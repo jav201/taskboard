@@ -1159,6 +1159,81 @@ class MilestoneOffer(ModalScreen[list | None]):
         self.dismiss([])
 
 
+class PresentHiddenPicker(ModalScreen[None]):
+    """`u` in the presentation (batch 2026-10-19-batch-01, HLR-2106): the items
+    left out of it, one row each — a project, or a task (indented under its
+    project in view 3) — `○` hidden, `●` shown. `↑↓` move, `space`/`↵` toggle
+    the row's "show in presentation" flag and save the board at once (the row
+    stays, with its new mark, so a second press undoes the first), `esc`/`q`/`u`
+    close. Every name and title is a plain Text piece (S1)."""
+
+    BINDINGS = [Binding("escape,q,u", "close", "Close", priority=True),
+                Binding("up,k", "move(-1)", "", priority=True, show=False),
+                Binding("down,j", "move(1)", "", priority=True, show=False),
+                Binding("space,enter", "toggle", "Toggle", priority=True, show=False)]
+
+    DEFAULT_CSS = """
+    PresentHiddenPicker { align: center middle; }
+    #picker-box { width: 64; max-width: 100%; height: auto; max-height: 100%;
+                  padding: 0 1; background: #0d1219; border: round #334154; }
+    #picker-box Static { margin: 0; }
+    """
+
+    def __init__(self, board: Board, rows: list[tuple[str, str, int]]):
+        super().__init__()
+        self.board = board
+        self.rows = rows
+        self.cursor = 0
+
+    def compose(self) -> ComposeResult:
+        with Vertical(id="picker-box"):
+            yield Static(Text("Hidden from the presentation", style=f"bold {HEX['bright']}"),
+                         id="picker-title")
+            yield Static(self._rows_text(), id="picker-rows")
+            yield Static(Text("↑↓ move · ␣ toggle · esc close", style=HEX["dim"]),
+                         id="picker-keys")
+
+    def _item(self, kind: str, oid: str):
+        return self.board.project_by_id(oid) if kind == "proj" else self.board.task_by_id(oid)
+
+    def _rows_text(self) -> Text:
+        if not self.rows:
+            return Text("nothing hidden", style=HEX["dim"])
+        out = Text(no_wrap=True, overflow="ellipsis")
+        for i, (kind, oid, depth) in enumerate(self.rows):
+            item = self._item(kind, oid)
+            on = i == self.cursor
+            if i:
+                out.append("\n")
+            out.append("▶ " if on else "  ", style=HEX["accent"])
+            out.append("   " * depth)
+            shown = item.show_in_present
+            out.append("● " if shown else "○ ", style=HEX["accent"] if shown else HEX["dim"])
+            out.append(item.name if kind == "proj" else item.title,
+                       style=f"bold {HEX['accent']}" if on else HEX["bright"])
+        return out
+
+    def _repaint(self) -> None:
+        self.query_one("#picker-rows", Static).update(self._rows_text())
+
+    def action_move(self, delta: int) -> None:
+        if self.rows:
+            self.cursor = max(0, min(len(self.rows) - 1, self.cursor + delta))
+            self._repaint()
+
+    def action_toggle(self) -> None:
+        if not self.rows:
+            return
+        kind, oid, _ = self.rows[self.cursor]
+        item = self._item(kind, oid)
+        item.show_in_present = not item.show_in_present
+        self.board.save()
+        self._repaint()
+
+    def action_close(self) -> None:
+        self.dismiss(None)
+
+
 class GanttLinkMode(ModalScreen[tuple[str, str] | None]):
     """`L` in the gantt — the link mode (D-A, LLR-502.3). The gantt is painted with
     the candidate as its selection (its group unfolds) and the proposed link drawn

@@ -1,0 +1,4 @@
+pre-check: tests/test_present_all.py -> exit 0
+R1 the stops keep the rows under the overflow row (code review F1 of 003) · taskboard/views.py · tests/test_present_all.py -> exit 1 · KILLED · restore digest 97009f8bd4ef66f919739293d264e5ab3461e7646ce164d5b589086c0798328a
+R2 the rail counts the shown projects' hidden tasks only (F3 of 003) · taskboard/views.py · tests/test_present_all.py -> exit 1 · KILLED · restore digest 97009f8bd4ef66f919739293d264e5ab3461e7646ce164d5b589086c0798328a
+2/2 KILLED

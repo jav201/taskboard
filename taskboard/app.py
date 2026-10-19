@@ -21,13 +21,15 @@ from .models import (AUTO_ARCHIVE_DAYS, IMAGE_EXTS, Board, Project, Task,
                      archive_refusal, chain_template, default_board_path, is_open,
                      link_refusal,
                      milestone_candidates, milestones_marked, next_priority, parse_iso,
+                     present_order, set_present_order,
                      ready_messages, run_link_migration, run_milestone_offer,
                      set_milestone, strip_controls, templates, waiting_ids,
                      CASCADE_MODES, apply_plan, plan_move, resolve_mode, restore,
                      snapshot)
 from .modals import (ClockModal, GanttLinkMode, LinkPicker, CommandPalette, ConfirmModal,
                      HelpModal, ImageViewer, MilestoneOffer, PhaseEditor, ProjectModal,
-                     ProjectPicker, StandupModal, TaskDetails, TaskModal, TeamIdentityPicker,
+                     PresentHiddenPicker, ProjectPicker, StandupModal, TaskDetails, TaskModal,
+                     TeamIdentityPicker,
                      TemplateEditor, TemplatePicker, TextPrompt)
 from .keymap import KeyBar, app_bindings, palette_commands
 from .ribbon import Ribbon
@@ -35,8 +37,9 @@ from .team_sync import (TEAM_FILENAME, TeamState, _read_json, clean_roster,
                         probe_setup_health)
 from .views import (clip, filtered_board, focus_tasks, gantt_group_key, group_key,
                     gantt_plan, nav_model, present_paths, present_project_id,
-                    present_hidden, present_tasks, render_present, render_view,
-                    save_present_png, PRESENT_MIN_WIDTH, PRESENT_VIEWS,
+                    present_hidden, present_hidden_rows, present_tasks, render_present,
+                    render_present_all, render_view, save_present_png, PresentAll,
+                    PRESENT_MIN_WIDTH, PRESENT_RAIL_MIN, PRESENT_SCREEN_VIEWS,
                      save_present_svg, sort_by_due, fit, vis, valid_url, _md)
 
 
@@ -179,37 +182,48 @@ class HelpScreen(ModalScreen[None]):
 
 
 class PresentScreen(ModalScreen[None]):
-    """`R` — the presentation, in two views (batch 2026-10-18-batch-01): `gantt`,
+    """`R` — the presentation, in three views: `gantt` (batch 2026-10-18-batch-01),
     the date ruler and the project's gantt field on top, the brief one-liners
-    below, a `⟦━⟧` cursor across them whose task's notes expand; and `split`, the
-    same field on top and every shown open task's notes below at once. `R`
-    always opens on `gantt` (the view is not remembered); `1` / `2` pick a view,
-    `tab` / `shift+tab` cycle them, `pgdn` / `pgup` scroll the split view's
-    notes. The cursor and the hidden tasks are shared by both views.
-    `←`/`→` and `↑`/`↓` move the cursor, `x` exports the current view's frame
-    as SVG + PNG to the board's `reports/` folder, `esc`/`q` leave — none of
-    these writes the board. It writes exactly ONE thing, the per-task "show in
-    presentation" flag (batch 2026-10-16-batch-01, LLR-1602.2): `space` hides
-    the cursor task, `a` shows every hidden task again, each saved at once. The
-    keys and the hidden count ride the hint row only — the frame is what the
-    room sees and what `x` exports."""
+    below, a `⟦━⟧` cursor across them whose task's notes expand; `split`, the
+    same field on top and every shown open task's notes below at once; and `all`
+    (batch 2026-10-19-batch-01), every shown project on one ruler beside a rail
+    that lists every project (`render_present_all`). `R` always opens on `gantt`
+    (the view is not remembered); `1` / `2` / `3` pick a view, `tab` /
+    `shift+tab` cycle them, `pgdn` / `pgup` scroll the split view's notes.
+    Views 1/2 share one cursor and one project's hidden tasks; view 3 has its
+    own cursor over project headers and tasks (on the rail, or on the timeline:
+    `←`/`→` switch where the rail is drawn), handed over both ways.
+    `x` exports the current view's frame (view 3: its timeline, without the
+    rail) as SVG + PNG to the board's `reports/` folder, `esc`/`q` leave. The
+    presentation writes only the "show in presentation" flags (a task's, and in
+    view 3 a project's) and the projects' presentation order: `space` hides the
+    cursor's row, `a` shows everything hidden, `shift+↑/↓` move a project in
+    view 3, `u` opens the list of hidden items — each change saved at once.
+    The keys and the hidden count ride the hint row only — the frame is what
+    the room sees and what `x` exports."""
 
     BINDINGS = [
         Binding("escape,q", "close", "Leave", priority=True),
-        Binding("left,h", "move(-1)", "", priority=True),
-        Binding("right,l", "move(1)", "", priority=True),
+        Binding("left,h", "side(-1)", "", priority=True),
+        Binding("right,l", "side(1)", "", priority=True),
         Binding("up,k", "move(-1)", "", priority=True),
         Binding("down,j", "move(1)", "", priority=True),
+        Binding("shift+up", "reorder(-1)", "", priority=True),
+        Binding("shift+down", "reorder(1)", "", priority=True),
+        Binding("enter", "fold", "", priority=True),
         Binding("x", "export", "Export", priority=True),
         # priority like the screen's other keys; today the screen's own `a`
-        # already beats the app's non-priority add-task `a` (no focusable child)
+        # already beats the app's non-priority add-task `a` (no focusable child),
+        # and its `u` the app's non-priority undo
         Binding("space", "hide", "", priority=True),
         Binding("a", "show_all", "", priority=True),
-        # the app's own `1`/`2` (views) are not reached past this modal screen,
-        # and its priority `tab` (toggle_presentation) is released while a
-        # modal is open (`TaskboardApp.check_action`)
+        Binding("u", "hidden_picker", "", priority=True),
+        # the app's own `1`/`2`/`3` (views) are not reached past this modal
+        # screen, and its priority `tab` (toggle_presentation) is released while
+        # a modal is open (`TaskboardApp.check_action`)
         Binding("1", "view(0)", "", priority=True),
         Binding("2", "view(1)", "", priority=True),
+        Binding("3", "view(2)", "", priority=True),
         Binding("tab", "cycle(1)", "", priority=True),
         Binding("shift+tab", "cycle(-1)", "", priority=True),
         Binding("pagedown", "scroll(1)", "", priority=True),
@@ -244,6 +258,9 @@ class PresentScreen(ModalScreen[None]):
         self._cursor_id = cursor_id
         self._view = 0           # R always opens on the gantt view
         self._scroll = 0
+        self._all_cur: tuple[str, str] | None = None   # view 3: ("proj" | "task", id)
+        self._folded: set[str] = set()                  # view 3, this presentation only
+        self._rail = False                              # view 3: the rail has the focus
 
     def compose(self) -> ComposeResult:
         with Vertical(id="present"):
@@ -260,15 +277,30 @@ class PresentScreen(ModalScreen[None]):
     def _frame_height(self) -> int:
         return max(1, (self.size.height or 0) - 1)
 
+    def _all(self) -> bool:
+        return PRESENT_SCREEN_VIEWS[self._view] == "all"
+
+    def _on_rail(self) -> bool:
+        return self._rail and (self.size.width or 0) >= PRESENT_RAIL_MIN
+
+    def _render_all(self) -> PresentAll:
+        return render_present_all(self._board, self._all_cur, self._today,
+                                  self.size.width or 0, self._frame_height(),
+                                  frozenset(self._folded), self._on_rail())
+
     def _frame_text(self, scroll: int | None = None) -> Text:
         """The current view's frame at the panel's size — what is painted and
-        what `x` exports."""
+        what `x` exports (view 3 exports its timeline, `action_export`)."""
+        if self._all():
+            return self._render_all().frame
         return render_present(self._board, self._project_id, self._cursor_id,
                               self._today, self.size.width or 0, self._frame_height(),
-                              PRESENT_VIEWS[self._view],
+                              PRESENT_SCREEN_VIEWS[self._view],
                               self._scroll if scroll is None else scroll)
 
     def _paint(self) -> None:
+        if self._all() and not self._on_rail():
+            self._all_cur = self._render_all().cursor      # the cursor as drawn
         self.query_one("#present-frame", Static).update(self._frame_text())
         self.query_one("#present-hint", Static).update(self._hint(self.size.width or 0))
 
@@ -277,38 +309,63 @@ class PresentScreen(ModalScreen[None]):
         no key but `esc`/`q` acts there, since nothing would show what it did."""
         return (self.size.width or 0) < PRESENT_MIN_WIDTH
 
+    def _hidden_count(self) -> int:
+        """What `u` would list as hidden: the project's hidden tasks (views 1/2);
+        the hidden projects and every visible project's hidden tasks (view 3)."""
+        if not self._all():
+            return len(present_hidden(self._board, self._project_id))
+        return sum(1 for p in present_order(self._board) if not p.show_in_present) + sum(
+            len(present_hidden(self._board, p.id)) for p in present_order(self._board))
+
     def _hint(self, w: int) -> Text:
         """The keys, under the frame: the view switch (the current view bright),
-        then the moves, then the hidden count — never painted in the frame. The
-        first wording that fits the hint's `w - 2` cells, longest first (the middle
-        one keeps `next` and `show all`, batch 2026-10-18-batch-03); below
-        `PRESENT_MIN_WIDTH` only `esc leave` and the count; whatever is left
-        over is cut with a visible `…`."""
+        then the moves, then `u` and the hidden count — never painted in the
+        frame. The first wording that fits the hint's `w - 2` cells, longest
+        first; below `PRESENT_MIN_WIDTH` only `esc leave` and the count; whatever
+        is left over is cut with a visible `…`."""
         room = w - 2
         if room <= 0:
             return Text()
-        hidden = len(present_hidden(self._board, self._project_id))
-        tail = f" · {hidden} hidden" if hidden else ""
+        hidden = self._hidden_count()
         if w < PRESENT_MIN_WIDTH:
-            hint = Text("esc leave" + tail, style="#8b98a5")
+            hint = Text("esc leave" + (f" · {hidden} hidden" if hidden else ""),
+                        style="#8b98a5")
             hint.truncate(room, overflow="ellipsis")
             return hint
-        split = PRESENT_VIEWS[self._view] == "split"
-        wordings = (
-            ("  ", ("pgdn notes · " if split else "")
-             + "⇥ next · ←→ ↑↓ move · ␣ hide · a show all · x export · esc leave"),
-            ("  ", ("pgdn · " if split else "")
-             + "⇥ next · ←→ ↑↓ · ␣ hide · a show all · x export · esc"),
-            (" ", ("pgdn · " if split else "") + "⇥ · ←→ · ␣ hide · a all · x export · esc"),
-            (" ", ("pgdn " if split else "") + "⇥ ←→ ␣ x esc"),
-            (" ", "esc"),
-        )
+        tail = f" · u {hidden} hidden" if hidden else ""
+        if self._all() and w >= PRESENT_RAIL_MIN:
+            wordings = (
+                ("  ", "⇥ next · ↑↓ move · ←→ rail/timeline · ␣ hide · ⇧↑↓ reorder · enter fold"
+                       " · a show all · x export · esc leave"),
+                ("  ", "⇥ · ↑↓ · ←→ rail · ␣ hide · ⇧↑↓ order · enter fold · a all · x · esc"),
+                (" ", "⇥ ↑↓ ←→ ␣ ⇧↑↓ enter a x esc"),
+                (" ", "esc"),
+            )
+        elif self._all():
+            wordings = (
+                ("  ", "⇥ next · ←→ ↑↓ move · ␣ hide · ⇧↑↓ reorder · enter fold · a show all"
+                       " · x export · esc leave"),
+                ("  ", "⇥ · ←→ ↑↓ · ␣ hide · ⇧↑↓ order · enter fold · a all · x · esc"),
+                (" ", "⇥ ←→ ↑↓ ␣ ⇧↑↓ enter a x esc"),
+                (" ", "esc"),
+            )
+        else:
+            split = PRESENT_SCREEN_VIEWS[self._view] == "split"
+            wordings = (
+                ("  ", ("pgdn notes · " if split else "")
+                 + "⇥ next · ←→ ↑↓ move · ␣ hide · a show all · x export · esc leave"),
+                ("  ", ("pgdn · " if split else "")
+                 + "⇥ next · ←→ ↑↓ · ␣ hide · a show all · x export · esc"),
+                (" ", ("pgdn · " if split else "") + "⇥ · ←→ · ␣ hide · a all · x export · esc"),
+                (" ", ("pgdn " if split else "") + "⇥ ←→ ␣ x esc"),
+                (" ", "esc"),
+            )
         for gap, keys in wordings:
-            names = sum(vis(f"{i + 1} {n}{gap}") for i, n in enumerate(PRESENT_VIEWS))
+            names = sum(vis(f"{i + 1} {n}{gap}") for i, n in enumerate(PRESENT_SCREEN_VIEWS))
             if names + vis(keys + tail) <= room:
                 break
         hint = Text()
-        for i, name in enumerate(PRESENT_VIEWS):
+        for i, name in enumerate(PRESENT_SCREEN_VIEWS):
             hint.append(f"{i + 1} {name}", style="bold #e6edf7" if i == self._view else "#5b6675")
             hint.append(gap)
         hint.append(keys + tail, style="#8b98a5")
@@ -316,16 +373,38 @@ class PresentScreen(ModalScreen[None]):
         return hint
 
     def _shown_ids(self) -> list[str]:
-        """The cursor's stops: the shown open tasks, read live (a flag change
-        moves them)."""
+        """The cursor's stops in views 1/2: the shown open tasks, read live (a flag
+        change moves them)."""
         return [t.id for t in present_tasks(self._board, self._project_id)[0]]
 
     def _cursor(self, ids: list[str]) -> str | None:
         """The task the frame draws the cursor on — the renderer's own rule."""
         return self._cursor_id if self._cursor_id in ids else (ids[0] if ids else None)
 
+    def _stops(self) -> list:
+        """View 3's stops: the rail's projects, or the timeline's drawn rows."""
+        r = self._render_all()
+        return r.rail_stops if self._on_rail() else r.stops
+
+    def _cursor_project(self) -> Project | None:
+        if self._all_cur is None:
+            return None
+        kind, oid = self._all_cur
+        if kind == "proj":
+            return self._board.project_by_id(oid)
+        task = self._board.task_by_id(oid)
+        return self._board.project_by_id(task.project_id) if task else None
+
     def action_move(self, delta: int) -> None:
         if self._narrow():
+            return
+        if self._all():
+            stops = self._stops()
+            if not stops:
+                return
+            i = stops.index(self._all_cur) if self._all_cur in stops else 0
+            self._all_cur = stops[max(0, min(len(stops) - 1, i + delta))]
+            self._paint()
             return
         ids = self._shown_ids()
         cur = self._cursor(ids)
@@ -335,16 +414,47 @@ class PresentScreen(ModalScreen[None]):
         self._scroll = 0
         self._paint()
 
+    def action_side(self, delta: int) -> None:
+        """`←`/`→` — in view 3 where the rail is drawn, the focus to the rail /
+        the timeline (a task cursor becomes its project on the rail); anywhere
+        else, a move."""
+        if not (self._all() and (self.size.width or 0) >= PRESENT_RAIL_MIN) or self._narrow():
+            self.action_move(delta)
+            return
+        self._rail = delta < 0
+        if self._rail and self._all_cur and self._all_cur[0] == "task":
+            proj = self._cursor_project()
+            self._all_cur = ("proj", proj.id) if proj else None
+        self._paint()
+
     def action_view(self, index: int) -> None:
-        """`1` / `2` — show that view, its notes scrolled back to the top."""
+        """`1` / `2` / `3` — show that view, its notes scrolled back to the top.
+        Leaving view 3 shows its cursor's project (and task) in views 1/2;
+        entering it puts its cursor on the current project — on the rail where
+        the rail is drawn, else on the cursor task's row or its project's header."""
         if self._narrow():
             return
+        leaving = self._all() and PRESENT_SCREEN_VIEWS[index] != "all"
+        entering = not self._all() and PRESENT_SCREEN_VIEWS[index] == "all"
+        if leaving and self._all_cur is not None:
+            proj = self._cursor_project()
+            if proj is not None:
+                self._project_id, self._project_name = proj.id, proj.name
+                self._cursor_id = self._all_cur[1] if self._all_cur[0] == "task" else None
+        if entering:
+            self._rail = (self.size.width or 0) >= PRESENT_RAIL_MIN
+            self._all_cur = (("task", self._cursor_id)
+                             if self._cursor_id and not self._rail
+                             and self._board.task_by_id(self._cursor_id) is not None
+                             and self._board.task_by_id(self._cursor_id).project_id
+                             == self._project_id
+                             else ("proj", self._project_id))
         self._view, self._scroll = index, 0
         self._paint()
 
     def action_cycle(self, delta: int) -> None:
         """`tab` / `shift+tab` — the next / previous view, wrapping."""
-        self.action_view((self._view + delta) % len(PRESENT_VIEWS))
+        self.action_view((self._view + delta) % len(PRESENT_SCREEN_VIEWS))
 
     def action_scroll(self, delta: int) -> None:
         """`pgdn` / `pgup` — the split view's notes one page down / up; a page
@@ -352,7 +462,7 @@ class PresentScreen(ModalScreen[None]):
         `pgup` answers at once."""
         if self._narrow():
             return
-        if PRESENT_VIEWS[self._view] != "split":
+        if PRESENT_SCREEN_VIEWS[self._view] != "split":
             return
         new = max(0, self._scroll + delta)
         if new == self._scroll:
@@ -363,9 +473,13 @@ class PresentScreen(ModalScreen[None]):
         self._paint()
 
     def action_hide(self) -> None:
-        """`space` — leave the cursor task out of the presentation; the cursor
-        moves to the next task by due (the previous one at the end)."""
+        """`space` — leave the cursor's row out of the presentation; the cursor
+        moves to the next row (the previous one at the end). On view 3's rail it
+        toggles the cursor project, the cursor staying on it."""
         if self._narrow():
+            return
+        if self._all():
+            self._hide_all()
             return
         ids = self._shown_ids()
         cur = self._cursor(ids)
@@ -379,10 +493,49 @@ class PresentScreen(ModalScreen[None]):
         self._scroll = 0
         self._paint()
 
+    def _hide_all(self) -> None:
+        if self._all_cur is None:
+            return
+        kind, oid = self._all_cur
+        if self._on_rail():
+            proj = self._board.project_by_id(oid)
+            proj.show_in_present = not proj.show_in_present
+            self._board.save()
+            self._paint()
+            return
+        stops = self._stops()
+        if self._all_cur not in stops:
+            return
+        i = stops.index(self._all_cur)
+        item = self._board.project_by_id(oid) if kind == "proj" else self._board.task_by_id(oid)
+        item.show_in_present = False
+        self._board.save()
+        after = self._render_all().stops
+        rest = ([s for s in stops[i + 1:] if s in after]
+                + [s for s in reversed(stops[:i]) if s in after])
+        self._all_cur = rest[0] if rest else None
+        self._paint()
+
     def action_show_all(self) -> None:
-        """`a` — every hidden task back in the presentation; nothing hidden,
-        nothing written."""
+        """`a` — every hidden task back in the presentation (view 3: every hidden
+        project and every visible project's hidden tasks, said in a notice);
+        nothing hidden, nothing written."""
         if self._narrow():
+            return
+        if self._all():
+            projects = [p for p in present_order(self._board) if not p.show_in_present]
+            tasks = [t for p in present_order(self._board)
+                     for t in present_hidden(self._board, p.id)]
+            if not projects and not tasks:
+                return
+            for item in projects + tasks:
+                item.show_in_present = True
+            self._board.save()
+            n, m = len(projects), len(tasks)
+            self.app.notify(f"Shown again: {n} project{'' if n == 1 else 's'} + "
+                            f"{m} task{'' if m == 1 else 's'}",
+                            title="Present", timeout=6, markup=False)
+            self._paint()
             return
         hidden = present_hidden(self._board, self._project_id)
         if not hidden:
@@ -394,6 +547,50 @@ class PresentScreen(ModalScreen[None]):
         self._scroll = 0
         self._paint()
 
+    def action_reorder(self, delta: int) -> None:
+        """`shift+↑` / `shift+↓` — view 3 only: the cursor's project one place up /
+        down in the presentation order (among every project on the rail, among
+        the shown on the timeline), every visible project's place renumbered;
+        nothing at either end."""
+        if self._narrow() or not self._all():
+            return
+        proj = self._cursor_project()
+        if proj is None:
+            return
+        order = present_order(self._board)
+        ids = [p.id for p in order]
+        i = ids.index(proj.id)
+        if self._on_rail():
+            j = i + delta
+        else:
+            shown = [k for k, p in enumerate(order) if p.show_in_present]
+            k = shown.index(i) + delta
+            j = shown[k] if 0 <= k < len(shown) else -1
+        if not 0 <= j < len(ids):
+            return
+        ids.insert(j, ids.pop(i))
+        set_present_order(self._board, ids)
+        self._board.save()
+        self._paint()
+
+    def action_fold(self) -> None:
+        """`enter` — view 3 only: fold or unfold the cursor's project (for this
+        presentation); nothing on a task."""
+        if self._narrow() or not self._all() or self._all_cur is None:
+            return
+        if self._all_cur[0] != "proj":
+            return
+        self._folded.symmetric_difference_update({self._all_cur[1]})
+        self._paint()
+
+    def action_hidden_picker(self) -> None:
+        """`u` — the list of hidden items (`PresentHiddenPicker`); the frame
+        repaints when it closes."""
+        if self._narrow():
+            return
+        rows = present_hidden_rows(self._board, self._project_id, self._all())
+        self.app.push_screen(PresentHiddenPicker(self._board, rows), lambda _: self._paint())
+
     def action_export(self) -> None:
         w = self.size.width or 0
         if self._narrow():
@@ -401,9 +598,14 @@ class PresentScreen(ModalScreen[None]):
                             title="Present", severity="warning", timeout=6, markup=False)
             return
         h = self._frame_height()
-        text = self._frame_text()
-        svg_path, png_path = present_paths(self._board, self._project_name, self._today,
-                                           PRESENT_VIEWS[self._view])
+        if self._all():
+            r = self._render_all()
+            text, w = r.timeline, r.timeline_w
+            svg_path, png_path = present_paths(self._board, None, self._today, "all")
+        else:
+            text = self._frame_text()
+            svg_path, png_path = present_paths(self._board, self._project_name, self._today,
+                                               PRESENT_SCREEN_VIEWS[self._view])
         save_present_svg(text, svg_path, w, h)
         png = save_present_png(svg_path, png_path, w, h)
         if png is None:

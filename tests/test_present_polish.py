@@ -179,9 +179,11 @@ SHORT = "⇥ · ←→ · ␣ hide · a all · x export · esc"
 LONG = "⇥ next · ←→ ↑↓ move · ␣ hide · a show all · x export · esc leave"
 # the first width the middle wording is painted at, and the long one (P-3, measured on the
 # design before it was built — never recomputed from the code under test)
-MIDDLE_FIRST = {("gantt", 0): (73, 84), ("gantt", 1): (84, 95), ("gantt", 3): (84, 95),
-                ("gantt", 10): (85, 96), ("split", 0): (80, 97), ("split", 1): (91, 108),
-                ("split", 3): (91, 108), ("split", 10): (92, 109)}
+# — since batch 2026-10-19-batch-01 with three view names and the `u` tail
+# (`.dev-flow/2026-10-19-batch-01/evidence/hint-widths.txt`, measured outside the code)
+MIDDLE_FIRST = {("gantt", 0): (80, 91), ("gantt", 1): (93, 104), ("gantt", 3): (93, 104),
+                ("gantt", 10): (94, 105), ("split", 0): (87, 104), ("split", 1): (100, 117),
+                ("split", 3): (100, 117), ("split", 10): (101, 118)}
 
 
 @pytest.mark.parametrize("view, hidden", sorted(MIDDLE_FIRST))
@@ -196,11 +198,11 @@ def test_TC_2002_the_middle_wording_sits_between_the_long_and_the_short(tmp_path
     for t in mine[:hidden]:
         t.show_in_present = False
     pg = view == "split"
-    tail = f" · {hidden} hidden" if hidden else ""
+    tail = f" · u {hidden} hidden" if hidden else ""
     first, long_first = MIDDLE_FIRST[(view, hidden)]
-    middle = "1 gantt  2 split  " + ("pgdn · " if pg else "") + MIDDLE + tail
-    short = "1 gantt 2 split " + ("pgdn · " if pg else "") + SHORT + tail
-    long_ = "1 gantt  2 split  " + ("pgdn notes · " if pg else "") + LONG + tail
+    middle = "1 gantt  2 split  3 all  " + ("pgdn · " if pg else "") + MIDDLE + tail
+    short = "1 gantt 2 split 3 all " + ("pgdn · " if pg else "") + SHORT + tail
+    long_ = "1 gantt  2 split  3 all  " + ("pgdn notes · " if pg else "") + LONG + tail
     assert scr._hint(first).plain == middle
     assert scr._hint(long_first - 1).plain == middle
     assert scr._hint(first - 1).plain == short
@@ -215,25 +217,25 @@ def test_TC_2002_the_middle_wording_sits_between_the_long_and_the_short(tmp_path
 async def test_AT_2002_the_80_column_hint_names_next_and_show_all(tmp_path, monkeypatch, frozen):
     """AT-2002 (HLR-2002): the app at 80x25, `R`: the hint row reads the middle
     wording — `next` and `show all`, the two keys a first-time presenter does
-    not guess — the current view bold; `2`: the split view's middle wording,
-    exactly the 78 cells the row holds; `space` (one hidden): the count no
-    longer leaves room, the short wording as shipped; at 118x31 the long one."""
+    not guess — the current view bold; at 118x31 the long one. Since batch
+    2026-10-19-batch-01 (three view names, LED-2026-10-19-batch-01.2 supersedes
+    HLR-2002 for the split view): `2` takes the short wording at 80 columns, and
+    `space` (one hidden, `u 1 hidden`) the compact one."""
     s = _Presenting(tmp_path, monkeypatch, (80, 25))
     async with s.app.run_test(size=s.size) as pilot:
         await s.open(pilot)
-        assert s.hint() == "1 gantt  2 split  " + MIDDLE
+        assert s.hint() == "1 gantt  2 split  3 all  " + MIDDLE
         assert "next" in s.hint() and "show all" in s.hint()
         hint = s.app.screen.query_one("#present-hint").content
         assert "bold #e6edf7" in _styles_at(hint, hint.plain.index("1 gantt"))
         await s.press(pilot, "2")
-        assert s.hint() == "1 gantt  2 split  pgdn · " + MIDDLE
-        assert views.vis(s.hint()) == 78
+        assert s.hint() == "1 gantt 2 split 3 all pgdn · " + SHORT
         await s.press(pilot, "space")
-        assert s.hint() == "1 gantt 2 split pgdn · " + SHORT + " · 1 hidden"
+        assert s.hint() == "1 gantt 2 split 3 all pgdn ⇥ ←→ ␣ x esc · u 1 hidden"
     s = _Presenting(tmp_path, monkeypatch, (118, 31))
     async with s.app.run_test(size=s.size) as pilot:
         await s.open(pilot)
-        assert s.hint() == "1 gantt  2 split  " + LONG
+        assert s.hint() == "1 gantt  2 split  3 all  " + LONG
 
 
 # --------------------------------------------------------------------------- #

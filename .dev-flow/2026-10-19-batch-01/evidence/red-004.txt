@@ -1,0 +1,13 @@
+# RED of increment 004 on base_ref bdf6e9d: tests/test_present_all.py (the screen's nodes: TC-2104..TC-2106, AT-2102..AT-2106) and the fixture copied into a scratch worktree at base_ref, source untouched
+=========================== short test summary info ===========================
+FAILED tests/test_present_all.py::test_AT_2103_the_portfolio_on_one_ruler - A...
+FAILED tests/test_present_all.py::test_AT_2104_three_views_one_cursor_and_the_export
+FAILED tests/test_present_all.py::test_AT_2102_the_order_and_hidden_projects_survive_a_restart
+FAILED tests/test_present_all.py::test_AT_2105_the_presenter_curates_view_3
+FAILED tests/test_present_all.py::test_AT_2106_u_lists_the_hidden_and_brings_one_back
+FAILED tests/test_present_all.py::test_TC_2104_view_3s_hint_takes_the_first_wording_that_fits
+FAILED tests/test_present_all.py::test_TC_2104_the_view_names_and_the_u_tail_in_views_1_2
+FAILED tests/test_present_all.py::test_TC_2104_the_cycle_and_the_hand_off - A...
+FAILED tests/test_present_all.py::test_TC_2105_the_curation_writes_exactly_what_changed
+FAILED tests/test_present_all.py::test_TC_2106_the_picker - textual.css.query...
+10 failed, 36 deselected in 4.91s

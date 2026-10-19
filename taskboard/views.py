@@ -6796,11 +6796,22 @@ def _all_timeline(board: Board, width: int, height: int, today: date, cur, folde
                     wide, "dim")
     _, _, cur_proj = _all_resolve(board, cur)
     open_, gap, stops = _all_layout(plan, cur_proj.id if cur_proj else None, folded, height - 3)
+    rows, y = {}, 3                    # each stop's row under the header and the ruler
+    for i, (p, ts) in enumerate(plan):
+        y += 1 if gap and i else 0
+        rows[("proj", p.id)], y = y, y + 1
+        if open_[p.id]:
+            for t in ts:
+                rows[("task", t.id)], y = y, y + 1
+    if y > height:                     # the overflow row takes the last row: what it
+        stops = [s for s in stops if rows[s] < height - 1]   # covers is no stop
     if cur not in stops:
         if rail_focus:                 # the rail's cursor on a hidden project: none here
             cur = None
         elif cur_proj is not None and ("proj", cur_proj.id) in stops:
             cur = ("proj", cur_proj.id)   # a task folded away: its project's header
+        elif cur in rows and stops:
+            cur = stops[-1]               # cut by the overflow row: the last drawn stop
         else:
             cur = stops[0] if stops else None
     kind, obj, proj = _all_resolve(board, cur)
@@ -6834,7 +6845,7 @@ def _all_rail(board: Board, height: int, cur_pid: str | None, focus: bool) -> li
         name = c(escape(fit(p.name, rw - 8)), tone, bold=on)
         lines.append(_pad(lead + num + " " + mark + " " + name, rw))
     hidden_p = sum(1 for p in ps if not p.show_in_present)
-    hidden_t = sum(len(present_hidden(board, p.id)) for p in ps if p.show_in_present)
+    hidden_t = sum(len(present_hidden(board, p.id)) for p in ps)
     lines.append(" " * rw)
     lines.append(_pad(c(fit(f" {len(ps) - hidden_p} shown · {hidden_p} hidden", rw), "mut"), rw))
     if hidden_t:

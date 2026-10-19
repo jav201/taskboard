@@ -191,11 +191,15 @@ async def test_AT_1803_the_view_keys_and_what_the_views_share(tmp_path, monkeypa
         assert "  gantt " in head()
         await s.press(pilot, "2")
         assert "  split " in head()
+        await s.press(pilot, "tab")                 # three views since 2026-10-19-batch-01
+        assert "  all " in head()
         await s.press(pilot, "tab")
         assert "  gantt " in head()
         await s.press(pilot, "shift+tab")
+        assert "  all " in head()
+        await s.press(pilot, "shift+tab")
         assert "  split " in head()
-        await s.press(pilot, "tab", "tab")
+        await s.press(pilot, "tab", "tab", "tab")
         assert "  split " in head()
         await s.press(pilot, "1")
         assert "  gantt " in head()
@@ -265,16 +269,18 @@ MIDDLE = "⇥ next · ←→ ↑↓ · ␣ hide · a show all · x export · esc
 
 
 @pytest.mark.parametrize("size, gantt, split, split_hidden", [
-    ((118, 31), "1 gantt  2 split  " + LONG, "1 gantt  2 split  pgdn notes · " + LONG,
-     "1 gantt  2 split  pgdn notes · " + LONG + " · 1 hidden"),
-    ((100, 31), "1 gantt  2 split  " + LONG, "1 gantt  2 split  pgdn notes · " + LONG,
-     "1 gantt  2 split  pgdn · " + MIDDLE + " · 1 hidden"),
-    ((99, 31), "1 gantt  2 split  " + LONG, "1 gantt  2 split  pgdn notes · " + LONG,
-     "1 gantt  2 split  pgdn · " + MIDDLE + " · 1 hidden"),
-    ((96, 31), "1 gantt  2 split  " + LONG, "1 gantt  2 split  pgdn · " + MIDDLE,
-     "1 gantt  2 split  pgdn · " + MIDDLE + " · 1 hidden"),
-    ((80, 25), "1 gantt  2 split  " + MIDDLE, "1 gantt  2 split  pgdn · " + MIDDLE,
-     "1 gantt 2 split pgdn · " + SHORT + " · 1 hidden"),
+    # three view names and the `u` tail since batch 2026-10-19-batch-01 (the first
+    # widths of `.dev-flow/2026-10-19-batch-01/evidence/hint-widths.txt`)
+    ((118, 31), "1 gantt  2 split  3 all  " + LONG, "1 gantt  2 split  3 all  " + "pgdn notes · " + LONG,
+     "1 gantt  2 split  3 all  " + "pgdn notes · " + LONG + " · u 1 hidden"),
+    ((100, 31), "1 gantt  2 split  3 all  " + LONG, "1 gantt  2 split  3 all  " + "pgdn · " + MIDDLE,
+     "1 gantt  2 split  3 all  " + "pgdn · " + MIDDLE + " · u 1 hidden"),
+    ((99, 31), "1 gantt  2 split  3 all  " + LONG, "1 gantt  2 split  3 all  " + "pgdn · " + MIDDLE,
+     "1 gantt 2 split 3 all " + "pgdn · " + SHORT + " · u 1 hidden"),
+    ((96, 31), "1 gantt  2 split  3 all  " + LONG, "1 gantt  2 split  3 all  " + "pgdn · " + MIDDLE,
+     "1 gantt 2 split 3 all " + "pgdn · " + SHORT + " · u 1 hidden"),
+    ((80, 25), "1 gantt  2 split  3 all  " + MIDDLE, "1 gantt 2 split 3 all " + "pgdn · " + SHORT,
+     "1 gantt 2 split 3 all " + "pgdn ⇥ ←→ ␣ x esc · u 1 hidden"),
 ], ids=["118", "100", "99", "96", "80"])
 async def test_TC_1808_the_hint_row_per_view(tmp_path, monkeypatch, frozen, size, gantt, split,
                                              split_hidden):

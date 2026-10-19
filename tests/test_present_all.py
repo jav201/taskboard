@@ -222,8 +222,14 @@ def test_TC_2103_the_frame_sweep(tmp_path, width):
                             cur[1] if cur[0] == "proj"
                             else board.task_by_id(cur[1]).project_id)
                         if cur_p and cur_p not in folded and board.project_by_id(cur_p).show_in_present:
-                            mine = views.present_tasks(board, cur_p)[0]
-                            assert all(("task", t.id) in r.stops for t in mine), (name, cur_p)
+                            name_p = board.project_by_id(cur_p).name[:12]
+                            heads = [x for x in tl if "■ " + name_p in x]
+                            assert not any(x.startswith("▸") for x in heads), (name, cur_p)
+                        # the cursor as drawn is a stop, and no stop is under the overflow
+                        # row (code review F1 of increment 003)
+                        assert r.cursor is None or r.cursor in r.stops or (
+                            focus and rail), (name, r.cursor)
+                        assert len(r.stops) == len(set(r.stops))
                         if "more rows not shown" not in body:
                             for p in shown:
                                 if p.id not in folded and ("proj", p.id) in r.stops:
@@ -313,3 +319,485 @@ def test_TC_2106_the_hidden_rows(tmp_path):
     for t in b.tasks:
         t.show_in_present = True
     assert views.present_hidden_rows(b, "pcp", True) == []
+
+
+# --------------------------------------------------------------------------- #
+# The screen: TC-2104, TC-2105, TC-2106 (picker), AT-2102..AT-2106 (increment 004)
+# --------------------------------------------------------------------------- #
+from datetime import date as _date
+
+
+class _Today(_date):
+    @classmethod
+    def today(cls):
+        return pf.TODAY
+
+
+@pytest.fixture
+def frozen(monkeypatch):
+    from taskboard import app as app_module
+    monkeypatch.setattr(app_module, "date", _Today)
+    monkeypatch.setattr(models, "date", _Today)
+
+
+class _Show:
+    """The app on the round's board saved to disk, `R` pressed on `Tax rules for
+    new regions`; helpers read the painted widgets as Textual holds them."""
+
+    def __init__(self, tmp_path, size, build=True):
+        from taskboard.app import TaskboardApp
+        self.path = tmp_path / "board.json"
+        if build:
+            pf.build(self.path).save()
+        self.size = size
+        self.app = TaskboardApp(board_path=str(self.path))
+
+    async def open(self, pilot):
+        await pilot.pause()
+        self.app.selected_task_id = pf.CURSOR
+        await self.press(pilot, "R")
+        return self.app.screen
+
+    async def press(self, pilot, *keys):
+        for k in keys:
+            await pilot.press(k)
+            await pilot.pause()
+
+    @property
+    def scr(self):
+        stack = self.app.screen_stack
+        return next(s for s in reversed(stack) if type(s).__name__ == "PresentScreen")
+
+    def frame(self) -> list[str]:
+        return self.scr.query_one("#present-frame").content.plain.split("\n")
+
+    def hint(self) -> str:
+        return self.scr.query_one("#present-hint").content.plain
+
+    def bytes(self) -> bytes:
+        return self.path.read_bytes()
+
+    def projects(self) -> dict:
+        return {p["id"]: p for p in json.loads(self.path.read_text(encoding="utf-8"))["projects"]}
+
+    def tasks(self) -> dict:
+        return {t["id"]: t for t in json.loads(self.path.read_text(encoding="utf-8"))["tasks"]}
+
+    async def goto(self, pilot, target: str):
+        """`↓` then `↑` until view 3's cursor is on `target` — keys only."""
+        for key in ("down", "up"):
+            for _ in range(40):
+                cur = self.scr._all_cur
+                if cur is not None and cur[1] == target:
+                    return
+                await self.press(pilot, key)
+        raise AssertionError((target, self.scr._all_cur))
+
+
+def _rail(rows):
+    return [r[:views.PRESENT_RAIL_W] for r in rows]
+
+
+def _timeline(rows):
+    return [r[views.PRESENT_RAIL_W + 1:] for r in rows]
+
+
+async def test_AT_2103_the_portfolio_on_one_ruler(tmp_path, frozen):
+    """AT-2103 (US-2102, HLR-2103): `R`, `3` at 160x45 — the header, every shown
+    project in order with its open tasks, no hidden item, the rail; at 118x30 the
+    rail and exact widths; at 80x24 no rail."""
+    s = _Show(tmp_path, (160, 45))
+    async with s.app.run_test(size=s.size) as pilot:
+        await s.open(pilot)
+        await s.press(pilot, "3")
+        rows = s.frame()
+        tl = _timeline(rows)
+        assert tl[0].startswith("◆ PRESENT · 5 projects  all"), tl[0]
+        assert tl[0].rstrip().endswith("23 open · ▲2 past due"), tl[0]
+        order = [n for r in tl for n in ("Customer Portal", "Billing Migration",
+                                         "Mobile Release 3.2", "Data Platform", "Brand Refresh")
+                 if "■ " + n in r]
+        assert order == ["Customer Portal", "Billing Migration", "Mobile Release 3.2",
+                         "Data Platform", "Brand Refresh"], order
+        body = "\n".join(tl)
+        for _, pk, title, phase, *_ in pf.TASKS:
+            if pk != "sa" and phase != "Done" and title not in ("Help-center links",
+                                                                  "Cost dashboards"):
+                assert title in body, title
+        for gone in ("Threat model review", "Help-center links", "Cost dashboards"):
+            assert gone not in body, gone
+        rail = _rail(rows)
+        want = ["  1 ● Customer Portal", "▶ 2 ● Billing Migrati…", "  3 ● Mobile Release …",
+                "  4 ● Data Platform", "  5 ○ Security Audit", "  6 ● Brand Refresh"]
+        for w in want:
+            assert any(r.startswith(w) for r in rail), (w, rail)
+        assert any(r.startswith(" 5 shown · 1 hidden") for r in rail), rail
+        assert any(r.startswith(" 2 tasks hidden") for r in rail), rail
+    for size, has_rail in (((118, 30), True), ((80, 24), False)):
+        s = _Show(tmp_path / f"{size[0]}", size)
+        async with s.app.run_test(size=s.size) as pilot:
+            await s.open(pilot)
+            await s.press(pilot, "3")
+            rows = s.frame()
+            assert all(vis(r) == size[0] for r in rows), size
+            assert any("PROJECTS" in r for r in rows) == has_rail
+            assert any("│" in r for r in rows) == has_rail
+
+
+async def test_AT_2104_three_views_one_cursor_and_the_export(tmp_path, frozen):
+    """AT-2104 (US-2102, HLR-2104): the hint names three views; `tab` cycles 1 → 2
+    → 3 → 1 with the cursor handed over; `x` in view 3 writes one `-all` SVG
+    without the rail or the hint; view 3's hint keeps its labels and `u`."""
+    s = _Show(tmp_path, (160, 45))
+    async with s.app.run_test(size=s.size) as pilot:
+        await s.open(pilot)
+        assert s.hint().startswith("1 gantt  2 split  3 all"), s.hint()
+        spans = {s.hint()[sp.start:sp.end]: str(sp.style)
+                 for sp in s.scr.query_one("#present-hint").content.spans}
+        assert "bold" in spans.get("1 gantt", ""), spans
+        await s.press(pilot, "tab", "tab")
+        rows = s.frame()
+        assert " all" in _timeline(rows)[0]
+        assert any(r.startswith("▶ 2 ● Billing") for r in _rail(rows)), _rail(rows)
+        await s.press(pilot, "tab")
+        assert "Billing Migration" in s.frame()[0] and "gantt" in s.frame()[0]
+        await s.press(pilot, "3", "right")
+        assert any("project span ▸" in r for r in _timeline(s.frame())[:3])
+        await s.press(pilot, "down")
+        assert s.scr._all_cur == ("task", "tb2")
+        assert any("selected task ▸" in r for r in _timeline(s.frame())[:3])
+        await s.press(pilot, "1")
+        assert any("⟦Dual-run reconciliation⟧" in r for r in s.frame()), s.frame()
+        await s.press(pilot, "3")
+        hint = s.hint()
+        assert hint.rstrip().endswith("· u 3 hidden"), hint
+        for key in ("␣ hide", "⇧↑↓", "enter fold"):
+            assert key in hint, (key, hint)
+        await s.press(pilot, "x")
+        svgs = list((tmp_path / "reports").glob("*.svg"))
+        assert [p.name for p in svgs] == ["present-board-2026-10-19-all.svg"], svgs
+        svg = svgs[0].read_text(encoding="utf-8").replace("&#160;", " ")
+        for name in ("Customer Portal", "Billing Migration", "Mobile Release 3.2",
+                     "Data Platform", "Brand Refresh"):
+            assert name in svg, name
+        for absent in ("PROJECTS", "shown ·", "u 3 hidden", "3 all"):
+            assert absent not in svg, absent
+
+
+async def test_AT_2102_the_order_and_hidden_projects_survive_a_restart(tmp_path, frozen):
+    """AT-2102 (US-2103, HLR-2102): reorder and hide on the rail → the file's ranks
+    and flags; a restart shows the same order; the main gantt keeps board order."""
+    s = _Show(tmp_path, (160, 45))
+    async with s.app.run_test(size=s.size) as pilot:
+        await s.open(pilot)
+        await s.press(pilot, "3", "down")
+        assert s.scr._all_cur == ("proj", "pmr")
+        await s.press(pilot, "shift+up", "shift+up")
+        await s.goto(pilot, "pbr")
+        await s.press(pilot, "space")
+    recs = s.projects()
+    assert {k: recs[k].get("present_rank") for k in recs} == {
+        "pmr": 0, "pcp": 1, "pbm": 2, "pdp": 3, "psa": 4, "pbr": 5}
+    assert sorted(k for k in recs if recs[k].get("show_in_present") is False) == ["pbr", "psa"]
+    s2 = _Show(tmp_path, (160, 45), build=False)
+    async with s2.app.run_test(size=s2.size) as pilot:
+        await s2.open(pilot)
+        await s2.press(pilot, "3")
+        tl = "\n".join(_timeline(s2.frame()))
+        pos = [tl.index("■ " + n) for n in ("Mobile Release 3.2", "Customer Portal",
+                                            "Billing Migration", "Data Platform")]
+        assert pos == sorted(pos), pos
+        assert "■ Brand Refresh" not in tl
+        assert any(r.startswith("  6 ○ Brand Refresh") for r in _rail(s2.frame()))
+        await s2.press(pilot, "escape", "3")
+        ranked = s2.app.query_one("#board").content.plain
+    # the same board with every presentation key stripped: the main gantt is identical
+    raw = json.loads(s.path.read_text(encoding="utf-8"))
+    for rec in raw["projects"]:
+        rec.pop("present_rank", None)
+        rec.pop("show_in_present", None)
+    (tmp_path / "plain").mkdir()
+    (tmp_path / "plain" / "board.json").write_text(json.dumps(raw, indent=2), encoding="utf-8")
+    s3 = _Show(tmp_path / "plain", (160, 45), build=False)
+    async with s3.app.run_test(size=s3.size) as pilot:
+        await s3.open(pilot)
+        await s3.press(pilot, "escape", "3")
+        assert s3.app.query_one("#board").content.plain == ranked
+
+
+async def test_AT_2105_the_presenter_curates_view_3(tmp_path, frozen):
+    """AT-2105 (US-2103, HLR-2105): fold, hide a task, hide a project, re-show it
+    on the rail, show all with a notice, keys that change nothing write nothing."""
+    s = _Show(tmp_path, (160, 45))
+    async with s.app.run_test(size=s.size, notifications=True) as pilot:
+        await s.open(pilot)
+        await s.press(pilot, "3")
+        base = s.bytes()
+        await s.press(pilot, "right")
+        await s.goto(pilot, "pdp")
+        await s.press(pilot, "enter")
+        assert not any("Ingest pipeline v2" in r for r in s.frame())
+        assert any("▸ ■ Data Platform" in r or "⟦ ■ Data Platform" in r for r in s.frame())
+        assert s.bytes() == base
+        await s.press(pilot, "enter")
+        assert any("Ingest pipeline v2" in r for r in s.frame())
+        await s.goto(pilot, "tm2")
+        await s.press(pilot, "space")
+        assert not any("Offline mode" in r for r in s.frame())
+        assert s.tasks()["tm2"]["show_in_present"] is False
+        await s.goto(pilot, "pbr")
+        await s.press(pilot, "space")
+        assert not any("■ Brand Refresh" in r for r in _timeline(s.frame()))
+        assert any("○ Brand Refresh" in r for r in _rail(s.frame()))
+        assert s.projects()["pbr"]["show_in_present"] is False
+        await s.press(pilot, "left")
+        await s.goto(pilot, "pbr")
+        await s.press(pilot, "space")
+        assert any(r.startswith("▶ 6 ● Brand Refresh") for r in _rail(s.frame())), _rail(s.frame())
+        assert "show_in_present" not in s.projects()["pbr"]
+        await s.press(pilot, "a")
+        notes = [str(n.message) for n in s.app._notifications]
+        assert "Shown again: 1 project + 3 tasks" in notes, notes
+        assert "show_in_present" not in s.bytes().decode("utf-8")
+        after = s.bytes()
+        await s.press(pilot, "a")
+        assert s.bytes() == after
+        await s.goto(pilot, "pcp")
+        await s.press(pilot, "shift+up")
+        assert s.bytes() == after
+
+
+async def test_AT_2106_u_lists_the_hidden_and_brings_one_back(tmp_path, frozen):
+    """AT-2106 (US-2104, HLR-2106): two tasks hidden in view 1, `u` lists them,
+    one toggled back, `esc`; in view 3 the grouped list; after `a`, nothing."""
+    s = _Show(tmp_path, (118, 31))
+    async with s.app.run_test(size=s.size) as pilot:
+        await s.open(pilot)
+        await s.press(pilot, "space", "space", "u")
+        rows = s.app.screen.query_one("#picker-rows").content.plain.split("\n")
+        assert [r.strip("▶ ") for r in rows] == ["○ Tax rules for new regions",
+                                                 "○ Refund edge cases"], rows
+        await s.press(pilot, "space")
+        rows = s.app.screen.query_one("#picker-rows").content.plain.split("\n")
+        assert rows[0].strip("▶ ") == "● Tax rules for new regions", rows
+        assert "show_in_present" not in s.tasks()["tb3"]
+        await s.press(pilot, "escape")
+        frame = "\n".join(s.frame())
+        assert "Tax rules for new regions" in frame and "Refund edge cases" not in frame
+        await s.press(pilot, "3", "u")
+        rows = [r.strip("▶ ") for r in
+                s.app.screen.query_one("#picker-rows").content.plain.split("\n")]
+        assert rows == ["● Customer Portal", "○ Help-center links", "● Billing Migration",
+                        "○ Refund edge cases", "● Data Platform", "○ Cost dashboards",
+                        "○ Security Audit"], rows
+        await s.press(pilot, "u")
+        assert type(s.app.screen).__name__ == "PresentScreen"
+        await s.press(pilot, "a", "u")
+        assert s.app.screen.query_one("#picker-rows").content.plain == "nothing hidden"
+
+
+# the first widths of `.dev-flow/2026-10-19-batch-01/evidence/hint-widths.txt` (PC-4:
+# `rich.cells.cell_len` over the literal strings, outside the code), pasted literally
+N2, N1 = "1 gantt  2 split  3 all  ", "1 gantt 2 split 3 all "
+ALL_WORDINGS = {
+    "all-rail": {"long": N2 + "⇥ next · ↑↓ move · ←→ rail/timeline · ␣ hide · ⇧↑↓ reorder · enter fold · a show all · x export · esc leave",
+                 "middle": N2 + "⇥ · ↑↓ · ←→ rail · ␣ hide · ⇧↑↓ order · enter fold · a all · x · esc",
+                 "compact": N1 + "⇥ ↑↓ ←→ ␣ ⇧↑↓ enter a x esc",
+                 "esc": N1 + "esc"},
+    "all": {"long": N2 + "⇥ next · ←→ ↑↓ move · ␣ hide · ⇧↑↓ reorder · enter fold · a show all · x export · esc leave",
+            "middle": N2 + "⇥ · ←→ ↑↓ · ␣ hide · ⇧↑↓ order · enter fold · a all · x · esc",
+            "compact": N1 + "⇥ ←→ ↑↓ ␣ ⇧↑↓ enter a x esc",
+            "esc": N1 + "esc"},
+}
+ALL_FIRST = {
+    ("all-rail", 0): {"middle": 100, "long": 134},
+    ("all-rail", 1): {"compact": 100, "middle": 108, "long": 147},
+    ("all-rail", 3): {"compact": 100, "middle": 108, "long": 147},
+    ("all", 0): {"esc": 36, "compact": 51, "middle": 88},
+    ("all", 1): {"esc": 36, "compact": 64},
+    ("all", 3): {"esc": 36, "compact": 64},
+}
+
+
+def _screen_all(tmp_path, hidden: int):
+    """A `PresentScreen` (not mounted) in view 3 on the round's board with exactly
+    `hidden` items `u` would list."""
+    from taskboard.app import PresentScreen
+    b = pf.build(tmp_path / "h.json")
+    for p in b.projects:
+        p.show_in_present = True
+    for t in b.tasks:
+        t.show_in_present = True
+    for t in b.tasks[:hidden]:
+        t.show_in_present = False
+    scr = PresentScreen(b, "pbm", "Billing Migration", pf.CURSOR)
+    scr._view = 2
+    return scr
+
+
+def test_TC_2104_view_3s_hint_takes_the_first_wording_that_fits(tmp_path):
+    """TC-2104 (LLR-2104.1): over widths 36–200 × 0 / 1 / 3 hidden, view 3's hint is
+    the wording of the literal first-width table plus ` · u N hidden`; it never
+    paints more than `w - 2` cells; at 118 with something hidden it keeps its
+    labels (`␣ hide`, `⇧↑↓ order`, `enter fold`)."""
+    for hidden in (0, 1, 3):
+        scr = _screen_all(tmp_path / str(hidden), hidden)
+        tail = f" · u {hidden} hidden" if hidden else ""
+        for w in range(36, 201):
+            view = "all-rail" if w >= views.PRESENT_RAIL_MIN else "all"
+            table = ALL_FIRST[(view, hidden)]
+            tier = max((t for t, first in table.items() if first <= w), key=lambda t: table[t])
+            got = scr._hint(w).plain
+            want = ALL_WORDINGS[view][tier] + tail
+            if vis(want) > w - 2:                       # none fits: the last, cut with `…`
+                want = want[:w - 3] + "…"
+            assert got == want, (hidden, w, got)
+            assert vis(got) <= w - 2
+        assert "enter fold" in scr._hint(118).plain and "␣ hide" in scr._hint(118).plain
+
+
+def test_TC_2104_the_view_names_and_the_u_tail_in_views_1_2(tmp_path):
+    """TC-2104 (LLR-2104.1): views 1/2 name three views and count with `u`; below
+    36 columns the count without `u` (no key acts there)."""
+    from taskboard.app import PresentScreen
+    b = pf.build(tmp_path / "b.json")
+    scr = PresentScreen(b, "pcp", "Customer Portal", "tc2")
+    assert scr._hint(160).plain == ("1 gantt  2 split  3 all  ⇥ next · ←→ ↑↓ move · ␣ hide · "
+                                    "a show all · x export · esc leave · u 1 hidden")
+    assert scr._hint(30).plain == "esc leave · 1 hidden"
+    assert views.PRESENT_SCREEN_VIEWS == ("gantt", "split", "all")
+    assert views.PRESENT_VIEWS == ("gantt", "split")
+    svg, png = views.present_paths(b, None, pf.TODAY, "all")
+    assert svg.name == "present-board-2026-10-19-all.svg" and png.suffix == ".png"
+
+
+async def test_TC_2104_the_cycle_and_the_hand_off(tmp_path, frozen):
+    """TC-2104 (LLR-2104.1): `tab` 1 → 2 → 3 → 1, `shift+tab` back, `3` from 1 and 2;
+    entering view 3 on the rail puts its cursor on the current project; leaving
+    view 3 shows its cursor's project and task in views 1/2; below 100 columns
+    entering view 3 lands on the cursor task's row, or on a hidden project the
+    first drawn row."""
+    s = _Show(tmp_path, (160, 45))
+    async with s.app.run_test(size=s.size) as pilot:
+        await s.open(pilot)
+        seen = []
+        for key in ("tab", "tab", "tab", "shift+tab", "shift+tab", "shift+tab"):
+            await s.press(pilot, key)
+            seen.append(s.scr._view)
+        assert seen == [1, 2, 0, 2, 1, 0], seen
+        await s.press(pilot, "2", "3")
+        assert s.scr._view == 2 and s.scr._all_cur == ("proj", "pbm") and s.scr._rail
+        await s.press(pilot, "right")
+        await s.goto(pilot, "tm3")
+        await s.press(pilot, "1")
+        assert (s.scr._project_id, s.scr._cursor_id) == ("pmr", "tm3")
+        assert "Mobile Release 3.2" in s.frame()[0]
+    s = _Show(tmp_path / "n", (80, 24))
+    async with s.app.run_test(size=s.size) as pilot:
+        await s.open(pilot)
+        await s.press(pilot, "3")
+        assert s.scr._all_cur == ("task", pf.CURSOR) and not s.scr._rail
+        await s.press(pilot, "1")
+        s.scr._project_id, s.scr._cursor_id = "psa", "ts1"      # a hidden project in view 3
+        await s.press(pilot, "3")
+        assert s.scr._all_cur == ("proj", "pcp"), s.scr._all_cur
+        await s.press(pilot, "1")
+        assert s.scr._project_id == "pcp"
+
+
+async def test_TC_2105_the_curation_writes_exactly_what_changed(tmp_path, frozen, monkeypatch):
+    """TC-2105 (LLR-2105.1): one save per change, none for a key that changes
+    nothing; the cursor after a hide; the rail's toggle in place; dense ranks
+    over every visible project; the timeline's reorder passes a hidden project;
+    `enter` folds without a write; inert keys outside view 3."""
+    saves = []
+    real = Board.save
+    monkeypatch.setattr(Board, "save", lambda self: (saves.append(1), real(self))[1])
+    s = _Show(tmp_path, (160, 45))
+    async with s.app.run_test(size=s.size) as pilot:
+        await s.open(pilot)
+        n0 = len(saves)
+        await s.press(pilot, "enter", "shift+up", "shift+down")          # view 1: inert
+        assert len(saves) == n0
+        await s.press(pilot, "3", "pagedown", "right")
+        assert len(saves) == n0
+        await s.goto(pilot, "tb7")
+        nxt_before = s.scr._stops()
+        i = nxt_before.index(("task", "tb7"))
+        await s.press(pilot, "space")
+        assert len(saves) == n0 + 1 and s.scr._all_cur == nxt_before[i + 1]
+        await s.goto(pilot, "pmr")
+        await s.press(pilot, "enter", "enter")
+        assert len(saves) == n0 + 1
+        await s.goto(pilot, "td5")                       # the last stop of a project
+        await s.press(pilot, "left")
+        assert s.scr._all_cur == ("proj", "pdp")
+        await s.press(pilot, "space", "space")           # the rail: hidden, shown, in place
+        assert len(saves) == n0 + 3 and s.scr._all_cur == ("proj", "pdp")
+        assert s.scr._board.project_by_id("pdp").show_in_present
+        await s.goto(pilot, "pmr")
+        await s.press(pilot, "shift+up", "shift+up")
+        assert len(saves) == n0 + 5
+        ranks = {p.id: p.present_rank for p in s.scr._board.projects}
+        assert sorted(ranks.values()) == list(range(6)) and ranks["pmr"] == 0
+        await s.press(pilot, "shift+up")                 # at the top: nothing
+        assert len(saves) == n0 + 5
+        await s.press(pilot, "right")
+        await s.goto(pilot, "pdp")
+        await s.press(pilot, "shift+down")               # over the hidden Security Audit
+        order = [p.id for p in models.present_order(s.scr._board)]
+        assert order.index("pdp") > order.index("psa"), order
+        await s.press(pilot, "a")
+        assert len(saves) == n0 + 7
+        await s.press(pilot, "a")
+        assert len(saves) == n0 + 7
+
+
+async def test_TC_2106_the_picker(tmp_path, frozen):
+    """TC-2106 (LLR-2106.1): the picker toggles one flag per keypress with one save
+    each, the mark follows, the rows stay; a title holding markup paints literally;
+    `nothing hidden` with no row."""
+    b = pf.build(tmp_path / "board.json")
+    b.task_by_id("tc6").title = "[@click=app.quit]x[/] [bold tail\\"
+    b.save()
+    s = _Show(tmp_path, (118, 31), build=False)
+    async with s.app.run_test(size=s.size) as pilot:
+        await s.open(pilot)
+        await s.press(pilot, "3", "u")
+        rows = s.app.screen.query_one("#picker-rows").content
+        assert "[@click=app.quit]x[/] [bold tail\\" in rows.plain
+        assert not any("@click" in str(sp.style) for sp in rows.spans)
+        await s.press(pilot, "down", "space")
+        assert "show_in_present" not in s.tasks()["tc6"]
+        await s.press(pilot, "space")
+        assert s.tasks()["tc6"]["show_in_present"] is False
+        assert "○ [@click" in s.app.screen.query_one("#picker-rows").content.plain
+        await s.press(pilot, "escape", "a", "u")
+        assert s.app.screen.query_one("#picker-rows").content.plain == "nothing hidden"
+
+
+def test_TC_2103_no_stop_hides_under_the_overflow_row(tmp_path):
+    """TC-2103 (LLR-2103.1; code review F1 of increment 003): when the overflow row
+    takes the frame's last row, every cursor stop is a row the frame draws, and a
+    cursor on a row the overflow covers is drawn on the last stop instead."""
+    b = pf.build(tmp_path / "b.json")
+    for height in (6, 8, 10, 14):
+        for cur in (("proj", "pbr"), ("task", "tm6"), None):
+            r = views.render_present_all(b, cur, pf.TODAY, 118, height)
+            rows = _plain(r.timeline)
+            drawn = "\n".join(rows[:-1] if "more rows not shown" in rows[-1] else rows)
+            for kind, oid in r.stops:
+                label = (b.project_by_id(oid).name if kind == "proj"
+                         else b.task_by_id(oid).title)[:10]
+                assert label in drawn, (height, cur, label)
+            assert r.cursor is None or r.cursor in r.stops, (height, cur, r.cursor)
+
+
+def test_TC_2103_the_rail_counts_every_hidden_task(tmp_path):
+    """TC-2103 (HLR-2103; code review F3 of increment 003): the rail's task count
+    is every visible project's hidden tasks — a hidden project's own hidden task
+    counts too, as `u` lists it."""
+    b = pf.build(tmp_path / "b.json")
+    b.task_by_id("ts1").show_in_present = False          # Security Audit is hidden
+    rail = _plain(views.render_present_all(b, None, pf.TODAY, 160, 45).frame)
+    assert any(r.startswith(" 3 tasks hidden") for r in rail), rail

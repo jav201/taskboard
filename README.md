@@ -131,7 +131,7 @@ between the short and the full layer. Every key below is also in the command pal
 | `s` `g` `z` | Kanban | Sort, group, collapse the last phase |
 | `F` / `/` / `esc` | Focus, filter | Kanban and gantt: focus one project / filter tasks / clear |
 | `Tab` | Layout | Cycle the layouts of kanban, focus and lanes |
-| `R` / `S` | Present / Standup | Present the selected task's project (gantt + brief, export SVG+PNG) / show the week's standup |
+| `R` / `S` | Present / Standup | Present the selected task's project, or every project (`3`), with gantt + brief, export SVG+PNG / show the week's standup |
 | `I` | Templates | Insert a process template (a named chain of tasks) into the selected task's project |
 | `comma` | Save chain | Save the selected chain as a template (chain map) |
 | `c` | Clocks | Choose the ribbon's two city clocks |
@@ -234,25 +234,39 @@ wrong.
 ## Presentation
 
 `R` opens the presentation of the selected task's project (the focused project when set). It
-has two views, and `R` always opens on the first:
+has three views, and `R` always opens on the first:
 
 - **`1` gantt** — a date ruler (today, the months, and the selected task's dates echoed on the
-  tick row), the gantt field with each task's start–end dates beside its bar, the brief blocks
-  below, and a cursor whose task's notes expand, keeping their line breaks and lists.
+  tick row), the gantt field with each task's start–end dates beside its bar (a milestone is a
+  `◆` on its date), the brief blocks below, and a cursor whose task's notes expand, keeping
+  their line breaks and lists.
 - **`2` split** — the same ruler and field on top and, below them, the notes of every shown
   open task at once: a heading (title, dates, days late or left) and the note, in two columns
   from 100 columns wide. When everything does not fit, the cursor's note gets more room and a
   cut note says `… +N lines`; `pgdn`/`pgup` page through the notes.
+- **`3` all** — every shown project on one date ruler: a header row per project (its name,
+  open and late counts, its span) and its shown open tasks below it. From 100 columns wide a
+  rail on the left lists every project in the presentation's order, `●` shown and `○` hidden;
+  `←`/`→` move between the rail and the timeline. When the rows do not fit, the projects
+  furthest from the cursor fold to their header row; `enter` folds or unfolds a project by
+  hand.
 
-`tab` and `shift+tab` (`⇥`, `⇧⇥`) switch between the views; `←`/`→` and `↑`/`↓` move the
-cursor, which both views share. `x` exports the view on screen to an SVG and a PNG in the
-`reports` folder (the split view's files end in `-split`); `esc` leaves. The keys live in the
-hint row under the frame, never in the frame, so the room and the export see only the project.
+`tab` and `shift+tab` (`⇥`, `⇧⇥`) cycle through the views; `↑`/`↓` move the cursor (and
+`←`/`→` in views 1 and 2). Views 1 and 2 share one cursor; leaving view 3 shows its cursor's
+project in views 1 and 2. `x` exports the view on screen to an SVG and a PNG in the `reports`
+folder (the split view's files end in `-split`; view 3 exports its timeline without the rail,
+to files ending in `-all`); `esc` leaves. The keys live in the hint row under the frame, never
+in the frame, so the room and the export see only the projects.
 
-`space` hides the cursor's task from the presentation (both views) and `a` shows every hidden
-task again; the hint row under the frame counts the hidden ones. The choice is saved on the
-task (a **Show in presentation** toggle in the task editor) and every task is shown by
-default. That flag is the only thing the presentation writes.
+`space` hides the cursor's row from the presentation — a task, or in view 3 a whole project on
+its header (on the rail, `space` hides or shows the project again) — and `a` shows everything
+hidden again. In view 3 `shift+↑`/`shift+↓` move the cursor's project up or down; that order
+is the presentation's own (the board's other views keep the board's order). `u` lists what is
+hidden — the project's tasks in views 1 and 2, every hidden project and task in view 3 — and
+brings items back one by one with `space`. The hint row counts the hidden items (`u N
+hidden`). The choices are saved on the board: a task's **Show in presentation** toggle (also in
+the task editor), a project's shown flag and its place in the presentation's order. Everything
+is shown by default, and these are the only things the presentation writes.
 
 ## Reports
 

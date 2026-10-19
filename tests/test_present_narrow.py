@@ -84,7 +84,8 @@ def test_TC_1903_every_width_renders_a_whole_frame(tmp_path):
 # --------------------------------------------------------------------------- #
 # The hint row
 # --------------------------------------------------------------------------- #
-NAMES2, NAMES1 = "1 gantt  2 split  ", "1 gantt 2 split "
+# three view names and the `u` tail since batch 2026-10-19-batch-01 (LLR-2104.1)
+NAMES2, NAMES1 = "1 gantt  2 split  3 all  ", "1 gantt 2 split 3 all "
 WORDINGS = {
     "gantt": {"long": NAMES2 + "⇥ next · ←→ ↑↓ move · ␣ hide · a show all · x export · esc leave",
               "middle": NAMES2 + "⇥ next · ←→ ↑↓ · ␣ hide · a show all · x export · esc",
@@ -97,17 +98,19 @@ WORDINGS = {
               "compact": NAMES1 + "pgdn ⇥ ←→ ␣ x esc",
               "esc": NAMES1 + "esc"},
 }
-# the first width each wording is painted at (P-7, measured on the probe; the middle
-# tier is 2026-10-18-batch-03's P-3, measured on its design)
+# the first width each wording is painted at — since batch 2026-10-19-batch-01 the
+# three view names and the `u` tail, measured with `rich.cells.cell_len` over the
+# literal strings outside the code (`.dev-flow/2026-10-19-batch-01/evidence/
+# hint-widths.txt`; before: P-7 of 2026-10-18-batch-02, P-3 of 2026-10-18-batch-03)
 THRESHOLDS = {
-    ("gantt", 0): {"compact": 36, "short": 58, "middle": 73, "long": 84},
-    ("gantt", 1): {"esc": 36, "compact": 41, "short": 69, "middle": 84, "long": 95},
-    ("gantt", 3): {"esc": 36, "compact": 41, "short": 69, "middle": 84, "long": 95},
-    ("gantt", 10): {"esc": 36, "compact": 42, "short": 70, "middle": 85, "long": 96},
-    ("split", 0): {"compact": 36, "short": 65, "middle": 80, "long": 97},
-    ("split", 1): {"esc": 36, "compact": 46, "short": 76, "middle": 91, "long": 108},
-    ("split", 3): {"esc": 36, "compact": 46, "short": 76, "middle": 91, "long": 108},
-    ("split", 10): {"esc": 36, "compact": 47, "short": 77, "middle": 92, "long": 109},
+    ("gantt", 0): {"compact": 36, "short": 64, "middle": 80, "long": 91},
+    ("gantt", 1): {"esc": 36, "compact": 49, "short": 77, "middle": 93, "long": 104},
+    ("gantt", 3): {"esc": 36, "compact": 49, "short": 77, "middle": 93, "long": 104},
+    ("gantt", 10): {"esc": 36, "compact": 50, "short": 78, "middle": 94, "long": 105},
+    ("split", 0): {"esc": 36, "compact": 41, "short": 71, "middle": 87, "long": 104},
+    ("split", 1): {"esc": 36, "compact": 54, "short": 84, "middle": 100, "long": 117},
+    ("split", 3): {"esc": 36, "compact": 54, "short": 84, "middle": 100, "long": 117},
+    ("split", 10): {"esc": 36, "compact": 55, "short": 85, "middle": 101, "long": 118},
 }
 
 
@@ -124,16 +127,17 @@ def _screen(tmp_path):
 
 
 def _expected(view: str, hidden: int, w: int) -> str:
-    tail = f" · {hidden} hidden" if hidden else ""
+    tail = f" · u {hidden} hidden" if hidden else ""
     room = w - 2
     if room <= 0:
         return ""
     if w < 36:
-        s = "esc leave" + tail
+        s = "esc leave" + (f" · {hidden} hidden" if hidden else "")
         return s if len(s) <= room else s[:room - 1] + "…"
     table = THRESHOLDS[(view, hidden)]
     tier = max((t for t, first in table.items() if first <= w), key=lambda t: table[t])
-    return WORDINGS[view][tier] + tail
+    s = WORDINGS[view][tier] + tail
+    return s if len(s) <= room else s[:room - 1] + "…"    # none fits: the last, cut
 
 
 def test_TC_1904_the_hint_takes_the_first_wording_that_fits(tmp_path):
@@ -182,7 +186,7 @@ def test_TC_1904_an_overflowing_count_is_cut_visibly(tmp_path, monkeypatch):
     monkeypatch.setattr(app_module, "present_hidden", lambda board, pid: list(range(123456)))
     got = scr._hint(36).plain
     assert views.vis(got) == 34 and got.endswith("…"), got
-    assert got.startswith("1 gantt 2 split esc · 1234"), got
+    assert got.startswith("1 gantt 2 split 3 all esc · u 12"), got
 
 
 # --------------------------------------------------------------------------- #
@@ -256,12 +260,12 @@ async def test_AT_1904_the_hint_shortens_and_cuts_visibly(tmp_path, monkeypatch,
             assert views.vis(text) <= w - 2, (w, text)
             return text
 
-        assert await at(50, 20) == "1 gantt 2 split ⇥ ←→ ␣ x esc · 3 hidden"
+        assert await at(50, 20) == "1 gantt 2 split 3 all ⇥ ←→ ␣ x esc · u 3 hidden"
         styles = [str(sp.style) for sp in hint().spans if sp.start == 0]
         assert "bold #e6edf7" in styles, styles
         await s.press(pilot, "2")
-        assert s.hint() == "1 gantt 2 split pgdn ⇥ ←→ ␣ x esc · 3 hidden"
-        assert await at(40, 20) == "1 gantt 2 split esc · 3 hidden"
+        assert s.hint() == "1 gantt 2 split 3 all esc · u 3 hidden"   # compact needs 54
+        assert await at(40, 20) == "1 gantt 2 split 3 all esc · u 3 hidden"
         at_split = [str(sp.style) for sp in hint().spans if sp.start == len("1 gantt ")]
         assert "bold #e6edf7" in at_split, at_split
         assert await at(30, 12) == "esc leave · 3 hidden"
