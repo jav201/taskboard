@@ -1,0 +1,10 @@
+pre-check: tests/test_present_all.py -> exit 0
+P1 the rail drawn below 100 columns · taskboard/views.py · tests/test_present_all.py -> exit 1 · KILLED · restore digest 31076c774a8899a357bb3ae0a5ff3bb36c937198b4b32f5f11d6ba48540b8a65
+P2 hidden projects reach the timeline · taskboard/views.py · tests/test_present_all.py -> exit 1 · KILLED · restore digest 31076c774a8899a357bb3ae0a5ff3bb36c937198b4b32f5f11d6ba48540b8a65
+P3 the auto-fold may fold the cursor's project · taskboard/views.py · tests/test_present_all.py -> exit 1 · KILLED · restore digest 31076c774a8899a357bb3ae0a5ff3bb36c937198b4b32f5f11d6ba48540b8a65
+P4 the order ignores present_rank · taskboard/views.py · tests/test_present_all.py -> exit 1 · KILLED · restore digest 31076c774a8899a357bb3ae0a5ff3bb36c937198b4b32f5f11d6ba48540b8a65
+P5 the rail's name loses its escape (PC-2) · taskboard/views.py · tests/test_present_all.py -> exit 1 · KILLED · restore digest 31076c774a8899a357bb3ae0a5ff3bb36c937198b4b32f5f11d6ba48540b8a65
+P6 the header's name loses its escape (PC-2) · taskboard/views.py · tests/test_present_all.py -> exit 1 · KILLED · restore digest 31076c774a8899a357bb3ae0a5ff3bb36c937198b4b32f5f11d6ba48540b8a65
+P7 a hidden project's own hidden tasks dropped from u · taskboard/views.py · tests/test_present_all.py -> exit 1 · KILLED · restore digest 31076c774a8899a357bb3ae0a5ff3bb36c937198b4b32f5f11d6ba48540b8a65
+P8 u lists shown tasks too · taskboard/views.py · tests/test_present_all.py -> exit 1 · KILLED · restore digest 31076c774a8899a357bb3ae0a5ff3bb36c937198b4b32f5f11d6ba48540b8a65
+8/8 KILLED

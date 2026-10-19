@@ -35,7 +35,7 @@ from rich.text import Text
 from . import history
 from .models import (Board, CASCADE_DEFAULT_MODE, CASCADE_MODES, Project, Task,
                      critical_chain, days_in_phase, link_conflicts, link_marks,
-                     open_predecessors, parse_iso, unblocks_count, _md)
+                     open_predecessors, parse_iso, present_order, unblocks_count, _md)
 from .team_sync import TeamState, sync_tone
 from .wave import DOT_ROWS, Bitmap, load_curve
 
@@ -6621,6 +6621,267 @@ def save_present_png(svg_path: Path, png_path: Path,
     if proc.returncode != 0 or not png_path.exists():
         return None
     return png_path
+
+
+# --------------------------------------------------------------------------- #
+# Present view 3 `all` (batch 2026-10-19-batch-01): every shown project on one
+# ruler beside a curate rail — variant C of the present-portfolio round
+# (`prototypes/present_portfolio/portfolio_proto.py`, its A/C path, moved here).
+# S1: every board-file string is escaped and clipped before it enters markup;
+# every row is exactly its width.
+# --------------------------------------------------------------------------- #
+PRESENT_SCREEN_VIEWS = PRESENT_VIEWS + ("all",)
+PRESENT_RAIL_MIN = 100     # below it view 3 draws no rail (the round's 80 columns cut names to 10 cells)
+PRESENT_RAIL_W = 24
+
+
+class PresentAll(NamedTuple):
+    frame: Text            # what the screen paints
+    timeline: Text         # the frame without the rail: what `x` exports
+    timeline_w: int
+    stops: list            # the timeline's drawn rows, ("proj" | "task", id), screen order
+    rail_stops: list       # every visible project on the rail; empty without a rail
+    cursor: tuple | None   # the cursor as drawn on the timeline
+
+
+def _all_plan(board: Board) -> list[tuple[Project, list[Task]]]:
+    """(project, its shown open tasks) for every shown project, in presentation order."""
+    return [(p, present_tasks(board, p.id)[0]) for p in present_order(board) if p.show_in_present]
+
+
+def _all_late(tasks: list[Task], today: date) -> int:
+    return sum(1 for t in tasks if (d := parse_iso(t.due_date)) and d < today)
+
+
+def _all_axis(plan, field_w: int, today: date) -> GanttAxis:
+    """`gantt_window`'s rule over the shown projects' open work."""
+    open_t = [t for _, ts in plan for t in ts]
+    dues = [d for t in open_t if (d := parse_iso(t.due_date))]
+    starts = [d for t in open_t if (d := parse_iso(t.start_date))]
+    pdues = [d for p, ts in plan if ts and (d := parse_iso(p.due_date))]
+    m = timedelta(days=GANTT_MARGIN)
+    lo = min(dues + [today]) - m
+    hi = max(dues + pdues + [today]) + m
+    return gantt_axis(field_w, today, lo, hi, min(starts + [lo]))
+
+
+def _all_label(p: Project, ts: list[Task], g: _PresentGeo, on: bool, caret: str) -> str:
+    """`▾ ■ Name   5 open ▲2 in 18d` — the bits the label has room for, shed
+    countdown first, then the open count; the late count is kept longest."""
+    late = _all_late(ts, g.today)
+    due, dtone = _present_due(parse_iso(p.due_date), g.today)
+    bits = [(f"{len(ts)} open" if g.wide else f"{len(ts)}", "mut", 1)]
+    if late:
+        bits.append((f"▲{late}", "over", 2))
+    if g.wide:
+        bits.append((due, dtone, 0))
+    want = min(vis(p.name), 16)                     # the name keeps 16 cells first
+    while bits and g.label_w - 4 - vis(" ".join(b[0] for b in bits)) - 2 < want:
+        bits.remove(min(bits, key=lambda b: b[2]))
+    plain = " ".join(b[0] for b in bits)
+    name_w = g.label_w - 4 - vis(plain) - (2 if bits else 1)
+    head = (c("⟦", "accent", bold=True) if on else c(caret, p.color)) + " " + c("■", p.color) + " "
+    body = c(escape(fit(p.name, max(0, name_w))), "accent" if on else p.color, bold=True)
+    tail = (" " + " ".join(c(t, k) for t, k, _ in bits)) if bits else ""
+    return _pad(head + body + tail, g.label_w)
+
+
+def _all_echo_span(cells: list[tuple[str, str]], on: bool) -> list[tuple[str, str]]:
+    if not on:
+        return cells
+    xs = [x for x, (gl, _) in enumerate(cells) if gl != " "]
+    if not xs:
+        return cells
+    out = list(cells)
+    for x in range(xs[0], xs[-1] + 1):
+        out[x] = ("━", "accent")
+    out[xs[0]], out[xs[-1]] = ("⟦", "accent"), ("⟧", "accent")
+    return out
+
+
+def _all_head_row(board: Board, p: Project, ts: list[Task], g: _PresentGeo, on: bool,
+                  folded: bool) -> str:
+    cells = _all_echo_span(_gantt_span(p, g.ax, board.project_progress(p.id), 0), on)
+    chip = " " + _present_chip(p.start_date, p.due_date, g.today, g.chip_w)
+    return _pad(_all_label(p, ts, g, on, "▸" if folded else "▾") + " "
+                + _present_field(cells, g.ax) + chip, g.width)
+
+
+def _all_ruler(board: Board, g: _PresentGeo, kind: str | None, obj, proj) -> list[str]:
+    """The present ruler for the portfolio: the month row marks the cursor's
+    project due `◆`; the tick row echoes the cursor's exact dates — a task's
+    (`_gantt_tick_label`), or on a header its project's span (`project span ▸`)."""
+    ax, today = g.ax, g.today
+    marks: dict[int, tuple[str, str]] = {}
+    if proj is not None and (pd := parse_iso(proj.due_date)) and 0 <= ax.cell(pd) < ax.w:
+        marks[ax.cell(pd)] = ("◆", proj.color)
+    if kind == "task":
+        echo = gantt_echo(obj, board, ax, today)
+    elif kind == "proj":
+        span = Task(title="", start_date=obj.start_date, due_date=obj.due_date)
+        echo = gantt_echo(span, board, ax, today)
+    else:
+        echo = None
+    mcells = gantt_month_row(ax, today, marks)
+    dcells, meta = gantt_day_row(ax, today, echo, shade_weekends=False)
+    mlabel = c(fit(f"today {today:%a} {_md(today)}", g.label_w - 1, "right") + " ", "accent")
+    if kind == "task":
+        dlabel = _gantt_tick_label(obj, echo, meta, g.label_w)
+    elif kind == "proj":
+        txt = (meta["echo_label"] or "project span") + " ▸" if echo else "project: no dates"
+        dlabel = c(fit(txt, g.label_w - 1, "right") + " ", echo[1] if echo else "dim",
+                   bold=echo is not None)
+    else:
+        dlabel = ""
+    tail = " " * (g.chip_w + 1)
+    return [_pad(_pad(mlabel, g.label_w) + " " + "".join(mcells) + tail, g.width),
+            _pad(_pad(dlabel, g.label_w) + " " + "".join(dcells) + tail, g.width)]
+
+
+def _all_layout(plan, cur_pid: str | None, folded, room: int):
+    """Which projects draw their tasks, whether a blank row parts them, and the
+    timeline's stops in screen order. Folded by hand stays folded; while the
+    rows overflow, the projects furthest from the cursor's fold to their header
+    (the cursor's own never)."""
+    open_ = {p.id: p.id not in folded for p, _ in plan}
+    ci = next((i for i, (p, _) in enumerate(plan) if p.id == cur_pid), 0)
+
+    def need(gap: bool) -> int:
+        return (sum(1 + (len(ts) if open_[p.id] else 0) for p, ts in plan)
+                + (len(plan) - 1 if gap else 0))
+
+    for i in sorted(range(len(plan)), key=lambda i: (-abs(i - ci), -i)):
+        if need(False) <= room:
+            break
+        p, ts = plan[i]
+        if p.id != cur_pid and open_[p.id] and ts:
+            open_[p.id] = False
+    gap = need(True) <= room
+    stops = []
+    for p, ts in plan:
+        stops.append(("proj", p.id))
+        if open_[p.id]:
+            stops += [("task", t.id) for t in ts]
+    return open_, gap, stops
+
+
+def _all_resolve(board: Board, cur):
+    """A cursor key -> (kind, object, its project), or (None, None, None)."""
+    if cur is None:
+        return None, None, None
+    kind, oid = cur
+    if kind == "proj":
+        p = board.project_by_id(oid)
+        return ("proj", p, p) if p else (None, None, None)
+    t = board.task_by_id(oid)
+    return ("task", t, board.project_by_id(t.project_id)) if t else (None, None, None)
+
+
+def _all_fit(lines: list[str], height: int, width: int) -> list[str]:
+    """`_present_finish`'s overflow rule, kept as rows (for the rail join)."""
+    if len(lines) > height:
+        over = len(lines) - height
+        lines = lines[:height - 1] + [
+            _pad(c(escape(fit(f"  +{over} more rows not shown", width)), "dim"), width)]
+    return lines + [" " * width] * (height - len(lines))
+
+
+def _all_timeline(board: Board, width: int, height: int, today: date, cur, folded,
+                  rail_focus: bool):
+    plan = _all_plan(board)
+    wide = width >= 100
+    label_w, chip_w, field_w = _present_cols(width, wide)
+    ax = _all_axis(plan, field_w, today)
+    g = _PresentGeo(width, label_w, chip_w, field_w, ax, set(critical_chain(board)), today,
+                    wide, "dim")
+    _, _, cur_proj = _all_resolve(board, cur)
+    open_, gap, stops = _all_layout(plan, cur_proj.id if cur_proj else None, folded, height - 3)
+    if cur not in stops:
+        if rail_focus:                 # the rail's cursor on a hidden project: none here
+            cur = None
+        elif cur_proj is not None and ("proj", cur_proj.id) in stops:
+            cur = ("proj", cur_proj.id)   # a task folded away: its project's header
+        else:
+            cur = stops[0] if stops else None
+    kind, obj, proj = _all_resolve(board, cur)
+    open_t = [t for _, ts in plan for t in ts]
+    late = _all_late(open_t, today)
+    title = (c("◆ PRESENT", "bright", bold=True) + c(" · ", "dim")
+             + c(f"{len(plan)} projects", "bright", bold=True) + c("  all", "reached"))
+    right = c(f"{len(open_t)} open", "mut") + c(" · ", "dim") + (
+        c(f"▲{late} past due", "over", bold=True) if late else c("nothing past due", "dim"))
+    lines = [header(title, right, width)] + _all_ruler(board, g, kind, obj, proj)
+    for i, (p, ts) in enumerate(plan):
+        if gap and i:
+            lines.append(" " * width)
+        lines.append(_all_head_row(board, p, ts, g, cur == ("proj", p.id), not open_[p.id]))
+        if open_[p.id]:
+            pg = g._replace(hue=p.color)
+            lines += [_present_task_row(t, board, pg, cursor=cur == ("task", t.id)) for t in ts]
+    return _all_fit(lines, height, width), stops, cur
+
+
+def _all_rail(board: Board, height: int, cur_pid: str | None, focus: bool) -> list[str]:
+    rw = PRESENT_RAIL_W
+    ps = present_order(board)
+    lines = [_pad(c("PROJECTS", "hd", bold=True), rw), " " * rw, " " * rw]
+    for i, p in enumerate(ps):
+        on = p.id == cur_pid
+        mark = c("●", p.color) if p.show_in_present else c("○", "dim")
+        num = c(f"{i + 1:>2}", "accent" if on else "dim")
+        lead = (c("▶", "accent", bold=True) if focus else c("›", "accent")) if on else " "
+        tone = "accent" if on else ("ink" if p.show_in_present else "dim")
+        name = c(escape(fit(p.name, rw - 8)), tone, bold=on)
+        lines.append(_pad(lead + num + " " + mark + " " + name, rw))
+    hidden_p = sum(1 for p in ps if not p.show_in_present)
+    hidden_t = sum(len(present_hidden(board, p.id)) for p in ps if p.show_in_present)
+    lines.append(" " * rw)
+    lines.append(_pad(c(fit(f" {len(ps) - hidden_p} shown · {hidden_p} hidden", rw), "mut"), rw))
+    if hidden_t:
+        lines.append(_pad(c(fit(f" {hidden_t} task{'s' if hidden_t > 1 else ''} hidden", rw),
+                            "dim"), rw))
+    return _all_fit(lines, height, rw)
+
+
+def render_present_all(board: Board, cursor, today: date, width: int, height: int,
+                       folded=frozenset(), rail_focus: bool = False) -> PresentAll:
+    """Present view 3 `all`: the header, the ruler fitted to the shown projects'
+    open work, and per shown project in `present_order` a header row and its
+    shown open tasks (folded by hand, or — when the rows do not fit — the
+    projects furthest from the cursor's). From `PRESENT_RAIL_MIN` columns a
+    `PRESENT_RAIL_W`-cell rail and a `│` at the left list every visible project
+    (`●` shown, `○` hidden); `rail_focus` puts the cursor there. Below
+    `PRESENT_MIN_WIDTH` the narrow frame of `render_present`."""
+    if width < PRESENT_MIN_WIDTH:
+        narrow = render_present(board, None, None, today, width, height)
+        return PresentAll(narrow, narrow, width, [], [], None)
+    if width < PRESENT_RAIL_MIN:
+        lines, stops, drawn = _all_timeline(board, width, height, today, cursor, folded, False)
+        text = _present_finish(lines, height, width)
+        return PresentAll(text, text, width, stops, [], drawn)
+    tw = width - PRESENT_RAIL_W - 1
+    lines, stops, drawn = _all_timeline(board, tw, height, today, cursor, folded, rail_focus)
+    _, _, proj = _all_resolve(board, cursor)
+    rail = _all_rail(board, height, proj.id if proj else None, rail_focus)
+    joined = [rail[y] + c("│", "frame") + lines[y] for y in range(height)]
+    return PresentAll(_present_finish(joined, height, width), _present_finish(lines, height, tw),
+                      tw, stops, [("proj", p.id) for p in present_order(board)], drawn)
+
+
+def present_hidden_rows(board: Board, project_id: str | None,
+                        all_view: bool) -> list[tuple[str, str, int]]:
+    """What `u` lists, as `(kind, id, depth)`: in views 1/2 the project's hidden
+    tasks; in view 3, per project of `present_order` that is hidden or holds
+    hidden tasks, the project, then its hidden tasks (batch 2026-10-19-batch-01)."""
+    if not all_view:
+        return [("task", t.id, 0) for t in present_hidden(board, project_id)]
+    rows: list[tuple[str, str, int]] = []
+    for p in present_order(board):
+        tasks = present_hidden(board, p.id)
+        if not p.show_in_present or tasks:
+            rows.append(("proj", p.id, 0))
+            rows += [("task", t.id, 1) for t in tasks]
+    return rows
 
 
 # ---------------------------------------------------------------------------
