@@ -1,0 +1,7 @@
+# P4 inspections, by the orchestrator (2026-10-19T01:04:51Z)
+$ git diff --stat 620f58c 984ba8e -- .dev-flow/2026-10-18-batch-01 prototypes/backlog_polish   (the PRES-V3 files and the round's committed files unchanged; §5.2)
+(end: empty = unchanged)
+$ git diff --stat 620f58c 984ba8e -- taskboard   (positive control of the same probe: the batch's source files)
+ taskboard/app.py   |  5 ++++-
+ taskboard/views.py | 23 ++++++++++++++---------
+ 2 files changed, 18 insertions(+), 10 deletions(-)

@@ -166,8 +166,8 @@
     }
   ],
   "guided": false,
-  "current_station": "P4",
-  "phase_status": "in-progress",
+  "current_station": "P5",
+  "phase_status": "closed",
   "stations_active": [
     "P0",
     "ARQ",
@@ -293,6 +293,11 @@
       "station": "DDR",
       "date": "2026-10-18",
       "decision": "standing authorization — DDR sealed approved under the 2026-10-18 commission (architect approved, no condition, the cut-row lead deviation judged correct; qa-reviewer approved with C1/C2 on evidence wording, both discharged before the seal: precheck-redproof.txt, the post-suite re-runs cite suite-003.txt); PDR PC-1..PC-4 re-read and discharged; P4 is next"
+    },
+    {
+      "station": "P4",
+      "date": "2026-10-18",
+      "decision": "standing authorization — P4 PASS-WITH-NOTES under the 2026-10-18 commission: the orchestrator's gate run in a clean worktree at 984ba8e (2759 passed, 0 failed, 0 skipped; the clipboard test passed); ledger 2740 - 0 + 19 = 2759; qa-reviewer PASS-WITH-NOTES (G-1 the separators unasserted, G-2 the export's contents by inspection), ux walkthrough pass-with-notes (UX4-1..4); the close is next"
     }
   ],
   "obsidian_synced": false,
