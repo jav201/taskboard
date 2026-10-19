@@ -1,0 +1,36 @@
+$ python port_captures.py --root <checkout> --mode port --out <scratch>/port-1   (the present-polish checkout with increment 001 in the working tree; 2026-10-18T23:46:59Z)
+gantt-118x31.svg 273d3842dc3b3159cdb14e704382eae1fe1dbc5c7fb40610ec52cc991c88fe1f
+gantt-80x25.svg c95691b4a758abd2704a5cc88a2c7ccd109911488e930c8d8199420b08281bb0
+split-118x31.svg 29441dc8eb30f5af3a65a3841124ff735db20545b58a7fb05864cea9aa87dd4a
+split-80x25.svg 2e0d5aeda188593fbed8abff3d3198c2e1184ae1c0d9f003149134d1f853ed72
+gantt-hidden-118x31.svg 29081f0e0eb192027d1566bd1c677d9462d34bc7f5f5a3c97ef8191e1f1e9343
+gantt-hidden-80x25.svg efa3e90ffa2bfa364ce9ee0343c8fc957ca6eccf9c8e1432103ff4da60150aa6
+gantt-long-118x31.svg 568a743a395bf268abfe6bd2de5cab77c37d845953f9554d9298847e3b8ec6bb
+gantt-long-80x25.svg b326c2b5c0ba9165541d9ad0d3330c9d43d7338c2ecc8129243bc3b31d88ca49
+split-long-118x31.svg a8d20069eff37960eb4b4997ccb7445fcf675eed6900879ab3bf78f4118a28d2
+split-long-80x25.svg f644f2c2abaa0bc0d2bfc1deb21f43dbe5ce3b78bfb27644182b80ef919477ad
+$ python port_captures.py --compare <scratch>/upto-1 <scratch>/port-1   (upto-1: the round's contrast A fork on 620f58c, evidence/expected/upto-1.txt)
+DIFFER gantt-118x31.svg
+DIFFER gantt-80x25.svg
+EQUAL  gantt-hidden-118x31.svg
+EQUAL  gantt-hidden-80x25.svg
+DIFFER gantt-long-118x31.svg
+DIFFER gantt-long-80x25.svg
+EQUAL  split-118x31.svg
+EQUAL  split-80x25.svg
+EQUAL  split-long-118x31.svg
+EQUAL  split-long-80x25.svg
+4 differ or missing
+exit=1
+# The 4 DIFFER, read (a difflib of the normalised SVGs, text runs only): each is ONE run on the gantt
+# view's cut row — the round paints `· … +N lines` as one #7a828c run (terminal-N-r4), the port paints
+# `· ` #5b6675 (terminal-N-r2) and `… +N lines` #7a828c (r4):
+#   gantt-118x31       round '· … +2 lines'  -> port '· ' + '… +2 lines'
+#   gantt-80x25        round '· … +3 lines'  -> port '· ' + '… +3 lines'
+#   gantt-long-118x31  round '· … +9 lines'  -> port '· ' + '… +9 lines'
+#   gantt-long-80x25   round '· … +11 lines' -> port '· ' + '… +11 lines'
+# Cause: on base the lead `c("· ", "dim")` and the cut row `c("… +N lines", "dim")` are adjacent dim
+# runs that `collapse_runs` merges into ONE span; the round's contrast_fork repaints every dim span its
+# _QUIET pattern finds in, so it repainted the merged lead with the mark. The round's page states the
+# lead stays dim ("el resto del dim … queda igual"); HLR-2001 keeps it dim on every row (P2-approved).
+# Declared deviation: the port follows the stated design, not this span-merge artefact. No other byte differs.

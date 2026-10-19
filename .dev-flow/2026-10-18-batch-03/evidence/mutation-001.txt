@@ -1,0 +1,28 @@
+# mutation battery, increment 001 — run by the orchestrator in a scratch copy of the increment tree (scratchpad/mut: taskboard/, tests/, pyproject.toml and the oracle frame folders copied from the present-polish working tree with increment 001); harness .dev-flow/2026-10-18-batch-03/evidence/mutate.py (2026-10-18T23:48:25Z)
+$ python mutate.py 001
+pre-check tests/test_present_polish.py::test_AT_2001_the_quiet_marks_read_in_the_running_app: GREEN
+pre-check tests/test_present_polish.py::test_TC_2001_a_one_row_cut_is_reached: GREEN
+pre-check tests/test_present_polish.py::test_TC_2001_the_quiet_marks_are_reached_and_the_rest_stays_dim: GREEN
+arms: 10
+M1 the view word dim · taskboard/views.py: 'c(f"  {escape(view)}", "reached")' -> 'c(f"  {escape(view)}", "dim")'
+    tests/test_present_polish.py::test_TC_2001_the_quiet_marks_are_reached_and_the_rest_stays_dim: RED (KILLED) · 1 failed in 0.79s · restored c31cd96d022a
+M1 the view word dim · taskboard/views.py: 'c(f"  {escape(view)}", "reached")' -> 'c(f"  {escape(view)}", "dim")'
+    tests/test_present_polish.py::test_AT_2001_the_quiet_marks_read_in_the_running_app: RED (KILLED) · 1 failed in 2.57s · restored c31cd96d022a
+M2 the one-row cut tag dim · taskboard/views.py: 'c(escape(clip(tag, w)), "reached")' -> 'c(escape(clip(tag, w)), "dim")'
+    tests/test_present_polish.py::test_TC_2001_a_one_row_cut_is_reached: RED (KILLED) · 1 failed in 0.61s · restored c31cd96d022a
+M3 the cut row dim · taskboard/views.py: 'lines", w)), "reached")' -> 'lines", w)), "dim")'
+    tests/test_present_polish.py::test_TC_2001_the_quiet_marks_are_reached_and_the_rest_stays_dim: RED (KILLED) · 1 failed in 0.63s · restored c31cd96d022a
+M3 the cut row dim · taskboard/views.py: 'lines", w)), "reached")' -> 'lines", w)), "dim")'
+    tests/test_present_polish.py::test_AT_2001_the_quiet_marks_read_in_the_running_app: RED (KILLED) · 1 failed in 2.68s · restored c31cd96d022a
+M4 the edge marks dim · taskboard/views.py: 'return _pad(c(escape(clip(text, w)), "reached"), w)' -> 'return _pad(c(escape(clip(text, w)), "dim"), w)'
+    tests/test_present_polish.py::test_TC_2001_the_quiet_marks_are_reached_and_the_rest_stays_dim: RED (KILLED) · 1 failed in 0.62s · restored c31cd96d022a
+M4 the edge marks dim · taskboard/views.py: 'return _pad(c(escape(clip(text, w)), "reached"), w)' -> 'return _pad(c(escape(clip(text, w)), "dim"), w)'
+    tests/test_present_polish.py::test_AT_2001_the_quiet_marks_read_in_the_running_app: RED (KILLED) · 1 failed in 2.76s · restored c31cd96d022a
+M5 the note lead reached · taskboard/views.py: 'lines += [_pad("  " + c("· ", "dim") + r, width)' -> 'lines += [_pad("  " + c("· ", "reached") + r, width)'
+    tests/test_present_polish.py::test_TC_2001_the_quiet_marks_are_reached_and_the_rest_stays_dim: RED (KILLED) · 1 failed in 0.69s · restored c31cd96d022a
+M5 the note lead reached · taskboard/views.py: 'lines += [_pad("  " + c("· ", "dim") + r, width)' -> 'lines += [_pad("  " + c("· ", "reached") + r, width)'
+    tests/test_present_polish.py::test_AT_2001_the_quiet_marks_read_in_the_running_app: RED (KILLED) · 1 failed in 2.57s · restored c31cd96d022a
+M6 no notes reached · taskboard/views.py: 'right = c("no notes", "dim")' -> 'right = c("no notes", "reached")'
+    tests/test_present_polish.py::test_TC_2001_the_quiet_marks_are_reached_and_the_rest_stays_dim: RED (KILLED) · 1 failed in 4.01s · restored c31cd96d022a
+killed 10 / 10 arms; bad 0
+exit=0

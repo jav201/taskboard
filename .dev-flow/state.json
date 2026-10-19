@@ -166,7 +166,7 @@
     }
   ],
   "guided": false,
-  "current_station": "PDR",
+  "current_station": "P3",
   "phase_status": "in-progress",
   "stations_active": [
     "P0",
@@ -268,6 +268,11 @@
       "station": "P2",
       "date": "2026-10-18",
       "decision": "standing authorization — P2 approved under the 2026-10-18 commission after iteration 2 (architect, qa-reviewer, ux-reviewer approve; one minor A2-1/QA2-1 owed by increment 003); the PDR is next"
+    },
+    {
+      "station": "PDR",
+      "date": "2026-10-18",
+      "decision": "standing authorization — PDR sealed approved with conditions under the 2026-10-18 commission (one agent, three lenses: architect approved, qa-reviewer with PC-1..PC-4 after running the drafted battery on a throwaway copy, ux-reviewer approved); PC-1, PC-3, PC-4 applied at the seal (LED .4), PC-2's harness pre-check applied and its TC-1904 tier owed at increment 002; P3 is next"
     }
   ],
   "obsidian_synced": false,

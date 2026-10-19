@@ -21,7 +21,7 @@ orchestrator presents the full plan in-conversation at each phase gate.
 | Project | taskboard |
 | Batch | 2026-10-18-batch-03 |
 | Objective | Present polish (the operator's verdict of 2026-10-18 on the backlog polish round, variant A of all three items): the dim view word and the cut and edge marks of the presentation in the reached tone (~4.9:1) instead of dim (~3:1); a middle hint wording between the long and the short one, which the 80-column hint takes; the gantt view's cursor note filling the frame's free rows instead of stopping at 3 |
-| Last updated | PDR · 2026-10-18 |
+| Last updated | P3 · 2026-10-18 |
 | Standing authorization | standing authorization — the coordinator's commission of 2026-10-18 (the runtime cannot prompt), relaying the operator's verdict of 2026-10-18: «Si, apruebo.» (variant A of all three items of `prototypes/backlog_polish/backlog-polish-prototype.html`). Quoted from the commission: «Open a NEW dev-flow batch in `C:\Users\jjgh8\Github\taskboard` … Create the local branch `present-polish` from main … follow `stations/core-runbook.md`», «Port each A faithfully from that round's code and captures», «No push, merge, reset or force», «At most 4 SOURCE files per increment», «Never rewrite oracle frames whose hashes are recorded; new frames go in new files», «An independent `code-reviewer` per increment», «Run P4 and the P5 close». Read as: every gate of this batch is autonomous (reviewer roles are spawned sub-agents); commits on the local branch `present-polish` are authorized, each ending with the commission's co-author line; **push and merge are NOT authorized**; synthetic data only; the operator's name nowhere (`username_subject`); no deletion is commissioned, so the round folder stays (§*Key decisions*). |
 | First gate | step 1, on `main` `620f58c` before the branch: exit 0 — 0 block · 42 notice · 64 not applicable; `V7`: bundle identical to its manifest both directions, 57 declared files, `2026-10-12-rev102`. Step 3 (after the rollover): exit 0 — 0 block · 63 notice · 47 not applicable. |
 | Premises / RC-1 | RC-1 (a): `git fetch origin` → `origin/main` = `620f58c787f855d4d2ad4942c79c5a7cecb55baa` = local `main`; `git switch -c present-polish main`; HEAD equals the origin tip, so no rebase is owed; `base_ref` = `620f58c787f855d4d2ad4942c79c5a7cecb55baa`. RC-1 (b): not already shipped — on `origin/main` the view word and the cut and edge marks are `dim` (`views.py:6243`, `:6244`, `:6277`, `:6511`), `_hint` holds no middle wording (`app.py:297-302`), the gantt note is cut at 3 rows (`views.py:6541`). RC-2: `git ls-remote --exit-code --heads origin` → exit 0; newest `origin/main` commit 2026-10-18 16:39 -0600. Premises: `01-requirements.md` §2.7. |
@@ -52,7 +52,7 @@ The trigger evaluation `state.json`'s `triggers.record` points at: one row per t
 
 ## Where we are
 
-PDR — P2 approved after one iterate-to-refine (LED .2, LED .3); the design proposal is written and under the PDR panel.
+P3 — increment 001 done (the quiet marks in reached: 1 source file; RED on base; 10/10 mutants KILLED; 1 failed (the pre-existing HelpModal flake), 2744 passed; code-reviewer OK, 0 HIGH); increment 002 (the middle hint wording) is next.
 
 ## Objective
 
@@ -62,14 +62,15 @@ Ship variant A of the three polish items the operator approved — the quiet mar
 
 | Story / station | Status | Notes |
 |---|---|---|
-| US-2001 | READY | increment 001 · HLR-2001 / LLR-2001.1 |
+| US-2001 | DONE | increment 001 · AT-2001 passes |
 | US-2002 | READY | increment 002 · HLR-2002 / LLR-2002.1 |
 | US-2003 | READY | increment 003 · HLR-2003 / LLR-2003.1 |
 | P0 | done | triggers evaluated; refinement done |
 | ARQ | approved | `docs/ARCHITECTURE.md` amended (one iterate: A-1..A-4 folded) |
 | P1 | approved after one iterate-to-refine | LED .2, LED .3 folded |
 | P2 | approved | iteration 1 iterate-to-refine (6 majors → LED .2, .3), iteration 2 approve (1 minor owed by increment 003) |
-| PDR | in progress | `design/design-proposal.md` |
+| PDR | approved with conditions | PC-1, PC-3, PC-4 at the seal; PC-2 harness at the seal, its TC-1904 tier at increment 002 |
+| P3 | in progress | increment 001 done; 002 next |
 
 ## Roadmap + increment plan
 
@@ -89,7 +90,7 @@ Ship variant A of the three polish items the operator approved — the quiet mar
 
 ## Risks / watch-items
 
-- the law-driven updates of shipped tests (TC-1807, TC-1808, TC-1904, AT-1604's hint arm) could hide a weakened assertion · medium · each is named in its packet's census with old → new, the new value taken from the round's measured design (P-3) or the round's own frames, never from the code under test
+- the law-driven updates of shipped tests (TC-1807, TC-1808, TC-1904, TC-1604's hint arm) could hide a weakened assertion · medium · each is named in its packet's census with old → new, the new value taken from the round's measured design (P-3) or the round's own frames, never from the code under test
 - the round's `capture.py` re-run on the branch would double-apply its forks · low · the round is frozen to its commit (`docs/ARCHITECTURE.md` §3); this batch re-runs it only on `base_ref`, and records that in the module map
 
 ## Conventions honored

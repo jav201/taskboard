@@ -1,0 +1,30 @@
+# suite-001.txt: 1 failed — tests/test_help_keys.py::test_AT_1603_the_help_shows_the_global_keys_without_scrolling[80x24] (a HelpModal paint read after its pauses; the timing flake carried in BACKLOG.md by 2026-10-18-batch-02, flake-002.txt there, [118x30] then). The code-reviewer ran tests/test_present_polish.py at the same time (CPU contention). Re-run of the node's file, 5 times, on the same tree (2026-10-19T00:00:52Z):
+$ python -m pytest -q -p no:cacheprovider tests/test_help_keys.py   (run 1)
+1 failed, 8 passed in 8.04s
+$ python -m pytest -q -p no:cacheprovider tests/test_help_keys.py   (run 2)
+9 passed in 8.87s
+$ python -m pytest -q -p no:cacheprovider tests/test_help_keys.py   (run 3)
+9 passed in 8.70s
+$ python -m pytest -q -p no:cacheprovider tests/test_help_keys.py   (run 4)
+9 passed in 8.87s
+$ python -m pytest -q -p no:cacheprovider tests/test_help_keys.py   (run 5)
+9 passed in 9.19s
+# the same file on base_ref 620f58c (the scratch worktree), 8 runs:
+$ python -m pytest -q -p no:cacheprovider tests/test_help_keys.py   (base run 1)
+9 passed in 8.93s
+$ python -m pytest -q -p no:cacheprovider tests/test_help_keys.py   (base run 2)
+9 passed in 8.86s
+$ python -m pytest -q -p no:cacheprovider tests/test_help_keys.py   (base run 3)
+FAILED tests/test_help_keys.py::test_AT_1603_the_help_shows_the_global_keys_without_scrolling[80x24]
+1 failed, 8 passed in 8.36s
+$ python -m pytest -q -p no:cacheprovider tests/test_help_keys.py   (base run 4)
+9 passed in 8.96s
+$ python -m pytest -q -p no:cacheprovider tests/test_help_keys.py   (base run 5)
+9 passed in 9.20s
+$ python -m pytest -q -p no:cacheprovider tests/test_help_keys.py   (base run 6)
+FAILED tests/test_help_keys.py::test_AT_1603_the_help_shows_the_global_keys_without_scrolling[80x24]
+1 failed, 8 passed in 8.16s
+$ python -m pytest -q -p no:cacheprovider tests/test_help_keys.py   (base run 7)
+9 passed in 9.11s
+$ python -m pytest -q -p no:cacheprovider tests/test_help_keys.py   (base run 8)
+9 passed in 9.19s

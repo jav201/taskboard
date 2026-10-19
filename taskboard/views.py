@@ -61,7 +61,7 @@ HEX = {
     "pink": "#f472b6",
     "over": "#f43f5e",
     "ash": "#6b4a3f",     # the CONSUMED field: days already spent (Prism's 4th house)
-    "reached": "#7a828c",  # a reached milestone: quiet but legible — 4.9:1 on #0d1117
+    "reached": "#7a828c",  # a reached milestone, the presentation's quiet marks: 4.9:1 on #0d1117
                            # (operator verdict UXV-5: the ash was ~2.4:1, near illegible)
     "bright": "#e6edf7",
     "soon": "#fbbf24",
@@ -6240,8 +6240,8 @@ def _present_cut(rows: list[tuple[str, str]], k: int, w: int) -> list[str]:
         first = (rows[0][0] + rows[0][1]).rstrip()
         if vis(first) > w - vis(tag):     # the cut mark already says "more": no second "…"
             first = set_cell_size(first, max(0, w - vis(tag)))
-        return [_pad(c(escape(first), "ink") + c(escape(clip(tag, w)), "dim"), w)]
-    more = c(escape(clip(f"… +{len(rows) - k + 1} lines", w)), "dim")
+        return [_pad(c(escape(first), "ink") + c(escape(clip(tag, w)), "reached"), w)]
+    more = c(escape(clip(f"… +{len(rows) - k + 1} lines", w)), "reached")
     return [_present_note_markup(r, w) for r in rows[:k - 1]] + [_pad(more, w)]
 
 
@@ -6273,8 +6273,8 @@ def _present_window(rows: list[str], room: int, start: int, w: int) -> list[str]
 
 
 def _present_mark(text: str, w: int) -> str:
-    """An edge row of a paged window: what is out of view, dim."""
-    return _pad(c(escape(clip(text, w)), "dim"), w)
+    """An edge row of a paged window: what is out of view, `reached`."""
+    return _pad(c(escape(clip(text, w)), "reached"), w)
 
 
 def present_alloc(ns: list[int], cur: int, room: int, floor_n: int = 2) -> list[int]:
@@ -6508,7 +6508,7 @@ def render_present(board: Board, project_id: str | None, cursor_id: str | None,
         cursor = None
 
     title = (c("◆ PRESENT", "bright", bold=True) + c(" · ", "dim")
-             + c(escape(proj.name), proj.color, bold=True) + c(f"  {escape(view)}", "dim"))
+             + c(escape(proj.name), proj.color, bold=True) + c(f"  {escape(view)}", "reached"))
     right = c(f"{open_n} open", "mut") + c(" · ", "dim") \
         + (c(f"▲{late} past due", "over", bold=True) if late else c(f"{done} done", "done"))
     lines = [header(title, right, width)]

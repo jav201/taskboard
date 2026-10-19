@@ -1,0 +1,89 @@
+$ python -m pytest -q -p no:cacheprovider -rs --color=no   (cwd: the present-polish checkout, increment 001 in the working tree on bf6f4bb: taskboard/views.py, tests/test_present_polish.py; started 2026-10-18T23:49:19Z)
+C:\Users\jjgh8\anaconda3\Lib\site-packages\pytest_asyncio\plugin.py:207: PytestDeprecationWarning: The configuration option "asyncio_default_fixture_loop_scope" is unset.
+The event loop scope for asynchronous fixtures will default to the fixture caching scope. Future versions of pytest-asyncio will default the loop scope for asynchronous fixtures to function scope. Set the default fixture loop scope explicitly in order to avoid unexpected behavior in the future. Valid fixture loop scopes are: "function", "class", "module", "package", "session"
+
+  warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCOPE_UNSET))
+........................................................................ [  2%]
+........................................................................ [  5%]
+........................................................................ [  7%]
+........................................................................ [ 10%]
+........................................................................ [ 13%]
+........................................................................ [ 15%]
+........................................................................ [ 18%]
+........................................................................ [ 20%]
+........................................................................ [ 23%]
+........................................................................ [ 26%]
+........................................................................ [ 28%]
+........................................................................ [ 31%]
+........................................................................ [ 34%]
+........................................................................ [ 36%]
+........................................................................ [ 39%]
+........................................................................ [ 41%]
+........................................................................ [ 44%]
+..........................................................F............. [ 47%]
+........................................................................ [ 49%]
+........................................................................ [ 52%]
+........................................................................ [ 55%]
+........................................................................ [ 57%]
+........................................................................ [ 60%]
+........................................................................ [ 62%]
+........................................................................ [ 65%]
+........................................................................ [ 68%]
+........................................................................ [ 70%]
+........................................................................ [ 73%]
+........................................................................ [ 76%]
+........................................................................ [ 78%]
+........................................................................ [ 81%]
+........................................................................ [ 83%]
+........................................................................ [ 86%]
+........................................................................ [ 89%]
+........................................................................ [ 91%]
+........................................................................ [ 94%]
+........................................................................ [ 97%]
+........................................................................ [ 99%]
+.........                                                                [100%]
+================================== FAILURES ===================================
+____ test_AT_1603_the_help_shows_the_global_keys_without_scrolling[80x24] _____
+
+tmp_path = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-20532/test_AT_1603_the_help_shows_th1')
+size = (80, 24)
+
+    @pytest.mark.parametrize("size", [(118, 30), (80, 24)], ids=lambda s: f"{s[0]}x{s[1]}")
+    async def test_AT_1603_the_help_shows_the_global_keys_without_scrolling(tmp_path, size):
+        """AT-1603 (US-1603, HLR-1603): the gantt view, `?` → the painted screen
+        holds `R Present` and `S Standup` with no scroll; then `end` scrolls the
+        body and the Keys band paints the gantt keys whole (hard-coded pairs) while
+        the global line is still on screen."""
+        from taskboard.app import TaskboardApp
+    
+        path = tmp_path / "board.json"
+        pb.build(path).save()
+        app = TaskboardApp(board_path=str(path))
+        async with app.run_test(size=size) as pilot:
+            for _ in range(50):
+                if type(app.screen).__name__ == "MilestoneOffer":
+                    await pilot.press("escape")
+                    break
+                await pilot.pause()
+            await pilot.press("3")
+            await pilot.pause()
+            await pilot.press("question_mark")
+            for _ in range(3):
+                await pilot.pause()
+            rows = "\n".join(_painted(app))
+            assert "R Present" in rows and "S Standup" in rows, rows
+    
+            await pilot.press("end")
+            for _ in range(3):
+                await pilot.pause()
+            rows = "\n".join(_painted(app))
+            for pair in GANTT_PAIRS:
+>               assert pair in rows, (pair, rows)
+E               AssertionError: ('L   Link', '                                                                                
+E                   ╭───────────────────...                                   
+E                                                                                                 ')
+E               assert 'L   Link' in '                                                                                \n  ╭────────────────────────────────...                                    \n                                                                                '
+
+tests\test_help_keys.py:168: AssertionError
+1 failed, 2744 passed in 621.68s (0:10:21)
+exit=1

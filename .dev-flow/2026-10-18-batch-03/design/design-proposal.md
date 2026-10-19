@@ -71,7 +71,7 @@ The gantt view's frame, top to bottom, and where the note's rows come from (the 
 | Id | Layer (0 unit / A white / B black / UX) | What it asserts | **The mutation that would turn it RED** |
 |---|---|---|---|
 | TC-2001 | A | the sweep: every view word (where the header keeps its tones), cut and edge mark `reached`, never `dim`; the lead, `no notes`, the overflow row `dim`; every kind met; the one-row cut at 60×20; `no project to present` `dim`; the contrast ordering dim < 4.5 ≤ reached < mut | each of the four sites kept `"dim"` (four mutants); the `· ` lead repainted `"reached"` |
-| AT-2001 | B | 80×25, `R`, `→ →`: `gantt` and `… +N lines` `#7a828c`, the lead `#5b6675`; `2`: the split view's marks `#7a828c` | the view word kept `dim`; `_present_cut`'s row kept `dim`; `_present_mark` kept `dim` |
+| AT-2001 | B | 80×25, `R`, `→ →`: `gantt` and `… +N lines` `#7a828c` and not `#5b6675`, the lead `#5b6675`; `2`: the split view's word `#7a828c`; `pgdn` (the cursor's note pages): at least one `↑`/`↓` edge mark, every mark `#7a828c` (PDR PC-1) | the view word kept `dim`; `_present_cut`'s row kept `dim`; `_present_mark` kept `dim` |
 | TC-2002 | 0 | for both views × 0/1/3/10 hidden: the middle wording at its first width and one below the long one's, the short one a column narrower, the long one at its first width | the middle wording removed; tried before the long one; its gap one space |
 | TC-1904 (updated) | 0 | the threshold sweep with the middle tier | the middle wording removed |
 | AT-2002 | B | 80×25: the middle wording in both views (78 cells in split), bold current view, the short one with one hidden; 118: the long one | the middle wording removed; its keys changed |
