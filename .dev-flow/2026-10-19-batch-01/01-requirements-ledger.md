@@ -29,3 +29,10 @@ above this line is ever edited._
 - **What changed:** Before → After. AT-2103's rail rows ` 1 ● Customer Portal` … → `  1 ● Customer Portal` … (the lead cell and a right-aligned two-cell number: two leading blanks on a row that is not the cursor's); the header's right end read right-stripped. §2.5: the fixture hides Security Audit through `Project.extra` at increment 001 and through the field from increment 002 (QA-9).
 - **Why:** the P2 review of 2026-10-19, iteration 2 (qa-reviewer QA-6 nit, QA-9).
 - **Evidence:** the qa-reviewer's probe of the round's renderer at 160×45 (`  1 ● Customer Portal`; the header ends `past due `).
+
+### LED-2026-10-19-batch-01.4 — the sweep as it runs; the drawn stops (P3, increments 003 and 004)
+- **Requirement:** LLR-2103.1
+- **Date:** 2026-10-19
+- **What changed:** Before → After. TC-2103's sweep "heights 10, 24, 30, 45" → "heights 10 and 45" (a cut, overflowing frame and a roomy one; the folds × rail-focus product bounded to the unfocused timeline — qa-reviewer QA-12: the four heights took 89 s of the suite); the threshold gains "every stop a row the frame draws (none under the overflow row) and the drawn cursor one of them" (code review F1 of increment 003: the stops included rows the overflow row covers; fixed in increment 004 with `TC-2103`'s overflow-row node).
+- **Why:** increment 003's code review, F1 and F2 (MEDIUM).
+- **Evidence:** packet 003 §4b; `tests/test_present_all.py::test_TC_2103_no_stop_hides_under_the_overflow_row` (RED without the increment-004 trim, GREEN with it — packet 004).

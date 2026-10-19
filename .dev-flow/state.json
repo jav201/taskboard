@@ -274,6 +274,16 @@
       "station": "P3",
       "date": "2026-10-19",
       "decision": "P3 increment 001 approved under the batch's standing authorization: the milestone row (HLR-2101, LLR-2101.1) — RED on base_ref (11 failed, 1 passed), 5/5 mutants KILLED, code-reviewer OK with findings (F1, F2 folded), suite-001 2768 passed, 1 skipped; increment 002 is next."
+    },
+    {
+      "station": "P3",
+      "date": "2026-10-19",
+      "decision": "P3 increment 002 approved under the batch's standing authorization: the project's presentation state (HLR-2102) — RED on base 21 failed, 6/6 mutants KILLED, code-reviewer OK (F1-F4 LOW), suite-002 2791 passed, 1 skipped."
+    },
+    {
+      "station": "P3",
+      "date": "2026-10-19",
+      "decision": "P3 increment 003 approved under the batch's standing authorization: the view-3 renderer (HLR-2103, the rows of HLR-2106) — RED on base 13 failed, 8/8 mutants KILLED, code-reviewer OK with findings (F1, F3 fixed in increment 004; F2 amended as LED .4), suite-003 2804 passed, 1 skipped."
     }
   ],
   "obsidian_synced": false,
