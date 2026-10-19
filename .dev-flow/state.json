@@ -1,8 +1,8 @@
 {
   "project": "taskboard",
   "language": "en",
-  "batch_id": "2026-10-18-batch-03",
-  "batch_objective": "Present polish (the operator's verdict of 2026-10-18 on the backlog polish round, variant A of all three items): the dim view word and the cut and edge marks of the presentation in the reached tone (~4.9:1) instead of dim (~3:1); a middle hint wording between the long and the short one, which the 80-column hint takes; the gantt view's cursor note filling the frame's free rows instead of stopping at 3",
+  "batch_id": "2026-10-19-batch-01",
+  "batch_objective": "Present view 3 `all` (variant C, curate rail, of the present-portfolio round): every shown project on one date ruler beside a project rail; hide and show projects and tasks, a persisted presentation-only project order, fold, a `u` picker of hidden items in all three Present views, `x` exporting the timeline without the rail; and the shipped bug of views 1/2 that draws a start-less milestone as a bar from today",
   "owner": "C:/Users/jjgh8/Github/taskboard",
   "mode": "core",
   "mode_history": [
@@ -163,11 +163,17 @@
       "to": "core",
       "date": "2026-10-18",
       "reason": "batch 2026-10-18-batch-03 opened by rollover from 2026-10-18-batch-02; mode core declared by the commission"
+    },
+    {
+      "from": null,
+      "to": "core",
+      "date": "2026-10-19",
+      "reason": "batch 2026-10-19-batch-01 opened by rollover from 2026-10-18-batch-03; mode core declared by the commission"
     }
   ],
   "guided": false,
-  "current_station": "P5",
-  "phase_status": "closed",
+  "current_station": "ARQ",
+  "phase_status": "in-progress",
   "stations_active": [
     "P0",
     "ARQ",
@@ -181,7 +187,7 @@
   ],
   "iterations_per_station": {
     "P0": 0,
-    "P1": 1,
+    "P1": 0,
     "P2": 0,
     "P3": 0,
     "P4": 0,
@@ -191,115 +197,60 @@
     "PDR": 0
   },
   "triggers": {
-    "evaluated_at": "2026-10-18T17:13:11",
+    "evaluated_at": "2026-10-19",
     "fired": [
       "A2",
+      "A3",
       "B1",
       "B3",
       "B4",
+      "C1",
+      "C4",
+      "C5",
+      "C8",
       "D1",
       "E1"
     ],
     "not_fired": [
       "A1",
-      "A3",
       "A4",
       "B2",
-      "C1",
       "C2",
       "C3",
-      "C4",
-      "C5",
       "C6",
       "C7",
-      "C8",
       "D2",
       "E2",
       "E3",
       "F1",
       "F2"
     ],
-    "record": ".dev-flow/2026-10-18-batch-03/PLAN.md#triggers"
+    "record": ".dev-flow/2026-10-19-batch-01/PLAN.md#triggers"
   },
   "artifact_homes": {
-    "requirements": "repo:.dev-flow/2026-10-18-batch-03/01-requirements.md",
-    "requirements_ledger": "repo:.dev-flow/2026-10-18-batch-03/01-requirements-ledger.md",
-    "traceability": "repo:.dev-flow/2026-10-18-batch-03/06-docs/traceability-matrix.md",
+    "requirements": "repo:.dev-flow/2026-10-19-batch-01/01-requirements.md",
+    "requirements_ledger": "repo:.dev-flow/2026-10-19-batch-01/01-requirements-ledger.md",
+    "traceability": "repo:.dev-flow/2026-10-19-batch-01/06-docs/traceability-matrix.md",
     "tests": "repo:tests/",
     "module_map": "repo:docs/ARCHITECTURE.md",
-    "increments": "repo:.dev-flow/2026-10-18-batch-03/03-increments/",
-    "evidence": "repo:.dev-flow/2026-10-18-batch-03/evidence/",
+    "increments": "repo:.dev-flow/2026-10-19-batch-01/03-increments/",
+    "evidence": "repo:.dev-flow/2026-10-19-batch-01/evidence/",
     "backlog": "repo:.dev-flow/BACKLOG.md",
-    "design_pdr": "vault:taskboard/design/PDR-2026-10-18-batch-03.md",
-    "design_ddr": "vault:taskboard/design/DDR-2026-10-18-batch-03.md",
-    "postmortem": "vault:taskboard/dev-flow-batches/2026-10-18-batch-03/",
-    "metrics": "vault:taskboard/dev-flow-batches/2026-10-18-batch-03/README.md",
+    "design_pdr": "vault:taskboard/design/PDR-2026-10-19-batch-01.md",
+    "design_ddr": "vault:taskboard/design/DDR-2026-10-19-batch-01.md",
+    "postmortem": "vault:taskboard/dev-flow-batches/2026-10-19-batch-01/",
+    "metrics": "vault:taskboard/dev-flow-batches/2026-10-19-batch-01/README.md",
     "requirements_canon": "repo:REQUIREMENTS.md"
   },
-  "base_ref": "620f58c787f855d4d2ad4942c79c5a7cecb55baa",
+  "base_ref": "bdf6e9d54d6e39ef083c2cc8708de5b6943b98e9",
   "artifacts": {},
   "decisions_log": [
     {
       "station": "P0",
-      "date": "2026-10-18",
-      "decision": "standing authorization — P0 closed under the coordinator's commission of 2026-10-18 (the operator's verdict «Si, apruebo.» on the polish round, variant A of all three items): batch opened on present-polish from main 620f58c by rollover (89140b7), three stories READY, triggers A2/B1/B3/B4/D1/E1 fired so ARQ is next; base suite 2740 passed"
-    },
-    {
-      "station": "ARQ",
-      "date": "2026-10-18",
-      "decision": "standing authorization — ARQ module map approved under the 2026-10-18 commission after the architect's iterate (A-1 the round's re-run written as done before it ran — now run, compare-round.txt EQUAL x14; A-2 planned paths marked; A-3 A3's evidence names the edited contract cell; A-4 frozen evidence scripts that patch source text) was folded into docs/ARCHITECTURE.md and re-read (approve); P1 is next"
-    },
-    {
-      "station": "P1",
-      "date": "2026-10-18",
-      "decision": "standing authorization — P1 requirements approved under the 2026-10-18 commission: 3 US, 3 HLR, 3 LLR, 6 premises TRUE (P-6 executed: the round's A captures re-run on 620f58c EQUAL x14), IFC Part A two FLOW blocks (3 nodes), scan flags none / security_required false; P2 review is next (architect, qa-reviewer, ux-reviewer by D1)"
-    },
-    {
-      "station": "P2",
-      "date": "2026-10-18",
-      "decision": "standing authorization — P2 iteration 1: architect iterate-to-refine (A-1 canon supersessions missing, A-3 verification commands selecting nothing, A-4 TC-2001's base_ref text clause, A-5 the note count under overflow; A-2 minor), qa-reviewer iterate-to-refine (QA-1 the header's flattened title, QA-2 the overflow count; QA-3, QA-4, QA-8 minor; QA-5..QA-7 owed by the increments), ux-reviewer approve (UX-1, UX-2 declared); requirement defects return to P1 for amendment (LED .2, LED .3), then a P2 re-review"
-    },
-    {
-      "station": "P1",
-      "date": "2026-10-18",
-      "decision": "standing authorization — P1 iteration 1 amendments (LED-2026-10-18-batch-03.2, .3) folded: the header's flattened title, the overflow clause and its boundaries, the canon supersessions (HLR-1802, HLR-1904, LLR-1001.1), one pytest command per -k, TC-2001's text clause; P2 re-review is next"
-    },
-    {
-      "station": "P2",
-      "date": "2026-10-18",
-      "decision": "standing authorization — P2 approved under the 2026-10-18 commission after iteration 2 (architect, qa-reviewer, ux-reviewer approve; one minor A2-1/QA2-1 owed by increment 003); the PDR is next"
-    },
-    {
-      "station": "PDR",
-      "date": "2026-10-18",
-      "decision": "standing authorization — PDR sealed approved with conditions under the 2026-10-18 commission (one agent, three lenses: architect approved, qa-reviewer with PC-1..PC-4 after running the drafted battery on a throwaway copy, ux-reviewer approved); PC-1, PC-3, PC-4 applied at the seal (LED .4), PC-2's harness pre-check applied and its TC-1904 tier owed at increment 002; P3 is next"
-    },
-    {
-      "station": "P3",
-      "date": "2026-10-18",
-      "decision": "standing authorization — P3 increment 001 approved under the 2026-10-18 commission: the quiet marks in reached in views.py (e72a316); RED on base 3 of 5 nodes (2 declared pins), 10/10 mutants killed, 2744 passed + 1 pre-existing HelpModal flake (flake-001.txt: 2/8 on base); round comparison 6 EQUAL, 4 DIFFER = the declared lead deviation; code-reviewer OK to advance, 0 HIGH (F1, F2 folded); increment 002 is next"
-    },
-    {
-      "station": "P3",
-      "date": "2026-10-18",
-      "decision": "standing authorization — P3 increment 002 approved under the 2026-10-18 commission: the middle hint wording in app.py (b12e563); RED on base (18 failed incl. 001's), 8/8 mutants killed, 2754 passed 0 failed; the AT-1603 timing flake hardened (20/20); round comparison: the hint EQUAL, the 4 DIFFER = the declared lead deviation; code-reviewer OK to advance, 0 HIGH (F1 folded, LED .5); increment 003 is next"
-    },
-    {
-      "station": "P3",
-      "date": "2026-10-18",
-      "decision": "standing authorization — P3 increment 003 approved under the 2026-10-18 commission: the gantt note fills the free rows in views.py (984ba8e); RED on base, 11/11 mutants killed, 2759 passed 0 failed (run 2; run 1 found AT-1802 on the old frames, re-pointed — the late correction population declared); final captures 9 EQUAL + the declared lead; code-reviewer OK to advance, 0 HIGH (F1, F2 folded); P3 complete, the DDR is next"
-    },
-    {
-      "station": "DDR",
-      "date": "2026-10-18",
-      "decision": "standing authorization — DDR sealed approved under the 2026-10-18 commission (architect approved, no condition, the cut-row lead deviation judged correct; qa-reviewer approved with C1/C2 on evidence wording, both discharged before the seal: precheck-redproof.txt, the post-suite re-runs cite suite-003.txt); PDR PC-1..PC-4 re-read and discharged; P4 is next"
-    },
-    {
-      "station": "P4",
-      "date": "2026-10-18",
-      "decision": "standing authorization — P4 PASS-WITH-NOTES under the 2026-10-18 commission: the orchestrator's gate run in a clean worktree at 984ba8e (2759 passed, 0 failed, 0 skipped; the clipboard test passed); ledger 2740 - 0 + 19 = 2759; qa-reviewer PASS-WITH-NOTES (G-1 the separators unasserted, G-2 the export's contents by inspection), ux walkthrough pass-with-notes (UX4-1..4); the close is next"
+      "date": "2026-10-19",
+      "decision": "P0 approved under the batch's standing authorization (the orchestrator's commission of 2026-10-19 relaying the operator's verdict «C» on prototypes/present_portfolio/): batch opened by rollover on bdf6e9d (the round cherry-picked from 1132d85); triggers A2 A3 B1 B3 B4 C1 C4 C5 C8 D1 E1 fired, ARQ/PDR/DDR taken up; US-2101..US-2104 READY; ARQ is next."
     }
   ],
   "obsidian_synced": false,
-  "created_at": "2026-10-18T17:05:28.291203"
+  "created_at": "2026-10-19T11:42:16.073642"
 }
