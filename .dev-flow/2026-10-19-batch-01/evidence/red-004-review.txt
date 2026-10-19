@@ -1,0 +1,5 @@
+# the resize node on 6d9f344's app.py (the code review F1/F2 state), the views fix kept
+E           AssertionError: ('task', 'tb2')
+tests\test_present_all.py:821: AssertionError
+FAILED tests/test_present_all.py::test_TC_2105_a_resize_keeps_the_cursor_and_the_rail_safe
+1 failed, 47 deselected in 1.48s

@@ -801,3 +801,30 @@ def test_TC_2103_the_rail_counts_every_hidden_task(tmp_path):
     b.task_by_id("ts1").show_in_present = False          # Security Audit is hidden
     rail = _plain(views.render_present_all(b, None, pf.TODAY, 160, 45).frame)
     assert any(r.startswith(" 3 tasks hidden") for r in rail), rail
+
+
+async def test_TC_2105_a_resize_keeps_the_cursor_and_the_rail_safe(tmp_path, frozen):
+    """TC-2105 (LLR-2104.1, LLR-2105.1; code review F1/F2 of increment 004): a task
+    cursor moved on the timeline under 100 columns becomes its project when the
+    rail is back (`space` there toggles that project, it does not crash); a trip
+    below 36 columns keeps view 3's cursor."""
+    s = _Show(tmp_path, (160, 45))
+    async with s.app.run_test(size=s.size) as pilot:
+        await s.open(pilot)
+        await s.press(pilot, "3")
+        await pilot.resize_terminal(90, 45)
+        await s.press(pilot, "down")
+        assert s.scr._all_cur[0] == "task"
+        proj = s.scr._board.task_by_id(s.scr._all_cur[1]).project_id
+        await pilot.resize_terminal(160, 45)
+        await s.press(pilot)
+        assert s.scr._all_cur == ("proj", proj), s.scr._all_cur
+        await s.press(pilot, "space")
+        assert s.projects()[proj]["show_in_present"] is False
+        await s.press(pilot, "space")
+        await s.goto(pilot, "pdp")
+        await pilot.resize_terminal(30, 45)
+        await s.press(pilot)
+        await pilot.resize_terminal(160, 45)
+        await s.press(pilot)
+        assert s.scr._all_cur == ("proj", "pdp"), s.scr._all_cur

@@ -144,6 +144,16 @@ MUTANTS = {
          "hidden_t = sum(len(present_hidden(board, p.id)) for p in ps if p.show_in_present)",
          ["tests/test_present_all.py"]),
     ],
+    "004-review": [
+        ("S1 the rail keeps a task cursor (code review F1 of 004)", "taskboard/app.py",
+         "            elif self._all_cur is not None and self._all_cur[0] == \"task\":",
+         "            elif False:", ["tests/test_present_all.py"]),
+        ("S2 a trip below 36 columns drops the cursor (F2 of 004)", "taskboard/app.py",
+         "        if self._all() and not self._narrow():\n            if not self._on_rail():",
+         "        if self._all():\n            if not self._on_rail():", ["tests/test_present_all.py"]),
+        ("S3 no stop trimmed under the overflow row (F3 of 004, the layout's rows)", "taskboard/views.py",
+         "    if rows and max(rows.values()) >= height:", "    if False:", ["tests/test_present_all.py"]),
+    ],
 }
 
 

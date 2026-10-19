@@ -1,0 +1,25 @@
+# the shipped present tests run on the new screen (increment 004, working tree) BEFORE the law-driven updates: the population of the correction
+FAILED tests/test_present_hide.py::test_TC_1604_the_hint_row_carries_the_keys_and_the_count[size0-1 gantt  2 split  \u21e5 next \xb7 \u2190\u2192 \u2191\u2193 move \xb7 \u2423 hide \xb7 a show all \xb7 x export \xb7 esc leave-1 gantt  2 split  \u21e5 next \xb7 \u2190\u2192 \u2191\u2193 move \xb7 \u2423 hide \xb7 a show all \xb7 x export \xb7 esc leave]
+FAILED tests/test_present_hide.py::test_TC_1604_the_hint_row_carries_the_keys_and_the_count[size1-1 gantt  2 split  \u21e5 next \xb7 \u2190\u2192 \u2191\u2193 \xb7 \u2423 hide \xb7 a show all \xb7 x export \xb7 esc-1 gantt 2 split \u21e5 \xb7 \u2190\u2192 \xb7 \u2423 hide \xb7 a all \xb7 x export \xb7 esc]
+FAILED tests/test_present_hide.py::test_AT_1602_space_hides_and_it_is_remembered_a_shows_all
+FAILED tests/test_present_narrow.py::test_TC_1904_the_hint_takes_the_first_wording_that_fits
+FAILED tests/test_present_narrow.py::test_TC_1904_an_overflowing_count_is_cut_visibly
+FAILED tests/test_present_narrow.py::test_AT_1904_the_hint_shortens_and_cuts_visibly
+FAILED tests/test_present_polish.py::test_TC_2002_the_middle_wording_sits_between_the_long_and_the_short[gantt-0]
+FAILED tests/test_present_polish.py::test_TC_2002_the_middle_wording_sits_between_the_long_and_the_short[gantt-1]
+FAILED tests/test_present_polish.py::test_TC_2002_the_middle_wording_sits_between_the_long_and_the_short[gantt-3]
+FAILED tests/test_present_polish.py::test_TC_2002_the_middle_wording_sits_between_the_long_and_the_short[gantt-10]
+FAILED tests/test_present_polish.py::test_TC_2002_the_middle_wording_sits_between_the_long_and_the_short[split-0]
+FAILED tests/test_present_polish.py::test_TC_2002_the_middle_wording_sits_between_the_long_and_the_short[split-1]
+FAILED tests/test_present_polish.py::test_TC_2002_the_middle_wording_sits_between_the_long_and_the_short[split-3]
+FAILED tests/test_present_polish.py::test_TC_2002_the_middle_wording_sits_between_the_long_and_the_short[split-10]
+FAILED tests/test_present_polish.py::test_AT_2002_the_80_column_hint_names_next_and_show_all
+FAILED tests/test_present_views_app.py::test_AT_1803_the_view_keys_and_what_the_views_share
+FAILED tests/test_present_views_app.py::test_TC_1808_the_hint_row_per_view[118]
+FAILED tests/test_present_views_app.py::test_TC_1808_the_hint_row_per_view[100]
+FAILED tests/test_present_views_app.py::test_TC_1808_the_hint_row_per_view[99]
+FAILED tests/test_present_views_app.py::test_TC_1808_the_hint_row_per_view[96]
+FAILED tests/test_present_views_app.py::test_TC_1808_the_hint_row_per_view[80]
+21 failed, 227 passed in 379.82s (0:06:19)
+
+[exited with code 0]

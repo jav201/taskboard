@@ -299,8 +299,14 @@ class PresentScreen(ModalScreen[None]):
                               self._scroll if scroll is None else scroll)
 
     def _paint(self) -> None:
-        if self._all() and not self._on_rail():
-            self._all_cur = self._render_all().cursor      # the cursor as drawn
+        if self._all() and not self._narrow():
+            if not self._on_rail():
+                self._all_cur = self._render_all().cursor      # the cursor as drawn
+            elif self._all_cur is not None and self._all_cur[0] == "task":
+                # the rail's stops are projects: a task cursor (moved on the
+                # timeline while the screen was under 100 columns) becomes its project
+                proj = self._cursor_project()
+                self._all_cur = ("proj", proj.id) if proj else None
         self.query_one("#present-frame", Static).update(self._frame_text())
         self.query_one("#present-hint", Static).update(self._hint(self.size.width or 0))
 
@@ -443,11 +449,10 @@ class PresentScreen(ModalScreen[None]):
                 self._cursor_id = self._all_cur[1] if self._all_cur[0] == "task" else None
         if entering:
             self._rail = (self.size.width or 0) >= PRESENT_RAIL_MIN
-            self._all_cur = (("task", self._cursor_id)
-                             if self._cursor_id and not self._rail
-                             and self._board.task_by_id(self._cursor_id) is not None
-                             and self._board.task_by_id(self._cursor_id).project_id
-                             == self._project_id
+            task = self._board.task_by_id(self._cursor_id)
+            self._all_cur = (("task", task.id)
+                             if task is not None and not self._rail
+                             and task.project_id == self._project_id
                              else ("proj", self._project_id))
         self._view, self._scroll = index, 0
         self._paint()

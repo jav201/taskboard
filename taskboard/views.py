@@ -6757,12 +6757,14 @@ def _all_layout(plan, cur_pid: str | None, folded, room: int):
         if p.id != cur_pid and open_[p.id] and ts:
             open_[p.id] = False
     gap = need(True) <= room
-    stops = []
-    for p, ts in plan:
-        stops.append(("proj", p.id))
-        if open_[p.id]:
-            stops += [("task", t.id) for t in ts]
-    return open_, gap, stops
+    stops, rows, y = [], {}, 3        # each stop and its row under the header and ruler
+    for i, (p, ts) in enumerate(plan):
+        y += 1 if gap and i else 0
+        drawn = [("proj", p.id)] + ([("task", t.id) for t in ts] if open_[p.id] else [])
+        for s in drawn:
+            stops.append(s)
+            rows[s], y = y, y + 1
+    return open_, gap, stops, rows
 
 
 def _all_resolve(board: Board, cur):
@@ -6795,21 +6797,15 @@ def _all_timeline(board: Board, width: int, height: int, today: date, cur, folde
     g = _PresentGeo(width, label_w, chip_w, field_w, ax, set(critical_chain(board)), today,
                     wide, "dim")
     _, _, cur_proj = _all_resolve(board, cur)
-    open_, gap, stops = _all_layout(plan, cur_proj.id if cur_proj else None, folded, height - 3)
-    rows, y = {}, 3                    # each stop's row under the header and the ruler
-    for i, (p, ts) in enumerate(plan):
-        y += 1 if gap and i else 0
-        rows[("proj", p.id)], y = y, y + 1
-        if open_[p.id]:
-            for t in ts:
-                rows[("task", t.id)], y = y, y + 1
-    if y > height:                     # the overflow row takes the last row: what it
-        stops = [s for s in stops if rows[s] < height - 1]   # covers is no stop
+    open_, gap, stops, rows = _all_layout(plan, cur_proj.id if cur_proj else None, folded,
+                                          height - 3)
+    if rows and max(rows.values()) >= height:   # the overflow row takes the last row:
+        stops = [s for s in stops if rows[s] < height - 1]   # what it covers is no stop
     if cur not in stops:
         if rail_focus:                 # the rail's cursor on a hidden project: none here
             cur = None
         elif cur_proj is not None and ("proj", cur_proj.id) in stops:
-            cur = ("proj", cur_proj.id)   # a task folded away: its project's header
+            cur = ("proj", cur_proj.id)   # a task folded away or cut: its project's header
         elif cur in rows and stops:
             cur = stops[-1]               # cut by the overflow row: the last drawn stop
         else:

@@ -1,0 +1,5 @@
+pre-check: tests/test_present_all.py -> exit 0
+S1 the rail keeps a task cursor (code review F1 of 004) · taskboard/app.py · tests/test_present_all.py -> exit 1 · KILLED · restore digest f72ba7b747c1c4eec1080bf8cfb729b2ab0d2062d08d53cce3eead4db96ef750
+S2 a trip below 36 columns drops the cursor (F2 of 004) · taskboard/app.py · tests/test_present_all.py -> exit 1 · KILLED · restore digest f72ba7b747c1c4eec1080bf8cfb729b2ab0d2062d08d53cce3eead4db96ef750
+S3 no stop trimmed under the overflow row (F3 of 004, the layout's rows) · taskboard/views.py · tests/test_present_all.py -> exit 1 · KILLED · restore digest c23eacdab08bd6bcb38934940a2b453ef71a4dc206686667701d8a599b10c654
+3/3 KILLED
