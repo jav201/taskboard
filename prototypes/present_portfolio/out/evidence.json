@@ -1,0 +1,68 @@
+{
+  "A": {
+    "Customer Portal": {
+      "present_rank": 1
+    },
+    "Billing Migration": {
+      "present_rank": 2
+    },
+    "Mobile Release 3.2": {
+      "present_rank": 0
+    },
+    "Data Platform": {
+      "present_rank": 3
+    },
+    "Security Audit": {
+      "show_in_present": true,
+      "present_rank": 4
+    },
+    "Brand Refresh": {
+      "show_in_present": true,
+      "present_rank": 5
+    }
+  },
+  "B": {
+    "Customer Portal": {
+      "present_rank": 1
+    },
+    "Billing Migration": {
+      "present_rank": 2
+    },
+    "Mobile Release 3.2": {
+      "present_rank": 0
+    },
+    "Data Platform": {
+      "present_rank": 3
+    },
+    "Security Audit": {
+      "show_in_present": true,
+      "present_rank": 4
+    },
+    "Brand Refresh": {
+      "show_in_present": true,
+      "present_rank": 5
+    }
+  },
+  "C": {
+    "Customer Portal": {
+      "present_rank": 1
+    },
+    "Billing Migration": {
+      "present_rank": 2
+    },
+    "Mobile Release 3.2": {
+      "present_rank": 0
+    },
+    "Data Platform": {
+      "present_rank": 3
+    },
+    "Security Audit": {
+      "show_in_present": true,
+      "present_rank": 4
+    },
+    "Brand Refresh": {
+      "show_in_present": true,
+      "present_rank": 5
+    }
+  }
+}
