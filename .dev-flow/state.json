@@ -166,7 +166,7 @@
     }
   ],
   "guided": false,
-  "current_station": "P3",
+  "current_station": "P4",
   "phase_status": "in-progress",
   "stations_active": [
     "P0",
@@ -283,6 +283,16 @@
       "station": "P3",
       "date": "2026-10-18",
       "decision": "standing authorization — P3 increment 002 approved under the 2026-10-18 commission: the middle hint wording in app.py (b12e563); RED on base (18 failed incl. 001's), 8/8 mutants killed, 2754 passed 0 failed; the AT-1603 timing flake hardened (20/20); round comparison: the hint EQUAL, the 4 DIFFER = the declared lead deviation; code-reviewer OK to advance, 0 HIGH (F1 folded, LED .5); increment 003 is next"
+    },
+    {
+      "station": "P3",
+      "date": "2026-10-18",
+      "decision": "standing authorization — P3 increment 003 approved under the 2026-10-18 commission: the gantt note fills the free rows in views.py (984ba8e); RED on base, 11/11 mutants killed, 2759 passed 0 failed (run 2; run 1 found AT-1802 on the old frames, re-pointed — the late correction population declared); final captures 9 EQUAL + the declared lead; code-reviewer OK to advance, 0 HIGH (F1, F2 folded); P3 complete, the DDR is next"
+    },
+    {
+      "station": "DDR",
+      "date": "2026-10-18",
+      "decision": "standing authorization — DDR sealed approved under the 2026-10-18 commission (architect approved, no condition, the cut-row lead deviation judged correct; qa-reviewer approved with C1/C2 on evidence wording, both discharged before the seal: precheck-redproof.txt, the post-suite re-runs cite suite-003.txt); PDR PC-1..PC-4 re-read and discharged; P4 is next"
     }
   ],
   "obsidian_synced": false,

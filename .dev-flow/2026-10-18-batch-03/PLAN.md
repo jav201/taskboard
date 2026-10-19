@@ -21,7 +21,7 @@ orchestrator presents the full plan in-conversation at each phase gate.
 | Project | taskboard |
 | Batch | 2026-10-18-batch-03 |
 | Objective | Present polish (the operator's verdict of 2026-10-18 on the backlog polish round, variant A of all three items): the dim view word and the cut and edge marks of the presentation in the reached tone (~4.9:1) instead of dim (~3:1); a middle hint wording between the long and the short one, which the 80-column hint takes; the gantt view's cursor note filling the frame's free rows instead of stopping at 3 |
-| Last updated | P3 · 2026-10-18 |
+| Last updated | P4 · 2026-10-18 |
 | Standing authorization | standing authorization — the coordinator's commission of 2026-10-18 (the runtime cannot prompt), relaying the operator's verdict of 2026-10-18: «Si, apruebo.» (variant A of all three items of `prototypes/backlog_polish/backlog-polish-prototype.html`). Quoted from the commission: «Open a NEW dev-flow batch in `C:\Users\jjgh8\Github\taskboard` … Create the local branch `present-polish` from main … follow `stations/core-runbook.md`», «Port each A faithfully from that round's code and captures», «No push, merge, reset or force», «At most 4 SOURCE files per increment», «Never rewrite oracle frames whose hashes are recorded; new frames go in new files», «An independent `code-reviewer` per increment», «Run P4 and the P5 close». Read as: every gate of this batch is autonomous (reviewer roles are spawned sub-agents); commits on the local branch `present-polish` are authorized, each ending with the commission's co-author line; **push and merge are NOT authorized**; synthetic data only; the operator's name nowhere (`username_subject`); no deletion is commissioned, so the round folder stays (§*Key decisions*). |
 | First gate | step 1, on `main` `620f58c` before the branch: exit 0 — 0 block · 42 notice · 64 not applicable; `V7`: bundle identical to its manifest both directions, 57 declared files, `2026-10-12-rev102`. Step 3 (after the rollover): exit 0 — 0 block · 63 notice · 47 not applicable. |
 | Premises / RC-1 | RC-1 (a): `git fetch origin` → `origin/main` = `620f58c787f855d4d2ad4942c79c5a7cecb55baa` = local `main`; `git switch -c present-polish main`; HEAD equals the origin tip, so no rebase is owed; `base_ref` = `620f58c787f855d4d2ad4942c79c5a7cecb55baa`. RC-1 (b): not already shipped — on `origin/main` the view word and the cut and edge marks are `dim` (`views.py:6243`, `:6244`, `:6277`, `:6511`), `_hint` holds no middle wording (`app.py:297-302`), the gantt note is cut at 3 rows (`views.py:6541`). RC-2: `git ls-remote --exit-code --heads origin` → exit 0; newest `origin/main` commit 2026-10-18 16:39 -0600. Premises: `01-requirements.md` §2.7. |
@@ -52,7 +52,7 @@ The trigger evaluation `state.json`'s `triggers.record` points at: one row per t
 
 ## Where we are
 
-P3 — increments 001–003 done (003: the gantt note fills the free rows, 1 source file; RED on base; 11/11 mutants KILLED; 2759 passed, 0 failed on run 2; the final real-app captures equal the round's three A forks composed on 620f58c but for the declared lead); the DDR is next.
+P4 — the DDR sealed approved (PC-1..PC-4 discharged by re-reading; the qa lens's C1/C2 discharged); the gate run in a clean worktree at 984ba8e is running; the P4 walkthrough follows.
 
 ## Objective
 
@@ -71,6 +71,8 @@ Ship variant A of the three polish items the operator approved — the quiet mar
 | P2 | approved | iteration 1 iterate-to-refine (6 majors → LED .2, .3), iteration 2 approve (1 minor owed by increment 003) |
 | PDR | approved with conditions | PC-1, PC-3, PC-4 at the seal; PC-2 harness at the seal, its TC-1904 tier at increment 002 |
 | P3 | done | increments 001, 002, 003 committed |
+| DDR | approved | architect approved; qa-reviewer C1/C2 discharged before the seal |
+| P4 | in progress | the gate run at 984ba8e |
 
 ## Roadmap + increment plan
 

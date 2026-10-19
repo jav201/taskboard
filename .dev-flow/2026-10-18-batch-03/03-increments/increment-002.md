@@ -69,7 +69,7 @@ At 80 columns the hint row now names `next` and `show all`: `PresentScreen._hint
 |---|---|---|
 | 0 | `tests/test_present_polish.py::test_TC_2002_the_middle_wording_sits_between_the_long_and_the_short[gantt-0 … split-10]` ×8 (TC-2002); `tests/test_present_narrow.py::test_TC_1904_the_hint_takes_the_first_wording_that_fits` (TC-1904, updated) | in the full suite (`suite-002.txt`) |
 | B | `tests/test_present_polish.py::test_AT_2002_the_80_column_hint_names_next_and_show_all` (AT-2002) | in the full suite (`suite-002.txt`) |
-| full suite | `python -m pytest -q -p no:cacheprovider -rs --color=no` on the working tree with increments 001 and 002 | 0 failed, 2754 passed, 0 skipped (`suite-002.txt`; 2745 + the 9 new nodes; the hardened AT-1603 green). After the suite, code-review F1 folded test-only (TC-1904 sweeps 1 hidden too, LED .5): `tests/test_present_narrow.py` re-run, 6 passed |
+| full suite | `python -m pytest -q -p no:cacheprovider -rs --color=no` on the working tree with increments 001 and 002 | 0 failed, 2754 passed, 0 skipped (`suite-002.txt`; 2745 + the 9 new nodes; the hardened AT-1603 green). After the suite, code-review F1 folded test-only (TC-1904 sweeps 1 hidden too, LED .5): `tests/test_present_narrow.py` re-run, 6 passed (no transcript kept; green in the later full run `suite-003.txt`, 0 failed — DDR C2) |
 
 | Field | Value |
 |---|---|
@@ -92,7 +92,7 @@ At 80 columns the hint row now names `next` and `show all`: `PresentScreen._hint
 | flake-002.txt | .dev-flow/2026-10-18-batch-03/evidence/flake-002.txt | 63c6d1b36199e7f7b3cc0fdf55cada0e92fccab4acd38473774343d7c14e8230 |
 | compare-002.txt | .dev-flow/2026-10-18-batch-03/evidence/compare-002.txt | 133d6f420b0a88ed6c4e58cdf8cd640ff3cf4145d76b570fdaeb94ddedc54e56 |
 | explain_diff.py | .dev-flow/2026-10-18-batch-03/evidence/explain_diff.py | 11e9ea4679816e7428515e50cb5d3eef94b89a02eeb1e38062764c16d29535b4 |
-| mutate.py | .dev-flow/2026-10-18-batch-03/evidence/mutate.py | 22499429ec513dcc326b0d1bf5c9ca836076d6d110181cde1470ffa5ffe95908 |
+| mutate-001-002.py | .dev-flow/2026-10-18-batch-03/evidence/mutate-001-002.py | 22499429ec513dcc326b0d1bf5c9ca836076d6d110181cde1470ffa5ffe95908 |
 
 | Field | Value |
 |---|---|
@@ -111,6 +111,8 @@ The middle wording drops `move` and `leave` from the long one; the round showed 
 ## 6 · Pending items / spec deviations
 
 - The AT-1603 hardening is outside the three commissioned items — a test-only change for the commission's 0-failure target, declared here; `BACKLOG.md`'s flake line closes at the batch close.
+
+- The battery ran with the harness as it stood at increments 001–002, kept as `evidence/mutate-001-002.py` (digest above); `evidence/mutate.py` later gained increment 003's anchors.
 
 ## 7 · Suggested next task
 

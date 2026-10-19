@@ -65,13 +65,13 @@ On a projector the presentation's quiet marks now read: the header's view word (
 |---|---|---|
 | A | `tests/test_present_polish.py::test_TC_2001_the_quiet_marks_are_reached_and_the_rest_stays_dim`, `::test_TC_2001_a_one_row_cut_is_reached`, `::test_TC_2001_no_project_to_present_stays_dim`, `::test_TC_2001_reached_reads_on_a_projector_and_stays_below_the_text` (TC-2001) | in the full suite (`suite-001.txt`) |
 | B | `tests/test_present_polish.py::test_AT_2001_the_quiet_marks_read_in_the_running_app` (AT-2001) | in the full suite (`suite-001.txt`) |
-| full suite | `python -m pytest -q -p no:cacheprovider -rs --color=no` on the working tree with increment 001 | 1 failed, 2744 passed (`suite-001.txt`; 2740 + the 5 new nodes): the 1 is `tests/test_help_keys.py::test_AT_1603_the_help_shows_the_global_keys_without_scrolling[80x24]`, a HelpModal paint read after 3 pauses — the timing flake 2026-10-18-batch-02 carried; it fails 2 of 8 runs alone on `base_ref` and 1 of 5 on this tree (`flake-001.txt`); no file of this increment reaches the help modal; hardened in increment 002 (the commission's 0-failure target). After the suite, comment-only folds of code-review F1 (`views.py:64`) and F2 (a test comment): `tests/test_present_polish.py` re-run, 5 passed |
+| full suite | `python -m pytest -q -p no:cacheprovider -rs --color=no` on the working tree with increment 001 | 1 failed, 2744 passed (`suite-001.txt`; 2740 + the 5 new nodes): the 1 is `tests/test_help_keys.py::test_AT_1603_the_help_shows_the_global_keys_without_scrolling[80x24]`, a HelpModal paint read after 3 pauses — the timing flake 2026-10-18-batch-02 carried; it fails 2 of 8 runs alone on `base_ref` and 1 of 5 on this tree (`flake-001.txt`); no file of this increment reaches the help modal; hardened in increment 002 (the commission's 0-failure target). After the suite, comment-only folds of code-review F1 (`views.py:64`) and F2 (a test comment): `tests/test_present_polish.py` re-run, 5 passed (no transcript kept; the folded files are green in the later full run `suite-003.txt`, 0 failed — DDR C2) |
 
 | Field | Value |
 |---|---|
 | **RED counterfactual** | `tests/test_present_polish.py` copied into a scratch worktree at `base_ref` `620f58c`: 3 failed, 2 passed — the sweep (`↓ 9 more lines` `#5b6675` at 36×12 split), the one-row cut (`. … +4 lines` `#5b6675`) and AT-2001 (the view word `#5b6675`) RED; `test_TC_2001_no_project_to_present_stays_dim` and `test_TC_2001_reached_reads_on_a_projector_and_stays_below_the_text` pass on base — a regression pin (out-of-scope line stays `dim`) and the why (the colour arithmetic, true of the palette on both sides) · `.dev-flow/2026-10-18-batch-03/evidence/red-001.txt` · the RED ran on the scratch worktree; the battery's restore digests below |
 | **Mutation verdicts** | 6 mutants, 10 arms, every node pre-checked GREEN on the unmutated copy (PDR PC-2): 10 KILLED — M1 the view word `dim` → the sweep, AT-2001 · M2 the one-row tag `dim` → the one-row cut node · M3 the cut row `dim` → the sweep, AT-2001 · M4 `_present_mark` `dim` → the sweep, AT-2001 (after `pgdn`, PDR PC-1) · M5 the note lead `reached` → the sweep, AT-2001 · M6 `no notes` `reached` → the sweep; arms that stayed GREEN: none · `.dev-flow/2026-10-18-batch-03/evidence/mutation-001.txt` · each file restored to `c31cd96d022a…` (views.py) by digest after every arm |
-| **Instrument RED-proof** | 2 instruments: `evidence/mutate.py` — 10 arms RED on planted mutants (above), its pre-check refuses a node already red (PDR PC-2); `evidence/port_captures.py --compare` — reported `DIFFER` ×4 on the port's captures (`compare-001.txt`) before any `EQUAL` was believed, and `EQUAL` ×14 on the round's own re-run (`expected/compare-round.txt`) |
+| **Instrument RED-proof** | 2 instruments: `evidence/mutate.py` — 10 arms RED on planted mutants (above), its pre-check refuses a node already red (PDR PC-2) — shown on a tree red before any edit, `precheck-redproof.txt` (`NOT GREEN`, `the battery stops`, DDR C1); `evidence/port_captures.py --compare` — reported `DIFFER` ×4 on the port's captures (`compare-001.txt`) before any `EQUAL` was believed, and `EQUAL` ×14 on the round's own re-run (`expected/compare-round.txt`) |
 | **Emitted-form assertion** | 2 artifacts: the frame as `#present-frame` holds it (its `Text` spans, AT-2001) and the frame as the app exports it (`export_screenshot` SVG, `compare-001.txt`: the port's SVGs against the round's) |
 | **Reverse census** | 5 probes: B1 `grep -rl "render_present\|lines above\|more lines" tests/` → `test_markup_census.py`, `test_present.py`, `test_present_narrow.py`, `test_present_room.py`, `test_present_rulers.py`, `test_present_views.py`, `test_present_views_app.py`, `test_tick_label.py`, `test_row_cost.py` — none asserts the marks' tone (plain text or other tones); 101 passed across the presentation files before the full suite · B2 no file moved · B3 no goldens; the PRES-V3 frames are plain text, unchanged (TC-1001/1002 green) · B4 the `x` export writes the same frame: its SVG carries `#7a828c` for the marks (`compare-001.txt`) · A3 `_present_cut`, `_present_mark` have no caller outside `views` but the frozen round (`grep -rn "_present_cut\|_present_mark" --include=*.py . ` → `taskboard/views.py`, `prototypes/backlog_polish/capture.py`) — 0 foreign hits re-validated |
 | **Correction population** | none — no correction |
@@ -87,12 +87,13 @@ On a projector the presentation's quiet marks now read: the header's view word (
 | red-001.txt | .dev-flow/2026-10-18-batch-03/evidence/red-001.txt | a71274e7d08b1501d7819079a6b5b4dd69b54eb09b44007a4e4a21a7a2617bef |
 | mutation-001.txt | .dev-flow/2026-10-18-batch-03/evidence/mutation-001.txt | 6c56e27df79a20499b739db141c870eeffddac2a037585538833b65950693df0 |
 | compare-001.txt | .dev-flow/2026-10-18-batch-03/evidence/compare-001.txt | c4e00cc7896ce3a11b2b7747ddf608d791ab2585121a0548a7076586658dbcf2 |
-| mutate.py | .dev-flow/2026-10-18-batch-03/evidence/mutate.py | 22499429ec513dcc326b0d1bf5c9ca836076d6d110181cde1470ffa5ffe95908 |
+| mutate-001-002.py | .dev-flow/2026-10-18-batch-03/evidence/mutate-001-002.py | 22499429ec513dcc326b0d1bf5c9ca836076d6d110181cde1470ffa5ffe95908 |
 | port_captures.py | .dev-flow/2026-10-18-batch-03/evidence/port_captures.py | 73f49fbfe1c68d58be0d0a54131861d05fd0dd1678e158f25a569fa7179bf463 |
+| precheck-redproof.txt | .dev-flow/2026-10-18-batch-03/evidence/precheck-redproof.txt | b0a0eec3c371e7c973d3617040a7b1c866a3ecd38d252be6fb9362e0d28ee525 |
 
 | Field | Value |
 |---|---|
-| **Evidence files** | `7 artifact(s), each at the declared home, with the digest of its bytes on disk` |
+| **Evidence files** | `8 artifact(s), each at the declared home, with the digest of its bytes on disk` |
 
 ## 4b · Independent review
 
@@ -107,6 +108,8 @@ The tone is the operator's approved A; on a real projector it was not measured (
 ## 6 · Pending items / spec deviations
 
 - Deviation (declared): the gantt cut row's `· ` lead stays `dim`, where the round's capture painted it `reached` by a span-merge artefact of its fork (`compare-001.txt`). One glyph per frame; the operator may ask for it.
+
+- The battery ran with the harness as it stood at increments 001–002, kept as `evidence/mutate-001-002.py` (digest above); `evidence/mutate.py` later gained increment 003's anchors.
 
 ## 7 · Suggested next task
 

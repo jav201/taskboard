@@ -1,0 +1,5 @@
+# instrument RED-proof of mutate.py's pre-check (DDR condition C1): the scratch copy of the increment-003 tree with taskboard/views.py replaced by base_ref 620f58c's (the 3-row cap), so the 003 nodes are red before any edit; the harness must refuse to run its arms (2026-10-19T00:55:53Z)
+$ python mutate.py 003
+pre-check tests/test_present_polish.py::test_AT_2003_the_gantt_note_runs_to_the_bottom_of_the_frame: NOT GREEN (exit 1)
+the battery stops: a node is not green on the unmutated tree
+exit=1
