@@ -280,7 +280,8 @@ class PresentScreen(ModalScreen[None]):
     def _hint(self, w: int) -> Text:
         """The keys, under the frame: the view switch (the current view bright),
         then the moves, then the hidden count — never painted in the frame. The
-        first wording that fits the hint's `w - 2` cells, longest first; below
+        first wording that fits the hint's `w - 2` cells, longest first (the middle
+        one keeps `next` and `show all`, batch 2026-10-18-batch-03); below
         `PRESENT_MIN_WIDTH` only `esc leave` and the count; whatever is left
         over is cut with a visible `…`."""
         room = w - 2
@@ -296,6 +297,8 @@ class PresentScreen(ModalScreen[None]):
         wordings = (
             ("  ", ("pgdn notes · " if split else "")
              + "⇥ next · ←→ ↑↓ move · ␣ hide · a show all · x export · esc leave"),
+            ("  ", ("pgdn · " if split else "")
+             + "⇥ next · ←→ ↑↓ · ␣ hide · a show all · x export · esc"),
             (" ", ("pgdn · " if split else "") + "⇥ · ←→ · ␣ hide · a all · x export · esc"),
             (" ", ("pgdn " if split else "") + "⇥ ←→ ␣ x esc"),
             (" ", "esc"),

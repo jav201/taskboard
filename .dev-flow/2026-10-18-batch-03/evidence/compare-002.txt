@@ -1,0 +1,30 @@
+$ python port_captures.py --root <checkout> --mode port --out <scratch>/port-2   (the present-polish checkout with increments 001 and 002; 2026-10-19T00:24:59Z)
+gantt-118x31.svg 273d3842dc3b3159cdb14e704382eae1fe1dbc5c7fb40610ec52cc991c88fe1f
+gantt-80x25.svg 274bf6329a53ea3332cdc5b639a598bae1167914ae052c1113dcde806ff6c043
+split-118x31.svg 29441dc8eb30f5af3a65a3841124ff735db20545b58a7fb05864cea9aa87dd4a
+split-80x25.svg d945b97019c15e9cd6e208ee52de36ea1c900f440fff749ca46f260c3483c6ef
+gantt-hidden-118x31.svg 29081f0e0eb192027d1566bd1c677d9462d34bc7f5f5a3c97ef8191e1f1e9343
+gantt-hidden-80x25.svg efa3e90ffa2bfa364ce9ee0343c8fc957ca6eccf9c8e1432103ff4da60150aa6
+gantt-long-118x31.svg 568a743a395bf268abfe6bd2de5cab77c37d845953f9554d9298847e3b8ec6bb
+gantt-long-80x25.svg 6499d979e1d6a52c2ccb4213bcae3768813afeafb8866af93cf3f4c5201d43c9
+split-long-118x31.svg a8d20069eff37960eb4b4997ccb7445fcf675eed6900879ab3bf78f4118a28d2
+split-long-80x25.svg 93a1eb0c45dec4f41f433ec631a0d89571bac40763620df121de6a301c293189
+$ python port_captures.py --compare <scratch>/upto-2 <scratch>/port-2   (upto-2: the round's contrast and hint A forks composed on 620f58c, evidence/expected/upto-2.txt)
+DIFFER gantt-118x31.svg
+DIFFER gantt-80x25.svg
+EQUAL  gantt-hidden-118x31.svg
+EQUAL  gantt-hidden-80x25.svg
+DIFFER gantt-long-118x31.svg
+DIFFER gantt-long-80x25.svg
+EQUAL  split-118x31.svg
+EQUAL  split-80x25.svg
+EQUAL  split-long-118x31.svg
+EQUAL  split-long-80x25.svg
+4 differ or missing
+exit=1
+$ python explain_diff.py <scratch>/upto-2 <scratch>/port-2   (- the round, + the port; r4 = #7a828c, r2 = #5b6675 in these SVGs' styles)
+gantt-118x31.svg · -terminal-N-r4 '· … +2 lines' | +terminal-N-r2 '· ' | +terminal-N-r4 '… +2 lines' 
+gantt-80x25.svg · -terminal-N-r4 '· … +3 lines' | +terminal-N-r2 '· ' | +terminal-N-r4 '… +3 lines' 
+gantt-long-118x31.svg · -terminal-N-r4 '· … +9 lines' | +terminal-N-r2 '· ' | +terminal-N-r4 '… +9 lines' 
+gantt-long-80x25.svg · -terminal-N-r4 '· … +11 lines' | +terminal-N-r2 '· ' | +terminal-N-r4 '… +11 lines' 
+# every DIFFER is the cut row's lead, the deviation declared in compare-001.txt; nothing else differs

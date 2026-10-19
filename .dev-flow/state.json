@@ -273,6 +273,11 @@
       "station": "PDR",
       "date": "2026-10-18",
       "decision": "standing authorization — PDR sealed approved with conditions under the 2026-10-18 commission (one agent, three lenses: architect approved, qa-reviewer with PC-1..PC-4 after running the drafted battery on a throwaway copy, ux-reviewer approved); PC-1, PC-3, PC-4 applied at the seal (LED .4), PC-2's harness pre-check applied and its TC-1904 tier owed at increment 002; P3 is next"
+    },
+    {
+      "station": "P3",
+      "date": "2026-10-18",
+      "decision": "standing authorization — P3 increment 001 approved under the 2026-10-18 commission: the quiet marks in reached in views.py (e72a316); RED on base 3 of 5 nodes (2 declared pins), 10/10 mutants killed, 2744 passed + 1 pre-existing HelpModal flake (flake-001.txt: 2/8 on base); round comparison 6 EQUAL, 4 DIFFER = the declared lead deviation; code-reviewer OK to advance, 0 HIGH (F1, F2 folded); increment 002 is next"
     }
   ],
   "obsidian_synced": false,

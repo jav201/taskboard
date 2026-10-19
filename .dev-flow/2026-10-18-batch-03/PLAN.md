@@ -52,7 +52,7 @@ The trigger evaluation `state.json`'s `triggers.record` points at: one row per t
 
 ## Where we are
 
-P3 — increment 001 done (the quiet marks in reached: 1 source file; RED on base; 10/10 mutants KILLED; 1 failed (the pre-existing HelpModal flake), 2744 passed; code-reviewer OK, 0 HIGH); increment 002 (the middle hint wording) is next.
+P3 — increments 001 and 002 done (002: the middle hint wording, 1 source file; RED on base; 8/8 mutants KILLED; 2754 passed, 0 failed; the AT-1603 flake hardened; code-reviewer OK, F1 folded); increment 003 (the gantt note fills the free rows) is next.
 
 ## Objective
 
@@ -63,14 +63,14 @@ Ship variant A of the three polish items the operator approved — the quiet mar
 | Story / station | Status | Notes |
 |---|---|---|
 | US-2001 | DONE | increment 001 · AT-2001 passes |
-| US-2002 | READY | increment 002 · HLR-2002 / LLR-2002.1 |
+| US-2002 | DONE | increment 002 · AT-2002 passes |
 | US-2003 | READY | increment 003 · HLR-2003 / LLR-2003.1 |
 | P0 | done | triggers evaluated; refinement done |
 | ARQ | approved | `docs/ARCHITECTURE.md` amended (one iterate: A-1..A-4 folded) |
 | P1 | approved after one iterate-to-refine | LED .2, LED .3 folded |
 | P2 | approved | iteration 1 iterate-to-refine (6 majors → LED .2, .3), iteration 2 approve (1 minor owed by increment 003) |
 | PDR | approved with conditions | PC-1, PC-3, PC-4 at the seal; PC-2 harness at the seal, its TC-1904 tier at increment 002 |
-| P3 | in progress | increment 001 done; 002 next |
+| P3 | in progress | increments 001, 002 done; 003 next |
 
 ## Roadmap + increment plan
 

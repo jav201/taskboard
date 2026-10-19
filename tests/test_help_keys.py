@@ -161,9 +161,11 @@ async def test_AT_1603_the_help_shows_the_global_keys_without_scrolling(tmp_path
         assert "R Present" in rows and "S Standup" in rows, rows
 
         await pilot.press("end")
-        for _ in range(3):
+        for _ in range(50):        # the scroll paints when it paints: wait for it, bounded
             await pilot.pause()
-        rows = "\n".join(_painted(app))
+            rows = "\n".join(_painted(app))
+            if all(pair in rows for pair in GANTT_PAIRS):
+                break
         for pair in GANTT_PAIRS:
             assert pair in rows, (pair, rows)
         assert "R Present" in rows and "S Standup" in rows, rows

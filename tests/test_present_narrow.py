@@ -87,22 +87,27 @@ def test_TC_1903_every_width_renders_a_whole_frame(tmp_path):
 NAMES2, NAMES1 = "1 gantt  2 split  ", "1 gantt 2 split "
 WORDINGS = {
     "gantt": {"long": NAMES2 + "⇥ next · ←→ ↑↓ move · ␣ hide · a show all · x export · esc leave",
+              "middle": NAMES2 + "⇥ next · ←→ ↑↓ · ␣ hide · a show all · x export · esc",
               "short": NAMES1 + "⇥ · ←→ · ␣ hide · a all · x export · esc",
               "compact": NAMES1 + "⇥ ←→ ␣ x esc",
               "esc": NAMES1 + "esc"},
     "split": {"long": NAMES2 + "pgdn notes · ⇥ next · ←→ ↑↓ move · ␣ hide · a show all · x export · esc leave",
+              "middle": NAMES2 + "pgdn · ⇥ next · ←→ ↑↓ · ␣ hide · a show all · x export · esc",
               "short": NAMES1 + "pgdn · ⇥ · ←→ · ␣ hide · a all · x export · esc",
               "compact": NAMES1 + "pgdn ⇥ ←→ ␣ x esc",
               "esc": NAMES1 + "esc"},
 }
-# the first width each wording is painted at (P-7, measured on the probe)
+# the first width each wording is painted at (P-7, measured on the probe; the middle
+# tier is 2026-10-18-batch-03's P-3, measured on its design)
 THRESHOLDS = {
-    ("gantt", 0): {"compact": 36, "short": 58, "long": 84},
-    ("gantt", 3): {"esc": 36, "compact": 41, "short": 69, "long": 95},
-    ("gantt", 10): {"esc": 36, "compact": 42, "short": 70, "long": 96},
-    ("split", 0): {"compact": 36, "short": 65, "long": 97},
-    ("split", 3): {"esc": 36, "compact": 46, "short": 76, "long": 108},
-    ("split", 10): {"esc": 36, "compact": 47, "short": 77, "long": 109},
+    ("gantt", 0): {"compact": 36, "short": 58, "middle": 73, "long": 84},
+    ("gantt", 1): {"esc": 36, "compact": 41, "short": 69, "middle": 84, "long": 95},
+    ("gantt", 3): {"esc": 36, "compact": 41, "short": 69, "middle": 84, "long": 95},
+    ("gantt", 10): {"esc": 36, "compact": 42, "short": 70, "middle": 85, "long": 96},
+    ("split", 0): {"compact": 36, "short": 65, "middle": 80, "long": 97},
+    ("split", 1): {"esc": 36, "compact": 46, "short": 76, "middle": 91, "long": 108},
+    ("split", 3): {"esc": 36, "compact": 46, "short": 76, "middle": 91, "long": 108},
+    ("split", 10): {"esc": 36, "compact": 47, "short": 77, "middle": 92, "long": 109},
 }
 
 
@@ -132,14 +137,14 @@ def _expected(view: str, hidden: int, w: int) -> str:
 
 
 def test_TC_1904_the_hint_takes_the_first_wording_that_fits(tmp_path):
-    """TC-1904 (LLR-1904.1): over widths 1–140, both views, 0 / 3 / 10 hidden,
+    """TC-1904 (LLR-1904.1): over widths 1–140, both views, 0 / 1 / 3 / 10 hidden,
     the hint is the wording of the literal threshold table — never wider than
     its `w - 2` cells, never longer as the width shrinks — and below 36 only
     the way out and the hidden count, cut with `…`."""
     scr, mine = _screen(tmp_path)
     for vi, view in enumerate(views.PRESENT_VIEWS):
         scr._view = vi
-        for hidden in (0, 3, 10):
+        for hidden in (0, 1, 3, 10):
             for t in mine:
                 t.show_in_present = True
             for t in mine[:hidden]:

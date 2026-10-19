@@ -1,0 +1,41 @@
+# AT-1603 hardened (increment 002): after `end`, a bounded wait (≤ 50 pauses) for the gantt pairs to paint, then the same assertions. The file, 20 runs on the present-polish tree with increment 002 (2026-10-19T00:10:39Z); before: 2 of 8 failed on base_ref (flake-001.txt)
+$ python -m pytest -q -p no:cacheprovider tests/test_help_keys.py   (run 1)
+9 passed in 8.91s
+$ python -m pytest -q -p no:cacheprovider tests/test_help_keys.py   (run 2)
+9 passed in 8.96s
+$ python -m pytest -q -p no:cacheprovider tests/test_help_keys.py   (run 3)
+9 passed in 8.76s
+$ python -m pytest -q -p no:cacheprovider tests/test_help_keys.py   (run 4)
+9 passed in 8.71s
+$ python -m pytest -q -p no:cacheprovider tests/test_help_keys.py   (run 5)
+9 passed in 8.86s
+$ python -m pytest -q -p no:cacheprovider tests/test_help_keys.py   (run 6)
+9 passed in 8.76s
+$ python -m pytest -q -p no:cacheprovider tests/test_help_keys.py   (run 7)
+9 passed in 8.91s
+$ python -m pytest -q -p no:cacheprovider tests/test_help_keys.py   (run 8)
+9 passed in 8.95s
+$ python -m pytest -q -p no:cacheprovider tests/test_help_keys.py   (run 9)
+9 passed in 8.76s
+$ python -m pytest -q -p no:cacheprovider tests/test_help_keys.py   (run 10)
+9 passed in 8.50s
+$ python -m pytest -q -p no:cacheprovider tests/test_help_keys.py   (run 11)
+9 passed in 8.87s
+$ python -m pytest -q -p no:cacheprovider tests/test_help_keys.py   (run 12)
+9 passed in 8.70s
+$ python -m pytest -q -p no:cacheprovider tests/test_help_keys.py   (run 13)
+9 passed in 8.73s
+$ python -m pytest -q -p no:cacheprovider tests/test_help_keys.py   (run 14)
+9 passed in 8.80s
+$ python -m pytest -q -p no:cacheprovider tests/test_help_keys.py   (run 15)
+9 passed in 9.17s
+$ python -m pytest -q -p no:cacheprovider tests/test_help_keys.py   (run 16)
+9 passed in 9.00s
+$ python -m pytest -q -p no:cacheprovider tests/test_help_keys.py   (run 17)
+9 passed in 8.38s
+$ python -m pytest -q -p no:cacheprovider tests/test_help_keys.py   (run 18)
+9 passed in 8.84s
+$ python -m pytest -q -p no:cacheprovider tests/test_help_keys.py   (run 19)
+9 passed in 8.58s
+$ python -m pytest -q -p no:cacheprovider tests/test_help_keys.py   (run 20)
+9 passed in 8.44s

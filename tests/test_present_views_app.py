@@ -258,18 +258,19 @@ async def test_AT_1803_the_view_keys_and_what_the_views_share(tmp_path, monkeypa
 # --------------------------------------------------------------------------- #
 LONG = "⇥ next · ←→ ↑↓ move · ␣ hide · a show all · x export · esc leave"
 SHORT = "⇥ · ←→ · ␣ hide · a all · x export · esc"
+MIDDLE = "⇥ next · ←→ ↑↓ · ␣ hide · a show all · x export · esc"   # 2026-10-18-batch-03
 
 
 @pytest.mark.parametrize("size, gantt, split, split_hidden", [
     ((118, 31), "1 gantt  2 split  " + LONG, "1 gantt  2 split  pgdn notes · " + LONG,
      "1 gantt  2 split  pgdn notes · " + LONG + " · 1 hidden"),
     ((100, 31), "1 gantt  2 split  " + LONG, "1 gantt  2 split  pgdn notes · " + LONG,
-     "1 gantt 2 split pgdn · " + SHORT + " · 1 hidden"),
+     "1 gantt  2 split  pgdn · " + MIDDLE + " · 1 hidden"),
     ((99, 31), "1 gantt  2 split  " + LONG, "1 gantt  2 split  pgdn notes · " + LONG,
-     "1 gantt 2 split pgdn · " + SHORT + " · 1 hidden"),
-    ((96, 31), "1 gantt  2 split  " + LONG, "1 gantt 2 split pgdn · " + SHORT,
-     "1 gantt 2 split pgdn · " + SHORT + " · 1 hidden"),
-    ((80, 25), "1 gantt 2 split " + SHORT, "1 gantt 2 split pgdn · " + SHORT,
+     "1 gantt  2 split  pgdn · " + MIDDLE + " · 1 hidden"),
+    ((96, 31), "1 gantt  2 split  " + LONG, "1 gantt  2 split  pgdn · " + MIDDLE,
+     "1 gantt  2 split  pgdn · " + MIDDLE + " · 1 hidden"),
+    ((80, 25), "1 gantt  2 split  " + MIDDLE, "1 gantt  2 split  pgdn · " + MIDDLE,
      "1 gantt 2 split pgdn · " + SHORT + " · 1 hidden"),
 ], ids=["118", "100", "99", "96", "80"])
 async def test_TC_1808_the_hint_row_per_view(tmp_path, monkeypatch, frozen, size, gantt, split,
@@ -277,8 +278,10 @@ async def test_TC_1808_the_hint_row_per_view(tmp_path, monkeypatch, frozen, size
     """TC-1808 (LLR-1803.2): the hint names both views, the current one bright
     and bold, then `pgdn` in the split view only, then the moves and the
     hidden count — in the long wording when it fits the hint's cells, else the
-    short one, so the hint is never cut (code-review: at 100 columns the long
-    split hint with a count is 107 cells in a 98-cell row)."""
+    middle one (batch 2026-10-18-batch-03: it keeps `next` and `show all`, the
+    keys a first-time presenter does not guess), else the short one, so the hint
+    is never cut (code-review: at 100 columns the long split hint with a count is
+    107 cells in a 98-cell row)."""
     s = _Presenting(tmp_path, monkeypatch, size)
     async with s.app.run_test(size=s.size) as pilot:
         await s.open(pilot)

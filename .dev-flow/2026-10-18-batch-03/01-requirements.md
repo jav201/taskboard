@@ -186,11 +186,11 @@ The fixtures `tests/present_board.py` and `tests/present_notes_board.py` stay as
 
 ### LLR-2002.1 — The middle wording in `_hint`
 - **Traceability:** HLR-2002
-- **Ledger:** LED-2026-10-18-batch-03.1, LED-2026-10-18-batch-03.3
+- **Ledger:** LED-2026-10-18-batch-03.1, LED-2026-10-18-batch-03.3, LED-2026-10-18-batch-03.5
 - **Statement:** `PresentScreen._hint(w)` shall hold, between the long and the short wording, the wording `("  ", ("pgdn · " if split else "") + "⇥ next · ←→ ↑↓ · ␣ hide · a show all · x export · esc")` — the round's `HINT_A`, verbatim — and keep LLR-1904.1's choice, cut and styles.
 - **Validation:** `test (unit)`
 - **Executed verification:** `python -m pytest -q -p no:cacheprovider tests/test_present_narrow.py -k TC_1904`; `python -m pytest -q -p no:cacheprovider tests/test_present_polish.py -k TC_2002`
-- **Numeric pass threshold:** TC-2002 passes over widths 1–140 × both views × 0, 1, 3 and 10 hidden: the wording at each width is the one of P-3's literal table and of TC-1904's table (each first width and one below asserted with the literal strings); the hint is at most `max(0, w - 2)` cells.
+- **Numeric pass threshold:** TC-1904 (updated) passes over widths 1–140 × both views × 0, 1, 3 and 10 hidden: the wording at each width is the one of its literal table, which gains P-3's middle tier (gantt 73 / 84 / 84 / 85, split 80 / 91 / 91 / 92); the hint is at most `max(0, w - 2)` cells. TC-2002 passes for both views × 0 / 1 / 3 / 10 hidden: the middle wording at its first width and one column below the long one's, the short one a column narrower, the long one at its first width, each with the literal strings.
 - **Negative control:** TC-2002 goes RED when the middle wording is removed, when it is tried before the long one, and when its gap is one space (mutations at increment 002 — planned).
 - **Boundary catalog:** ☑ boundary (each middle first width and one below; 80 exactly in the split view) ☐ empty — none ☐ invalid — none ☐ error — none
 

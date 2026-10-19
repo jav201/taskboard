@@ -36,3 +36,10 @@ above this line is ever edited._
 - **What changed:** AT-2001: in the split view at 80×25 "every span over a cut or edge mark … at least one such mark" → `pgdn` pages the cursor's note first and at least one `↑`/`↓` edge mark is required, so the `_present_mark` tone is observed through the app (PDR PC-1: the first page shows no edge mark, so a `dim` `_present_mark` survived AT-2001); the `gantt` and `split` view words also asserted not `#5b6675`.
 - **Why:** the PDR of 2026-10-18 (qa lens, executed: M4 survived AT-2001 on a throwaway copy of the design).
 - **Evidence:** the PDR record `design/PDR-2026-10-18-batch-03.md` (PC-1).
+
+### LED-2026-10-18-batch-03.5 — the threshold of LLR-2002.1 as it is run (P3, increment 002)
+- **Requirement:** LLR-2002.1
+- **Date:** 2026-10-18
+- **What changed:** Before → After. "TC-2002 passes over widths 1–140 × both views × 0, 1, 3 and 10 hidden" → the 1–140 sweep is TC-1904's (updated: the middle tier of P-3, and 1 hidden added to its 0 / 3 / 10, its table rows for 1 hidden equal to the 3-hidden ones as P-3 measured); TC-2002 checks each middle first width, one below the long one's, the short a column narrower and the long one at its first width.
+- **Why:** increment 002's code review, F1 (MEDIUM): the LLR claimed a sweep no node ran at 1 hidden.
+- **Evidence:** `tests/test_present_narrow.py::test_TC_1904_the_hint_takes_the_first_wording_that_fits` → passed with `(0, 1, 3, 10)`; packet 002 §4b.

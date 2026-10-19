@@ -1,0 +1,26 @@
+# mutation battery, increment 002 — run by the orchestrator in a scratch copy of the increment tree (scratchpad/mut: taskboard/, tests/, pyproject.toml and the oracle frame folders copied from the present-polish working tree with increment 002); harness .dev-flow/2026-10-18-batch-03/evidence/mutate.py (2026-10-19T00:10:01Z)
+$ python mutate.py 002
+pre-check tests/test_present_narrow.py::test_TC_1904_the_hint_takes_the_first_wording_that_fits: GREEN
+pre-check tests/test_present_polish.py::test_AT_2002_the_80_column_hint_names_next_and_show_all: GREEN
+pre-check tests/test_present_polish.py::test_TC_2002_the_middle_wording_sits_between_the_long_and_the_short[gantt-0]: GREEN
+pre-check tests/test_present_polish.py::test_TC_2002_the_middle_wording_sits_between_the_long_and_the_short[gantt-10]: GREEN
+pre-check tests/test_present_polish.py::test_TC_2002_the_middle_wording_sits_between_the_long_and_the_short[split-3]: GREEN
+arms: 8
+N1 no middle wording · taskboard/app.py: '            ("  ", ("pgdn · " if split else "")\n             + "⇥ next · ←→ ↑↓ · ␣ hide · a show all · x export · esc"),\n' -> ''
+    tests/test_present_polish.py::test_TC_2002_the_middle_wording_sits_between_the_long_and_the_short[gantt-0]: RED (KILLED) · 1 failed in 0.55s · restored 603cff7e17cd
+N1 no middle wording · taskboard/app.py: '            ("  ", ("pgdn · " if split else "")\n             + "⇥ next · ←→ ↑↓ · ␣ hide · a show all · x export · esc"),\n' -> ''
+    tests/test_present_narrow.py::test_TC_1904_the_hint_takes_the_first_wording_that_fits: RED (KILLED) · 1 failed in 0.56s · restored 603cff7e17cd
+N1 no middle wording · taskboard/app.py: '            ("  ", ("pgdn · " if split else "")\n             + "⇥ next · ←→ ↑↓ · ␣ hide · a show all · x export · esc"),\n' -> ''
+    tests/test_present_polish.py::test_AT_2002_the_80_column_hint_names_next_and_show_all: RED (KILLED) · 1 failed in 2.55s · restored 603cff7e17cd
+N2 the middle wording tried first · taskboard/app.py: '        wordings = (\n            ("  ", ("pgdn notes · " if split else "")' -> '        wordings = (\n            ("  ", ("pgdn · " if split else "")\n             + "⇥ next · ←→ ↑↓ · ␣ hide · a show all · x export · esc"),\n            ("  ", ("pgdn notes · " if split else "")'
+    tests/test_present_polish.py::test_TC_2002_the_middle_wording_sits_between_the_long_and_the_short[split-3]: RED (KILLED) · 1 failed in 0.58s · restored 603cff7e17cd
+N2 the middle wording tried first · taskboard/app.py: '        wordings = (\n            ("  ", ("pgdn notes · " if split else "")' -> '        wordings = (\n            ("  ", ("pgdn · " if split else "")\n             + "⇥ next · ←→ ↑↓ · ␣ hide · a show all · x export · esc"),\n            ("  ", ("pgdn notes · " if split else "")'
+    tests/test_present_narrow.py::test_TC_1904_the_hint_takes_the_first_wording_that_fits: RED (KILLED) · 1 failed in 0.56s · restored 603cff7e17cd
+N3 the middle gap one space · taskboard/app.py: '            ("  ", ("pgdn · " if split else "")\n             + "⇥ next' -> '            (" ", ("pgdn · " if split else "")\n             + "⇥ next'
+    tests/test_present_polish.py::test_TC_2002_the_middle_wording_sits_between_the_long_and_the_short[gantt-10]: RED (KILLED) · 1 failed in 0.62s · restored 603cff7e17cd
+N3 the middle gap one space · taskboard/app.py: '            ("  ", ("pgdn · " if split else "")\n             + "⇥ next' -> '            (" ", ("pgdn · " if split else "")\n             + "⇥ next'
+    tests/test_present_polish.py::test_AT_2002_the_80_column_hint_names_next_and_show_all: RED (KILLED) · 1 failed in 2.55s · restored 603cff7e17cd
+N4 the middle keys drop show all · taskboard/app.py: '"⇥ next · ←→ ↑↓ · ␣ hide · a show all · x export · esc"),' -> '"⇥ next · ←→ ↑↓ · ␣ hide · a all · x export · esc"),'
+    tests/test_present_polish.py::test_AT_2002_the_80_column_hint_names_next_and_show_all: RED (KILLED) · 1 failed in 2.41s · restored 603cff7e17cd
+killed 8 / 8 arms; bad 0
+exit=0
