@@ -16,6 +16,11 @@ shipped presentation to what that round showed, for the reason each item exists:
    guess. A middle wording, the long one's vocabulary and order without its
    longest words, now sits between the long and the short one. Its widths are
    the ones measured on the design before it was built (P-3).
+3. The gantt view kept the cursor's note to 3 rows with 6 (80x25) to 12
+   (118x31) rows empty below it; the presenter had to switch views to talk from
+   the note. The note now takes every free row (3 at least) and still declares
+   its cut. The frames it is held to are the round's own variant-A output on the
+   base tree (`evidence/frames/gen_frames.py`), not this batch's renderer.
 """
 from __future__ import annotations
 
@@ -229,3 +234,110 @@ async def test_AT_2002_the_80_column_hint_names_next_and_show_all(tmp_path, monk
     async with s.app.run_test(size=s.size) as pilot:
         await s.open(pilot)
         assert s.hint() == "1 gantt  2 split  " + LONG
+
+
+# --------------------------------------------------------------------------- #
+# TC-2003 — the gantt note fills the free rows (LLR-2003.1)
+# --------------------------------------------------------------------------- #
+FRAMES = Path(__file__).resolve().parents[1] / ".dev-flow" / "2026-10-18-batch-03" / "evidence" / "frames"
+
+
+def _v4(name: str) -> list[str]:
+    """A PRES-V4 frame: the round's own `cap_fork("fill")` output on base_ref
+    (`evidence/frames/gen_frames.py`), not this batch's renderer."""
+    return (FRAMES / name).read_text(encoding="utf-8").splitlines()
+
+
+@pytest.mark.parametrize("w, h", [(118, 30), (80, 24)])
+def test_TC_2003_the_long_note_equals_the_rounds_frame(tmp_path, w, h):
+    """TC-2003 (LLR-2003.1): the long note under the cursor, at both operator
+    sizes, equals the round's variant-A frame row for row."""
+    b = nb.build(tmp_path / "board.json")
+    rows = views.render_present(b, pb.PROJECT_ID, nb.LONG, pb.TODAY, w, h, "gantt").plain.split("\n")
+    assert rows == _v4(f"PRES-V4-gantt-notes-{w}x{h}.txt")
+
+
+def test_TC_2003_the_note_takes_every_free_row_and_declares_its_cut(tmp_path):
+    """TC-2003 (LLR-2003.1): over both boards, every open task as cursor, six
+    widths and seven heights, plus one free row (`L + 1`) and, for a note of 4+
+    rows, the room equal to the note and one row short: the frame is `height`
+    rows; where the frame holds the 3-row floor the note shows
+    `min(n, max(3, height - L))` rows (`L` the rows that are not the note) and
+    nothing overflows — a cut note leaves no blank row and ends on
+    `· … +N lines` counting what it hides; where it does not, the shipped
+    `+N more rows not shown` closes the frame. The expectation is counted from
+    the fixture's notes and the frame's own other rows, never from the
+    renderer's cap."""
+    seen = set()
+    for name, build in (("present", pb.build), ("notes", nb.build)):
+        board = build(tmp_path / f"{name}.json")
+        open_t = views.present_tasks(board, pb.PROJECT_ID)[0]
+        L = 1 + 2 + 1 + len(open_t) + 1 + len(open_t)      # header, ruler, span, tasks, rule, briefs
+        for t in open_t:
+            for w in (36, 50, 80, 100, 118, 140):
+                n = len(views.present_note_lines(t.notes, w - 6))
+                exact = {L + n, L + n - 1} if n > 3 else set()   # the room equal to the note, one short
+                for h in sorted({5, 12, 20, 24, 30, 40, 60, L + 1} | exact):    # L + 1: one free row
+                    rows = views.render_present(board, pb.PROJECT_ID, t.id, pb.TODAY, w, h,
+                                                "gantt").plain.split("\n")
+                    assert len(rows) == h, (name, t.id, w, h)
+                    if h < L + min(n, 3):                            # the floor overflows, as shipped
+                        assert re.search(r"\+\d+ more rows not shown", rows[-1]), rows[-1]
+                        seen.add("overflow")
+                        continue
+                    want = min(n, max(3, h - L))
+                    note = [r for r in rows if r.startswith("  · ")]
+                    assert len(note) == want, (name, t.id, w, h, len(note), want)
+                    assert not any("more rows not shown" in r for r in rows), (name, t.id, w, h)
+                    if want < n:
+                        assert note[-1].rstrip() == f"  · … +{n - want + 1} lines", note[-1]
+                        assert all(r.strip() for r in rows), (name, t.id, w, h)
+                        seen.add("cut")
+                    if h == L + n:
+                        assert note[-1].rstrip() != "" and "… +" not in note[-1], note
+                        assert all(r.strip() for r in rows), (name, t.id, w, h)
+                        seen.add("exact")
+                    if h == L + n - 1:
+                        assert note[-1].rstrip() == "  · … +2 lines", note
+                        seen.add("one short")
+    assert seen == {"overflow", "cut", "exact", "one short"}, seen
+
+
+def test_TC_2003_no_cursor_note_without_a_cursor_or_notes(tmp_path):
+    """TC-2003 (LLR-2003.1, empty): a cursor task with no notes, and a project
+    with no shown open task (so no cursor), paint no note row however many rows
+    are free."""
+    b = nb.build(tmp_path / "board.json")
+    bare = next(t for t in views.present_tasks(b, pb.PROJECT_ID)[0] if not t.notes.strip())
+    rows = views.render_present(b, pb.PROJECT_ID, bare.id, pb.TODAY, 118, 60, "gantt").plain.split("\n")
+    assert not [r for r in rows if r.startswith("  · ")], rows
+    for t in b.tasks:
+        if t.project_id == pb.PROJECT_ID:
+            t.show_in_present = False
+    rows = views.render_present(b, pb.PROJECT_ID, nb.LONG, pb.TODAY, 118, 60, "gantt").plain.split("\n")
+    assert not [r for r in rows if r.startswith("  · ")], rows
+    assert "◆ PRESENT" in rows[0] and not views.present_tasks(b, pb.PROJECT_ID)[0], rows[0]
+
+
+# --------------------------------------------------------------------------- #
+# AT-2003 — the presenter talks from the whole note (HLR-2003)
+# --------------------------------------------------------------------------- #
+async def test_AT_2003_the_gantt_note_runs_to_the_bottom_of_the_frame(tmp_path, monkeypatch, frozen):
+    """AT-2003 (HLR-2003): the app at 80x25, `R`, `→ →` (the long note under the
+    cursor): the frame is the round's variant-A frame — the note runs on to the
+    last free row and ends on `… +5 lines`, the next brief closes the frame, no
+    row is blank; at 118x31 the same note shows whole, no cut mark."""
+    for size, name in (((80, 25), "PRES-V4-gantt-notes-80x24.txt"),
+                       ((118, 31), "PRES-V4-gantt-notes-118x30.txt")):
+        (tmp_path / f"{size[0]}").mkdir()
+        s = _Presenting(tmp_path / f"{size[0]}", monkeypatch, size)
+        async with s.app.run_test(size=s.size) as pilot:
+            await s.open(pilot)
+            await s.press(pilot, "right", "right")
+            rows = s.rows()
+            assert rows == _v4(name), size
+            if size[0] == 80:
+                assert all(r.strip() for r in rows), rows
+                assert rows[-2].rstrip() == "  · … +5 lines" and "SEO redirects map" in rows[-1]
+            else:
+                assert "… +" not in "\n".join(rows)

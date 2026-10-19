@@ -28,6 +28,7 @@ from taskboard.models import Board
 
 ROOT = Path(__file__).resolve().parents[1]
 FRAMES = ROOT / ".dev-flow" / "2026-10-18-batch-01" / "evidence" / "frames"
+FRAMES_V4 = ROOT / ".dev-flow" / "2026-10-18-batch-03" / "evidence" / "frames"   # gantt notes since then
 KEY_WORDS = ("pgdn", "⇥", "1 gantt", "2 split", "esc", "x export", "hide")
 
 
@@ -151,20 +152,22 @@ async def test_AT_1801_2_shows_every_task_text_at_once(tmp_path, monkeypatch, fr
 # --------------------------------------------------------------------------- #
 # AT-1802 — the gantt view keeps the note's line breaks
 # --------------------------------------------------------------------------- #
-@pytest.mark.parametrize("size, name", [((118, 31), "PRES-V3-gantt-notes-118x30.txt"),
-                                        ((80, 25), "PRES-V3-gantt-notes-80x24.txt")])
+@pytest.mark.parametrize("size, name", [((118, 31), "PRES-V4-gantt-notes-118x30.txt"),
+                                        ((80, 25), "PRES-V4-gantt-notes-80x24.txt")])
 async def test_AT_1802_the_gantt_note_keeps_its_line_breaks(tmp_path, monkeypatch, frozen,
                                                             size, name):
     """AT-1802 (US-1802, HLR-1802): `R` opens on the gantt view; the cursor moved
     onto `Launch new homepage` expands its note with its line breaks kept —
     `1. Feature-flag …` starts its own row, never `Sep 22. 1. Feature-flag` —
-    and the painted rows equal the PRES-V3 gantt-notes frame."""
+    and the painted rows equal the gantt-notes frame — since batch
+    2026-10-18-batch-03 (LLR-2003.1, the note fills the free rows) that
+    batch's PRES-V4 frame; the PRES-V3 files stay as recorded."""
     s = _Presenting(tmp_path, monkeypatch, size)
     async with s.app.run_test(size=s.size) as pilot:
         await s.open(pilot)
         assert s.rows()[0].startswith("◆ PRESENT · Website Redesign  gantt ")
         await s.press(pilot, "right", "right")
-        assert s.rows() == _frame(name)
+        assert s.rows() == (FRAMES_V4 / name).read_text(encoding="utf-8").splitlines()
         assert any(r.startswith("  · 1. Feature-flag") for r in s.rows())
         assert "Sep 22. 1." not in s.frame()
 

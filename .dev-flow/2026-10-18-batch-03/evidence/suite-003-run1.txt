@@ -1,0 +1,99 @@
+$ python -m pytest -q -p no:cacheprovider -rs --color=no   (cwd: the present-polish checkout, increment 003 in the working tree on b12e563: taskboard/views.py, tests/test_present_polish.py, tests/test_present_views.py, docs/ARCHITECTURE.md; started 2026-10-19T00:28:17Z)
+C:\Users\jjgh8\anaconda3\Lib\site-packages\pytest_asyncio\plugin.py:207: PytestDeprecationWarning: The configuration option "asyncio_default_fixture_loop_scope" is unset.
+The event loop scope for asynchronous fixtures will default to the fixture caching scope. Future versions of pytest-asyncio will default the loop scope for asynchronous fixtures to function scope. Set the default fixture loop scope explicitly in order to avoid unexpected behavior in the future. Valid fixture loop scopes are: "function", "class", "module", "package", "session"
+
+  warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCOPE_UNSET))
+........................................................................ [  2%]
+........................................................................ [  5%]
+........................................................................ [  7%]
+........................................................................ [ 10%]
+........................................................................ [ 13%]
+........................................................................ [ 15%]
+........................................................................ [ 18%]
+........................................................................ [ 20%]
+........................................................................ [ 23%]
+........................................................................ [ 26%]
+........................................................................ [ 28%]
+........................................................................ [ 31%]
+........................................................................ [ 33%]
+........................................................................ [ 36%]
+........................................................................ [ 39%]
+........................................................................ [ 41%]
+........................................................................ [ 44%]
+........................................................................ [ 46%]
+........................................................................ [ 49%]
+........................................................................ [ 52%]
+........................................................................ [ 54%]
+........................................................................ [ 57%]
+........................................................................ [ 60%]
+........................................................................ [ 62%]
+........................................................................ [ 65%]
+........................................................................ [ 67%]
+........................................................................ [ 70%]
+........................................................................ [ 73%]
+........................................................................ [ 75%]
+........FF.............................................................. [ 78%]
+........................................................................ [ 80%]
+........................................................................ [ 83%]
+........................................................................ [ 86%]
+........................................................................ [ 88%]
+........................................................................ [ 91%]
+........................................................................ [ 93%]
+........................................................................ [ 96%]
+........................................................................ [ 99%]
+.......................                                                  [100%]
+================================== FAILURES ===================================
+_ test_AT_1802_the_gantt_note_keeps_its_line_breaks[size0-PRES-V3-gantt-notes-118x30.txt] _
+
+tmp_path = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-20633/test_AT_1802_the_gantt_note_ke0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x000001CC8EEC89E0>
+frozen = None, size = (118, 31), name = 'PRES-V3-gantt-notes-118x30.txt'
+
+    @pytest.mark.parametrize("size, name", [((118, 31), "PRES-V3-gantt-notes-118x30.txt"),
+                                            ((80, 25), "PRES-V3-gantt-notes-80x24.txt")])
+    async def test_AT_1802_the_gantt_note_keeps_its_line_breaks(tmp_path, monkeypatch, frozen,
+                                                                size, name):
+        """AT-1802 (US-1802, HLR-1802): `R` opens on the gantt view; the cursor moved
+        onto `Launch new homepage` expands its note with its line breaks kept —
+        `1. Feature-flag …` starts its own row, never `Sep 22. 1. Feature-flag` —
+        and the painted rows equal the PRES-V3 gantt-notes frame."""
+        s = _Presenting(tmp_path, monkeypatch, size)
+        async with s.app.run_test(size=s.size) as pilot:
+            await s.open(pilot)
+            assert s.rows()[0].startswith("◆ PRESENT · Website Redesign  gantt ")
+            await s.press(pilot, "right", "right")
+>           assert s.rows() == _frame(name)
+E           AssertionError: assert ['◆ PRESENT ·...p 24–28', ...] == ['◆ PRESENT ·...p 24–28', ...]
+E             
+E             At index 16 diff: '  ·    we watch conversion, error rate and the p95 of the checkout page against last week.                            ' != '  · … +9 lines                                                                                                        '
+E             Use -v to get more diff
+
+tests\test_present_views_app.py:167: AssertionError
+_ test_AT_1802_the_gantt_note_keeps_its_line_breaks[size1-PRES-V3-gantt-notes-80x24.txt] _
+
+tmp_path = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-20633/test_AT_1802_the_gantt_note_ke1')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x000001CC8D7C8B00>
+frozen = None, size = (80, 25), name = 'PRES-V3-gantt-notes-80x24.txt'
+
+    @pytest.mark.parametrize("size, name", [((118, 31), "PRES-V3-gantt-notes-118x30.txt"),
+                                            ((80, 25), "PRES-V3-gantt-notes-80x24.txt")])
+    async def test_AT_1802_the_gantt_note_keeps_its_line_breaks(tmp_path, monkeypatch, frozen,
+                                                                size, name):
+        """AT-1802 (US-1802, HLR-1802): `R` opens on the gantt view; the cursor moved
+        onto `Launch new homepage` expands its note with its line breaks kept —
+        `1. Feature-flag …` starts its own row, never `Sep 22. 1. Feature-flag` —
+        and the painted rows equal the PRES-V3 gantt-notes frame."""
+        s = _Presenting(tmp_path, monkeypatch, size)
+        async with s.app.run_test(size=s.size) as pilot:
+            await s.open(pilot)
+            assert s.rows()[0].startswith("◆ PRESENT · Website Redesign  gantt ")
+            await s.press(pilot, "right", "right")
+>           assert s.rows() == _frame(name)
+E           AssertionError: assert ['◆ PRESENT ·...p 24–28', ...] == ['◆ PRESENT ·...p 24–28', ...]
+E             
+E             At index 16 diff: '  ·    traffic for one full business day while we watch conversion, error rate  ' != '  · … +11 lines                                                                 '
+E             Use -v to get more diff
+
+tests\test_present_views_app.py:167: AssertionError
+2 failed, 2757 passed in 610.22s (0:10:10)
+exit=1

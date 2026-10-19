@@ -1,0 +1,34 @@
+$ python port_captures.py --root <checkout> --mode port --out evidence/captures --png   (the present-polish checkout with increments 001-003 at b12e563 + increment 003 in the working tree; PNGs at 118 columns by views.save_present_png, headless Edge; 2026-10-19T00:51:19Z)
+gantt-118x31.svg 492e7d1983b8965e5438e8cd19fe9027b6b2af137e7a6d07c4f3669aea243e5f png written
+gantt-80x25.svg eb43c7b1a373159c28eb815305091baf7a0ddcf3e4d1b4fb7d674e87d3beb02c
+split-118x31.svg 29441dc8eb30f5af3a65a3841124ff735db20545b58a7fb05864cea9aa87dd4a png written
+split-80x25.svg d945b97019c15e9cd6e208ee52de36ea1c900f440fff749ca46f260c3483c6ef
+gantt-hidden-118x31.svg 29081f0e0eb192027d1566bd1c677d9462d34bc7f5f5a3c97ef8191e1f1e9343 png written
+gantt-hidden-80x25.svg efa3e90ffa2bfa364ce9ee0343c8fc957ca6eccf9c8e1432103ff4da60150aa6
+gantt-long-118x31.svg d9c3abcb2e70c5cbd54b673462dc8567129f72992256fa659272b2f369e7f270 png written
+gantt-long-80x25.svg a66006f508f875b9cb66e4a99e89cb6e7dd4d49acf697d0ef804e43798d813c5
+split-long-118x31.svg a8d20069eff37960eb4b4997ccb7445fcf675eed6900879ab3bf78f4118a28d2 png written
+split-long-80x25.svg 93a1eb0c45dec4f41f433ec631a0d89571bac40763620df121de6a301c293189
+$ python port_captures.py --compare evidence/expected/upto-3 evidence/captures   (upto-3: the round's three A forks composed on 620f58c)
+EQUAL  gantt-118x31.svg
+EQUAL  gantt-80x25.svg
+EQUAL  gantt-hidden-118x31.svg
+EQUAL  gantt-hidden-80x25.svg
+EQUAL  gantt-long-118x31.svg
+DIFFER gantt-long-80x25.svg
+EQUAL  split-118x31.svg
+EQUAL  split-80x25.svg
+EQUAL  split-long-118x31.svg
+EQUAL  split-long-80x25.svg
+1 differ or missing
+exit=1
+$ python explain_diff.py evidence/expected/upto-3 evidence/captures   (- the round, + the port)
+gantt-long-80x25.svg · -terminal-N-r4 '· … +5 lines' | +terminal-N-r2 '· ' | +terminal-N-r4 '… +5 lines' 
+# Read by eye (the orchestrator, 2026-10-18): the port's PNGs at 118 against the round's A PNGs —
+#   captures/gantt-long-118x31.png  vs prototypes/backlog_polish/out/notecap-A-gantt-long-118x31.png: the same
+#     frame, the note's 11 rows whole, the hint row the same; the view word `gantt` reached in the port (the
+#     notecap round kept it dim — its contrast fork was not composed there)
+#   captures/split-long-118x31.png  vs prototypes/backlog_polish/out/contrast-A-split-long-118x31.png: the same
+#     (the SVGs are EQUAL above)
+# 9 EQUAL; the 1 DIFFER is the gantt cut row's `· ` lead (80x25 only: at 118 the long note no longer cuts),
+# the deviation declared in compare-001.txt.

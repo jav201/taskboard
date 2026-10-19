@@ -6476,12 +6476,16 @@ def render_present(board: Board, project_id: str | None, cursor_id: str | None,
     header names the view in a quiet word. Both draw the date ruler and the
     project's gantt field with start–end chips, and only the shown open tasks.
     `gantt`: the brief one-liners below, a `⟦━⟧` cursor across them, the cursor
-    task's note expanded to 3 rows, its line breaks and list items kept.
+    task's note in the rows left under them (3 at least; batch
+    2026-10-18-batch-03), its line breaks and list items kept, a cut declared.
     `split` (the prototype's D2 · stacked): below the field every shown open
     task gets a block — a heading and its whole note when they fit, else a fair
     share (`present_alloc`), each cut declared — two columns from 100 wide, one
     below; `scroll` scrolls the notes (`_present_stack`). Byte-faithful to the
-    PRES-V3 oracle frames (batch 2026-10-18-batch-01) at 118x30 and 80x24.
+    PRES-V3 oracle frames (batch 2026-10-18-batch-01) at 118x30 and 80x24, and,
+    for a cursor note longer than 3 rows, to the PRES-V4 gantt-notes frames
+    (batch 2026-10-18-batch-03); the quiet marks (the view word, the cut and
+    edge marks) are `reached`.
     Below `PRESENT_MIN_WIDTH` no view fits: one `mut` line, the longest rung of
     `PRESENT_NARROW` that fits, whatever the view, cursor or scroll."""
     if width < PRESENT_MIN_WIDTH:
@@ -6532,13 +6536,14 @@ def render_present(board: Board, project_id: str | None, cursor_id: str | None,
             lines += [_pad(" " + r, width) for r in a]
         return _present_finish(lines, height, width)
 
+    room = max(3, height - len(lines) - len(open_t))     # the free rows under the briefs, 3 at least
     for t in open_t:
         on = cursor is not None and t.id == cursor.id
         lines.append(_present_brief(t, p, on, width))
         if on:
             rows = present_note_lines(t.notes, width - 6)
             lines += [_pad("  " + c("· ", "dim") + r, width)
-                      for r in _present_cut(rows, 3, width - 6)]
+                      for r in _present_cut(rows, room, width - 6)]
     return _present_finish(lines, height, width)
 
 

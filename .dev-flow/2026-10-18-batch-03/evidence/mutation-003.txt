@@ -1,0 +1,32 @@
+# mutation battery, increment 003 — run by the orchestrator in a scratch copy of the increment tree (scratchpad/mut: taskboard/, tests/, pyproject.toml and the oracle frame folders copied from the present-polish working tree with increment 003, AT-1802 re-pointed and the review's F1 arm folded); harness .dev-flow/2026-10-18-batch-03/evidence/mutate.py (2026-10-19T00:39:56Z). The first run (10/10 KILLED) preceded AT-1802's re-pointing and is superseded by this one.
+$ python mutate.py 003
+pre-check tests/test_present_polish.py::test_AT_2003_the_gantt_note_runs_to_the_bottom_of_the_frame: GREEN
+pre-check tests/test_present_polish.py::test_TC_2003_the_long_note_equals_the_rounds_frame[80-24]: GREEN
+pre-check tests/test_present_polish.py::test_TC_2003_the_note_takes_every_free_row_and_declares_its_cut: GREEN
+pre-check tests/test_present_views.py::test_TC_1807_the_cursor_note_keeps_its_line_breaks[PRES-V4-gantt-notes-80x24.txt-80-24-9]: GREEN
+pre-check tests/test_present_views_app.py::test_AT_1802_the_gantt_note_keeps_its_line_breaks[size1-PRES-V4-gantt-notes-80x24.txt]: GREEN
+arms: 11
+K1 the cap stays 3 · taskboard/views.py: 'room = max(3, height - len(lines) - len(open_t))' -> 'room = 3'
+    tests/test_present_polish.py::test_TC_2003_the_long_note_equals_the_rounds_frame[80-24]: RED (KILLED) · 1 failed in 0.57s · restored 08e2d72d67db
+K1 the cap stays 3 · taskboard/views.py: 'room = max(3, height - len(lines) - len(open_t))' -> 'room = 3'
+    tests/test_present_polish.py::test_TC_2003_the_note_takes_every_free_row_and_declares_its_cut: RED (KILLED) · 1 failed in 0.55s · restored 08e2d72d67db
+K1 the cap stays 3 · taskboard/views.py: 'room = max(3, height - len(lines) - len(open_t))' -> 'room = 3'
+    tests/test_present_polish.py::test_AT_2003_the_gantt_note_runs_to_the_bottom_of_the_frame: RED (KILLED) · 1 failed in 2.72s · restored 08e2d72d67db
+K1 the cap stays 3 · taskboard/views.py: 'room = max(3, height - len(lines) - len(open_t))' -> 'room = 3'
+    tests/test_present_views.py::test_TC_1807_the_cursor_note_keeps_its_line_breaks[PRES-V4-gantt-notes-80x24.txt-80-24-9]: RED (KILLED) · 1 failed in 0.54s · restored 08e2d72d67db
+K1 the cap stays 3 · taskboard/views.py: 'room = max(3, height - len(lines) - len(open_t))' -> 'room = 3'
+    tests/test_present_views_app.py::test_AT_1802_the_gantt_note_keeps_its_line_breaks[size1-PRES-V4-gantt-notes-80x24.txt]: RED (KILLED) · 1 failed in 2.47s · restored 08e2d72d67db
+K2 the floor dropped · taskboard/views.py: 'room = max(3, height - len(lines) - len(open_t))' -> 'room = max(0, height - len(lines) - len(open_t))'
+    tests/test_present_polish.py::test_TC_2003_the_note_takes_every_free_row_and_declares_its_cut: RED (KILLED) · 1 failed in 0.61s · restored 08e2d72d67db
+K3 the briefs not subtracted · taskboard/views.py: 'room = max(3, height - len(lines) - len(open_t))' -> 'room = max(3, height - len(lines))'
+    tests/test_present_polish.py::test_TC_2003_the_long_note_equals_the_rounds_frame[80-24]: RED (KILLED) · 1 failed in 0.58s · restored 08e2d72d67db
+K3 the briefs not subtracted · taskboard/views.py: 'room = max(3, height - len(lines) - len(open_t))' -> 'room = max(3, height - len(lines))'
+    tests/test_present_polish.py::test_TC_2003_the_note_takes_every_free_row_and_declares_its_cut: RED (KILLED) · 1 failed in 0.57s · restored 08e2d72d67db
+K3 the briefs not subtracted · taskboard/views.py: 'room = max(3, height - len(lines) - len(open_t))' -> 'room = max(3, height - len(lines))'
+    tests/test_present_polish.py::test_AT_2003_the_gantt_note_runs_to_the_bottom_of_the_frame: RED (KILLED) · 1 failed in 2.59s · restored 08e2d72d67db
+K4 one row too many · taskboard/views.py: 'room = max(3, height - len(lines) - len(open_t))' -> 'room = max(3, height - len(lines) - len(open_t) + 1)'
+    tests/test_present_polish.py::test_TC_2003_the_long_note_equals_the_rounds_frame[80-24]: RED (KILLED) · 1 failed in 0.58s · restored 08e2d72d67db
+K4 one row too many · taskboard/views.py: 'room = max(3, height - len(lines) - len(open_t))' -> 'room = max(3, height - len(lines) - len(open_t) + 1)'
+    tests/test_present_polish.py::test_TC_2003_the_note_takes_every_free_row_and_declares_its_cut: RED (KILLED) · 1 failed in 0.55s · restored 08e2d72d67db
+killed 11 / 11 arms; bad 0
+exit=0

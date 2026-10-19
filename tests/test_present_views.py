@@ -34,6 +34,8 @@ from taskboard import views
 
 ROOT = Path(__file__).resolve().parents[1]
 FRAMES = ROOT / ".dev-flow" / "2026-10-18-batch-01" / "evidence" / "frames"
+# the gantt-notes frames since batch 2026-10-18-batch-03 (the note fills the free rows)
+FRAMES_V4 = ROOT / ".dev-flow" / "2026-10-18-batch-03" / "evidence" / "frames"
 
 
 def _frame(name: str) -> list[str]:
@@ -400,23 +402,28 @@ def test_TC_1806_every_scroll_keeps_the_frame_exact(tmp_path, w, h):
 # --------------------------------------------------------------------------- #
 # TC-1807 — the gantt view keeps a note's line breaks (LLR-1802.1)
 # --------------------------------------------------------------------------- #
-@pytest.mark.parametrize("name, w, h", [
-    ("PRES-V3-gantt-notes-118x30.txt", 118, 30),
-    ("PRES-V3-gantt-notes-80x24.txt", 80, 24),
+@pytest.mark.parametrize("name, w, h, shown", [
+    ("PRES-V4-gantt-notes-118x30.txt", 118, 30, 11),
+    ("PRES-V4-gantt-notes-80x24.txt", 80, 24, 9),
 ])
-def test_TC_1807_the_cursor_note_keeps_its_line_breaks(tmp_path, name, w, h):
-    """TC-1807 (LLR-1802.1): the gantt view's cursor note is at most 3 rows —
-    its line breaks kept (`1. Feature-flag` starts its own row, never
-    `Sep 22. 1. Feature-flag`), the cut said `… +N lines` — and equals the
-    PRES-V3 frame."""
+def test_TC_1807_the_cursor_note_keeps_its_line_breaks(tmp_path, name, w, h, shown):
+    """TC-1807 (LLR-1802.1): the gantt view's cursor note keeps its line breaks
+    (`1. Feature-flag` starts its own row, never `Sep 22. 1. Feature-flag`) and
+    equals the frame. Since batch 2026-10-18-batch-03 (LLR-2003.1) the note
+    fills the free rows instead of stopping at 3: at 118x30 its 11 rows show
+    whole, at 80x24 it takes 9 rows and the last says the cut `… +N lines`; the
+    frames are that batch's PRES-V4 ones (the PRES-V3 files stay as recorded)."""
     b = nb.build(tmp_path / "board.json")
     rows = _rows(b, nb.LONG, w, h, "gantt")
-    assert rows == _frame(name)
+    assert rows == (FRAMES_V4 / name).read_text(encoding="utf-8").splitlines()
     notes = [r for r in rows if r.startswith("  · ")]
-    assert len(notes) == 3, notes
+    assert len(notes) == shown, notes
     assert notes[0].strip().endswith("Sep 22."), notes
     assert notes[1].startswith("  · 1. Feature-flag"), notes
-    assert re.match(r"  · … \+\d+ lines", notes[2]), notes
+    if w == 80:
+        assert re.match(r"  · … \+\d+ lines", notes[-1]), notes
+    else:
+        assert "… +" not in "\n".join(notes), notes
     assert "Sep 22. 1." not in "\n".join(rows)
 
 

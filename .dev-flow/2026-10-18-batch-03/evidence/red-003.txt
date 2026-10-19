@@ -1,0 +1,18 @@
+$ python -m pytest -q -p no:cacheprovider -rfs --color=no tests/test_present_polish.py -k 2003 ; python -m pytest -q -p no:cacheprovider -rfs --color=no tests/test_present_views.py   (cwd: a scratch worktree at 620f58c = base_ref, increment 003's test files copied in, the PRES-V4 frames beside them; 2026-10-19T00:26:22Z)
+FAILED tests/test_present_polish.py::test_TC_2003_the_long_note_equals_the_rounds_frame[118-30]
+FAILED tests/test_present_polish.py::test_TC_2003_the_long_note_equals_the_rounds_frame[80-24]
+FAILED tests/test_present_polish.py::test_TC_2003_the_note_takes_every_free_row_and_declares_its_cut
+FAILED tests/test_present_polish.py::test_AT_2003_the_gantt_note_runs_to_the_bottom_of_the_frame
+4 failed, 1 passed, 14 deselected in 2.82s
+exit=1
+FAILED tests/test_present_views.py::test_TC_1807_the_cursor_note_keeps_its_line_breaks[PRES-V4-gantt-notes-118x30.txt-118-30-11]
+FAILED tests/test_present_views.py::test_TC_1807_the_cursor_note_keeps_its_line_breaks[PRES-V4-gantt-notes-80x24.txt-80-24-9]
+2 failed, 46 passed in 2.92s
+exit=1
+
+# addendum after suite-003-run1.txt found AT-1802 still reading the PRES-V3 gantt-notes frames (the census had missed it): AT-1802 re-pointed at PRES-V4, the no-cursor arm added to TC-2003 (code-review F1); the same worktree at 620f58c (2026-10-19T00:39:36Z):
+$ python -m pytest -q -p no:cacheprovider -rfs --color=no tests/test_present_views_app.py -k 1802 ; ... tests/test_present_polish.py -k no_cursor
+FAILED tests/test_present_views_app.py::test_AT_1802_the_gantt_note_keeps_its_line_breaks[size0-PRES-V4-gantt-notes-118x30.txt]
+FAILED tests/test_present_views_app.py::test_AT_1802_the_gantt_note_keeps_its_line_breaks[size1-PRES-V4-gantt-notes-80x24.txt]
+2 failed, 10 deselected in 4.60s
+1 passed, 18 deselected in 0.48s
