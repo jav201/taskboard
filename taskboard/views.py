@@ -6399,6 +6399,20 @@ def _present_span_row(proj: Project, board: Board, p: _PresentGeo) -> str:
 
 
 def _present_task_row(task: Task, board: Board, p: _PresentGeo, cursor: bool = False) -> str:
+    """One field row. A milestone is drawn as the gantt view draws it — `◆` on
+    its due and the date beside it, never a bar — with `◆` before the title and
+    its due alone in the chip (batch 2026-10-19-batch-01, HLR-2101)."""
+    if task.milestone:
+        tone = milestone_tone(task, board, p.today)
+        cells = gantt_milestone_cells(task, board, p.ax, p.today, tone)
+        if cursor:
+            cells = [("◆", "accent") if g == "◆" else (g, k) for g, k in cells]
+        lead = c("⟦", "accent", bold=True) if cursor else " "
+        label = (" " + lead + c("▎", p.hue) + " " + c("◆", tone) + " "
+                 + _present_title(task, p.label_w - 6))
+        chip = " " + _present_chip(None, task.due_date, p.today, p.chip_w)
+        return _pad(_pad(label, p.label_w) + gantt_dep_mark(task, board, p.chain)
+                    + _present_field(cells, p.ax) + chip, p.width)
     cells = _gantt_bar(task, board, p.ax, p.chain, 0)
     if cursor:
         lo = next((x for x, (g, _) in enumerate(cells) if g != " "), None)

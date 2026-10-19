@@ -1,0 +1,7 @@
+pre-check: tests/test_present_milestone.py -> exit 0
+M1 the milestone branch removed (the bar returns) · taskboard/views.py · tests/test_present_milestone.py -> exit 1 · KILLED · restore digest 3f1089763b688a2e382d90182c2a39caedd074a3110f40a8e850eee198e67568
+M2 the chip keeps the start date · taskboard/views.py · tests/test_present_milestone.py -> exit 1 · KILLED · restore digest 3f1089763b688a2e382d90182c2a39caedd074a3110f40a8e850eee198e67568
+M3 the cursor's ◆ not accented · taskboard/views.py · tests/test_present_milestone.py -> exit 1 · KILLED · restore digest 3f1089763b688a2e382d90182c2a39caedd074a3110f40a8e850eee198e67568
+M4 the label's ◆ dropped · taskboard/views.py · tests/test_present_milestone.py -> exit 1 · KILLED · restore digest 3f1089763b688a2e382d90182c2a39caedd074a3110f40a8e850eee198e67568
+M5 the cursor's ⟦ lead never drawn (code review F1) · taskboard/views.py · tests/test_present_milestone.py -> exit 1 · KILLED · restore digest 3f1089763b688a2e382d90182c2a39caedd074a3110f40a8e850eee198e67568
+5/5 KILLED

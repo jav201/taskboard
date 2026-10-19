@@ -269,6 +269,11 @@
       "station": "PDR",
       "date": "2026-10-19",
       "decision": "PDR sealed approved with conditions (PC-1..PC-4) under the batch's standing authorization; the cut re-made (003 views only, 004 app + modals); P3 is next."
+    },
+    {
+      "station": "P3",
+      "date": "2026-10-19",
+      "decision": "P3 increment 001 approved under the batch's standing authorization: the milestone row (HLR-2101, LLR-2101.1) — RED on base_ref (11 failed, 1 passed), 5/5 mutants KILLED, code-reviewer OK with findings (F1, F2 folded), suite-001 2768 passed, 1 skipped; increment 002 is next."
     }
   ],
   "obsidian_synced": false,

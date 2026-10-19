@@ -9,6 +9,7 @@ FAILED tests/test_present_milestone.py::test_TC_2101_a_milestone_row_is_its_date
 FAILED tests/test_present_milestone.py::test_TC_2101_a_milestone_row_is_its_date_not_a_bar[160-gantt]
 FAILED tests/test_present_milestone.py::test_TC_2101_a_milestone_row_is_its_date_not_a_bar[160-split]
 FAILED tests/test_present_milestone.py::test_TC_2101_a_start_date_does_not_make_a_milestone_a_bar
+FAILED tests/test_present_milestone.py::test_TC_2101_a_late_milestone_is_painted_over
 FAILED tests/test_present_milestone.py::test_AT_2101_the_cut_over_weekend_reads_as_a_milestone
 PASSED tests/test_present_milestone.py::test_TC_2101_other_rows_are_drawn_as_shipped
-10 failed, 1 passed in 0.84s
+11 failed, 1 passed in 0.82s

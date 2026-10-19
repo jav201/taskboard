@@ -1,0 +1,14 @@
+=========================== short test summary info ===========================
+PASSED tests/test_present_milestone.py::test_TC_2101_a_milestone_row_is_its_date_not_a_bar[36-gantt]
+PASSED tests/test_present_milestone.py::test_TC_2101_a_milestone_row_is_its_date_not_a_bar[36-split]
+PASSED tests/test_present_milestone.py::test_TC_2101_a_milestone_row_is_its_date_not_a_bar[80-gantt]
+PASSED tests/test_present_milestone.py::test_TC_2101_a_milestone_row_is_its_date_not_a_bar[80-split]
+PASSED tests/test_present_milestone.py::test_TC_2101_a_milestone_row_is_its_date_not_a_bar[118-gantt]
+PASSED tests/test_present_milestone.py::test_TC_2101_a_milestone_row_is_its_date_not_a_bar[118-split]
+PASSED tests/test_present_milestone.py::test_TC_2101_a_milestone_row_is_its_date_not_a_bar[160-gantt]
+PASSED tests/test_present_milestone.py::test_TC_2101_a_milestone_row_is_its_date_not_a_bar[160-split]
+PASSED tests/test_present_milestone.py::test_TC_2101_a_start_date_does_not_make_a_milestone_a_bar
+PASSED tests/test_present_milestone.py::test_TC_2101_a_late_milestone_is_painted_over
+PASSED tests/test_present_milestone.py::test_TC_2101_other_rows_are_drawn_as_shipped
+PASSED tests/test_present_milestone.py::test_AT_2101_the_cut_over_weekend_reads_as_a_milestone
+12 passed in 1.18s
