@@ -702,7 +702,7 @@ def _extra_keys(d: dict, known: set[str]) -> dict:
 
 
 _PROJECT_KEYS = {"id", "name", "color", "status", "archived", "pinned", "start_date",
-                 "due_date", "extra"}
+                 "due_date", "extra", "show_in_present", "present_rank"}
 _TASK_KEYS = {"id", "title", "project_id", "phase", "blocked", "priority", "start_date",
               "due_date", "notes", "urls", "images", "archived", "pinned", "extra",
               "phase_changed", "depends_on", "milestone", "show_in_present",
@@ -801,6 +801,11 @@ class Project:
     pinned: bool = False
     start_date: str | None = None
     due_date: str | None = None
+    # view 3 of the presentation (batch 2026-10-19-batch-01, LLR-2102.1): shown
+    # unless the JSON `false`; its place in the presentation's own order, kept
+    # only as a non-boolean integer. Both written only off their default.
+    show_in_present: bool = True
+    present_rank: int | None = None
     extra: dict = field(default_factory=dict)
     id: str = field(default_factory=_new_id)
 
@@ -820,6 +825,9 @@ class Project:
             pinned=d.get("pinned") is True,
             start_date=start if isinstance(start, str) else None,
             due_date=due if isinstance(due, str) else None,
+            show_in_present=d.get("show_in_present") is not False,
+            present_rank=(rank if isinstance(rank := d.get("present_rank"), int)
+                          and not isinstance(rank, bool) else None),
             extra=_extra_keys(d, _PROJECT_KEYS),
         )
 
@@ -999,6 +1007,8 @@ class Board:
         d = asdict(item)
         if d.get("show_in_present") is True:
             del d["show_in_present"]
+        if "present_rank" in d and d["present_rank"] is None:
+            del d["present_rank"]
         return {**d.pop("extra", {}), **d}
 
     def _serialized(self) -> str:
@@ -2392,3 +2402,21 @@ def chain_template(board: Board, task_id: str | None) -> Template | None:
         wait = pos[min(preds, key=lambda p: pos[p.id]).id] if preds else None
         tasks.append(TemplateTask(t.title, t.notes, wait))
     return Template(order[0].title, tuple(tasks))
+
+
+def present_order(board: Board) -> list[Project]:
+    """The visible projects in the presentation's own order (view 3, batch
+    2026-10-19-batch-01): those with a `present_rank` first, by rank, then the
+    others; board order breaks every tie. Every other view keeps `board.projects`."""
+    projects = board.visible_projects(False)
+    index = {id(p): i for i, p in enumerate(projects)}
+    return sorted(projects, key=lambda p: (p.present_rank is None,
+                                           p.present_rank if p.present_rank is not None else 0,
+                                           index[id(p)]))
+
+
+def set_present_order(board: Board, ids: list[str]) -> None:
+    """Rank `i` on the project `ids[i]`; the caller passes every visible project,
+    so the ranks stay dense."""
+    for i, pid in enumerate(ids):
+        board.project_by_id(pid).present_rank = i

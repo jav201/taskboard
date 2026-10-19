@@ -14,6 +14,9 @@ The one change from the round's board: `settings` carries the milestone offer's 
 (`migrations.milestones = 1`), so the one-time startup offer never covers the app
 under test and the app writes nothing at start.
 
+Security Audit is hidden through `Project.show_in_present` (batch 2026-10-19-batch-01,
+increment 002; the round used `Project.extra`).
+
 `build()` returns the board unsaved; the tests that save it do so under
 `tmp_path`.
 """
@@ -88,7 +91,7 @@ def build(path: Path) -> Board:
     for key, name, color, s, d in PROJECTS:
         p = Project(name=name, color=color, start_date=_d(s), due_date=_d(d), id=f"p{key}")
         if key in HIDDEN_PROJECTS:
-            p.extra["show_in_present"] = False
+            p.show_in_present = False
         projects[key] = p
     tasks = []
     for key, pk, title, phase, prio, s, d, deps, ms in TASKS:

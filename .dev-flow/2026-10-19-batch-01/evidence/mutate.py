@@ -38,6 +38,28 @@ MUTANTS = {
          "lead = \" \"",
          ["tests/test_present_milestone.py"]),
     ],
+    "002": [
+        ("N1 a boolean accepted as a rank", "taskboard/models.py",
+         "and not isinstance(rank, bool) else None", "else None",
+         ["tests/test_present_all.py"]),
+        ("N2 a None rank written", "taskboard/models.py",
+         "if \"present_rank\" in d and d[\"present_rank\"] is None:",
+         "if False:",
+         ["tests/test_present_all.py"]),
+        ("N3 the shown flag read truthy (0 hides)", "taskboard/models.py",
+         "show_in_present=d.get(\"show_in_present\") is not False,\n            present_rank=",
+         "show_in_present=bool(d.get(\"show_in_present\", True)),\n            present_rank=",
+         ["tests/test_present_all.py"]),
+        ("N4 the unranked sorted first", "taskboard/models.py",
+         "key=lambda p: (p.present_rank is None,", "key=lambda p: (p.present_rank is not None,",
+         ["tests/test_present_all.py"]),
+        ("N5 the team pull keeps the keys", "taskboard/team_sync.py",
+         "if k not in (\"show_in_present\",", "if k not in (\"x\",",
+         ["tests/test_present_all.py"]),
+        ("N6 the ranks not from 0", "taskboard/models.py",
+         "board.project_by_id(pid).present_rank = i", "board.project_by_id(pid).present_rank = i + 1",
+         ["tests/test_present_all.py"]),
+    ],
 }
 
 

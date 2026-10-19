@@ -1,0 +1,25 @@
+# RED of increment 002 on base_ref bdf6e9d: tests/test_present_all.py (its TC-2102 nodes) and tests/present_portfolio_board.py copied into a scratch worktree at base_ref, source untouched
+=========================== short test summary info ===========================
+FAILED tests/test_present_all.py::test_TC_2102_show_in_present_is_false_only_for_the_json_false[False-False]
+FAILED tests/test_present_all.py::test_TC_2102_show_in_present_is_false_only_for_the_json_false[<absent>-True]
+FAILED tests/test_present_all.py::test_TC_2102_show_in_present_is_false_only_for_the_json_false[True-True]
+FAILED tests/test_present_all.py::test_TC_2102_show_in_present_is_false_only_for_the_json_false[0-True]
+FAILED tests/test_present_all.py::test_TC_2102_show_in_present_is_false_only_for_the_json_false[false-True]
+FAILED tests/test_present_all.py::test_TC_2102_show_in_present_is_false_only_for_the_json_false[None-True]
+FAILED tests/test_present_all.py::test_TC_2102_present_rank_is_kept_only_as_an_integer[0-0]
+FAILED tests/test_present_all.py::test_TC_2102_present_rank_is_kept_only_as_an_integer[3-3]
+FAILED tests/test_present_all.py::test_TC_2102_present_rank_is_kept_only_as_an_integer[-3--3]
+FAILED tests/test_present_all.py::test_TC_2102_present_rank_is_kept_only_as_an_integer[1000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000-1000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000]
+FAILED tests/test_present_all.py::test_TC_2102_present_rank_is_kept_only_as_an_integer[<absent>-None]
+FAILED tests/test_present_all.py::test_TC_2102_present_rank_is_kept_only_as_an_integer[None-None]
+FAILED tests/test_present_all.py::test_TC_2102_present_rank_is_kept_only_as_an_integer[True-None]
+FAILED tests/test_present_all.py::test_TC_2102_present_rank_is_kept_only_as_an_integer[False-None]
+FAILED tests/test_present_all.py::test_TC_2102_present_rank_is_kept_only_as_an_integer[2-None]
+FAILED tests/test_present_all.py::test_TC_2102_present_rank_is_kept_only_as_an_integer[2.5-None]
+FAILED tests/test_present_all.py::test_TC_2102_present_rank_is_kept_only_as_an_integer[1.0-None]
+FAILED tests/test_present_all.py::test_TC_2102_present_rank_is_kept_only_as_an_integer[raw11-None]
+FAILED tests/test_present_all.py::test_TC_2102_the_keys_are_written_only_off_their_default
+FAILED tests/test_present_all.py::test_TC_2102_the_presentation_order - Attri...
+FAILED tests/test_present_all.py::test_TC_2102_a_team_pull_never_curates_this_presentation
+PASSED tests/test_present_all.py::test_TC_2102_the_oracle_board_keeps_its_bytes
+21 failed, 1 passed in 0.68s

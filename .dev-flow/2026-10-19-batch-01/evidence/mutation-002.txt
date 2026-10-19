@@ -1,0 +1,8 @@
+pre-check: tests/test_present_all.py -> exit 0
+N1 a boolean accepted as a rank · taskboard/models.py · tests/test_present_all.py -> exit 1 · KILLED · restore digest 6bddacd2e2ecac674a05cff98f8905eea5b8c119dc41d4da32a821595bc1939d
+N2 a None rank written · taskboard/models.py · tests/test_present_all.py -> exit 1 · KILLED · restore digest 6bddacd2e2ecac674a05cff98f8905eea5b8c119dc41d4da32a821595bc1939d
+N3 the shown flag read truthy (0 hides) · taskboard/models.py · tests/test_present_all.py -> exit 1 · KILLED · restore digest 6bddacd2e2ecac674a05cff98f8905eea5b8c119dc41d4da32a821595bc1939d
+N4 the unranked sorted first · taskboard/models.py · tests/test_present_all.py -> exit 1 · KILLED · restore digest 6bddacd2e2ecac674a05cff98f8905eea5b8c119dc41d4da32a821595bc1939d
+N5 the team pull keeps the keys · taskboard/team_sync.py · tests/test_present_all.py -> exit 1 · KILLED · restore digest 6fcb92c80f1b3e9779e00197f0b993c9a5dcbfd5a321214d86e6dd27ba7d1183
+N6 the ranks not from 0 · taskboard/models.py · tests/test_present_all.py -> exit 1 · KILLED · restore digest 6bddacd2e2ecac674a05cff98f8905eea5b8c119dc41d4da32a821595bc1939d
+6/6 KILLED

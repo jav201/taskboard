@@ -290,7 +290,11 @@ class TeamState:
                     existing.archived = pd["archived"]
             else:
                 try:
-                    project = Project.from_dict(pd)
+                    # a teammate's team.json never curates this board's
+                    # presentation (batch 2026-10-19-batch-01, security S-4)
+                    project = Project.from_dict({k: v for k, v in pd.items()
+                                                 if k not in ("show_in_present",
+                                                              "present_rank")})
                 except Exception:
                     continue
                 board.projects.append(project)
