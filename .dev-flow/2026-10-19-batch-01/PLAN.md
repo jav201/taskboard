@@ -21,7 +21,7 @@ orchestrator presents the full plan in-conversation at each phase gate.
 | Project | taskboard |
 | Batch | 2026-10-19-batch-01 |
 | Objective | Present view 3 `all` (variant C, curate rail, of the present-portfolio round): every shown project on one date ruler beside a project rail; hide and show projects and tasks, a persisted presentation-only project order, fold, a `u` picker of hidden items in all three Present views, `x` exporting the timeline without the rail; and the shipped bug of views 1/2 that draws a start-less milestone as a bar from today |
-| Last updated | ARQ · 2026-10-19 |
+| Last updated | P3 · 2026-10-19 |
 | Standing authorization | standing authorization — the orchestrator's commission of 2026-10-19 (the runtime cannot prompt), relaying the operator's verdict on `prototypes/present_portfolio/` of 2026-10-19: «C: Me parece la mejor opción para mis objetivos.» · «Sí, que persista el orden.» · «Siempre la traigo con (a), pero sería útil tener el seleccionador propuesto con (u)», and the earlier commission «necesito que en el modo presentación pueda tener la vista del gantt con todos los proyectos… esconder tareas o proyectos… reordenar los proyectos en el orden que mejor me convenga.» Quoted from the commission: «Implement a /dev-flow batch … Batch id `2026-10-19-batch-01`, artifact language English», «Cut local branch `feat/present-all` from `main` (2cf17f0)», «you may cherry-pick or merge that prototype commit into your branch», «Do NOT push», «Max 4 SOURCE files per increment (tests uncapped)», decisions D1–D8 «made by the orchestrator under "confío en tu juicio"». Read as: every gate of this batch is autonomous (reviewer roles are spawned sub-agents); commits on the local branch `feat/present-all` are authorized, each ending with the commission's co-author line; **push and merge are NOT authorized**; synthetic data only; the operator's name nowhere (`username_subject`); `.gitattributes`, the two `inc001-brief.md` files and the untracked old `.dev-flow/*` files are not touched or staged. |
 | First gate | step 1, on `feat/present-all` at `2cf17f0` before the rollover: exit 1 — 86 block · 42 notice · 63 not applicable; every BLOCK the outgoing closed batch's record against the tree: `V59` ×85 (2026-10-18-batch-03's `base_ref` `620f58c` predates `2cf17f0`, the retirement commit made after its close) and `V2` ×1 (`AT-1905`, whose node `2cf17f0` retired with the round, named by the closed batch's records) — both repaired by the rollover, which re-stamps `base_ref` and makes this batch the active record; `V7`: bundle identical to its manifest both directions, 57 declared files, `2026-10-12-rev102`. Step 3 (after the rollover): exit 0 — 0 block · 64 notice · 47 not applicable (`evidence/gate-step1.txt`, `evidence/gate-step3.txt`). |
 | Premises / RC-1 | RC-1 (a): `git fetch origin` → `origin/main` = `2cf17f0cab2738d1c1ae9250eb845d77eb73c300` = local `main`; `git switch -c feat/present-all main`; HEAD equals the origin tip, so no rebase is owed. The round's commit `1132d85` (local branch `proto/present-portfolio`) cherry-picked as `bdf6e9d` (prototype files only — the design input, as the commission allows), and `base_ref` stamped `bdf6e9d54d6e39ef083c2cc8708de5b6943b98e9` so the round is not counted as this batch's work. RC-1 (b): not already shipped — on `origin/main` `PresentScreen` has two views (`views.py:6168` `PRESENT_VIEWS = ("gantt", "split")`), `Project` has no presentation field (`models.py:796-805`), `git grep present_rank taskboard/` → nothing. RC-2: `git ls-remote --exit-code --heads origin` → exit 0. Premises: `01-requirements.md` §2.7 (P-1..P-7, all TRUE, `evidence/premises.txt`). |
@@ -53,7 +53,7 @@ The trigger evaluation `state.json`'s `triggers.record` points at: one row per t
 
 ## Where we are
 
-ARQ — P0 approved (the batch open by rollover on `bdf6e9d`, triggers evaluated, ARQ/PDR/DDR taken up, the stories READY); the module-map amendment, the requirements and the design proposal are drafted and go to the reviewer lenses (architect · qa-reviewer · ux-reviewer · security-reviewer).
+P3 — ARQ approved (with A-1..A-4, A-15 fixed), P1/P2 approved after one iterate-to-refine (LED .2, .3), the PDR sealed approved with conditions PC-1..PC-4; increment 001 (the milestone row) is next.
 
 ## Objective
 
@@ -68,14 +68,18 @@ Ship variant C of the present-portfolio round as Present view 3 `all` — the po
 | US-2103 | READY | increments 002, 004 |
 | US-2104 | READY | increment 004 |
 | P0 | done | triggers evaluated; refinement done |
-| ARQ | in progress | `docs/ARCHITECTURE.md` amended (drafted) |
+| ARQ | approved | `docs/ARCHITECTURE.md` amended; architect iteration 2 |
+| P1 | approved after one iterate-to-refine | LED .2, LED .3 folded |
+| P2 | approved | iteration 1 iterate-to-refine (architect, qa majors); iteration 2 approve; ux and security approve with conditions, carried |
+| PDR | approved with conditions | PC-1..PC-4 |
+| P3 | in progress | increment 001 next |
 
 ## Roadmap + increment plan
 
 - 001 — the milestone row (HLR-2101): `taskboard/views.py` (`_present_task_row`); `tests/test_present_milestone.py` (TC-2101, AT-2101), `tests/present_portfolio_board.py` (the round's board). 1 source file.
-- 002 — the model (HLR-2102): `taskboard/models.py`; `tests/test_present_all.py` (TC-2102; AT-2102 lands with 004, which ships the keys it drives). 1 source file.
-- 003 — view 3 (HLR-2103, HLR-2104): `taskboard/views.py` (`render_present_all`, `PRESENT_SCREEN_VIEWS`), `taskboard/app.py` (`PresentScreen`); `tests/test_present_all.py` (TC-2103, TC-2104, AT-2103, AT-2104) and the law-driven hint updates. 2 source files.
-- 004 — curation and the picker (HLR-2105, HLR-2106, AT-2102): `taskboard/app.py`, `taskboard/modals.py`, `taskboard/views.py` (`present_hidden_rows`); `tests/test_present_all.py`; `README.md`, `.dev-flow/BACKLOG.md` (docs). 3 source files.
+- 002 — the model (HLR-2102): `taskboard/models.py`, `taskboard/team_sync.py` (the pull strips the two keys); `tests/test_present_all.py` (TC-2102). 2 source files.
+- 003 — the view-3 renderer (HLR-2103; the rows of HLR-2106): `taskboard/views.py` (`render_present_all`, `PRESENT_SCREEN_VIEWS`, `present_hidden_rows`); `tests/test_present_all.py` (TC-2103, TC-2106's rows). 1 source file.
+- 004 — the screen and the picker (HLR-2104, HLR-2105, HLR-2106): `taskboard/app.py`, `taskboard/modals.py`; `tests/test_present_all.py` (TC-2104, TC-2105, TC-2106's picker, AT-2102..AT-2106) and the law-driven hint updates; `README.md`, `.dev-flow/BACKLOG.md` (docs). 2 source files.
 
 ## Key decisions
 
@@ -94,7 +98,7 @@ Ship variant C of the present-portfolio round as Present view 3 `all` — the po
 | 2026-10-19 | the hint's `u`: the tail ` · u N hidden` (views 1/2) / ` · u P project(s) + T task(s) hidden` (view 3), only when something is hidden; below 36 columns the tail stays ` · N hidden` | the hint's own `<key> <label>` grammar; `u` shown where it acts; +2 cells only when hidden |
 | 2026-10-19 | `PRESENT_VIEWS` stays `("gantt", "split")` (the views of `render_present`); the screen's three views are `PRESENT_SCREEN_VIEWS` | view 3 has its own renderer (`docs/ARCHITECTURE.md` §5); the tests that iterate `PRESENT_VIEWS` through `render_present` stay valid |
 | 2026-10-19 | the reviewer lenses of ARQ, P2 and the PDR run as one spawned agent per role over the drafted artifacts together (architect · qa-reviewer · ux-reviewer · security-reviewer), each returning per-station findings; the gates are then recorded in station order | the four roles are independent of each other and of the author; one pass per role over the three stations' artifacts avoids re-reading the same contract three times — declared here |
-| 2026-10-19 | four increments in the order 001 milestone → 002 model → 003 view 3 → 004 curation + picker | 001 first so view 3 inherits the fixed row; 002 before 003 because view 3 reads the order |
+| 2026-10-19 | four increments: 001 milestone → 002 model → 003 renderer → 004 screen + picker (re-cut after P2: the screen in one increment) | 001 first so view 3 inherits the fixed row; 002 before 003 because view 3 reads the order; the screen whole in 004 so no commit ships a half-wired view 3 (architect A-11, A-12) |
 
 ## Risks / watch-items
 
@@ -119,6 +123,8 @@ Ship variant C of the present-portfolio round as Present view 3 `all` — the po
 **Runtime absences (`SKILL.md` gate step 5), named once:** no slash commands, no hooks of the flow's own, no operator prompt (the standing authorization stands in at every gate); reviewer roles run as spawned agents carrying their `agents/<role>.md` role. `V15`, `V16`, `V17`: `not-run` — no canon tree, checkout table or flow hook from a bundle. `/dev-flow-sync`: `not-run` — no deployment record in a bundle install.
 
 **Step 1 (before the rollover):** exit 1 — the BLOCKs are the outgoing closed batch's (`V59` ×85, `V2` ×1, see the header's `First gate`), repaired by the rollover; NOTICEs `V9` ×13, `V13` ×8, `V22` ×5, `V23` ×3, `V42` ×9, `V53` ×1, `V57` ×2, `V30` — historical, over closed batches, and the bundle run.
+
+**ARQ … PDR gates:** 0 block expected; `V62` between each `--station` move and this plan's rewrite — cleared by each rewrite; `V23` on the seeded design records' template placeholders until each was filled, and on the design proposal's preamble line 18 (the template's own grammar line) — it stays.
 
 **P0 (step 3, after the rollover):** 0 block · 64 notice — the step-3 placeholder NOTICEs (`V27`, `V31`–`V34`, `V36`–`V38`, `V41`, `V43`–`V51`, `V54`) over the unfilled seeds; `V30`; the historical NOTICEs above.
 

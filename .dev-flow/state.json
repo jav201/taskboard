@@ -172,7 +172,7 @@
     }
   ],
   "guided": false,
-  "current_station": "ARQ",
+  "current_station": "P3",
   "phase_status": "in-progress",
   "stations_active": [
     "P0",
@@ -249,6 +249,26 @@
       "station": "P0",
       "date": "2026-10-19",
       "decision": "P0 approved under the batch's standing authorization (the orchestrator's commission of 2026-10-19 relaying the operator's verdict «C» on prototypes/present_portfolio/): batch opened by rollover on bdf6e9d (the round cherry-picked from 1132d85); triggers A2 A3 B1 B3 B4 C1 C4 C5 C8 D1 E1 fired, ARQ/PDR/DDR taken up; US-2101..US-2104 READY; ARQ is next."
+    },
+    {
+      "station": "ARQ",
+      "date": "2026-10-19",
+      "decision": "ARQ approved under the batch's standing authorization: docs/ARCHITECTURE.md amended (the project record and its team pull, present_order, render_present_all, PRESENT_SCREEN_VIEWS, present_hidden_rows, PresentHiddenPicker; §5 rationale rows); architect approve with conditions, A-1..A-4, A-15 and the A-2 remainder fixed in iteration 2; P1 is next."
+    },
+    {
+      "station": "P1",
+      "date": "2026-10-19",
+      "decision": "P1 approved under the batch's standing authorization: US-2101..US-2104 -> HLR-2101..HLR-2106 -> LLR-2101.1..LLR-2106.1, AT/TC-2101..2106, premises P-1..P-7 TRUE, LED .1 (amended by LED .2, .3 after P2); P2 is next."
+    },
+    {
+      "station": "P2",
+      "date": "2026-10-19",
+      "decision": "P2 approved under the batch's standing authorization: iteration 1 iterate-to-refine (architect, qa-reviewer majors) folded as LED-2026-10-19-batch-01.2; iteration 2 approve (architect, qa-reviewer), two minors folded as LED .3; ux-reviewer and security-reviewer approve with conditions, carried; PDR is next."
+    },
+    {
+      "station": "PDR",
+      "date": "2026-10-19",
+      "decision": "PDR sealed approved with conditions (PC-1..PC-4) under the batch's standing authorization; the cut re-made (003 views only, 004 app + modals); P3 is next."
     }
   ],
   "obsidian_synced": false,

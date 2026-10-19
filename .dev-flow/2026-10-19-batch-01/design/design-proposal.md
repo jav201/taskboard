@@ -27,7 +27,7 @@
 |---|---|
 | Id | `PDR-2026-10-19-batch-01` |
 | Requirements covered | HLR-2101..HLR-2106 · LLR-2101.1..LLR-2106.1 (LED-2026-10-19-batch-01.1) |
-| Modules touched (from `docs/ARCHITECTURE.md`) | `models` (`taskboard/models.py`), `views` (`taskboard/views.py`), `app` (`taskboard/app.py`), `modals` (`taskboard/modals.py`), `tests`, `docs` |
+| Modules touched (from `docs/ARCHITECTURE.md`) | `models` (`taskboard/models.py`), `team_sync` (`taskboard/team_sync.py`, increment 002: → `models` only, an allowed direction), `views` (`taskboard/views.py`), `app` (`taskboard/app.py`), `modals` (`taskboard/modals.py`), `tests`, `docs` |
 | Triggers that fired | A2 · A3 · B1 · B3 · B4 · C1 · C4 · C5 · C8 · D1 · E1 |
 | Author / reviewers | orchestrator (author) · `architect` · `qa-reviewer` · `ux-reviewer` · `security-reviewer` |
 
@@ -38,9 +38,9 @@
 Ship variant C of the present-portfolio round as Present view 3 `all`, and fix the milestone row it found. Four increments, in this order:
 
 - **001 — the milestone row (HLR-2101).** `views._present_task_row` gains the round's milestone branch (`portfolio_proto.task_row`): `gantt_milestone_cells` on the frame's axis, `◆` in the label, chip `_present_chip(None, due)`, the cursor's `◆` accent. Views 1/2 change only on milestone rows; view 3 (003) inherits it.
-- **002 — the model (HLR-2102).** `Project.show_in_present` / `Project.present_rank` (the round's `Project.extra` stand-ins made fields); `present_order`, `set_present_order` in `models`; `_to_dict` drops a `None` rank.
-- **003 — view 3 (HLR-2103, HLR-2104).** `views.render_present_all` — the round's A/C path (`geo`, `layout`, `timeline_lines`, `head_row`, `_label`, `_echo_span`, `ruler`, `head`, `rail_lines`, `render`) moved in, B's code (`_ticks`, `_legend`, `unfolded`) left out, the rail fixed at 24 cells and not drawn below 100 columns; `PRESENT_SCREEN_VIEWS`; `PresentScreen`: `3`, the cycle over three views, the view-3 cursor and its hand-off, `↑↓`/`←→` in view 3, `x` in view 3, the hint (three names, view 3's wordings, the `u` tail).
-- **004 — curation and the picker (HLR-2105, HLR-2106).** `PresentScreen`: `space`/`a` in view 3, `shift+↑/↓`, `enter`, `u`; `views.present_hidden_rows`; `modals.PresentHiddenPicker`. Docs: `README.md` §Presentation, `.dev-flow/BACKLOG.md`.
+- **002 — the model (HLR-2102).** `Project.show_in_present` / `Project.present_rank` (the round's `Project.extra` stand-ins made fields); `present_order`, `set_present_order` in `models`; `_to_dict` drops a `None` rank; `team_sync`'s pull strips the two keys from a new team project (security S-4). 2 source files.
+- **003 — the view-3 renderer (HLR-2103; the rows of HLR-2106).** `views.render_present_all` — the round's A/C path (`geo`, `layout`, `timeline_lines`, `head_row`, `_label`, `_echo_span`, `ruler`, `head`, `rail_lines`, `render`) moved in, B's code (`_ticks`, `_legend`, `unfolded`) left out, the rail fixed at 24 cells and not drawn below 100 columns; `PRESENT_SCREEN_VIEWS`; `present_hidden_rows`. 1 source file; nothing reachable from the app yet.
+- **004 — the screen and the picker (HLR-2104, HLR-2105, HLR-2106).** `PresentScreen`: `3`, the cycle over three views, the view-3 cursor and its hand-off, `↑↓`/`←→`, `space`/`a` in view 3, `shift+↑/↓`, `enter`, `u`, `x` in view 3, the hint (three names, view 3's wordings, the `u` tail); `modals.PresentHiddenPicker`. 2 source files. Docs: `README.md` §Presentation, `.dev-flow/BACKLOG.md`. One increment for the screen, so no commit ships view 3 with the views-1/2 `space`/`a` acting in it or advertises `u` before it is bound (architect A-11, A-12).
 
 **Not done:** variants A/B and B's ticks; persisting folds or the view; reordering `board.projects`; the `?` help (§6).
 
@@ -87,7 +87,7 @@ The writes (all `Board.save()` at once): `space` → one flag; `a` → every hid
 | `Project` fields | 9 fields | + `show_in_present`, `present_rank` | `models`, `views`, `app`, `team_sync` | no |
 | `_present_task_row` (private) | every task a bar | a milestone is `◆` on its date | `render_present`, `render_present_all` | no |
 | `render_present_all` (new), `PRESENT_SCREEN_VIEWS` (new), `present_hidden_rows` (new) | — | as LLR-2103.1, LLR-2104.1, LLR-2106.1 | `app.PresentScreen`, `modals`, tests | no |
-| `PresentScreen` keys and hint | 2 views; ` · N hidden` | 3 views; `3`, `shift+↑↓`, `enter`, `u`; ` · u N hidden` | the presenter; the hint tests (law-driven) | no |
+| `PresentScreen` keys and hint | 2 views; ` · N hidden` | 3 views; `3`, `shift+↑↓`, `enter`, `u`; ` · u N hidden` (one count in every view) | the presenter; the hint tests (law-driven) | no |
 
 ## 5 · Proposed test cases
 
@@ -97,13 +97,13 @@ The writes (all `Board.save()` at once): `space` → one flag; `a` → every hid
 | AT-2101 | B | `R` on Billing Migration at 118×31: `Cut-over weekend` holds one `◆` at Oct 25, no bar glyph, chip `due Oct 25`; the same in view 2 | the branch removed |
 | TC-2102 | 0 | the load table of both keys; the save rule; byte-identity of boards without keys; `present_order` / `set_present_order` | rank accepting a bool; `None` written; `show_in_present` read truthy; unranked first |
 | AT-2102 | B | reorder + hide on the rail → the file's ranks and flags; restart → same order; the board gantt in board order | `_to_dict` dropping the rank; the order read from `board.projects` |
-| TC-2103 | A | the frame sweep (dims, rail iff ≥100, order, hidden absent, cursor never auto-folded, no overflow row when everything fits); the round's C text at 160×45 / 118×30 but for the milestone rows; markup in a name | the rail at <100; hidden projects drawn; auto-fold of the cursor's project; the order ignoring `present_rank` |
+| TC-2103 | A | the frame sweep over three boards incl. a reverse-ranked one with a hidden project (dims, rail iff ≥100, order, hidden absent, cursor never auto-folded, no overflow row when everything fits); the round's C text at 160×45 / 118×30 row for row; the S-2 markup payloads | the rail at <100; hidden projects drawn; auto-fold of the cursor's project; the order ignoring `present_rank` |
 | AT-2103 | B | `R`, `3` at 160×45 / 118×30 / 80×24: header, projects in order, rail contents, no rail at 80 | `3` unbound; the rail threshold moved |
-| TC-2104 | 0 | the cycle table; the cursor hand-off; the hint list × widths × hidden; `present_paths(..., "all")`; the re-derived hint tables | `tab` modulo 2; `u` dropped from the tail; the export writing the frame (with the rail); the hand-off keeping the old project |
-| AT-2104 | B | the views' cycle with one cursor; `x` → `-all` SVG without `PROJECTS`; the hint's tail in view 3 | the export with the rail; the cycle |
+| TC-2104 | 0 | the cycle table; the cursor hand-off; the hint against LITERAL first-width tables (measured with `cell_len` outside the code); `present_paths(..., "all")`; the law-driven hint tables | `tab` modulo 2; `u` dropped from the tail; the hand-off keeping the old project |
+| AT-2104 | B | the views' cycle with one cursor; `x` → `-all` SVG without `PROJECTS`; the hint's tail and labels in view 3 | the export written with the rail; the cycle |
 | TC-2105 | A | `space` / `a` / `shift+↑↓` / `enter` / `←→` on a mounted screen with counted saves | a no-op key that saves; reorder over shown only on the rail; ranks not dense; `enter` saving |
 | AT-2105 | B | the curation sequence through keys, read in the frame and the file | `space` on a header hiding nothing; the rail's toggle one-way |
-| TC-2106 | A | `present_hidden_rows` both modes; the picker's toggle and save; markup in a title; `nothing hidden` | shown tasks listed; the toggle not saving; the title through a parser |
+| TC-2106 | A | `present_hidden_rows` both modes (003); the picker's toggle and save, markup in a title, `nothing hidden`, the census unchanged (004) | shown tasks listed; a hidden project's hidden tasks dropped; the toggle not saving; the title through a parser |
 | AT-2106 | B | `u` in view 1 and view 3: the rows, a toggle, `esc`, the frame | `u` unbound; the picker's rows from the wrong project |
 
 **5b · The gauntlet controls that apply, and who pays:** C-40 (each new assertion RED on `base_ref` — a worktree at `bdf6e9d` — or by a recorded mutation; the orchestrator, `evidence/mutate.py` per increment); C-19 (one complete suite run per increment and at P4 — the orchestrator); C-42 (the ATs read the frame, the hint and the picker as Textual holds them); C-17/C8 (every new site over board-file text escaped or a plain `Text` piece; `tests/test_markup_census.py` stays green and gains no exemption); the captures (the real app headless, `NO_COLOR` unset, compared by eye with the round's C captures — the orchestrator, at increments 003 and 004).
@@ -136,3 +136,5 @@ Risks: the law-driven updates of the shipped hint tests (TC-1904, TC-1808, TC-20
 ## 8 · Parallelisation plan *(only if the batch forks)*
 
 none — one lane, four increments in order.
+
+**After the P2/PDR review (LED-2026-10-19-batch-01.2):** the conditions are carried by the requirements (the view-3 tail one count, the rail toggle in place, `a`'s notice, `u` closing, the escape order, the census key, the literal hint tables, the team pull stripping the keys) and the re-cut above.
