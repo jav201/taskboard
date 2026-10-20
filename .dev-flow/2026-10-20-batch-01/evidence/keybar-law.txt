@@ -1,0 +1,8 @@
+gantt primary 80 -> '? Map  ; More  q Quit  B  1  2  3  4  5  6  7  8  9  0  ↵  a  e  d  L  ↓  ↑'
+gantt more 118 -> '?  ;  q  B  1  2  3  4  5  6  7  8  9  0  ↵  a  e  d  L  x  X  v  u  t  T  M  [  ]  !  b  +  -  m  F  esc  /  ↓  ↑ +2'
+gantt primary 80: before '? Map  ; More  q Quit  1 Lanes  2  3  4  5  6  7  8  9  0  ↵  a  e  d  L  ↓  ↑'
+                  after  '? Map  ; More  q Quit  B  1  2  3  4  5  6  7  8  9  0  ↵  a  e  d  L  ↓  ↑'
+gantt primary 118: before '? Map  ; More  q Quit  1 Lanes  2 Agenda  3 Gantt  4 Kanban  5 Focus  6 Chains  7 Flow  8  9  0  ↵  a  e  d  L  ↓  ↑'
+                  after  '? Map  ; More  q Quit  B Boards  1 Lanes  2 Agenda  3 Gantt  4 Kanban  5 Focus  6  7  8  9  0  ↵  a  e  d  L  ↓  ↑'
+gantt primary 160: before '? Map  ; More  q Quit  1 Lanes  2 Agenda  3 Gantt  4 Kanban  5 Focus  6 Chains  7 Flow  8 Standup  9 People  0 Setup  ↵ Details  a Add  e Edit  d Del  L  ↓  ↑'
+                  after  '? Map  ; More  q Quit  B Boards  1 Lanes  2 Agenda  3 Gantt  4 Kanban  5 Focus  6 Chains  7 Flow  8 Standup  9 People  0 Setup  ↵ Details  a Add  e  d  L  ↓  ↑'

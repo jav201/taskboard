@@ -11,13 +11,13 @@ from rich.text import Text
 from textual import events
 from textual.app import App, ComposeResult
 from textual.binding import Binding
-from textual.containers import Vertical, VerticalScroll
+from textual.containers import Grid, Vertical, VerticalScroll
 from textual.keys import format_key
-from textual.screen import ModalScreen
+from textual.screen import ModalScreen, Screen
 from textual.widgets import Static
 
 from . import history
-from .boards import Registry
+from .boards import Registry, peek_board
 from .models import (AUTO_ARCHIVE_DAYS, IMAGE_EXTS, Board, Project, Task,
                      archive_refusal, chain_template, default_board_path, is_open,
                      link_refusal,
@@ -32,11 +32,12 @@ from .modals import (ClockModal, GanttLinkMode, LinkPicker, CommandPalette, Conf
                      PresentHiddenPicker, ProjectPicker, StandupModal, TaskDetails, TaskModal,
                      TeamIdentityPicker,
                      TemplateEditor, TemplatePicker, TextPrompt)
-from .keymap import KeyBar, app_bindings, palette_commands
+from .keymap import KEYMAP, KeyBar, app_bindings, palette_commands
 from .ribbon import Ribbon
 from .team_sync import (TEAM_FILENAME, TeamState, _read_json, clean_roster,
                         probe_setup_health)
-from .views import (clip, filtered_board, focus_tasks, gantt_group_key, group_key,
+from .views import (HEX, ago, board_hex, board_summary, home_card, home_keys, home_missing, home_title,
+                    clip, filtered_board, focus_tasks, gantt_group_key, group_key,
                     gantt_plan, nav_model, present_paths, present_project_id,
                     present_hidden, present_hidden_rows, present_tasks, render_present,
                     render_present_all, render_view, save_present_png, PresentAll,
@@ -52,6 +53,9 @@ TICK_SECONDS = 1.0
 # Written into board.json the first time the renumbering notice is shown, so it
 # is shown exactly once per board rather than at every launch.
 RENUMBER_NOTICE_KEY = "seen_view_renumber_2026_07"
+
+# every action the key seat binds — the main screen's keys (the home blocks them)
+SEAT_ACTIONS = frozenset(k.action.split("(")[0] for k in KEYMAP)
 
 VIEW_ORDER = ["swimlanes", "agenda", "gantt", "kanban", "focus", "chainmap",
               "flow", "standup", "people", "setup"]
@@ -626,6 +630,124 @@ class PresentScreen(ModalScreen[None]):
         self.dismiss(None)
 
 
+class BoardCard(Static):
+    """One board on the home."""
+
+
+class BoardsHome(Screen[None]):
+    """The home (batch 2026-10-20-batch-01, HLR-2204; variant C of the
+    multi-board round): every active board as a card — its pressure at a glance
+    — and the door to open one. Shown at start when more than one board is
+    active, and on `B`. Each board is read once, when the home opens."""
+
+    BINDINGS = [Binding("escape", "back", "", priority=True),
+                Binding("left,h", "move(-1)", "", priority=True, show=False),
+                Binding("right,l", "move(1)", "", priority=True, show=False),
+                Binding("up,k", "move(-2)", "", priority=True, show=False),
+                Binding("down,j", "move(2)", "", priority=True, show=False),
+                Binding("enter", "open", "", priority=True, show=False),
+                Binding("q", "quit_app", "", show=False)]
+    DEFAULT_CSS = """
+    BoardsHome { background: #0d1117; }
+    #home-title { height: 1; padding: 0 1; }
+    #home-scroll { height: 1fr; scrollbar-size: 1 1; }
+    #home-grid { grid-size: 2; grid-gutter: 1 2; height: auto; padding: 1 1 0 1; }
+    BoardCard { height: auto; padding: 0 1; border-title-style: bold;
+                border-subtitle-color: #5b6675; }
+    #home-keys { dock: bottom; height: 1; padding: 0 1; background: #0b0f17; }
+    """
+
+    def __init__(self) -> None:
+        super().__init__()
+        self.cursor = 0
+        self.entries: list = []
+        self.boards: dict = {}
+
+    def compose(self) -> ComposeResult:
+        self._load()
+        self.cursor = next((i for i, e in enumerate(self.entries)
+                            if e.id == self.app.board_id), 0)
+        yield Static(id="home-title")
+        with VerticalScroll(id="home-scroll"):
+            with Grid(id="home-grid"):
+                for i in range(len(self.entries)):
+                    yield BoardCard(id=f"card-{i}")
+        yield Static(id="home-keys")
+
+    def on_mount(self) -> None:
+        self._paint()
+
+    def _load(self) -> None:
+        """Every active board, read once: the open one is the app's own."""
+        self.entries = self.app.registry.active()
+        self.boards = {}
+        for e in self.entries:
+            if e.id == self.app.board_id:
+                self.boards[e.id] = self.app.board
+            elif Path(e.path).exists():
+                self.boards[e.id] = peek_board(e.path)
+            else:
+                self.boards[e.id] = None
+
+    def on_resize(self, _event) -> None:
+        self._paint()
+
+    def _paint(self) -> None:
+        cards = list(self.query(BoardCard))
+        if len(cards) != len(self.entries):
+            return
+        w, h = self.app.size
+        inner = (w - 4) // 2 - 4
+        n_next = 5 if h >= 40 else 3 if h >= 30 else 1
+        today, now = date.today(), datetime.now()
+        late_tot = 0
+        for i, (e, card) in enumerate(zip(self.entries, cards)):
+            board = self.boards.get(e.id)
+            hexc = board_hex(e.color)
+            on = i == self.cursor
+            card.styles.border = ("heavy" if on else "round", hexc if on else "#334154")
+            card.styles.border_title_color = hexc
+            card.border_title = Text(("▶ " if on else "") + e.name)
+            card.border_subtitle = Text("open now" if e.id == self.app.board_id
+                                        else "opened " + ago(e.last_opened, now))
+            if board is None or board.load_report.get("file_unreadable"):
+                why = "file missing" if board is None else "file unreadable"
+                card.update(Text.assemble(home_missing(e.path, inner, why)))
+                continue
+            s = board_summary(board, today)
+            late_tot += s["late"]
+            card.update(Text.assemble(home_card(s, e.color, inner, n_next, h >= 40, today)))
+        # each body is a Text built from plain pieces (views); `Text.assemble` keeps
+        # it one, so no markup parser ever reads a board's text here
+        self.query_one("#home-title", Static).update(
+            Text.assemble(home_title(len(self.entries), late_tot, today, w)))
+        self.query_one("#home-keys", Static).update(Text.assemble(home_keys(w)))
+        if cards:
+            cards[self.cursor].scroll_visible(animate=False)
+
+    def action_move(self, delta: int) -> None:
+        if self.entries:
+            self.cursor = max(0, min(len(self.entries) - 1, self.cursor + delta))
+            self._paint()
+
+    def action_open(self) -> None:
+        if not self.entries:
+            return
+        entry = self.entries[self.cursor]
+        if self.boards.get(entry.id) is None:
+            self.app.notify(f"{entry.name}: its file is missing ({entry.path}). Nothing was "
+                            "opened.", title="Boards", severity="warning", markup=False)
+            return
+        self.app.pop_screen()
+        self.app.switch_board(entry.id)
+
+    def action_back(self) -> None:
+        self.app.pop_screen()
+
+    def action_quit_app(self) -> None:
+        self.app.exit()
+
+
 class TaskboardApp(App):
     """Frameless kanban desktop widget."""
 
@@ -699,9 +821,19 @@ class TaskboardApp(App):
     def check_action(self, action: str, parameters: tuple[object, ...]) -> bool | None:
         """While a modal is open, release the board's priority arrow/vim bindings
         so the modal's own widgets (e.g. the ProjectPicker list, Select dropdowns)
-        receive them instead of moving the hidden board selection."""
-        if (action in ("cursor", "hmove", "toggle_presentation")
+        receive them instead of moving the hidden board selection; `B` (`boards`)
+        too, so the home never opens over another screen. While the home is on the
+        stack, it holds the keys: no action of the key seat but `quit` acts."""
+        if action in SEAT_ACTIONS and any(isinstance(sc, BoardsHome)
+                                          for sc in self.screen_stack):
+            # the home holds the keys — and the modals over it (its form, its
+            # confirmation, a board's start-up modal) keep their own: no key of
+            # the main screen acts behind it (architect A-9); Textual's own
+            # actions (focus_next for tab in a modal) are not the seat's
+            return action == "quit"
+        if (action in ("cursor", "hmove", "toggle_presentation", "boards")
                 and len(self.screen_stack) > 1):
+            # `boards` too: the home never opens over the presentation or a modal
             return False
         return True
 
@@ -713,8 +845,24 @@ class TaskboardApp(App):
             yield KeyBar(id="keybar")
 
     def on_mount(self) -> None:
+        self._label_board()
+        if len(self.registry.active()) > 1:
+            # FIRST: the opened board's own modals (team identity, the milestone
+            # offer) then sit above the home and answer for that board (D11)
+            self.push_screen(BoardsHome())
         if self._open_board(at_mount=True):
             self._warn_registry()
+
+    def _label_board(self) -> None:
+        """The chip (HLR-2203): the open board's name and colour, only when more
+        than one board is active."""
+        entry = self.registry.get(self.board_id) if self.board_id else None
+        self.board.label = ((entry.name, entry.color)
+                            if entry is not None and len(self.registry.active()) > 1 else None)
+
+    def action_boards(self) -> None:
+        """`B`: the home."""
+        self.push_screen(BoardsHome())
 
     def _open_board(self, at_mount: bool = False) -> bool:
         """The start a board gets — at mount, and again at every switch to
@@ -786,6 +934,7 @@ class TaskboardApp(App):
             self.view_mode = self._pre_setup_view
         self._setup_state = None
         self._last_history_error = None
+        self._label_board()
         self._refresh_keybar()
         if not self._open_board():
             # its migration failed: the board that was open comes back as it was
@@ -793,6 +942,7 @@ class TaskboardApp(App):
             # notices again (architect A-6, ux UX-12)
             for k, v in before.items():
                 setattr(self, k, v)
+            self._label_board()
             self._refresh_keybar()
             self.refresh_view()
             self._start_team_daemon()

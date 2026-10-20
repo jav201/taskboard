@@ -108,6 +108,7 @@ between the short and the full layer. Every key below is also in the command pal
 | `?` | Help | Per-view help (usage, legend, example, keys, and the global keys such as `R` and `S`); `m` there for the full map |
 | `;` | More | Toggle the key bar's layer |
 | `q` | Quit | Quit |
+| `B` | Boards | The home of your boards: one card per board; `Enter` opens one |
 | `1`–`6`, `7`–`9`, `0` | Views | See [Views](#views) |
 | `↑` `↓` / `k` `j` | Move | Move the selection in the order the view draws |
 | `←` `→` / `h` `l` | Across | Move between columns (kanban) |

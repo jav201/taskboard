@@ -1,0 +1,54 @@
+# the key-bar words (and keys) lost per view, layer and width once `B Boards` joins the seat (ux N1, PDR PC-1)
+# base: 783397e; after: the batch's tree; read with keymap.fit_bar
+swimlanes/primary/118: words lost ['6 Chains']; keys lost -
+swimlanes/primary/160: words lost ['a Add', 'e Edit']; keys lost -
+swimlanes/more/80: words lost -; keys lost ['[']
+swimlanes/more/118: words lost ['; More']; keys lost -
+swimlanes/more/160: words lost ['5 Focus']; keys lost -
+agenda/primary/80: words lost ['1 Lanes']; keys lost -
+agenda/primary/118: words lost ['6 Chains', '7 Flow']; keys lost -
+agenda/primary/160: words lost ['e Edit', 'd Del']; keys lost -
+agenda/more/80: words lost -; keys lost ['[']
+agenda/more/160: words lost ['5 Focus', '6 Chains']; keys lost -
+gantt/primary/80: words lost ['1 Lanes']; keys lost -
+gantt/primary/118: words lost ['6 Chains', '7 Flow']; keys lost -
+gantt/primary/160: words lost ['e Edit', 'd Del']; keys lost -
+gantt/more/80: words lost -; keys lost ['[']
+gantt/more/118: words lost -; keys lost ['←', '→']
+gantt/more/160: words lost ['4 Kanban']; keys lost -
+kanban/primary/118: words lost ['6 Chains']; keys lost -
+kanban/primary/160: words lost ['a Add', 'e Edit']; keys lost -
+kanban/more/80: words lost -; keys lost ['[']
+kanban/more/118: words lost -; keys lost ['/']
+kanban/more/160: words lost ['2 Agenda']; keys lost -
+focus/primary/118: words lost ['6 Chains']; keys lost -
+focus/primary/160: words lost ['a Add', 'e Edit']; keys lost -
+focus/more/80: words lost -; keys lost ['[']
+focus/more/118: words lost ['; More']; keys lost -
+focus/more/160: words lost ['5 Focus']; keys lost -
+chainmap/primary/80: words lost ['1 Lanes']; keys lost -
+chainmap/primary/118: words lost ['6 Chains', '7 Flow']; keys lost -
+chainmap/primary/160: words lost ['e Edit', 'd Del']; keys lost -
+chainmap/more/80: words lost -; keys lost [']']
+chainmap/more/160: words lost ['5 Focus', '6 Chains']; keys lost -
+flow/primary/80: words lost ['1 Lanes']; keys lost -
+flow/primary/118: words lost ['7 Flow']; keys lost -
+flow/primary/160: words lost ['e Edit', 'd Del', '↓ Down']; keys lost -
+flow/more/80: words lost -; keys lost ['!']
+flow/more/160: words lost ['6 Chains', '7 Flow']; keys lost -
+standup/primary/80: words lost ['1 Lanes']; keys lost -
+standup/primary/118: words lost ['7 Flow']; keys lost -
+standup/primary/160: words lost ['e Edit', 'd Del', '↓ Down']; keys lost -
+standup/more/80: words lost -; keys lost ['!']
+standup/more/160: words lost ['6 Chains', '7 Flow']; keys lost -
+people/primary/80: words lost ['1 Lanes']; keys lost -
+people/primary/118: words lost ['7 Flow']; keys lost -
+people/primary/160: words lost ['e Edit', 'd Del', '↓ Down']; keys lost -
+people/more/80: words lost -; keys lost ['!']
+people/more/160: words lost ['6 Chains', '7 Flow']; keys lost -
+setup/primary/80: words lost ['1 Lanes']; keys lost -
+setup/primary/118: words lost ['7 Flow']; keys lost -
+setup/primary/160: words lost ['e Edit', 'd Del', '↓ Down']; keys lost -
+setup/more/80: words lost -; keys lost ['!']
+setup/more/118: words lost ['? Map']; keys lost -
+setup/more/160: words lost ['4 Kanban', '5 Focus']; keys lost -

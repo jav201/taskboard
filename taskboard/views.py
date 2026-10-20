@@ -33,8 +33,8 @@ from rich.table import Table
 from rich.text import Text
 
 from . import history
-from .models import (Board, CASCADE_DEFAULT_MODE, CASCADE_MODES, Project, Task,
-                     critical_chain, days_in_phase, link_conflicts, link_marks,
+from .models import (Board, CASCADE_DEFAULT_MODE, CASCADE_MODES, PROJECT_COLORS, Project, Task,
+                     critical_chain, days_in_phase, is_open, link_conflicts, link_marks,
                      open_predecessors, parse_iso, present_order, unblocks_count, _md)
 from .team_sync import TeamState, sync_tone
 from .wave import DOT_ROWS, Bitmap, load_curve
@@ -646,22 +646,48 @@ def _strip(markup: str) -> str:
         return markup
 
 
-def header(title: str, right: str, w: int, tone: str = "bright") -> str:
+def header(title: str, right: str, w: int, tone: str = "bright",
+           chip: tuple[str, str] | None = None) -> str:
     """THE HEAD ROW. No box: this design commits with RULES, not boxes — the
     prototype's closure law, which the frame was the last thing failing.
 
     The row carries facts (what the view is, what it counts) across its whole
     width; `head_rule` under it is the only box-drawing left, and it is one row
-    rather than a border on all four sides."""
+    rather than a border on all four sides.
+
+    `chip` (a `Board.label`) opens the row with the open board's name when the
+    app knows more than one board (batch 2026-10-20-batch-01)."""
+    title = board_chip(chip) + title
     tvis, rvis = vis(_strip(title)), vis(_strip(right))
     if tvis + rvis + 3 > w:               # too tight -> the right content goes
         right, rvis = "", 0
     if tvis + 2 > w:                      # still tight -> truncate the title
         # in the title's own tone: every title is bold `bright` (the colour
         # budget, batches 2026-10-02-batch-01 and -02)
-        return c(fit(_strip(title), w), tone, bold=True)
+        return c(escape(fit(_strip(title), w)), tone, bold=True)
     gap = max(1, w - tvis - rvis - 1)
     return title + " " * gap + right + " "
+
+
+def board_chip(label: tuple[str, str] | None) -> str:
+    """The open board's chip (batch 2026-10-20-batch-01, HLR-2203): its name, cut
+    to 24 cells and escaped, in bold board-background ink on the board's colour,
+    a space each side — then one more. Empty without a label (one board)."""
+    if not label:
+        return ""
+    name, colour = label
+    return f"[b #0d1117 on {board_hex(colour)}] {escape(fit(name, 24).rstrip())} [/] "
+
+
+def board_hex(colour) -> str:
+    """A board's colour as a hex: a project colour's, else violet's — one rule for
+    the chip, the home's card and its strip (code review F5)."""
+    return HEX[colour] if colour in PROJECT_COLORS else HEX["violet"]
+
+
+def _head(board, title: str, right: str, w: int, tone: str = "bright") -> str:
+    """A main-screen view's head row: `header` with the board's chip."""
+    return header(title, right, w, tone, chip=getattr(board, "label", None))
 
 
 def head_rule(w: int) -> str:
@@ -1182,7 +1208,7 @@ def _grid_render(board: Board, show_archived: bool,
     right = c(f"{open_n} open · ", "mut") + c(f"{due_n} due", "over", bold=True)
     if hidden:
         right = c(f"+{len(hidden)} lanes ", "dim") + right
-    lines = [header(c("◆ TASKBOARD", "bright", bold=True)
+    lines = [_head(board, c("◆ TASKBOARD", "bright", bold=True)
                     + c(f" · grid {n_cols}×{layers_n}", "mut"), right, w)]
 
     body = h - 1
@@ -1841,7 +1867,7 @@ def render_swimlanes(board, show_archived, selected_id, today=None,
     open_n = sum(1 for t in live if not board.is_done(t))
     due_n = sum(1 for t in live if urgency(t, today, board) in ("overdue", "today"))
     right = c(f"{open_n} open · ", "mut") + c(f"{due_n} due", "over", bold=True)
-    lines = [header(c("◆ TASKBOARD", "bright", bold=True), right, w)]
+    lines = [_head(board, c("◆ TASKBOARD", "bright", bold=True), right, w)]
 
     if not lanes:
         lines.append(line(c(fit("  (no projects — press 'p' to add one)", inner), "dim")))
@@ -1944,7 +1970,7 @@ def render_agenda(board, show_archived, selected_id, today=None,
     today_n = sum(1 for t in judged if agenda_bucket(t, today) == "today")
     right = (c(f"▲ {overdue_n} overdue", "over", bold=True) + c(" · ", "mut")
              + c(f"{today_n} today", "soon"))
-    lines = [header(c("AGENDA", "bright", bold=True), right, w)]
+    lines = [_head(board, c("AGENDA", "bright", bold=True), right, w)]
 
     dated = sort_by_due([t for t in tasks if parse_iso(t.due_date) is not None])
     undated = [t for t in tasks if parse_iso(t.due_date) is None]
@@ -2981,7 +3007,7 @@ def _gantt_frame(board, show_archived, selected_id, today=None, width=68, height
                   else c("nothing past due", "dim")]
     if chain:
         right_bits.append(c(f"chain {len(chain)}", "hd"))
-    lines = [header(title, c(" · ", "dim").join(right_bits), w, tone="bright")]
+    lines = [_head(board, title, c(" · ", "dim").join(right_bits), w, tone="bright")]
 
     # the ruler
     marks: dict[int, tuple[str, str]] = {}
@@ -3575,7 +3601,7 @@ def _focus_review(board: Board, tasks: list[Task], selected_id: str | None,
 
     title = c("◆ FOCUS", "bright", bold=True) + c(" · review", "mut")
     right = c(f"{idx + 1}/{len(ordered)} · stale first", "mut")
-    lines = [header(title, right, inner)]
+    lines = [_head(board, title, right, inner)]
     selected_line = 1
     n_rows = max(len(left_rows), len(rail_rows))
     for r in range(n_rows):
@@ -3604,7 +3630,7 @@ def _focus_stale(board: Board, tasks: list[Task], selected_id: str | None,
              if (days_in_phase(t, today) or 0) >= 7 and not board.is_done(t)]
     title = c("◆ FOCUS", "bright", bold=True) + c(" · stale first", "mut")
     right = c(f"{len(tasks)} pinned", "mut")
-    lines = [header(title, right, inner)]
+    lines = [_head(board, title, right, inner)]
     lines.append(line(c(f"▲ {len(overdue)} overdue", "over")
                       + c("    ", "dim")
                       + c(f"■ {len(stale)} sitting ≥7d", "soon")
@@ -3859,7 +3885,7 @@ def render_focus(board, show_archived, selected_id, today=None,
 
     right = c(f"{len(tasks)} pinned", "mut")
     title = c("◆ FOCUS", "bright", bold=True) + c(f" · {presentation}", "mut")
-    lines = [header(title, right, w)]
+    lines = [_head(board, title, right, w)]
 
     if presentation == "inspector":
         lines += _focus_inspector(board, tasks, selected_id, today, inner, line_map)
@@ -4033,7 +4059,7 @@ def render_flow(board, show_archived, selected_id, today=None,
     known = {t.id for t in board.visible_tasks(True)}
     records = [r for r in records if r.get("task") in known]
 
-    lines = [header(c("FLOW", "bright", bold=True), "", w)]
+    lines = [_head(board, c("FLOW", "bright", bold=True), "", w)]
     lines.append(head_rule(w))
 
     if not records:
@@ -4247,7 +4273,7 @@ def render_standup(board, show_archived, selected_id, today=None,
     inner = w
 
     chrome = render_team_filter_chrome(team_filter)
-    lines = [header(c("STANDUP", "bright", bold=True) + c(" · ", "mut") + chrome,
+    lines = [_head(board, c("STANDUP", "bright", bold=True) + c(" · ", "mut") + chrome,
                     "", w)]
     lines.append(head_rule(w))
 
@@ -4350,7 +4376,7 @@ def render_people(board, show_archived, selected_id, today=None,
     marks = link_marks(board)            # board tasks only; a teammate's paint none
 
     chrome = render_team_filter_chrome(team_filter)
-    lines = [header(c("PEOPLE", "bright", bold=True) + c(" · ", "mut") + chrome,
+    lines = [_head(board, c("PEOPLE", "bright", bold=True) + c(" · ", "mut") + chrome,
                     "", w)]
     lines.append(head_rule(w))
 
@@ -5048,7 +5074,7 @@ def _kanban_grouped(board, show_archived, selected_id, today, w, height, line_ma
     if focused is not None:      # the focus is a mode too: it is NAMED (R-08),
         mode += (c(" · focus: ", "mut")          # with the user's own text
                  + c(escape(focused.name), "mut"))  # escaped like everywhere
-    head = [header(c("KANBAN", "bright", bold=True) + mode, right, w, tone="bright")]
+    head = [_head(board, c("KANBAN", "bright", bold=True) + mode, right, w, tone="bright")]
     n_done = len(phase_buckets(board, plan.tasks)[-1]) if board.phases else 0
     last = board.phases[-1].upper() if board.phases else ""
     rail_head = c(fit(f"✓ {last} {n_done}" if plan.rail_titles else f"✓{n_done}",
@@ -5240,7 +5266,7 @@ def _kanban_matrix(board, show_archived, selected_id, today, w, height, line_map
     sep = c("│", "frame")
 
     right = c(f"{len(tasks)} tasks", "mut")
-    lines = [header(c("KANBAN", "bright", bold=True) + c(" · matrix", "mut"), right, w,
+    lines = [_head(board, c("KANBAN", "bright", bold=True) + c(" · matrix", "mut"), right, w,
                      tone="bright")]
     lines.append(line(fit("", label_w) + sep
                       + sep.join(_windowed_header(board, start, widths, tasks)) + sep
@@ -5348,7 +5374,7 @@ def _kanban_lanes(board, show_archived, selected_id, today, w, height, line_map,
     if focused is not None:
         mode += (c(" · focus: ", "mut")
                  + c(escape(focused.name), "mut"))
-    lines = [header(c("KANBAN", "bright", bold=True) + mode, right, w, tone="bright")]
+    lines = [_head(board, c("KANBAN", "bright", bold=True) + mode, right, w, tone="bright")]
     lines.append(line(" " * label_w + sep
                       + sep.join(_windowed_header(board, start, widths, tasks))))
     lines.append(rule_row(juncs, w))
@@ -5982,7 +6008,7 @@ def render_chainmap(board, show_archived, selected_id, today=None,
     right = (c(f"{n_drawn} linked tasks", "mut") + c(" · ", "dim") + c(f"▲{n_late} late", "over")
              + c(" · ", "dim") + _chainmap_st("━", HEX["bright"], None, True)
              + c(f" chain {len(chain)}", "hd"))
-    lines = ([header(title, right, w)]
+    lines = ([_head(board, title, right, w)]
              + [_chainmap_pad(x, w) for x in body]
              + [_chainmap_pad(x, w) for x in footer])
 
@@ -6907,6 +6933,161 @@ RENDERERS = {
 }
 
 
+# ---------------------------------------------------------------------------
+# the home: one card per board (batch 2026-10-20-batch-01, HLR-2204) — variant C
+# of the multi-board round. Pure renders of a card's body; the screen (its
+# borders, titles and the grid) is `app.BoardsHome`.
+# ---------------------------------------------------------------------------
+HOME_KEYS = (("←→↑↓", "move"), ("↵", "open"), ("n", "new"), ("e", "name/colour"),
+             ("x", "archive"), ("esc", "back"), ("q", "quit"))
+
+
+def board_summary(board: Board, today: date) -> dict:
+    """What a card counts: open, late, due this week (today to Sunday), the next
+    open dues by date, how many fall due per day from today, the projects."""
+    open_ = [t for t in board.tasks if is_open(board, t)]
+    dues = [(d, t) for t in open_ if (d := parse_iso(t.due_date)) is not None]
+    late = [x for x in dues if x[0] < today]
+    upcoming = sorted([x for x in dues if x[0] >= today], key=lambda x: x[0])
+    week_end = today + timedelta(days=6 - today.weekday())
+    by_day: dict[int, int] = {}
+    for d, _t in upcoming:
+        by_day[(d - today).days] = by_day.get((d - today).days, 0) + 1
+    return {"open": len(open_), "late": len(late),
+            "week": sum(1 for d, _ in upcoming if d <= week_end),
+            "next": upcoming, "by_day": by_day,
+            "projects": [p for p in board.projects if not p.archived]}
+
+
+def ago(iso: str | None, now: datetime) -> str:
+    """`opened …` on a card: just now, minutes, hours, days — or never."""
+    try:
+        then = datetime.fromisoformat(iso) if isinstance(iso, str) else None
+    except ValueError:
+        then = None
+    if then is None:
+        return "never opened"
+    if then.tzinfo is not None:      # a hand-edited "+00:00": read as local time (code review F1)
+        then = then.replace(tzinfo=None)
+    mins = int((now - then).total_seconds() // 60)
+    if mins < 2:
+        return "just now"
+    if mins < 60:
+        return f"{mins}m ago"
+    if mins < 60 * 24:
+        return f"{mins // 60}h ago"
+    return f"{mins // (60 * 24)}d ago"
+
+
+def due_strip(summary: dict, inner: int, colour: str, today: date) -> tuple[Text, Text]:
+    """The late badge, then one or two cells per day from today (the widest
+    window that fits), each day's height its count of open dues; and its axis:
+    today's day number, then each Monday's."""
+    late = summary["late"]
+    badge = f"▲{late} " if late else "   "
+    room = inner - len(badge) - 1
+    for days, cw in ((28, 2), (21, 2), (14, 2), (28, 1), (21, 1), (14, 1), (7, 1)):
+        if days * cw <= room:
+            break
+    bars, axis = Text(no_wrap=True), Text(no_wrap=True)
+    bars.append(badge, style=f"bold {HEX['over']}" if late else HEX["dim"])
+    axis.append(" " * len(badge))
+    glyph = {0: "·", 1: "▃", 2: "▅", 3: "▇"}
+    hexc = board_hex(colour)
+    for i in range(days):
+        d = today + timedelta(days=i)
+        n = summary["by_day"].get(i, 0)
+        style = HEX["dim"] if n == 0 else (HEX["soon"] if i == 0 else hexc)
+        if n == 0 and d.weekday() >= 5:
+            style = "#3a4350"
+        bars.append(glyph.get(n, "█").ljust(cw) if n == 0 else glyph.get(n, "█") * cw,
+                    style=style)
+    row = [" "] * (days * cw)
+    marks = [(0, str(today.day))] + [(i, str((today + timedelta(days=i)).day))
+                                     for i in range(1, days)
+                                     if (today + timedelta(days=i)).weekday() == 0]
+    for i, lab in marks:
+        for j, ch in enumerate(lab):
+            if i * cw + j < len(row):
+                row[i * cw + j] = ch
+    text = "".join(row)
+    first = len(str(today.day))
+    axis.append(text[:first], style=f"bold {HEX['soon']}")
+    axis.append(text[first:], style=HEX["dim"])
+    return bars, axis
+
+
+def home_card(summary: dict, colour: str, inner: int, n_next: int, show_projects: bool,
+              today: date) -> Text:
+    """A card's body: the counts row, the due strip and its axis, the next dues,
+    and — with room — the projects. Names are appended as plain text."""
+    t = Text()
+    s = summary
+    parts = [(f"{s['open']} open", f"bold {HEX['bright']}"),
+             (f"▲{s['late']} late" if s["late"] else "0 late",
+              f"bold {HEX['over']}" if s["late"] else HEX["dim"]),
+             (f"{s['week']} due this week", HEX["hd"]),
+             (f"{len(s['projects'])} projects", HEX["dim"])]
+    if sum(len(a) + 5 for a, _ in parts) > inner:
+        parts = parts[:3]
+        parts[2] = (f"{s['week']} this week", HEX["hd"])
+    for j, (a, st) in enumerate(parts):
+        if j:
+            t.append("  ·  " if inner > 50 else " · ", style=HEX["dim"])
+        t.append(a, style=st)
+    bars, axis = due_strip(s, inner, colour, today)
+    t.append("\n")
+    t.append_text(bars)
+    t.append("\n")
+    t.append_text(axis)
+    for d, task in s["next"][:n_next]:
+        t.append("\n")
+        lab = "today" if d == today else f"{d:%b} {d.day}"
+        t.append(f"{lab:>6}  ", style=HEX["soon"] if d == today else HEX["hd"])
+        t.append(fit(task.title, inner - 8).rstrip(), style=HEX["mut"])
+    if not s["next"]:
+        t.append("\n")
+        t.append("nothing due", style=HEX["dim"])
+    if show_projects:
+        line_ = Text()
+        for p in s["projects"]:
+            line_.append("■ ", style=HEX.get(p.color, HEX["violet"]))
+            line_.append(p.name + "   ", style=HEX["mut"])
+        line_.truncate(inner, overflow="ellipsis")
+        t.append("\n")
+        t.append_text(line_)
+    return t
+
+
+def home_missing(path: str, inner: int, why: str = "file missing") -> Text:
+    """The card of a board whose file is not there (an unmounted drive, a deleted
+    folder) or cannot be read: said, never drawn as an empty board (ux-reviewer
+    UX-1; code review F6)."""
+    t = Text(why, style=f"bold {HEX['over']}")
+    t.append("\n")
+    t.append(fit(path, inner).rstrip(), style=HEX["dim"])
+    return t
+
+
+def home_title(n: int, late: int, today: date, w: int) -> Text:
+    title = Text(no_wrap=True)
+    title.append("◆ TASKBOARD", style=f"bold {HEX['bright']}")
+    title.append("  boards", style=HEX["mut"])
+    right = f"{n} boards · ▲{late} late · {today:%a %d %b}"
+    title.append(" " * max(1, w - 2 - title.cell_len - len(right)))
+    title.append(right, style=HEX["dim"])
+    return title
+
+
+def home_keys(w: int) -> Text:
+    k = Text(no_wrap=True)
+    for key, lab in HOME_KEYS:
+        k.append(key, style=f"b {HEX['bright']}")
+        k.append(f" {lab}  ", style=HEX["mut"])
+    k.truncate(w - 2)
+    return k
+
+
 def render_view(mode, board, show_archived, selected_id, today=None,
                 width=68, height=0, line_map=None, presentation="grouped", tick=0,
                 kanban_sort="project", kanban_group="project",
@@ -7097,8 +7278,11 @@ def render_setup(setup_state: dict | None, board, width: int = 68,
 
     # Header
     lines: list[Text] = []
-    lines.append(Text.assemble(("SETUP", f"bold {HEX['bright']}"),
-                               (" · team · projects · roster", HEX["mut"])))
+    head = (Text.from_markup(board_chip(getattr(board, "label", None)), emoji=False)
+            + Text.assemble(("SETUP", f"bold {HEX['bright']}"),
+                            (" · team · projects · roster", HEX["mut"])))
+    head.truncate(w)
+    lines.append(head)
     lines.append(Text("─" * w, style=HEX["dim"]))
     lines.append(Text())
 
@@ -7790,7 +7974,7 @@ def gantt_link_frame(board: Board, show_archived: bool, waiter: Task, cand: Task
     lines, _drawn, _groups, ax = _gantt_frame(
         board, show_archived, cand.id if cand else None, today, w, height, line_map, 0,
         None, gantt_group_key(board, waiter), waiter.id)
-    lines[0] = header(c("◆ GANTT · LINK", "bright", bold=True), c(escape(right), "mut"), w,
+    lines[0] = _head(board, c("◆ GANTT · LINK", "bright", bold=True), c(escape(right), "mut"), w,
                       tone="bright")
     label_w = gantt_columns(w)[0]
     text = Text()

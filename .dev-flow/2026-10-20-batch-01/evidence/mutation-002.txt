@@ -1,0 +1,29 @@
+arms: 27
+taskboard/views.py ['if not label:\n        return ""' -> 'if not label:\n        label = ("X", "vio'] test_TC_2203_no_label_is_the_base_frame: RED (KILLED) · restore 0d762a0a0caac52d
+taskboard/views.py ['if not label:\n        return ""' -> 'if not label:\n        label = ("X", "vio'] test_TC_2203_board_chip: RED (KILLED) · restore 0d762a0a0caac52d
+taskboard/views.py ['{escape(fit(name, 24).rstrip())}' -> '{fit(name, 24).rstrip()}'] test_TC_2203_board_chip: RED (KILLED) · restore 0d762a0a0caac52d
+taskboard/views.py ['{escape(fit(name, 24).rstrip())}' -> '{fit(name, 24).rstrip()}'] test_TC_2203_markup_in_a_board_name_paints_literally: RED (KILLED) · restore 0d762a0a0caac52d
+taskboard/views.py ['return c(escape(fit(_strip(title), w)), tone, bold' -> 'return c(fit(_strip(title), w), tone, bo'] test_TC_2203_markup_in_a_board_name_paints_literally: RED (KILLED) · restore 0d762a0a0caac52d
+taskboard/views.py ['fit(name, 24).rstrip()' -> 'fit(name, 99).rstrip()'] test_TC_2203_board_chip: RED (KILLED) · restore 0d762a0a0caac52d
+taskboard/views.py ['tvis, rvis = vis(_strip(title)), vis(_strip(right)' -> 'tvis, rvis = vis(_strip(title)) + vis(_s'] test_TC_2203_every_view_opens_with_the_chip_at_its_width: RED (KILLED) · restore 0d762a0a0caac52d
+taskboard/views.py ['return header(title, right, w, tone, chip=getattr(' -> 'return header(title, right, w, tone, chi'] test_TC_2203_every_view_opens_with_the_chip_at_its_width: RED (KILLED) · restore 0d762a0a0caac52d
+taskboard/views.py ['return header(title, right, w, tone, chip=getattr(' -> 'return header(title, right, w, tone, chi'] test_AT_2203_the_chip_in_every_view: RED (KILLED) · restore 0d762a0a0caac52d
+taskboard/views.py ['"week": sum(1 for d, _ in upcoming if d <= week_en' -> '"week": sum(1 for d, _ in upcoming)'] test_TC_2204_board_summary_counts_what_the_cards_show: RED (KILLED) · restore 0d762a0a0caac52d
+taskboard/views.py ['"next": upcoming, "by_day": by_day,' -> '"next": sorted(dues, key=lambda x: x[0])'] test_TC_2204_board_summary_counts_what_the_cards_show: RED (KILLED) · restore 0d762a0a0caac52d
+taskboard/views.py ['if sum(len(a) + 5 for a, _ in parts) > inner:' -> 'if sum(len(a) for a, _ in parts) + 5 * ('] test_TC_2204_the_counts_row_joins_and_shortens: RED (KILLED) · restore 0d762a0a0caac52d
+taskboard/views.py ['if sum(len(a) + 5 for a, _ in parts) > inner:' -> 'if sum(len(a) for a, _ in parts) + 5 * ('] test_AT_2204_the_home_is_the_approved_capture: RED (KILLED) · restore 0d762a0a0caac52d
+taskboard/app.py ['("cursor", "hmove", "toggle_presentation", "boards' -> '("cursor", "hmove", "toggle_presentation'] test_TC_2204_check_action_and_the_cursor: RED (KILLED) · restore f9f09ced355aa412
+taskboard/app.py ['if action in SEAT_ACTIONS and any(' -> 'if action in SEAT_ACTIONS and False and '] test_TC_2204_check_action_and_the_cursor: RED (KILLED) · restore f9f09ced355aa412
+taskboard/app.py ['if action in SEAT_ACTIONS and any(' -> 'if action in SEAT_ACTIONS and False and '] test_AT_2204_B_and_the_keys_the_home_holds: RED (KILLED) · restore f9f09ced355aa412
+taskboard/app.py ['elif Path(e.path).exists():\n                self.b' -> 'elif True:\n                self.boards[e'] test_TC_2204_seven_boards_scroll_and_a_missing_file: RED (KILLED) · restore f9f09ced355aa412
+taskboard/app.py ['self.app.pop_screen()\n        self.app.switch_boar' -> 'self.app.switch_board(entry.id)\n        '] test_TC_2204_enter_closes_the_home_before_the_board_starts: RED (KILLED) · restore f9f09ced355aa412
+taskboard/app.py ['if len(self.registry.active()) > 1:\n            # ' -> 'if True:\n            # FIRST'] test_AT_2201_no_registry_and_an_unreadable_one: RED (KILLED) · restore f9f09ced355aa412
+taskboard/app.py ['if entry is not None and len(self.registry.active(' -> 'if entry is not None else None)'] test_AT_2203_the_chip_in_every_view: RED (KILLED) · restore f9f09ced355aa412
+taskboard/keymap.py ['Key("B", "B", "boards", "Boards", universal=True, ' -> ''] test_TC_2204_B_is_in_the_seat_for_every_view: RED (KILLED) · restore 2b2ec12908881989
+taskboard/keymap.py ['Key("B", "B", "boards", "Boards", universal=True, ' -> ''] test_AT_2204_B_and_the_keys_the_home_holds: RED (KILLED) · restore 2b2ec12908881989
+taskboard/app.py ['if self.boards.get(entry.id) is None:' -> 'if False:'] test_TC_2204_seven_boards_scroll_and_a_missing_file: RED (KILLED) · restore f9f09ced355aa412
+taskboard/views.py ['then = then.replace(tzinfo=None)' -> 'pass'] test_TC_2204_ago_never: RED (KILLED) · restore 0d762a0a0caac52d
+taskboard/views.py ['"label", None)), emoji=False)' -> '"label", None)))'] test_TC_2203_markup_in_a_board_name_paints_literally: RED (KILLED) · restore 0d762a0a0caac52d
+taskboard/app.py ['Binding("down,j", "move(2)", "", priority=True, sh' -> 'Binding("down,j", "move(1)", "", priorit'] test_TC_2204_check_action_and_the_cursor: RED (KILLED) · restore f9f09ced355aa412
+taskboard/app.py ['if board is None or board.load_report.get("file_un' -> 'if board is None:'] test_TC_2204_the_home_reads_an_unreadable_board_without_copying_it: RED (KILLED) · restore f9f09ced355aa412
+not killed: 0

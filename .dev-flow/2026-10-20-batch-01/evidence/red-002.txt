@@ -1,0 +1,41 @@
+# RED of increment 002's new and law-driven nodes on base_ref 783397e: a clean worktree, only the test files (and the base-frame oracle) copied in, NO_COLOR unset; the main checkout's taskboard/boards.py moved aside for the run (the editable install's finder)
+FAILED tests/test_boards_home.py::test_TC_2203_board_chip - AttributeError: m...
+FAILED tests/test_boards_home.py::test_TC_2203_every_view_opens_with_the_chip_at_its_width[30]
+FAILED tests/test_boards_home.py::test_TC_2203_every_view_opens_with_the_chip_at_its_width[40]
+FAILED tests/test_boards_home.py::test_TC_2203_every_view_opens_with_the_chip_at_its_width[80]
+FAILED tests/test_boards_home.py::test_TC_2203_every_view_opens_with_the_chip_at_its_width[118]
+FAILED tests/test_boards_home.py::test_TC_2203_every_view_opens_with_the_chip_at_its_width[160]
+FAILED tests/test_boards_home.py::test_TC_2203_markup_in_a_board_name_paints_literally[30]
+FAILED tests/test_boards_home.py::test_TC_2203_markup_in_a_board_name_paints_literally[40]
+FAILED tests/test_boards_home.py::test_TC_2203_markup_in_a_board_name_paints_literally[80]
+FAILED tests/test_boards_home.py::test_TC_2203_markup_in_a_board_name_paints_literally[160]
+FAILED tests/test_boards_home.py::test_TC_2203_no_label_is_the_base_frame - A...
+FAILED tests/test_boards_home.py::test_TC_2204_board_summary_counts_what_the_cards_show
+FAILED tests/test_boards_home.py::test_TC_2204_ago[1-just now] - AttributeErr...
+FAILED tests/test_boards_home.py::test_TC_2204_ago[2-2m ago] - AttributeError...
+FAILED tests/test_boards_home.py::test_TC_2204_ago[59-59m ago] - AttributeErr...
+FAILED tests/test_boards_home.py::test_TC_2204_ago[60-1h ago] - AttributeErro...
+FAILED tests/test_boards_home.py::test_TC_2204_ago[1439-23h ago] - AttributeE...
+FAILED tests/test_boards_home.py::test_TC_2204_ago[1440-1d ago] - AttributeEr...
+FAILED tests/test_boards_home.py::test_TC_2204_ago_never - AttributeError: mo...
+FAILED tests/test_boards_home.py::test_TC_2204_the_strip_takes_the_first_window_that_fits[74-28-2]
+FAILED tests/test_boards_home.py::test_TC_2204_the_strip_takes_the_first_window_that_fits[53-21-2]
+FAILED tests/test_boards_home.py::test_TC_2204_the_strip_takes_the_first_window_that_fits[34-14-2]
+FAILED tests/test_boards_home.py::test_TC_2204_the_strip_takes_the_first_window_that_fits[27-21-1]
+FAILED tests/test_boards_home.py::test_TC_2204_the_strip_takes_the_first_window_that_fits[12-7-1]
+FAILED tests/test_boards_home.py::test_TC_2204_the_counts_row_joins_and_shortens
+FAILED tests/test_boards_home.py::test_TC_2204_names_paint_literally_in_a_card
+FAILED tests/test_boards_home.py::test_TC_2204_B_is_in_the_seat_for_every_view
+FAILED tests/test_colour_budget_app.py::test_TC_203_the_key_bar_wears_bright_keys_and_muted_words
+ERROR tests/test_boards_home.py::test_TC_2204_check_action_and_the_cursor - A...
+ERROR tests/test_boards_home.py::test_TC_2204_seven_boards_scroll_and_a_missing_file
+ERROR tests/test_boards_home.py::test_TC_2204_enter_closes_the_home_before_the_board_starts
+ERROR tests/test_boards_home.py::test_TC_2204_the_home_reads_an_unreadable_board_without_copying_it
+ERROR tests/test_boards_home.py::test_AT_2202_switching_boards_in_place - Att...
+ERROR tests/test_boards_home.py::test_AT_2203_the_chip_in_every_view - Attrib...
+ERROR tests/test_boards_home.py::test_AT_2204_the_home_is_the_approved_capture[size0-C-160-open.svg]
+ERROR tests/test_boards_home.py::test_AT_2204_the_home_is_the_approved_capture[size1-C-118-open.svg]
+ERROR tests/test_boards_home.py::test_AT_2204_the_home_is_the_approved_capture[size2-C-80-open.svg]
+ERROR tests/test_boards_home.py::test_AT_2204_B_and_the_keys_the_home_holds
+28 failed, 1 passed, 10 errors in 1.41s
+restore: e73695b7f26091b466bb77777b451b22b37b6efcc1baeb920169d7c7593331df e73695b7f26091b466bb77777b451b22b37b6efcc1baeb920169d7c7593331df

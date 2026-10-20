@@ -470,14 +470,20 @@ KEYBAR_BASE = {   # read off the base tree a0e7d9a (`key_bar_plain`), not typed
         # bar sheds one more word ("Agenda") and keeps every key
         # batch 2026-10-07-batch-02 added `6` (Chains) to the primary layer — the
         # bar sheds one more word ("Agenda" was already gone) and keeps every key
-        "? Map  ; More  q Quit  1 Lanes  2  3  4  5  6  7  8  9  0  ↵  a  e  d  L  ↓  ↑",
+        # batch 2026-10-20-batch-01 added `B` (Boards) as a universal key: the bar
+        # sheds "Lanes" too and keeps every key (law-driven: the seat's strings fitted
+        # by hand, `.dev-flow/2026-10-20-batch-01/evidence/keybar-law.txt`)
+        "? Map  ; More  q Quit  B  1  2  3  4  5  6  7  8  9  0  ↵  a  e  d  L  ↓  ↑",
     ("gantt", 118, "more"):
         # batch 2026-10-04-batch-02 added `M` (Milestone); batch 2026-10-06-batch-01
         # added `m` (Chain) to the more layer — both keep every key
         # batch 2026-10-07-batch-02 added `6` (Chains) — the more layer sheds its
         # last word ("Map") and keeps every key (117 cells at 118)
-        "?  ;  q  1  2  3  4  5  6  7  8  9  0  ↵  a  e  d  L  x  X  v  u  t  T  M  [  ]  !  b"
-        "  +  -  m  F  esc  /  ↓  ↑  ←  →",
+        # batch 2026-10-20-batch-01 added `B` (Boards): every word was already gone,
+        # so the last two keys (← →) go and are counted, `+2` (law-driven, the same
+        # evidence file)
+        "?  ;  q  B  1  2  3  4  5  6  7  8  9  0  ↵  a  e  d  L  x  X  v  u  t  T  M  [  ]  !  b"
+        "  +  -  m  F  esc  /  ↓  ↑ +2",
 }
 
 

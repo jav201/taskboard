@@ -56,6 +56,9 @@ KEYMAP: tuple[Key, ...] = (
     Key("?", "?", "legend", "Map", universal=True, primary=True, group="system"),
     Key(";", ";", "layer_toggle", "More", universal=True, primary=True, group="system"),
     Key("q", "q", "quit", "Quit", universal=True, primary=True, group="system"),
+    # `B` — the home of boards (batch 2026-10-20-batch-01, HLR-2204); lowercase `b`
+    # is Blocked
+    Key("B", "B", "boards", "Boards", universal=True, primary=True, group="system"),
 
     # -- views ----------------------------------------------------------------
     Key("1", "1", "view('swimlanes')", "Lanes", primary=True, group="views"),

@@ -958,6 +958,10 @@ class Board:
         self._load_report: dict = {}
         # ordered workflow; never empty (progress + every view index into it)
         self.phases = list(phases) if phases else list(DEFAULT_PHASES)
+        # (name, colour) of this board when the app knows more than one: the chip
+        # its views' head rows open with. Set by the app, never written to the
+        # file (batch 2026-10-20-batch-01, LLR-2203.1).
+        self.label: tuple[str, str] | None = None
 
     @property
     def load_report(self) -> dict:
