@@ -172,8 +172,8 @@
     }
   ],
   "guided": false,
-  "current_station": "P3",
-  "phase_status": "in-progress",
+  "current_station": "P5",
+  "phase_status": "closed",
   "stations_active": [
     "P0",
     "ARQ",
@@ -289,6 +289,26 @@
       "station": "P3",
       "date": "2026-10-20",
       "decision": "P3 increment 004 approved under the batch's standing authorization: the screen and the picker (HLR-2104..HLR-2106) — RED on base 10 failed, 20/20 mutants KILLED, code-reviewer BLOCK-UNTIL F1 at 6d9f344, OK at fc55d3a, suite-004 2818 passed."
+    },
+    {
+      "station": "P3",
+      "date": "2026-10-20",
+      "decision": "P3 increment 005 approved under the batch's standing authorization (the coordinator's follow-up of 2026-10-20): the picker keeps the presentation in view behind it — RED on the opaque picker, code-reviewer OK (F1/F2 folded in 006)."
+    },
+    {
+      "station": "P3",
+      "date": "2026-10-20",
+      "decision": "P3 increment 006 approved under the batch's standing authorization: the shared modal backdrop, the picker's first hidden row (P4 ux UX4-1), AT-2105's caret (P4 qa G-1), the module map's PresentAll row — RED on 7c4140a, code-reviewer APPROVE; DDR is next."
+    },
+    {
+      "station": "DDR",
+      "date": "2026-10-20",
+      "decision": "DDR sealed approved under the batch's standing authorization: the re-cut and the review fixes declared, the interfaces re-read, each AT in one node, the ledger 2758 - 2 + 63 = 2819, PC-1..PC-4 discharged (PC-1 with four declared substitutions); P4 is next."
+    },
+    {
+      "station": "P4",
+      "date": "2026-10-20",
+      "decision": "P4 PASS-WITH-NOTES under the batch's standing authorization: the gate run at 91d1f8c in a clean worktree, 2819 passed, 0 failed, 0 skipped (evidence/suite-p4.txt); ux walkthrough pass-with-notes (UX4-1 fixed in 006); qa G-1 fixed, G-2..G-6 accepted."
     }
   ],
   "obsidian_synced": false,

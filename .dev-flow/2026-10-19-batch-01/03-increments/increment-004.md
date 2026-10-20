@@ -49,12 +49,12 @@
 | `taskboard/app.py` | source | LLR-2104.1, LLR-2105.1, LLR-2106.1 | `PresentScreen`: bindings `3`, `←/→` → `side`, `shift+↑/↓`, `enter`, `u`; view 3's state, paint, keys, hint, export; imports |
 | `taskboard/modals.py` | source | LLR-2106.1 | `PresentHiddenPicker` |
 | `taskboard/views.py` | source | LLR-2103.1 (LED .4), HLR-2103 | `_all_timeline` trims the stops to drawn rows; `_all_rail` counts every visible project's hidden tasks |
-| `tests/test_present_all.py` | test | HLR-2102..HLR-2106, LLR-2103.1..LLR-2106.1 | AT-2102..AT-2106, TC-2104 ×3, TC-2105 ×2 (the curation; the resize, code review F1/F2), TC-2106 (the picker), TC-2103 ×2 (the overflow row, the rail's count) |
+| `tests/test_present_all.py` | test | HLR-2102, HLR-2103, HLR-2104, HLR-2105, HLR-2106, LLR-2103.1, LLR-2104.1, LLR-2105.1, LLR-2106.1 | AT-2102..AT-2106, TC-2104 ×3, TC-2105 ×2 (the curation; the resize, code review F1/F2), TC-2106 (the picker), TC-2103 ×2 (the overflow row, the rail's count) |
 | `tests/test_present_narrow.py` | test | LLR-2104.1, LLR-1904.1 | law-driven: TC-1904's names and literal first widths, its overflow arm, AT-1904 |
 | `tests/test_present_polish.py` | test | LLR-2104.1, HLR-2002 | law-driven: TC-2002's first widths and names; AT-2002 (the split view at 80, LED .2) |
 | `tests/test_present_views_app.py` | test | LLR-2104.1, HLR-1803 | law-driven: TC-1808's five cells, AT-1803's three-view wrap |
 | `tests/test_present_hide.py` | test | LLR-2104.1, HLR-1602 | law-driven: TC-1604's two cells and its count, AT-1602's `· u 1 hidden` |
-| `tests/test_markup_census.py` | test | PC-3 | the `PresentScreen._paint` exempt key's reason text only (names `render_present_all`); the key unchanged |
+| `tests/test_markup_census.py` | test | LLR-2104.1, LLR-2106.1 (PDR PC-3) | the `PresentScreen._paint` exempt key's reason text only (names `render_present_all`); the key unchanged |
 | `README.md` | doc | HLR-2103..HLR-2106 | §Presentation: three views, the keys, what is saved |
 | `.dev-flow/BACKLOG.md` | doc | — | this batch's lane |
 
@@ -100,7 +100,7 @@
 | hint-widths.txt | .dev-flow/2026-10-19-batch-01/evidence/hint-widths.txt | 316c0542d2140e8824e2636b0d0df90f41deaa039dae88e93b1f48a3b497c75c |
 | hint_widths.py | .dev-flow/2026-10-19-batch-01/evidence/hint_widths.py | 82d7c25cfea14b2b5528e8a7339ee29656f535623dad74c0ea2d58d9403d1089 |
 | lawdriven-before.txt | .dev-flow/2026-10-19-batch-01/evidence/lawdriven-before.txt | 53b6e12479e1f39f186bf08cddaac954b74f3dcd71a89f76b91d283b45d4f28e |
-| capture.py | .dev-flow/2026-10-19-batch-01/evidence/capture.py | 7619e3fcc6988265d404c2e3893adb8585cd54e10801b545e7330d4113e78187 |
+| capture.py (the version that ran at increment 004; increment 006 changed one step) | .dev-flow/2026-10-19-batch-01/evidence/capture-004.py | 7619e3fcc6988265d404c2e3893adb8585cd54e10801b545e7330d4113e78187 |
 | view3-160x45.svg | .dev-flow/2026-10-19-batch-01/evidence/captures/view3-160x45.svg | da80142a95b987d5b2c5d8964a7817337df862c22539c913e2cc8968d168ea7e |
 | seq-160x45-export-present-board-2026-10-19-all.svg | .dev-flow/2026-10-19-batch-01/evidence/captures/seq-160x45-export-present-board-2026-10-19-all.svg | 00f40aa5dd3fe554b58765ba72edec629f968b1fa4c18258348e932fb102dfc9 |
 

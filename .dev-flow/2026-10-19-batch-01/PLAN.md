@@ -21,7 +21,7 @@ orchestrator presents the full plan in-conversation at each phase gate.
 | Project | taskboard |
 | Batch | 2026-10-19-batch-01 |
 | Objective | Present view 3 `all` (variant C, curate rail, of the present-portfolio round): every shown project on one date ruler beside a project rail; hide and show projects and tasks, a persisted presentation-only project order, fold, a `u` picker of hidden items in all three Present views, `x` exporting the timeline without the rail; and the shipped bug of views 1/2 that draws a start-less milestone as a bar from today |
-| Last updated | P3 · 2026-10-19 |
+| Last updated | P5 · 2026-10-20 |
 | Standing authorization | standing authorization — the orchestrator's commission of 2026-10-19 (the runtime cannot prompt), relaying the operator's verdict on `prototypes/present_portfolio/` of 2026-10-19: «C: Me parece la mejor opción para mis objetivos.» · «Sí, que persista el orden.» · «Siempre la traigo con (a), pero sería útil tener el seleccionador propuesto con (u)», and the earlier commission «necesito que en el modo presentación pueda tener la vista del gantt con todos los proyectos… esconder tareas o proyectos… reordenar los proyectos en el orden que mejor me convenga.» Quoted from the commission: «Implement a /dev-flow batch … Batch id `2026-10-19-batch-01`, artifact language English», «Cut local branch `feat/present-all` from `main` (2cf17f0)», «you may cherry-pick or merge that prototype commit into your branch», «Do NOT push», «Max 4 SOURCE files per increment (tests uncapped)», decisions D1–D8 «made by the orchestrator under "confío en tu juicio"». Read as: every gate of this batch is autonomous (reviewer roles are spawned sub-agents); commits on the local branch `feat/present-all` are authorized, each ending with the commission's co-author line; **push and merge are NOT authorized**; synthetic data only; the operator's name nowhere (`username_subject`); `.gitattributes`, the two `inc001-brief.md` files and the untracked old `.dev-flow/*` files are not touched or staged. |
 | First gate | step 1, on `feat/present-all` at `2cf17f0` before the rollover: exit 1 — 86 block · 42 notice · 63 not applicable; every BLOCK the outgoing closed batch's record against the tree: `V59` ×85 (2026-10-18-batch-03's `base_ref` `620f58c` predates `2cf17f0`, the retirement commit made after its close) and `V2` ×1 (`AT-1905`, whose node `2cf17f0` retired with the round, named by the closed batch's records) — both repaired by the rollover, which re-stamps `base_ref` and makes this batch the active record; `V7`: bundle identical to its manifest both directions, 57 declared files, `2026-10-12-rev102`. Step 3 (after the rollover): exit 0 — 0 block · 64 notice · 47 not applicable (`evidence/gate-step1.txt`, `evidence/gate-step3.txt`). |
 | Premises / RC-1 | RC-1 (a): `git fetch origin` → `origin/main` = `2cf17f0cab2738d1c1ae9250eb845d77eb73c300` = local `main`; `git switch -c feat/present-all main`; HEAD equals the origin tip, so no rebase is owed. The round's commit `1132d85` (local branch `proto/present-portfolio`) cherry-picked as `bdf6e9d` (prototype files only — the design input, as the commission allows), and `base_ref` stamped `bdf6e9d54d6e39ef083c2cc8708de5b6943b98e9` so the round is not counted as this batch's work. RC-1 (b): not already shipped — on `origin/main` `PresentScreen` has two views (`views.py:6168` `PRESENT_VIEWS = ("gantt", "split")`), `Project` has no presentation field (`models.py:796-805`), `git grep present_rank taskboard/` → nothing. RC-2: `git ls-remote --exit-code --heads origin` → exit 0. Premises: `01-requirements.md` §2.7 (P-1..P-7, all TRUE, `evidence/premises.txt`). |
@@ -53,7 +53,7 @@ The trigger evaluation `state.json`'s `triggers.record` points at: one row per t
 
 ## Where we are
 
-P3 — ARQ approved (with A-1..A-4, A-15 fixed), P1/P2 approved after one iterate-to-refine (LED .2, .3), the PDR sealed approved with conditions PC-1..PC-4; increment 001 (the milestone row) is next.
+Closed (P5, 2026-10-20) — ARQ approved; P1/P2 approved after one iterate-to-refine (LED .2, .3); the PDR sealed approved with conditions PC-1..PC-4; increments 001 (`85281a6`), 002 (`1c601bc`), 003 (`231e56b`), 004 (`6d9f344` + its review fixes `fc55d3a`), 005 (`7c4140a`, the coordinator's follow-up) and 006 (`91d1f8c`, the review of 005 and the P4 walkthrough's UX4-1) implemented, reviewed and committed; the DDR approved; P4 PASS-WITH-NOTES (2819 passed, 0 failed, 0 skipped at `91d1f8c`); the canon folded (12 rows) with nine superseded rows marked; the batch is closed on the local branch `feat/present-all`, not pushed (the commission forbids a push).
 
 ## Objective
 
@@ -63,23 +63,28 @@ Ship variant C of the present-portfolio round as Present view 3 `all` — the po
 
 | Story / station | Status | Notes |
 |---|---|---|
-| US-2101 | READY | increment 001 |
-| US-2102 | READY | increment 003 |
-| US-2103 | READY | increments 002, 004 |
-| US-2104 | READY | increment 004 |
+| US-2101 | DONE | increment 001 · AT-2101 passes |
+| US-2102 | DONE | increments 003, 004 · AT-2103, AT-2104 pass |
+| US-2103 | DONE | increments 002, 004 · AT-2102, AT-2105 pass |
+| US-2104 | DONE | increments 003–006 · AT-2106 passes |
 | P0 | done | triggers evaluated; refinement done |
-| ARQ | approved | `docs/ARCHITECTURE.md` amended; architect iteration 2 |
-| P1 | approved after one iterate-to-refine | LED .2, LED .3 folded |
-| P2 | approved | iteration 1 iterate-to-refine (architect, qa majors); iteration 2 approve; ux and security approve with conditions, carried |
-| PDR | approved with conditions | PC-1..PC-4 |
-| P3 | in progress | increment 001 next |
+| ARQ | approved | `docs/ARCHITECTURE.md` amended (and corrected at 006) |
+| P1 | approved after one iterate-to-refine | LED .2, .3 folded; LED .4, .5 at P3 |
+| P2 | approved | iteration 1 iterate-to-refine; iteration 2 approve |
+| PDR | approved with conditions | PC-1..PC-4, discharged at the DDR |
+| P3 | done | increments 001–006 committed |
+| DDR | approved | `design/DDR-2026-10-19-batch-01.md` |
+| P4 | PASS-WITH-NOTES | `04-validation.md`, gate run `evidence/suite-p4.txt` |
+| P5 | closed | `05-close.md` |
 
 ## Roadmap + increment plan
 
 - 001 — the milestone row (HLR-2101): `taskboard/views.py` (`_present_task_row`); `tests/test_present_milestone.py` (TC-2101, AT-2101), `tests/present_portfolio_board.py` (the round's board). 1 source file.
 - 002 — the model (HLR-2102): `taskboard/models.py`, `taskboard/team_sync.py` (the pull strips the two keys); `tests/test_present_all.py` (TC-2102). 2 source files.
 - 003 — the view-3 renderer (HLR-2103; the rows of HLR-2106): `taskboard/views.py` (`render_present_all`, `PRESENT_SCREEN_VIEWS`, `present_hidden_rows`); `tests/test_present_all.py` (TC-2103, TC-2106's rows). 1 source file.
-- 004 — the screen and the picker (HLR-2104, HLR-2105, HLR-2106): `taskboard/app.py`, `taskboard/modals.py`; `tests/test_present_all.py` (TC-2104, TC-2105, TC-2106's picker, AT-2102..AT-2106) and the law-driven hint updates; `README.md`, `.dev-flow/BACKLOG.md` (docs). 2 source files.
+- 004 — the screen and the picker (HLR-2104, HLR-2105, HLR-2106): `taskboard/app.py`, `taskboard/modals.py`, `taskboard/views.py` (the review F1/F3 of 003); `tests/test_present_all.py` (TC-2104, TC-2105, TC-2106's picker, AT-2102..AT-2106) and the law-driven hint updates; `README.md`, `.dev-flow/BACKLOG.md` (docs). 3 source files; its review fixes `fc55d3a` (2).
+- 005 — the coordinator's follow-up (2026-10-20): the picker keeps the presentation in view behind it — `taskboard/modals.py`. 1 source file.
+- 006 — the review of 005 and Phase 4's UX4-1/G-1: the shared modal backdrop rule, the picker opening on its first hidden row — `taskboard/modals.py`, `taskboard/taskboard.tcss`. 2 source files.
 
 ## Key decisions
 
@@ -97,6 +102,7 @@ Ship variant C of the present-portfolio round as Present view 3 `all` — the po
 | 2026-10-19 | the rollover by script with `devflow-init.py`'s own seed helpers (the 2026-10-18-batch-02/03 pattern); the evidence home's `-text` mark a per-directory `evidence/.gitattributes` | the root `.gitattributes` was dirty before the batch and the commission says not to touch it |
 | 2026-10-19 | the hint's `u`: the tail ` · u N hidden` (views 1/2) / ` · u P project(s) + T task(s) hidden` (view 3), only when something is hidden; below 36 columns the tail stays ` · N hidden` | the hint's own `<key> <label>` grammar; `u` shown where it acts; +2 cells only when hidden |
 | 2026-10-19 | `PRESENT_VIEWS` stays `("gantt", "split")` (the views of `render_present`); the screen's three views are `PRESENT_SCREEN_VIEWS` | view 3 has its own renderer (`docs/ARCHITECTURE.md` §5); the tests that iterate `PRESENT_VIEWS` through `render_present` stay valid |
+| 2026-10-20 | the coordinator's follow-up (2026-10-20, resuming the batch): the `u` picker over a blank screen fixed as increment 005, then moved to the app's shared modal backdrop rule (increment 006, the code review's F1); the P4 walkthrough's UX4-1 (the picker's cursor on a shown project's heading) folded into 006 before the gate | the follow-up names it; UX4-1 hid a shown project on `u space` |
 | 2026-10-19 | the reviewer lenses of ARQ, P2 and the PDR run as one spawned agent per role over the drafted artifacts together (architect · qa-reviewer · ux-reviewer · security-reviewer), each returning per-station findings; the gates are then recorded in station order | the four roles are independent of each other and of the author; one pass per role over the three stations' artifacts avoids re-reading the same contract three times — declared here |
 | 2026-10-19 | four increments: 001 milestone → 002 model → 003 renderer → 004 screen + picker (re-cut after P2: the screen in one increment) | 001 first so view 3 inherits the fixed row; 002 before 003 because view 3 reads the order; the screen whole in 004 so no commit ships a half-wired view 3 (architect A-11, A-12) |
 
@@ -128,6 +134,10 @@ Ship variant C of the present-portfolio round as Present view 3 `all` — the po
 
 **P0 (step 3, after the rollover):** 0 block · 64 notice — the step-3 placeholder NOTICEs (`V27`, `V31`–`V34`, `V36`–`V38`, `V41`, `V43`–`V51`, `V54`) over the unfilled seeds; `V30`; the historical NOTICEs above.
 
+**P3 (increment gates):** `V2` BLOCK for AT-2102..AT-2106 at increments 001–003 — the station-expected red of `commands/dev-flow.md` §*Two-layer validation model* (their nodes landed with increment 004); `V27` before each increment's decision; `V53` while the contract named nodes not yet written; `V26` (the live contract past its 54,000-character budget — it carries six HLRs with full acceptance blocks; narration is in the ledger); `V41` BLOCK ×2 at the close's first gate (packets 001/004 cited a capture and `capture.py` re-taken/changed later) — fixed by keeping the versions they cited (`captures/view1-118x31-after-001.svg`, `capture-004.py`); `V59` BLOCK ×3 (packet 004's `Traces to` written as ranges, and the census file's row with no requirement id) — fixed in place.
+
+**DDR / P4 / P5:** `V56` on packet 006 (it cites `red-005.txt`/`red-006.txt`, deliberately failing transcripts); `V57` at close step 5 (the `Gated tree` placeholder) — expected by the runbook; at the final gate `V57` (the record predates the tree by the commits after the close; the tree dirty with the files found before the batch) — expected; `V23` on `design/design-proposal.md:18` (the template's preamble line); `V30` (bundle run); the historical NOTICEs over closed batches unchanged from step 1.
+
 **Found before the batch:** tracked and modified — `.gitattributes`, `.dev-flow/2026-10-07-batch-0{8,9}/evidence/inc001-brief.md` (line endings only); untracked — `.dev-flow/2026-10-07-batch-0{5..8}/decisions-log.json`, `.dev-flow/2026-10-07-batch-06/evidence/{gen_verdict_sheet.py,kanban-demo.json,veredicto-batch06.html,veredicto-board.json}`, `.dev-flow/rollover_batch{g,h,i,j}.py`. Not touched.
 
 ## Test ledger
@@ -135,3 +145,5 @@ Ship variant C of the present-portfolio round as Present view 3 `all` — the po
 | Suite / command | Last run | Result |
 |---|---|---|
 | `python -m pytest -q -p no:cacheprovider -rs --color=no` on `base_ref` (a worktree at `bdf6e9d`, `NO_COLOR` unset) | 2026-10-19 | 2757 passed, 1 skipped (the clipboard roundtrip, its refusal quoted) — `evidence/suite-base.txt` |
+| the same after increments 001 / 002 / 003 / 004 (clean worktrees from 002 on) | 2026-10-19 | 2768 + 1 skipped / 2791 + 1 skipped / 2804 + 1 skipped / 2818 — `suite-001.txt` … `suite-004.txt` |
+| the P4 gate run, a clean worktree at `91d1f8c` (the last code commit) | 2026-10-20 | 2819 passed, 0 failed, 0 skipped — `evidence/suite-p4.txt` |

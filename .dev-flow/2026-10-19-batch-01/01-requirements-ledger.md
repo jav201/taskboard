@@ -36,3 +36,10 @@ above this line is ever edited._
 - **What changed:** Before → After. TC-2103's sweep "heights 10, 24, 30, 45" → "heights 10 and 45" (a cut, overflowing frame and a roomy one; the folds × rail-focus product bounded to the unfocused timeline — qa-reviewer QA-12: the four heights took 89 s of the suite); the threshold gains "every stop a row the frame draws (none under the overflow row) and the drawn cursor one of them" (code review F1 of increment 003: the stops included rows the overflow row covers; fixed in increment 004 with `TC-2103`'s overflow-row node).
 - **Why:** increment 003's code review, F1 and F2 (MEDIUM).
 - **Evidence:** packet 003 §4b; `tests/test_present_all.py::test_TC_2103_no_stop_hides_under_the_overflow_row` (RED without the increment-004 trim, GREEN with it — packet 004).
+
+### LED-2026-10-19-batch-01.5 — the picker's backdrop and first row (P3, increments 005 and 006)
+- **Requirement:** LLR-2106.1
+- **Date:** 2026-10-20
+- **What changed:** Before → After. "a cursor row, and the keys line `↑↓ move · ␣ toggle · esc close`" → "a cursor row that opens on the first hidden row, and the keys line `↑↓ move · ␣ show/hide · ○ hidden · esc close`, over the app's shared modal backdrop (`taskboard.tcss`, the presentation dimmed behind it)".
+- **Why:** the coordinator's follow-up of 2026-10-20 (the capture `seq-160x45-4-picker` showed the picker over a blank screen); the P4 ux walkthrough UX4-1 (major: in view 3 `u` then `space` hid a shown project listed as a heading) and UX4-2; the code review of increment 005 (F1: the shared rule, not an inline colour).
+- **Evidence:** `evidence/red-005.txt`, `evidence/red-006.txt`; packets 005 and 006; `evidence/captures/seq-160x45-4-picker.svg`.

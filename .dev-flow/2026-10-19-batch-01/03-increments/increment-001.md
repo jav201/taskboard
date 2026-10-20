@@ -85,7 +85,7 @@ A milestone in the presentation (views 1 and 2) is now drawn the way the board's
 | mutation-001.txt | .dev-flow/2026-10-19-batch-01/evidence/mutation-001.txt | 776e29f69bc138aab713dc29a49bf5125d787f2de0dd5f41ba3c98b9d4047fb7 |
 | mutate-001.py | .dev-flow/2026-10-19-batch-01/evidence/mutate-001.py | 998fc0e2ce577d7db227da29ca2853dff1e8d3b8e638aed551524c742d7ae036 |
 | fold-001.txt | .dev-flow/2026-10-19-batch-01/evidence/fold-001.txt | c68f8db7199ffe95df93501a1864856cc5a8f03a4867ef74775a854d18150708 |
-| view1-118x31-after.svg | .dev-flow/2026-10-19-batch-01/evidence/captures/view1-118x31-after.svg | c14b637bb772ed253a5cc8f4d174d3d795062c8c79bf34ff45021e3da44a3171 |
+| view1-118x31-after.svg (the capture as taken at increment 001; re-taken later as `view1-118x31-after.svg`) | .dev-flow/2026-10-19-batch-01/evidence/captures/view1-118x31-after-001.svg | c14b637bb772ed253a5cc8f4d174d3d795062c8c79bf34ff45021e3da44a3171 |
 
 | Field | Value |
 |---|---|
