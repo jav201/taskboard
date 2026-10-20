@@ -149,6 +149,7 @@ recorded full-suite run).
 - two app instances can both write `boards.json` and a board file (the last write wins, as with the board file today); a move does not lock the target board.
 - `ProjectPicker._move_target` keeps a `_boards` parameter it no longer reads since the target is re-read when chosen (code review of increment 004, N2).
 - AT-2204's `?` check reads the word `Boards` in the help, not the `B` key itself, and the node sets `selected_task_id` before `R` instead of reaching it by a key (qa-reviewer at the DDR, QA-03).
+- the suite's home seam patches `Path.home` only; `Path(p).expanduser()` in `boards.py` resolves `~` from the environment, so a test writing a `~`-prefixed registry path would reach the real home (qa-reviewer at P4, G-9 — inspection; no test does today).
 - a move rewrites the source `history.jsonl` without a pre-move copy, and an undecodable byte in a kept line comes back as U+FFFD (security review of increment 004, N1: only bytes that were already unreadable).
 
 ## Open — after `2026-10-19-batch-01` (present view 3 `all`: the operator's verdict on the present-portfolio round)

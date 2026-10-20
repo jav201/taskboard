@@ -1,0 +1,2 @@
+# pytest --collect-only at b88322d (the DDR seal), main checkout with taskboard/ and tests/ equal to b88322d, NO_COLOR unset, run by the orchestrator, 2026-10-20T16:54:06-06:00
+2936 tests collected in 1.01s
