@@ -1,0 +1,25 @@
+arms: 23
+taskboard/boards.py ['folder.mkdir(parents=True, exist_ok=False)' -> 'folder.mkdir(parents=True, exist_ok=True'] test_TC_2205_a_folder_on_disk_is_never_written_into: RED (KILLED) · restore 0f4e82847867ddd3
+taskboard/boards.py ['taken = {p.name.lower() for p in root.iterdir()} i' -> 'taken = set()'] test_TC_2205_a_folder_on_disk_is_never_written_into: RED (KILLED) · restore 0f4e82847867ddd3
+taskboard/boards.py ['if not name:\n            raise ValueError("a board' -> 'if False:\n            raise ValueError("'] test_TC_2205_an_empty_name_is_refused: RED (KILLED) · restore 0f4e82847867ddd3
+taskboard/boards.py ['return strip_controls(str(name)).strip()[:NAME_MAX' -> 'return strip_controls(str(name)).strip()'] test_TC_2205_names_are_cut_and_reserved_slugs_suffixed: RED (KILLED) · restore 0f4e82847867ddd3
+taskboard/boards.py ['return out + "-board" if out in _RESERVED else out' -> 'return out'] test_TC_2205_names_are_cut_and_reserved_slugs_suffixed: RED (KILLED) · restore 0f4e82847867ddd3
+taskboard/boards.py ['return next((c for c in PROJECT_COLORS if c not in' -> 'return "violet"'] test_TC_2205_edit_archive_and_free_color: RED (KILLED) · restore 0f4e82847867ddd3
+taskboard/boards.py ['return next((c for c in PROJECT_COLORS if c not in' -> 'return "violet"'] test_AT_2205_manage_boards_from_the_home: RED (KILLED) · restore 0f4e82847867ddd3
+taskboard/boards.py ['try:\n            self.save()\n        except OSErro' -> 'try:\n            pass\n        except OSE'] test_TC_2205_edit_archive_and_free_color: RED (KILLED) · restore 0f4e82847867ddd3
+taskboard/app.py ['if entry.id == self.app.board_id:\n            self' -> 'if False:\n            self.app.notify("T'] test_TC_2205_the_open_board_is_never_archived: RED (KILLED) · restore 4268e6b5cff9ae18
+taskboard/app.py ['RENUMBER_NOTICE_KEY: True}' -> '}'] test_AT_2205_manage_boards_from_the_home: RED (KILLED) · restore 4268e6b5cff9ae18
+taskboard/app.py ['ConfirmModal(msg, confirm="Archive", variant="warn' -> 'ConfirmModal(msg)'] test_AT_2205_manage_boards_from_the_home: RED (KILLED) · restore 4268e6b5cff9ae18
+taskboard/app.py ['ConfirmModal(msg, confirm="Archive", variant="warn' -> 'ConfirmModal(msg)'] test_TC_2205_the_chip_follows_a_rename_and_leaves_at_one_board: RED (KILLED) · restore 4268e6b5cff9ae18
+taskboard/app.py ['return\n        self.app._label_board()\n        sel' -> 'return\n        self.app.refresh_view()\n '] test_TC_2205_the_chip_follows_a_rename_and_leaves_at_one_board: RED (KILLED) · restore 4268e6b5cff9ae18
+taskboard/modals.py ['self.hue = (self.hue + delta) % len(PROJECT_COLORS' -> 'self.hue = min(len(PROJECT_COLORS) - 1, '] test_TC_2205_the_form: RED (KILLED) · restore 702a191d9f511724
+taskboard/boards.py ['return value if when.tzinfo is None else None' -> 'return value'] test_TC_2205_an_offset_time_in_the_registry_is_none: RED (KILLED) · restore 0f4e82847867ddd3
+taskboard/app.py ['def _notify_save_error(self, failed: str | None) -' -> 'def _notify_save_error(self, failed: str'] test_TC_2205_a_registry_that_cannot_be_written: RED (KILLED) · restore 4268e6b5cff9ae18
+taskboard/boards.py ['self.entries.remove(entry)          # nothing regi' -> 'pass          # nothing registered'] test_TC_2205_a_failed_registry_save_changes_nothing: RED (KILLED) · restore 0f4e82847867ddd3
+taskboard/boards.py ['shutil.rmtree(folder, ignore_errors=True)   # the ' -> 'pass   # the folder'] test_TC_2205_a_failed_registry_save_changes_nothing: RED (KILLED) · restore 0f4e82847867ddd3
+taskboard/boards.py ['entry.name, entry.color = before        # as on di' -> 'pass        # as on disk'] test_TC_2205_a_failed_registry_save_changes_nothing: RED (KILLED) · restore 0f4e82847867ddd3
+taskboard/boards.py ['entry.name, entry.color = before        # as on di' -> 'pass        # as on disk'] test_TC_2205_a_registry_that_cannot_be_written: RED (KILLED) · restore 0f4e82847867ddd3
+taskboard/boards.py ['entry.archived = False              # as on disk' -> 'pass              # as on disk'] test_TC_2205_a_failed_registry_save_changes_nothing: RED (KILLED) · restore 0f4e82847867ddd3
+taskboard/modals.py ['"boards" / self.next_id(name)' -> '"boards" / slug(name)'] test_TC_2205_the_form: RED (KILLED) · restore 702a191d9f511724
+taskboard/app.py ['try:\n            self.app.registry.edit(self.entri' -> 'try:\n            self.app.registry.edit('] test_TC_2205_a_registry_that_cannot_be_written: RED (KILLED) · restore 4268e6b5cff9ae18
+not killed: 0

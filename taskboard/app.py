@@ -18,7 +18,8 @@ from textual.widgets import Static
 
 from . import history
 from .boards import Registry, peek_board
-from .models import (AUTO_ARCHIVE_DAYS, IMAGE_EXTS, Board, Project, Task,
+from .models import (AUTO_ARCHIVE_DAYS, IMAGE_EXTS, LINKS_MIGRATION, MILESTONES_MIGRATION,
+                     Board, Project, Task,
                      archive_refusal, chain_template, default_board_path, is_open,
                      link_refusal,
                      milestone_candidates, milestones_marked, next_priority, parse_iso,
@@ -27,7 +28,7 @@ from .models import (AUTO_ARCHIVE_DAYS, IMAGE_EXTS, Board, Project, Task,
                      set_milestone, strip_controls, templates, waiting_ids,
                      CASCADE_MODES, apply_plan, plan_move, resolve_mode, restore,
                      snapshot)
-from .modals import (ClockModal, GanttLinkMode, LinkPicker, CommandPalette, ConfirmModal,
+from .modals import (BoardForm, ClockModal, GanttLinkMode, LinkPicker, CommandPalette, ConfirmModal,
                      HelpModal, ImageViewer, MilestoneOffer, PhaseEditor, ProjectModal,
                      PresentHiddenPicker, ProjectPicker, StandupModal, TaskDetails, TaskModal,
                      TeamIdentityPicker,
@@ -646,6 +647,9 @@ class BoardsHome(Screen[None]):
                 Binding("up,k", "move(-2)", "", priority=True, show=False),
                 Binding("down,j", "move(2)", "", priority=True, show=False),
                 Binding("enter", "open", "", priority=True, show=False),
+                Binding("n", "new", "", show=False),
+                Binding("e", "edit", "", show=False),
+                Binding("x", "archive", "", show=False),
                 Binding("q", "quit_app", "", show=False)]
     DEFAULT_CSS = """
     BoardsHome { background: #0d1117; }
@@ -743,6 +747,74 @@ class BoardsHome(Screen[None]):
 
     def action_back(self) -> None:
         self.app.pop_screen()
+
+    # ---- the boards themselves (HLR-2205) ---------------------------------
+    def action_new(self) -> None:
+        reg = self.app.registry
+        self.app.push_screen(BoardForm(color=reg.free_color(), root=reg.path.parent,
+                                       next_id=reg.next_id), self._created)
+
+    def _created(self, result) -> None:
+        if not result:
+            return
+        name, colour = result
+        settings = {"migrations": {"links": LINKS_MIGRATION, "milestones": MILESTONES_MIGRATION},
+                    RENUMBER_NOTICE_KEY: True}
+        try:
+            entry = self.app.registry.create(name, colour, datetime.now(), settings)
+        except (OSError, ValueError) as exc:
+            self.app.notify(f"The board was not created: {exc}", title="Boards",
+                            severity="error", markup=False)
+            return
+        self.app.pop_screen()
+        self.app.switch_board(entry.id)
+
+    def action_edit(self) -> None:
+        if self.entries:
+            self.app.push_screen(BoardForm(self.entries[self.cursor]), self._edited)
+
+    def _edited(self, result) -> None:
+        if not result:
+            return
+        try:
+            self.app.registry.edit(self.entries[self.cursor].id, *result)
+        except OSError as exc:
+            self.app.notify(f"The board was not renamed: {exc}", title="Boards",
+                            severity="error", markup=False)
+            return
+        self.app._label_board()
+        self.app.refresh_view()
+        self._paint()
+
+    def action_archive(self) -> None:
+        if not self.entries:
+            return
+        entry = self.entries[self.cursor]
+        if entry.id == self.app.board_id:
+            self.app.notify("The open board cannot be archived — open another board first.",
+                            title="Boards", severity="warning", markup=False)
+            return
+        msg = (f"Archive {entry.name}? It leaves the home; its folder is not touched. "
+               f"taskboard --board {entry.path} brings it back.")
+        self.app.push_screen(ConfirmModal(msg, confirm="Archive", variant="warning"),
+                             lambda ok, e=entry: self._archived(e, ok))
+
+    def _archived(self, entry, ok) -> None:
+        if not ok:
+            return
+        try:
+            self.app.registry.archive(entry.id)
+        except OSError as exc:
+            self.app.notify(f"The board was not archived: {exc}", title="Boards",
+                            severity="error", markup=False)
+            return
+        self.app.notify(f"Archived {entry.name} — its folder is untouched; "
+                        f"taskboard --board {entry.path} brings it back.", title="Boards",
+                        markup=False)
+        self.app._label_board()
+        self.app.refresh_view()
+        self.app.pop_screen()
+        self.app.push_screen(BoardsHome())
 
     def action_quit_app(self) -> None:
         self.app.exit()
@@ -891,11 +963,7 @@ class TaskboardApp(App):
         if missing:
             self.notify(f"A board's file is missing ({missing}); another board was opened.",
                         title="Boards", severity="warning", timeout=15, markup=False)
-        failed = self.registry.load_report.get("save_error")
-        if failed:
-            self.notify(f"boards.json could not be written ({failed}); the boards are "
-                        "unchanged on disk.", title="Boards", severity="warning", timeout=15,
-                        markup=False)
+        self._notify_save_error(self.registry.load_report.pop("save_error", None))
         backup = self.registry.load_report.get("backup")
         if self.registry.load_report.get("unreadable"):
             where = backup or "nowhere (the copy failed)"
@@ -948,6 +1016,14 @@ class TaskboardApp(App):
             self._start_team_daemon()
             return
         self.registry.touch(bid, datetime.now())
+        # the board is open; only its record as the last one may not be (code review N1)
+        self._notify_save_error(self.registry.load_report.pop("save_error", None))
+
+    def _notify_save_error(self, failed: str | None) -> None:
+        if failed:
+            self.notify(f"boards.json could not be written ({failed}); the boards are "
+                        "unchanged on disk.", title="Boards", severity="warning", timeout=15,
+                        markup=False)
 
     def _offer_milestones(self) -> None:
         """The one-time milestone offer (HLR-605): nothing on an unreadable load or

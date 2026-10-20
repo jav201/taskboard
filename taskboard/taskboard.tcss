@@ -288,7 +288,7 @@ KeyBar {
 }
 
 TaskModal, ProjectModal, ConfirmModal, ProjectPicker, ImageViewer, TaskDetails, CalendarModal,
-PresentHiddenPicker {
+PresentHiddenPicker, BoardForm {
     align: center middle;
     background: #0007;
 }
@@ -316,4 +316,24 @@ PresentHiddenPicker {
     width: 100%;
     height: auto;
     margin-bottom: 1;
+}
+
+/* several boards (batch 2026-10-20-batch-01): the board form and the move */
+#bf-box {
+    width: 64;
+    max-width: 100%;
+    height: auto;
+    padding: 0 1;
+    background: #0d1219;
+    border: round #334154;
+}
+#bf-name {
+    border: none;
+    height: 1;
+    padding: 0;
+    background: #151c26;
+    margin: 1 0 0 0;
+}
+#bf-hues, #bf-path, #bf-keys {
+    margin: 1 0 0 0;
 }

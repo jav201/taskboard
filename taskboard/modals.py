@@ -39,6 +39,7 @@ from .models import (IMAGE_EXTS, PROJECT_COLORS, PROJECT_STATUSES, TASK_PRIORITI
                      open_dependents, project_archive_refusal,
                      grab_clipboard_image, grab_clipboard_text, parse_iso,
                      resolve_city, save_pil_image, templates)
+from .boards import clean_name, slug
 from .keymap import palette_commands
 from .views import (HEX, clip, gantt_group_key, gantt_link_frame, gantt_link_order,
                     highlight_segments, valid_url)
@@ -2283,3 +2284,84 @@ class CommandPalette(ModalScreen[None]):
 
     def action_close(self) -> None:
         self.dismiss(None)
+
+
+# ---- several boards (batch 2026-10-20-batch-01) -----------------------------
+def _home_path(path: Path) -> str:
+    """A path as the operator reads it: the home folder written `~`."""
+    try:
+        return "~/" + Path(path).relative_to(Path.home()).as_posix()
+    except ValueError:
+        return str(path)
+
+
+class BoardForm(ModalScreen[tuple[str, str] | None]):
+    """Create (no entry) or edit a board: a name, one of the eight project
+    colours, and the file it creates or keeps (HLR-2205). Every line is a `Text`
+    built from plain pieces: a typed name is never parsed as markup."""
+
+    BINDINGS = [Binding("escape", "cancel", "", priority=True),
+                Binding("tab", "hue(1)", "", priority=True, show=False),
+                Binding("shift+tab", "hue(-1)", "", priority=True, show=False)]
+    BOX_W = 64
+
+    def __init__(self, entry=None, *, color: str = "violet", root: Path | None = None,
+                 next_id=slug):
+        super().__init__()
+        self.entry = entry
+        self.root = root
+        self.next_id = next_id      # the registry's: the folder `create` will make (F3)
+        start = entry.color if entry is not None else color
+        self.hue = PROJECT_COLORS.index(start) if start in PROJECT_COLORS else 0
+
+    def compose(self) -> ComposeResult:
+        with Vertical(id="bf-box"):
+            yield Static(Text("Edit board" if self.entry else "New board",
+                              style=f"bold {HEX['bright']}"), id="bf-title")
+            yield Input(value=self.entry.name if self.entry else "", placeholder="board name",
+                        id="bf-name")
+            yield Static(id="bf-hues")
+            yield Static(id="bf-path")
+            yield Static(Text("⇥ colour · ↵ " + ("save" if self.entry else "create and open")
+                              + " · esc cancel", style=HEX["dim"]), id="bf-keys")
+
+    def on_mount(self) -> None:
+        self.query_one("#bf-name", Input).focus()
+        self._paint()
+
+    def on_input_changed(self, _event) -> None:
+        self._paint()
+
+    def _paint(self) -> None:
+        t = Text("colour  ", style=HEX["mut"])
+        for i, c in enumerate(PROJECT_COLORS):
+            on = i == self.hue
+            t.append("[" if on else " ", style=HEX["bright"])
+            t.append("██", style=HEX[c])
+            t.append("]" if on else " ", style=HEX["bright"])
+        t.append(f"  {PROJECT_COLORS[self.hue]}", style=HEX["dim"])
+        self.query_one("#bf-hues", Static).update(t)
+        room = self.BOX_W - 4 - 8
+        p = Text("file    ", style=HEX["mut"])
+        if self.entry is not None:
+            p.append(clip(_home_path(Path(self.entry.path)) + "  (unchanged)", room),
+                     style=HEX["dim"])
+        else:
+            name = self.query_one("#bf-name", Input).value
+            where = ((self.root or Path.home() / ".taskboard") / "boards" / self.next_id(name)
+                     / "board.json")
+            p.append(clip(_home_path(where), room), style=HEX["hd"])
+        self.query_one("#bf-path", Static).update(p)
+
+    def action_hue(self, delta: int) -> None:
+        self.hue = (self.hue + delta) % len(PROJECT_COLORS)
+        self._paint()
+
+    def on_input_submitted(self, _event) -> None:
+        name = clean_name(self.query_one("#bf-name", Input).value)
+        if name:
+            self.dismiss((name, PROJECT_COLORS[self.hue]))
+
+    def action_cancel(self) -> None:
+        self.dismiss(None)
+

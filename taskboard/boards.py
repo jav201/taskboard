@@ -16,6 +16,7 @@ from __future__ import annotations
 import json
 import os
 import re
+import shutil
 import unicodedata
 from dataclasses import asdict, dataclass, field
 from datetime import datetime
@@ -91,10 +92,12 @@ def _iso_or_none(value) -> str | None:
     if not isinstance(value, str):
         return None
     try:
-        datetime.fromisoformat(value)
+        when = datetime.fromisoformat(value)
     except ValueError:
         return None
-    return value
+    # a local time only: an offset ("+00:00") is a hand edit the app never writes
+    # (code review of increment 002, F1)
+    return value if when.tzinfo is None else None
 
 
 @dataclass
@@ -234,6 +237,64 @@ class Registry:
         self.entries.append(entry)
         self.save()
         return entry
+
+    def create(self, name: str, color: str, now: datetime, settings: dict) -> BoardEntry:
+        """A new board in its own folder `boards/<slug>/` beside the registry:
+        an empty board file (no project, no task, the default phases, `settings`),
+        never written into a folder that already exists. Raises `ValueError` for
+        a name that is empty once cleaned."""
+        name = clean_name(name)
+        if not name:
+            raise ValueError("a board needs a name")
+        bid = self.next_id(name)
+        folder = self.path.parent / "boards" / bid
+        folder.mkdir(parents=True, exist_ok=False)
+        try:
+            Board([], [], folder / "board.json", dict(settings)).save_atomic()
+            entry = BoardEntry(bid, name, color if color in PROJECT_COLORS else "violet",
+                               str((folder / "board.json").resolve()),
+                               now.isoformat(timespec="minutes"))
+            self.entries.append(entry)
+            try:
+                self.save()
+            except OSError:
+                self.entries.remove(entry)          # nothing registered (code review F1)
+                raise
+        except OSError:
+            shutil.rmtree(folder, ignore_errors=True)   # the folder this call made, and only it
+            raise
+        return entry
+
+    def next_id(self, name: str) -> str:
+        """The id — and folder name — a board of this name would get: its slug,
+        made unique against the registry and the folders already under `boards/`."""
+        root = self.path.parent / "boards"
+        taken = {p.name.lower() for p in root.iterdir()} if root.is_dir() else set()
+        return self._unique_id(slug(clean_name(name)), taken)
+
+    def edit(self, bid: str, name: str, color: str) -> None:
+        name = clean_name(name)
+        entry = self.get(bid)
+        if entry is None or not name:
+            return
+        before = (entry.name, entry.color)
+        entry.name = name
+        entry.color = color if color in PROJECT_COLORS else entry.color
+        try:
+            self.save()
+        except OSError:
+            entry.name, entry.color = before        # as on disk (code review F1)
+            raise
+
+    def archive(self, bid: str) -> None:
+        entry = self.get(bid)
+        if entry is not None:
+            entry.archived = True
+            try:
+                self.save()
+            except OSError:
+                entry.archived = False              # as on disk (code review F1)
+                raise
 
     def touch(self, bid: str, now: datetime) -> None:
         """Record `bid` as the board opened last — on disk only when the registry

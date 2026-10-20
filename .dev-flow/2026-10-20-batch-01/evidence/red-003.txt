@@ -1,0 +1,25 @@
+# RED of increment 003's new nodes on base_ref 783397e: a clean worktree, only the test files copied in, NO_COLOR unset; the main checkout's taskboard/boards.py moved aside for the run (the editable install's finder)
+    from taskboard import boards, models, views
+E   ImportError: cannot import name 'boards' from 'taskboard' (C:\Users\jjgh8\AppData\Local\Temp\claude\C--Users-jjgh8-clde\3940a65a-4a09-41f4-888b-90e6e8089d9e\scratchpad\wt-base\taskboard\__init__.py)
+=========================== short test summary info ===========================
+ERROR tests/test_boards_forms.py
+!!!!!!!!!!!!!!!!!!! Interrupted: 1 error during collection !!!!!!!!!!!!!!!!!!!!
+1 error in 0.23s
+restore: 481a64bb78f13efa7516a9f3e64659cfeb5da3b39000b32a4663717fd0f62738 481a64bb78f13efa7516a9f3e64659cfeb5da3b39000b32a4663717fd0f62738
+
+# the same nodes on increment 002's commit dc643e4 (a clean worktree; boards.py present there, so the run reaches every node)
+FAILED tests/test_boards_forms.py::test_TC_2205_create_makes_its_own_folder_and_an_empty_board
+FAILED tests/test_boards_forms.py::test_TC_2205_a_folder_on_disk_is_never_written_into
+FAILED tests/test_boards_forms.py::test_TC_2205_an_empty_name_is_refused[] - ...
+FAILED tests/test_boards_forms.py::test_TC_2205_an_empty_name_is_refused[   ]
+FAILED tests/test_boards_forms.py::test_TC_2205_an_empty_name_is_refused[  \x1b  ]
+FAILED tests/test_boards_forms.py::test_TC_2205_an_empty_name_is_refused[\x00]
+FAILED tests/test_boards_forms.py::test_TC_2205_names_are_cut_and_reserved_slugs_suffixed
+FAILED tests/test_boards_forms.py::test_TC_2205_edit_archive_and_free_color
+FAILED tests/test_boards_forms.py::test_TC_2205_the_form - ImportError: canno...
+FAILED tests/test_boards_forms.py::test_TC_2205_the_open_board_is_never_archived
+FAILED tests/test_boards_forms.py::test_TC_2205_the_chip_follows_a_rename_and_leaves_at_one_board
+FAILED tests/test_boards_forms.py::test_AT_2205_manage_boards_from_the_home
+FAILED tests/test_boards_forms.py::test_TC_2205_a_registry_that_cannot_be_written
+FAILED tests/test_boards_forms.py::test_TC_2205_an_offset_time_in_the_registry_is_none
+14 failed in 2.19s

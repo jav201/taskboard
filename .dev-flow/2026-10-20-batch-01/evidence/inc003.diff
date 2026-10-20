@@ -1,0 +1,725 @@
+diff --git a/taskboard/app.py b/taskboard/app.py
+index e062eae..9589d5c 100644
+--- a/taskboard/app.py
++++ b/taskboard/app.py
+@@ -18,7 +18,8 @@ from textual.widgets import Static
+ 
+ from . import history
+ from .boards import Registry, peek_board
+-from .models import (AUTO_ARCHIVE_DAYS, IMAGE_EXTS, Board, Project, Task,
++from .models import (AUTO_ARCHIVE_DAYS, IMAGE_EXTS, LINKS_MIGRATION, MILESTONES_MIGRATION,
++                     Board, Project, Task,
+                      archive_refusal, chain_template, default_board_path, is_open,
+                      link_refusal,
+                      milestone_candidates, milestones_marked, next_priority, parse_iso,
+@@ -27,7 +28,7 @@ from .models import (AUTO_ARCHIVE_DAYS, IMAGE_EXTS, Board, Project, Task,
+                      set_milestone, strip_controls, templates, waiting_ids,
+                      CASCADE_MODES, apply_plan, plan_move, resolve_mode, restore,
+                      snapshot)
+-from .modals import (ClockModal, GanttLinkMode, LinkPicker, CommandPalette, ConfirmModal,
++from .modals import (BoardForm, ClockModal, GanttLinkMode, LinkPicker, CommandPalette, ConfirmModal,
+                      HelpModal, ImageViewer, MilestoneOffer, PhaseEditor, ProjectModal,
+                      PresentHiddenPicker, ProjectPicker, StandupModal, TaskDetails, TaskModal,
+                      TeamIdentityPicker,
+@@ -646,6 +647,9 @@ class BoardsHome(Screen[None]):
+                 Binding("up,k", "move(-2)", "", priority=True, show=False),
+                 Binding("down,j", "move(2)", "", priority=True, show=False),
+                 Binding("enter", "open", "", priority=True, show=False),
++                Binding("n", "new", "", show=False),
++                Binding("e", "edit", "", show=False),
++                Binding("x", "archive", "", show=False),
+                 Binding("q", "quit_app", "", show=False)]
+     DEFAULT_CSS = """
+     BoardsHome { background: #0d1117; }
+@@ -744,6 +748,74 @@ class BoardsHome(Screen[None]):
+     def action_back(self) -> None:
+         self.app.pop_screen()
+ 
++    # ---- the boards themselves (HLR-2205) ---------------------------------
++    def action_new(self) -> None:
++        reg = self.app.registry
++        self.app.push_screen(BoardForm(color=reg.free_color(), root=reg.path.parent,
++                                       next_id=reg.next_id), self._created)
++
++    def _created(self, result) -> None:
++        if not result:
++            return
++        name, colour = result
++        settings = {"migrations": {"links": LINKS_MIGRATION, "milestones": MILESTONES_MIGRATION},
++                    RENUMBER_NOTICE_KEY: True}
++        try:
++            entry = self.app.registry.create(name, colour, datetime.now(), settings)
++        except (OSError, ValueError) as exc:
++            self.app.notify(f"The board was not created: {exc}", title="Boards",
++                            severity="error", markup=False)
++            return
++        self.app.pop_screen()
++        self.app.switch_board(entry.id)
++
++    def action_edit(self) -> None:
++        if self.entries:
++            self.app.push_screen(BoardForm(self.entries[self.cursor]), self._edited)
++
++    def _edited(self, result) -> None:
++        if not result:
++            return
++        try:
++            self.app.registry.edit(self.entries[self.cursor].id, *result)
++        except OSError as exc:
++            self.app.notify(f"The board was not renamed: {exc}", title="Boards",
++                            severity="error", markup=False)
++            return
++        self.app._label_board()
++        self.app.refresh_view()
++        self._paint()
++
++    def action_archive(self) -> None:
++        if not self.entries:
++            return
++        entry = self.entries[self.cursor]
++        if entry.id == self.app.board_id:
++            self.app.notify("The open board cannot be archived — open another board first.",
++                            title="Boards", severity="warning", markup=False)
++            return
++        msg = (f"Archive {entry.name}? It leaves the home; its folder is not touched. "
++               f"taskboard --board {entry.path} brings it back.")
++        self.app.push_screen(ConfirmModal(msg, confirm="Archive", variant="warning"),
++                             lambda ok, e=entry: self._archived(e, ok))
++
++    def _archived(self, entry, ok) -> None:
++        if not ok:
++            return
++        try:
++            self.app.registry.archive(entry.id)
++        except OSError as exc:
++            self.app.notify(f"The board was not archived: {exc}", title="Boards",
++                            severity="error", markup=False)
++            return
++        self.app.notify(f"Archived {entry.name} — its folder is untouched; "
++                        f"taskboard --board {entry.path} brings it back.", title="Boards",
++                        markup=False)
++        self.app._label_board()
++        self.app.refresh_view()
++        self.app.pop_screen()
++        self.app.push_screen(BoardsHome())
++
+     def action_quit_app(self) -> None:
+         self.app.exit()
+ 
+@@ -891,11 +963,7 @@ class TaskboardApp(App):
+         if missing:
+             self.notify(f"A board's file is missing ({missing}); another board was opened.",
+                         title="Boards", severity="warning", timeout=15, markup=False)
+-        failed = self.registry.load_report.get("save_error")
+-        if failed:
+-            self.notify(f"boards.json could not be written ({failed}); the boards are "
+-                        "unchanged on disk.", title="Boards", severity="warning", timeout=15,
+-                        markup=False)
++        self._notify_save_error(self.registry.load_report.pop("save_error", None))
+         backup = self.registry.load_report.get("backup")
+         if self.registry.load_report.get("unreadable"):
+             where = backup or "nowhere (the copy failed)"
+@@ -948,6 +1016,14 @@ class TaskboardApp(App):
+             self._start_team_daemon()
+             return
+         self.registry.touch(bid, datetime.now())
++        # the board is open; only its record as the last one may not be (code review N1)
++        self._notify_save_error(self.registry.load_report.pop("save_error", None))
++
++    def _notify_save_error(self, failed: str | None) -> None:
++        if failed:
++            self.notify(f"boards.json could not be written ({failed}); the boards are "
++                        "unchanged on disk.", title="Boards", severity="warning", timeout=15,
++                        markup=False)
+ 
+     def _offer_milestones(self) -> None:
+         """The one-time milestone offer (HLR-605): nothing on an unreadable load or
+diff --git a/taskboard/boards.py b/taskboard/boards.py
+index b532b36..6eae1c2 100644
+--- a/taskboard/boards.py
++++ b/taskboard/boards.py
+@@ -16,6 +16,7 @@ from __future__ import annotations
+ import json
+ import os
+ import re
++import shutil
+ import unicodedata
+ from dataclasses import asdict, dataclass, field
+ from datetime import datetime
+@@ -91,10 +92,12 @@ def _iso_or_none(value) -> str | None:
+     if not isinstance(value, str):
+         return None
+     try:
+-        datetime.fromisoformat(value)
++        when = datetime.fromisoformat(value)
+     except ValueError:
+         return None
+-    return value
++    # a local time only: an offset ("+00:00") is a hand edit the app never writes
++    # (code review of increment 002, F1)
++    return value if when.tzinfo is None else None
+ 
+ 
+ @dataclass
+@@ -235,6 +238,64 @@ class Registry:
+         self.save()
+         return entry
+ 
++    def create(self, name: str, color: str, now: datetime, settings: dict) -> BoardEntry:
++        """A new board in its own folder `boards/<slug>/` beside the registry:
++        an empty board file (no project, no task, the default phases, `settings`),
++        never written into a folder that already exists. Raises `ValueError` for
++        a name that is empty once cleaned."""
++        name = clean_name(name)
++        if not name:
++            raise ValueError("a board needs a name")
++        bid = self.next_id(name)
++        folder = self.path.parent / "boards" / bid
++        folder.mkdir(parents=True, exist_ok=False)
++        try:
++            Board([], [], folder / "board.json", dict(settings)).save_atomic()
++            entry = BoardEntry(bid, name, color if color in PROJECT_COLORS else "violet",
++                               str((folder / "board.json").resolve()),
++                               now.isoformat(timespec="minutes"))
++            self.entries.append(entry)
++            try:
++                self.save()
++            except OSError:
++                self.entries.remove(entry)          # nothing registered (code review F1)
++                raise
++        except OSError:
++            shutil.rmtree(folder, ignore_errors=True)   # the folder this call made, and only it
++            raise
++        return entry
++
++    def next_id(self, name: str) -> str:
++        """The id — and folder name — a board of this name would get: its slug,
++        made unique against the registry and the folders already under `boards/`."""
++        root = self.path.parent / "boards"
++        taken = {p.name.lower() for p in root.iterdir()} if root.is_dir() else set()
++        return self._unique_id(slug(clean_name(name)), taken)
++
++    def edit(self, bid: str, name: str, color: str) -> None:
++        name = clean_name(name)
++        entry = self.get(bid)
++        if entry is None or not name:
++            return
++        before = (entry.name, entry.color)
++        entry.name = name
++        entry.color = color if color in PROJECT_COLORS else entry.color
++        try:
++            self.save()
++        except OSError:
++            entry.name, entry.color = before        # as on disk (code review F1)
++            raise
++
++    def archive(self, bid: str) -> None:
++        entry = self.get(bid)
++        if entry is not None:
++            entry.archived = True
++            try:
++                self.save()
++            except OSError:
++                entry.archived = False              # as on disk (code review F1)
++                raise
++
+     def touch(self, bid: str, now: datetime) -> None:
+         """Record `bid` as the board opened last — on disk only when the registry
+         holds more than one board or its file already exists."""
+diff --git a/taskboard/modals.py b/taskboard/modals.py
+index aafcba7..e38d4ba 100644
+--- a/taskboard/modals.py
++++ b/taskboard/modals.py
+@@ -39,6 +39,7 @@ from .models import (IMAGE_EXTS, PROJECT_COLORS, PROJECT_STATUSES, TASK_PRIORITI
+                      open_dependents, project_archive_refusal,
+                      grab_clipboard_image, grab_clipboard_text, parse_iso,
+                      resolve_city, save_pil_image, templates)
++from .boards import clean_name, slug
+ from .keymap import palette_commands
+ from .views import (HEX, clip, gantt_group_key, gantt_link_frame, gantt_link_order,
+                     highlight_segments, valid_url)
+@@ -2283,3 +2284,84 @@ class CommandPalette(ModalScreen[None]):
+ 
+     def action_close(self) -> None:
+         self.dismiss(None)
++
++
++# ---- several boards (batch 2026-10-20-batch-01) -----------------------------
++def _home_path(path: Path) -> str:
++    """A path as the operator reads it: the home folder written `~`."""
++    try:
++        return "~/" + Path(path).relative_to(Path.home()).as_posix()
++    except ValueError:
++        return str(path)
++
++
++class BoardForm(ModalScreen[tuple[str, str] | None]):
++    """Create (no entry) or edit a board: a name, one of the eight project
++    colours, and the file it creates or keeps (HLR-2205). Every line is a `Text`
++    built from plain pieces: a typed name is never parsed as markup."""
++
++    BINDINGS = [Binding("escape", "cancel", "", priority=True),
++                Binding("tab", "hue(1)", "", priority=True, show=False),
++                Binding("shift+tab", "hue(-1)", "", priority=True, show=False)]
++    BOX_W = 64
++
++    def __init__(self, entry=None, *, color: str = "violet", root: Path | None = None,
++                 next_id=slug):
++        super().__init__()
++        self.entry = entry
++        self.root = root
++        self.next_id = next_id      # the registry's: the folder `create` will make (F3)
++        start = entry.color if entry is not None else color
++        self.hue = PROJECT_COLORS.index(start) if start in PROJECT_COLORS else 0
++
++    def compose(self) -> ComposeResult:
++        with Vertical(id="bf-box"):
++            yield Static(Text("Edit board" if self.entry else "New board",
++                              style=f"bold {HEX['bright']}"), id="bf-title")
++            yield Input(value=self.entry.name if self.entry else "", placeholder="board name",
++                        id="bf-name")
++            yield Static(id="bf-hues")
++            yield Static(id="bf-path")
++            yield Static(Text("⇥ colour · ↵ " + ("save" if self.entry else "create and open")
++                              + " · esc cancel", style=HEX["dim"]), id="bf-keys")
++
++    def on_mount(self) -> None:
++        self.query_one("#bf-name", Input).focus()
++        self._paint()
++
++    def on_input_changed(self, _event) -> None:
++        self._paint()
++
++    def _paint(self) -> None:
++        t = Text("colour  ", style=HEX["mut"])
++        for i, c in enumerate(PROJECT_COLORS):
++            on = i == self.hue
++            t.append("[" if on else " ", style=HEX["bright"])
++            t.append("██", style=HEX[c])
++            t.append("]" if on else " ", style=HEX["bright"])
++        t.append(f"  {PROJECT_COLORS[self.hue]}", style=HEX["dim"])
++        self.query_one("#bf-hues", Static).update(t)
++        room = self.BOX_W - 4 - 8
++        p = Text("file    ", style=HEX["mut"])
++        if self.entry is not None:
++            p.append(clip(_home_path(Path(self.entry.path)) + "  (unchanged)", room),
++                     style=HEX["dim"])
++        else:
++            name = self.query_one("#bf-name", Input).value
++            where = ((self.root or Path.home() / ".taskboard") / "boards" / self.next_id(name)
++                     / "board.json")
++            p.append(clip(_home_path(where), room), style=HEX["hd"])
++        self.query_one("#bf-path", Static).update(p)
++
++    def action_hue(self, delta: int) -> None:
++        self.hue = (self.hue + delta) % len(PROJECT_COLORS)
++        self._paint()
++
++    def on_input_submitted(self, _event) -> None:
++        name = clean_name(self.query_one("#bf-name", Input).value)
++        if name:
++            self.dismiss((name, PROJECT_COLORS[self.hue]))
++
++    def action_cancel(self) -> None:
++        self.dismiss(None)
++
+diff --git a/taskboard/taskboard.tcss b/taskboard/taskboard.tcss
+index addd56d..a88c10d 100644
+--- a/taskboard/taskboard.tcss
++++ b/taskboard/taskboard.tcss
+@@ -288,7 +288,7 @@ KeyBar {
+ }
+ 
+ TaskModal, ProjectModal, ConfirmModal, ProjectPicker, ImageViewer, TaskDetails, CalendarModal,
+-PresentHiddenPicker {
++PresentHiddenPicker, BoardForm {
+     align: center middle;
+     background: #0007;
+ }
+@@ -317,3 +317,23 @@ PresentHiddenPicker {
+     height: auto;
+     margin-bottom: 1;
+ }
++
++/* several boards (batch 2026-10-20-batch-01): the board form and the move */
++#bf-box {
++    width: 64;
++    max-width: 100%;
++    height: auto;
++    padding: 0 1;
++    background: #0d1219;
++    border: round #334154;
++}
++#bf-name {
++    border: none;
++    height: 1;
++    padding: 0;
++    background: #151c26;
++    margin: 1 0 0 0;
++}
++#bf-hues, #bf-path, #bf-keys {
++    margin: 1 0 0 0;
++}
+diff --git a/tests/test_boards_forms.py b/tests/test_boards_forms.py
+new file mode 100644
+index 0000000..0df0e97
+--- /dev/null
++++ b/tests/test_boards_forms.py
+@@ -0,0 +1,357 @@
++"""Several boards: create, rename and recolour, archive — from the home.
++
++Batch 2026-10-20-batch-01 (variant C of the multi-board round, P4):
++HLR-2205 / LLR-2205.1 · TC-2205 · AT-2205 (US-2203). Synthetic data only, under
++this test's own temporary home.
++"""
++from __future__ import annotations
++
++import json
++from datetime import date, datetime
++from pathlib import Path
++
++import pytest
++from rich.text import Text
++
++import multi_board_fixture as mb
++from taskboard import boards, models, views
++from taskboard.boards import Registry
++from taskboard.models import DEFAULT_PHASES, PROJECT_COLORS, Board
++
++NOW = datetime(2026, 10, 20, 9, 30)
++SETTINGS = {"migrations": {"links": 1, "milestones": 1}, "seen_view_renumber_2026_07": True}
++PAYLOADS = ["[@click=app.quit]x[/]", "tail\\", "[bold", "x[/]"]
++
++
++class _Today(date):
++    @classmethod
++    def today(cls):
++        return mb.TODAY
++
++
++class _Now(datetime):
++    @classmethod
++    def now(cls, tz=None):
++        return NOW
++
++
++@pytest.fixture
++def home(tmp_path, monkeypatch):
++    from taskboard import app as app_module, modals
++    import taskboard.__main__ as entry
++    monkeypatch.setattr(Path, "home", classmethod(lambda cls: tmp_path))
++    for mod in (app_module, models, views, modals):
++        monkeypatch.setattr(mod, "date", _Today)
++    monkeypatch.setattr(app_module, "datetime", _Now)
++    monkeypatch.setattr(entry, "datetime", _Now)
++    return tmp_path / ".taskboard"
++
++
++def _reg(home) -> Registry:
++    return Registry.load(home / "boards.json", home / "board.json")
++
++
++def _open(board=None):
++    from taskboard.__main__ import open_app
++    return open_app(board)
++
++
++async def _press(pilot, *keys):
++    for k in keys:
++        await pilot.press(k)
++        await pilot.pause()
++
++
++def _plain(widget) -> str:
++    c = widget.content
++    return c.plain if hasattr(c, "plain") else str(c)
++
++
++def _scr(app) -> str:
++    return type(app.screen).__name__
++
++
++# --------------------------------------------------------------------------- #
++# TC-2205 — the registry's writers and the form (LLR-2205.1)
++# --------------------------------------------------------------------------- #
++def test_TC_2205_create_makes_its_own_folder_and_an_empty_board(home):
++    mb.build(home, "personal")
++    reg = _reg(home)
++    e = reg.create("Course · Kubernetes", "green", NOW, SETTINGS)
++    p = home / "boards" / "course-kubernetes" / "board.json"
++    assert (e.id, e.name, e.color, Path(e.path)) == ("course-kubernetes", "Course · Kubernetes",
++                                                     "green", p.resolve())
++    b = Board.load(p)
++    assert b.projects == [] and b.tasks == [] and b.phases == list(DEFAULT_PHASES)
++    assert b.settings == SETTINGS
++    assert e.last_opened == "2026-10-20T09:30"
++    assert _reg(home).get("course-kubernetes") is not None
++    assert reg.create("Course · Kubernetes", "lime", NOW, SETTINGS).id == "course-kubernetes-2"
++
++
++def test_TC_2205_a_folder_on_disk_is_never_written_into(home):
++    """TC-2205: a folder not in the registry is skipped by the slug; when the
++    uniqueness probe is made to miss it, the creation fails and writes nothing
++    (architect A-22: kills `exist_ok=True`)."""
++    mb.build(home, "personal")
++    stray = home / "boards" / "x"
++    stray.mkdir(parents=True)
++    (stray / "keep.txt").write_text("mine", encoding="utf-8")
++    reg = _reg(home)
++    assert reg.create("X", "lime", NOW, SETTINGS).id == "x-2"
++    assert [p.name for p in stray.iterdir()] == ["keep.txt"]
++    before = (home / "boards.json").read_bytes()
++    reg2 = _reg(home)
++    reg2._unique_id = lambda base, taken=None: "x"
++    with pytest.raises(FileExistsError):
++        reg2.create("X", "lime", NOW, SETTINGS)
++    assert [p.name for p in stray.iterdir()] == ["keep.txt"]
++    assert (home / "boards.json").read_bytes() == before
++
++
++@pytest.mark.parametrize("name", ["", "   ", "  \x1b  ", "\x00"])
++def test_TC_2205_an_empty_name_is_refused(home, name):
++    mb.build(home, "personal")
++    reg = _reg(home)
++    before = sorted(p.name for p in (home / "boards").iterdir())
++    with pytest.raises(ValueError):
++        reg.create(name, "lime", NOW, SETTINGS)
++    assert sorted(p.name for p in (home / "boards").iterdir()) == before
++
++
++def test_TC_2205_names_are_cut_and_reserved_slugs_suffixed(home):
++    mb.build(home, "personal")
++    reg = _reg(home)
++    e = reg.create("N" * 61, "lime", NOW, SETTINGS)
++    assert len(e.name) == 60
++    assert reg.create("Con", "lime", NOW, SETTINGS).id == "con-board"
++    assert (home / "boards" / "con-board" / "board.json").exists()
++
++
++def test_TC_2205_edit_archive_and_free_color(home):
++    mb.build(home, "personal")
++    reg = _reg(home)
++    assert reg.free_color() == "lime"
++    reg.edit("course-docker", "Course · Containers", "blue")
++    edited = _reg(home).get("course-docker")            # on disk before anything else saves
++    assert (edited.name, edited.color) == ("Course · Containers", "blue")
++    reg.archive("client-retail-rag")
++    again = _reg(home)
++    assert (again.get("course-docker").name, again.get("course-docker").color) == \
++        ("Course · Containers", "blue")
++    assert again.get("client-retail-rag").archived is True
++    for i, c in enumerate(PROJECT_COLORS):
++        again.entries.append(boards.BoardEntry(f"c{i}", "C", c, str(home / f"c{i}.json")))
++    assert again.free_color() == "violet"
++
++
++async def test_TC_2205_the_form(home):
++    """TC-2205: the colour cycle wraps both ways; a blank name keeps the form open;
++    a typed markup name paints literally; a 60-character name's file line fits."""
++    from taskboard.modals import BoardForm
++    mb.build(home, "personal")
++    app = _open()
++    async with app.run_test(size=(160, 45)) as pilot:
++        await pilot.pause()
++        await _press(pilot, "n")
++        form = app.screen
++        assert type(form) is BoardForm and PROJECT_COLORS[form.hue] == "lime"
++        for _ in range(8):
++            await _press(pilot, "tab")
++        assert PROJECT_COLORS[form.hue] == "lime"
++        await _press(pilot, "shift+tab")
++        assert PROJECT_COLORS[form.hue] == "pink"
++        await _press(pilot, "enter")
++        assert app.screen is form
++        box = form.query_one("#bf-name")
++        box.value = "Course · Docker"                 # its slug is taken: the preview says -2
++        await pilot.pause()
++        assert form.query_one("#bf-path").content.plain.endswith(
++            "/boards/course-docker-2/board.json")     # the folder create will make (F3)
++        box.value = "N" * 60
++        await pilot.pause()
++        line = form.query_one("#bf-path").content.plain
++        assert len(line) <= form.BOX_W - 4 and line.endswith("…"), line
++        await _press(pilot, "escape")
++        assert _scr(app) == "BoardsHome"
++
++
++async def test_TC_2205_a_typed_name_paints_literally(home):
++    """TC-2205 (code review F2): a board created with a markup payload as its name
++    paints it literally where a typed name is painted — the home card's title,
++    the chip, the archive confirmation — and no span carries an action."""
++    mb.build(home, "personal")
++    app = _open()
++    payload = "[@click=app.quit]x[/]"
++    async with app.run_test(size=(160, 45)) as pilot:
++        await pilot.pause()
++        await _press(pilot, "n")
++        app.screen.query_one("#bf-name").value = payload
++        await _press(pilot, "enter")
++        assert app.board.label[0] == payload
++        row0 = app.query_one("#board").content
++        assert row0.plain.startswith(" " + payload + " ")
++        await _press(pilot, "B")
++        scr = app.screen
++        idx = [e.name for e in scr.entries].index(payload)
++        card = scr.query_one(f"#card-{idx}")
++        assert card._border_title.plain == "▶ " + payload     # as Textual holds it
++        assert r"\[@click" in card.border_title                # its markup escapes the bracket
++        assert app.is_running
++
++
++async def test_TC_2205_the_open_board_is_never_archived(home):
++    mb.build(home, "personal")
++    app = _open()
++    async with app.run_test(size=(160, 45)) as pilot:
++        await pilot.pause()
++        before = (home / "boards.json").read_bytes()
++        await _press(pilot, "x")
++        assert _scr(app) == "BoardsHome"
++        assert (home / "boards.json").read_bytes() == before
++        assert any(n.message == "The open board cannot be archived — open another board first."
++                   for n in app._notifications)
++
++
++async def test_TC_2205_the_chip_follows_a_rename_and_leaves_at_one_board(home):
++    mb.build(home, "personal")
++    app = _open()
++    async with app.run_test(size=(160, 45)) as pilot:
++        await pilot.pause()
++        await _press(pilot, "e")
++        box = app.screen.query_one("#bf-name")
++        box.value = "Home"
++        await _press(pilot, "enter", "escape")
++        assert app.board.label == ("Home", "green")
++        for _ in range(3):
++            await _press(pilot, "B", "right", "x")
++            assert "Archive" in [str(b.label) for b in app.screen.query("Button")]
++            await _press(pilot, "tab", "enter")
++            await _press(pilot, "escape")
++        assert len(app.registry.active()) == 1
++        assert app.board.label is None
++
++
++# --------------------------------------------------------------------------- #
++# AT-2205 — create, rename, archive from the home (HLR-2205)
++# --------------------------------------------------------------------------- #
++async def test_AT_2205_manage_boards_from_the_home(home):
++    """AT-2205 (US-2203): `n` creates a board in its own folder and opens it; `e`
++    renames it and its chip; `x` archives another board, its folder intact; the
++    open board refuses; a blank name does nothing."""
++    mb.build(home, "personal")
++    app = _open()
++    async with app.run_test(size=(160, 45)) as pilot:
++        await pilot.pause()
++        await _press(pilot, "n")
++        form = app.screen
++        assert "New board" in _plain(form.query_one("#bf-title"))
++        assert _plain(form.query_one("#bf-path")) == "file    ~/.taskboard/boards/board/board.json"
++        form.query_one("#bf-name").value = "Course · Kubernetes"
++        await pilot.pause()
++        assert _plain(form.query_one("#bf-path")) == \
++            "file    ~/.taskboard/boards/course-kubernetes/board.json"
++        assert _plain(form.query_one("#bf-hues")).endswith("lime")
++        await _press(pilot, "tab", "enter")
++        made = home / "boards" / "course-kubernetes" / "board.json"
++        data = json.loads(made.read_text(encoding="utf-8"))
++        assert data["projects"] == [] and data["tasks"] == []
++        assert data["settings"] == SETTINGS
++        assert not any(n.title == "View keys renumbered" for n in app._notifications)
++        assert _scr(app) == "Screen"
++        row0 = app.query_one("#board").content.plain.split("\n")[0]
++        assert row0.startswith(" Course · Kubernetes "), row0
++        reg = json.loads((home / "boards.json").read_text(encoding="utf-8"))
++        assert (reg["boards"][-1]["id"], reg["boards"][-1]["color"]) == ("course-kubernetes",
++                                                                           "green")
++        await _press(pilot, "B")
++        scr = app.screen
++        assert len(scr.entries) == 5
++        assert scr.entries[scr.cursor].id == "course-kubernetes"
++        await _press(pilot, "e")
++        app.screen.query_one("#bf-name").value = "Course · K8s"
++        await _press(pilot, "enter")
++        assert str(scr.query_one(f"#card-{scr.cursor}").border_title) == "▶ Course · K8s"
++        await _press(pilot, "escape")
++        row0 = app.query_one("#board").content.plain.split("\n")[0]
++        assert row0.startswith(" Course · K8s "), row0
++        client = home / "boards" / "client-retail-rag" / "board.json"
++        kept = client.read_bytes()
++        await _press(pilot, "B", "up", "up", "right")
++        scr = app.screen
++        assert scr.entries[scr.cursor].id == "client-retail-rag"
++        await _press(pilot, "x")
++        assert sorted(str(b.label) for b in app.screen.query("Button")) == ["Archive", "Cancel"]
++        await _press(pilot, "tab", "enter")
++        scr = app.screen
++        assert type(scr).__name__ == "BoardsHome" and len(scr.entries) == 4
++        assert _reg(home).get("client-retail-rag").archived is True
++        assert client.read_bytes() == kept
++        assert any(n.message.startswith("Archived Client · Retail RAG")
++                   for n in app._notifications)
++        scr.cursor = next(i for i, e in enumerate(scr.entries) if e.id == "course-kubernetes")
++        before = (home / "boards.json").read_bytes()
++        await _press(pilot, "x")
++        assert len(app.screen.entries) == 4
++        assert (home / "boards.json").read_bytes() == before
++        await _press(pilot, "n", "enter")
++        assert type(app.screen).__name__ == "BoardForm"
++        assert not (home / "boards" / "board").exists()
++
++
++async def test_TC_2205_a_registry_that_cannot_be_written(home, monkeypatch):
++    """TC-2205 (code review N1, N2, carried from increment 001): a `boards.json`
++    that cannot be written — at a switch the board still opens and a `Boards`
++    notice says so; a rename says it was not made."""
++    from taskboard import models as models_module
++    mb.build(home, "personal")
++    app = _open()
++    async with app.run_test(size=(160, 45)) as pilot:
++        await pilot.pause()
++
++        def boom(*a, **k):
++            raise PermissionError("locked")
++        monkeypatch.setattr(models_module.os, "replace", boom)
++        await _press(pilot, "right", "enter")
++        assert app.board_id == "client-retail-rag"
++        notes = [n.message for n in app._notifications if n.title == "Boards"]
++        assert any("could not be written" in m and "locked" in m for m in notes), notes
++        await _press(pilot, "B", "e")
++        app.screen.query_one("#bf-name").value = "Renamed"
++        await _press(pilot, "enter")
++        assert any(n.message.startswith("The board was not renamed") for n in app._notifications)
++        assert _reg(home).get("client-retail-rag").name == "Client · Retail RAG"
++        # ... and in memory too: the card and the next save keep the old name (F1)
++        assert app.registry.get("client-retail-rag").name == "Client · Retail RAG"
++
++
++def test_TC_2205_a_failed_registry_save_changes_nothing(home, monkeypatch):
++    """TC-2205 (code review F1): when `boards.json` cannot be written, `create`,
++    `edit` and `archive` leave the registry in memory as it is on disk — `create`
++    also removes the folder it made — so the notice that says so is true."""
++    mb.build(home, "personal")
++    reg = _reg(home)
++    before = [(e.id, e.name, e.color, e.archived) for e in reg.entries]
++    folders = sorted(p.name for p in (home / "boards").iterdir())
++
++    def boom(self):
++        raise PermissionError("locked")
++    monkeypatch.setattr(Registry, "save", boom)
++    with pytest.raises(OSError):
++        reg.create("Fresh", "lime", NOW, SETTINGS)
++    with pytest.raises(OSError):
++        reg.edit("course-docker", "Other", "blue")
++    with pytest.raises(OSError):
++        reg.archive("client-retail-rag")
++    assert [(e.id, e.name, e.color, e.archived) for e in reg.entries] == before
++    assert sorted(p.name for p in (home / "boards").iterdir()) == folders
++
++
++def test_TC_2205_an_offset_time_in_the_registry_is_none(home):
++    """TC-2205 (code review of increment 002, F1): `last_opened` with an offset is a
++    hand edit — read as none, so `ago` and the home never meet an aware time."""
++    reg_path = mb.build(home, "personal")
++    data = json.loads(reg_path.read_text(encoding="utf-8"))
++    data["boards"][1]["last_opened"] = "2026-10-19T08:00+00:00"
++    reg_path.write_text(json.dumps(data), encoding="utf-8")
++    assert _reg(home).get("client-retail-rag").last_opened is None
