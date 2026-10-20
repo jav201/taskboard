@@ -21,7 +21,7 @@ orchestrator presents the full plan in-conversation at each phase gate.
 | Project | taskboard |
 | Batch | 2026-10-20-batch-01 |
 | Objective | Multi-board (variant C, home cards, of the multi-board round): several boards in one taskboard -- a boards registry with one folder per board and today's board as `Main` in place, the active board's chip in the head row, the Home cards behind `B` (shown at launch when more than one board is open), create / rename+recolour / archive boards, `--board PATH` registering its board, and moving a project to another board from the projects modal (backups, a move log, crossing links dropped and logged, team mode refused) |
-| Last updated | P4 · 2026-10-20 |
+| Last updated | P5 · 2026-10-20 |
 | Standing authorization | standing authorization — the orchestrator's commission of 2026-10-20 (the runtime cannot prompt), relaying the operator's commission «necesito tener configurados varios boards… hago boards para varios proyectos de distintas disciplinas además de mis tareas personales. Entonces todo está mezclado y no necesariamente debería serlo.» and verdict on `prototypes/multi_board/multi-board-prototype.html` «VARIANTE ELEGIDA: C · Sin objeciones: acepto P1–P4 como están.» Quoted from the commission: «Implement a /dev-flow batch … Batch id `2026-10-20-batch-01`, artifact language English», «Cut local branch `feat/multi-board` from `main` (fff21cc)», «cherry-pick it first so the round folder ships», «Do NOT push», «Max 4 SOURCE files per increment (tests uncapped)», «Finish the whole batch in one go including 04-validation and 05-close». Read as: every gate of this batch is autonomous (reviewer roles are spawned sub-agents carrying their `agents/<role>.md`); commits on the local branch `feat/multi-board` are authorized, each ending with the commission's co-author line; **push and merge are NOT authorized**; synthetic data only; the operator's name nowhere (`username_subject`); `.gitattributes`, the two `inc001-brief.md` files and the untracked old `.dev-flow/*` files are not touched or staged; tests never touch the real `~/.taskboard`. |
 | First gate | step 1, on `feat/multi-board` at `783397e` before the rollover: exit 1 — 32 block · 45 notice · 62 not applicable; every BLOCK the outgoing closed batch's record against the tree: `V59` ×32 (2026-10-19-batch-01's `base_ref` `bdf6e9d` predates the round's cherry-pick `783397e`, whose 32 files no packet of that batch names) — repaired by the rollover, which re-stamps `base_ref` at `783397e`; `V7`: bundle identical to its manifest both directions, 57 declared files, `2026-10-12-rev102`. Step 3 (after the rollover): exit 0 — 0 block · 65 notice · 47 not applicable (`evidence/gate-step1.txt`, `evidence/gate-step3.txt`). |
 | Premises / RC-1 | RC-1 (a): `git fetch origin` → `origin/main` = `fff21cc6e81fe9ab22e43e0dc02aa054ccf023d8` = local `main`; `git switch -c feat/multi-board main`; HEAD equals the origin tip, so no rebase is owed. The round's commit `74bbe4d` (local branch `proto/multi-board`) cherry-picked as `783397e` (prototype files only — the design oracle, as the commission asks), and `base_ref` stamped `783397ed64cbb4adcf129c60d1f7381a4dbe5325` so the round is not counted as this batch's work. RC-1 (b): not already shipped — on `origin/main` `git grep -n "boards.json\|switch_board\|registry" taskboard/` → nothing; `taskboard --board` opens one file (`taskboard/__main__.py`). RC-2: `git ls-remote --exit-code --heads origin` → exit 0. Premises: `01-requirements.md` §2.7 (P-1..P-10, all TRUE, `evidence/premises.txt`, `evidence/suite-keyb.txt`). |
@@ -53,7 +53,7 @@ The trigger evaluation `state.json`'s `triggers.record` points at: one row per t
 
 ## Where we are
 
-P4 — increments 001–004 committed on `feat/multi-board` (`e522eac`, `dc643e4`, `6eefdac`, `9ddabe8`), each approved at its gate; the DDR sealed approved (`design/DDR-2026-10-20-batch-01.md`: architect and qa-reviewer approved after their folds — LED .5, the module map, AT-2204 joined into one node, nine AT-row mutation arms 9/9 KILLED). The Phase-4 gate run (the whole suite on the final commit) waits on the operator's go-ahead: the host's memory reaper stopped increment 003's run and said not to restart it unasked.
+P5 — closed. Increments 001–004, the DDR (approved) and P4 (PASS-WITH-NOTES: the whole suite, 2936 passed, run by the orchestrator on the operator's go-ahead) are done on `feat/multi-board`; the canon folded; the push and merge are the orchestrator's, on the operator's word.
 
 ## Objective
 
@@ -63,10 +63,10 @@ Ship variant C of the multi-board round with P1–P4 as accepted: one folder per
 
 | Story / station | Status | Notes |
 |---|---|---|
-| US-2201 | DONE (P4 pending) | increment 001 (registry, switching, `--board`) — `e522eac` |
-| US-2202 | DONE (P4 pending) | increment 002 (chip, home, `B`) — `dc643e4` |
-| US-2203 | DONE (P4 pending) | increment 003 (forms) — `6eefdac` |
-| US-2204 | DONE (P4 pending) | increment 004 (move, README, backlog) — `9ddabe8` |
+| US-2201 | DONE | increment 001 (registry, switching, `--board`) — `e522eac` |
+| US-2202 | DONE | increment 002 (chip, home, `B`) — `dc643e4` |
+| US-2203 | DONE | increment 003 (forms) — `6eefdac` |
+| US-2204 | DONE | increment 004 (move, README, backlog) — `9ddabe8` |
 | P0 | done | triggers evaluated; refinement done |
 | ARQ | approved | `docs/ARCHITECTURE.md` amended (iterations 1–3) |
 | P1 | approved after two iterate-to-refine | LED .1, .2, .3 |
@@ -74,7 +74,8 @@ Ship variant C of the multi-board round with P1–P4 as accepted: one folder per
 | PDR | approved with conditions | `design/PDR-2026-10-20-batch-01.md`: PC-1..PC-3 open, PC-4/PC-5 discharged |
 | P3 | done | 001–004 approved; code review PASS-WITH-NOTES each (a HIGH fixed and re-read in 002, 003, 004); security APPROVE at 004; LED .4 |
 | DDR | approved | PC-1..PC-3 discharged by re-reading; LED .5; AT-2204 one node; `mutation-ddr.txt` 12/12 KILLED |
-| P4 | in progress | the gate run waits on the operator's go-ahead |
+| P4 | PASS-WITH-NOTES | the gate run by the orchestrator on the operator's go-ahead: 2936 passed in three chunks at `b88322d` |
+| P5 | closed | `05-close.md`; the canon folded (12 ids); landing (push, merge) by the orchestrator |
 
 ## Roadmap + increment plan
 
@@ -142,6 +143,8 @@ Ship variant C of the multi-board round with P1–P4 as accepted: one folder per
 
 **P3 … DDR gates:** 0 block — `V26` blocked once at increment 004 (LED .4 pairings without the requirement's back-pointer) and was cleared by adding the Ledger back-pointers; `V2` station-expected red at P3 entry before the tests existed.
 
+**P4 and the close:** 0 block; `V47` while `Result` was not-run (cleared by the gate run); `V57` (the unfilled `Gated tree` row, filled by close step 7) and `V62` (this cell, rewritten) expected at the close.
+
 **Found before the batch:** tracked and modified — `.gitattributes`, `.dev-flow/2026-10-07-batch-0{8,9}/evidence/inc001-brief.md` (line endings only); untracked — `.dev-flow/2026-10-07-batch-0{5..8}/decisions-log.json`, `.dev-flow/2026-10-07-batch-06/evidence/{gen_verdict_sheet.py,kanban-demo.json,veredicto-batch06.html,veredicto-board.json}`, `.dev-flow/rollover_batch{g,h,i,j}.py`. Not touched.
 
 ## Test ledger
@@ -156,4 +159,4 @@ Ship variant C of the multi-board round with P1–P4 as accepted: one folder per
 | `tests/test_boards*.py` + the files that drive app, modals, key seat, markup, README (increment 003, targeted) | 2026-10-20 | 391 passed — `evidence/suite-003.txt`; the full run stopped by the host at ~73% with no failure — `evidence/suite-003-stopped.txt` |
 | 44 test files (increment 004, targeted, two halves) | 2026-10-20 | 928 + 828 = 1756 passed — `evidence/suite-004.txt` |
 | `pytest --collect-only` on the DDR tree | 2026-10-20 | 2936 collected (2819 + 117) |
-| the whole suite at P4 | — | not-run — waits on the operator's go-ahead |
+| the whole suite at P4 (three sequential chunks over `ls tests/test_*.py | sort`, a clean worktree at `b88322d`, the orchestrator) | 2026-10-20 | 1388 + 796 + 752 = 2936 passed, 0 failed, 0 skipped — `evidence/suite-p4-chunk00..02.txt` |

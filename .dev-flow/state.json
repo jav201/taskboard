@@ -178,8 +178,8 @@
     }
   ],
   "guided": false,
-  "current_station": "P3",
-  "phase_status": "in-progress",
+  "current_station": "P5",
+  "phase_status": "closed",
   "stations_active": [
     "P0",
     "ARQ",
@@ -295,6 +295,36 @@
       "station": "PDR",
       "date": "2026-10-20",
       "decision": "PDR sealed approved with conditions under the batch's standing authorization (PDR-2026-10-20-batch-01): PC-1 (the key-bar word losses per width in packet 002), PC-2 (BLOCK-UNTIL S-1, S-2 at 004), PC-3 (the mutations of the design's section 5 killed per increment); PC-4 and PC-5 discharged at the seal; P3 is next."
+    },
+    {
+      "station": "P3",
+      "date": "2026-10-20",
+      "decision": "P3 increment 001 approved under the batch's standing authorization: the registry and switching in place (HLR-2201, HLR-2202), 22/22 mutants killed, code review PASS-WITH-NOTES with F1-F7 folded, 2855 passed; P3 continues."
+    },
+    {
+      "station": "P3",
+      "date": "2026-10-20",
+      "decision": "P3 increment 002 approved under the batch's standing authorization: the chip, the home and B (HLR-2203, HLR-2204, AT-2202), 27/27 mutants killed, code review PASS-WITH-NOTES after its F1 HIGH was fixed and re-read, 2893 passed; PDR PC-1 (the key-bar word losses per width) recorded in the packet's census; P3 continues."
+    },
+    {
+      "station": "P3",
+      "date": "2026-10-20",
+      "decision": "P3 increment 003 approved under the batch's standing authorization: board create/edit/archive (HLR-2205), 23/23 mutants killed, code review PASS-WITH-NOTES after its F1 HIGH was fixed and re-read; the full suite was stopped by the host's memory reaper at ~73% with no failure and not restarted (its instruction) — a targeted run 391 passed, the whole suite owed at P4; P3 continues."
+    },
+    {
+      "station": "P3",
+      "date": "2026-10-20",
+      "decision": "P3 increment 004 approved under the batch's standing authorization: moving a project to another board (HLR-2206), 33/33 mutants killed; code review BLOCK-UNTIL F1 (two boards in one folder) fixed and re-read, PASS-WITH-NOTES (N2 open, LOW); security APPROVE (S-1, S-2 lifted; N1 LOW in BACKLOG); LLR-2206.1 amended by LED .4; a targeted run of 44 files 1756 passed, the whole suite owed at P4; P3's increments are done, the DDR is next."
+    },
+    {
+      "station": "DDR",
+      "date": "2026-10-20",
+      "decision": "DDR sealed approved under the batch's standing authorization (DDR-2026-10-20-batch-01): architect approved after A-01..A-05 folded (HLR-2206 and LLR-2206.1 via LED .5, docs/ARCHITECTURE.md aligned, rows 1/2/7 corrected), qa-reviewer approved after QA-01 (9 AT-row mutations armed on their AT nodes, 9/9 KILLED, mutation-ddr.txt) and QA-02; AT-2204 joined into one node (C-18); PC-1..PC-3 discharged by re-reading; the full-suite run carried into P4, waiting on the operator's go-ahead."
+    },
+    {
+      "station": "P4",
+      "date": "2026-10-20",
+      "decision": "P4 approved under the batch's standing authorization (the operator's go-ahead for the gate run): the qa-reviewer's evaluation folded (G-5..G-9), the gate run by the orchestrator at b88322d in three sequential chunks, 1388 + 796 + 752 = 2936 passed, 0 failed, 0 skipped (suite-p4-chunk00..02.txt), Result PASS-WITH-NOTES (G-1..G-4, G-8, G-9 accepted or in BACKLOG); the close is next."
     }
   ],
   "obsidian_synced": false,

@@ -1,0 +1,19 @@
+# Phase-4 gate run, chunk 01 of 3 — run and collected by the orchestrator (the coordinator; exact pytest flags not recorded in the transcript), on the operator's go-ahead, in the clean worktree scratchpad/wt-p4 at b88322d (0 changed files; no source/test diff to the branch head), NO_COLOR unset; the suite's test files (`ls tests/test_*.py | sort`, 95 files) split into thirds and run as three sequential pytest processes to lower peak memory after the host's reaper incident — this chunk's files: suite-p4-chunk01-files.txt
+C:\Users\jjgh8\anaconda3\Lib\site-packages\pytest_asyncio\plugin.py:207: PytestDeprecationWarning: The configuration option "asyncio_default_fixture_loop_scope" is unset.
+The event loop scope for asynchronous fixtures will default to the fixture caching scope. Future versions of pytest-asyncio will default the loop scope for asynchronous fixtures to function scope. Set the default fixture loop scope explicitly in order to avoid unexpected behavior in the future. Valid fixture loop scopes are: "function", "class", "module", "package", "session"
+
+  warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCOPE_UNSET))
+........................................................................ [  9%]
+........................................................................ [ 18%]
+........................................................................ [ 27%]
+........................................................................ [ 36%]
+........................................................................ [ 45%]
+........................................................................ [ 54%]
+........................................................................ [ 63%]
+........................................................................ [ 72%]
+........................................................................ [ 81%]
+........................................................................ [ 90%]
+........................................................................ [ 99%]
+....                                                                     [100%]
+796 passed in 325.55s (0:05:25)
+chunk01 exit 0

@@ -1,0 +1,8 @@
+# Phase-4 gate run summary (the orchestrator): three chunks at b88322d
+chunk00 exit 0
+1388 passed in 272.79s (0:04:32)
+chunk01 exit 0
+796 passed in 325.55s (0:05:25)
+chunk02 exit 0
+752 passed in 131.02s (0:02:11)
+total: 1388 + 796 + 752 = 2936 passed, 0 failed, 0 skipped — equal to the 2936 collected (collect-p4.txt)
