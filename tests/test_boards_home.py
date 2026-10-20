@@ -446,30 +446,30 @@ async def test_AT_2203_the_chip_in_every_view(home, tmp_path):
 # --------------------------------------------------------------------------- #
 # AT-2204 — the home (HLR-2204)
 # --------------------------------------------------------------------------- #
-@pytest.mark.parametrize("size, svg", [((160, 45), "C-160-open.svg"),
-                                       ((118, 30), "C-118-open.svg"),
-                                       ((80, 24), "C-80-open.svg")])
-async def test_AT_2204_the_home_is_the_approved_capture(home, size, svg):
-    """AT-2204 (US-2202): at start over the round's four boards the home's rows
-    equal the round's approved C capture but its key row, which loses option D's
-    `A all boards` and reads the shipped keys."""
-    w, h = size
+CAPTURES = [((160, 45), "C-160-open.svg"), ((118, 30), "C-118-open.svg"),
+            ((80, 24), "C-80-open.svg")]
+
+
+async def test_AT_2204_the_home(home):
+    """AT-2204 (US-2202), one node for the whole chain (C-18): at start over the
+    round's four boards the home's rows equal the round's approved C capture at
+    160, 118 and 80 columns but its key row, which loses option D's `A all boards`
+    and reads the shipped keys; then `3` and `a` do nothing on the home; `B` opens
+    it from a view but not over the presentation or the projects modal; the bar
+    and `?` list `B`."""
     mb.build(home, "personal")
-    app = _open()
-    async with app.run_test(size=size) as pilot:
-        for _ in range(4):
-            await pilot.pause()
-        assert _scr(app) == "BoardsHome"
-        got = _svg_rows(app.export_screenshot(), w, h)
-    want = _svg_rows((ROUND / svg).read_text(encoding="utf-8"), w, h)
-    diff = [(y, g, x) for y, (g, x) in enumerate(zip(got[:-1], want[:-1])) if g != x]
-    assert not diff, diff
-    assert got[-1] == " " + KEY_ROW
-
-
-async def test_AT_2204_B_and_the_keys_the_home_holds(home):
-    """AT-2204: `3` and `a` do nothing on the home; `B` opens it from a view but not
-    over the presentation or the projects modal; the bar and `?` list `B`."""
+    for size, svg in CAPTURES:
+        w, h = size
+        app = _open()
+        async with app.run_test(size=size) as pilot:
+            for _ in range(4):
+                await pilot.pause()
+            assert _scr(app) == "BoardsHome"
+            got = _svg_rows(app.export_screenshot(), w, h)
+        want = _svg_rows((ROUND / svg).read_text(encoding="utf-8"), w, h)
+        diff = [(y, g, x) for y, (g, x) in enumerate(zip(got[:-1], want[:-1])) if g != x]
+        assert not diff, (svg, diff)
+        assert got[-1] == " " + KEY_ROW, svg
     mb.build(home, "personal")
     app = _open()
     async with app.run_test(size=(160, 45)) as pilot:

@@ -1,0 +1,15 @@
+increment 002 arms read: 27
+arms (DDR): 12
+taskboard/views.py ['if sum(len(a) + 5 for a, _ in parts) > inner:' -> 'if sum(len(a) for a, _ in parts) + 5 * ('] test_AT_2204_the_home: RED (KILLED) · restore 0d762a0a0caac52d
+taskboard/app.py ['if action in SEAT_ACTIONS and any(' -> 'if action in SEAT_ACTIONS and False and '] test_AT_2204_the_home: RED (KILLED) · restore 4651d9489fb2e692
+taskboard/keymap.py ['Key("B", "B", "boards", "Boards", universal=True, ' -> ''] test_AT_2204_the_home: RED (KILLED) · restore 2b2ec12908881989
+taskboard/boards.py ['if len(self.entries) > 1 or self.path.exists():\n  ' -> 'if True:\n            try:\n              '] test_AT_2201_no_registry_and_an_unreadable_one: RED (KILLED) · restore 64d749027e6e9a1e
+taskboard/boards.py ['backup = _keep_aside(path)' -> 'backup = None'] test_AT_2201_no_registry_and_an_unreadable_one: RED (KILLED) · restore 64d749027e6e9a1e
+taskboard/app.py ['board = Board.load(entry.path)\n        if self._te' -> 'board = self.board\n        if self._team'] test_AT_2202_switching_boards_in_place: RED (KILLED) · restore 4651d9489fb2e692
+taskboard/boards.py ['self.last = bid\n        entry.last_opened' -> 'entry.last_opened'] test_AT_2202_switching_boards_in_place: RED (KILLED) · restore 64d749027e6e9a1e
+taskboard/views.py ['for j, (a, st) in enumerate(parts):' -> 'for j, (a, st) in enumerate(parts[::-1])'] test_AT_2204_the_home: RED (KILLED) · restore 0d762a0a0caac52d
+taskboard/app.py ['self.app.pop_screen()\n        self.app.switch_boar' -> 'self.app.pop_screen()\n\n    def action_ed'] test_AT_2205_manage_boards_from_the_home: RED (KILLED) · restore 4651d9489fb2e692
+taskboard/boards.py ['entry.archived = True' -> 'entry.archived = True\n            shutil'] test_AT_2205_manage_boards_from_the_home: RED (KILLED) · restore 64d749027e6e9a1e
+taskboard/boards.py ['for t in new_src.tasks:\n            t.depends_on =' -> 'for t in new_src.tasks:\n            pass'] test_AT_2206_move_a_project_to_another_board: RED (KILLED) · restore 64d749027e6e9a1e
+taskboard/boards.py ['t.depends_on = [d for d in t.depends_on if d in id' -> 't.depends_on = list(t.depends_on)'] test_AT_2206_move_a_project_to_another_board: RED (KILLED) · restore 64d749027e6e9a1e
+not killed: 0

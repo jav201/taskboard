@@ -148,6 +148,7 @@ recorded full-suite run).
 - `tests/test_boards_forms.py` holds an unused `PAYLOADS` list and `Text` import (code review of increment 003, N1); a test reads Textual's private `_border_title` (N2).
 - two app instances can both write `boards.json` and a board file (the last write wins, as with the board file today); a move does not lock the target board.
 - `ProjectPicker._move_target` keeps a `_boards` parameter it no longer reads since the target is re-read when chosen (code review of increment 004, N2).
+- AT-2204's `?` check reads the word `Boards` in the help, not the `B` key itself, and the node sets `selected_task_id` before `R` instead of reaching it by a key (qa-reviewer at the DDR, QA-03).
 - a move rewrites the source `history.jsonl` without a pre-move copy, and an undecodable byte in a kept line comes back as U+FFFD (security review of increment 004, N1: only bytes that were already unreadable).
 
 ## Open — after `2026-10-19-batch-01` (present view 3 `all`: the operator's verdict on the present-portfolio round)

@@ -1,0 +1,18 @@
+# captures retaken on the final code (9ddabe8 + the DDR's test-only join), 2026-10-20T16:46:16-06:00, NO_COLOR unset: 17 SVG, 17 PNG; compared with the committed set modulo Textual's random class ids and the status bar's wall clocks (HH:MM[:SS])
+same create-160x45-1-form.svg
+same create-160x45-2-created.svg
+same create-80x24-form.svg
+same home-118x30.svg
+same home-160x45.svg
+same home-80x24.svg
+same move-160x45-0-main-before.svg
+same move-160x45-1-projects.svg
+same move-160x45-2-target.svg
+same move-160x45-3-confirm.svg
+same move-160x45-4-moved.svg
+same move-160x45-5-main-after.svg
+same move-160x45-6-client-after.svg
+same move-80x24-confirm.svg
+same single-board-160x45.svg
+same switched-160x45.svg
+same switched-gantt-160x45.svg
