@@ -1,0 +1,42 @@
+{
+  "tree_before": "~/.taskboard/board.json\n~/.taskboard/boards/\n~/.taskboard/boards/client-retail-rag/\n~/.taskboard/boards/client-retail-rag/board.json\n~/.taskboard/boards/course-docker/\n~/.taskboard/boards/course-docker/board.json\n~/.taskboard/boards/personal/\n~/.taskboard/boards/personal/board.json\n~/.taskboard/boards.json",
+  "tree_after": "~/.taskboard/board.json\n~/.taskboard/board.json.pre-move-2026-10-20\n~/.taskboard/boards/\n~/.taskboard/boards/client-retail-rag/\n~/.taskboard/boards/client-retail-rag/board.json\n~/.taskboard/boards/client-retail-rag/board.json.pre-move-2026-10-20\n~/.taskboard/boards/client-retail-rag/move-2026-10-20.json\n~/.taskboard/boards/course-docker/\n~/.taskboard/boards/course-docker/board.json\n~/.taskboard/boards/personal/\n~/.taskboard/boards/personal/board.json\n~/.taskboard/boards.json\n~/.taskboard/move-2026-10-20.json",
+  "registry_move-160": {
+    "version": 1,
+    "last": "client-retail-rag",
+    "boards": [
+      {
+        "id": "personal",
+        "name": "Personal",
+        "color": "green",
+        "path": "~/.taskboard/boards/personal/board.json",
+        "last_opened": "2026-10-20T07:30",
+        "archived": false
+      },
+      {
+        "id": "client-retail-rag",
+        "name": "Client \u00b7 Retail RAG",
+        "color": "sky",
+        "path": "~/.taskboard/boards/client-retail-rag/board.json",
+        "last_opened": "2026-10-20T09:30",
+        "archived": false
+      },
+      {
+        "id": "course-docker",
+        "name": "Course \u00b7 Docker",
+        "color": "violet",
+        "path": "~/.taskboard/boards/course-docker/board.json",
+        "last_opened": "2026-10-18T07:30",
+        "archived": false
+      },
+      {
+        "id": "main",
+        "name": "Main",
+        "color": "fuchsia",
+        "path": "~/.taskboard/board.json",
+        "last_opened": "2026-10-20T09:30",
+        "archived": false
+      }
+    ]
+  }
+}
