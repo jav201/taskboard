@@ -108,7 +108,7 @@ between the short and the full layer. Every key below is also in the command pal
 | `?` | Help | Per-view help (usage, legend, example, keys, and the global keys such as `R` and `S`); `m` there for the full map |
 | `;` | More | Toggle the key bar's layer |
 | `q` | Quit | Quit |
-| `B` | Boards | The home of your boards: one card per board; `Enter` opens one |
+| `B` | Boards | The home of your boards: one card per board; `Enter` opens one (see [Boards](#boards)) |
 | `1`–`6`, `7`–`9`, `0` | Views | See [Views](#views) |
 | `↑` `↓` / `k` `j` | Move | Move the selection in the order the view draws |
 | `←` `→` / `h` `l` | Across | Move between columns (kanban) |
@@ -269,6 +269,42 @@ hidden`). The choices are saved on the board: a task's **Show in presentation** 
 the task editor), a project's shown flag and its place in the presentation's order. Everything
 is shown by default, and these are the only things the presentation writes.
 
+## Boards
+
+Keep separate boards for separate work — one per client or course, one for your own tasks —
+instead of one mixed board. Each board is its own file in its own folder, so its history,
+pasted images and reports stay with it; your existing `~/.taskboard/board.json` is the first
+board, **Main**, left exactly where it is.
+
+`B` opens the **home**: one card per board with its open tasks, how many are late, how many fall
+due this week, a four-week strip of upcoming dues, the next dues and its projects. `←`/`→` and
+`↑`/`↓` move between cards, `Enter` opens one, `Esc` goes back to the board you were on, `q`
+quits. With more than one board the app starts on the home, its cursor on the board you used
+last, and every view's head row opens with the open board's name in its colour. With a single
+board nothing changes: no home at start and no name in the head row (`B` still opens the home,
+which is where you create the second board).
+
+On the home:
+
+| Key | What |
+|-----|------|
+| `n` | New board: a name and a colour (`Tab` cycles the colours); the form shows the file it will create, `~/.taskboard/boards/<name>/board.json`. The new board opens empty |
+| `e` | Rename or recolour the board under the cursor |
+| `x` | Archive the board under the cursor (it asks first; `Tab`, `Enter` confirms). It leaves the home; its folder is not touched. `taskboard --board PATH` brings it back. The open board cannot be archived |
+
+**Moving a project to another board.** In the projects manager (`P`), `m` moves the project under
+the cursor, with all its tasks — done and archived ones too — to another board. You pick the
+board, then a confirmation lists what moves, the links inside the project that stay, and every
+link to a task that stays behind: those links are dropped, because a task cannot wait on a task
+on another board. Before anything is written both board files are copied to
+`board.json.pre-move-<date>`, and the dropped links are listed in `move-<date>.json` beside each
+board. The project's history lines and pasted images move with it. **A move cannot be undone with
+`u`** (and the undo history of the board you moved from is cleared): the `.pre-move` copies are the
+way back. A move is refused, and says why, when the project is shared in team mode, when the
+other board lacks one of the project's phases (add it there with `f` first), when the other
+board already holds one of its ids, when both boards are files in the same folder (they would
+share one history), or when that board's file is missing or unreadable.
+
 ## Reports
 
 From the shell:
@@ -309,6 +345,11 @@ Everything lives under `~/.taskboard/` (or beside the file you pass with `--boar
 | `board.json` | Your board: projects, tasks, settings |
 | `board.json.corrupt` | A copy of an unreadable board, kept before the app starts empty |
 | `history.jsonl` | One line per phase move and per added task — the Flow view reads it |
+| `boards.json` | The list of your boards (name, colour, file, when last opened, archived) and the one opened last; written only once you have a second board |
+| `boards.json.corrupt` | A copy of an unreadable `boards.json`, kept before the app shows the default board |
+| `boards/<name>/board.json` | A board created from the home, with its own `history.jsonl`, `images/` and `reports/` beside it |
+| `board.json.pre-move-<date>` | A copy of a board file taken before a project moved to or from it |
+| `move-<date>.json` | The projects moved that day, beside each board involved: tasks, links kept, links dropped |
 | `images/<task id>/` | Pasted images, as plain files |
 | `reports/` | HTML reports and the presentation's SVG + PNG exports |
 
@@ -319,8 +360,8 @@ files that carry your board's text.
 
 | Command | What |
 |---------|------|
-| `taskboard` | Run the app on `~/.taskboard/board.json` |
-| `taskboard --board PATH` | Run it on another board file |
+| `taskboard` | Run the app: the home when you have several boards, else `~/.taskboard/board.json` |
+| `taskboard --board PATH` | Run it on another board file, and add that file to your boards (an archived one comes back) |
 | `taskboard --report [PROJECT]` | Write a report and exit |
 
 `python -m taskboard` is the same command.

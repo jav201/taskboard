@@ -932,6 +932,25 @@ class TaskboardApp(App):
         self.board.label = ((entry.name, entry.color)
                             if entry is not None and len(self.registry.active()) > 1 else None)
 
+    @staticmethod
+    def move_team_ids(board: Board) -> set[str] | None:
+        """The project ids `board`'s team configuration shares (HLR-2206): empty
+        out of team mode (no `team_shared_dir`), None in team mode when its
+        `team.json` cannot be read — read fresh, whatever `team_state` holds."""
+        state = TeamState.from_settings(board.settings.get("team_shared_dir"))
+        if state is None:
+            return set()
+        return state.team_project_ids() if state.load_config() else None
+
+    def after_move(self, new_src: Board) -> None:
+        """A project moved out (HLR-2206): the open board becomes the move's new
+        source — its label kept — and the undo stack, whose snapshots name the
+        moved tasks, is cleared."""
+        new_src.label = self.board.label
+        self.board = new_src
+        self._undo_stack = []
+        self.refresh_view()
+
     def action_boards(self) -> None:
         """`B`: the home."""
         self.push_screen(BoardsHome())

@@ -39,9 +39,9 @@ from .models import (IMAGE_EXTS, PROJECT_COLORS, PROJECT_STATUSES, TASK_PRIORITI
                      open_dependents, project_archive_refusal,
                      grab_clipboard_image, grab_clipboard_text, parse_iso,
                      resolve_city, save_pil_image, templates)
-from .boards import clean_name, slug
+from .boards import clean_name, move_plan, move_project, peek_board, slug
 from .keymap import palette_commands
-from .views import (HEX, clip, gantt_group_key, gantt_link_frame, gantt_link_order,
+from .views import (HEX, clip, fit, gantt_group_key, gantt_link_frame, gantt_link_order,
                     highlight_segments, valid_url)
 
 # Imported at MODULE load (before the app starts) on purpose: textual-image
@@ -656,6 +656,7 @@ class ProjectPicker(ModalScreen[None]):
         ("e", "edit", "Edit"),
         ("x", "archive", "Archive"),
         ("d", "delete", "Delete"),
+        ("m", "move_board", "Move to board"),
         Binding("j", "move(1)", show=False),
         Binding("k", "move(-1)", show=False),
     ]
@@ -666,7 +667,8 @@ class ProjectPicker(ModalScreen[None]):
 
     def compose(self) -> ComposeResult:
         with VerticalScroll(id="picker-box", classes="modal"):
-            yield Label("[b]Projects[/b]  —  e edit · x archive · d delete · esc close",
+            yield Label("[b]Projects[/b]  —  e edit · x archive · d delete · m move to board · "
+                        "esc close",
                         classes="modal-title")
             yield OptionList(id="proj-list")
 
@@ -764,6 +766,66 @@ class ProjectPicker(ModalScreen[None]):
         if not ok:
             return
         self._do_archive_toggle(proj)
+
+    # ---- move to another board (batch 2026-10-20-batch-01, HLR-2206) ------------
+    def action_move_board(self) -> None:
+        proj = self._current()
+        if proj is None:
+            return
+        app = self.app
+        others = [e for e in app.registry.active() if e.id != app.board_id]
+        if not others:
+            app.notify("There is no other board to move it to — B, then n, creates one.",
+                       title="Boards", severity="warning", markup=False)
+            return
+        boards = {e.id: peek_board(e.path) for e in others}
+        n = sum(1 for t in self.board.tasks if t.project_id == proj.id)
+        app.push_screen(MoveTarget(proj, n, others, boards),
+                        lambda bid, p=proj: self._move_target(p, bid, boards))
+
+    def _move_target(self, proj: Project, bid: str | None, _boards: dict) -> None:
+        if not bid:
+            return
+        app = self.app
+        # read again now: the picker's copy may be older than the file (security F1)
+        dst = peek_board(app.registry.get(bid).path)
+        plan = move_plan(self.board, dst, proj.id, app.move_team_ids(self.board),
+                         app.move_team_ids(dst))
+        if plan.refusal:
+            app.notify(f"{proj.name} was not moved to {app.registry.get(bid).name}: "
+                       f"{plan.refusal}.", title="Boards",
+                       severity="warning", markup=False)
+            return
+        src_e, dst_e = app.registry.get(app.board_id), app.registry.get(bid)
+        app.push_screen(MoveConfirm(plan, proj, self.board, src_e, dst_e,
+                                    date.today().isoformat()),
+                        lambda ok: self._move_confirmed(proj, dst, plan, src_e, dst_e, ok))
+
+    def _move_confirmed(self, proj, dst, plan, src_e, dst_e, ok) -> None:
+        if not ok:
+            return
+        app = self.app
+        try:
+            new_src, _steps = move_project(self.board, dst, proj.id, plan,
+                                           date.today().isoformat(), (src_e.name, dst_e.name))
+        except OSError as exc:
+            if getattr(exc, "board", None) is not None:
+                # the source file no longer holds the project: neither may the open
+                # board, or the next save would write it back (architect A-27)
+                app.after_move(exc.board)
+                self.board = app.board
+                self._reload()
+            done = ", ".join(getattr(exc, "steps", [])) or "nothing"
+            app.notify(f"The move stopped: {exc}. Done: {done}. The backups "
+                       f"(*.pre-move-{date.today().isoformat()}) are beside each board file.",
+                       title="Boards", severity="error", timeout=30, markup=False)
+            return
+        app.after_move(new_src)
+        self.board = app.board
+        self._reload()
+        app.notify(f"Moved {proj.name} to {dst_e.name} · {len(plan.tasks)} tasks · "
+                   f"{plan.kept} links kept · {len(plan.crossing)} dropped", title="Boards",
+                   timeout=30, markup=False)
 
     def _refused(self, proj: Project) -> bool:
         """The guard (D-523): archiving a project archives its tasks, so it is
@@ -2365,3 +2427,132 @@ class BoardForm(ModalScreen[tuple[str, str] | None]):
     def action_cancel(self) -> None:
         self.dismiss(None)
 
+
+class MoveTarget(ModalScreen[str | None]):
+    """The board a project moves to (HLR-2206): the other active boards, each
+    with its colour, name and size. Names are plain `Text` pieces."""
+
+    BINDINGS = [Binding("escape", "cancel", "", priority=True),
+                Binding("up,k", "move(-1)", "", priority=True, show=False),
+                Binding("down,j", "move(1)", "", priority=True, show=False),
+                Binding("enter", "choose", "", priority=True, show=False)]
+
+    def __init__(self, project: Project, n_tasks: int, entries: list, boards: dict):
+        super().__init__()
+        self.project, self.n_tasks = project, n_tasks
+        self.targets, self.boards = entries, boards
+        self.cursor = 0
+
+    def compose(self) -> ComposeResult:
+        head = Text("Move ", style=f"bold {HEX['bright']}")
+        head.append("██ ", style=HEX.get(self.project.color, HEX["violet"]))
+        head.append(self.project.name, style=f"bold {HEX['bright']}")
+        head.append(f"  ({self.n_tasks} tasks)  to which board?", style=HEX["mut"])
+        with Vertical(id="mt-box"):
+            yield Static(head, id="mt-title")
+            yield Static(id="mt-rows")
+            yield Static(Text("↑↓ move · ↵ choose · esc cancel", style=HEX["dim"]),
+                         id="mt-keys")
+
+    def on_mount(self) -> None:
+        self._paint()
+
+    def _paint(self) -> None:
+        t = Text(no_wrap=True)
+        for i, e in enumerate(self.targets):
+            b = self.boards[e.id]
+            n_open = sum(1 for x in b.tasks if not b.is_done(x) and not x.archived)
+            n_proj = sum(1 for p in b.projects if not p.archived)
+            on = i == self.cursor
+            if i:
+                t.append("\n")
+            t.append("▶ " if on else "  ", style=HEX["accent"])
+            t.append("██ ", style=HEX.get(e.color, HEX["violet"]))
+            t.append(fit(e.name, 24), style=f"bold {HEX['bright']}" if on else HEX["ink"])
+            t.append(f"{n_proj} projects · {n_open} open", style=HEX["dim"])
+        self.query_one("#mt-rows", Static).update(t)
+
+    def action_move(self, delta: int) -> None:
+        self.cursor = max(0, min(len(self.targets) - 1, self.cursor + delta))
+        self._paint()
+
+    def action_choose(self) -> None:
+        self.dismiss(self.targets[self.cursor].id)
+
+    def action_cancel(self) -> None:
+        self.dismiss(None)
+
+
+class MoveConfirm(ModalScreen[bool]):
+    """What a move does, said before it is done (HLR-2206): what moves, the
+    links that stay, each link that crosses the boards and will be dropped, the
+    backups, the log, and that `u` cannot undo it. The links scroll; the head
+    and the keys are always on screen."""
+
+    BINDINGS = [Binding("escape", "no", "", priority=True),
+                Binding("enter", "yes", "", priority=True, show=False)]
+
+    def __init__(self, plan, project: Project, src_board: Board, src_entry, dst_entry,
+                 day: str):
+        super().__init__()
+        self.plan, self.project, self.board = plan, project, src_board
+        self.src, self.dst, self.day = src_entry, dst_entry, day
+
+    def compose(self) -> ComposeResult:
+        p, plan = self.project, self.plan
+        done = sum(1 for t in plan.tasks if self.board.is_done(t) or t.archived)
+        head = Text()
+        head.append("Move project to another board\n\n", style=f"bold {HEX['bright']}")
+        head.append("  ██ ", style=HEX.get(p.color, HEX["violet"]))
+        head.append(p.name, style=f"bold {HEX['bright']}")
+        head.append("   from ", style=HEX["mut"])
+        head.append(f" {self.src.name} ",
+                    style=f"bold #0d1117 on {HEX.get(self.src.color, HEX['violet'])}")
+        head.append("  to ", style=HEX["mut"])
+        head.append(f" {self.dst.name} ",
+                    style=f"bold #0d1117 on {HEX.get(self.dst.color, HEX['violet'])}")
+        head.append(f"\n\n  {len(plan.tasks)} tasks move ({len(plan.tasks) - done} open, {done} "
+                    f"done) · {plan.kept} links inside the project stay", style=HEX["hd"])
+        links = Text()
+        n = len(plan.crossing)
+        if n:
+            pname = {q.id: q.name for q in self.board.projects}
+            links.append(f"  {n} link{'s' if n > 1 else ''} cross the boards and will be "
+                         "dropped:\n", style=f"bold {HEX['over']}")
+            for waiter, pred in plan.crossing:
+                for task, role in ((waiter, ""), (pred, "waits on ")):
+                    links.append("    " + ("✕ " if not role else "    "), style=HEX["over"])
+                    if role:
+                        links.append(role, style=HEX["mut"])
+                    links.append(task.title, style=HEX["ink"])
+                    where = ("moves" if task.project_id == p.id else
+                             f"{pname.get(task.project_id, 'Inbox')}, stays on {self.src.name}")
+                    links.append(f"  ({where})\n", style=HEX["dim"])
+        links.rstrip()
+        foot = Text()
+        foot.append(f"  Both board files are backed up first ({Path(self.src.path).name}.pre-move-{self.day}),\n"
+                    f"  and the dropped links are listed in move-{self.day}.json beside each.\n"
+                    "  u cannot undo a move or the edits before it — the backups are the way "
+                    "back.\n", style=HEX["dim"])
+        foot.append("\n  ↵ ", style=f"b {HEX['bright']}")
+        foot.append(f"move{f' and drop {n} links' if n else ''}", style=HEX["mut"])
+        foot.append("   esc ", style=f"b {HEX['bright']}")
+        foot.append("cancel", style=HEX["mut"])
+        with Vertical(id="mc-box"):
+            yield Static(head, id="mc-head")
+            with VerticalScroll(id="mc-links"):
+                yield Static(links, id="mc-links-text")
+            yield Static(foot, id="mc-foot")
+
+    def on_mount(self) -> None:
+        box = self.query_one("#mc-links", VerticalScroll)
+        if not self.plan.crossing:
+            box.display = False
+        # the links scroll; the head and the keys stay on screen (ux-reviewer UX-3)
+        box.styles.max_height = max(3, self.app.size.height - 16)
+
+    def action_yes(self) -> None:
+        self.dismiss(True)
+
+    def action_no(self) -> None:
+        self.dismiss(False)

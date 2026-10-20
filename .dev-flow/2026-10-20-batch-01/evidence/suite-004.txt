@@ -1,0 +1,41 @@
+# targeted run, increment 004 (6eefdac + increment 004's files, both reviews folded, README N1 folded), NO_COLOR unset, foreground in two halves — the batch's test files and every test file that drives the app, the modals, the key seat, the markup or the README (44 files: tests/test_app.py tests/test_archive.py tests/test_boards.py tests/test_boards_forms.py tests/test_boards_home.py tests/test_boards_move.py tests/test_cells.py tests/test_chainmap.py tests/test_colour_budget.py tests/test_colour_budget_app.py tests/test_dependencies.py tests/test_details_links.py tests/test_details_markup.py tests/test_edit_window.py tests/test_field.py tests/test_focus.py tests/test_gantt_board.py tests/test_gantt_link.py tests/test_gantt_milestones.py tests/test_gantt_polish.py tests/test_highlight_segments.py tests/test_kanban_milestones.py tests/test_kanban_readable.py tests/test_keymap.py tests/test_lanes_grid.py tests/test_legend.py tests/test_link_picker.py tests/test_links.py tests/test_markup_census.py tests/test_markup_sites.py tests/test_milestone_offer.py tests/test_palette_ration.py tests/test_present.py tests/test_present_all.py tests/test_present_rulers.py tests/test_prism_laws.py tests/test_readme.py tests/test_report.py tests/test_span_economy.py tests/test_swimlanes.py tests/test_sync_fields.py tests/test_team_views.py tests/test_tick_label.py tests/test_undo_toast.py). The full suite stays owed at P4 (host memory, suite-003-stopped.txt)
+## half 1 (files 1-22)
+C:\Users\jjgh8\anaconda3\Lib\site-packages\pytest_asyncio\plugin.py:207: PytestDeprecationWarning: The configuration option "asyncio_default_fixture_loop_scope" is unset.
+The event loop scope for asynchronous fixtures will default to the fixture caching scope. Future versions of pytest-asyncio will default the loop scope for asynchronous fixtures to function scope. Set the default fixture loop scope explicitly in order to avoid unexpected behavior in the future. Valid fixture loop scopes are: "function", "class", "module", "package", "session"
+
+  warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCOPE_UNSET))
+........................................................................ [  7%]
+........................................................................ [ 15%]
+........................................................................ [ 23%]
+........................................................................ [ 31%]
+........................................................................ [ 38%]
+........................................................................ [ 46%]
+........................................................................ [ 54%]
+........................................................................ [ 62%]
+........................................................................ [ 69%]
+........................................................................ [ 77%]
+........................................................................ [ 85%]
+........................................................................ [ 93%]
+................................................................         [100%]
+928 passed in 252.07s (0:04:12)
+exit=0
+## half 2 (files 23-44)
+C:\Users\jjgh8\anaconda3\Lib\site-packages\pytest_asyncio\plugin.py:207: PytestDeprecationWarning: The configuration option "asyncio_default_fixture_loop_scope" is unset.
+The event loop scope for asynchronous fixtures will default to the fixture caching scope. Future versions of pytest-asyncio will default the loop scope for asynchronous fixtures to function scope. Set the default fixture loop scope explicitly in order to avoid unexpected behavior in the future. Valid fixture loop scopes are: "function", "class", "module", "package", "session"
+
+  warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCOPE_UNSET))
+........................................................................ [  8%]
+........................................................................ [ 17%]
+........................................................................ [ 26%]
+........................................................................ [ 34%]
+........................................................................ [ 43%]
+........................................................................ [ 52%]
+........................................................................ [ 60%]
+........................................................................ [ 69%]
+........................................................................ [ 78%]
+........................................................................ [ 86%]
+........................................................................ [ 95%]
+....................................                                     [100%]
+828 passed in 307.70s (0:05:07)
+exit=0
+## total: 1756 passed, 0 failed, 0 skipped

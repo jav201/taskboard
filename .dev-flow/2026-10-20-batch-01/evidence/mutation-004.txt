@@ -1,0 +1,40 @@
+# increment 004 battery after the review folds (fresh run, both slices), 2026-10-20T16:28:22-06:00
+## slice 0-14
+arms: 18
+taskboard/boards.py ['for t in new_src.tasks:\n            t.depends_on =' -> 'for t in new_src.tasks:\n            pass'] test_TC_2206_the_move: RED (KILLED) · restore 64d749027e6e9a1e
+taskboard/boards.py ['t.depends_on = [d for d in t.depends_on if d in id' -> 't.depends_on = list(t.depends_on)'] test_TC_2206_the_move: RED (KILLED) · restore 64d749027e6e9a1e
+taskboard/boards.py ['t.depends_on = [d for d in t.depends_on if d in id' -> 't.depends_on = []'] test_TC_2206_the_move: RED (KILLED) · restore 64d749027e6e9a1e
+taskboard/boards.py ['t.depends_on = [d for d in t.depends_on if d in id' -> 't.depends_on = []'] test_AT_2206_move_a_project_to_another_board: RED (KILLED) · restore 64d749027e6e9a1e
+taskboard/boards.py ['pre-move-{day}" + (f"-{n}" if n > 1 else ""))\n    ' -> 'pre-move-{day}" + (f"-{n}" if n > 1 else'] test_TC_2206_a_second_move_the_same_day: RED (KILLED) · restore 64d749027e6e9a1e
+taskboard/boards.py ['new_dst.save_atomic()\n        steps.append("saved ' -> 'new_src.save_atomic()\n        saved = ne'] test_TC_2206_the_target_save_failing_leaves_the_source: RED (KILLED) · restore 64d749027e6e9a1e
+taskboard/boards.py ['new_src, new_dst = copy.deepcopy(src), copy.deepco' -> 'new_src, new_dst = src, dst'] test_TC_2206_the_move: RED (KILLED) · restore 64d749027e6e9a1e
+taskboard/boards.py ['new_src, new_dst = copy.deepcopy(src), copy.deepco' -> 'new_src, new_dst = src, dst'] test_TC_2206_the_target_save_failing_leaves_the_source: RED (KILLED) · restore 64d749027e6e9a1e
+taskboard/boards.py ['if plan.refusal:\n            raise OSError(plan.re' -> 'if False:\n            raise OSError(plan'] test_TC_2206_the_target_lacks_a_phase: RED (KILLED) · restore 64d749027e6e9a1e
+taskboard/boards.py ['refs.append(str(new_dir / r.resolve().relative_to(' -> 'refs.append(ref)'] test_TC_2206_the_move: RED (KILLED) · restore 64d749027e6e9a1e
+taskboard/boards.py ['refs.append(str(new_dir / r.resolve().relative_to(' -> 'refs.append(ref)'] test_AT_2206_move_a_project_to_another_board: RED (KILLED) · restore 64d749027e6e9a1e
+taskboard/boards.py ['if not (isinstance(x, str) and _ID.fullmatch(x)):' -> 'if False:'] test_TC_2206_an_id_that_cannot_name_a_folder: RED (KILLED) · restore 64d749027e6e9a1e
+taskboard/boards.py ['if pid in src_team or pid in dst_team:' -> 'if pid in src_team:'] test_TC_2206_shared_in_team_mode_either_side: RED (KILLED) · restore 64d749027e6e9a1e
+taskboard/boards.py ['if _key(src.path) == _key(dst.path) or _samefile(s' -> 'if False:'] test_TC_2206_a_missing_or_unreadable_target_or_the_same_file: RED (KILLED) · restore 64d749027e6e9a1e
+taskboard/boards.py ['if _stamp(dst.path) != plan.dst_stamp:' -> 'if False:'] test_TC_2206_a_target_changed_after_the_plan: RED (KILLED) · restore 64d749027e6e9a1e
+taskboard/boards.py ['if missing:\n        return f"the target has no pha' -> 'if False:\n        return f"the target ha'] test_TC_2206_the_target_lacks_a_phase: RED (KILLED) · restore 64d749027e6e9a1e
+taskboard/boards.py ['if missing:\n        return f"the target has no pha' -> 'if False:\n        return f"the target ha'] test_TC_2206_refusal_notices_and_no_other_board: RED (KILLED) · restore 64d749027e6e9a1e
+taskboard/boards.py ['saved = new_src' -> ''] test_TC_2206_a_failure_after_the_source_save: RED (KILLED) · restore 64d749027e6e9a1e
+not killed: 0
+## slice 14-28
+arms: 15
+taskboard/boards.py ['(moved if isinstance(task, str) and task in ids el' -> 'keep.append(line)'] test_TC_2206_the_move: RED (KILLED) · restore 64d749027e6e9a1e
+taskboard/boards.py ['(moved if isinstance(task, str) and task in ids el' -> 'keep.append(line)'] test_AT_2206_move_a_project_to_another_board: RED (KILLED) · restore 64d749027e6e9a1e
+taskboard/boards.py ['write_atomic(p, json.dumps(items + [entry], indent' -> 'write_atomic(p, json.dumps([entry], inde'] test_TC_2206_a_second_move_the_same_day: RED (KILLED) · restore 64d749027e6e9a1e
+taskboard/modals.py ['("m", "move_board", "Move to board"),' -> ''] test_AT_2206_move_a_project_to_another_board: RED (KILLED) · restore ed409e3d34e07c1b
+taskboard/app.py ['self.board = new_src\n        self._undo_stack = []' -> 'self.board = new_src'] test_AT_2206_move_a_project_to_another_board: RED (KILLED) · restore 4651d9489fb2e692
+taskboard/modals.py ['links.rstrip()' -> ''] test_TC_2206_the_confirmation_is_the_rounds_box_and_the_undo_line: RED (KILLED) · restore ed409e3d34e07c1b
+taskboard/boards.py ['if _key(src.path.parent) == _key(dst.path.parent):' -> 'if False:'] test_TC_2206_two_boards_in_one_folder_are_refused: RED (KILLED) · restore 64d749027e6e9a1e
+taskboard/boards.py ['_key(src.path) == _key(dst.path) or _samefile(src.' -> '_key(src.path) == _key(dst.path)'] test_TC_2206_a_hard_linked_target_is_this_board: RED (KILLED) · restore 64d749027e6e9a1e
+taskboard/boards.py ['hist.read_text(encoding="utf-8", errors="replace")' -> 'hist.read_text(encoding="utf-8")'] test_TC_2206_a_bad_history_line_never_stops_the_handover: RED (KILLED) · restore 64d749027e6e9a1e
+taskboard/boards.py ['except (ValueError, RecursionError):\n             ' -> 'except ValueError:\n                    r'] test_TC_2206_a_bad_history_line_never_stops_the_handover: RED (KILLED) · restore 64d749027e6e9a1e
+taskboard/boards.py ['(moved if isinstance(task, str) and task in ids el' -> '(moved if task in ids else keep)'] test_TC_2206_a_bad_history_line_never_stops_the_handover: RED (KILLED) · restore 64d749027e6e9a1e
+taskboard/boards.py ['fh.write(lead)' -> ''] test_TC_2206_a_bad_history_line_never_stops_the_handover: RED (KILLED) · restore 64d749027e6e9a1e
+taskboard/boards.py ['except Exception as exc:   # any other failure' -> 'except ZeroDivisionError as exc:   # any'] test_TC_2206_an_unexpected_error_after_the_source_save_is_handed_over: RED (KILLED) · restore 64d749027e6e9a1e
+taskboard/boards.py ['and src.image_dir(t.id).resolve().parent == images' -> '}'] test_TC_2206_a_linked_image_folder_stays_with_its_references: RED (KILLED) · restore 64d749027e6e9a1e
+taskboard/modals.py ['dst = peek_board(app.registry.get(bid).path)' -> 'dst = _boards[bid]'] test_TC_2206_the_target_is_read_when_it_is_chosen: RED (KILLED) · restore ed409e3d34e07c1b
+not killed: 0

@@ -1,0 +1,1136 @@
+diff --git a/taskboard/app.py b/taskboard/app.py
+index 9589d5c..d5c2bff 100644
+--- a/taskboard/app.py
++++ b/taskboard/app.py
+@@ -932,6 +932,25 @@ class TaskboardApp(App):
+         self.board.label = ((entry.name, entry.color)
+                             if entry is not None and len(self.registry.active()) > 1 else None)
+ 
++    @staticmethod
++    def move_team_ids(board: Board) -> set[str] | None:
++        """The project ids `board`'s team configuration shares (HLR-2206): empty
++        out of team mode (no `team_shared_dir`), None in team mode when its
++        `team.json` cannot be read — read fresh, whatever `team_state` holds."""
++        state = TeamState.from_settings(board.settings.get("team_shared_dir"))
++        if state is None:
++            return set()
++        return state.team_project_ids() if state.load_config() else None
++
++    def after_move(self, new_src: Board) -> None:
++        """A project moved out (HLR-2206): the open board becomes the move's new
++        source — its label kept — and the undo stack, whose snapshots name the
++        moved tasks, is cleared."""
++        new_src.label = self.board.label
++        self.board = new_src
++        self._undo_stack = []
++        self.refresh_view()
++
+     def action_boards(self) -> None:
+         """`B`: the home."""
+         self.push_screen(BoardsHome())
+diff --git a/taskboard/boards.py b/taskboard/boards.py
+index 6eae1c2..552661d 100644
+--- a/taskboard/boards.py
++++ b/taskboard/boards.py
+@@ -13,6 +13,7 @@ and never for a one-board user who has no registry file yet.
+ 
+ from __future__ import annotations
+ 
++import copy
+ import json
+ import os
+ import re
+@@ -337,3 +338,227 @@ def peek_board(path) -> Board:
+         return board
+     return Board.load(p)
+ 
++
++# ---- moving a project to another board (HLR-2206) ---------------------------
++@dataclass
++class MovePlan:
++    tasks: list                          # every task of the project, in board order
++    kept: int                            # links between two of them
++    crossing: list                       # (waiter, waits on) pairs that cross the boards
++    refusal: str | None = None
++    dst_stamp: tuple | None = None       # the target file's (mtime, size) when planned
++
++
++def _inside(child: Path, parent: Path) -> bool:
++    try:
++        c, p = child.resolve(), parent.resolve()
++    except (OSError, RuntimeError):
++        return False
++    return os.path.normcase(str(c)).startswith(os.path.normcase(str(p)) + os.sep)
++
++
++def move_plan(src: Board, dst: Board, project_id: str, src_team: set | None,
++              dst_team: set | None) -> MovePlan:
++    """What a move would do, and whether it may (a refusal reason, or None)."""
++    mine = [t for t in src.tasks if t.project_id == project_id]
++    ids = {t.id for t in mine}
++    by = {t.id: t for t in src.tasks}
++    crossing_in, crossing_out, kept = [], [], 0
++    for t in src.tasks:
++        for dep in t.depends_on:
++            if t.id in ids and dep in ids:
++                kept += 1
++            elif t.id in ids and dep in by:
++                crossing_out.append((t, by[dep]))
++            elif t.id not in ids and dep in ids:
++                crossing_in.append((t, by[dep]))
++    plan = MovePlan(mine, kept, crossing_in + crossing_out)
++    plan.dst_stamp = _stamp(dst.path)
++    plan.refusal = _refusal(src, dst, project_id, mine, src_team, dst_team)
++    return plan
++
++
++def _samefile(a, b) -> bool:
++    try:
++        return os.path.samefile(a, b)
++    except OSError:
++        return False
++
++
++def _stamp(path: Path) -> tuple | None:
++    """What a stale plan is checked against: the file's mtime and size."""
++    if not path.exists():
++        return None
++    st = path.stat()
++    return (st.st_mtime_ns, st.st_size)
++
++
++def _refusal(src, dst, pid, mine, src_team, dst_team) -> str | None:
++    if _key(src.path) == _key(dst.path) or _samefile(src.path, dst.path):
++        return "the target is this board"
++    if _key(src.path.parent) == _key(dst.path.parent):
++        # history.jsonl and images/ live beside the board file: one folder, one
++        # history — moving lines inside it would erase them (code review F1)
++        return "the two boards share a folder (their history and images are one)"
++    if not dst.path.exists():
++        return "the target board's file is missing"
++    if dst.load_report.get("file_unreadable"):
++        return "the target board's file cannot be read"
++    if src_team is None or dst_team is None:
++        return "a board is in team mode and its team configuration cannot be read"
++    if pid in src_team or pid in dst_team:
++        return "the project is shared in team mode"
++    for x in [pid] + [t.id for t in mine]:
++        if not (isinstance(x, str) and _ID.fullmatch(x)):
++            return f"the id {x!r} cannot name a folder"
++    dst_ids = {p.id for p in dst.projects} | {t.id for t in dst.tasks}
++    clash = [x for x in [pid] + [t.id for t in mine] if x in dst_ids]
++    if clash:
++        return f"the target already holds the id {clash[0]}"
++    for t in mine:
++        if dst.image_dir(t.id).exists():
++            return f"the target already holds images/{t.id}"
++    phases = {p.strip().lower() for p in dst.phases}
++    missing = sorted({t.phase for t in mine if t.phase.strip().lower() not in phases})
++    if missing:
++        return f"the target has no phase {missing[0]!r} — add it there first (f)"
++    return None
++
++
++def _backup(path: Path, day: str) -> Path | None:
++    """A byte copy beside `path`, created exclusively: an earlier copy is never
++    replaced (`-2`, `-3`… instead)."""
++    if not path.exists():
++        return None
++    data = path.read_bytes()
++    n = 1
++    while True:
++        dest = path.with_name(f"{path.name}.pre-move-{day}" + (f"-{n}" if n > 1 else ""))
++        try:
++            with open(dest, "xb") as fh:
++                fh.write(data)
++            return dest
++        except FileExistsError:
++            n += 1
++
++
++def _log(folder: Path, day: str, entry: dict) -> None:
++    """Append `entry` to the list in `move-<day>.json`; a file that does not hold
++    a list is left alone and the next free `move-<day>-N.json` takes it."""
++    n = 1
++    while True:
++        p = folder / (f"move-{day}" + (f"-{n}" if n > 1 else "") + ".json")
++        if not p.exists():
++            items = []
++            break
++        try:
++            items = json.loads(p.read_text(encoding="utf-8"))
++        except (OSError, ValueError, RecursionError):
++            items = None
++        if isinstance(items, list):
++            break
++        n += 1
++    write_atomic(p, json.dumps(items + [entry], indent=2, ensure_ascii=False))
++
++
++def move_project(src: Board, dst: Board, project_id: str, plan: MovePlan, day: str,
++                 names: tuple[str, str]) -> tuple[Board, list[str]]:
++    """Carry the project out on COPIES of both boards; return the new source
++    board and the steps done. Order: the byte copies, the target saved, the
++    source saved — the live boards are never changed, so a failure before the
++    source is saved leaves the open board as its file — then the image folders,
++    the history lines and the move logs. An `OSError` carries `.steps`, and
++    `.board`: the new source once it was saved (the caller adopts it), else None."""
++    steps: list[str] = []
++    saved = None
++    try:
++        if plan.refusal:
++            raise OSError(plan.refusal)
++        if _stamp(dst.path) != plan.dst_stamp:
++            raise OSError("the target board changed since the move was planned")
++        new_src, new_dst = copy.deepcopy(src), copy.deepcopy(dst)
++        ids = {t.id for t in plan.tasks}
++        for b in (src, dst):
++            if _backup(b.path, day):
++                steps.append(f"copied {b.path.name}")
++        proj = new_src.project_by_id(project_id)
++        proj.present_rank = None
++        moving = [t for t in new_src.tasks if t.id in ids]
++        images = (src.path.parent / "images").resolve()
++        # the folders that move: a task's own, directly under the source's images/
++        # (a junction or link elsewhere stays, and so do the references into it)
++        img_src = {t.id: src.image_dir(t.id) for t in moving
++                   if src.image_dir(t.id).is_dir()
++                   and src.image_dir(t.id).resolve().parent == images}
++        for t in moving:
++            t.depends_on = [d for d in t.depends_on if d in ids]
++            old_dir, new_dir = img_src.get(t.id), dst.image_dir(t.id)
++            refs = []
++            for ref in t.images:
++                r = Path(ref)
++                if old_dir is not None and r.is_absolute() and _inside(r, old_dir):
++                    refs.append(str(new_dir / r.resolve().relative_to(old_dir.resolve())))
++                else:
++                    refs.append(ref)
++            t.images = refs
++        new_src.tasks = [t for t in new_src.tasks if t.id not in ids]
++        for t in new_src.tasks:
++            t.depends_on = [d for d in t.depends_on if d not in ids]
++        new_src.projects = [p for p in new_src.projects if p.id != project_id]
++        new_dst.projects.append(proj)
++        new_dst.tasks.extend(moving)
++        new_dst.path.parent.mkdir(parents=True, exist_ok=True)
++        new_dst.save_atomic()
++        steps.append("saved the target")
++        new_src.save_atomic()
++        saved = new_src
++        steps.append("saved the source")
++        for tid, old_dir in img_src.items():
++            target = dst.image_dir(tid)
++            target.parent.mkdir(parents=True, exist_ok=True)
++            tmp = target.parent / f".{tid}.moving"
++            shutil.rmtree(tmp, ignore_errors=True)
++            try:
++                shutil.copytree(old_dir, tmp, symlinks=True)
++                os.replace(tmp, target)
++            except OSError:
++                shutil.rmtree(tmp, ignore_errors=True)
++                raise
++            shutil.rmtree(old_dir)
++            steps.append(f"moved images/{tid}")
++        hist = src.path.parent / "history.jsonl"
++        if hist.exists():
++            keep, moved = [], []
++            for line in hist.read_text(encoding="utf-8", errors="replace").splitlines():
++                try:
++                    rec = json.loads(line)
++                except (ValueError, RecursionError):
++                    rec = None
++                task = rec.get("task") if isinstance(rec, dict) else None
++                (moved if isinstance(task, str) and task in ids else keep).append(line)
++            if moved:
++                target_hist = dst.path.parent / "history.jsonl"
++                # F6: never glue the first moved line onto a hand-edited last one
++                lead = ("\n" if target_hist.exists() and target_hist.stat().st_size
++                        and not target_hist.read_bytes().endswith(b"\n") else "")
++                with open(target_hist, "a", encoding="utf-8") as fh:
++                    fh.write(lead)
++                    fh.writelines(x + "\n" for x in moved)
++                write_atomic(hist, "".join(x + "\n" for x in keep))
++                steps.append("moved the history lines")
++        entry = {"date": day, "project": proj.name, "from": names[0], "to": names[1],
++                 "tasks": len(moving), "links_kept": plan.kept,
++                 "links_dropped": [{"task": a.title, "waits_on": b.title}
++                                   for a, b in plan.crossing]}
++        for b in (src, dst):
++            _log(b.path.parent, day, entry)
++        steps.append("wrote the move logs")
++        return new_src, steps
++    except OSError as exc:
++        exc.steps = steps
++        exc.board = saved      # past the source save: the caller must adopt it
++        raise
++    except Exception as exc:   # any other failure is reported the same way (F2)
++        err = OSError(f"{type(exc).__name__}: {exc}")
++        err.steps, err.board = steps, saved
++        raise err from exc
+diff --git a/taskboard/modals.py b/taskboard/modals.py
+index e38d4ba..250c25c 100644
+--- a/taskboard/modals.py
++++ b/taskboard/modals.py
+@@ -39,9 +39,9 @@ from .models import (IMAGE_EXTS, PROJECT_COLORS, PROJECT_STATUSES, TASK_PRIORITI
+                      open_dependents, project_archive_refusal,
+                      grab_clipboard_image, grab_clipboard_text, parse_iso,
+                      resolve_city, save_pil_image, templates)
+-from .boards import clean_name, slug
++from .boards import clean_name, move_plan, move_project, peek_board, slug
+ from .keymap import palette_commands
+-from .views import (HEX, clip, gantt_group_key, gantt_link_frame, gantt_link_order,
++from .views import (HEX, clip, fit, gantt_group_key, gantt_link_frame, gantt_link_order,
+                     highlight_segments, valid_url)
+ 
+ # Imported at MODULE load (before the app starts) on purpose: textual-image
+@@ -656,6 +656,7 @@ class ProjectPicker(ModalScreen[None]):
+         ("e", "edit", "Edit"),
+         ("x", "archive", "Archive"),
+         ("d", "delete", "Delete"),
++        ("m", "move_board", "Move to board"),
+         Binding("j", "move(1)", show=False),
+         Binding("k", "move(-1)", show=False),
+     ]
+@@ -666,7 +667,8 @@ class ProjectPicker(ModalScreen[None]):
+ 
+     def compose(self) -> ComposeResult:
+         with VerticalScroll(id="picker-box", classes="modal"):
+-            yield Label("[b]Projects[/b]  —  e edit · x archive · d delete · esc close",
++            yield Label("[b]Projects[/b]  —  e edit · x archive · d delete · m move to board · "
++                        "esc close",
+                         classes="modal-title")
+             yield OptionList(id="proj-list")
+ 
+@@ -765,6 +767,66 @@ class ProjectPicker(ModalScreen[None]):
+             return
+         self._do_archive_toggle(proj)
+ 
++    # ---- move to another board (batch 2026-10-20-batch-01, HLR-2206) ------------
++    def action_move_board(self) -> None:
++        proj = self._current()
++        if proj is None:
++            return
++        app = self.app
++        others = [e for e in app.registry.active() if e.id != app.board_id]
++        if not others:
++            app.notify("There is no other board to move it to — B, then n, creates one.",
++                       title="Boards", severity="warning", markup=False)
++            return
++        boards = {e.id: peek_board(e.path) for e in others}
++        n = sum(1 for t in self.board.tasks if t.project_id == proj.id)
++        app.push_screen(MoveTarget(proj, n, others, boards),
++                        lambda bid, p=proj: self._move_target(p, bid, boards))
++
++    def _move_target(self, proj: Project, bid: str | None, _boards: dict) -> None:
++        if not bid:
++            return
++        app = self.app
++        # read again now: the picker's copy may be older than the file (security F1)
++        dst = peek_board(app.registry.get(bid).path)
++        plan = move_plan(self.board, dst, proj.id, app.move_team_ids(self.board),
++                         app.move_team_ids(dst))
++        if plan.refusal:
++            app.notify(f"{proj.name} was not moved to {app.registry.get(bid).name}: "
++                       f"{plan.refusal}.", title="Boards",
++                       severity="warning", markup=False)
++            return
++        src_e, dst_e = app.registry.get(app.board_id), app.registry.get(bid)
++        app.push_screen(MoveConfirm(plan, proj, self.board, src_e, dst_e,
++                                    date.today().isoformat()),
++                        lambda ok: self._move_confirmed(proj, dst, plan, src_e, dst_e, ok))
++
++    def _move_confirmed(self, proj, dst, plan, src_e, dst_e, ok) -> None:
++        if not ok:
++            return
++        app = self.app
++        try:
++            new_src, _steps = move_project(self.board, dst, proj.id, plan,
++                                           date.today().isoformat(), (src_e.name, dst_e.name))
++        except OSError as exc:
++            if getattr(exc, "board", None) is not None:
++                # the source file no longer holds the project: neither may the open
++                # board, or the next save would write it back (architect A-27)
++                app.after_move(exc.board)
++                self.board = app.board
++                self._reload()
++            done = ", ".join(getattr(exc, "steps", [])) or "nothing"
++            app.notify(f"The move stopped: {exc}. Done: {done}. The backups "
++                       f"(*.pre-move-{date.today().isoformat()}) are beside each board file.",
++                       title="Boards", severity="error", timeout=30, markup=False)
++            return
++        app.after_move(new_src)
++        self.board = app.board
++        self._reload()
++        app.notify(f"Moved {proj.name} to {dst_e.name} · {len(plan.tasks)} tasks · "
++                   f"{plan.kept} links kept · {len(plan.crossing)} dropped", title="Boards",
++                   timeout=30, markup=False)
++
+     def _refused(self, proj: Project) -> bool:
+         """The guard (D-523): archiving a project archives its tasks, so it is
+         refused while an open task outside it waits on one of them."""
+@@ -2365,3 +2427,132 @@ class BoardForm(ModalScreen[tuple[str, str] | None]):
+     def action_cancel(self) -> None:
+         self.dismiss(None)
+ 
++
++class MoveTarget(ModalScreen[str | None]):
++    """The board a project moves to (HLR-2206): the other active boards, each
++    with its colour, name and size. Names are plain `Text` pieces."""
++
++    BINDINGS = [Binding("escape", "cancel", "", priority=True),
++                Binding("up,k", "move(-1)", "", priority=True, show=False),
++                Binding("down,j", "move(1)", "", priority=True, show=False),
++                Binding("enter", "choose", "", priority=True, show=False)]
++
++    def __init__(self, project: Project, n_tasks: int, entries: list, boards: dict):
++        super().__init__()
++        self.project, self.n_tasks = project, n_tasks
++        self.targets, self.boards = entries, boards
++        self.cursor = 0
++
++    def compose(self) -> ComposeResult:
++        head = Text("Move ", style=f"bold {HEX['bright']}")
++        head.append("██ ", style=HEX.get(self.project.color, HEX["violet"]))
++        head.append(self.project.name, style=f"bold {HEX['bright']}")
++        head.append(f"  ({self.n_tasks} tasks)  to which board?", style=HEX["mut"])
++        with Vertical(id="mt-box"):
++            yield Static(head, id="mt-title")
++            yield Static(id="mt-rows")
++            yield Static(Text("↑↓ move · ↵ choose · esc cancel", style=HEX["dim"]),
++                         id="mt-keys")
++
++    def on_mount(self) -> None:
++        self._paint()
++
++    def _paint(self) -> None:
++        t = Text(no_wrap=True)
++        for i, e in enumerate(self.targets):
++            b = self.boards[e.id]
++            n_open = sum(1 for x in b.tasks if not b.is_done(x) and not x.archived)
++            n_proj = sum(1 for p in b.projects if not p.archived)
++            on = i == self.cursor
++            if i:
++                t.append("\n")
++            t.append("▶ " if on else "  ", style=HEX["accent"])
++            t.append("██ ", style=HEX.get(e.color, HEX["violet"]))
++            t.append(fit(e.name, 24), style=f"bold {HEX['bright']}" if on else HEX["ink"])
++            t.append(f"{n_proj} projects · {n_open} open", style=HEX["dim"])
++        self.query_one("#mt-rows", Static).update(t)
++
++    def action_move(self, delta: int) -> None:
++        self.cursor = max(0, min(len(self.targets) - 1, self.cursor + delta))
++        self._paint()
++
++    def action_choose(self) -> None:
++        self.dismiss(self.targets[self.cursor].id)
++
++    def action_cancel(self) -> None:
++        self.dismiss(None)
++
++
++class MoveConfirm(ModalScreen[bool]):
++    """What a move does, said before it is done (HLR-2206): what moves, the
++    links that stay, each link that crosses the boards and will be dropped, the
++    backups, the log, and that `u` cannot undo it. The links scroll; the head
++    and the keys are always on screen."""
++
++    BINDINGS = [Binding("escape", "no", "", priority=True),
++                Binding("enter", "yes", "", priority=True, show=False)]
++
++    def __init__(self, plan, project: Project, src_board: Board, src_entry, dst_entry,
++                 day: str):
++        super().__init__()
++        self.plan, self.project, self.board = plan, project, src_board
++        self.src, self.dst, self.day = src_entry, dst_entry, day
++
++    def compose(self) -> ComposeResult:
++        p, plan = self.project, self.plan
++        done = sum(1 for t in plan.tasks if self.board.is_done(t) or t.archived)
++        head = Text()
++        head.append("Move project to another board\n\n", style=f"bold {HEX['bright']}")
++        head.append("  ██ ", style=HEX.get(p.color, HEX["violet"]))
++        head.append(p.name, style=f"bold {HEX['bright']}")
++        head.append("   from ", style=HEX["mut"])
++        head.append(f" {self.src.name} ",
++                    style=f"bold #0d1117 on {HEX.get(self.src.color, HEX['violet'])}")
++        head.append("  to ", style=HEX["mut"])
++        head.append(f" {self.dst.name} ",
++                    style=f"bold #0d1117 on {HEX.get(self.dst.color, HEX['violet'])}")
++        head.append(f"\n\n  {len(plan.tasks)} tasks move ({len(plan.tasks) - done} open, {done} "
++                    f"done) · {plan.kept} links inside the project stay", style=HEX["hd"])
++        links = Text()
++        n = len(plan.crossing)
++        if n:
++            pname = {q.id: q.name for q in self.board.projects}
++            links.append(f"  {n} link{'s' if n > 1 else ''} cross the boards and will be "
++                         "dropped:\n", style=f"bold {HEX['over']}")
++            for waiter, pred in plan.crossing:
++                for task, role in ((waiter, ""), (pred, "waits on ")):
++                    links.append("    " + ("✕ " if not role else "    "), style=HEX["over"])
++                    if role:
++                        links.append(role, style=HEX["mut"])
++                    links.append(task.title, style=HEX["ink"])
++                    where = ("moves" if task.project_id == p.id else
++                             f"{pname.get(task.project_id, 'Inbox')}, stays on {self.src.name}")
++                    links.append(f"  ({where})\n", style=HEX["dim"])
++        links.rstrip()
++        foot = Text()
++        foot.append(f"  Both board files are backed up first ({Path(self.src.path).name}.pre-move-{self.day}),\n"
++                    f"  and the dropped links are listed in move-{self.day}.json beside each.\n"
++                    "  u cannot undo a move or the edits before it — the backups are the way "
++                    "back.\n", style=HEX["dim"])
++        foot.append("\n  ↵ ", style=f"b {HEX['bright']}")
++        foot.append(f"move{f' and drop {n} links' if n else ''}", style=HEX["mut"])
++        foot.append("   esc ", style=f"b {HEX['bright']}")
++        foot.append("cancel", style=HEX["mut"])
++        with Vertical(id="mc-box"):
++            yield Static(head, id="mc-head")
++            with VerticalScroll(id="mc-links"):
++                yield Static(links, id="mc-links-text")
++            yield Static(foot, id="mc-foot")
++
++    def on_mount(self) -> None:
++        box = self.query_one("#mc-links", VerticalScroll)
++        if not self.plan.crossing:
++            box.display = False
++        # the links scroll; the head and the keys stay on screen (ux-reviewer UX-3)
++        box.styles.max_height = max(3, self.app.size.height - 16)
++
++    def action_yes(self) -> None:
++        self.dismiss(True)
++
++    def action_no(self) -> None:
++        self.dismiss(False)
+diff --git a/taskboard/taskboard.tcss b/taskboard/taskboard.tcss
+index a88c10d..0bcf32d 100644
+--- a/taskboard/taskboard.tcss
++++ b/taskboard/taskboard.tcss
+@@ -288,7 +288,7 @@ KeyBar {
+ }
+ 
+ TaskModal, ProjectModal, ConfirmModal, ProjectPicker, ImageViewer, TaskDetails, CalendarModal,
+-PresentHiddenPicker, BoardForm {
++PresentHiddenPicker, BoardForm, MoveTarget, MoveConfirm {
+     align: center middle;
+     background: #0007;
+ }
+@@ -337,3 +337,34 @@ PresentHiddenPicker, BoardForm {
+ #bf-hues, #bf-path, #bf-keys {
+     margin: 1 0 0 0;
+ }
++#mt-box {
++    width: 76;
++    max-width: 100%;
++    height: auto;
++    padding: 0 1;
++    background: #0d1219;
++    border: round #334154;
++}
++#mt-rows, #mt-keys {
++    margin: 1 0 0 0;
++}
++#mc-box {
++    width: 84;
++    max-width: 100%;
++    height: auto;
++    max-height: 100%;
++    padding: 0 1;
++    background: #0d1219;
++    border: round #f43f5e;
++}
++#mc-links {
++    height: auto;
++    margin: 1 0 0 0;
++    scrollbar-size: 1 1;
++}
++#mc-links-text {
++    height: auto;
++}
++#mc-foot {
++    margin: 1 0 0 0;
++}
+diff --git a/tests/test_boards_move.py b/tests/test_boards_move.py
+new file mode 100644
+index 0000000..7ca3017
+--- /dev/null
++++ b/tests/test_boards_move.py
+@@ -0,0 +1,578 @@
++"""Several boards: moving a project to another board.
++
++Batch 2026-10-20-batch-01 (variant C of the multi-board round, P3):
++HLR-2206 / LLR-2206.1 · TC-2206 · AT-2206 (US-2204). Synthetic data only: the
++round's boards (`tests/multi_board_fixture.py`) under this test's own home.
++"""
++from __future__ import annotations
++
++import hashlib
++import html
++import json
++import os
++import re
++from datetime import date, datetime
++from pathlib import Path
++
++import pytest
++
++import multi_board_fixture as mb
++from taskboard import boards, models, views
++from taskboard.boards import move_plan, move_project, peek_board
++from taskboard.models import Board, Project, Task
++
++DAY = "2026-10-20"
++NOW = datetime(2026, 10, 20, 9, 30)
++ROUND = Path(__file__).resolve().parents[1] / "prototypes" / "multi_board" / "out"
++PAYLOADS = ["[@click=app.quit]x[/]", "tail\\", "[bold", "x[/]"]
++
++
++class _Today(date):
++    @classmethod
++    def today(cls):
++        return mb.TODAY
++
++
++class _Now(datetime):
++    @classmethod
++    def now(cls, tz=None):
++        return NOW
++
++
++@pytest.fixture
++def home(tmp_path, monkeypatch):
++    from taskboard import app as app_module, modals
++    import taskboard.__main__ as entry
++    monkeypatch.setattr(Path, "home", classmethod(lambda cls: tmp_path))
++    for mod in (app_module, models, views, modals):
++        monkeypatch.setattr(mod, "date", _Today)
++    monkeypatch.setattr(app_module, "datetime", _Now)
++    monkeypatch.setattr(entry, "datetime", _Now)
++    return tmp_path / ".taskboard"
++
++
++def _pair(home):
++    """Main (the source) and Client · Retail RAG (the target), as files."""
++    mb.build(home, "main")
++    return home / "board.json", home / "boards" / "client-retail-rag" / "board.json"
++
++
++def _snap(*folders) -> dict:
++    out = {}
++    for f in folders:
++        for p in sorted(Path(f).rglob("*")):
++            if p.is_file():
++                out[str(p)] = hashlib.sha256(p.read_bytes()).hexdigest()
++    return out
++
++
++def _deps(path) -> dict:
++    return {t["id"]: t["depends_on"] for t in json.loads(Path(path).read_text(
++        encoding="utf-8"))["tasks"]}
++
++
++def _image(home, src: Path) -> Path:
++    """A pasted image of tr3 in Main's folder, referenced by its absolute path."""
++    img = src.parent / "images" / "tr3" / "paste-001.png"
++    img.parent.mkdir(parents=True)
++    img.write_bytes(b"\x89PNG fake")
++    data = json.loads(src.read_text(encoding="utf-8"))
++    for t in data["tasks"]:
++        if t["id"] == "tr3":
++            t["images"] = [str(img.resolve()), "relative.png", str(home.parent / "else.png")]
++    src.write_text(json.dumps(data), encoding="utf-8")
++    return img
++
++
++# --------------------------------------------------------------------------- #
++# TC-2206 — the plan (LLR-2206.1)
++# --------------------------------------------------------------------------- #
++def test_TC_2206_the_plan_of_the_rounds_move(home):
++    src_p, dst_p = _pair(home)
++    plan = move_plan(Board.load(src_p), peek_board(dst_p), "pmr", set(), set())
++    assert plan.refusal is None
++    assert len(plan.tasks) == 7 and plan.kept == 3
++    assert [(a.id, b.id) for a, b in plan.crossing] == [("tw2", "tr4"), ("tr3", "tl3")]
++
++
++def _refused(home, why, mutate=None, src_team=frozenset(), dst_team=frozenset()):
++    src_p, dst_p = _pair(home)
++    if mutate:
++        mutate(src_p, dst_p)
++    before = _snap(home)
++    src, dst = Board.load(src_p), peek_board(dst_p)
++    plan = move_plan(src, dst, "pmr", None if src_team is None else set(src_team),
++                     None if dst_team is None else set(dst_team))
++    assert plan.refusal is not None and why in plan.refusal, plan.refusal
++    with pytest.raises(OSError):
++        move_project(src, dst, "pmr", plan, DAY, ("Main", "Client"))
++    assert _snap(home) == before
++
++
++def _edit(path, fn):
++    data = json.loads(path.read_text(encoding="utf-8"))
++    fn(data)
++    path.write_text(json.dumps(data), encoding="utf-8")
++
++
++def test_TC_2206_shared_in_team_mode_either_side(home):
++    _refused(home, "shared in team mode", src_team={"pmr"})
++    _refused(home, "shared in team mode", dst_team={"pmr"})
++
++
++def test_TC_2206_an_unreadable_team_configuration(home):
++    _refused(home, "cannot be read", src_team=None)
++    _refused(home, "cannot be read", dst_team=None)
++
++
++@pytest.mark.parametrize("bad", ["..", "../x", "a/b", "C:\\x", 7])
++def test_TC_2206_an_id_that_cannot_name_a_folder(home, bad):
++    def m(src, _dst):
++        _edit(src, lambda d: next(t for t in d["tasks"] if t["id"] == "tr6").update(id=bad))
++    _refused(home, "cannot name a folder", m)
++
++
++def test_TC_2206_the_target_holds_a_moving_id(home):
++    def m(_src, dst):
++        _edit(dst, lambda d: d["tasks"].append({"id": "tr1", "title": "Clash"}))
++    _refused(home, "already holds the id tr1", m)
++
++
++def test_TC_2206_the_target_holds_an_image_folder(home):
++    def m(_src, dst):
++        (dst.parent / "images" / "tr2").mkdir(parents=True)
++    _refused(home, "already holds images/tr2", m)
++
++
++def test_TC_2206_the_target_lacks_a_phase(home):
++    def m(_src, dst):
++        _edit(dst, lambda d: d.update(phases=["Backlog", "Doing", "Done"]))
++    _refused(home, "no phase 'Next'", m)
++
++
++def test_TC_2206_a_missing_or_unreadable_target_or_the_same_file(home):
++    _refused(home, "file is missing", lambda _s, dst: dst.unlink())
++    _refused(home, "cannot be read", lambda _s, dst: dst.write_text("{oops", encoding="utf-8"))
++    src_p, _dst = _pair(home)
++    src = Board.load(src_p)
++    assert move_plan(src, peek_board(src_p), "pmr", set(), set()).refusal == \
++        "the target is this board"
++
++
++def test_TC_2206_a_target_changed_after_the_plan(home):
++    src_p, dst_p = _pair(home)
++    src, dst = Board.load(src_p), peek_board(dst_p)
++    plan = move_plan(src, dst, "pmr", set(), set())
++    dst_p.write_text(dst_p.read_text(encoding="utf-8") + " ", encoding="utf-8")
++    before = _snap(home)
++    with pytest.raises(OSError, match="changed since"):
++        move_project(src, dst, "pmr", plan, DAY, ("Main", "Client"))
++    assert _snap(home) == before
++
++
++# --------------------------------------------------------------------------- #
++# TC-2206 — the move (LLR-2206.1)
++# --------------------------------------------------------------------------- #
++def test_TC_2206_the_move(home):
++    src_p, dst_p = _pair(home)
++    img = _image(home, src_p)
++    (src_p.parent / "history.jsonl").write_text(
++        json.dumps({"task": "tw1", "to": "Doing"}) + "\n"
++        + json.dumps({"task": "tr3", "to": "Doing"}) + "\nnot json\n"
++        + json.dumps({"task": "tw2", "to": "Next"}) + "\n", encoding="utf-8")
++    _edit(src_p, lambda d: (next(p for p in d["projects"] if p["id"] == "pmr").update(
++        present_rank=2), next(t for t in d["tasks"] if t["id"] == "tr6").update(
++        archived=True)))
++    old = {p: p.read_bytes() for p in (src_p, dst_p)}
++    src, dst = Board.load(src_p), peek_board(dst_p)
++    live = json.dumps(Board._to_dict(src.projects[0]))
++    plan = move_plan(src, dst, "pmr", set(), set())
++    new_src, steps = move_project(src, dst, "pmr", plan, DAY, ("Main", "Client · Retail RAG"))
++    assert json.dumps(Board._to_dict(src.projects[0])) == live      # the live board untouched
++    assert "pmr" not in {p.id for p in new_src.projects}
++    for p in (src_p, dst_p):
++        assert p.with_name(p.name + f".pre-move-{DAY}").read_bytes() == old[p]
++    s, d = _deps(src_p), _deps(dst_p)
++    assert not any(t.startswith("tr") for t in s) and s["tw2"] == []
++    assert d["tr3"] == [] and d["tr4"] == ["tr3"] and d["tr5"] == ["tr4"] \
++        and d["tr2"] == ["tr1"]
++    dst_data = json.loads(dst_p.read_text(encoding="utf-8"))
++    proj = next(p for p in dst_data["projects"] if p["id"] == "pmr")
++    assert "present_rank" not in proj
++    assert next(t for t in dst_data["tasks"] if t["id"] == "tr6")["archived"] is True
++    tr3 = next(t for t in dst_data["tasks"] if t["id"] == "tr3")
++    moved = dst_p.parent / "images" / "tr3" / "paste-001.png"
++    assert moved.exists() and not img.parent.exists()
++    assert tr3["images"] == [str(moved.parent.resolve() / "paste-001.png"), "relative.png",
++                             str(home.parent / "else.png")]
++    assert (src_p.parent / "history.jsonl").read_text(encoding="utf-8").splitlines() == [
++        json.dumps({"task": "tw1", "to": "Doing"}), "not json",
++        json.dumps({"task": "tw2", "to": "Next"})]
++    assert (dst_p.parent / "history.jsonl").read_text(encoding="utf-8").splitlines() == [
++        json.dumps({"task": "tr3", "to": "Doing"})]
++    for folder in (src_p.parent, dst_p.parent):
++        log = json.loads((folder / f"move-{DAY}.json").read_text(encoding="utf-8"))
++        assert len(log) == 1 and log[0]["links_kept"] == 3 and log[0]["tasks"] == 7
++        assert log[0]["links_dropped"] == [
++            {"task": "Case study: retail RAG", "waits_on": "Pilot results deck"},
++            {"task": "Demo env on Docker", "waits_on": "Compose template"}]
++    assert steps[:2] == ["copied board.json", "copied board.json"]
++
++
++def test_TC_2206_a_second_move_the_same_day(home):
++    src_p, dst_p = _pair(home)
++    (src_p.parent / f"move-{DAY}.json").write_text("{}", encoding="utf-8")
++    for pid in ("pmr", "pma"):
++        src, dst = Board.load(src_p), peek_board(dst_p)
++        plan = move_plan(src, dst, pid, set(), set())
++        move_project(src, dst, pid, plan, DAY, ("Main", "Client"))
++    assert src_p.with_name(f"board.json.pre-move-{DAY}-2").exists()
++    assert (src_p.parent / f"move-{DAY}.json").read_text(encoding="utf-8") == "{}"
++    assert len(json.loads((src_p.parent / f"move-{DAY}-2.json").read_text(encoding="utf-8"))) == 2
++    assert len(json.loads((dst_p.parent / f"move-{DAY}.json").read_text(encoding="utf-8"))) == 2
++
++
++def test_TC_2206_the_target_save_failing_leaves_the_source(home, monkeypatch):
++    """TC-2206 (architect A-20): the target is written first — when it fails, the
++    source file and the live board still hold the project."""
++    src_p, dst_p = _pair(home)
++    src, dst = Board.load(src_p), peek_board(dst_p)
++    plan = move_plan(src, dst, "pmr", set(), set())
++    old = src_p.read_bytes()
++    real = Board.save_atomic
++
++    def fail_dst(self):
++        if self.path == dst_p:
++            raise OSError("disk full")
++        real(self)
++    monkeypatch.setattr(Board, "save_atomic", fail_dst)
++    with pytest.raises(OSError) as err:
++        move_project(src, dst, "pmr", plan, DAY, ("Main", "Client"))
++    assert src_p.read_bytes() == old and "pmr" in {p.id for p in src.projects}
++    assert err.value.board is None and err.value.steps == ["copied board.json",
++                                                         "copied board.json"]
++
++
++def test_TC_2206_the_source_save_failing(home, monkeypatch):
++    src_p, dst_p = _pair(home)
++    src, dst = Board.load(src_p), peek_board(dst_p)
++    plan = move_plan(src, dst, "pmr", set(), set())
++    old = src_p.read_bytes()
++    real = Board.save_atomic
++
++    def fail_src(self):
++        if self.path == src_p:
++            raise OSError("locked")
++        real(self)
++    monkeypatch.setattr(Board, "save_atomic", fail_src)
++    with pytest.raises(OSError) as err:
++        move_project(src, dst, "pmr", plan, DAY, ("Main", "Client"))
++    assert src_p.read_bytes() == old and err.value.board is None
++    assert "pmr" in {p["id"] for p in json.loads(dst_p.read_text(encoding="utf-8"))["projects"]}
++
++
++@pytest.mark.parametrize("step", ["images", "log"])
++async def test_TC_2206_a_failure_after_the_source_save(home, monkeypatch, step):
++    """TC-2206 (architect A-27): past the source save, the app adopts the new
++    source — the project is not saved back into it by the next edit."""
++    src_p, dst_p = _pair(home)
++    _image(home, src_p)
++    if step == "images":
++        monkeypatch.setattr(boards.shutil, "copytree",
++                            lambda *a, **k: (_ for _ in ()).throw(OSError("copy failed")))
++    else:
++        monkeypatch.setattr(boards, "_log", lambda *a, **k: (_ for _ in ()).throw(
++            OSError("log failed")))
++    from taskboard.__main__ import open_app
++    app = open_app(None)
++    async with app.run_test(size=(160, 45)) as pilot:
++        await pilot.pause()
++        for k in ("escape", "P", "down", "m", "down", "enter", "enter"):
++            await pilot.press(k)
++            await pilot.pause()
++        assert "pmr" not in {p.id for p in app.board.projects}
++        assert any(n.title == "Boards" and "The move stopped" in n.message
++                   for n in app._notifications)
++        app.board.save()
++    assert "pmr" not in {p["id"] for p in json.loads(src_p.read_text(
++        encoding="utf-8"))["projects"]}
++
++
++# --------------------------------------------------------------------------- #
++# TC-2206 — the modals (LLR-2206.1)
++# --------------------------------------------------------------------------- #
++_SVG = re.compile(r'<text class="[^"]*" x="([\d.]+)" y="[\d.]+" textLength="[\d.]+" '
++                  r'clip-path="url\(#[^)]*-line-(\d+)\)">([^<]*)</text>')
++
++
++def _svg_rows(svg: str, width: int, height: int) -> list[str]:
++    rows = [[" "] * width for _ in range(height)]
++    for x, line, body in _SVG.findall(svg):
++        y, col = int(line), round(float(x) / 12.2)
++        if y >= height:
++            continue
++        for i, ch in enumerate(html.unescape(body).replace("\xa0", " ")):
++            if col + i < width:
++                rows[y][col + i] = ch
++    return ["".join(r) for r in rows]
++
++
++def _box(rows: list[str]) -> list[str]:
++    """The confirmation box's inner rows: between its `╭`/`╰` border rows, inside
++    its `│` sides."""
++    top = next(i for i, r in enumerate(rows) if "╭" in r and "╮" in r and r.count("─") > 40)
++    bot = next(i for i in range(top + 1, len(rows)) if "╰" in rows[i])
++    left, right = rows[top].index("╭"), rows[top].index("╮")
++    return [r[left + 1:right].rstrip() for r in rows[top + 1:bot]]
++
++
++async def test_TC_2206_the_confirmation_is_the_rounds_box_and_the_undo_line(home):
++    """TC-2206 (qa QA-16): the confirmation's box rows equal the round's
++    `move-160-3-confirm.svg` box but for the added undo row."""
++    _pair(home)
++    from taskboard.__main__ import open_app
++    app = open_app(None)
++    async with app.run_test(size=(160, 45)) as pilot:
++        await pilot.pause()
++        for k in ("escape", "P", "down", "m", "down", "enter"):
++            await pilot.press(k)
++            await pilot.pause()
++        assert type(app.screen).__name__ == "MoveConfirm"
++        got = _box(_svg_rows(app.export_screenshot(), 160, 45))
++    want = _box(_svg_rows((ROUND / "move-160-3-confirm.svg").read_text(encoding="utf-8"),
++                          160, 45))
++    undo = "u cannot undo a move or the edits before it — the backups are the way back."
++    assert [r.strip() for r in got].count(undo) == 1
++    assert [r for r in got if r.strip() != undo] == want
++
++
++async def test_TC_2206_many_crossing_links_keep_the_keys_on_screen(home):
++    src_p, _dst = _pair(home)
++
++    def more_links(d):
++        others = [t["id"] for t in d["tasks"] if not t["id"].startswith("tr")][:6]
++        next(t for t in d["tasks"] if t["id"] == "tr6")["depends_on"] = others
++    _edit(src_p, more_links)
++    from taskboard.__main__ import open_app
++    app = open_app(None)
++    async with app.run_test(size=(80, 24)) as pilot:
++        await pilot.pause()
++        for k in ("escape", "P", "down", "m", "down", "enter"):
++            await pilot.press(k)
++            await pilot.pause()
++        rows = _svg_rows(app.export_screenshot(), 80, 24)
++        assert any("↵ move and drop 8 links" in r for r in rows), rows
++
++
++async def test_TC_2206_markup_in_names_paints_literally(home):
++    src_p, _dst = _pair(home)
++    for payload in PAYLOADS:
++        _edit(src_p, lambda d: (next(p for p in d["projects"] if p["id"] == "pmr").update(
++            name=f"P{payload}"), next(t for t in d["tasks"] if t["id"] == "tw2").update(
++            title=f"T{payload}")))
++        from taskboard.__main__ import open_app
++        app = open_app(None)
++        async with app.run_test(size=(160, 45)) as pilot:
++            await pilot.pause()
++            for k in ("escape", "P", "down", "m"):
++                await pilot.press(k)
++                await pilot.pause()
++            assert f"P{payload}" in app.screen.query_one("#mt-title").content.plain
++            for k in ("down", "enter"):
++                await pilot.press(k)
++                await pilot.pause()
++            text = app.screen.query_one("#mc-head").content
++            links = app.screen.query_one("#mc-links-text").content
++            assert f"P{payload}" in text.plain and f"T{payload}" in links.plain
++            assert not any(getattr(s.style, "meta", None) for s in text.spans + links.spans)
++
++
++async def test_TC_2206_refusal_notices_and_no_other_board(home):
++    src_p, dst_p = _pair(home)
++    _edit(dst_p, lambda d: d.update(phases=["Backlog", "Doing", "Done"]))
++    from taskboard.__main__ import open_app
++    app = open_app(None)
++    async with app.run_test(size=(160, 45)) as pilot:
++        await pilot.pause()
++        for k in ("escape", "P", "down", "m", "down", "enter"):
++            await pilot.press(k)
++            await pilot.pause()
++        assert type(app.screen).__name__ == "ProjectPicker"
++        assert any(n.message == "Retail RAG · pilot was not moved to Client · Retail RAG: the "
++                   "target has no phase 'Next' — add it there first (f)." for n in app._notifications)
++    reg = json.loads((home / "boards.json").read_text(encoding="utf-8"))
++    for e in reg["boards"]:
++        e["archived"] = e["id"] != "main"
++    (home / "boards.json").write_text(json.dumps(reg), encoding="utf-8")
++    app = open_app(None)
++    async with app.run_test(size=(160, 45)) as pilot:
++        await pilot.pause()
++        for k in ("P", "down", "m"):
++            await pilot.press(k)
++            await pilot.pause()
++        assert any("no other board" in n.message for n in app._notifications)
++
++
++# --------------------------------------------------------------------------- #
++# AT-2206 — split the mixed board (HLR-2206)
++# --------------------------------------------------------------------------- #
++async def test_AT_2206_move_a_project_to_another_board(home):
++    """AT-2206 (US-2204): `Retail RAG · pilot` moves from Main to Client · Retail RAG
++    with its tasks, history and image; the crossing links are named, dropped and
++    logged; both files are copied first."""
++    src_p, dst_p = _pair(home)
++    img = _image(home, src_p)
++    (src_p.parent / "history.jsonl").write_text(
++        json.dumps({"task": "tr3", "from": "Next", "to": "Doing", "at": "x"}) + "\n",
++        encoding="utf-8")
++    from taskboard.__main__ import open_app
++    app = open_app(None)
++    async with app.run_test(size=(160, 45)) as pilot:
++        await pilot.pause()
++        for k in ("escape", "P", "down", "m"):
++            await pilot.press(k)
++            await pilot.pause()
++        rows = app.screen.query_one("#mt-rows").content.plain.split("\n")
++        assert [r[5:29].rstrip() for r in rows] == ["Personal", "Client · Retail RAG",
++                                                    "Course · Docker"]
++        for k in ("down", "enter"):
++            await pilot.press(k)
++            await pilot.pause()
++        text = "\n".join(app.screen.query_one(f"#{i}").content.plain
++                         for i in ("mc-head", "mc-links-text", "mc-foot"))
++        for want in ("7 tasks move (5 open, 2 done) · 3 links inside the project stay",
++                     "2 links cross the boards and will be dropped:", "Case study: retail RAG",
++                     "Compose template", "u cannot undo a move", "↵ move and drop 2 links"):
++            assert want in text, want
++        app._undo_stack.append({"task_id": "tw1", "fields": {}})
++        old = {p: p.read_bytes() for p in (src_p, dst_p)}
++        await pilot.press("enter")
++        await pilot.pause()
++        listed = [o.prompt.plain if hasattr(o.prompt, "plain") else str(o.prompt)
++                  for o in app.screen.query_one("#proj-list")._options]
++        assert not any("Retail RAG · pilot" in x for x in listed), listed
++        assert app._undo_stack == []           # the move is not undoable, and clears it
++        assert any(n.message == "Moved Retail RAG · pilot to Client · Retail RAG · 7 tasks · "
++                   "3 links kept · 2 dropped" for n in app._notifications)
++    src = json.loads(src_p.read_text(encoding="utf-8"))
++    dst = json.loads(dst_p.read_text(encoding="utf-8"))
++    assert len(src["projects"]) == 4 and not any(t["project_id"] == "pmr" for t in src["tasks"])
++    assert _deps(src_p)["tw2"] == []
++    assert len(dst["projects"]) == 3
++    assert len([t for t in dst["tasks"] if t["project_id"] == "pmr"]) == 7
++    d = _deps(dst_p)
++    assert d["tr3"] == [] and d["tr4"] == ["tr3"] and d["tr5"] == ["tr4"] \
++        and d["tr2"] == ["tr1"]
++    for p in (src_p, dst_p):
++        assert p.with_name(f"board.json.pre-move-{DAY}").read_bytes() == old[p]
++        log = json.loads((p.parent / f"move-{DAY}.json").read_text(encoding="utf-8"))
++        assert len(log) == 1 and log[0]["links_kept"] == 3 and len(log[0]["links_dropped"]) == 2
++    assert "tr3" in (dst_p.parent / "history.jsonl").read_text(encoding="utf-8")
++    assert "tr3" not in (src_p.parent / "history.jsonl").read_text(encoding="utf-8")
++    moved = dst_p.parent / "images" / "tr3" / "paste-001.png"
++    assert moved.exists() and not img.parent.exists()
++    tr3 = next(t for t in dst["tasks"] if t["id"] == "tr3")
++    assert Path(tr3["images"][0]).resolve() == moved.resolve()
++
++
++# --------------------------------------------------------------------------- #
++# the reviews of increment 004 (code review F1-F6, security F1-F3)
++# --------------------------------------------------------------------------- #
++def test_TC_2206_two_boards_in_one_folder_are_refused(home):
++    """TC-2206 (code review F1): `history.jsonl` and `images/` live beside the board
++    file, so two boards in one folder share them — a move there is refused."""
++    src_p, _dst = _pair(home)
++    side = src_p.parent / "work.json"
++    Board([], [], side, {"seen_view_renumber_2026_07": True}).save()
++    (src_p.parent / "history.jsonl").write_text(
++        json.dumps({"task": "tr3", "to": "Doing"}) + "\n", encoding="utf-8")
++    before = _snap(home)
++    plan = move_plan(Board.load(src_p), peek_board(side), "pmr", set(), set())
++    assert plan.refusal == "the two boards share a folder (their history and images are one)"
++    assert _snap(home) == before
++
++
++def test_TC_2206_a_hard_linked_target_is_this_board(home):
++    """TC-2206 (code review F5): a hard link to the source file is the same file."""
++    src_p, _dst = _pair(home)
++    linked = home / "boards" / "linked" / "board.json"
++    linked.parent.mkdir(parents=True)
++    try:
++        os.link(src_p, linked)
++    except OSError:
++        pytest.skip("this file system makes no hard link")
++    plan = move_plan(Board.load(src_p), peek_board(linked), "pmr", set(), set())
++    assert plan.refusal == "the target is this board"
++
++
++def test_TC_2206_a_bad_history_line_never_stops_the_handover(home):
++    """TC-2206 (code review F2, security F2): undecodable bytes and odd records in
++    the history are kept as they are; the moved lines move; nothing raises."""
++    src_p, dst_p = _pair(home)
++    hist = src_p.parent / "history.jsonl"
++    hist.write_bytes(b'{"task": "tr3", "to": "Doing"}\n\xff\xfe junk\n{"task": ["tr3"]}\n'
++                     + b"[" * 3000 + b"\n")
++    (dst_p.parent / "history.jsonl").write_bytes(b'{"task": "tc1", "to": "Done"}')  # no newline
++    src, dst = Board.load(src_p), peek_board(dst_p)
++    plan = move_plan(src, dst, "pmr", set(), set())
++    new_src, steps = move_project(src, dst, "pmr", plan, DAY, ("Main", "Client"))
++    assert "moved the history lines" in steps
++    lines = (dst_p.parent / "history.jsonl").read_text(encoding="utf-8").splitlines()
++    assert lines == ['{"task": "tc1", "to": "Done"}', '{"task": "tr3", "to": "Doing"}']  # F6
++    kept = hist.read_text(encoding="utf-8", errors="replace").splitlines()
++    assert len(kept) == 3 and '{"task": ["tr3"]}' in kept
++
++
++def test_TC_2206_an_unexpected_error_after_the_source_save_is_handed_over(home, monkeypatch):
++    """TC-2206 (code review F2): a failure that is not an OSError past the source
++    save still carries the new source, so the caller adopts it."""
++    src_p, dst_p = _pair(home)
++    monkeypatch.setattr(boards, "_log", lambda *a, **k: (_ for _ in ()).throw(
++        TypeError("odd")))
++    src, dst = Board.load(src_p), peek_board(dst_p)
++    plan = move_plan(src, dst, "pmr", set(), set())
++    with pytest.raises(OSError) as err:
++        move_project(src, dst, "pmr", plan, DAY, ("Main", "Client"))
++    assert err.value.board is not None and "pmr" not in {p.id for p in err.value.board.projects}
++
++
++def test_TC_2206_a_linked_image_folder_stays_with_its_references(home):
++    """TC-2206 (code review F3): an image folder that is a link to elsewhere does
++    not move, and its references are not rewritten to a folder that would not exist."""
++    src_p, dst_p = _pair(home)
++    outside = home.parent / "elsewhere"
++    outside.mkdir()
++    (outside / "a.png").write_bytes(b"png")
++    link = src_p.parent / "images" / "tr3"
++    link.parent.mkdir(parents=True)
++    try:
++        os.symlink(outside, link, target_is_directory=True)
++    except OSError:
++        pytest.skip("this system makes no directory link")
++    _edit(src_p, lambda d: next(t for t in d["tasks"] if t["id"] == "tr3").update(
++        images=[str(link / "a.png")]))
++    src, dst = Board.load(src_p), peek_board(dst_p)
++    plan = move_plan(src, dst, "pmr", set(), set())
++    move_project(src, dst, "pmr", plan, DAY, ("Main", "Client"))
++    tr3 = next(t for t in json.loads(dst_p.read_text(encoding="utf-8"))["tasks"] if t["id"] == "tr3")
++    assert tr3["images"] == [str(link / "a.png")]
++    assert (outside / "a.png").exists() and not (dst_p.parent / "images" / "tr3").exists()
++
++
++async def test_TC_2206_the_target_is_read_when_it_is_chosen(home):
++    """TC-2206 (code review F4, security F1): a change to the target while the picker
++    is open is seen — here an id that now clashes refuses the move."""
++    src_p, dst_p = _pair(home)
++    from taskboard.__main__ import open_app
++    app = open_app(None)
++    async with app.run_test(size=(160, 45)) as pilot:
++        await pilot.pause()
++        for k in ("escape", "P", "down", "m"):
++            await pilot.press(k)
++            await pilot.pause()
++        _edit(dst_p, lambda d: d["tasks"].append({"id": "tr1", "title": "Clash"}))
++        for k in ("down", "enter"):
++            await pilot.press(k)
++            await pilot.pause()
++        assert type(app.screen).__name__ == "ProjectPicker"
++        assert any("already holds the id tr1" in n.message for n in app._notifications)

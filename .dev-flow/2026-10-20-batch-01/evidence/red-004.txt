@@ -1,0 +1,4 @@
+# RED of increment 004's new nodes on increment 003's commit 6eefdac (a clean worktree; only the test file copied in), NO_COLOR unset — on base_ref 783397e the file would not even import (no taskboard.boards)
+ERROR tests/test_boards_move.py
+!!!!!!!!!!!!!!!!!!! Interrupted: 1 error during collection !!!!!!!!!!!!!!!!!!!!
+1 error in 0.37s

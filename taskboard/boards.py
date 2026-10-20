@@ -13,6 +13,7 @@ and never for a one-board user who has no registry file yet.
 
 from __future__ import annotations
 
+import copy
 import json
 import os
 import re
@@ -337,3 +338,227 @@ def peek_board(path) -> Board:
         return board
     return Board.load(p)
 
+
+# ---- moving a project to another board (HLR-2206) ---------------------------
+@dataclass
+class MovePlan:
+    tasks: list                          # every task of the project, in board order
+    kept: int                            # links between two of them
+    crossing: list                       # (waiter, waits on) pairs that cross the boards
+    refusal: str | None = None
+    dst_stamp: tuple | None = None       # the target file's (mtime, size) when planned
+
+
+def _inside(child: Path, parent: Path) -> bool:
+    try:
+        c, p = child.resolve(), parent.resolve()
+    except (OSError, RuntimeError):
+        return False
+    return os.path.normcase(str(c)).startswith(os.path.normcase(str(p)) + os.sep)
+
+
+def move_plan(src: Board, dst: Board, project_id: str, src_team: set | None,
+              dst_team: set | None) -> MovePlan:
+    """What a move would do, and whether it may (a refusal reason, or None)."""
+    mine = [t for t in src.tasks if t.project_id == project_id]
+    ids = {t.id for t in mine}
+    by = {t.id: t for t in src.tasks}
+    crossing_in, crossing_out, kept = [], [], 0
+    for t in src.tasks:
+        for dep in t.depends_on:
+            if t.id in ids and dep in ids:
+                kept += 1
+            elif t.id in ids and dep in by:
+                crossing_out.append((t, by[dep]))
+            elif t.id not in ids and dep in ids:
+                crossing_in.append((t, by[dep]))
+    plan = MovePlan(mine, kept, crossing_in + crossing_out)
+    plan.dst_stamp = _stamp(dst.path)
+    plan.refusal = _refusal(src, dst, project_id, mine, src_team, dst_team)
+    return plan
+
+
+def _samefile(a, b) -> bool:
+    try:
+        return os.path.samefile(a, b)
+    except OSError:
+        return False
+
+
+def _stamp(path: Path) -> tuple | None:
+    """What a stale plan is checked against: the file's mtime and size."""
+    if not path.exists():
+        return None
+    st = path.stat()
+    return (st.st_mtime_ns, st.st_size)
+
+
+def _refusal(src, dst, pid, mine, src_team, dst_team) -> str | None:
+    if _key(src.path) == _key(dst.path) or _samefile(src.path, dst.path):
+        return "the target is this board"
+    if _key(src.path.parent) == _key(dst.path.parent):
+        # history.jsonl and images/ live beside the board file: one folder, one
+        # history — moving lines inside it would erase them (code review F1)
+        return "the two boards share a folder (their history and images are one)"
+    if not dst.path.exists():
+        return "the target board's file is missing"
+    if dst.load_report.get("file_unreadable"):
+        return "the target board's file cannot be read"
+    if src_team is None or dst_team is None:
+        return "a board is in team mode and its team configuration cannot be read"
+    if pid in src_team or pid in dst_team:
+        return "the project is shared in team mode"
+    for x in [pid] + [t.id for t in mine]:
+        if not (isinstance(x, str) and _ID.fullmatch(x)):
+            return f"the id {x!r} cannot name a folder"
+    dst_ids = {p.id for p in dst.projects} | {t.id for t in dst.tasks}
+    clash = [x for x in [pid] + [t.id for t in mine] if x in dst_ids]
+    if clash:
+        return f"the target already holds the id {clash[0]}"
+    for t in mine:
+        if dst.image_dir(t.id).exists():
+            return f"the target already holds images/{t.id}"
+    phases = {p.strip().lower() for p in dst.phases}
+    missing = sorted({t.phase for t in mine if t.phase.strip().lower() not in phases})
+    if missing:
+        return f"the target has no phase {missing[0]!r} — add it there first (f)"
+    return None
+
+
+def _backup(path: Path, day: str) -> Path | None:
+    """A byte copy beside `path`, created exclusively: an earlier copy is never
+    replaced (`-2`, `-3`… instead)."""
+    if not path.exists():
+        return None
+    data = path.read_bytes()
+    n = 1
+    while True:
+        dest = path.with_name(f"{path.name}.pre-move-{day}" + (f"-{n}" if n > 1 else ""))
+        try:
+            with open(dest, "xb") as fh:
+                fh.write(data)
+            return dest
+        except FileExistsError:
+            n += 1
+
+
+def _log(folder: Path, day: str, entry: dict) -> None:
+    """Append `entry` to the list in `move-<day>.json`; a file that does not hold
+    a list is left alone and the next free `move-<day>-N.json` takes it."""
+    n = 1
+    while True:
+        p = folder / (f"move-{day}" + (f"-{n}" if n > 1 else "") + ".json")
+        if not p.exists():
+            items = []
+            break
+        try:
+            items = json.loads(p.read_text(encoding="utf-8"))
+        except (OSError, ValueError, RecursionError):
+            items = None
+        if isinstance(items, list):
+            break
+        n += 1
+    write_atomic(p, json.dumps(items + [entry], indent=2, ensure_ascii=False))
+
+
+def move_project(src: Board, dst: Board, project_id: str, plan: MovePlan, day: str,
+                 names: tuple[str, str]) -> tuple[Board, list[str]]:
+    """Carry the project out on COPIES of both boards; return the new source
+    board and the steps done. Order: the byte copies, the target saved, the
+    source saved — the live boards are never changed, so a failure before the
+    source is saved leaves the open board as its file — then the image folders,
+    the history lines and the move logs. An `OSError` carries `.steps`, and
+    `.board`: the new source once it was saved (the caller adopts it), else None."""
+    steps: list[str] = []
+    saved = None
+    try:
+        if plan.refusal:
+            raise OSError(plan.refusal)
+        if _stamp(dst.path) != plan.dst_stamp:
+            raise OSError("the target board changed since the move was planned")
+        new_src, new_dst = copy.deepcopy(src), copy.deepcopy(dst)
+        ids = {t.id for t in plan.tasks}
+        for b in (src, dst):
+            if _backup(b.path, day):
+                steps.append(f"copied {b.path.name}")
+        proj = new_src.project_by_id(project_id)
+        proj.present_rank = None
+        moving = [t for t in new_src.tasks if t.id in ids]
+        images = (src.path.parent / "images").resolve()
+        # the folders that move: a task's own, directly under the source's images/
+        # (a junction or link elsewhere stays, and so do the references into it)
+        img_src = {t.id: src.image_dir(t.id) for t in moving
+                   if src.image_dir(t.id).is_dir()
+                   and src.image_dir(t.id).resolve().parent == images}
+        for t in moving:
+            t.depends_on = [d for d in t.depends_on if d in ids]
+            old_dir, new_dir = img_src.get(t.id), dst.image_dir(t.id)
+            refs = []
+            for ref in t.images:
+                r = Path(ref)
+                if old_dir is not None and r.is_absolute() and _inside(r, old_dir):
+                    refs.append(str(new_dir / r.resolve().relative_to(old_dir.resolve())))
+                else:
+                    refs.append(ref)
+            t.images = refs
+        new_src.tasks = [t for t in new_src.tasks if t.id not in ids]
+        for t in new_src.tasks:
+            t.depends_on = [d for d in t.depends_on if d not in ids]
+        new_src.projects = [p for p in new_src.projects if p.id != project_id]
+        new_dst.projects.append(proj)
+        new_dst.tasks.extend(moving)
+        new_dst.path.parent.mkdir(parents=True, exist_ok=True)
+        new_dst.save_atomic()
+        steps.append("saved the target")
+        new_src.save_atomic()
+        saved = new_src
+        steps.append("saved the source")
+        for tid, old_dir in img_src.items():
+            target = dst.image_dir(tid)
+            target.parent.mkdir(parents=True, exist_ok=True)
+            tmp = target.parent / f".{tid}.moving"
+            shutil.rmtree(tmp, ignore_errors=True)
+            try:
+                shutil.copytree(old_dir, tmp, symlinks=True)
+                os.replace(tmp, target)
+            except OSError:
+                shutil.rmtree(tmp, ignore_errors=True)
+                raise
+            shutil.rmtree(old_dir)
+            steps.append(f"moved images/{tid}")
+        hist = src.path.parent / "history.jsonl"
+        if hist.exists():
+            keep, moved = [], []
+            for line in hist.read_text(encoding="utf-8", errors="replace").splitlines():
+                try:
+                    rec = json.loads(line)
+                except (ValueError, RecursionError):
+                    rec = None
+                task = rec.get("task") if isinstance(rec, dict) else None
+                (moved if isinstance(task, str) and task in ids else keep).append(line)
+            if moved:
+                target_hist = dst.path.parent / "history.jsonl"
+                # F6: never glue the first moved line onto a hand-edited last one
+                lead = ("\n" if target_hist.exists() and target_hist.stat().st_size
+                        and not target_hist.read_bytes().endswith(b"\n") else "")
+                with open(target_hist, "a", encoding="utf-8") as fh:
+                    fh.write(lead)
+                    fh.writelines(x + "\n" for x in moved)
+                write_atomic(hist, "".join(x + "\n" for x in keep))
+                steps.append("moved the history lines")
+        entry = {"date": day, "project": proj.name, "from": names[0], "to": names[1],
+                 "tasks": len(moving), "links_kept": plan.kept,
+                 "links_dropped": [{"task": a.title, "waits_on": b.title}
+                                   for a, b in plan.crossing]}
+        for b in (src, dst):
+            _log(b.path.parent, day, entry)
+        steps.append("wrote the move logs")
+        return new_src, steps
+    except OSError as exc:
+        exc.steps = steps
+        exc.board = saved      # past the source save: the caller must adopt it
+        raise
+    except Exception as exc:   # any other failure is reported the same way (F2)
+        err = OSError(f"{type(exc).__name__}: {exc}")
+        err.steps, err.board = steps, saved
+        raise err from exc

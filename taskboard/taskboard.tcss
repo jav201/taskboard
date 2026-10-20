@@ -288,7 +288,7 @@ KeyBar {
 }
 
 TaskModal, ProjectModal, ConfirmModal, ProjectPicker, ImageViewer, TaskDetails, CalendarModal,
-PresentHiddenPicker, BoardForm {
+PresentHiddenPicker, BoardForm, MoveTarget, MoveConfirm {
     align: center middle;
     background: #0007;
 }
@@ -335,5 +335,36 @@ PresentHiddenPicker, BoardForm {
     margin: 1 0 0 0;
 }
 #bf-hues, #bf-path, #bf-keys {
+    margin: 1 0 0 0;
+}
+#mt-box {
+    width: 76;
+    max-width: 100%;
+    height: auto;
+    padding: 0 1;
+    background: #0d1219;
+    border: round #334154;
+}
+#mt-rows, #mt-keys {
+    margin: 1 0 0 0;
+}
+#mc-box {
+    width: 84;
+    max-width: 100%;
+    height: auto;
+    max-height: 100%;
+    padding: 0 1;
+    background: #0d1219;
+    border: round #f43f5e;
+}
+#mc-links {
+    height: auto;
+    margin: 1 0 0 0;
+    scrollbar-size: 1 1;
+}
+#mc-links-text {
+    height: auto;
+}
+#mc-foot {
     margin: 1 0 0 0;
 }
