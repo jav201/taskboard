@@ -1,0 +1,4 @@
+# the backdrop node on fc55d3a's modals.py (the opaque picker), the test from the follow-up
+E           assert ('PRESENT' in '<svg class="rich-terminal" viewBox="0 0 1970 1148.0" xmlns="http://www.w3.org/2000/svg">\n    <!-- Generated with Ric...52" y="1069.2" textLength="12.2" clip-path="url(#terminal-2231494738-line-43)">\n</text>\n    </g>\n    </g>\n</svg>\n')
+FAILED tests/test_present_all.py::test_TC_2106_the_presentation_stays_in_view_behind_the_picker
+1 failed, 48 deselected in 1.12s

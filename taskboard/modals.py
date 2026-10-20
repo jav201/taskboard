@@ -25,6 +25,7 @@ from rich.text import Text
 from textual import events
 from textual.app import ComposeResult
 from textual.binding import Binding
+from textual.color import Color
 from textual.containers import Grid, Horizontal, Vertical, VerticalScroll
 from textual.keys import format_key
 from textual.screen import ModalScreen
@@ -1184,6 +1185,10 @@ class PresentHiddenPicker(ModalScreen[None]):
         self.board = board
         self.rows = rows
         self.cursor = 0
+        # the presentation stays in view behind the list, dimmed: Textual's own
+        # ModalScreen backdrop (the background at 60%) in the presentation's colour.
+        # Inline, because the app's `Screen { background }` rule outranks DEFAULT_CSS.
+        self.styles.background = Color(13, 17, 23, 0.6)
 
     def compose(self) -> ComposeResult:
         with Vertical(id="picker-box"):

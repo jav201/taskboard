@@ -828,3 +828,18 @@ async def test_TC_2105_a_resize_keeps_the_cursor_and_the_rail_safe(tmp_path, fro
         await pilot.resize_terminal(160, 45)
         await s.press(pilot)
         assert s.scr._all_cur == ("proj", "pdp"), s.scr._all_cur
+
+
+async def test_TC_2106_the_presentation_stays_in_view_behind_the_picker(tmp_path, frozen):
+    """TC-2106 (HLR-2106; the coordinator's review of the capture
+    `seq-160x45-4-picker`): with `u` open the presentation is still painted
+    behind the picker, dimmed — the screenshot holds both the picker's title and
+    the frame's own text (its header and a project the picker does not list)."""
+    s = _Show(tmp_path, (160, 45))
+    async with s.app.run_test(size=s.size) as pilot:
+        await s.open(pilot)
+        await s.press(pilot, "3", "u")
+        assert type(s.app.screen).__name__ == "PresentHiddenPicker"
+        shot = s.app.export_screenshot().replace("&#160;", " ")
+        assert "Hidden from the presentation" in shot
+        assert "PRESENT" in shot and "Mobile Release 3.2" in shot and "Schema registry" in shot
