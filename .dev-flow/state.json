@@ -284,6 +284,11 @@
       "station": "P3",
       "date": "2026-10-19",
       "decision": "P3 increment 003 approved under the batch's standing authorization: the view-3 renderer (HLR-2103, the rows of HLR-2106) — RED on base 13 failed, 8/8 mutants KILLED, code-reviewer OK with findings (F1, F3 fixed in increment 004; F2 amended as LED .4), suite-003 2804 passed, 1 skipped."
+    },
+    {
+      "station": "P3",
+      "date": "2026-10-20",
+      "decision": "P3 increment 004 approved under the batch's standing authorization: the screen and the picker (HLR-2104..HLR-2106) — RED on base 10 failed, 20/20 mutants KILLED, code-reviewer BLOCK-UNTIL F1 at 6d9f344, OK at fc55d3a, suite-004 2818 passed."
     }
   ],
   "obsidian_synced": false,
