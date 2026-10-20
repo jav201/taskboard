@@ -142,6 +142,9 @@ recorded full-suite run).
 - **OPERATOR — the `?` help still lists the main screen's keys only** (a declared deviation from the commission's D8): the presentation's keys, view 3's and `u` among them, live in its hint row and the README (`docs/ARCHITECTURE.md` §5, the presentation's keys outside `KEYMAP`). Listing them in `?` means a key seat for the presentation (`?` is not reachable inside `R` today).
 - **OPERATOR — the 80-column hint**: with three view names the split view's hint at 80 columns takes the short wording (the compact one with something hidden); HLR-2002's «next and show all at 80» now holds for the gantt view only.
 - view 3 below ~14 rows: projects past the overflow row are not reachable with `↑↓` on the timeline (the rail, from 100 columns, reaches every project) — inherited from the round; a scrolling timeline would close it.
+- the `-all` export carries the presenter's cursor (the `⟦` lead and the echoed project span) and the empty rows under the last project (P4 ux-reviewer UX4-5); an export without the cursor, cut to its content, would read as a slide.
+- at 80×24 view 3's hint is glyphs only (`⇥ ←→ ↑↓ ␣ ⇧↑↓ enter a x esc`, the specified third wording; UX4-4) — the README carries the words.
+- AT-2104 checks the tick row after `→`, not the cursor's row, and several ATs read the private `_all_cur` (P4 qa-reviewer G-2); `u` is not driven in view 2 (G-4).
 - `shift+↑/↓` is the only reorder key; some terminals and multiplexers do not pass `shift+arrow` (ux-reviewer UX-8).
 - an archived project keeps its `present_rank` and may tie with another when unarchived (board order breaks the tie; architect A-10).
 - the round's capture script (`prototypes/present_portfolio/app_capture.py`) subclasses `PresentScreen` and no longer reproduces its captures since increment 004 (frozen evidence; the folder stays as the design record — retire it with the operator's yes, as the polish round was).
