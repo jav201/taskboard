@@ -91,7 +91,7 @@ SCENARIOS = {
         ("2-hidden", ["right", "@pbr", "space"]),
         ("3-reordered", ["left", "@pmr", "shift+up", "shift+up"]),
         ("4-picker", ["u"]),
-        ("5-shown", ["down", "space", "escape"]),
+        ("5-shown", ["space", "escape"]),          # the cursor opens on the first hidden row
         ("6-exported", ["x"]),
     ]),
 }

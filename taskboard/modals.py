@@ -25,7 +25,6 @@ from rich.text import Text
 from textual import events
 from textual.app import ComposeResult
 from textual.binding import Binding
-from textual.color import Color
 from textual.containers import Grid, Horizontal, Vertical, VerticalScroll
 from textual.keys import format_key
 from textual.screen import ModalScreen
@@ -1174,7 +1173,7 @@ class PresentHiddenPicker(ModalScreen[None]):
                 Binding("space,enter", "toggle", "Toggle", priority=True, show=False)]
 
     DEFAULT_CSS = """
-    PresentHiddenPicker { align: center middle; }
+    PresentHiddenPicker { align: center middle; }   /* its dimmed backdrop: taskboard.tcss */
     #picker-box { width: 64; max-width: 100%; height: auto; max-height: 100%;
                   padding: 0 1; background: #0d1219; border: round #334154; }
     #picker-box Static { margin: 0; }
@@ -1184,18 +1183,17 @@ class PresentHiddenPicker(ModalScreen[None]):
         super().__init__()
         self.board = board
         self.rows = rows
-        self.cursor = 0
-        # the presentation stays in view behind the list, dimmed: Textual's own
-        # ModalScreen backdrop (the background at 60%) in the presentation's colour.
-        # Inline, because the app's `Screen { background }` rule outranks DEFAULT_CSS.
-        self.styles.background = Color(13, 17, 23, 0.6)
+        # the cursor starts on the first hidden row: a shown project is listed only
+        # as the heading of its hidden tasks, and `space` on it would hide it
+        self.cursor = next((i for i, (kind, oid, _) in enumerate(rows)
+                            if not self._item(kind, oid).show_in_present), 0)
 
     def compose(self) -> ComposeResult:
         with Vertical(id="picker-box"):
             yield Static(Text("Hidden from the presentation", style=f"bold {HEX['bright']}"),
                          id="picker-title")
             yield Static(self._rows_text(), id="picker-rows")
-            yield Static(Text("↑↓ move · ␣ toggle · esc close", style=HEX["dim"]),
+            yield Static(Text("↑↓ move · ␣ show/hide · ○ hidden · esc close", style=HEX["dim"]),
                          id="picker-keys")
 
     def _item(self, kind: str, oid: str):

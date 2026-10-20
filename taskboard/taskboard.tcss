@@ -287,7 +287,8 @@ KeyBar {
     height: auto;
 }
 
-TaskModal, ProjectModal, ConfirmModal, ProjectPicker, ImageViewer, TaskDetails, CalendarModal {
+TaskModal, ProjectModal, ConfirmModal, ProjectPicker, ImageViewer, TaskDetails, CalendarModal,
+PresentHiddenPicker {
     align: center middle;
     background: #0007;
 }

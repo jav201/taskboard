@@ -1,0 +1,7 @@
+# increment 006's nodes on 7c4140a's modals.py and taskboard.tcss (the inline backdrop; the picker's cursor on row 0)
+E           AssertionError: ▶ ● Customer Portal
+E                  ○ [@click=app.quit]x[/] [bold tail\
+E               ● Data Platform
+E                  ○ Cost dashboards
+E               ○ Security Audit
+E           assert False

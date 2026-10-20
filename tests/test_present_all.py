@@ -537,9 +537,10 @@ async def test_AT_2105_the_presenter_curates_view_3(tmp_path, frozen):
         await s.goto(pilot, "pdp")
         await s.press(pilot, "enter")
         assert not any("Ingest pipeline v2" in r for r in s.frame())
-        assert any("▸ ■ Data Platform" in r or "⟦ ■ Data Platform" in r for r in s.frame())
+        await s.press(pilot, "up")                    # off the header: its caret shows
+        assert any("▸ ■ Data Platform" in r for r in s.frame()), s.frame()
         assert s.bytes() == base
-        await s.press(pilot, "enter")
+        await s.press(pilot, "down", "enter")
         assert any("Ingest pipeline v2" in r for r in s.frame())
         await s.goto(pilot, "tm2")
         await s.press(pilot, "space")
@@ -766,8 +767,10 @@ async def test_TC_2106_the_picker(tmp_path, frozen):
         await s.press(pilot, "3", "u")
         rows = s.app.screen.query_one("#picker-rows").content
         assert "[@click=app.quit]x[/] [bold tail\\" in rows.plain
+        # the cursor starts on the first hidden row, never on a shown project's heading
+        assert rows.plain.splitlines()[1].startswith("▶"), rows.plain
         assert not any("@click" in str(sp.style) for sp in rows.spans)
-        await s.press(pilot, "down", "space")
+        await s.press(pilot, "space")
         assert "show_in_present" not in s.tasks()["tc6"]
         await s.press(pilot, "space")
         assert s.tasks()["tc6"]["show_in_present"] is False
@@ -817,29 +820,34 @@ async def test_TC_2105_a_resize_keeps_the_cursor_and_the_rail_safe(tmp_path, fro
         assert s.scr._all_cur[0] == "task"
         proj = s.scr._board.task_by_id(s.scr._all_cur[1]).project_id
         await pilot.resize_terminal(160, 45)
-        await s.press(pilot)
+        await pilot.pause()
+        await pilot.pause()
         assert s.scr._all_cur == ("proj", proj), s.scr._all_cur
         await s.press(pilot, "space")
         assert s.projects()[proj]["show_in_present"] is False
         await s.press(pilot, "space")
         await s.goto(pilot, "pdp")
         await pilot.resize_terminal(30, 45)
-        await s.press(pilot)
+        await pilot.pause()
+        await pilot.pause()
         await pilot.resize_terminal(160, 45)
-        await s.press(pilot)
+        await pilot.pause()
+        await pilot.pause()
         assert s.scr._all_cur == ("proj", "pdp"), s.scr._all_cur
 
 
 async def test_TC_2106_the_presentation_stays_in_view_behind_the_picker(tmp_path, frozen):
     """TC-2106 (HLR-2106; the coordinator's review of the capture
     `seq-160x45-4-picker`): with `u` open the presentation is still painted
-    behind the picker, dimmed — the screenshot holds both the picker's title and
-    the frame's own text (its header and a project the picker does not list)."""
+    behind the picker — the screenshot holds both the picker's title and the
+    frame's own text (its header and a project the picker does not list) — under
+    the app's own modal backdrop (`taskboard.tcss`, the rule the other modals share)."""
     s = _Show(tmp_path, (160, 45))
     async with s.app.run_test(size=s.size) as pilot:
         await s.open(pilot)
         await s.press(pilot, "3", "u")
         assert type(s.app.screen).__name__ == "PresentHiddenPicker"
+        assert 0 < s.app.screen.styles.background.a < 1        # dimmed, not hidden
         shot = s.app.export_screenshot().replace("&#160;", " ")
         assert "Hidden from the presentation" in shot
         assert "PRESENT" in shot and "Mobile Release 3.2" in shot and "Schema registry" in shot
