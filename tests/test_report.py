@@ -247,13 +247,23 @@ def test_a_hostile_title_cannot_break_out_into_markup(tmp_path):
 # --------------------------------------------------------------------------- #
 # AC1 / AC2 — the CLI, driven as a user drives it
 # --------------------------------------------------------------------------- #
+def _home_env(tmp_path):
+    """The CLI's subprocess gets a temporary home too (batch 2026-10-20-batch-01,
+    security S-13): the boards registry lives under it, never the real one."""
+    import os
+    home = tmp_path / "home"
+    home.mkdir(exist_ok=True)
+    return dict(os.environ, HOME=str(home), USERPROFILE=str(home))
+
+
 def test_the_cli_writes_a_report_and_says_where(tmp_path):
     b = loaded(tmp_path, "cli.json")
     path = tmp_path / "cli.json"
     before = hashlib.md5(path.read_bytes()).hexdigest()
     r = subprocess.run([sys.executable, "-m", "taskboard", "--board", str(path),
-                        "--report"], capture_output=True, text=True)
+                        "--report"], capture_output=True, text=True, env=_home_env(tmp_path))
     assert r.returncode == 0, r.stderr
+    assert not (tmp_path / "home" / ".taskboard").exists()     # --report registers nothing
     assert "Report written to" in r.stdout
     written = r.stdout.split("Report written to", 1)[1].strip()
     assert written.endswith(".html")
@@ -266,11 +276,13 @@ def test_the_cli_scopes_to_a_project_and_refuses_an_unknown_one(tmp_path):
     loaded(tmp_path, "cli2.json")
     path = tmp_path / "cli2.json"
     ok = subprocess.run([sys.executable, "-m", "taskboard", "--board", str(path),
-                         "--report", "Platform"], capture_output=True, text=True)
+                         "--report", "Platform"], capture_output=True, text=True,
+                        env=_home_env(tmp_path))
     assert ok.returncode == 0 and "platform-" in ok.stdout
 
     bad = subprocess.run([sys.executable, "-m", "taskboard", "--board", str(path),
-                          "--report", "Nope"], capture_output=True, text=True)
+                          "--report", "Nope"], capture_output=True, text=True,
+                         env=_home_env(tmp_path))
     assert bad.returncode != 0
     assert "no project named" in (bad.stderr + bad.stdout)
     assert "Website Redesign" in (bad.stderr + bad.stdout)   # it names the real ones

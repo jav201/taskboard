@@ -3,9 +3,21 @@
 from __future__ import annotations
 
 import argparse
+from datetime import datetime
 
 from .app import TaskboardApp
+from .boards import Registry, registry_path
 from .models import Board, default_board_path
+
+
+def open_app(board: str | None) -> TaskboardApp:
+    """The app as `taskboard` starts it (batch 2026-10-20-batch-01): the user's
+    registry; `--board PATH` registered and opened, else the board opened last."""
+    registry = Registry.load(registry_path(), default_board_path())
+    now = datetime.now()
+    entry = registry.register(board) if board else registry.opening()
+    registry.touch(entry.id, now)
+    return TaskboardApp(board_path=entry.path, registry=registry)
 
 
 def main() -> None:
@@ -17,7 +29,7 @@ def main() -> None:
         "--board",
         metavar="PATH",
         default=None,
-        help=f"JSON store to use (default: {default_board_path()})",
+        help=f"JSON store to use, added to the boards list (default: {default_board_path()})",
     )
     parser.add_argument(
         "--report",
@@ -44,7 +56,7 @@ def main() -> None:
         print(f"Report written to {out}")
         return
 
-    TaskboardApp(board_path=args.board).run()
+    open_app(args.board).run()
 
 
 if __name__ == "__main__":

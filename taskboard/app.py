@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import os
 import webbrowser
-from datetime import date
+from datetime import date, datetime
 from pathlib import Path
 
 from rich.text import Text
@@ -17,6 +17,7 @@ from textual.screen import ModalScreen
 from textual.widgets import Static
 
 from . import history
+from .boards import Registry
 from .models import (AUTO_ARCHIVE_DAYS, IMAGE_EXTS, Board, Project, Task,
                      archive_refusal, chain_template, default_board_path, is_open,
                      link_refusal,
@@ -640,9 +641,16 @@ class TaskboardApp(App):
     BINDINGS = app_bindings()
 
     def __init__(self, board_path: str | Path | None = None, *,
-                 team_sync_interval: float = 1800.0):
+                 team_sync_interval: float = 1800.0, registry: Registry | None = None):
         super().__init__()
         self.board = Board.load(board_path or default_board_path())
+        # the boards this app knows (batch 2026-10-20-batch-01): `open_app` passes
+        # the user's registry; an app built without one knows only its own board,
+        # and that registry's file would sit beside the board, never in the home
+        self.registry = registry or Registry.single(self.board.path)
+        entry = self.registry.entry_for(self.board.path)
+        self.board_id = entry.id if entry is not None else None
+        self._team_timer = None
         self.view_mode = "swimlanes"
         self.kanban_presentation = "grouped"
         self.kanban_sort = "project"       # session-level view state (LLR-003.2):
@@ -705,22 +713,91 @@ class TaskboardApp(App):
             yield KeyBar(id="keybar")
 
     def on_mount(self) -> None:
+        if self._open_board(at_mount=True):
+            self._warn_registry()
+
+    def _open_board(self, at_mount: bool = False) -> bool:
+        """The start a board gets — at mount, and again at every switch to
+        another board (batch 2026-10-20-batch-01, LLR-2202.1)."""
         # FIRST, before any other write: the backup must hold the file as the
         # user left it (LLR-505.3) — the renumber notice and the sweep both save.
-        if not self._migrate_links():
-            return
+        if not self._migrate_links(at_switch=not at_mount):
+            return False
         self._announce_renumbering()
         self._sweep_old_done()
         self._select_first()
         self.refresh_view()
         self._apply_clock_settings()
-        # ONE shared clock interval for the whole app (never per-widget).
-        self.set_interval(TICK_SECONDS, self._tick)
+        if at_mount:
+            # ONE shared clock interval for the whole app (never per-widget).
+            self.set_interval(TICK_SECONDS, self._tick)
         self._warn_if_rescued()
         self._init_team_mode()
         # LAST: the one-time milestone offer covers whatever start opened (the
         # identity picker included) until it is answered (D-615)
         self._offer_milestones()
+        return True
+
+    def _warn_registry(self) -> None:
+        missing = self.registry.load_report.get("missing")
+        if missing:
+            self.notify(f"A board's file is missing ({missing}); another board was opened.",
+                        title="Boards", severity="warning", timeout=15, markup=False)
+        failed = self.registry.load_report.get("save_error")
+        if failed:
+            self.notify(f"boards.json could not be written ({failed}); the boards are "
+                        "unchanged on disk.", title="Boards", severity="warning", timeout=15,
+                        markup=False)
+        backup = self.registry.load_report.get("backup")
+        if self.registry.load_report.get("unreadable"):
+            where = backup or "nowhere (the copy failed)"
+            self.notify(f"boards.json could not be read; a copy was kept at {where}. "
+                        "The default board is open.", title="Boards", severity="warning",
+                        timeout=15, markup=False)
+
+    def switch_board(self, bid: str) -> None:
+        """Open another board IN PLACE (LLR-2202.1): its file, and with it its
+        history, images and reports; the per-board session state starts over, the
+        view and its layouts stay."""
+        entry = self.registry.get(bid)
+        if entry is None or bid == self.board_id:
+            return
+        if not Path(entry.path).exists():
+            self.notify(f"{entry.name}: its file is missing ({entry.path}). Nothing was "
+                        "opened.", title="Boards", severity="warning", markup=False)
+            return
+        keep = ("board", "board_id", "selected_task_id", "focused_project_id",
+                "search_query", "_undo_stack", "_gantt_group", "_gantt_previous",
+                "team_state", "view_mode", "_setup_state", "_last_history_error")
+        before = {k: getattr(self, k) for k in keep}
+        board = Board.load(entry.path)
+        if self._team_timer is not None:
+            self._team_timer.stop()
+            self._team_timer = None
+        self.board = board
+        self.board_id = bid
+        self.selected_task_id = None
+        self.focused_project_id = None
+        self.search_query = None
+        self._undo_stack = []
+        self._gantt_group = self._gantt_previous = None
+        self.team_state = None
+        if self.view_mode == "setup":
+            self.view_mode = self._pre_setup_view
+        self._setup_state = None
+        self._last_history_error = None
+        self._refresh_keybar()
+        if not self._open_board():
+            # its migration failed: the board that was open comes back as it was
+            # — its undo stack, search and setup staging too — without its start
+            # notices again (architect A-6, ux UX-12)
+            for k, v in before.items():
+                setattr(self, k, v)
+            self._refresh_keybar()
+            self.refresh_view()
+            self._start_team_daemon()
+            return
+        self.registry.touch(bid, datetime.now())
 
     def _offer_milestones(self) -> None:
         """The one-time milestone offer (HLR-605): nothing on an unreadable load or
@@ -763,14 +840,21 @@ class TaskboardApp(App):
                         "milestone.", title="Milestones", timeout=30, markup=False)
         self.refresh_view()
 
-    def _migrate_links(self) -> bool:
+    def _migrate_links(self, at_switch: bool = False) -> bool:
         """The one-time link migration (HLR-505). Returns False when it failed:
         the board file was not touched, and the app stops rather than work on
-        links that would be read with the wrong meaning (D-518). On success
-        every changed task is one undo step, and the toast names the backup."""
+        links that would be read with the wrong meaning (D-518) — at a switch to
+        another board it says so and the caller keeps the board that was open
+        (batch 2026-10-20-batch-01, architect A-6). On success every changed task
+        is one undo step, and the toast names the backup."""
         result = run_link_migration(self.board)
         if result is None:
             return True
+        if result.error is not None and at_switch:
+            self.notify(f"That board was not opened — its link migration stopped: "
+                        f"{result.error}. Its file was not changed.", title="Boards",
+                        severity="error", timeout=30, markup=False)
+            return False
         if result.error is not None:
             # a Text piece: the reason holds a file name, and Rich would parse a
             # str printed at exit as markup (S1)
@@ -883,7 +967,8 @@ class TaskboardApp(App):
         """Schedule the periodic pull/push cycle when team mode is active."""
         if self.team_state is None or not self.team_state.user_id:
             return
-        self.set_interval(self.team_sync_interval, self._team_sync_tick)
+        # kept, so a switch to another board can stop it (P-6, LLR-2202.1)
+        self._team_timer = self.set_interval(self.team_sync_interval, self._team_sync_tick)
 
     def _run_team_sync(self) -> None:
         """One sync pass: push/pull then inherit authoritative config."""

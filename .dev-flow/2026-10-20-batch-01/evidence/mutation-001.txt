@@ -1,0 +1,24 @@
+arms: 22
+taskboard/boards.py ['backup = _keep_aside(path)' -> 'backup = None'] test_TC_2201_an_unreadable_registry_is_kept_aside: RED (KILLED) · restore e73695b7f26091b4
+taskboard/boards.py ['with open(dest, "xb") as fh:' -> 'with open(dest, "wb") as fh:'] test_TC_2201_an_existing_corrupt_copy_is_never_overwritten: RED (KILLED) · restore e73695b7f26091b4
+taskboard/boards.py ['if key in seen_paths:\n                continue' -> 'if False:\n                continue'] test_TC_2201_the_entry_rules: RED (KILLED) · restore e73695b7f26091b4
+taskboard/boards.py ['or not Path(p).expanduser().is_absolute():' -> ':'] test_TC_2201_the_entry_rules: RED (KILLED) · restore e73695b7f26091b4
+taskboard/boards.py ['item.get("archived") is True' -> 'bool(item.get("archived"))'] test_TC_2201_the_entry_rules: RED (KILLED) · restore e73695b7f26091b4
+taskboard/boards.py ['if len(self.entries) > 1 or self.path.exists():' -> 'if True:'] test_TC_2201_touch_writes_only_with_more_than_one_board_or_a_file: RED (KILLED) · restore e73695b7f26091b4
+taskboard/boards.py ['return      # the unreadable file stays' -> 'pass      # the unreadable file stays'] test_AT_2201_no_registry_and_an_unreadable_one: RED (KILLED) · restore e73695b7f26091b4
+taskboard/boards.py ['write_atomic(self.path, json.dumps(data, indent=2,' -> 'self.path.write_text(json.dumps(data, in'] test_TC_2201_the_round_trip_and_the_atomic_save: RED (KILLED) · restore e73695b7f26091b4
+taskboard/boards.py ['except OSError as exc:      # bookkeeping' -> 'except ZeroDivisionError as exc:      # '] test_TC_2202_a_registry_that_cannot_be_written_never_stops_a_start: RED (KILLED) · restore e73695b7f26091b4
+taskboard/boards.py ['if not readable:' -> 'if False:'] test_TC_2201_peek_board_never_writes: RED (KILLED) · restore e73695b7f26091b4
+taskboard/boards.py ['if self._is_main(e) or Path(e.path).exists():' -> 'if True:'] test_TC_2201_opening: RED (KILLED) · restore e73695b7f26091b4
+taskboard/boards.py ['if self._is_main(e) or Path(e.path).exists():' -> 'if True:'] test_TC_2202_the_last_board_missing_at_start: RED (KILLED) · restore e73695b7f26091b4
+taskboard/boards.py ['return self.main_path is not None and _key(e.path)' -> 'return e.id == MAIN_ID'] test_TC_2201_opening: RED (KILLED) · restore e73695b7f26091b4
+taskboard/app.py ['self._undo_stack = []\n        self._gantt_group = ' -> 'self._gantt_group = self._gantt_previous'] test_TC_2202_switch_board_starts_the_other_board_over: RED (KILLED) · restore fb7253270a96aadb
+taskboard/app.py ['self._team_timer.stop()' -> ''] test_TC_2202_switch_board_starts_the_other_board_over: RED (KILLED) · restore fb7253270a96aadb
+taskboard/app.py ['if not self._open_board():' -> 'if False:'] test_TC_2202_a_switched_board_gets_the_start_a_board_gets: RED (KILLED) · restore fb7253270a96aadb
+taskboard/app.py ['if not self._open_board():' -> 'if False:'] test_TC_2202_a_switch_into_a_team_board_starts_its_timer: RED (KILLED) · restore fb7253270a96aadb
+taskboard/app.py ['if at_mount:' -> 'if True:'] test_TC_2202_the_mount_order_is_the_shipped_one: RED (KILLED) · restore fb7253270a96aadb
+taskboard/app.py ['if result.error is not None and at_switch:' -> 'if False:'] test_TC_2202_a_failed_migration_at_a_switch_keeps_the_open_board: RED (KILLED) · restore fb7253270a96aadb
+taskboard/app.py ['for k, v in before.items():\n                setatt' -> 'self.board, self.board_id = before["boar'] test_TC_2202_a_failed_migration_at_a_switch_keeps_the_open_board: RED (KILLED) · restore fb7253270a96aadb
+taskboard/app.py ['if not Path(entry.path).exists():' -> 'if False:'] test_TC_2202_a_missing_board_file_opens_nothing: RED (KILLED) · restore fb7253270a96aadb
+taskboard/__main__.py ['entry = registry.register(board) if board else reg' -> 'entry = registry.opening()'] test_TC_2202_open_app_picks_the_board: RED (KILLED) · restore d2d847ec761c13ef
+not killed: 0

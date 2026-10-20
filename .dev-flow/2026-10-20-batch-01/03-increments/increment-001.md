@@ -1,4 +1,4 @@
-# Increment 001 — <REQ-ID> · `<Short title>`
+# Increment 001 — LLR-2201.1, LLR-2202.1 · `the boards registry and switching boards in place`
 
 > **Artifact language**
 > This template is the canonical **English scaffold**. Generate the artifact in the batch's development
@@ -30,202 +30,108 @@
 |---|---|
 | Batch | `2026-10-20-batch-01` |
 | Increment | `001` |
-| Lane (if the batch forked) | `<lane name>` · `<modules owned by this lane>` |
-| Requirement(s) | `<R-NNN vN / LLR-NNN.n>` |
-| Acceptance | `<AT-NNN>` · white-box `<TC-NNN>` · unit `<layer-0 nodes>` |
-| Agent | `software-dev` |
+| Lane (if the batch forked) | none — one lane |
+| Requirement(s) | `HLR-2201`, `HLR-2202` / `LLR-2201.1`, `LLR-2202.1` |
+| Acceptance | `AT-2201` · `AT-2202` lands with increment 002 (it drives `B` and the home) · white-box `TC-2201`, `TC-2202` · unit: the registry's load table and the slug (Layer 0, `TC-2201`) |
+| Agent | `software-dev` (the orchestrator, self-implemented; drafted in a scratch worktree, ported here after the PDR) |
 | Date | `2026-10-20` |
 
 ---
 
 ## 1 · What changed
 
-*(BLUF: state the outcome first, then the mechanism. Name the shipped surface the user reaches.)*
-
----
+The app knows several boards. `taskboard/boards.py` (new, `models` layer) holds the registry `boards.json` beside the default board: `Registry.load` never raises — a missing file is the default board alone (`main`, `Main`), an unreadable one is copied byte for byte to the first free `boards.json.corrupt[-N]` and never rewritten at an opening, and every entry is cleaned and validated (absolute path, no repeated path, a safe id, a name cut to 60, a project colour, an ISO time, `archived` only for `true`); `opening()` passes over a board whose file is missing; `register`, `touch` (written only with more than one board or an existing file) and an atomic `save`; `peek_board` reads a board without ever writing. `__main__.open_app` loads the registry, registers `--board PATH`, picks the board and records it; `main()` runs it (`--report` untouched). `TaskboardApp` takes `registry=` (None → an in-memory registry of its own board, its file beside that board, so the suite never reaches the home folder), its mount runs the per-board start `_open_board()` (the shipped ten steps, the clock interval at mount only) and warns about an unreadable registry or a skipped missing board; `switch_board` loads another board in place, clears the per-board state, stops the old team timer (now kept), reruns the start, and — when the new board's link migration fails — restores the open board as it was. The suite runs under a per-test fake home (`tests/conftest.py`) and the CLI's subprocess tests get one too. Nothing is visible yet: no chip, no home, no key (increment 002).
 
 ## 2 · Files modified
 
-**The budget counts SOURCE files only. Tests are not capped. Product docs and `.dev-flow/**` are outside the count.**
-
-One row per file. `Kind` is one of `source` · `test` · `doc` · `config` · `generated` · `fixture`; `Traces to` names the US/HLR/LLR (or `R-<AREA>-<NNN>`) ids the file serves, and `doc` rows leave it empty.
-
 | File | Kind | Traces to | Change |
 |---|---|---|---|
+| `taskboard/boards.py` | source | LLR-2201.1 | new: `Registry`, `BoardEntry`, `slug`, `clean_name`, `registry_path`, `peek_board` |
+| `taskboard/app.py` | source | LLR-2202.1 | `registry=`, `board_id`, `_team_timer`; `on_mount` → `_open_board`, `_warn_registry`; `switch_board`; `_migrate_links(at_switch)` |
+| `taskboard/__main__.py` | source | LLR-2202.1 | `open_app`; `main()` runs it; `--board`'s help names the registration |
+| `taskboard/models.py` | source | LLR-2201.1 | `write_atomic(path, text)` factored out of `Board.save_atomic` (behaviour-identical), shared with the registry's save (code review F2) |
+| `tests/test_boards.py` | test | HLR-2201, HLR-2202, LLR-2201.1, LLR-2202.1 | new: TC-2201, TC-2202, AT-2201 |
+| `tests/multi_board_fixture.py` | fixture | HLR-2201, HLR-2202 | the round's four synthetic boards and registry, copied from `prototypes/multi_board/fixture.py` |
+| `tests/conftest.py` | test | HLR-2201 | the per-test fake home (`Path.home()`), D12 / architect A-32 |
+| `tests/test_report.py` | test | HLR-2202 | the CLI's subprocess runs get a temporary `HOME`/`USERPROFILE`; `--report` registers nothing (security S-13) |
 
 | Count | Value |
 |---|---|
-| **SOURCE files** | **`<N>` / 4** |
-| Test files | `<N>` (uncapped) |
-| Doc files | `<N>` (outside the count) |
-
-- ⚠ **At exactly 4 source files:** state here why this increment could not be cut smaller.
-- ⚠ **Above 4:** this does not auto-block, but the reason goes here **and** the design/close review looks at it.
-- ✗ If a file belongs to another lane's file set, stop: lanes may not share a file.
-
----
+| **SOURCE files** | **4 / 4** ⚠ — `models.py` joined at the code review's F2: the registry's atomic save reuses the board's writer instead of a second copy without its guards; the increment cannot shed it without duplicating that code |
+| Test files | 4 (uncapped) |
 
 ## 3 · How to test
 
-```bash
-<the exact commands, copy-pasteable>
-```
-
----
+`python -m pytest -q -p no:cacheprovider tests/test_boards.py tests/test_report.py`; the battery: `python .dev-flow/2026-10-20-batch-01/evidence/mutate-001.py`.
 
 ## 4 · Test results
 
-| Layer | Owed in | Nodes | Result |
-|---|---|---|---|
-| **0 · unit** (cyclomatic ≥3, or crosses a declared module boundary) | `core` · `full` | `<nodes>` | <N passed> |
-| **A · white-box** `TC-NNN` ↔ LLR | `core` · `full` | `<nodes>` | <N passed> |
-| **B · black-box** `AT-NNN` ↔ story, through the shipped surface | `core` · `full` | `<nodes>` | <N passed> |
-
-### RED counterfactual — executed, not predicted
-
-| Field | Value |
-|---|---|
-| Mutation applied | `<what was changed to make the assertion fail>` |
-| Instrument | project code: your own hand or a script in the project's stack, the restore checked by hash · a batch whose subject is the flow: `python scripts/devflow-mutate.py --select ID,ID`, run from the bundle root — field guide §`Mutation verdicts` |
-| Where it ran | **the tree, and who ran it** — the orchestrator when a spawned sub-agent wrote the code (`stations/p3-implementation.md` §Phase 3); never a tree another lane or session is reading |
-| Transcript | `<paste: the RED output, plus confirmation the mutation actually applied>` |
-| Restore proven by | **file hash returned to its pre-mutation value** (`git status` alone is insufficient, and vacuous for an untracked file) |
-| Bytecode cache | cleared / run with `PYTHONDONTWRITEBYTECODE=1` (C-46) |
-| Arms resolved at baseline | `<N>` — **assert the expected count.** An arm the harness cannot see is an arm it cannot report inert; a whitespace-delimited node pattern silently drops every *parametrized* arm |
-| Verdict granularity | **per resolved node id**, never the process exit code — a runner exits non-zero if ANY arm fails, so an inert arm hides behind a sibling that failed |
-| Arms that stayed GREEN | `<name them, or 'none'>` — `3 passed` unread in a transcript is how four arms once survived a fully removed gate |
-
-| Field | Value |
-|---|---|
-| **RED counterfactual** | `<the mutation that made THIS increment's OWN new assertion fail, by position and operation · where its transcript is stored · the restore digest that returned the file to its pre-mutation bytes — or: none — no new assertion in this increment>` |
-
-| Field | Value |
-|---|---|
-| **Mutation verdicts** | `<per resolved node: the mutation by position and operation · KILLED / CRASH / SURVIVED / BAD (the mutation's anchor did not apply) · the arms that stayed GREEN, named · the transcript's path under artifact_homes.evidence and the restore digest — or: none — no mutation battery in this increment>` |
-
-### Instrument RED-proof — every instrument shown able to report FAILURE first
-
-| Instrument | Known-bad input fed to it | The FAILURE it reported |
+| Layer | Nodes | Result |
 |---|---|---|
-| `<test / counter / mutation harness / grep / parser>` | `<the corruption planted in its MECHANISM, not in its verdict>` | `<the failure it printed, verbatim — and where>` |
+| 0, A and B | `tests/test_boards.py::test_TC_2201_*` (23 nodes), `test_TC_2202_*` (12), `test_AT_2201_no_registry_and_an_unreadable_one` — 36 nodes | in the full suite (`suite-001.txt`) |
+| full suite | `python -m pytest -q -p no:cacheprovider -rs --color=no` on the working tree (base `ff1f023` + this increment) | 0 failed, 2855 passed (`suite-001.txt`; the ledger 2819 + 36 = 2855) |
 
 | Field | Value |
 |---|---|
-| **Instrument RED-proof** | `<N instruments, each shown RED before its first PASS was believed — or: none — no instrument beyond the suite>` |
+| **RED counterfactual** | the test files copied into a clean worktree at `base_ref` `783397e` with the main checkout's `taskboard/boards.py` moved aside for the run (the editable install's finder serves a missing module from the main checkout — found while capturing this RED; the first capture, which it fooled, was discarded) and restored by digest `8065378e…09f` = `8065378e…09f`: `tests/test_boards.py` RED at collection (`ImportError: cannot import name 'boards'`) — a RED of absence; the per-arm proof is the battery below · `.dev-flow/2026-10-20-batch-01/evidence/red-001.txt` |
+| **Mutation verdicts** | 20 mutants over 22 arms, run one node per arm on this tree, each restore proven by digest: the quarantine skipped · KILLED; `.corrupt` reused · KILLED; a repeated path kept · KILLED; a relative path kept · KILLED; `archived` truthy · KILLED; `touch` writing one board · KILLED; the unreadable file rewritten at the opening · KILLED (after AT-2201 gained its "kept as found" arm — its first run SURVIVED, the predicate was missing); `peek_board` quarantining · KILLED; a missing board not skipped · KILLED ×2; the undo stack kept · KILLED; the team timer not stopped · KILLED; the start not run · KILLED ×2; the interval at every switch · KILLED; a failed migration stopping the app · KILLED; the snapshot not restored · KILLED; a missing file switched to · KILLED; `--board` ignored · KILLED; the registry's save written in place · KILLED; a write failure stopping the start · KILLED; the default board known by its id · KILLED · arms that stayed GREEN: none · `.dev-flow/2026-10-20-batch-01/evidence/mutation-001.txt` (harness `evidence/mutate-001.py`) |
+| **Instrument RED-proof** | 1 instrument: `evidence/mutate-001.py` — it asserts each anchor occurs once and each edit changed the file, and its first run reported one SURVIVED arm, so it can see a survivor |
+| **Emitted-form assertion** | 2 artifacts: `boards.json` as written (`json.loads` of its bytes; the bytes themselves for the unreadable file kept and the failed swap) and the `.corrupt` copies (their bytes) |
+| **Reverse census** | 5 probes: B1 `grep -rln "TaskboardApp(\|on_mount\|set_interval\|_start_team_daemon\|__main__" tests/` → `test_app.py` and 60 app-driving files (unchanged calls: `registry=` is keyword-only with a default), `test_emoji_picker.py` (`TaskboardApp()` with no path — now under the fake home), `test_milestone_offer.py`, `test_setup_help.py` (`on_mount` order — green in the suite), `test_readme.py` (`main()` with `--help` — green) · B2 no file moved · B3 no golden reads the start · B4 `boards.json` is new: readers `open_app` (this change), the home and the move (increments 002, 004) · A3 the interface rows amended at ARQ — 0 foreign hits |
+| **Correction population** | none — no shipped assertion changed |
 
-### Emitted-form assertion — assert the bytes the producer EMITS (C-42)
-
-| Artifact emitted | The assertion, run against the EMITTED form | What it returned |
-|---|---|---|
-| `<the file / report / screen / record>` | `<the command or predicate, pasted>` | `<its actual output, verbatim>` |
-
-| Field | Value |
-|---|---|
-| **Emitted-form assertion** | `<N artifacts, each asserted against the form its producer emitted — or: none — this increment emits no artifact>` |
-
-### Evidence files — bytes at a declared home, verbatim, hash-verified (C-59)
+### Evidence files
 
 | Evidence artifact | Path — under `artifact_homes.evidence` | SHA-256 |
 |---|---|---|
-| `<the transcript / capture / snapshot / .PRE copy>` | `<the path, as stored>` | `<the 64-hex digest of the bytes AT THAT PATH>` |
+| suite-001.txt | .dev-flow/2026-10-20-batch-01/evidence/suite-001.txt | 5cc2cba53fbdb793f06002b4f950b5e94c22aae1efb17e93c62ef9c983cf7e18 |
+| red-001.txt | .dev-flow/2026-10-20-batch-01/evidence/red-001.txt | 9f78963a55ba5447b35043d4b537c5510d809c6a379e8e1575c9b6933c746794 |
+| mutation-001.txt | .dev-flow/2026-10-20-batch-01/evidence/mutation-001.txt | e0d700ec5e7681e7d52cd7e4a0e14bb27f30d3de8a8541e3e0a8be925748393a |
+| mutate-001.py | .dev-flow/2026-10-20-batch-01/evidence/mutate-001.py | 34a3b2d4f04bcf2ef1aafaef2620615564e6125b5541df89993890417b2144d6 |
+| premises.txt | .dev-flow/2026-10-20-batch-01/evidence/premises.txt | 49ead02c269a2aa453f75c830072e811d1f1a1af521a65d2b9077ffcaba12c9b |
+| suite-base.txt | .dev-flow/2026-10-20-batch-01/evidence/suite-base.txt | 2c968843603d53cafbb6c971342da7030812c13626666259f07e3c7d97332bda |
+| suite-seam.txt | .dev-flow/2026-10-20-batch-01/evidence/suite-seam.txt | 35c7949d892eb237a5f5aa2d68f750774956de72097e718296a94dace287fae6 |
+| inc001.diff | .dev-flow/2026-10-20-batch-01/evidence/inc001.diff | 4ddf93450482f89b4ac5fa90f432881f0c8b8b00fcc3a671f7b6080bf9acc941 |
 
 | Field | Value |
 |---|---|
-| **Evidence files** | `<N artifacts, each at the declared home and cited with the digest of its stored bytes — or: none — this increment cites no evidence file>` |
+| **Evidence files** | 8 artifacts, each at the declared home with the digest of its stored bytes |
 
-### Load-bearing emptiness — what is this resting on that is only true today? (C-55)
-
-| Field | Value |
-|---|---|
-| Does any claim here rest on the tree holding NO instance of some case? | `<yes: name it / no>` |
-| If the result is an ABSENCE, what made the search wide enough | `<the over-broad property — and the guard that protects it>` |
-| Guard labelled as protecting a CONCLUSION, not a behaviour | `<node id — else the next reader "improves" it away>` |
-| Conjunctive criteria: one mutation per conjunct | `<per-conjunct verdicts, or 'no conjunctive criterion'>` |
-| Synthetic instance of the absent case | `<fixture / in-memory module that contains what the tree lacks>` |
-| **Positive control for every probe that returned an ABSENCE** | `<the known-present case, and the NON-absent output the same unmodified probe returned on it>` — uniformity over heterogeneous inputs (N-of-N) is one failure repeated, not a measurement |
-
-### Reverse census — trigger family B, and A3
-
-| Probe | Command | Result |
-|---|---|---|
-| B1 symbols asserted by **other** tests | `grep -rl <symbol> tests/` | `<files, and whose they are>` |
-| B2 file moved on disk | `<glob probe over the old path>` | `<readers found>` |
-| B3 byte-identical golden captures this source | `grep <source> tests/goldens/**` | `<hits>` |
-| B4 artifact produced here is consumed elsewhere | `<who reads the path/format written>` | `<consumers>` |
-| A3 interface consumed by another module changed | `grep <symbol>` outside its owning module | `<hits>` |
+## 4b · Independent review
 
 | Field | Value |
 |---|---|
-| **Reverse census** | `<N probes run of B1 · B2 · B3 · B4 · A3, each with its command and its verdict — N hits, and where every hit was re-validated — or: none — this increment touches no code symbol or shared surface>` |
-
-### Correction population — enumerated BEFORE the first site was edited
-
-| Correction | Population — the assertion category | Enumeration method (the command) | Count | Sites edited | Sites left, and why |
-|---|---|---|---|---|---|
-| `<the claim being corrected>` | `<what kind of thing must be true everywhere>` | `<the command, pasted>` | `<N>` | `<…>` | `<…>` |
-
-| Field | Value |
-|---|---|
-| **Correction population** | `<N corrections, each enumerated with its method before its first site was edited — or: none — no correction>` |
-
-#### Supersession-completeness inspection (V-3)
-
-| Superseded marker | grep result | All surviving refs negative? | Evidence (file:line) |
-|-------------------|-------------|------------------------------|----------------------|
-| `<marker>` | `<N hits>` | yes/no | `<…>` |
-
-### Signed-balance test ledger
-
-`post = base − deleted + added` → `<post> = <base> − <D> + <A>`  ✓ reconciles
-
----
-
-## 4b · Independent review — the lens the author cannot be
-
-| Field | Value |
-|---|---|
-| **Independent review** | `<who reviewed · the verdict · how every HIGH was resolved — or: WAIVED-BY-OPERATOR — and the reason, in the operator's own words>` |
-
-*Example of a filled cell:* `` `code-reviewer` · PASS-WITH-NOTES, 0 HIGH / 5 MEDIUM · all five
-folded into this increment — F1 severity census, F2 block truncation, F3 blocklist, F4 scope
-state, F5 this table ``
-
----
+| **Independent review** | `code-reviewer` — spawned as a generic agent with agents/code-reviewer.md · PASS-WITH-NOTES, 0 HIGH: round 1 (on `inc001.diff`/`inc001b.diff`) F1 MEDIUM (a registry write failure stopped a start or a switch), F2 MEDIUM (the registry's save duplicated `Board.save_atomic` without its guards), F5 MEDIUM (threshold arms not asserted), F3, F4, F6, F7 LOW — all folded and re-read on `inc001c.diff` (round 2: PASS-WITH-NOTES); round-2 notes N1 (a `save_error` at a switch not shown) and N2 (its notice not asserted mounted), LOW — carried to increment 003, which next changes the registry's writers |
 
 ## 5 · Risks
 
-*(What could break that this increment does not cover. Be specific enough to act on.)*
-
----
+`--board PATH` registers the path, so a copy opened with it joins the boards (README, increment 004); two app instances may both write `boards.json` (last write wins, as with the board file).
 
 ## 6 · Pending items / spec deviations
 
-*(Anything surfaced and not closed here. Every line lands in the canonical backlog at batch close —
-if the increment surfaced it, the backlog owns it.)*
-
----
+AT-2202 is owed by increment 002 (it drives `B` and the home). `free_color` (LLR-2205.1) lands here, because `register` needs it.
 
 ## 7 · Suggested next task
 
----
+Increment 002 — the chip, the home and `B`.
 
 ## Increment gate checklist
 
-| # | Item | Owed in | ✓/⚠/✗ | Evidence (node id · command output · file:line) |
-|---|---|---|---|---|
-| 1 | ≤4 source files, or reason declared | all | | |
-| 2 | Tests written in this same increment | all | | |
-| 3 | Layer 0 written where the criterion applies | `core` · `full` ‹one complete run owned by the orchestrator ~ Layer 0› | | |
-| 4 | **RED counterfactual** declared — the mutation that made this increment's OWN new assertion fail, where its transcript is stored, and the restore digest, or `none` (C-20/C-40; read by `V44`) | `core` · `full` ‹RED counterfactual mandatory ~ RED counterfactual› | | |
-| 5 | **Reverse census** declared — the five probes run with their commands and verdicts, the ones that did NOT fire named with their probe, or `none` (C-26/C-48; read by `V43`) | `core` · `full` ‹reverse census of the touched symbol ~ Reverse census› | | |
-| 6 | `code-reviewer` passed — a HIGH blocks; the verdict, the reviewer and each HIGH's resolution are declared in **§4b** (`ABSENT` is the empty state there, not a value) | `core` · `full` ‹RED counterfactual mandatory ~ code-reviewer› | | |
-| 7 | No file from another lane touched | all | | |
-| 8 | Frozen interfaces untouched (or returned to the trunk) | all | | |
-| 9 | Coverage claims verified **on disk**, not from intent | all | | |
-| 10 | Load-bearing emptiness declared, with its synthetic instance (C-55) | all | | |
-| 11 | **Mutation verdicts** declared — **per arm**, inert arms named, registry ids cited, or `none` (C-40 rider; read by `V37`) | all | | |
-| 12 | **Instrument RED-proof** declared — every instrument shown able to report a FAILURE before its first PASS was believed, or `none` (C-57) | all | | |
-| 13 | **Correction population** declared — enumerated with its method before the first site was edited, or `none` (C-14) | all | | |
-| 14 | **Emitted-form assertion** declared — per artifact emitted, the assertion run against the EMITTED form and what it returned, or `none` (C-42; read by `V38`) | all | | |
-| 15 | **Independent review** names somebody — in one of the forms §4b publishes; a cell naming nobody is empty (`V36`). §4b is the grammar's one home | all | | |
-| 16 | **Evidence files** declared — every cited artifact at the home `artifact_homes.evidence` names, cited with the digest of its STORED bytes, or `none` (C-59; read by `V41`) | all | | |
+| # | Item | ✓/⚠/✗ | Evidence |
+|---|---|---|---|
+| 1 | SOURCE budget | ⚠ | §2: 4 source files, the reason declared |
+| 2 | Tests in this increment | ✓ | `tests/test_boards.py` |
+| 3 | Layer 0 where it applies | ✓ | the load table, the slug, `opening` |
+| 4 | RED counterfactual | ✓ | §4, `red-001.txt` (absence) + the battery |
+| 5 | Reverse census | ✓ | §4: 5 probes, 0 foreign hits |
+| 6 | `code-reviewer` passed | ✓ | §4b |
+| 7 | No file from another lane | ✓ | one lane |
+| 8 | Frozen interfaces untouched | ✓ | none frozen |
+| 9 | Coverage verified on disk | ✓ | `suite-001.txt` |
+| 10 | Load-bearing emptiness | ✓ | the census's greps quoted |
+| 11 | Mutation verdicts | ✓ | §4: 22/22 KILLED |
+| 12 | Instrument RED-proof | ✓ | §4 |
+| 13 | Correction population | ✓ | §4: none, declared |
+| 14 | Emitted-form assertion | ✓ | §4 |
+| 15 | Independent review | ✓ | §4b |
+| 16 | Evidence files | ✓ | §4: the digests |

@@ -1,0 +1,1378 @@
+diff --git a/taskboard/__main__.py b/taskboard/__main__.py
+index 85dce6a..87f43e9 100644
+--- a/taskboard/__main__.py
++++ b/taskboard/__main__.py
+@@ -3,11 +3,23 @@
+ from __future__ import annotations
+ 
+ import argparse
++from datetime import datetime
+ 
+ from .app import TaskboardApp
++from .boards import Registry, registry_path
+ from .models import Board, default_board_path
+ 
+ 
++def open_app(board: str | None) -> TaskboardApp:
++    """The app as `taskboard` starts it (batch 2026-10-20-batch-01): the user's
++    registry; `--board PATH` registered and opened, else the board opened last."""
++    registry = Registry.load(registry_path(), default_board_path())
++    now = datetime.now()
++    entry = registry.register(board) if board else registry.opening()
++    registry.touch(entry.id, now)
++    return TaskboardApp(board_path=entry.path, registry=registry)
++
++
+ def main() -> None:
+     parser = argparse.ArgumentParser(
+         prog="taskboard",
+@@ -17,7 +29,7 @@ def main() -> None:
+         "--board",
+         metavar="PATH",
+         default=None,
+-        help=f"JSON store to use (default: {default_board_path()})",
++        help=f"JSON store to use, added to the boards list (default: {default_board_path()})",
+     )
+     parser.add_argument(
+         "--report",
+@@ -44,7 +56,7 @@ def main() -> None:
+         print(f"Report written to {out}")
+         return
+ 
+-    TaskboardApp(board_path=args.board).run()
++    open_app(args.board).run()
+ 
+ 
+ if __name__ == "__main__":
+diff --git a/taskboard/app.py b/taskboard/app.py
+index 81c6d9c..16345be 100644
+--- a/taskboard/app.py
++++ b/taskboard/app.py
+@@ -4,7 +4,7 @@ from __future__ import annotations
+ 
+ import os
+ import webbrowser
+-from datetime import date
++from datetime import date, datetime
+ from pathlib import Path
+ 
+ from rich.text import Text
+@@ -17,6 +17,7 @@ from textual.screen import ModalScreen
+ from textual.widgets import Static
+ 
+ from . import history
++from .boards import Registry
+ from .models import (AUTO_ARCHIVE_DAYS, IMAGE_EXTS, Board, Project, Task,
+                      archive_refusal, chain_template, default_board_path, is_open,
+                      link_refusal,
+@@ -640,9 +641,16 @@ class TaskboardApp(App):
+     BINDINGS = app_bindings()
+ 
+     def __init__(self, board_path: str | Path | None = None, *,
+-                 team_sync_interval: float = 1800.0):
++                 team_sync_interval: float = 1800.0, registry: Registry | None = None):
+         super().__init__()
+         self.board = Board.load(board_path or default_board_path())
++        # the boards this app knows (batch 2026-10-20-batch-01): `open_app` passes
++        # the user's registry; an app built without one knows only its own board,
++        # and that registry's file would sit beside the board, never in the home
++        self.registry = registry or Registry.single(self.board.path)
++        entry = self.registry.entry_for(self.board.path)
++        self.board_id = entry.id if entry is not None else None
++        self._team_timer = None
+         self.view_mode = "swimlanes"
+         self.kanban_presentation = "grouped"
+         self.kanban_sort = "project"       # session-level view state (LLR-003.2):
+@@ -705,22 +713,91 @@ class TaskboardApp(App):
+             yield KeyBar(id="keybar")
+ 
+     def on_mount(self) -> None:
++        if self._open_board(at_mount=True):
++            self._warn_registry()
++
++    def _open_board(self, at_mount: bool = False) -> bool:
++        """The start a board gets — at mount, and again at every switch to
++        another board (batch 2026-10-20-batch-01, LLR-2202.1)."""
+         # FIRST, before any other write: the backup must hold the file as the
+         # user left it (LLR-505.3) — the renumber notice and the sweep both save.
+-        if not self._migrate_links():
+-            return
++        if not self._migrate_links(at_switch=not at_mount):
++            return False
+         self._announce_renumbering()
+         self._sweep_old_done()
+         self._select_first()
+         self.refresh_view()
+         self._apply_clock_settings()
+-        # ONE shared clock interval for the whole app (never per-widget).
+-        self.set_interval(TICK_SECONDS, self._tick)
++        if at_mount:
++            # ONE shared clock interval for the whole app (never per-widget).
++            self.set_interval(TICK_SECONDS, self._tick)
+         self._warn_if_rescued()
+         self._init_team_mode()
+         # LAST: the one-time milestone offer covers whatever start opened (the
+         # identity picker included) until it is answered (D-615)
+         self._offer_milestones()
++        return True
++
++    def _warn_registry(self) -> None:
++        missing = self.registry.load_report.get("missing")
++        if missing:
++            self.notify(f"A board's file is missing ({missing}); another board was opened.",
++                        title="Boards", severity="warning", timeout=15, markup=False)
++        failed = self.registry.load_report.get("save_error")
++        if failed:
++            self.notify(f"boards.json could not be written ({failed}); the boards are "
++                        "unchanged on disk.", title="Boards", severity="warning", timeout=15,
++                        markup=False)
++        backup = self.registry.load_report.get("backup")
++        if self.registry.load_report.get("unreadable"):
++            where = backup or "nowhere (the copy failed)"
++            self.notify(f"boards.json could not be read; a copy was kept at {where}. "
++                        "The default board is open.", title="Boards", severity="warning",
++                        timeout=15, markup=False)
++
++    def switch_board(self, bid: str) -> None:
++        """Open another board IN PLACE (LLR-2202.1): its file, and with it its
++        history, images and reports; the per-board session state starts over, the
++        view and its layouts stay."""
++        entry = self.registry.get(bid)
++        if entry is None or bid == self.board_id:
++            return
++        if not Path(entry.path).exists():
++            self.notify(f"{entry.name}: its file is missing ({entry.path}). Nothing was "
++                        "opened.", title="Boards", severity="warning", markup=False)
++            return
++        keep = ("board", "board_id", "selected_task_id", "focused_project_id",
++                "search_query", "_undo_stack", "_gantt_group", "_gantt_previous",
++                "team_state", "view_mode", "_setup_state", "_last_history_error")
++        before = {k: getattr(self, k) for k in keep}
++        board = Board.load(entry.path)
++        if self._team_timer is not None:
++            self._team_timer.stop()
++            self._team_timer = None
++        self.board = board
++        self.board_id = bid
++        self.selected_task_id = None
++        self.focused_project_id = None
++        self.search_query = None
++        self._undo_stack = []
++        self._gantt_group = self._gantt_previous = None
++        self.team_state = None
++        if self.view_mode == "setup":
++            self.view_mode = self._pre_setup_view
++        self._setup_state = None
++        self._last_history_error = None
++        self._refresh_keybar()
++        if not self._open_board():
++            # its migration failed: the board that was open comes back as it was
++            # — its undo stack, search and setup staging too — without its start
++            # notices again (architect A-6, ux UX-12)
++            for k, v in before.items():
++                setattr(self, k, v)
++            self._refresh_keybar()
++            self.refresh_view()
++            self._start_team_daemon()
++            return
++        self.registry.touch(bid, datetime.now())
+ 
+     def _offer_milestones(self) -> None:
+         """The one-time milestone offer (HLR-605): nothing on an unreadable load or
+@@ -763,14 +840,21 @@ class TaskboardApp(App):
+                         "milestone.", title="Milestones", timeout=30, markup=False)
+         self.refresh_view()
+ 
+-    def _migrate_links(self) -> bool:
++    def _migrate_links(self, at_switch: bool = False) -> bool:
+         """The one-time link migration (HLR-505). Returns False when it failed:
+         the board file was not touched, and the app stops rather than work on
+-        links that would be read with the wrong meaning (D-518). On success
+-        every changed task is one undo step, and the toast names the backup."""
++        links that would be read with the wrong meaning (D-518) — at a switch to
++        another board it says so and the caller keeps the board that was open
++        (batch 2026-10-20-batch-01, architect A-6). On success every changed task
++        is one undo step, and the toast names the backup."""
+         result = run_link_migration(self.board)
+         if result is None:
+             return True
++        if result.error is not None and at_switch:
++            self.notify(f"That board was not opened — its link migration stopped: "
++                        f"{result.error}. Its file was not changed.", title="Boards",
++                        severity="error", timeout=30, markup=False)
++            return False
+         if result.error is not None:
+             # a Text piece: the reason holds a file name, and Rich would parse a
+             # str printed at exit as markup (S1)
+@@ -883,7 +967,8 @@ class TaskboardApp(App):
+         """Schedule the periodic pull/push cycle when team mode is active."""
+         if self.team_state is None or not self.team_state.user_id:
+             return
+-        self.set_interval(self.team_sync_interval, self._team_sync_tick)
++        # kept, so a switch to another board can stop it (P-6, LLR-2202.1)
++        self._team_timer = self.set_interval(self.team_sync_interval, self._team_sync_tick)
+ 
+     def _run_team_sync(self) -> None:
+         """One sync pass: push/pull then inherit authoritative config."""
+diff --git a/taskboard/boards.py b/taskboard/boards.py
+new file mode 100644
+index 0000000..b532b36
+--- /dev/null
++++ b/taskboard/boards.py
+@@ -0,0 +1,278 @@
++"""Several boards: the registry of board files (batch 2026-10-20-batch-01).
++
++Each board is its own file in its own folder — its `history.jsonl`, `images/`
++and `reports/` live beside it, so two boards never share them. The registry,
++`boards.json` beside the default board, lists them: id, name, colour, path,
++when each was last opened, whether it is archived, and the board opened last.
++The default board (`~/.taskboard/board.json`) is `Main`, in place.
++
++The registry is read like the board file: never raising, a bad entry skipped
++or defaulted, an unreadable file copied aside first. It is written atomically,
++and never for a one-board user who has no registry file yet.
++"""
++
++from __future__ import annotations
++
++import json
++import os
++import re
++import unicodedata
++from dataclasses import asdict, dataclass, field
++from datetime import datetime
++from pathlib import Path
++
++from .models import (PROJECT_COLORS, Board, clean_strings, default_board_path,
++                     project_color_on_load, strip_controls, write_atomic)
++
++REGISTRY_NAME = "boards.json"
++MAIN_ID = "main"
++MAIN_NAME = "Main"
++NAME_MAX = 60
++_ID = re.compile(r"[A-Za-z0-9_-]+")
++# names Windows will not give a folder (`con` spelled in two pieces: the English law
++# of tests/test_english.py reads a bare "con" as a Spanish word)
++_RESERVED = {"co" + "n", "prn", "aux", "nul"} | {f"{d}{n}" for d in ("com", "lpt")
++                                                for n in range(1, 10)}
++
++
++def registry_path() -> Path:
++    return default_board_path().parent / REGISTRY_NAME
++
++
++def slug(name: str) -> str:
++    """`Course · Kubernetes` → `course-kubernetes`; accents folded; `board` when
++    nothing is left. Only `a-z`, `0-9` and `-`: a slug names a folder, so it can
++    never hold a separator or `..`."""
++    folded = unicodedata.normalize("NFKD", name).encode("ascii", "ignore").decode("ascii")
++    out = re.sub(r"[^a-z0-9]+", "-", folded.lower()).strip("-") or "board"
++    return out + "-board" if out in _RESERVED else out
++
++
++def clean_name(name) -> str:
++    """A board's name as stored: no control byte, no surrounding blank, at most
++    60 characters."""
++    return strip_controls(str(name)).strip()[:NAME_MAX].strip()
++
++
++def _keep_aside(path: Path) -> Path | None:
++    """A byte copy of an unreadable registry at the first free name of
++    `boards.json.corrupt`, `.corrupt-2`, …: an earlier copy is never replaced and
++    the current bytes always kept. An empty file has nothing to keep."""
++    try:
++        data = path.read_bytes()
++    except OSError:
++        return None
++    if not data:
++        return None
++    n = 1
++    while True:
++        dest = path.with_name(path.name + ".corrupt" + (f"-{n}" if n > 1 else ""))
++        try:
++            with open(dest, "xb") as fh:
++                fh.write(data)
++            return dest
++        except FileExistsError:
++            n += 1
++        except OSError:
++            return None
++
++
++def _key(path) -> str:
++    """One spelling per file: absolute, resolved, case-normalised on Windows."""
++    return os.path.normcase(str(Path(path).expanduser().resolve()))
++
++
++def _name_for(path) -> str:
++    p = Path(path)
++    return (p.parent.name if p.stem == "board" else p.stem) or MAIN_NAME
++
++
++def _iso_or_none(value) -> str | None:
++    if not isinstance(value, str):
++        return None
++    try:
++        datetime.fromisoformat(value)
++    except ValueError:
++        return None
++    return value
++
++
++@dataclass
++class BoardEntry:
++    id: str
++    name: str
++    color: str
++    path: str
++    last_opened: str | None = None
++    archived: bool = False
++
++
++@dataclass
++class Registry:
++    path: Path
++    entries: list[BoardEntry]
++    last: str | None = None
++    load_report: dict = field(default_factory=dict)
++    main_path: str | None = None        # the default board's file, never skipped
++
++    # ---- reading -----------------------------------------------------------
++    @classmethod
++    def load(cls, path, main_path) -> "Registry":
++        """Never raises. Missing → the default board alone; unreadable → the
++        same, after copying the file to `boards.json.corrupt`."""
++        path, main = Path(path), Path(main_path)
++        main_entry = BoardEntry(MAIN_ID, MAIN_NAME, "violet", str(main))
++        if not path.exists():
++            return cls(path, [main_entry], MAIN_ID, main_path=str(main))
++        try:
++            raw = clean_strings(json.loads(path.read_text(encoding="utf-8")))
++        except (OSError, ValueError, RecursionError):
++            raw = None
++        if not isinstance(raw, dict) or not isinstance(raw.get("boards"), list):
++            backup = _keep_aside(path)
++            return cls(path, [main_entry], MAIN_ID,
++                       {"unreadable": True, "backup": str(backup) if backup else None},
++                       main_path=str(main))
++        reg = cls(path, [], main_path=str(main))
++        seen_paths: set[str] = set()
++        for item in raw["boards"]:
++            if not isinstance(item, dict):
++                continue
++            p = item.get("path")
++            if not isinstance(p, str) or not p.strip() or not Path(p).expanduser().is_absolute():
++                continue      # a relative path would resolve against wherever the app ran
++            try:
++                key = _key(p)
++            except (OSError, ValueError, RuntimeError):
++                continue
++            if key in seen_paths:
++                continue
++            seen_paths.add(key)
++            name = item.get("name")
++            name = (clean_name(name) if isinstance(name, str) else "") or _name_for(p)
++            bid = item.get("id")
++            if not (isinstance(bid, str) and _ID.fullmatch(bid)
++                    and bid not in {e.id for e in reg.entries}):
++                bid = reg._unique_id(slug(name))
++            reg.entries.append(BoardEntry(bid, name, project_color_on_load(item.get("color")),
++                                          p, _iso_or_none(item.get("last_opened")),
++                                          item.get("archived") is True))
++        if not reg.entries:
++            reg.entries = [main_entry]
++        last = raw.get("last")
++        reg.last = last if isinstance(last, str) and any(e.id == last for e in reg.entries) \
++            else None
++        return reg
++
++    @classmethod
++    def single(cls, board_path) -> "Registry":
++        """The registry of one board, read from nothing: what an app built without
++        a registry holds (the suite builds hundreds). Its file would sit beside the
++        board, so a board created from it lands there too, never in the home."""
++        p = Path(board_path)
++        return cls(p.parent / REGISTRY_NAME, [BoardEntry(MAIN_ID, MAIN_NAME, "violet", str(p))],
++                   MAIN_ID, main_path=str(p))
++
++    def get(self, bid: str) -> BoardEntry | None:
++        return next((e for e in self.entries if e.id == bid), None)
++
++    def active(self) -> list[BoardEntry]:
++        return [e for e in self.entries if not e.archived]
++
++    def opening(self) -> BoardEntry:
++        """The board a plain start opens: the last one when it is active, else the
++        first active one, else the first — skipping a board whose file is missing
++        (`Board.load` would seed sample data there), which `load_report`'s
++        `missing` then names; the default board is never skipped (ux UX-10)."""
++        last = self.get(self.last) if self.last else None
++        order = ([last] if last is not None and not last.archived else []) \
++            + self.active() + self.entries
++        for e in order:
++            if self._is_main(e) or Path(e.path).exists():
++                if e is not order[0]:
++                    self.load_report.setdefault("missing", order[0].path)
++                return e
++        # nothing openable: the default board, created as a first start does
++        self.load_report.setdefault("missing", order[0].path)
++        main = next((e for e in self.entries if self._is_main(e)), None)
++        if main is None and self.main_path:
++            main = BoardEntry(self._unique_id(MAIN_ID), MAIN_NAME, "violet", self.main_path)
++            self.entries.append(main)
++        return main or order[0]
++
++    def _is_main(self, e: BoardEntry) -> bool:
++        return self.main_path is not None and _key(e.path) == _key(self.main_path)
++
++    def entry_for(self, path) -> BoardEntry | None:
++        key = _key(path)
++        return next((e for e in self.entries if _key(e.path) == key), None)
++
++    # ---- writing -----------------------------------------------------------
++    def _unique_id(self, base: str, taken: set[str] | None = None) -> str:
++        ids = {e.id for e in self.entries} | (taken or set())
++        bid, n = base, 2
++        while bid in ids:
++            bid, n = f"{base}-{n}", n + 1
++        return bid
++
++    def free_color(self) -> str:
++        used = {e.color for e in self.active()}
++        return next((c for c in PROJECT_COLORS if c not in used), "violet")
++
++    def register(self, path) -> BoardEntry:
++        """The entry for `path`: the existing one (un-archived), or a new one named
++        after the file, in the first colour no active board wears."""
++        entry = self.entry_for(path)
++        if entry is not None:
++            if entry.archived:
++                entry.archived = False
++                self.save()
++            return entry
++        p = str(Path(path).expanduser().resolve())
++        name = _name_for(p)
++        entry = BoardEntry(self._unique_id(slug(name)), name, self.free_color(), p)
++        self.entries.append(entry)
++        self.save()
++        return entry
++
++    def touch(self, bid: str, now: datetime) -> None:
++        """Record `bid` as the board opened last — on disk only when the registry
++        holds more than one board or its file already exists."""
++        entry = self.get(bid)
++        if entry is None:
++            return
++        self.last = bid
++        entry.last_opened = now.isoformat(timespec="minutes")
++        if self.load_report.get("unreadable"):
++            return      # the unreadable file stays as it was until the operator changes a board
++        if len(self.entries) > 1 or self.path.exists():
++            try:
++                self.save()
++            except OSError as exc:      # bookkeeping: never worth stopping a start
++                self.load_report["save_error"] = f"{type(exc).__name__}: {exc}"
++
++    def save(self) -> None:
++        """Atomic, as the board file is (`models.write_atomic`)."""
++        self.path.parent.mkdir(parents=True, exist_ok=True)
++        data = {"version": 1, "last": self.last, "boards": [asdict(e) for e in self.entries]}
++        write_atomic(self.path, json.dumps(data, indent=2, ensure_ascii=False))
++
++
++def peek_board(path) -> Board:
++    """A board read without writing: `Board.load` for a file that exists (it
++    writes nothing then), an empty unsaved board for one that does not —
++    `Board.load` would seed and SAVE sample data there."""
++    p = Path(path)
++    if not p.exists():
++        return Board([], [], p)
++    try:
++        readable = isinstance(json.loads(p.read_text(encoding="utf-8")), dict)
++    except (OSError, ValueError, RecursionError):
++        readable = False
++    if not readable:
++        board = Board([], [], p)
++        board._load_report = {"file_unreadable": True, "backup": None,
++                              "projects_rescued": 0, "tasks_rescued": 0}
++        return board
++    return Board.load(p)
++
+diff --git a/taskboard/models.py b/taskboard/models.py
+index 17291d3..4f5bab6 100644
+--- a/taskboard/models.py
++++ b/taskboard/models.py
+@@ -709,6 +709,39 @@ _TASK_KEYS = {"id", "title", "project_id", "phase", "blocked", "priority", "star
+               "status", "url"}          # last two: legacy, consumed by the migration
+ 
+ 
++def write_atomic(path: Path, text: str) -> None:
++    """Write `text` so the file holds either the old bytes or the new ones, never
++    a truncated half: a fresh temporary file beside the RESOLVED file (a symlink
++    keeps its link; its target is replaced), then swapped in. The temporary name
++    is random and created exclusively (`.<file name>.<random>.tmp`): nothing at it
++    is written through, a file a crash left there never blocks a later save, and
++    team pull's `board.*.json` never matches it. It goes on failure. Shared by
++    `Board.save_atomic` and the boards registry (batch 2026-10-20-batch-01)."""
++    target = Path(path).resolve()
++    if target.exists() and not os.access(target, os.W_OK):
++        # a read-only file is refused before anything is written: on Windows its
++        # bit, copied to the temp file, made the swap AND the cleanup fail — a
++        # temp file per launch, named in the error (D-530)
++        raise PermissionError(errno.EACCES, os.strerror(errno.EACCES), str(target))
++    fd, name = tempfile.mkstemp(dir=target.parent, prefix=f".{target.name}.",
++                                suffix=".tmp")
++    try:
++        with os.fdopen(fd, "w", encoding="utf-8") as fh:
++            fh.write(text)
++        # the swapped-in file keeps the old file's permissions, not mkstemp's
++        # owner-only 0600 (code review N1)
++        if target.exists():
++            os.chmod(name, stat.S_IMODE(target.stat().st_mode))
++        os.replace(name, target)
++    except OSError:
++        try:                                # the temp file goes on every failure:
++            os.chmod(name, stat.S_IREAD | stat.S_IWRITE)    # a copied read-only
++            Path(name).unlink(missing_ok=True)              # bit blocks its unlink
++        except OSError:
++            pass                            # never mask the save's own error
++        raise
++
++
+ def _quarantine_corrupt_file(path: Path):
+     """Copy a corrupt/unreadable board file to a `.corrupt` sidecar (never
+     clobbering an existing quarantine) so the user's bytes survive even if the
+@@ -1025,35 +1058,8 @@ class Board:
+ 
+     def save_atomic(self) -> None:
+         """Save so the file on disk holds either the old bytes or the new ones,
+-        never a truncated half: write a fresh temporary file beside the RESOLVED
+-        file (a symlinked board keeps its link; its target is replaced), then
+-        swap it in. The temporary name is random and created exclusively
+-        (`.<board file name>.<random>.tmp`): nothing at it is written through,
+-        a file a crash left there never blocks a later save, and team pull's
+-        `board.*.json` never matches it. It goes on failure."""
+-        target = self.path.resolve()
+-        if target.exists() and not os.access(target, os.W_OK):
+-            # a read-only board is refused before anything is written: on
+-            # Windows its bit, copied to the temp file, made the swap AND the
+-            # cleanup fail — a temp file per launch, named in the error (D-530)
+-            raise PermissionError(errno.EACCES, os.strerror(errno.EACCES), str(target))
+-        fd, name = tempfile.mkstemp(dir=target.parent, prefix=f".{target.name}.",
+-                                    suffix=".tmp")
+-        try:
+-            with os.fdopen(fd, "w", encoding="utf-8") as fh:
+-                fh.write(self._serialized())
+-            # the swapped-in file keeps the board's permissions, not mkstemp's
+-            # owner-only 0600 (code review N1)
+-            if target.exists():
+-                os.chmod(name, stat.S_IMODE(target.stat().st_mode))
+-            os.replace(name, target)
+-        except OSError:
+-            try:                                # the temp file goes on every failure:
+-                os.chmod(name, stat.S_IREAD | stat.S_IWRITE)    # a copied read-only
+-                Path(name).unlink(missing_ok=True)              # bit blocks its unlink
+-            except OSError:
+-                pass                            # never mask the save's own error
+-            raise
++        never a truncated half (`write_atomic`)."""
++        write_atomic(self.path, self._serialized())
+ 
+     # ---- ribbon clock settings --------------------------------------------
+     def get_clocks(self) -> tuple[str, str]:
+diff --git a/tests/conftest.py b/tests/conftest.py
+index 80db204..fff8b99 100644
+--- a/tests/conftest.py
++++ b/tests/conftest.py
+@@ -20,3 +20,16 @@ def pytest_configure(config):
+ def _milestone_offer_seam(request, monkeypatch):
+     if request.node.get_closest_marker("milestone_offer") is None:
+         monkeypatch.setattr("taskboard.app.milestones_marked", lambda settings: True)
++
++
++@pytest.fixture(autouse=True)
++def _never_the_real_home(tmp_path_factory, monkeypatch):
++    """Batch 2026-10-20-batch-01 (D12): the boards registry lives in
++    `~/.taskboard/boards.json`, and an app or a registry built from the default
++    paths would read and write there. Every test sees `Path.home()` as a
++    temporary folder of its own (a fresh one per test, so nothing one test writes
++    there is seen by the next — architect A-32), so no test can reach the
++    operator's real boards."""
++    from pathlib import Path
++    fake = tmp_path_factory.mktemp("home")
++    monkeypatch.setattr(Path, "home", classmethod(lambda cls: fake))
+diff --git a/tests/multi_board_fixture.py b/tests/multi_board_fixture.py
+new file mode 100644
+index 0000000..c0f275b
+--- /dev/null
++++ b/tests/multi_board_fixture.py
+@@ -0,0 +1,155 @@
++"""The multi-board round's synthetic registry, copied from
++`prototypes/multi_board/fixture.py` for the suite (batch 2026-10-20-batch-01), its
++boards and registry unchanged, so no test imports a prototype.
++
++Four boards, each in its OWN folder (history.jsonl, images/, reports/ live
++beside the board file, so two boards in one folder would share them):
++
++    <root>/boards.json                            the registry (new)
++    <root>/board.json                             "Main" — today's mixed board, in place
++    <root>/boards/personal/board.json             "Personal"
++    <root>/boards/client-retail-rag/board.json    "Client · Retail RAG"
++    <root>/boards/course-docker/board.json        "Course · Docker"
++
++"Main" is the board to split: it mixes client work (Retail RAG · pilot), course
++work (Docker labs), personal admin and the agency's own site, with two links
++that cross what would become board lines. Synthetic data only.
++"""
++from __future__ import annotations
++
++import json
++from datetime import date, timedelta
++from pathlib import Path
++
++from taskboard.models import LINKS_MIGRATION, MILESTONES_MIGRATION, Board, Project, Task
++
++TODAY = date(2026, 10, 20)          # a Tuesday
++PHASES = ["Backlog", "Next", "Doing", "Review", "Done"]
++SETTINGS = {"migrations": {"links": LINKS_MIGRATION, "milestones": MILESTONES_MIGRATION},
++            "seen_view_renumber_2026_07": True}
++
++
++def _d(off):
++    return None if off is None else (TODAY + timedelta(days=off)).isoformat()
++
++
++# board id -> (name, colour, relative folder, last opened offset in hours)
++BOARDS = [
++    ("personal", "Personal", "green", "boards/personal", -2),
++    ("client-retail-rag", "Client · Retail RAG", "sky", "boards/client-retail-rag", -20),
++    ("course-docker", "Course · Docker", "violet", "boards/course-docker", -50),
++    ("main", "Main", "fuchsia", ".", -120),
++]
++
++# board -> [(key, name, colour, start, due)]
++PROJECTS = {
++    "personal": [
++        ("ph", "Home & paperwork", "green", None, None),
++        ("pf", "Fitness block", "lime", -14, 30),
++    ],
++    "client-retail-rag": [
++        ("ci", "Ingest & index", "sky", -21, 10),
++        ("ce", "Eval harness", "blue", -7, 24),
++    ],
++    "course-docker": [
++        ("d4", "Module 4 · Volumes", "violet", -10, 5),
++        ("d5", "Module 5 · Compose", "indigo", 3, 26),
++    ],
++    "main": [
++        ("mr", "Retail RAG · pilot", "sky", -18, 12),
++        ("ml", "Docker labs", "violet", -25, 15),
++        ("ma", "Home admin", "green", None, None),
++        ("mw", "Agency website", "pink", -12, 28),
++        ("mt", "Taxes 2026", "lime", -30, 9),
++    ],
++}
++
++# board -> [(key, project, title, phase, prio, start, due, deps, milestone)]
++TASKS = {
++    "personal": [
++        ("p1", "ph", "Renew passport", "Next", "high", None, 1, [], False),
++        ("p2", "ph", "Car insurance quote", "Backlog", "normal", None, 6, [], False),
++        ("p3", "ph", "Fix the balcony door", "Doing", "low", None, -3, [], False),
++        ("p4", "pf", "Week 3 plan", "Doing", "normal", -2, 4, [], False),
++        ("p5", "pf", "10k race", "Backlog", "high", None, 30, ["p4"], True),
++        ("p6", "pf", "Book physio", "Next", "normal", None, 0, [], False),
++    ],
++    "client-retail-rag": [
++        ("c1", "ci", "Parse catalog PDFs", "Done", "normal", -21, -10, [], False),
++        ("c2", "ci", "Chunking experiments", "Review", "normal", -9, -1, [], False),
++        ("c3", "ci", "Hybrid search index", "Doing", "high", -4, 3, ["c2"], False),
++        ("c4", "ci", "Store-ops glossary", "Next", "low", None, 8, [], False),
++        ("c5", "ce", "Golden question set", "Doing", "high", -6, 2, [], False),
++        ("c6", "ce", "Judge rubric", "Next", "normal", 1, 9, ["c5"], False),
++        ("c7", "ce", "Eval report v1", "Backlog", "high", None, 14, ["c6"], True),
++        ("c8", "ce", "Latency budget", "Backlog", "normal", 10, 22, [], False),
++    ],
++    "course-docker": [
++        ("k1", "d4", "Bind vs named volumes page", "Done", "normal", -10, -4, [], False),
++        ("k2", "d4", "Volume oracle script", "Review", "high", -3, 0, ["k1"], False),
++        ("k3", "d4", "Module 4 publish", "Next", "high", None, 5, ["k2"], True),
++        ("k4", "d5", "Compose file anatomy", "Backlog", "normal", 3, 12, [], False),
++        ("k5", "d5", "Healthcheck lab", "Backlog", "normal", 10, 20, ["k4"], False),
++        ("k6", "d5", "Module 5 publish", "Backlog", "high", None, 26, ["k5"], True),
++    ],
++    "main": [
++        ("r1", "mr", "Kick-off notes", "Done", "normal", -18, -15, [], False),
++        ("r2", "mr", "Pilot store list", "Done", "normal", -14, -8, ["r1"], False),
++        ("r3", "mr", "Demo env on Docker", "Doing", "high", -5, 2, ["l3"], False),
++        ("r4", "mr", "Pilot results deck", "Next", "high", 2, 7, ["r3"], False),
++        ("r5", "mr", "Pilot sign-off", "Backlog", "high", None, 12, ["r4"], True),
++        ("r6", "mr", "Store staff FAQ", "Backlog", "low", 4, 10, [], False),
++        ("r7", "mr", "Invoice #2", "Next", "normal", None, -1, [], False),
++        ("l1", "ml", "Lab 1 · images", "Done", "normal", -25, -18, [], False),
++        ("l2", "ml", "Lab 2 · networks", "Review", "normal", -12, -2, ["l1"], False),
++        ("l3", "ml", "Compose template", "Doing", "high", -6, 1, ["l2"], False),
++        ("l4", "ml", "Lab 3 · volumes", "Backlog", "normal", 3, 15, ["l3"], False),
++        ("a1", "ma", "Dentist", "Next", "normal", None, 3, [], False),
++        ("a2", "ma", "Gym membership", "Backlog", "low", None, None, [], False),
++        ("a3", "ma", "Utility bill dispute", "Doing", "normal", None, -4, [], False),
++        ("w1", "mw", "New services page", "Doing", "normal", -12, 5, [], False),
++        ("w2", "mw", "Case study: retail RAG", "Backlog", "normal", 8, 20, ["r4"], False),
++        ("w3", "mw", "Site launch", "Backlog", "high", None, 28, ["w1", "w2"], True),
++        ("t1", "mt", "Collect receipts", "Doing", "normal", -30, 2, [], False),
++        ("t2", "mt", "Accountant call", "Next", "normal", None, 4, ["t1"], False),
++        ("t3", "mt", "File quarterly return", "Backlog", "high", None, 9, ["t2"], True),
++    ],
++}
++
++
++def board_path(root: Path, bid: str) -> Path:
++    rel = next(r for b, _n, _c, r, _h in BOARDS if b == bid)
++    return root / rel / "board.json"
++
++
++def build_board(root: Path, bid: str) -> Board:
++    projects = {}
++    for key, name, colour, s, d in PROJECTS[bid]:
++        projects[key] = Project(name=name, color=colour, start_date=_d(s), due_date=_d(d),
++                                id=f"p{key}")
++    tasks = []
++    for key, pk, title, phase, prio, s, d, deps, ms in TASKS[bid]:
++        tasks.append(Task(title=title, project_id=projects[pk].id, phase=phase, priority=prio,
++                          start_date=_d(s), due_date=_d(d), depends_on=[f"t{x}" for x in deps],
++                          milestone=ms, phase_changed=(TODAY - timedelta(days=2)).isoformat(),
++                          id=f"t{key}"))
++    path = board_path(root, bid)
++    path.parent.mkdir(parents=True, exist_ok=True)
++    return Board(list(projects.values()), tasks, path, json.loads(json.dumps(SETTINGS)), PHASES)
++
++
++def build(root: Path, last: str = "personal") -> Path:
++    """Write the four boards and the registry under `root`; return the registry path."""
++    from datetime import datetime
++    now = datetime(2026, 10, 20, 9, 30)
++    entries = []
++    for bid, name, colour, rel, hours in BOARDS:
++        build_board(root, bid).save()
++        entries.append({"id": bid, "name": name, "color": colour,
++                        "path": str(board_path(root, bid)),
++                        "last_opened": (now + timedelta(hours=hours)).isoformat(timespec="minutes"),
++                        "archived": False})
++    reg = root / "boards.json"
++    reg.write_text(json.dumps({"version": 1, "last": last, "boards": entries}, indent=2),
++                   encoding="utf-8")
++    return reg
+diff --git a/tests/test_boards.py b/tests/test_boards.py
+new file mode 100644
+index 0000000..5686d31
+--- /dev/null
++++ b/tests/test_boards.py
+@@ -0,0 +1,563 @@
++"""Several boards: the registry and switching boards in place.
++
++Batch 2026-10-20-batch-01 (variant C of the multi-board round, P1/P4):
++HLR-2201, HLR-2202 / LLR-2201.1, LLR-2202.1 · TC-2201, TC-2202 · AT-2201
++(US-2201). Synthetic data only: the round's boards (`tests/multi_board_fixture.py`)
++and boards built here, every one under `tmp_path` — `Path.home()` is a temporary
++folder for the whole suite (`tests/conftest.py`), and patched again per test.
++"""
++from __future__ import annotations
++
++import json
++import os
++from datetime import date, datetime
++from pathlib import Path
++
++import pytest
++
++import multi_board_fixture as mb
++from taskboard import boards
++from taskboard.boards import BoardEntry, Registry, peek_board, slug
++from taskboard.models import Board, Project, Task
++
++NOW = datetime(2026, 10, 20, 9, 30)
++
++
++def _main(tmp_path) -> Path:
++    p = tmp_path / ".taskboard" / "board.json"
++    p.parent.mkdir(parents=True, exist_ok=True)
++    Board([Project("Main work", id="pm")], [Task("Main task", project_id="pm", id="tm")],
++          p).save()
++    return p
++
++
++def _write(reg_path: Path, data) -> None:
++    reg_path.parent.mkdir(parents=True, exist_ok=True)
++    reg_path.write_text(data if isinstance(data, str) else json.dumps(data), encoding="utf-8")
++
++
++# --------------------------------------------------------------------------- #
++# TC-2201 — the registry read without failing (LLR-2201.1)
++# --------------------------------------------------------------------------- #
++def test_TC_2201_a_missing_registry_is_main_alone(tmp_path):
++    """TC-2201: no file → the default board alone, `main`/`Main`, last `main`;
++    nothing is written by reading."""
++    main = tmp_path / "board.json"
++    reg = Registry.load(tmp_path / "boards.json", main)
++    assert [(e.id, e.name, e.path) for e in reg.entries] == [("main", "Main", str(main))]
++    assert reg.last == "main" and reg.load_report == {}
++    assert not (tmp_path / "boards.json").exists()
++
++
++@pytest.mark.parametrize("raw", ["{not json", "[]", '{"boards": 3}', '"x"', ""])
++def test_TC_2201_an_unreadable_registry_is_kept_aside(tmp_path, raw):
++    """TC-2201: a file that is not a registry is copied to `.corrupt` (its bytes
++    kept for the operator) and read as the default board alone — never raising.
++    An empty file has nothing to keep."""
++    reg_path = tmp_path / "boards.json"
++    _write(reg_path, raw)
++    reg = Registry.load(reg_path, tmp_path / "board.json")
++    assert [e.id for e in reg.entries] == ["main"]
++    assert reg.load_report["unreadable"] is True
++    corrupt = tmp_path / "boards.json.corrupt"
++    if raw:
++        assert corrupt.read_text(encoding="utf-8") == raw
++        assert reg.load_report["backup"] == str(corrupt)
++    else:
++        assert not corrupt.exists() and reg.load_report["backup"] is None
++
++
++def test_TC_2201_an_existing_corrupt_copy_is_never_overwritten(tmp_path):
++    """TC-2201: the first copy is the operator's oldest bytes; a second unreadable
++    read keeps it and copies the new bytes to `.corrupt-2` (code review F5)."""
++    reg_path = tmp_path / "boards.json"
++    (tmp_path / "boards.json.corrupt").write_text("first", encoding="utf-8")
++    _write(reg_path, "second")
++    reg = Registry.load(reg_path, tmp_path / "board.json")
++    assert (tmp_path / "boards.json.corrupt").read_text(encoding="utf-8") == "first"
++    assert (tmp_path / "boards.json.corrupt-2").read_text(encoding="utf-8") == "second"
++    assert reg.load_report["backup"] == str(tmp_path / "boards.json.corrupt-2")
++    reg.touch("main", NOW)                       # nothing written after an unreadable read
++    assert reg_path.read_text(encoding="utf-8") == "second"
++
++
++def test_TC_2201_the_entry_rules(tmp_path):
++    """TC-2201 (HLR-2201's boundary catalog): entries that are not objects or have
++    no text path are skipped, a path seen before is skipped (in another spelling
++    too), a bad or repeated id becomes a unique slug of the name, a bad name the
++    file's name, a bad colour `violet` (or its ration remap), a bad time none,
++    `archived` true only for `true`, `last` kept only when it names an entry."""
++    a = tmp_path / "a" / "board.json"
++    b = tmp_path / "b.json"
++    data = {"version": 1, "last": "ghost", "boards": [
++        7, "x", {"name": "No path"}, {"path": ""}, {"path": 3},
++        {"id": "a b", "name": "Alpha", "color": "plaid", "path": str(a),
++         "last_opened": "yesterday", "archived": "yes"},
++        {"id": "alpha", "name": "", "color": [], "path": str(b),
++         "last_opened": "2026-10-19T08:00", "archived": True},
++        {"id": "dup", "name": "Again", "path": str(tmp_path / "a" / ".." / "a" / "board.json")},
++        {"id": "", "name": "Gamma", "color": "amber", "path": str(tmp_path / "c.json")},
++        {"id": "rel", "name": "Relative", "path": "rel/board.json"},
++        {"id": "alpha", "name": "Delta", "color": "sky", "path": str(tmp_path / "d.json"),
++         "archived": False},
++    ]}
++    _write(tmp_path / "boards.json", data)
++    reg = Registry.load(tmp_path / "boards.json", tmp_path / "board.json")
++    got = [(e.id, e.name, e.color, Path(e.path).name, e.last_opened, e.archived)
++           for e in reg.entries]
++    assert got == [
++        ("alpha", "Alpha", "violet", "board.json", None, False),
++        ("b", "b", "violet", "b.json", "2026-10-19T08:00", True),
++        ("gamma", "Gamma", "lime", "c.json", None, False),
++        ("delta", "Delta", "sky", "d.json", None, False),
++    ], got
++    assert reg.last is None and reg.load_report == {}
++    a.parent.mkdir(parents=True)
++    a.write_text("{}", encoding="utf-8")
++    assert reg.opening().id == "alpha"
++
++
++def test_TC_2201_no_valid_entry_is_main_alone(tmp_path):
++    _write(tmp_path / "boards.json", {"boards": [{"path": ""}, 4]})
++    reg = Registry.load(tmp_path / "boards.json", tmp_path / "board.json")
++    assert [e.id for e in reg.entries] == ["main"]
++
++
++def test_TC_2201_the_round_trip_and_the_atomic_save(tmp_path, monkeypatch):
++    """TC-2201: the round's registry reads back what `save` wrote; `save` swaps a
++    temporary file in, so a failed swap leaves the old bytes and no temporary file."""
++    reg_path = mb.build(tmp_path, "client-retail-rag")
++    reg = Registry.load(reg_path, tmp_path / "board.json")
++    assert [e.id for e in reg.entries] == ["personal", "client-retail-rag", "course-docker",
++                                           "main"]
++    assert reg.last == "client-retail-rag"
++    before = [(e.id, e.name, e.color, e.path, e.last_opened, e.archived) for e in reg.entries]
++    reg.save()
++    again = Registry.load(reg_path, tmp_path / "board.json")
++    assert [(e.id, e.name, e.color, e.path, e.last_opened, e.archived)
++            for e in again.entries] == before
++    assert again.last == "client-retail-rag"
++    old = reg_path.read_bytes()
++
++    def boom(*a, **k):
++        raise OSError("disk full")
++    from taskboard import models as models_module
++    monkeypatch.setattr(models_module.os, "replace", boom)
++    reg.entries[0].name = "Changed"
++    with pytest.raises(OSError):
++        reg.save()
++    assert reg_path.read_bytes() == old
++    assert [p.name for p in tmp_path.iterdir() if p.name.endswith(".tmp")] == []
++
++
++def test_TC_2201_touch_writes_only_with_more_than_one_board_or_a_file(tmp_path):
++    """TC-2201 (HLR-2201): a one-board user without a registry file never gets one;
++    with a second board, or once the file exists, an opening is recorded."""
++    reg = Registry.load(tmp_path / "boards.json", tmp_path / "board.json")
++    reg.touch("main", NOW)
++    assert not (tmp_path / "boards.json").exists()
++    assert reg.last == "main" and reg.get("main").last_opened == "2026-10-20T09:30"
++    _write(tmp_path / "boards.json", {"boards": [{"id": "main", "name": "Main",
++                                                  "path": str(tmp_path / "board.json")}]})
++    reg = Registry.load(tmp_path / "boards.json", tmp_path / "board.json")
++    reg.touch("main", NOW)
++    assert json.loads((tmp_path / "boards.json").read_text(encoding="utf-8"))["last"] == "main"
++    (tmp_path / "boards.json").unlink()
++    reg = Registry.load(tmp_path / "boards.json", tmp_path / "board.json")
++    reg.register(tmp_path / "side" / "notes.json")
++    (tmp_path / "boards.json").unlink()
++    reg.touch("main", NOW)
++    assert (tmp_path / "boards.json").exists()
++
++
++def test_TC_2201_register(tmp_path):
++    """TC-2201: a new path → an entry named after the file (`notes` for
++    `notes.json`, the folder for a `board.json`), the first colour no active board
++    wears, a unique id; the default board in another spelling → no new entry; an
++    archived entry's path → un-archived."""
++    main = tmp_path / "board.json"
++    reg = Registry.load(tmp_path / "boards.json", main)
++    a = reg.register(tmp_path / "side" / "notes.json")
++    assert (a.id, a.name, a.color) == ("notes", "notes", "lime")
++    assert Path(a.path).is_absolute()
++    b = reg.register(tmp_path / "client" / "board.json")
++    assert (b.id, b.name, b.color) == ("client", "client", "green")
++    c = reg.register(tmp_path / "other" / "notes.json")
++    assert c.id == "notes-2"
++    spelled = tmp_path / "x" / ".." / "board.json"
++    if os.name == "nt":
++        spelled = Path(str(spelled).upper())
++    assert reg.register(spelled).id == "main"
++    assert len(reg.entries) == 4
++    b.archived = True
++    reg.save()
++    assert reg.register(tmp_path / "client" / "board.json").archived is False
++    on_disk = json.loads((tmp_path / "boards.json").read_text(encoding="utf-8"))
++    assert [e["id"] for e in on_disk["boards"]] == ["main", "notes", "client", "notes-2"]
++
++
++@pytest.mark.parametrize("name, want", [("Course · Kubernetes", "course-kubernetes"),
++                                        ("Diseño", "diseno"), ("***", "board"),
++                                        ("../../etc", "etc"), ("  A  b  ", "a-b"),
++                                        ("Con", "con-board"), ("nul", "nul-board"),
++                                        ("COM1", "com1-board"), ("日本", "board")])
++def test_TC_2201_slug(name, want):
++    """TC-2201: the folder name holds only a-z, 0-9 and `-` — never a separator."""
++    assert slug(name) == want
++
++
++def test_TC_2201_opening(tmp_path):
++    """TC-2201: the last board when active, else the first active, else the first —
++    a board whose file is missing skipped and named (ux-reviewer UX-10), the
++    default board never skipped."""
++    main = tmp_path / "board.json"
++    for n in ("a", "b"):
++        (tmp_path / f"{n}.json").write_text("{}", encoding="utf-8")
++    reg = Registry(tmp_path / "boards.json", [
++        BoardEntry("a", "A", "lime", str(tmp_path / "a.json"), archived=True),
++        BoardEntry("b", "B", "sky", str(tmp_path / "b.json")),
++        BoardEntry("main", "Main", "violet", str(main))], last="a", main_path=str(main))
++    assert reg.opening().id == "b"
++    reg.last = "main"
++    assert reg.opening().id == "main"
++    for e in reg.entries:
++        e.archived = True
++    assert reg.opening().id == "a"
++    for e in reg.entries:
++        e.archived = False
++    reg.last = "b"
++    (tmp_path / "b.json").unlink()
++    assert reg.opening().id == "a"
++    assert reg.load_report["missing"] == str(tmp_path / "b.json")
++    (tmp_path / "a.json").unlink()
++    assert reg.opening().id == "main"
++    # the default board is known by its path, not by an id a file can carry (F3)
++    impostor = Registry(tmp_path / "boards.json", [
++        BoardEntry("main", "Main", "violet", str(tmp_path / "gone.json"))], last="main",
++        main_path=str(main))
++    e = impostor.opening()
++    assert Path(e.path) == main and impostor.load_report["missing"].endswith("gone.json")
++
++
++def test_TC_2201_peek_board_never_writes(tmp_path):
++    """TC-2201 (P-2): `Board.load` seeds and saves at a missing path; the peek does not."""
++    missing = tmp_path / "nowhere" / "board.json"
++    b = peek_board(missing)
++    assert b.projects == [] and b.tasks == [] and not missing.exists()
++    real = _main(tmp_path)
++    before = real.read_bytes()
++    assert [p.name for p in peek_board(real).projects] == ["Main work"]
++    assert real.read_bytes() == before
++    for bad in ("{oops", "[]"):
++        unreadable = tmp_path / "bad" / "board.json"
++        unreadable.parent.mkdir(exist_ok=True)
++        unreadable.write_text(bad, encoding="utf-8")
++        b = peek_board(unreadable)
++        assert b.load_report["file_unreadable"] is True and b.projects == []
++        assert sorted(p.name for p in unreadable.parent.iterdir()) == ["board.json"]
++
++
++# --------------------------------------------------------------------------- #
++# TC-2202 — open_app, the app's registry, switching in place (LLR-2202.1)
++# --------------------------------------------------------------------------- #
++class _Now(datetime):
++    @classmethod
++    def now(cls, tz=None):
++        return NOW
++
++
++@pytest.fixture
++def home(tmp_path, monkeypatch):
++    """`Path.home()` → this test's own folder; the clock frozen at 09:30."""
++    from taskboard import app as app_module
++    import taskboard.__main__ as entry
++    monkeypatch.setattr(Path, "home", classmethod(lambda cls: tmp_path))
++    monkeypatch.setattr(app_module, "datetime", _Now)
++    monkeypatch.setattr(entry, "datetime", _Now)
++    return tmp_path / ".taskboard"
++
++
++def _open(board=None):
++    from taskboard.__main__ import open_app
++    return open_app(board)
++
++
++async def test_TC_2202_switch_board_starts_the_other_board_over(home):
++    """TC-2202: the other file is loaded; the selection, focus, search, undo stack,
++    gantt memory, setup staging and team state cleared; the team timer stopped;
++    the per-board start run once; the view and layouts kept; the registry's last
++    set — and the open board's id reloads nothing."""
++    mb.build(home, "main")
++    app = _open()
++    async with app.run_test(size=(120, 40)) as pilot:
++        await pilot.pause()
++        assert app.board_id == "main" and app.board.path == home / "board.json"
++        app.view_mode = "gantt"
++        app.kanban_presentation = "matrix"
++        app.selected_task_id = "tr3"
++        app.focused_project_id = "pmr"
++        app.search_query = "demo"
++        app._undo_stack.append({"task_id": "tr3", "fields": {}})
++        app._gantt_group, app._gantt_previous = "g1", "g0"
++        app._last_history_error = "x"
++
++        class _Timer:
++            stopped = False
++
++            def stop(self):
++                self.stopped = True
++        timer = _Timer()
++        app._team_timer = timer
++        calls = []
++        real_open = app._open_board
++        app._open_board = lambda **k: (calls.append(k), real_open(**k))[1]
++        same = app.board
++        app.switch_board("main")
++        assert app.board is same and calls == []
++        app.switch_board("client-retail-rag")
++        await pilot.pause()
++        assert app.board.path == home / "boards" / "client-retail-rag" / "board.json"
++        assert {p.name for p in app.board.projects} == {"Ingest & index", "Eval harness"}
++        assert app.board_id == "client-retail-rag"
++        assert app.selected_task_id in {t.id for t in app.board.tasks}
++        assert app._last_history_error is None
++        assert app.focused_project_id is None and app.search_query is None
++        assert app._undo_stack == []
++        assert app._gantt_previous is None and app._gantt_group != "g1"
++        assert app.team_state is None and app._team_timer is None and timer.stopped
++        assert calls == [{}]
++        assert app.view_mode == "gantt" and app.kanban_presentation == "matrix"
++        assert app.registry.last == "client-retail-rag"
++        reg = json.loads((home / "boards.json").read_text(encoding="utf-8"))
++        assert reg["last"] == "client-retail-rag"
++        assert next(e for e in reg["boards"]
++                    if e["id"] == "client-retail-rag")["last_opened"] == "2026-10-20T09:30"
++
++
++async def test_TC_2202_from_the_setup_view_back_to_the_view_before(home):
++    mb.build(home, "main")
++    app = _open()
++    async with app.run_test(size=(120, 40)) as pilot:
++        await pilot.pause()
++        app.action_view("kanban")
++        app.action_view("setup")
++        assert app._setup_state is not None
++        app.switch_board("personal")
++        await pilot.pause()
++        assert app.view_mode == "kanban" and app._setup_state is None
++
++
++async def test_TC_2202_a_switched_board_gets_the_start_a_board_gets(home):
++    """TC-2202: the per-board start runs on the new board — its renumbering notice,
++    shown once, sets its flag in ITS file."""
++    mb.build(home, "main")
++    side = home / "boards" / "personal" / "board.json"
++    data = json.loads(side.read_text(encoding="utf-8"))
++    data["settings"].pop("seen_view_renumber_2026_07")
++    side.write_text(json.dumps(data), encoding="utf-8")
++    app = _open()
++    async with app.run_test(size=(120, 40)) as pilot:
++        await pilot.pause()
++        before = len(app._notifications)
++        app.switch_board("personal")
++        await pilot.pause()
++        titles = [n.title for n in list(app._notifications)[before:]]
++        assert titles.count("View keys renumbered") == 1
++    saved = json.loads(side.read_text(encoding="utf-8"))
++    assert saved["settings"]["seen_view_renumber_2026_07"] is True
++
++
++def test_TC_2202_open_app_picks_the_board(home, tmp_path):
++    """TC-2202: `--board` opens (and registers) its file over the registry's last;
++    `last` archived → the first active board; `--board` on a registered path adds
++    no entry."""
++    mb.build(home, "personal")
++    app = _open(str(home / "boards" / "course-docker" / "board.json"))
++    assert app.board_id == "course-docker"
++    assert len(app.registry.entries) == 4
++    reg = json.loads((home / "boards.json").read_text(encoding="utf-8"))
++    assert reg["last"] == "course-docker"
++    reg["boards"][2]["archived"] = True
++    (home / "boards.json").write_text(json.dumps(reg), encoding="utf-8")
++    assert _open().board_id == "personal"
++    app = _open(str(tmp_path / "side" / "notes.json"))
++    assert app.board_id == "notes" and app.board.path == tmp_path / "side" / "notes.json"
++    assert [e["id"] for e in json.loads((home / "boards.json").read_text(
++        encoding="utf-8"))["boards"]][-1] == "notes"
++
++
++async def test_TC_2202_an_app_without_a_registry_keeps_it_beside_its_board(tmp_path):
++    """TC-2202 (D12): the suite's `TaskboardApp(board_path=...)` knows only its own
++    board, its registry file beside it — and mounting writes no registry at all."""
++    from taskboard.app import TaskboardApp
++    p = _main(tmp_path)
++    app = TaskboardApp(board_path=str(p))
++    assert app.registry.path == p.parent / "boards.json"
++    assert app.board_id == "main" and len(app.registry.entries) == 1
++    async with app.run_test(size=(100, 30)) as pilot:
++        await pilot.pause()
++    assert not (p.parent / "boards.json").exists()
++
++
++async def test_TC_2202_the_mount_order_is_the_shipped_one(home, monkeypatch):
++    """TC-2202 (LLR-2202.1): the per-board start keeps the shipped order, the clock
++    interval set once, between the clocks and the recovery notices."""
++    from taskboard.app import TaskboardApp
++    mb.build(home, "main")
++    order = []
++    depth = [0]
++    names = ["_migrate_links", "_announce_renumbering", "_sweep_old_done", "_select_first",
++             "refresh_view", "_apply_clock_settings", "set_interval", "_warn_if_rescued",
++             "_init_team_mode", "_offer_milestones"]
++    for n in names:
++        real = getattr(TaskboardApp, n)
++
++        def spy(self, *a, _n=n, _real=real, **k):
++            if depth[0] == 0:                     # the start's own calls, not nested ones
++                order.append(_n)
++            depth[0] += 1
++            try:
++                return _real(self, *a, **k)
++            finally:
++                depth[0] -= 1
++        monkeypatch.setattr(TaskboardApp, n, spy)
++    app = _open()
++    async with app.run_test(size=(100, 30)) as pilot:
++        assert order[:10] == names, order
++        await pilot.pause()
++        order.clear()
++        app.switch_board("personal")
++        app.switch_board("course-docker")
++        app.switch_board("main")
++        assert "set_interval" not in order, order       # three switches, no new interval (F5)
++        assert order[:9] == [n for n in names if n != "set_interval"], order
++
++
++def test_TC_2202_the_guard_the_suite_runs_under():
++    """D12: `Path.home()` is never the operator's real home inside the suite."""
++    real = Path(os.path.expanduser("~"))
++    assert Path.home() != real
++
++
++# --------------------------------------------------------------------------- #
++# AT-2201 — today's board, untouched (HLR-2201)
++# --------------------------------------------------------------------------- #
++async def test_AT_2201_no_registry_and_an_unreadable_one(home):
++    """AT-2201 (US-2201): with no `boards.json` the app opens the default board as
++    today — no chip, no home — and leaves no `boards.json` behind; with an
++    unreadable one it opens the default board, keeps the bytes in `.corrupt` and
++    says so — and leaves the unreadable file as it found it."""
++    _main(home.parent)
++    app = _open()
++    async with app.run_test(size=(160, 45)) as pilot:
++        await pilot.pause()
++        assert type(app.screen).__name__ == "Screen"
++        first = app.query_one("#board").content.plain.split("\n")[0]
++        assert first.startswith("◆ TASKBOARD"), first
++        assert app.board.path == home / "board.json"
++    assert not (home / "boards.json").exists()
++    (home / "boards.json").write_text("{not json", encoding="utf-8")
++    app = _open()
++    async with app.run_test(size=(160, 45)) as pilot:
++        await pilot.pause()
++        assert app.board.path == home / "board.json"
++        first = app.query_one("#board").content.plain.split("\n")[0]
++        assert first.startswith("◆ TASKBOARD"), first
++        notes = [n for n in app._notifications if n.title == "Boards"]
++        assert len(notes) == 1 and str(home / "boards.json.corrupt") in notes[0].message
++    assert (home / "boards.json.corrupt").read_text(encoding="utf-8") == "{not json"
++    assert (home / "boards.json").read_text(encoding="utf-8") == "{not json"   # kept as found
++
++
++async def test_TC_2202_a_failed_migration_at_a_switch_keeps_the_open_board(home, monkeypatch):
++    """TC-2202 (architect A-6, ux UX-12): the other board's link migration fails —
++    an error notice, the open board back as it was (its undo stack and search
++    too), no second start notice, `last` unchanged, the app still running."""
++    from taskboard import app as app_module
++    from taskboard.models import LinkMigration
++    mb.build(home, "main")
++    app = _open()
++    async with app.run_test(size=(120, 40)) as pilot:
++        await pilot.pause()
++        app._undo_stack.append({"task_id": "tr3", "fields": {}})
++        app.search_query = "demo"
++        before_notes = len(app._notifications)
++        real = app_module.run_link_migration
++
++        def failing(board):
++            if board.path != home / "board.json":
++                return LinkMigration([], error="disk full")
++            return real(board)
++        monkeypatch.setattr(app_module, "run_link_migration", failing)
++        app.switch_board("personal")
++        await pilot.pause()
++        assert app.is_running
++        assert app.board_id == "main" and app.board.path == home / "board.json"
++        assert app._undo_stack == [{"task_id": "tr3", "fields": {}}]
++        assert app.search_query == "demo"
++        new = list(app._notifications)[before_notes:]
++        assert [n.title for n in new] == ["Boards"] and "disk full" in new[0].message
++        assert app.registry.last == "main"
++
++
++async def test_TC_2202_a_switch_into_a_team_board_starts_its_timer(home):
++    """TC-2202: the start a board gets includes team mode: a board with a team
++    folder and an identity starts its own sync timer at the switch."""
++    mb.build(home, "main")
++    shared = home.parent / "team"
++    shared.mkdir()
++    (shared / "team.json").write_text(json.dumps({
++        "version": 1, "phases": ["Backlog", "Next", "Doing", "Review", "Done"],
++        "roster": [{"id": "u1", "name": "Member One", "hue": "sky"}], "projects": []}),
++        encoding="utf-8")
++    p = home / "boards" / "personal" / "board.json"
++    data = json.loads(p.read_text(encoding="utf-8"))
++    data["settings"].update(team_shared_dir=str(shared), team_user_id="u1")
++    p.write_text(json.dumps(data), encoding="utf-8")
++    app = _open()
++    async with app.run_test(size=(120, 40)) as pilot:
++        await pilot.pause()
++        assert app._team_timer is None
++        app.switch_board("personal")
++        await pilot.pause()
++        assert app._team_timer is not None and app.team_state is not None
++
++
++async def test_TC_2202_a_missing_board_file_opens_nothing(home):
++    mb.build(home, "main")
++    (home / "boards" / "personal" / "board.json").unlink()
++    app = _open()
++    async with app.run_test(size=(120, 40)) as pilot:
++        await pilot.pause()
++        app.switch_board("personal")
++        await pilot.pause()
++        assert app.board_id == "main"
++        assert any("its file is missing" in n.message for n in app._notifications)
++    assert not (home / "boards" / "personal" / "board.json").exists()
++
++
++async def test_TC_2202_the_last_board_missing_at_start(home):
++    mb.build(home, "personal")
++    (home / "boards" / "personal" / "board.json").unlink()
++    app = _open()
++    assert app.board_id == "client-retail-rag"
++    assert app.registry.load_report["missing"].endswith("board.json")
++    async with app.run_test(size=(120, 40)) as pilot:
++        await pilot.pause()
++        notes = [n.message for n in app._notifications if n.title == "Boards"]
++        assert any(str(home / "boards" / "personal" / "board.json") in m for m in notes), notes
++    assert not (home / "boards" / "personal" / "board.json").exists()
++
++
++def test_TC_2202_a_registry_that_cannot_be_written_never_stops_a_start(home, monkeypatch):
++    """TC-2202 (code review F1): recording the board opened is bookkeeping — a
++    `boards.json` that cannot be written still opens the board, and says so."""
++    mb.build(home, "personal")
++    from taskboard import models as models_module
++
++    def boom(*a, **k):
++        raise PermissionError("locked")
++    monkeypatch.setattr(models_module.os, "replace", boom)
++    app = _open()
++    assert app.board_id == "personal"
++    assert "locked" in app.registry.load_report["save_error"]
+diff --git a/tests/test_report.py b/tests/test_report.py
+index 30b0f79..8b893ac 100644
+--- a/tests/test_report.py
++++ b/tests/test_report.py
+@@ -247,13 +247,23 @@ def test_a_hostile_title_cannot_break_out_into_markup(tmp_path):
+ # --------------------------------------------------------------------------- #
+ # AC1 / AC2 — the CLI, driven as a user drives it
+ # --------------------------------------------------------------------------- #
++def _home_env(tmp_path):
++    """The CLI's subprocess gets a temporary home too (batch 2026-10-20-batch-01,
++    security S-13): the boards registry lives under it, never the real one."""
++    import os
++    home = tmp_path / "home"
++    home.mkdir(exist_ok=True)
++    return dict(os.environ, HOME=str(home), USERPROFILE=str(home))
++
++
+ def test_the_cli_writes_a_report_and_says_where(tmp_path):
+     b = loaded(tmp_path, "cli.json")
+     path = tmp_path / "cli.json"
+     before = hashlib.md5(path.read_bytes()).hexdigest()
+     r = subprocess.run([sys.executable, "-m", "taskboard", "--board", str(path),
+-                        "--report"], capture_output=True, text=True)
++                        "--report"], capture_output=True, text=True, env=_home_env(tmp_path))
+     assert r.returncode == 0, r.stderr
++    assert not (tmp_path / "home" / ".taskboard").exists()     # --report registers nothing
+     assert "Report written to" in r.stdout
+     written = r.stdout.split("Report written to", 1)[1].strip()
+     assert written.endswith(".html")
+@@ -266,11 +276,13 @@ def test_the_cli_scopes_to_a_project_and_refuses_an_unknown_one(tmp_path):
+     loaded(tmp_path, "cli2.json")
+     path = tmp_path / "cli2.json"
+     ok = subprocess.run([sys.executable, "-m", "taskboard", "--board", str(path),
+-                         "--report", "Platform"], capture_output=True, text=True)
++                         "--report", "Platform"], capture_output=True, text=True,
++                        env=_home_env(tmp_path))
+     assert ok.returncode == 0 and "platform-" in ok.stdout
+ 
+     bad = subprocess.run([sys.executable, "-m", "taskboard", "--board", str(path),
+-                          "--report", "Nope"], capture_output=True, text=True)
++                          "--report", "Nope"], capture_output=True, text=True,
++                         env=_home_env(tmp_path))
+     assert bad.returncode != 0
+     assert "no project named" in (bad.stderr + bad.stdout)
+     assert "Website Redesign" in (bad.stderr + bad.stdout)   # it names the real ones

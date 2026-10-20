@@ -1,0 +1,22 @@
+# RED of increment 001's new nodes on base_ref 783397e: a clean worktree, only the test files copied in, NO_COLOR unset; taskboard/boards.py of the main checkout moved aside for the run (the editable install's finder would otherwise serve it to the worktree — C-20 move-aside)
+taskboard.boards resolvable: False
+C:\Users\jjgh8\anaconda3\Lib\site-packages\pytest_asyncio\plugin.py:207: PytestDeprecationWarning: The configuration option "asyncio_default_fixture_loop_scope" is unset.
+The event loop scope for asynchronous fixtures will default to the fixture caching scope. Future versions of pytest-asyncio will default the loop scope for asynchronous fixtures to function scope. Set the default fixture loop scope explicitly in order to avoid unexpected behavior in the future. Valid fixture loop scopes are: "function", "class", "module", "package", "session"
+
+  warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCOPE_UNSET))
+
+=================================== ERRORS ====================================
+____________________ ERROR collecting tests/test_boards.py ____________________
+ImportError while importing test module 'C:\Users\jjgh8\AppData\Local\Temp\claude\C--Users-jjgh8-clde\3940a65a-4a09-41f4-888b-90e6e8089d9e\scratchpad\wt-base\tests\test_boards.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+C:\Users\jjgh8\anaconda3\Lib\importlib\__init__.py:90: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+tests\test_boards.py:19: in <module>
+    from taskboard import boards
+E   ImportError: cannot import name 'boards' from 'taskboard' (C:\Users\jjgh8\AppData\Local\Temp\claude\C--Users-jjgh8-clde\3940a65a-4a09-41f4-888b-90e6e8089d9e\scratchpad\wt-base\taskboard\__init__.py)
+=========================== short test summary info ===========================
+ERROR tests/test_boards.py
+!!!!!!!!!!!!!!!!!!! Interrupted: 1 error during collection !!!!!!!!!!!!!!!!!!!!
+1 error in 0.32s
+restore: 8065378e1257f02aade87c50ccef84d6fb18abe6624c2646769ee1146ffab09f 8065378e1257f02aade87c50ccef84d6fb18abe6624c2646769ee1146ffab09f

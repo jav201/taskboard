@@ -709,6 +709,39 @@ _TASK_KEYS = {"id", "title", "project_id", "phase", "blocked", "priority", "star
               "status", "url"}          # last two: legacy, consumed by the migration
 
 
+def write_atomic(path: Path, text: str) -> None:
+    """Write `text` so the file holds either the old bytes or the new ones, never
+    a truncated half: a fresh temporary file beside the RESOLVED file (a symlink
+    keeps its link; its target is replaced), then swapped in. The temporary name
+    is random and created exclusively (`.<file name>.<random>.tmp`): nothing at it
+    is written through, a file a crash left there never blocks a later save, and
+    team pull's `board.*.json` never matches it. It goes on failure. Shared by
+    `Board.save_atomic` and the boards registry (batch 2026-10-20-batch-01)."""
+    target = Path(path).resolve()
+    if target.exists() and not os.access(target, os.W_OK):
+        # a read-only file is refused before anything is written: on Windows its
+        # bit, copied to the temp file, made the swap AND the cleanup fail — a
+        # temp file per launch, named in the error (D-530)
+        raise PermissionError(errno.EACCES, os.strerror(errno.EACCES), str(target))
+    fd, name = tempfile.mkstemp(dir=target.parent, prefix=f".{target.name}.",
+                                suffix=".tmp")
+    try:
+        with os.fdopen(fd, "w", encoding="utf-8") as fh:
+            fh.write(text)
+        # the swapped-in file keeps the old file's permissions, not mkstemp's
+        # owner-only 0600 (code review N1)
+        if target.exists():
+            os.chmod(name, stat.S_IMODE(target.stat().st_mode))
+        os.replace(name, target)
+    except OSError:
+        try:                                # the temp file goes on every failure:
+            os.chmod(name, stat.S_IREAD | stat.S_IWRITE)    # a copied read-only
+            Path(name).unlink(missing_ok=True)              # bit blocks its unlink
+        except OSError:
+            pass                            # never mask the save's own error
+        raise
+
+
 def _quarantine_corrupt_file(path: Path):
     """Copy a corrupt/unreadable board file to a `.corrupt` sidecar (never
     clobbering an existing quarantine) so the user's bytes survive even if the
@@ -1025,35 +1058,8 @@ class Board:
 
     def save_atomic(self) -> None:
         """Save so the file on disk holds either the old bytes or the new ones,
-        never a truncated half: write a fresh temporary file beside the RESOLVED
-        file (a symlinked board keeps its link; its target is replaced), then
-        swap it in. The temporary name is random and created exclusively
-        (`.<board file name>.<random>.tmp`): nothing at it is written through,
-        a file a crash left there never blocks a later save, and team pull's
-        `board.*.json` never matches it. It goes on failure."""
-        target = self.path.resolve()
-        if target.exists() and not os.access(target, os.W_OK):
-            # a read-only board is refused before anything is written: on
-            # Windows its bit, copied to the temp file, made the swap AND the
-            # cleanup fail — a temp file per launch, named in the error (D-530)
-            raise PermissionError(errno.EACCES, os.strerror(errno.EACCES), str(target))
-        fd, name = tempfile.mkstemp(dir=target.parent, prefix=f".{target.name}.",
-                                    suffix=".tmp")
-        try:
-            with os.fdopen(fd, "w", encoding="utf-8") as fh:
-                fh.write(self._serialized())
-            # the swapped-in file keeps the board's permissions, not mkstemp's
-            # owner-only 0600 (code review N1)
-            if target.exists():
-                os.chmod(name, stat.S_IMODE(target.stat().st_mode))
-            os.replace(name, target)
-        except OSError:
-            try:                                # the temp file goes on every failure:
-                os.chmod(name, stat.S_IREAD | stat.S_IWRITE)    # a copied read-only
-                Path(name).unlink(missing_ok=True)              # bit blocks its unlink
-            except OSError:
-                pass                            # never mask the save's own error
-            raise
+        never a truncated half (`write_atomic`)."""
+        write_atomic(self.path, self._serialized())
 
     # ---- ribbon clock settings --------------------------------------------
     def get_clocks(self) -> tuple[str, str]:
