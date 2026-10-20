@@ -1,0 +1,5 @@
+--- a/taskboard/keymap.py
++++ b/taskboard/keymap.py
+@@ (after the q Quit line of KEYMAP) @@
+     Key("q", "q", "quit", "Quit", universal=True, primary=True, group="system"),
++    Key("B", "B", "boards", "Boards", universal=True, primary=True, group="system"),

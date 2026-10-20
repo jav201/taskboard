@@ -1,0 +1,126 @@
+C:\Users\jjgh8\anaconda3\Lib\site-packages\pytest_asyncio\plugin.py:207: PytestDeprecationWarning: The configuration option "asyncio_default_fixture_loop_scope" is unset.
+The event loop scope for asynchronous fixtures will default to the fixture caching scope. Future versions of pytest-asyncio will default the loop scope for asynchronous fixtures to function scope. Set the default fixture loop scope explicitly in order to avoid unexpected behavior in the future. Valid fixture loop scopes are: "function", "class", "module", "package", "session"
+
+  warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCOPE_UNSET))
+........................................................................ [  2%]
+........................................................................ [  5%]
+........................................................................ [  7%]
+........................................................................ [ 10%]
+........................................................................ [ 12%]
+........................................................................ [ 15%]
+........................................................................ [ 17%]
+........................................F............................... [ 20%]
+........................................................................ [ 22%]
+........................................................................ [ 25%]
+........................................................................ [ 28%]
+........................................................................ [ 30%]
+........................................................................ [ 33%]
+........................................................................ [ 35%]
+........................................................................ [ 38%]
+........................................................................ [ 40%]
+........................................................................ [ 43%]
+........................................................................ [ 45%]
+........................................................................ [ 48%]
+........................................................................ [ 51%]
+........................................................................ [ 53%]
+........................................................................ [ 56%]
+........................................................................ [ 58%]
+................................F................F...................... [ 61%]
+........................................................................ [ 63%]
+........................................................................ [ 66%]
+........................................................................ [ 68%]
+........................................................................ [ 71%]
+........................................................................ [ 74%]
+........................................................................ [ 76%]
+........................................................................ [ 79%]
+........................................................................ [ 81%]
+........................................................................ [ 84%]
+........................................................................ [ 86%]
+........................................................................ [ 89%]
+........................................................................ [ 91%]
+........................................................................ [ 94%]
+........................................................................ [ 97%]
+........................................................................ [ 99%]
+...........                                                              [100%]
+================================== FAILURES ===================================
+__________ test_TC_203_the_key_bar_wears_bright_keys_and_muted_words __________
+
+    def test_TC_203_the_key_bar_wears_bright_keys_and_muted_words():
+        """TC-203 (LLR-202.1). Every view × both layers × widths 24..160: the bar's
+        hexes are only bright (keys, bold), mut (words) and dim (the overflow note);
+        every key shown is bold bright; the markup paints exactly the plain bar.
+        RED on the base tree: accent keys (primary), eight group hues (more)."""
+        from taskboard.app import VIEW_ORDER as views_
+        checked = 0
+        for view in views_:
+            for layer in ("primary", "more"):
+                for width in (24, 60, 80, 118, 160):
+                    markup = render_key_bar(width, view, layer)
+                    assert set(h.lower() for h in HEXES.findall(markup)) <= KEY_HEXES, (view, layer, width)
+                    text = render_markup(markup)
+                    assert text.plain == key_bar_plain(width, view, layer)
+                    at = 0
+                    for show, label in fit_bar(width, view, layer)[0]:   # each key's own cell
+                        st = " ".join(str(sp.style) for sp in text.spans if sp.start <= at < sp.end)
+                        assert "bold" in st and HEX["bright"] in st, (view, layer, width, show, st)
+                        at += len(f"{show} {label}".strip()) + 2
+                    checked += 1
+        assert checked == 10 * 2 * 5
+        for (view, width, layer), plain in KEYBAR_BASE.items():
+>           assert key_bar_plain(width, view, layer) == plain
+E           AssertionError: assert '? Map  ; Mor...e  d  L  \u2193  \u2191' == '? Map  ; Mor...e  d  L  \u2193  \u2191'
+E             
+E             - ? Map  ; More  q Quit  1 Lanes  2  3  4  5  6  7  8  9  0  \u21b5  a  e  d  L  \u2193  \u2191
+E             + ? Map  ; More  q Quit  B  1  2  3  4  5  6  7  8  9  0  \u21b5  a  e  d  L  \u2193  \u2191
+
+tests\test_colour_budget_app.py:506: AssertionError
+______________ test_every_shown_key_has_a_real_action_on_the_app ______________
+
+    def test_every_shown_key_has_a_real_action_on_the_app():
+        """The other direction, and the one that catches a stale bar: the action of
+        every entry must actually exist as a method (inherited counts — `quit` is
+        Textual's)."""
+        for k in KEYMAP:
+>           assert hasattr(TaskboardApp, "action_" + action_name(k.action)), \
+                f"{k.show} ({k.label}) shows a dead action: {k.action}"
+E           AssertionError: B (Boards) shows a dead action: boards
+E           assert False
+E            +  where False = hasattr(TaskboardApp, ('action_' + 'boards'))
+E            +    where 'boards' = action_name('boards')
+E            +      where 'boards' = Key(keys='B', show='B', action='boards', label='Boards', universal=True, priority=False, views=None, primary=True, group='system', bar=True).action
+
+tests\test_keymap.py:99: AssertionError
+______________ test_the_readme_keybinding_table_matches_the_seat ______________
+
+    def test_the_readme_keybinding_table_matches_the_seat():
+        """THE CONTRACT REACHES THE README. Every key the table documents must be a
+        real binding, and every key the app binds must be documented — the same law
+        the key bar obeys, applied to the page a reader meets first.
+    
+        Read off the RAW KEYMAP, never through the accessor (the M12 lesson)."""
+        import re
+        table = [l for l in _readme().splitlines() if l.startswith("| `")]
+        assert table, "no keybinding table found"
+        documented = set()
+        for line in table:
+            cell = line.split("|")[1]
+            for key in re.findall(r"`([^`]+)`", cell):
+                documented.add(key)
+    
+        # the seat's own keys, in the spelling the README uses
+        spelled = {"?": "?", "q": "q", "enter": "Enter", "tab": "Tab",
+                   "d,delete": "d", "+,=": "+", "escape": "esc",
+                   "down,j": "\u2193", "up,k": "\u2191",
+                   "left,h": "\u2190", "right,l": "\u2192"}
+        for k in KEYMAP:
+            want = spelled.get(k.keys, k.keys)
+            if k.action.startswith("view("):
+                want = k.show                      # the views share one table row
+>           assert want in documented, \
+                f"{k.show} ({k.label}) is bound but the README never mentions it"
+E           AssertionError: B (Boards) is bound but the README never mentions it
+E           assert 'B' in {'!', '+', '-', '/', '0', '1', ...}
+
+tests\test_keymap.py:428: AssertionError
+3 failed, 2816 passed in 744.05s (0:12:24)
+exit=1

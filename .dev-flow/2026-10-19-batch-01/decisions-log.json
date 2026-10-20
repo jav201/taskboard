@@ -1,0 +1,67 @@
+[
+  {
+    "station": "P0",
+    "date": "2026-10-19",
+    "decision": "P0 approved under the batch's standing authorization (the orchestrator's commission of 2026-10-19 relaying the operator's verdict «C» on prototypes/present_portfolio/): batch opened by rollover on bdf6e9d (the round cherry-picked from 1132d85); triggers A2 A3 B1 B3 B4 C1 C4 C5 C8 D1 E1 fired, ARQ/PDR/DDR taken up; US-2101..US-2104 READY; ARQ is next."
+  },
+  {
+    "station": "ARQ",
+    "date": "2026-10-19",
+    "decision": "ARQ approved under the batch's standing authorization: docs/ARCHITECTURE.md amended (the project record and its team pull, present_order, render_present_all, PRESENT_SCREEN_VIEWS, present_hidden_rows, PresentHiddenPicker; §5 rationale rows); architect approve with conditions, A-1..A-4, A-15 and the A-2 remainder fixed in iteration 2; P1 is next."
+  },
+  {
+    "station": "P1",
+    "date": "2026-10-19",
+    "decision": "P1 approved under the batch's standing authorization: US-2101..US-2104 -> HLR-2101..HLR-2106 -> LLR-2101.1..LLR-2106.1, AT/TC-2101..2106, premises P-1..P-7 TRUE, LED .1 (amended by LED .2, .3 after P2); P2 is next."
+  },
+  {
+    "station": "P2",
+    "date": "2026-10-19",
+    "decision": "P2 approved under the batch's standing authorization: iteration 1 iterate-to-refine (architect, qa-reviewer majors) folded as LED-2026-10-19-batch-01.2; iteration 2 approve (architect, qa-reviewer), two minors folded as LED .3; ux-reviewer and security-reviewer approve with conditions, carried; PDR is next."
+  },
+  {
+    "station": "PDR",
+    "date": "2026-10-19",
+    "decision": "PDR sealed approved with conditions (PC-1..PC-4) under the batch's standing authorization; the cut re-made (003 views only, 004 app + modals); P3 is next."
+  },
+  {
+    "station": "P3",
+    "date": "2026-10-19",
+    "decision": "P3 increment 001 approved under the batch's standing authorization: the milestone row (HLR-2101, LLR-2101.1) — RED on base_ref (11 failed, 1 passed), 5/5 mutants KILLED, code-reviewer OK with findings (F1, F2 folded), suite-001 2768 passed, 1 skipped; increment 002 is next."
+  },
+  {
+    "station": "P3",
+    "date": "2026-10-19",
+    "decision": "P3 increment 002 approved under the batch's standing authorization: the project's presentation state (HLR-2102) — RED on base 21 failed, 6/6 mutants KILLED, code-reviewer OK (F1-F4 LOW), suite-002 2791 passed, 1 skipped."
+  },
+  {
+    "station": "P3",
+    "date": "2026-10-19",
+    "decision": "P3 increment 003 approved under the batch's standing authorization: the view-3 renderer (HLR-2103, the rows of HLR-2106) — RED on base 13 failed, 8/8 mutants KILLED, code-reviewer OK with findings (F1, F3 fixed in increment 004; F2 amended as LED .4), suite-003 2804 passed, 1 skipped."
+  },
+  {
+    "station": "P3",
+    "date": "2026-10-20",
+    "decision": "P3 increment 004 approved under the batch's standing authorization: the screen and the picker (HLR-2104..HLR-2106) — RED on base 10 failed, 20/20 mutants KILLED, code-reviewer BLOCK-UNTIL F1 at 6d9f344, OK at fc55d3a, suite-004 2818 passed."
+  },
+  {
+    "station": "P3",
+    "date": "2026-10-20",
+    "decision": "P3 increment 005 approved under the batch's standing authorization (the coordinator's follow-up of 2026-10-20): the picker keeps the presentation in view behind it — RED on the opaque picker, code-reviewer OK (F1/F2 folded in 006)."
+  },
+  {
+    "station": "P3",
+    "date": "2026-10-20",
+    "decision": "P3 increment 006 approved under the batch's standing authorization: the shared modal backdrop, the picker's first hidden row (P4 ux UX4-1), AT-2105's caret (P4 qa G-1), the module map's PresentAll row — RED on 7c4140a, code-reviewer APPROVE; DDR is next."
+  },
+  {
+    "station": "DDR",
+    "date": "2026-10-20",
+    "decision": "DDR sealed approved under the batch's standing authorization: the re-cut and the review fixes declared, the interfaces re-read, each AT in one node, the ledger 2758 - 2 + 63 = 2819, PC-1..PC-4 discharged (PC-1 with four declared substitutions); P4 is next."
+  },
+  {
+    "station": "P4",
+    "date": "2026-10-20",
+    "decision": "P4 PASS-WITH-NOTES under the batch's standing authorization: the gate run at 91d1f8c in a clean worktree, 2819 passed, 0 failed, 0 skipped (evidence/suite-p4.txt); ux walkthrough pass-with-notes (UX4-1 fixed in 006); qa G-1 fixed, G-2..G-6 accepted."
+  }
+]

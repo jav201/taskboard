@@ -1,0 +1,30 @@
+P-1 history_path: one/history.jsonl
+P-1 image_dir:    one/images/t1
+P-1 present_paths: one/reports/present-demo-2026-10-20.svg
+P-1: TRUE
+P-2 exists after load: True projects: 6 tasks: 16
+P-2: TRUE
+P-3 save_pil_image returns: ['return its resolved absolute path."""', 'return dest.resolve()']
+P-3 caller: ['dest = save_pil_image(self.board.image_dir(self._img_key), grabbed)']
+P-3: TRUE
+P-4 'B' in seat: False · 'b' in seat: True · 'B' in a screen's BINDINGS: False
+P-4: TRUE
+P-5 check_action: e them instead of moving the hidden board selection.""" if (action in ("cursor", "hmove", "toggle_presentation") and len(self.screen_stack) > 1): return False return True
+P-5: TRUE
+P-6 _start_team_daemon: am_state is None or not self.team_state.user_id: return self.set_interval(self.team_sync_interval, self._team_sync_tick)
+P-6: TRUE
+P-7 team_project_ids: ['p1', 'p2']
+P-7: TRUE
+P-8 C-160-open.svg row 0:  ◆ TASKBOARD  boards                                                                                                            4 boards · ▲5 late · Tue 20 Oct
+P-8 C-160-open.svg row 2:  ┏━ ▶ Personal ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓  ╭─ Client · Retail RAG ──────────────────────────────────────────────────────╮
+P-8 C-160-open.svg last row:  ←→↑↓ move  ↵ open  n new  e name/colour  x archive  A all boards  esc back  q quit
+P-8 C-118-open.svg row 0:  ◆ TASKBOARD  boards                                                                  4 boards · ▲5 late · Tue 20 Oct
+P-8 C-118-open.svg row 2:  ┏━ ▶ Personal ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓  ╭─ Client · Retail RAG ─────────────────────────────────╮
+P-8 C-118-open.svg last row:  ←→↑↓ move  ↵ open  n new  e name/colour  x archive  A all boards  esc back  q quit
+P-8 C-80-open.svg row 0:  ◆ TASKBOARD  boards                            4 boards · ▲5 late · Tue 20 Oct
+P-8 C-80-open.svg row 2:  ┏━ ▶ Personal ━━━━━━━━━━━━━━━━━━━━━━━┓  ╭─ Client · Retail RAG ──────────────╮
+P-8 C-80-open.svg last row:  ←→↑↓ move  ↵ open  n new  e name/colour  x archive  A all boards  esc back  q
+P-8: TRUE
+P-9 save: ir(parents=True, exist_ok=True) self.path.write_text(self._serialized(), encoding="utf-8")
+P-9 save_atomic uses os.replace: True
+P-9: TRUE
