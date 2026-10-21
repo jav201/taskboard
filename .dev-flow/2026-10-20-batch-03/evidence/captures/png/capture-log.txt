@@ -80,3 +80,5 @@ ok   task-editor 118x30 (1095 x 627, 21 colours sampled) via PrintWindow - windo
 ok   task-editor 80x24 (753 x 513, 14 colours sampled) via PrintWindow - window closed
 ok   clocks 118x30 (1095 x 627, 10 colours sampled) via PrintWindow - window closed
 ok   clocks 80x24 (753 x 513, 10 colours sampled) via PrintWindow - window closed
+ok   open 118x30 (1095 x 627, 46 colours sampled) via PrintWindow - window closed
+ok   open 80x24 (753 x 513, 23 colours sampled) via PrintWindow - window closed

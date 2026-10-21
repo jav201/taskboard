@@ -51,8 +51,8 @@ The boards take the round's items 7, 8 and 9. The milestone offer and the team i
 | `taskboard/app.py` | source | LLR-2408.1, LLR-2409.2, LLR-2410.2 | `_presence`, `_enter_presence` (in `_open_board`), the 30-tick renewal, `on_unmount`; `_label_board`'s unlisted label; `on_mount` without the home for an unlisted board and its notice; `TeamIdentityPicker(roster, self.board.label)` |
 | `taskboard/__main__.py` | source | LLR-2410.1 | `--open` (exclusive with `--board`), `_a_board_file` checked before `--report`, `open_app(board, unlisted=None)` |
 | `taskboard/modals.py` | source | LLR-2408.1, LLR-2410.2 | the offer's and the picker's chip and wrapping titles, the picker's key line; `ProjectPicker.action_move_board` refuses an unlisted board |
-| `tests/test_boards_backlog_round.py` | test | HLR-2408..HLR-2410, LLR-2408.1..LLR-2410.2 | new: TC-2408, AT-2408, TC-2409 ×2, AT-2409, TC-2410 ×4 (+ parameters), AT-2410 |
-| `.dev-flow/2026-10-20-batch-03/evidence/mutate-003.py` | doc | HLR-2408..HLR-2410 | the increment's mutation battery |
+| `tests/test_boards_backlog_round.py` | test | HLR-2408, HLR-2409, HLR-2410, LLR-2408.1, LLR-2409.1, LLR-2409.2, LLR-2410.1, LLR-2410.2 | new: TC-2408, AT-2408, TC-2409 ×2, AT-2409, TC-2410 ×4 (+ parameters), AT-2410 |
+| `.dev-flow/2026-10-20-batch-03/evidence/mutate-003.py` | doc | HLR-2408, HLR-2409, HLR-2410 | the increment's mutation battery |
 
 | Count | Value |
 |---|---|
@@ -77,6 +77,7 @@ The boards take the round's items 7, 8 and 9. The milestone offer and the team i
 | **Instrument RED-proof** | 1 instrument: `evidence/mutate-003.py` — increment 001's harness (its RED seen at increment 002: a `CRASH/BAD` node id and a `SURVIVED` arm) with this increment's arms; its first run here printed `GREEN (SURVIVED)` for M11b (the notice's text, not its flag, was read) and `BAD` for M17 (an anchor the review's cleanup moved), both repaired before the recorded run; `arms: 24` |
 | **Emitted-form assertion** | 1 artifact: the presence marker — its JSON read back (`since` `2026-10-20T09:30`) and its name matched against the pattern another window reads (TC-2409) |
 | **Reverse census** | 4 probes: B1 `grep -rln "open_app\|Registry\|MilestoneOffer\|TeamIdentityPicker\|action_move_board" tests/` → the boards suites, `test_milestone_offer.py`, `test_milestone_offer_seam.py`, `test_team_sync.py`, `test_markup_sites.py`, `test_markup_census.py` — green in `suite-003.txt`; architect A-12's notice census `grep -ln "_notifications\|notify" tests/*.py \| xargs grep -ln "open_app\|TaskboardApp("` → 26 files, all run in `suite-003.txt` · B2 no file moves · B3 no golden capture renders a start-up title or a notice · B4 the marker (above); `boards.json`, untouched by `--open` (AT-2410 compares its bytes) · 0 foreign hits |
+| **Evidence files** | the table under §4 *Evidence files*: each artifact's path and SHA-256 |
 | **Correction population** | none — no shipped assertion changed |
 
 ### Evidence files

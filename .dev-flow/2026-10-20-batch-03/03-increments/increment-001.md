@@ -79,6 +79,7 @@ Every modal button now has a direct key written on the modal (the operator's obj
 | **Instrument RED-proof** | 1 instrument: `evidence/mutate-001.py` — batch 2026-10-20-batch-02's harness (its RED seen there: a `BAD` anchor and a `SURVIVED` arm) with this increment's arms; `arms: 17` |
 | **Emitted-form assertion** | none — this increment emits no artifact (the modals answer their callers; the move's files are batch-02's, re-asserted unchanged by its suites) |
 | **Reverse census** | 4 probes: B1 `grep -rln "ConfirmModal\|MoveConfirm\|TaskModal\|ProjectModal\|TextPrompt\|ClockModal\|TemplateEditor\|KEYMAP" tests/` → `test_app.py`, `test_archive.py`, `test_boards_home.py`, `test_links.py`, `test_markup_census.py`, `test_markup_sites.py`, `test_boards_move.py`, `test_boards_concurrency.py`, `test_details_grid.py`, `test_edit_window.py`, `test_emoji_picker.py`, `test_link_picker.py`, `test_milestones.py`, `test_present_hide.py`, `test_setup_help.py`, `test_template_new.py`, `test_template_save_app.py`, `test_keymap.py`, `test_help_keys.py` — the move pair updated (law-driven, §2), the rest green unchanged in `suite-001.txt` but for `test_milestones.py`, `test_present_hide.py` and `test_link_picker.py`, which only open the forms (green at P4) · B2 no file moves · B3 no golden capture (the round's `move-160-3-confirm.svg` is a read box the test now compares with the keys row re-worded) · B4 none — no artifact written · 0 foreign hits |
+| **Evidence files** | the table under §4 *Evidence files*: each artifact's path and SHA-256 |
 | **Correction population** | 1 correction: the confirmation of a move by `enter`, enumerated by `grep -n '"enter"\|↵ move' tests/test_boards_move.py tests/test_boards_concurrency.py` before the first edit — 8 sites: `test_boards_move.py` 290 and 449 (`enter` → `y`), 364 and 445 (`↵ move` → `y move`), the round-box comparison (its keys row re-worded); `test_boards_concurrency.py` 448, 454, 535 (`enter` → `y`) |
 
 ### Evidence files
@@ -107,7 +108,7 @@ The full suite is owed at P4. AT-2406's move arm opens the move with `escape`, `
 
 ## 7 · Suggested next task
 
-Increment 002 — the presentation (HLR-2402..HLR-2405).
+Increment 002 — the presentation (HLR-2402, HLR-2403, HLR-2404, HLR-2405).
 
 ## Increment gate checklist
 

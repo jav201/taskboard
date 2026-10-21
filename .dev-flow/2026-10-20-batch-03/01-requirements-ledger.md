@@ -59,7 +59,7 @@ above this line is ever edited._
 - **Evidence:** `03-increments/increment-004.md`; `evidence/mutation-004.txt`.
 
 ### LED-2026-10-20-batch-03.8 — the DDR's folds (DDR)
-- **Requirement:** HLR-2407, LLR-2407.1, HLR-2405, HLR-2401, LLR-2410.2
+- **Requirement:** HLR-2407, LLR-2407.1, HLR-2405, HLR-2401, HLR-2410, LLR-2410.2
 - **Date:** 2026-10-21
 - **What changed:** Before → After. (1) LLR-2407.1's form key line: "the forms' last row names every button's key" → a form whose box scrolls keeps its key line docked at the box's foot, always on screen (ux UX-DDR-1: the project form's line sat below the fold at 30 rows). (2) The task editor's words: `alt+i paste image`, `alt+t start date`, `alt+d due date` → `alt+i image`, `alt+t start`, `alt+d due`, so `esc cancel` stays whole at 80 columns (ux UX-DDR-2). (3) AT-2405 re-reads the file after `J` as after `K` (qa QA-DDR-2). (4) AT-2401's byte-identity leg proven RED by a writing jump (qa QA-DDR-1, DDR-C1). (5) LLR-2410.2 "`--board PATH` is unchanged" → `--report --board ~/x` now expands `~` as `register` does (architect A-DDR-3: harmless, declared here). (6) An escaped regression of increment 001, found by the DDR's targeted run: `#confirm-box .modal-title` sat before `.modal-title` in `taskboard.tcss`, so TC-204 (`test_colour_budget_app.py`, which reads the first `.modal-title {` block) failed; the rule moved after the base block, the cascade unchanged (an id selector outranks the class either way). Increment 001's targeted run had not listed that suite.
 - **Why:** the DDR's independent reviews (architect, qa-reviewer, ux-reviewer).

@@ -51,10 +51,10 @@ The presentation (`R`) takes the round's items 2, 3, 4 and 5. Its key bindings a
 | `taskboard/views.py` | source | LLR-2402.1, LLR-2404.1 | `board_chip_text`, `present_all_export` (new); `_all_timeline(…, anchor=None)` |
 | `taskboard/modals.py` | source | LLR-2403.2 | `PresentKeys` (new) |
 | `taskboard/app.py` | source | LLR-2402.1, LLR-2403.1, LLR-2403.2, LLR-2404.1, LLR-2405.1 | `PresentScreen.BINDINGS = present_bindings()`; `_hint` (the chip) over `_keys_hint` (`? keys`, view 3's `K J` wordings); `action_keys`; `action_export`'s view 3 |
-| `tests/test_present_backlog_round.py` | test | HLR-2402..HLR-2405, LLR-2402.1..LLR-2405.1 | new: TC-2402..TC-2405, AT-2402..AT-2405 |
+| `tests/test_present_backlog_round.py` | test | HLR-2402, HLR-2403, HLR-2404, HLR-2405, LLR-2402.1, LLR-2403.1, LLR-2403.2, LLR-2404.1, LLR-2405.1 | new: TC-2402..TC-2405, AT-2402..AT-2405 |
 | `tests/test_modal_keys.py` | test | HLR-2407 | the inventory gains `PresentKeys` (no buttons) |
 | `tests/test_present_narrow.py`, `tests/test_present_polish.py`, `tests/test_present_views_app.py`, `tests/test_present_hide.py`, `tests/test_present_all.py` | test | HLR-2403, HLR-2405 | law-driven (LED .5, D-14): every expected hint ends `  ? keys`, its wording chosen in the room left (first widths + 8, the long view-3 one + 12), view 3's wordings with `K J`; AT-2002 now checks that `?` lists `next` and `show all`; `ALL_FIRST` re-pinned as literal measured numbers (+8, the long one +12; code review CR-3); TC-1904's overflow arm renamed and given a 48-column count (CR-5) |
-| `.dev-flow/2026-10-20-batch-03/evidence/mutate-002.py` | doc | HLR-2402..HLR-2405 | the increment's mutation battery |
+| `.dev-flow/2026-10-20-batch-03/evidence/mutate-002.py` | doc | HLR-2402, HLR-2403, HLR-2404, HLR-2405 | the increment's mutation battery |
 
 | Count | Value |
 |---|---|
@@ -79,6 +79,7 @@ The presentation (`R`) takes the round's items 2, 3, 4 and 5. Its key bindings a
 | **Instrument RED-proof** | 1 instrument: `evidence/mutate-002.py` — increment 001's harness; its first run here printed `CRASH/BAD (exit 4)` for a node id holding non-ASCII parameters and `GREEN (SURVIVED)` for the AT's live-rule arm, both repaired before the recorded run; `arms: 16` |
 | **Emitted-form assertion** | 1 artifact: the view-3 SVG (`reports/present-board-2026-10-20-all.svg`), read row by row as Rich emits it (`&#160;` unescaped, the `<text>` pieces of each `line-N` joined, rows = the highest `line-N` + 1) — AT-2402, AT-2403, AT-2404 |
 | **Reverse census** | 4 probes: B1 `grep -rln "PresentScreen\|present-hint\|_hint\|render_present_all\|action_export\|KEYMAP" tests/` → the presentation suites (5 law-driven updates, §2), `test_boards_home.py`, `test_gantt_polish.py`, `test_link_picker.py`, `test_report.py`, `test_markup_census.py`, `test_markup_sites.py`, `test_keymap.py`, `test_help_keys.py`, `test_readme.py` — green in `suite-002.txt` · B2 no file moves · B3 the round frames read by `test_present_polish.py`/`test_present_views.py` are frames, never the hint — green · B4 the view-3 SVG/PNG (above) · 0 foreign hits |
+| **Evidence files** | the table under §4 *Evidence files*: each artifact's path and SHA-256 |
 | **Correction population** | 1 correction: the hint pins, enumerated by `grep -rln "esc leave\|x export · esc\|⇧↑↓ order\|⇧↑↓ reorder" tests/` before the first edit — 5 files, each pin moved by the one rule (`  ? keys` appended, the wording chosen 8 cells narrower; view 3 `K J`) |
 
 ### Evidence files
@@ -108,7 +109,7 @@ The full suite is owed at P4. `SOURCE files` at the cap (4/4), declared in §2. 
 
 ## 7 · Suggested next task
 
-Increment 003 — the boards (HLR-2408..HLR-2410).
+Increment 003 — the boards (HLR-2408, HLR-2409, HLR-2410).
 
 ## Increment gate checklist
 

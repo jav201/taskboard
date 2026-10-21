@@ -162,7 +162,7 @@ Textual 8.2.8 reads `ESC` + a letter as `alt+<letter>` (P-10) and Windows Termin
 
 ### HLR-2401 — An agenda of every board
 - **Traceability:** US-2401
-- **Ledger:** LED-2026-10-20-batch-03.1, LED-2026-10-20-batch-03.2, LED-2026-10-20-batch-03.3, LED-2026-10-20-batch-03.7
+- **Ledger:** LED-2026-10-20-batch-03.1, LED-2026-10-20-batch-03.2, LED-2026-10-20-batch-03.3, LED-2026-10-20-batch-03.7, LED-2026-10-20-batch-03.8
 - **Statement:** When the operator presses `A` on the main screen or on the home, the system shall show, read-only, the agenda of every active board — a head row (`◆ ALL BOARDS`, `<n> boards · read-only` where `<n>` counts the lanes, `1 board` singular; at the right `▲<late> late · <today> today · <week> to Sun <day>`), a bucket row (`LATE`, `TODAY`, then each day to Sunday written `Wed 21`, the chosen bucket marked `▼` and shaded), one lane per active board in the registry's order — and, when the open board is unlisted (`--open`), a last lane for it under its chip's name — (`▌` and the name in the board's colour, a `●` per open task with a due date in each bucket, `·` where none; a board whose file is missing or unreadable drawn with its name dimmed and, from 100 cells, `file missing` / `file unreadable`), a rule, the chosen bucket's head (`<BUCKET> · <n> due across <m> boards`, singular `1 due`, `1 board`) and its tasks (the board's bar and name, from 100 cells the project, the title, and `▲Nd` / `today` / `Wed 21`), ordered by due date then lane, and a key row in the key bar's style (`←→ day   ↑↓ task   ↵ open on its board   esc back` then `· read-only: nothing here edits a task`, the tail dropped first and the words before any key when the row is narrow); it shall open on `TODAY`; `←`/`→` (`h`/`l`) choose the bucket, `↑`/`↓` (`k`/`j`) the task; `enter` shall close it (and the home beneath it), open the task's board in place when it is another — a switch, with a switch's own writes — and select the task; `escape` or `A` shall close it; the agenda itself shall write nothing; `A` shall not act over a modal or the presentation, and no other key of the main screen shall act while the agenda is open; `A` shall be listed by `?`'s map and the palette (`KEYMAP`, off the main bar) and on the home's key row (`A all boards`).
 - **Rationale (informative):** item 1, variant C (`AgendaRuler`), opened from the home as the round's scene was (ux UX-1); a lane per board answers "which board carries which day" at a glance. The list's order changes from the capture the operator saw (by board name) to lane order (declared, to be said at the close).
 - **Validation:** `test`
@@ -226,7 +226,7 @@ Textual 8.2.8 reads `ESC` + a letter as `alt+<letter>` (P-10) and Windows Termin
 
 ### HLR-2405 — `K`/`J` reorder beside `shift+↑/↓`
 - **Traceability:** US-2402
-- **Ledger:** LED-2026-10-20-batch-03.1, LED-2026-10-20-batch-03.2, LED-2026-10-20-batch-03.3, LED-2026-10-20-batch-03.5
+- **Ledger:** LED-2026-10-20-batch-03.1, LED-2026-10-20-batch-03.2, LED-2026-10-20-batch-03.3, LED-2026-10-20-batch-03.5, LED-2026-10-20-batch-03.8
 - **Statement:** In view 3, `K` and `J` shall do what `shift+↑` and `shift+↓` do (the cursor's project one place up / down, saved); the hint's wordings shall name them: `⇧↑↓/K J reorder` (long), `K J order` (middle), `K J` (glyphs).
 - **Rationale (informative):** item 5, variant A (`PresentReorderKJ`); `[`/`]` rejected (the main screen's phase keys).
 - **Validation:** `test`
@@ -258,7 +258,7 @@ Textual 8.2.8 reads `ESC` + a letter as `alt+<letter>` (P-10) and Windows Termin
 
 ### HLR-2407 — Every button of a modal with a text field has an `alt+<letter>` key on a key line
 - **Traceability:** US-2404
-- **Ledger:** LED-2026-10-20-batch-03.1, LED-2026-10-20-batch-03.2, LED-2026-10-20-batch-03.3, LED-2026-10-20-batch-03.4
+- **Ledger:** LED-2026-10-20-batch-03.1, LED-2026-10-20-batch-03.2, LED-2026-10-20-batch-03.3, LED-2026-10-20-batch-03.4, LED-2026-10-20-batch-03.8
 - **Statement:** Every modal holding a text field shall bind keys that press its buttons (one routing: the key presses the button) — `alt+s` its Save button (`TaskModal`, `ProjectModal`, `TemplateEditor`, `ClockModal`, `TextPrompt`), `alt+i` to `Paste image` (`TaskModal`), `alt+t` and `alt+d` to the start and due calendars (`TaskModal`, `ProjectModal`), and keep `escape` for Cancel; each shall show a key line of those keys, three spaces between pairs (`alt+s save`, `alt+i paste image`, `alt+t start date`, `alt+d due date`, `esc cancel`; in the 62-cell project form `alt+t start`, `alt+d due`, so `esc cancel` keeps its word; `↵ / alt+s save` where `enter` in the field saves, `TextPrompt`) — in the four boxed modals under the buttons, in the full-screen task editor as its last row, whose words go from the right before any key when the row is too narrow; a plain letter typed in a field stays text. Every modal of the app shall reach each of its buttons by a direct key it shows, and a law shall hold every `ModalScreen` subclass of the package (found by walking `taskboard.modals` and `taskboard.app`) to its inventory row. Checkboxes and selects are fields, reached by `tab` as today (qa QA-15); the editor keeps its title's `ctrl+e emoji` and its preview's `ctrl+v paste · esc cancel` as they are (ux UX-14, a decision at the captures).
 - **Rationale (informative):** the objection to item 6 (D-6): «un acceso directo a los botones … cuando hay bloques de entrada de texto usar una combinación específica»; no modal saves with `ctrl+s` today, so none is kept.
 - **Validation:** `test`
@@ -306,7 +306,7 @@ Textual 8.2.8 reads `ESC` + a letter as `alt+<letter>` (P-10) and Windows Termin
 
 ### HLR-2410 — `--open PATH` opens a board without registering it
 - **Traceability:** US-2407
-- **Ledger:** LED-2026-10-20-batch-03.1, LED-2026-10-20-batch-03.2, LED-2026-10-20-batch-03.3, LED-2026-10-20-batch-03.6
+- **Ledger:** LED-2026-10-20-batch-03.1, LED-2026-10-20-batch-03.2, LED-2026-10-20-batch-03.3, LED-2026-10-20-batch-03.6, LED-2026-10-20-batch-03.8, LED-2026-10-20-batch-03.9
 - **Statement:** When `taskboard --open PATH` names an existing board file (a regular file, after a leading `~` is read as `Path.home()`, that parses to a JSON object), the system shall open it without writing `boards.json` (no entry, no `last`): the board's chip shall read `<name> · not listed` (the file's name as a registered board would be named — `boards.name_for`, its control characters stripped (security S-11) — on `pink`) whatever the number of boards, the home shall not open at start, a notice (`markup=False`, 15 s) shall say `Opened <PATH> without adding it to your boards (--open). B lists your <n> boards; this file is not one of them.` (`1 board` singular), `B` shall list the registered boards, a project moved out of it (`P`, `m`) shall be refused with `This board is not listed (--open): open it with --board to move its projects.`, and it shall be no move target; the file itself opens read-write and its start writes as any board's does (the one-time migrations, the renumber notice's mark, the sweep of old done work; architect A-2 — a read-only `--open` is an item for the operator); once the operator switches away from it, it is not reachable again in that session; when PATH is not such a file the system shall exit with status 2 and `taskboard: no board file at <PATH> (--open opens an existing one)` on stderr, checked right after the arguments are read, before `--report` and before anything is built, writing nothing; `<PATH>` is printed with its control characters stripped; `--open` and `--board` together shall be refused by the argument parser (`not allowed with argument`); `--board PATH` is unchanged; `--report` reads `--open`'s file as it reads `--board`'s.
 - **Rationale (informative):** item 9, variant A (`opened_unlisted`); a missing file is refused because the loader would seed and save sample data there.
 - **Validation:** `test`
@@ -409,7 +409,7 @@ Textual 8.2.8 reads `ESC` + a letter as `alt+<letter>` (P-10) and Windows Termin
 
 ### LLR-2407.1 — the form modals' `alt` keys and key lines
 - **Traceability:** HLR-2407
-- **Ledger:** LED-2026-10-20-batch-03.1, LED-2026-10-20-batch-03.2, LED-2026-10-20-batch-03.3, LED-2026-10-20-batch-03.4
+- **Ledger:** LED-2026-10-20-batch-03.1, LED-2026-10-20-batch-03.2, LED-2026-10-20-batch-03.3, LED-2026-10-20-batch-03.4, LED-2026-10-20-batch-03.8
 - **Statement:** `taskboard/modals.py` (NEW — created in increment 001) shall provide `ButtonKeysMixin.action_press_button(button_id)` (presses that button: the key and the button share one path — architect A-7); `TaskModal`, `ProjectModal`, `TemplateEditor`, `ClockModal` and `TextPrompt` shall bind `alt+s` → `press_button('save')`; `TaskModal` `alt+i` → `press_button('paste-img')`; `TaskModal` and `ProjectModal` `alt+t` → `press_button('cal-f-start')`, `alt+d` → `press_button('cal-f-due')` — all priority (a design choice; no field of Textual 8.2.8 binds `alt+<letter>`, so the priority is not observable — qa QA-13); the four boxed modals shall yield `Label(key_line(...), classes="modal-keys")` after their buttons; `TaskModal` shall yield a one-row `Static(id="task-keys")` last in `#task-box`, its `key_line` fitted to the screen's width on mount and resize; the inventory law (`tests/test_modal_keys.py`) shall enumerate `ModalScreen` subclasses of `taskboard.modals` and `taskboard.app` and hold each to its table row.
 - **Validation:** `test (unit)`
 - **Executed verification:** `python -m pytest -q -p no:cacheprovider tests/test_modal_keys.py -k TC_2407`
@@ -459,7 +459,7 @@ Textual 8.2.8 reads `ESC` + a letter as `alt+<letter>` (P-10) and Windows Termin
 
 ### LLR-2410.2 — the unlisted board in the app
 - **Traceability:** HLR-2410
-- **Ledger:** LED-2026-10-20-batch-03.1, LED-2026-10-20-batch-03.2, LED-2026-10-20-batch-03.3, LED-2026-10-20-batch-03.6
+- **Ledger:** LED-2026-10-20-batch-03.1, LED-2026-10-20-batch-03.2, LED-2026-10-20-batch-03.3, LED-2026-10-20-batch-03.6, LED-2026-10-20-batch-03.8, LED-2026-10-20-batch-03.9
 - **Statement:** with `board_id` None (no registry entry for the open file), `_label_board` shall set the label `(<boards.name_for(path)> · not listed, "pink")`, `on_mount` shall not push the home and shall notify HLR-2410's text with `markup=False`, `timeout=15` (the path with its control characters stripped), and `ProjectPicker.action_move_board` shall refuse with HLR-2410's text before listing targets.
 - **Validation:** `test (unit)`
 - **Executed verification:** `python -m pytest -q -p no:cacheprovider tests/test_boards_backlog_round.py -k TC_2410`

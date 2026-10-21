@@ -51,7 +51,7 @@ The round's item 1, variant C: `A` opens one read-only screen with every board's
 | `taskboard/keymap.py` | source | LLR-2401.2 | `Key("A", …, "agenda_all", bar=False)` |
 | `tests/test_all_agenda.py` | test | HLR-2401, LLR-2401.1, LLR-2401.2 | new: TC-2401 ×5 nodes, AT-2401 |
 | `tests/test_boards_home.py` | test | HLR-2401 | the home's key row compared whole with the round's capture (`A all boards`) |
-| `README.md`, `docs/ARCHITECTURE.md`, `.dev-flow/BACKLOG.md` | doc | HLR-2401..HLR-2410 | the batch's keys, CLI, `open/` folder, module and decision rows, the round's findings logged |
+| `README.md`, `docs/ARCHITECTURE.md`, `.dev-flow/BACKLOG.md` | doc | HLR-2401, HLR-2402, HLR-2403, HLR-2404, HLR-2405, HLR-2406, HLR-2407, HLR-2408, HLR-2409, HLR-2410 | the batch's keys, CLI, `open/` folder, module and decision rows, the round's findings logged |
 | `.dev-flow/2026-10-20-batch-03/evidence/mutate-004.py` | doc | HLR-2401 | the increment's mutation battery |
 
 | Count | Value |
@@ -77,6 +77,7 @@ The round's item 1, variant C: `A` opens one read-only screen with every board's
 | **Instrument RED-proof** | 1 instrument: `evidence/mutate-004.py` — increment 001's harness; after the review's CR-5 rewrite its run printed `BAD (anchor found 0 times)` for M10 (the stale anchor), then `GREEN (SURVIVED)` for M10 against the old test (the clipped tail was not read); the test now asserts `read-only` absent at 80 and the recorded run kills it; `arms: 15` |
 | **Emitted-form assertion** | 1 artifact: the board files — AT-2401 compares every board file's bytes before and after (the agenda writes nothing) |
 | **Reverse census** | 3 probes: B1 `grep -rln "HOME_KEYS\|home_keys\|KEYMAP\|check_action\|SEAT_ACTIONS" tests/` → the home, keymap, help, README and seat suites — all in `suite-004.txt` · B2 no file moves · B3 the home's key-row capture (`test_boards_home.py`) updated to the round's capture, declared in §4 *Correction population* · 0 foreign hits |
+| **Evidence files** | the table under §4 *Evidence files*: each artifact's path and SHA-256 |
 | **Correction population** | 1 assertion: `test_boards_home.py`'s key row — the constant `KEY_ROW` replaced by the round's approved capture with `A all boards` (LED .7) |
 
 ### Evidence files

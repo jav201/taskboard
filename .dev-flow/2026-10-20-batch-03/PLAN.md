@@ -22,7 +22,7 @@ orchestrator presents the full plan in-conversation at each phase gate.
 | Project | taskboard |
 | Batch | 2026-10-20-batch-03 |
 | Objective | The backlog round after the several-boards batches, as the operator's verdict on prototypes/backlog_round chose: an all-boards agenda on `A` (a lane per board and the chosen day's list, variant C); the board's chip on the presentation's hint row; `?` inside `R` opens its keys; the view-3 export without the cursor, cut to its content; `K`/`J` reorder beside shift+arrows; a direct, shown key for every modal button (`y`/`n` in confirmations, `alt+<letter>` beside text inputs); the board's chip in the start-up modals' titles; one notice when the board is open in another window; `--open PATH` opens a board without registering it |
-| Last updated | P3 · 2026-10-20 |
+| Last updated | P5 · 2026-10-21 |
 | Standing authorization | standing authorization — the orchestrator's commission of 2026-10-20 (the runtime cannot prompt), relaying the operator's words «Haz lo del backlog por favor.» and the operator's verdict on the backlog round, verbatim: «1 agenda: C · 2 chip: B · 3 help: A · 4 export: limpia · 5 reorder: A · 6 confirm: B · OBJECIÓN: «Esa opción debería ser el estandar para todas las aplicaciones TUI que tenemos. Para tener un acceso directo a los botones. (y cuando hay bloques de entrada de texto usar una combinación específica)» · 7 startup: A · 8 twice: A · 9 register: A · notes: (none)». Quoted from the commission: «Gates close under this authorization. Do NOT push or merge; stop at batch close and report», «WORKTREE: … -b feat/backlog-round fix/backlog-boards, then git cherry-pick 36bba10», «the chosen variant of each item is the spec; port the prototype's code into the real app», «EVERY modal in taskboard gets a direct key per button, visible on screen … In modals with text inputs, plain letters type, so buttons use alt+<letter> (keep ctrl+s where a form already saves with it; keep esc cancel)», «Max 4 SOURCE files per increment (tests uncapped)», «spawn independent agents (code-reviewer, qa-reviewer, ux-reviewer, security-reviewer for the presence marker / CLI) … no self-review», «Real-app captures of each shipped item at 118x30 and 80x24», «full suite in 3 SEQUENTIAL chunks». Read as: every gate of this batch is autonomous (reviewer roles are spawned sub-agents carrying their `agents/<role>.md`); commits on the local branch `feat/backlog-round` are authorized, each ending with the commission's co-author line; **push and merge are NOT authorized**; synthetic data only; the operator's name nowhere (`username_subject`); the main checkout's dirty and untracked files and the other worktrees are not touched; tests never touch the real home. |
 | First gate | step 1, on `2eade16` (the base before the cherry-pick, a scratch detached worktree): exit 0 — 0 block · 51 notice · 63 not applicable; `V7`: bundle identical to its manifest both directions, 57 declared files, `2026-10-12-rev102` (`evidence/gate-step1.txt`). The same run on `1fd667b` (after the commission's cherry-pick, before the rollover) printed 136 BLOCK, every one `V59` naming a `prototypes/backlog_round/` file against the closed batch's `base_ref` `b1b71e4` (`evidence/gate-step1-after-cherry-pick.txt`); the rollover re-stamps `base_ref` to `1fd667b`, the cherry-pick then predates the batch. Step 3 (after the rollover): exit 0 — 0 block · 72 notice · 47 not applicable (`evidence/gate-step3.txt`). |
 | Premises / RC-1 | RC-1 (a): `git fetch origin` → `origin/main` = `b1b71e4310ea7944edbbb6f16f350352e0a9491b`, an ancestor of the worktree's `HEAD` `1fd667b` (`fix/backlog-boards` at `2eade16`, batch 2026-10-20-batch-02's unpushed close, plus the commission's cherry-pick of `36bba10`); the commission names that base, so no rebase onto `origin/main`; `base_ref` stamped `1fd667b27b0980996d7a8d7ce0a8d7f0e8156e3d`. RC-1 (b): not already shipped — on `HEAD` `A` is bound nowhere, `?` does nothing in `R`, `ConfirmModal` answers no `y`, `--open` is not an option (P-1, P-3, P-6, P-9). RC-2: `git ls-remote --exit-code --heads origin` → exit 0; newest commit on `origin/main` 2026-10-20 17:57 −0600. Premises: `01-requirements.md` §2.7 (P-1..P-11, all TRUE, `evidence/premises.txt`). |
@@ -55,7 +55,7 @@ The trigger evaluation `state.json`'s `triggers.record` points at: one row per t
 
 ## Where we are
 
-P3 — ARQ, P1 (one iterate-to-refine: LED .2, LED .3), P2 and the PDR (approved with conditions PC-1..PC-5) closed under the standing authorization; increment 001 is next.
+P5 — closed under the standing authorization: four increments (`fab1206`, `5d50baa`, `b05799c`, `8ba1161`), the real captures (`13a8f25`), the DDR's folds (`1647442`, approved), the P4 fold (`8f0fe85`) and the gate run (3025 passed, `04-validation.md` PASS-WITH-NOTES). Not pushed, not merged (the commission): the branch `feat/backlog-round` waits for the operator.
 
 ## Objective
 
@@ -65,19 +65,22 @@ Port the round's nine chosen variants into the app, with item 6's objection read
 
 | Story / station | Status | Notes |
 |---|---|---|
-| US-2401 | READY | increment 004 |
-| US-2402 | READY | increment 002 |
-| US-2403 | READY | increment 002 |
-| US-2404 | READY | increment 001 |
-| US-2405 | READY | increment 003 |
-| US-2406 | READY | increment 003 |
-| US-2407 | READY | increment 003 |
+| US-2401 | DONE | increment 004; AT pass at P4 |
+| US-2402 | DONE | increment 002; AT pass at P4 |
+| US-2403 | DONE | increment 002; AT pass at P4 |
+| US-2404 | DONE | increment 001; AT pass at P4 |
+| US-2405 | DONE | increment 003; AT pass at P4 |
+| US-2406 | DONE | increment 003; AT pass at P4 |
+| US-2407 | DONE | increment 003; AT pass at P4 |
 | P0 | done | triggers evaluated; refinement done |
 | ARQ | approved | `docs/ARCHITECTURE.md` amended |
 | P1 | approved after one iterate-to-refine | LED .1, .2, .3 |
 | P2 | approved | iteration 2: all four lenses approve |
 | PDR | approved with conditions | PC-1..PC-5 |
-| P3 | in progress | increment 001 next |
+| P3 | done | increments 001..004, each code-reviewed OK to advance; security APPROVE at 003 |
+| DDR | approved | architect, qa, ux: conditions folded (LED .8); PC-1..PC-5 discharged |
+| P4 | PASS-WITH-NOTES | 3025 passed at `8f0fe85` (second pass; LED .9) |
+| P5 | closed | `05-close.md` |
 
 ## Roadmap + increment plan
 
@@ -137,9 +140,20 @@ Port the round's nine chosen variants into the app, with item 6's objection read
 
 **ARQ … PDR gates:** 0 block — `V26` (the live contract past its 54 000-character budget: ten HLRs with their thresholds, accepted as batch-02's was); `V53` while the contract names test nodes not yet written (P3 writes them); the increment-001 seed's placeholders (`V31`, `V32`, `V36`–`V38`, `V41`, `V43`, `V44`) until its packet is written; the seeded validation and close records (`V47`–`V51`, `V54`); the seeded DDR record; the historical NOTICEs; `V30`.
 
+**P3 (increments 001..004):** 0 block — notices only (the seeds' placeholders while each packet was written).
+
+**DDR:** 0 block after the folds — `V59` (packets tracing to id ranges `HLR-2402..HLR-2405` …) and `V26` (the requirements' `Ledger:` lines missing LED .8/.9) were BLOCKs at the P4 check and were fixed: ranges expanded to ids, the back-pointers added; `V41` notices answered with an `Evidence files` row per packet.
+
+**P4 / close:** 0 block — the historical NOTICEs above; `V53` (a census over closed records).
+
 ## Test ledger
 
 | Suite / command | Last run | Result |
 |---|---|---|
 | `evidence/premises.py` on `base_ref` | 2026-10-20 | P-1..P-11 TRUE — `evidence/premises.txt` |
 | the drafted increment 001 (scratch worktree), targeted | 2026-10-20 | `tests/test_modal_keys.py` 27 passed; the move suites' 7 `enter`-confirms RED as expected (law-driven, increment 001) — scratch only, not evidence |
+| `evidence/suite-001.txt` … `suite-004.txt` (targeted, per increment) | 2026-10-20 | 579 · 370 · 916 · 654 passed |
+| `evidence/suite-ddr.txt` (the DDR's folds, targeted) | 2026-10-21 | 506 passed (the first run: 1 failed, TC-204 — `suite-ddr-first.txt`, LED .8) |
+| P4 first pass at `1647442` | 2026-10-21 | 1398 + 857 + 769 passed, 1 failed (the voice law — `first-suite-p4-chunk02.txt`, LED .9) |
+| P4 gate run at `8f0fe85`, three sequential chunks | 2026-10-21 | 1398 + 857 + 770 = 3025 passed, 0 failed, 0 skipped = 3025 collected (`suite-p4-chunk00..02.txt`, `suite-p4-summary.txt`) |
+| mutation batteries | 2026-10-20/21 | 001: 17, 002: 16, 003: 24, 004: 15, DDR: 7 arms — all KILLED |

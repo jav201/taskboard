@@ -1,0 +1,9 @@
+# Phase-4 gate run summary (the orchestrator): three sequential chunks at 8f0fe85, a clean worktree, NO_COLOR unset
+chunk00 exit 0
+1398 passed in 280.26s (0:04:40)
+chunk01 exit 0
+857 passed in 405.34s (0:06:45)
+chunk02 exit 0
+770 passed in 136.36s (0:02:16)
+total: 1398 + 857 + 770 = 3025 passed, 0 failed, 0 skipped — equal to the 3025 collected (collect-p4.txt); base 2962 + 63 new nodes
+first pass at 1647442 (first-suite-p4-chunk00..02.txt): 1398 + 857 + 769 passed, 1 failed — test_prism_laws.py::test_no_literal_in_the_source_can_emit_the_second_person (the --open notice said "your"); fixed in 8f0fe85 (ledger LED .9), then this second pass

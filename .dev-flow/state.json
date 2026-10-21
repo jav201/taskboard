@@ -190,7 +190,7 @@
     }
   ],
   "guided": false,
-  "current_station": "P4",
+  "current_station": "P5",
   "phase_status": "in-progress",
   "stations_active": [
     "P0",
@@ -322,6 +322,11 @@
       "station": "DDR",
       "date": "2026-10-21",
       "decision": "DDR approved under the batch's standing authorization: architect, qa-reviewer and ux-reviewer returned approved with conditions; every condition folded and re-read (UX-DDR-1 form key line docked, UX-DDR-2 short editor words, QA-DDR-1/DDR-C1 and QA-DDR-2 armed, A-DDR-1/2/5 ARCHITECTURE rows, A-DDR-3 ledgered); an escaped increment-001 CSS-order regression (TC-204) found and fixed; mutation-ddr 5/5 KILLED, suite-ddr 506 passed; LED .8; PC-1..PC-5 discharged; P4 is next."
+    },
+    {
+      "station": "P4",
+      "date": "2026-10-21",
+      "decision": "P4 passed with notes under the batch's standing authorization: the gate run at 8f0fe85, three sequential chunks, 1398 + 857 + 770 = 3025 passed = 3025 collected; the first pass at 1647442 failed the voice law once (the --open notice), fixed (LED .9); qa-reviewer PASS-WITH-NOTES, 25/25 requirements, gaps G-1..G-7 logged; P5 is next."
     }
   ],
   "obsidian_synced": false,
