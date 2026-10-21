@@ -1923,6 +1923,64 @@ class TextPrompt(ButtonKeysMixin, ModalScreen[str | None]):
         self.dismiss(None)
 
 
+class PersonForm(ButtonKeysMixin, ModalScreen[tuple[str, str, str] | None]):
+    """A person of the directory: name, role, an optional one-line note (batch
+    2026-10-21-batch-01). Dismisses with the three fields stripped on Save /
+    `enter` / `alt+s`, None on Cancel / `esc`; an empty name is refused in place.
+    Editing never changes the person's handle, which the title shows."""
+
+    BINDINGS = [("escape", "cancel", "Cancel"), *FORM_KEYS]
+
+    def __init__(self, person=None):
+        super().__init__()
+        self._person = person
+
+    def compose(self) -> ComposeResult:
+        p = self._person
+        title = Text("New person", style="bold") if p is None else Text.assemble(
+            ("Edit person ", "bold"), (f"@{p.id}", f"b {HEX['pink']}"))
+        with VerticalScroll(id="modal-box", classes="modal"):
+            yield Label(title, classes="modal-title")
+            # each field labelled: a value hides its placeholder (ux UX-8)
+            yield Label("Name")
+            yield Input(value=p.name if p else "", placeholder="name", id="f-name")
+            yield Label("Role")
+            yield Input(value=p.role if p else "", placeholder="role, e.g. Client A PM",
+                        id="f-role")
+            yield Label("Note")
+            yield Input(value=p.note if p else "", placeholder="a note (optional)",
+                        id="f-note")
+            with Horizontal(classes="modal-buttons"):
+                yield Button("Save", variant="success", id="save")
+                yield Button("Cancel", variant="default", id="cancel")
+            yield Label(key_line([("↵ / alt+s", "save"), ("⇥", "next field"), ("esc", "cancel")],
+                                 MODAL_KEYS_W), classes="modal-keys")
+
+    def on_mount(self) -> None:
+        self.query_one("#f-name", Input).focus()
+
+    def on_input_submitted(self, event: Input.Submitted) -> None:
+        self._save()
+
+    def on_button_pressed(self, event: Button.Pressed) -> None:
+        if event.button.id == "save":
+            self._save()
+        else:
+            self.dismiss(None)
+
+    def _save(self) -> None:
+        name, role, note = (str(self.query_one(f"#f-{k}", Input).value).strip()
+                            for k in ("name", "role", "note"))
+        if not name:
+            self.notify("A person needs a name.", severity="warning")
+            self.query_one("#f-name", Input).focus()
+            return
+        self.dismiss((name, role, note))
+
+    def action_cancel(self) -> None:
+        self.dismiss(None)
+
+
 class PhaseEditor(ModalScreen[None]):
     """Manage the board's ORDERED phases: add / rename / reorder / delete.
 

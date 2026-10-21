@@ -133,6 +133,7 @@ between the short and the full layer. Every key below is also in the command pal
 | `F` / `/` / `esc` | Focus, filter | Kanban and gantt: focus one project / filter tasks / clear |
 | `Tab` | Layout | Cycle the layouts of kanban, focus and lanes |
 | `A` | All boards | The agenda of every board: a lane per board with a dot per due day, the chosen day's tasks below; `enter` opens a task on its board (also on the home) |
+| `@` | People directory | Who you owe what: the people of `~/.taskboard/people.json` (most late first) beside the chosen person's open tasks of every board, each with the note line that mentions them and a `late · today · open` box; `enter` opens a task on its board, `n`/`e` add and edit a person, `/` finds a name. Not view `9` (the team's `People`) |
 | `R` / `S` | Present / Standup | Present the selected task's project, or every project (`3`), with gantt + brief, export SVG+PNG / show the week's standup |
 | `I` | Templates | Insert a process template (a named chain of tasks) into the selected task's project |
 | `comma` | Save chain | Save the selected chain as a template (chain map) |
@@ -224,6 +225,11 @@ the board (free space or write access in its folder, or run `taskboard --board` 
 ## Notes, links and images
 
 - In notes, `==text==`, `!!text!!` and `++text++` are highlighted yellow, red and green.
+- In notes, `@` at the start of a word mentions a person: a list under the cursor narrows as
+  you type, `enter` writes the person's handle (`@ana.ruiz`) and `+ add` creates a new person
+  (name and role, `enter` to add) for every board. A mention reads as `@Ana Ruiz` in pink in the
+  details, the preview and the presentation, and as `@Ana` on the kanban card; `@` on the
+  main screen lists everyone.
 - A task with a URL shows `↗`; `o` opens its http(s) links in your browser.
 - In the editor, **Paste image** saves the clipboard image as a real file; `i` views a task's
   images inline, and `o` inside the viewer opens them in your default app.
@@ -362,6 +368,8 @@ Everything lives under `~/.taskboard/` (or beside the file you pass with `--boar
 | `move-<date>.json` | The projects moved that day, beside each board involved: tasks, links kept, links dropped |
 | `images/<task id>/` | Pasted images, as plain files |
 | `reports/` | HTML reports and the presentation's SVG + PNG exports |
+| `people.json` | The people you mention, for every board: handle, name, role, a note; written only when you add or edit a person (never sent to a team folder) |
+| `people.json.corrupt` | A copy of an unreadable `people.json`, kept before the app starts with no people |
 | `open/` | One small file per window per open board (when it opened, its process id), removed when the window leaves the board; another window opening the same board says so once |
 
 Never commit a real board: the repo's pre-commit hook (`tools/precommit_privacy.py`) refuses

@@ -420,7 +420,7 @@ def test_the_readme_keybinding_table_matches_the_seat():
     spelled = {"?": "?", "q": "q", "enter": "Enter", "tab": "Tab",
                "d,delete": "d", "+,=": "+", "escape": "esc",
                "down,j": "↓", "up,k": "↑",
-               "left,h": "←", "right,l": "→"}
+               "left,h": "←", "right,l": "→", "at": "@"}   # `@`: batch 2026-10-21-batch-01
     for k in KEYMAP:
         want = spelled.get(k.keys, k.keys)
         if k.action.startswith("view("):

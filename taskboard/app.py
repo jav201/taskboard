@@ -29,7 +29,7 @@ from .models import (AUTO_ARCHIVE_DAYS, IMAGE_EXTS, LINKS_MIGRATION, MILESTONES_
                      set_milestone, strip_controls, templates, waiting_ids,
                      CASCADE_MODES, apply_plan, plan_move, resolve_mode, restore,
                      snapshot)
-from .modals import (BoardForm, ClockModal, GanttLinkMode, LinkPicker, CommandPalette, ConfirmModal,
+from .modals import (BoardForm, PersonForm, ClockModal, GanttLinkMode, LinkPicker, CommandPalette, ConfirmModal,
                      HelpModal, ImageViewer, MilestoneOffer, PhaseEditor, ProjectModal,
                      PresentHiddenPicker, PresentKeys, ProjectPicker, StandupModal, TaskDetails, TaskModal,
                      TeamIdentityPicker,
@@ -40,6 +40,7 @@ from .team_sync import (TEAM_FILENAME, TeamState, _read_json, clean_roster,
                         probe_setup_health)
 from .views import (HEX, ago, agenda_buckets, all_agenda, board_chip_text, board_hex,
                     board_summary, home_card, home_keys, render_all_agenda,
+                    people_by_urgency, person_items, render_people_directory,
                     home_missing, home_title, present_all_export,
                     clip, filtered_board, focus_tasks, gantt_group_key, group_key,
                     gantt_plan, nav_model, present_paths, present_project_id,
@@ -831,6 +832,41 @@ class BoardsHome(Screen[None]):
 AGENDA_KEYS = [("←→", "day"), ("↑↓", "task"), ("↵", "open on its board"), ("esc", "back")]
 
 
+def board_lanes(app) -> tuple[list, list]:
+    """Every active board as a plain lane `(name, colour, board | None, state)` and
+    its registry id: the open board as the app holds it, another read once
+    (`peek_board`), None when its file is missing or unreadable; an unlisted board
+    (`--open`) last, id None. What the agenda and the people view read."""
+    lanes, ids = [], []
+    for e in app.registry.active():
+        if e.id == app.board_id:
+            board, state = app.board, ""
+        elif Path(e.path).exists():
+            board = peek_board(e.path)
+            state = "file unreadable" if board.load_report.get("file_unreadable") else ""
+            board = None if state else board
+        else:
+            board, state = None, "file missing"
+        lanes.append((e.name, e.color, board, state))
+        ids.append(e.id)
+    if app.board_id is None:                        # an unlisted board (`--open`)
+        label = app.board.label or ("this board", "pink")
+        lanes.append((label[0], label[1], app.board, ""))
+        ids.append(None)
+    return lanes, ids
+
+
+def open_on_board(app, bid, task_id: str) -> None:
+    """Leave every pushed screen, open board `bid` in place when it is another (a
+    switch, with a switch's own writes), then select the task there."""
+    while len(app.screen_stack) > 1:
+        app.pop_screen()
+    if bid is not None and bid != app.board_id:
+        app.switch_board(bid)
+    if app.board_id == bid or bid is None:
+        app.jump_to(task_id)
+
+
 class AllBoardsAgenda(Screen[None]):
     """`A` — every board's dues this week, read-only (batch 2026-10-20-batch-03, the
     round's item 1, variant C): a lane per board with a dot per due in each bucket
@@ -857,22 +893,7 @@ class AllBoardsAgenda(Screen[None]):
         self.items: list = []
 
     def compose(self) -> ComposeResult:
-        app = self.app
-        for e in app.registry.active():
-            if e.id == app.board_id:
-                board, state = app.board, ""
-            elif Path(e.path).exists():
-                board = peek_board(e.path)
-                state = "file unreadable" if board.load_report.get("file_unreadable") else ""
-                board = None if state else board
-            else:
-                board, state = None, "file missing"
-            self.lanes.append((e.name, e.color, board, state))
-            self.ids.append(e.id)
-        if app.board_id is None:                    # an unlisted board (`--open`)
-            label = app.board.label or ("this board", "pink")
-            self.lanes.append((label[0], label[1], app.board, ""))
-            self.ids.append(None)
+        self.lanes, self.ids = board_lanes(self.app)
         self.today = date.today()                  # a snapshot: read once, as the boards are
         self.items = all_agenda(self.lanes, self.today)
         yield Static(id="ag-body")
@@ -914,14 +935,139 @@ class AllBoardsAgenda(Screen[None]):
         if not chosen:
             return
         it = chosen[min(self.row, len(chosen) - 1)]
-        bid = self.ids[it.lane]
-        app = self.app
-        while len(app.screen_stack) > 1:            # the agenda, and the home beneath it
-            app.pop_screen()
-        if bid is not None and bid != app.board_id:
-            app.switch_board(bid)
-        if app.board_id == bid or bid is None:
-            app.jump_to(it.task.id)
+        open_on_board(self.app, self.ids[it.lane], it.task.id)   # the home beneath it too
+
+    def action_back(self) -> None:
+        self.app.pop_screen()
+
+
+# the key row says what `enter` does where the cursor is (ux UX-1), in words that fit
+# 80 columns whole (ux UX-4); `e` edits the PERSON, never a task
+def people_keys(pane: str) -> list[tuple[str, str]]:
+    return [("↑↓", "move"), ("⇥", "panes"),
+            ("↵", "their tasks" if pane == "people" else "open task"),
+            ("/", "find"), ("n", "add"), ("e", "edit person"), ("esc", "back")]
+
+
+class PeopleDirectory(Screen[None]):
+    """`@` — the people directory (batch 2026-10-21-batch-01, the round's item 1):
+    variant A's two panes, the people most in need first on the left and the
+    chosen person's open tasks of every board on the right, each with the note line
+    that mentions them (from C) under B's progress box. Every board is read once,
+    when it opens; `enter` opens a task on its board. It edits no task: `n` and `e`
+    add and edit the directory's people."""
+
+    BINDINGS = [Binding("escape,at", "back", "", priority=True),
+                Binding("up,k", "move(-1)", "", priority=True),
+                Binding("down,j", "move(1)", "", priority=True),
+                Binding("left,h,right,l,tab", "pane", "", priority=True),
+                Binding("enter", "enter", "", priority=True),
+                Binding("slash", "find", "", priority=True),
+                Binding("n", "new", "", priority=True),
+                Binding("e", "edit", "", priority=True)]
+    DEFAULT_CSS = """
+    PeopleDirectory { background: #0d1117; overflow-y: hidden; }
+    #pd-body { padding: 0 1; height: 1fr; }
+    #pd-keys { dock: bottom; height: 1; padding: 0 1; background: #0b0f17; }
+    """
+
+    def __init__(self, start: str | None = None) -> None:
+        super().__init__()
+        self.start = start
+        self.pane, self.row, self.sel = "people", 0, 0
+
+    def compose(self) -> ComposeResult:
+        self.lanes, self.ids = board_lanes(self.app)
+        self.today = date.today()                  # a snapshot: read once, as the boards are
+        self._order(self.start)
+        yield Static(id="pd-body")
+        yield Static(id="pd-keys")
+
+    def _order(self, handle: str | None) -> None:
+        """Read every person's items and order the people; the cursor on `handle`."""
+        directory = self.app.people
+        self.items = {h: person_items(self.lanes, h, self.today) for h in directory.people}
+        self.people = people_by_urgency(list(directory.people.values()), self.items)
+        self.sel = next((i for i, p in enumerate(self.people) if p.id == handle), 0)
+
+    def on_mount(self) -> None:
+        self._paint()
+
+    def on_resize(self, _event) -> None:
+        self._paint()
+
+    def _mine(self) -> list:
+        return self.items.get(self.people[self.sel].id, []) if self.people else []
+
+    def _paint(self) -> None:
+        w, h = self.app.size
+        self.query_one("#pd-body", Static).update(Text.assemble(
+            render_people_directory(self.people, self.items, self.sel, self.pane, self.row,
+                                    self.today, w - 2, h - 1, self.app.people.people)))
+        self.query_one("#pd-keys", Static).update(key_line(people_keys(self.pane), w - 2))
+
+    def action_move(self, delta: int) -> None:
+        if self.pane == "people":
+            self.sel = max(0, min(len(self.people) - 1, self.sel + delta))
+            self.row = 0
+        else:
+            self.row = max(0, min(len(self._mine()) - 1, self.row + delta))
+        self._paint()
+
+    def action_pane(self) -> None:
+        self.pane = "tasks" if self.pane == "people" and self._mine() else "people"
+        self.row = 0
+        self._paint()
+
+    def action_enter(self) -> None:
+        """On the people, `enter` goes to their tasks; on a task, opens it."""
+        mine = self._mine()
+        if self.pane == "people":
+            if mine:
+                self.action_pane()
+            return
+        it = mine[min(self.row, len(mine) - 1)]
+        open_on_board(self.app, self.ids[it.lane], it.task.id)
+
+    def action_find(self) -> None:
+        self.app.push_screen(TextPrompt("Find a name", placeholder="name or role"),
+                             self._found)
+
+    def _found(self, q: str | None) -> None:
+        if not q:
+            return
+        hits = self.app.people.find(q)
+        if not hits:
+            self.notify(f"No one in the directory matches {q!r}.", title="People",
+                        markup=False)
+            return
+        self.sel = next(i for i, p in enumerate(self.people) if p.id == hits[0].id)
+        self.pane, self.row = "people", 0
+        self._paint()
+
+    def action_new(self) -> None:
+        self.app.push_screen(PersonForm(), self._saved(None))
+
+    def action_edit(self) -> None:
+        if self.people:
+            p = self.people[self.sel]
+            self.app.push_screen(PersonForm(p), self._saved(p.id))
+
+    def _saved(self, handle: str | None):
+        def done(fields) -> None:
+            if fields is None:
+                return
+            try:
+                p = (self.app.people.add(*fields) if handle is None
+                     else self.app.people.edit(handle, *fields))
+            except (OSError, ValueError) as err:
+                self.notify(f"The directory was not saved: {err}", title="People",
+                            severity="error", markup=False)
+                return
+            self._order(p.id)
+            self.pane, self.row = "people", 0
+            self._paint()
+        return done
 
     def action_back(self) -> None:
         self.app.pop_screen()
@@ -1006,14 +1152,17 @@ class TaskboardApp(App):
         so the modal's own widgets (e.g. the ProjectPicker list, Select dropdowns)
         receive them instead of moving the hidden board selection; `B` (`boards`)
         too, so the home never opens over another screen. While the home or the
-        agenda of every board is on the stack, it holds the keys: no action of the
-        key seat but `quit` acts. `agenda_all` is always allowed here: a pushed modal
-        holds its own keys, so `A` acts only on a non-modal screen."""
-        if action == "agenda_all":
-            # the main screen and the home (batch 2026-10-20-batch-03): a pushed modal
-            # (the presentation among them) holds its own keys, so `A` never reaches past one
+        agenda of every board or the people directory is on the stack, it holds the
+        keys: no action of the key seat but `quit` acts. `agenda_all` and
+        `people_directory` are always allowed here: a pushed modal holds its own keys,
+        so `A` and `@` act only on a non-modal screen."""
+        if action in ("agenda_all", "people_directory"):
+            # the main screen and the home (batch 2026-10-20-batch-03, 2026-10-21-batch-01):
+            # a pushed modal (the presentation among them) holds its own keys, so `A` and
+            # `@` never reach past one
             return True
-        if action in SEAT_ACTIONS and any(isinstance(sc, (BoardsHome, AllBoardsAgenda))
+        if action in SEAT_ACTIONS and any(isinstance(sc, (BoardsHome, AllBoardsAgenda,
+                                                          PeopleDirectory))
                                           for sc in self.screen_stack):
             # the home holds the keys — and the modals over it (its form, its
             # confirmation, a board's start-up modal) keep their own: no key of
@@ -1113,9 +1262,23 @@ class TaskboardApp(App):
         """`B`: the home."""
         self.push_screen(BoardsHome())
 
+    def _bring(self, kind: type, make) -> None:
+        """The screen of `kind` on top: the one already on the stack, the screens over
+        it left, or a new one — `@` and `A` never pile up (code review CR-2 of
+        increment 004)."""
+        if any(isinstance(sc, kind) for sc in self.screen_stack):
+            while not isinstance(self.screen, kind):
+                self.pop_screen()
+            return
+        self.push_screen(make())
+
+    def action_people_directory(self) -> None:
+        """`@`: the people directory's view (batch 2026-10-21-batch-01)."""
+        self._bring(PeopleDirectory, PeopleDirectory)
+
     def action_agenda_all(self) -> None:
         """`A`: the agenda of every board (batch 2026-10-20-batch-03)."""
-        self.push_screen(AllBoardsAgenda())
+        self._bring(AllBoardsAgenda, AllBoardsAgenda)
 
     def _open_board(self, at_mount: bool = False) -> bool:
         """The start a board gets — at mount, and again at every switch to

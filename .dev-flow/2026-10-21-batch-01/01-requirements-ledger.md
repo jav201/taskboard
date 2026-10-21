@@ -36,3 +36,10 @@ above this line is ever edited._
 - **What changed:** Before → After. «`tab` with the list open closes it; the list's keys act only while the notes hold the focus» → the focus leaving the picker by any path closes it (the list or the form), typing in the notes closes an open form, the mention replaces only the still-standing `@<typed>` span (code review CR-1, HIGH: the form's `enter` added a person and replaced the operator's text after `shift+tab`); a held handle with sentence punctuation opens nothing (CR-2, HIGH: `@ana.ruiz.` created `ana.ruiz2`); `enter` with no one listed is a new line (CR-4).
 - **Why:** increment 003's independent review (code-reviewer FIX FIRST on CR-1, CR-2).
 - **Evidence:** `03-increments/increment-003.md` §4b; `evidence/mutation-003.txt` (M3, M12, M13, M14).
+
+### LED-2026-10-21-batch-01.5 — increment 004's code-review drifts (P3)
+- **Requirement:** HLR-2504, LLR-2504.1, LLR-2504.2
+- **Date:** 2026-10-21
+- **What changed:** Before → After. «scrolls by whole tasks … never opening on a quote without its task» → the window ends on the cursor's task and its quote, an orphan quote at its top drawn blank, the marker counting the tasks under the window and never `0` (code review CR-1, HIGH: at 78×20 the cursor's own quote was cut under `↓ 0 more below`); `@` and `A` bring an existing screen to the top instead of stacking another (CR-2: `@ A @ A …` piled screens without limit, each re-reading every board).
+- **Why:** increment 004's independent review (code-reviewer FIX FIRST on CR-1).
+- **Evidence:** `03-increments/increment-004.md` §4b; `evidence/mutation-004.txt` (M4, M17, M18, M19).

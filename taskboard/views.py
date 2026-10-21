@@ -34,7 +34,7 @@ from rich.table import Table
 from rich.text import Text
 
 from . import history
-from .people import MENTION_RE, mention_ids, split_mentions
+from .people import MENTION_RE, mention_ids, mention_line, split_mentions
 from .models import (Board, CASCADE_DEFAULT_MODE, CASCADE_MODES, PROJECT_COLORS, Project, Task,
                      critical_chain, days_in_phase, is_open, link_conflicts, link_marks,
                      open_predecessors, parse_iso, present_order, unblocks_count, _md)
@@ -8314,3 +8314,261 @@ def gantt_link_overlay(rows: list[Text], line_map: dict[str, int], ax: GanttAxis
         if put(rw, col, "╯" if down else "╮", "bright", True):
             out["connector"].append((rw, col))
     return out
+
+
+# ---------------------------------------------------------------------------
+# the people directory's view, `@` (batch 2026-10-21-batch-01, the round's item 1:
+# variant A's two panes, C's note line under each task, B's progress box)
+# ---------------------------------------------------------------------------
+class PersonItem(NamedTuple):
+    band: str            # "late", "today", "week", "later", "nodate"
+    lane: int            # the lane's index (the board it is on)
+    board_name: str
+    colour: str
+    task: Task
+    project: str
+    due: date | None
+
+
+PERSON_BANDS = ("late", "today", "week", "later", "nodate")
+
+
+def person_items(lanes, handle: str, today: date) -> list[PersonItem]:
+    """Every open task of every lane's board (`lanes` as the agenda's) whose notes
+    mention `handle`, banded — late, today, to Sunday, later, no date — and ordered
+    by band, due date, then lane, then the board's own order."""
+    end = _week_end(today)
+    out = []
+    for li, (name, colour, board, _state) in enumerate(lanes):
+        if board is None:
+            continue
+        names = {p.id: p.name for p in board.projects}
+        for t in board.tasks:
+            if not is_open(board, t) or handle not in mention_ids(t.notes):
+                continue
+            d = parse_iso(t.due_date)
+            band = ("nodate" if d is None else "late" if d < today else "today" if d == today
+                    else "week" if d <= end else "later")
+            out.append(PersonItem(band, li, name, colour, t, names.get(t.project_id, ""), d))
+    return sorted(out, key=lambda x: (PERSON_BANDS.index(x.band), x.due or date.max, x.lane))
+
+
+def person_counts(items: list[PersonItem]) -> tuple[int, int, int]:
+    """(late, today, open) of one person's items."""
+    return (sum(x.band == "late" for x in items), sum(x.band == "today" for x in items),
+            len(items))
+
+
+def people_by_urgency(people: list, items: dict) -> list:
+    """Who needs the operator most first: most late, then most due today, then most
+    open, then by name."""
+    def key(p):
+        late, today, n = person_counts(items.get(p.id, []))
+        return (-late, -today, -n, unicodedata.normalize("NFKD", p.name.lower()), p.id)
+    return sorted(people, key=key)
+
+
+def _band_head(band: str, today: date) -> tuple[str, str]:
+    return {"late": ("LATE", HEX["over"]), "today": ("TODAY", HEX["soon"]),
+            "week": (f"THIS WEEK · to Sun {_week_end(today).day}", HEX["hd"]),
+            "later": ("LATER", HEX["hd"]), "nodate": ("NO DATE", HEX["mut"])}[band]
+
+
+def _person_when(d: date | None, today: date) -> tuple[str, str]:
+    return ("—", HEX["dim"]) if d is None else _agenda_when(d, today)
+
+
+def _line(*parts, w: int) -> Text:
+    """One row of plain pieces — `(text, style)` or a Text — cut and padded to `w`."""
+    t = Text(no_wrap=True)
+    for p in parts:
+        t.append_text(p) if isinstance(p, Text) else t.append(*p)
+    t.truncate(w, pad=True)
+    return t
+
+
+def progress_box(items: list[PersonItem], w: int) -> list[Text]:
+    """B's progress box, three rows at most `w` cells: a block per open task —
+    red late, amber today, grey the rest — then `N late · N today · N open`."""
+    late, today, n = person_counts(items)
+    inner = Text(no_wrap=True)
+    if n:
+        bar = min(n, max(1, w - 30))           # a long list keeps its words: blocks are cut
+        k_late, k_today = min(late, bar), min(today, max(0, bar - late))
+        inner.append("█" * k_late, HEX["over"])
+        inner.append("█" * k_today, HEX["soon"])
+        inner.append("█" * (bar - k_late - k_today), HEX["later"])
+        inner.append("  ")
+        words = ([(f"{late} late", f"b {HEX['over']}")] if late else []) \
+            + ([(f"{today} today", f"b {HEX['soon']}")] if today else []) + [(f"{n} open", HEX["hd"])]
+        for i, (word, style) in enumerate(words):
+            if i:
+                inner.append(" · ", HEX["dim"])
+            inner.append(word, style)
+    else:
+        inner.append("nothing open", HEX["dim"])
+    bw = max(4, min(w, inner.cell_len + 4))
+    inner.truncate(bw - 4, pad=True)
+    frame = HEX["frame"]
+    return [Text("╭" + "─" * (bw - 2) + "╮", frame),
+            Text.assemble(("│ ", frame), inner, (" │", frame)),
+            Text("╰" + "─" * (bw - 2) + "╯", frame)]
+
+
+def _task_rows(items: list[PersonItem], sel: int | None, w: int, handle: str, people: dict,
+               today: date) -> tuple[list[Text], int, list]:
+    """The banded rows of one person's tasks: a band head, then per task its row
+    (cursor, the board's chip, the title, from 78 cells the project, the due) and,
+    under it, the note line that mentions the person between quotes (C's context).
+    Returns the rows, the cursor's row and, per row, `("task" | "quote", i)` or None."""
+    rows: list[Text] = []
+    kinds: list = []
+    cur_row, band = 0, None
+    chip_w = 10 if w >= 70 else 9
+    pw = 18 if w >= 78 else 0
+    for i, it in enumerate(items):
+        if it.band != band:
+            band = it.band
+            lab, col = _band_head(band, today)
+            if rows:
+                rows.append(Text(" " * w))
+                kinds.append(None)
+            rows.append(_line((lab, f"b {col}"), (" " + "─" * w, HEX["frame"]), w=w))
+            kinds.append(None)
+        on = sel == i
+        if on:
+            cur_row = len(rows)
+        when, wcol = _person_when(it.due, today)
+        tw = max(1, w - 2 - chip_w - 1 - (pw + 1 if pw else 0) - 8)
+        r = _line(("▶ " if on else "  ", HEX["accent"]),
+                  (fit(f" {it.board_name}", chip_w), f"b #0d1117 on {board_hex(it.colour)}"),
+                  (" " + fit(it.task.title, tw), f"b {HEX['bright']}" if on else HEX["ink"]),
+                  *([(" " + fit(it.project, pw), HEX["dim"])] if pw else []),
+                  (f"{when:>8}", wcol), w=w)
+        if on:                              # the cursor's band, around the chip (it keeps its hue)
+            r.stylize("on #16202c", 0, 2)
+            r.stylize("on #16202c", 2 + chip_w)
+        rows.append(r)
+        kinds.append(("task", i))
+        quote = mention_line(it.task.notes, handle)
+        if quote:
+            ctx = Text(" " * (3 + chip_w), no_wrap=True)
+            ctx.append("“", HEX["dim"])
+            ctx.append_text(notes_text(quote, people))
+            ctx.append("”", HEX["dim"])
+            ctx.truncate(w, overflow="ellipsis", pad=True)
+            rows.append(ctx)
+            kinds.append(("quote", i))
+    if not items:
+        rows.append(_line(("  nothing open with this person", HEX["mut"]), w=w))
+        kinds.append(None)
+    return rows, cur_row, kinds
+
+
+def _scroll_tasks(trs: list[Text], kinds: list, cur: int, follow: bool, room: int,
+                  w: int) -> list[Text]:
+    """`room` rows of the task list: from the top, or around the cursor's task and its
+    quote when `follow`; never a quote without its task above it, and when tasks lie
+    below, the last row says how many (`↓ N more below`, ux UX-5)."""
+    def quote(i: int) -> bool:
+        return kinds[i] is not None and kinds[i][0] == "quote"
+
+    if len(trs) <= room:
+        return trs
+    avail = max(1, room - 1)                      # one row for the marker
+    # the window ends on the cursor's task and its quote (code review CR-1 of increment
+    # 004: moving the top up to dodge an orphan quote cut the cursor's own quote)
+    end = max(avail, cur + 2) if follow else avail
+    if end >= len(trs):                           # the rest fits whole: no marker
+        top = len(trs) - room
+        return ([Text(" " * w)] + trs[top + 1:]) if quote(top) else trs[top:]
+    top = end - avail
+    rows = trs[top:end]
+    if quote(top):
+        rows[0] = Text(" " * w)                   # a quote without its task is not shown
+    below = sum(1 for k in kinds[end:] if k is not None and k[0] == "task")
+    return rows + [_line((f"  ↓ {below} more below", HEX["dim"]), w=w)]
+
+
+PEOPLE_TITLE = "PEOPLE · directory"     # D4: view 9 is the team's `People`
+
+
+def render_people_directory(people: list, items: dict, sel: int, pane: str, row: int,
+                            today: date, width: int, height: int,
+                            directory: dict | None = None) -> Text:
+    """The `@` view's rows (without its key row), each exactly `width` cells: the
+    head, then two panes — the people (name and `▲late ●today open`, the role
+    under it; `people` already ordered) and the chosen person's work: name and
+    role, the note, the progress box, then their open tasks of every board, banded,
+    each with its mentioning note line, scrolled to keep the cursor's task on
+    screen. `pane` is "people" or "tasks"; `items` maps a handle to its
+    `PersonItem`s; `directory` (handle → Person) draws the quoted mentions. Every name, role, note and
+    board string is a plain Text piece cut with `fit`, never markup."""
+    inner = max(1, width)
+    directory = directory or {}
+    head = Text(no_wrap=True)
+    head.append("◆ " + PEOPLE_TITLE, f"bold {HEX['bright']}")
+    head.append("  who do I owe what · every board", HEX["mut"])
+    right = f"{len(people)} in the directory · tasks read-only"
+    if head.cell_len + len(right) + 1 > inner:
+        right = f"{len(people)} {'person' if len(people) == 1 else 'people'} · tasks read-only"
+        if head.cell_len + len(right) + 1 > inner:      # 80 columns: the subtitle shortens
+            head = Text("◆ " + PEOPLE_TITLE, f"bold {HEX['bright']}", no_wrap=True)
+            head.append("  who do I owe what", HEX["mut"])
+    head.append(" " * max(1, inner - head.cell_len - len(right)))
+    head.append(right, HEX["dim"])
+    out = [head, Text(" " * inner)]
+    body_h = max(1, height - 2)
+    if not people:
+        out += [_line(("  No one in the directory yet.", HEX["ink"]), w=inner),
+                _line(("  n adds a person · an @ in a task's notes mentions one",
+                       HEX["mut"]), w=inner)]
+    else:
+        sel = max(0, min(sel, len(people) - 1))
+        lw = 32 if inner >= 100 else 24
+        rw = max(10, inner - lw - 3)
+        left: list[Text] = []
+        for i, p in enumerate(people):
+            on = i == sel
+            late, today_n, n = person_counts(items.get(p.id, []))
+            ct = Text(no_wrap=True)
+            ct.append(f"▲{late}" if late else "  ", f"b {HEX['over']}")
+            ct.append(" ")
+            ct.append(f"●{today_n}" if today_n else "  ", f"b {HEX['soon']}")
+            ct.append(" ")
+            ct.append(f"{n:>2}", HEX["hd"])
+            # the cursor of the pane `↑↓` does not move is dimmed (ux UX-6)
+            nm = _line(("▶ " if on else "  ", HEX["accent" if pane == "people" else "dim"]),
+                       (fit(p.name, lw - 3 - ct.cell_len), f"b {HEX['bright']}" if on else HEX["ink"]),
+                       " ", ct, w=lw)
+            rl = _line(("  " + fit(p.role, lw - 2), HEX["dim"]), w=lw)
+            if on:
+                bg = "on #16202c" if pane == "people" else "on #121a24"
+                nm.stylize(bg)
+                rl.stylize(bg)
+            left += [nm, rl]
+        top_l = max(0, min(2 * sel - body_h + 2, len(left) - body_h))
+        left = left[top_l:]
+        per = people[sel]
+        mine = items.get(per.id, [])
+        right_rows = [_line((per.name, f"b {HEX['pink']}"), ("  " + per.role, HEX["hd"]), w=rw),
+                      _line((per.note or "no note", HEX["mut"] if per.note else HEX["dim"]), w=rw)]
+        right_rows += progress_box(mine, rw)
+        right_rows.append(Text(" " * rw))
+        trs, cur, kinds = _task_rows(mine, row if pane == "tasks" else None, rw, per.id,
+                                     directory, today)
+        right_rows += _scroll_tasks(trs, kinds, cur, pane == "tasks",
+                                    max(1, body_h - len(right_rows)), rw)
+        for y in range(body_h):
+            lft = left[y] if y < len(left) else Text(" " * lw)
+            rgt = right_rows[y] if y < len(right_rows) else Text(" " * rw)
+            out.append(Text.assemble(lft, (" │ ", HEX["frame"]), rgt))
+    text = Text()
+    for i, t in enumerate(out[:max(1, height)]):
+        t = t.copy()
+        t.truncate(inner)
+        t.pad_right(inner - t.cell_len)
+        if i:
+            text.append("\n")
+        text.append_text(t)
+    return text

@@ -1,0 +1,9 @@
+# RED on increment 003's commit 6dcbeed: this increment's tests over that commit's source
+ERROR tests/test_people_view.py
+!!!!!!!!!!!!!!!!!!! Interrupted: 1 error during collection !!!!!!!!!!!!!!!!!!!!
+1 error in 0.68s
+# and the law files alone over the same source
+FAILED tests/test_modal_keys.py::test_TC_2407_alt_s_does_what_save_does[PersonForm]
+FAILED tests/test_modal_keys.py::test_TC_2407_every_modal_is_in_the_inventory
+FAILED tests/test_modal_keys.py::test_TC_2407_every_button_has_its_key[PersonForm]
+3 failed, 60 passed in 28.24s

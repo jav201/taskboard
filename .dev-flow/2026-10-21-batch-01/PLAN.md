@@ -74,7 +74,7 @@ Port the round's chosen variants into the app — the directory (D1–D3, the ha
 | P1 | approved | LED .1, .2 |
 | P2 | approved | all four lenses approve with conditions, folded (LED .2) |
 | PDR | approved with conditions | PC-1..PC-4 |
-| P3 | in progress | increments 001, 002, 003 done (code-reviewer OK each — 003 after one FIX FIRST; security APPROVE S-1 both sides) |
+| P3 | in progress | increments 001..004 done (code-reviewer OK each — 003, 004 after one FIX FIRST; security APPROVE S-1 both sides) |
 
 ## Roadmap + increment plan
 
@@ -146,3 +146,5 @@ Port the round's chosen variants into the app — the directory (D1–D3, the ha
 | `evidence/mutation-002.txt` | 2026-10-21 | 14/14 KILLED |
 | `evidence/suite-003.txt` (increment 003, targeted) | 2026-10-21 | 363 passed |
 | `evidence/mutation-003.txt` | 2026-10-21 | 13/13 KILLED |
+| `evidence/suite-004.txt` (increment 004, targeted) | 2026-10-21 | 435 passed |
+| `evidence/mutation-004.txt` | 2026-10-21 | 19/19 KILLED |

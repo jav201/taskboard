@@ -139,7 +139,7 @@ def test_TC_120_every_key_the_readme_documents_is_bound():
         for b in getattr(cls, "BINDINGS", None) or []:
             bound.update((b.key if isinstance(b, Binding) else b[0]).split(","))
     spelled = {"↑": "up", "↓": "down", "←": "left", "→": "right", "Enter": "enter",
-               "Delete": "delete", "Tab": "tab", "esc": "escape"}
+               "Delete": "delete", "Tab": "tab", "esc": "escape", "@": "at"}
     rows = _keys_section()
     assert len(rows) >= 20, len(rows)
     for row in rows:

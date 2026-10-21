@@ -1,0 +1,20 @@
+M1 a done or archived task owed · taskboard/views.py · test_TC_2504_done_and_archived_tasks_are_not_owed: RED (KILLED) · sha256 c268d99f5ed3 restored · 1 failed in 0.59s
+M2 the urgency key without today · taskboard/views.py · test_TC_2504_today_outranks_a_longer_list: RED (KILLED) · sha256 c268d99f5ed3 restored · 1 failed in 0.58s
+M3 the quote dropped from under its task · taskboard/views.py · test_TC_2504_each_task_carries_its_mentioning_line_under_it: RED (KILLED) · sha256 c268d99f5ed3 restored · 1 failed in 0.60s
+M4 an orphan quote at the top of a scrolled pane · taskboard/views.py · test_TC_2504_a_quote_is_never_shown_without_its_task[22-3]: RED (KILLED) · sha256 c268d99f5ed3 restored · 1 failed in 0.62s
+M5 no `↓ N more below` marker · taskboard/views.py · test_TC_2504_the_tasks_pane_scrolls_to_keep_the_cursor: RED (KILLED) · sha256 c268d99f5ed3 restored · 1 failed in 0.61s
+M6 the head says read-only beside n/e (no `tasks`) · taskboard/views.py · test_TC_2504_the_wide_head_says_tasks_read_only: RED (KILLED) · sha256 c268d99f5ed3 restored · 1 failed in 0.59s
+M7 the key row says the same enter on both panes (ux UX-1) · taskboard/app.py · test_AT_2504_at_shows_who_needs_what_and_enter_opens_the_task[size0]: RED (KILLED) · sha256 85da4d62ad5a restored · 1 failed in 1.20s
+M8 enter on the people pane opens the first task (D-7) · taskboard/app.py · test_AT_2504_enter_on_the_people_goes_to_their_tasks_and_esc_or_at_closes: RED (KILLED) · sha256 85da4d62ad5a restored · 1 failed in 1.13s
+M9 the seat keys act behind the view · taskboard/app.py · test_AT_2504_the_main_screens_keys_do_not_act_behind_it: RED (KILLED) · sha256 85da4d62ad5a restored · 1 failed in 1.16s
+M10 `@` refused on the home · taskboard/app.py · test_AT_2504_at_shows_who_needs_what_and_enter_opens_the_task[size0]: RED (KILLED) · sha256 85da4d62ad5a restored · 1 failed in 1.17s
+M11 `@` unbound · taskboard/keymap.py · test_AT_2504_at_from_the_main_screen: RED (KILLED) · sha256 353ff3e511ce restored · 1 failed in 0.93s
+M12 the find says nothing when no one matches · taskboard/app.py · test_AT_2504_n_adds_e_edits_and_slash_finds: RED (KILLED) · sha256 85da4d62ad5a restored · 1 failed in 3.63s
+M13 a blank name saved · taskboard/modals.py · test_AT_2504_n_adds_e_edits_and_slash_finds: RED (KILLED) · sha256 a5442f45fca8 restored · 1 failed in 3.57s
+M14 the box's today block grey (ux UX-2) · taskboard/views.py · test_TC_2504_the_tones_say_late_today_and_who: RED (KILLED) · sha256 c268d99f5ed3 restored · 1 failed in 0.59s
+M15 the jump leaves the home beneath it · taskboard/app.py · test_AT_2504_at_shows_who_needs_what_and_enter_opens_the_task[size0]: RED (KILLED) · sha256 85da4d62ad5a restored · 1 failed in 1.80s
+M16 a failed write said nothing · taskboard/app.py · test_AT_2504_errors_are_said_and_change_nothing: RED (KILLED) · sha256 85da4d62ad5a restored · 1 failed in 1.59s
+M17 the window ends a row short of the cursor's quote (code review CR-1) · taskboard/views.py · test_TC_2504_the_cursors_task_and_quote_are_always_shown_and_the_marker_counts[20-4]: RED (KILLED) · sha256 c268d99f5ed3 restored · 1 failed in 0.60s
+M18 the marker counts what is shown too · taskboard/views.py · test_TC_2504_the_cursors_task_and_quote_are_always_shown_and_the_marker_counts[24-2]: RED (KILLED) · sha256 c268d99f5ed3 restored · 1 failed in 0.65s
+M19 `@` and `A` pile up (code review CR-2) · taskboard/app.py · test_AT_2504_at_and_a_never_pile_up: RED (KILLED) · sha256 85da4d62ad5a restored · 1 failed in 1.02s
+not killed: 0

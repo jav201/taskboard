@@ -26,6 +26,7 @@ import backlog_round_fixture as fx
 from taskboard import app as app_module, keymap, models, modals, views
 from taskboard.app import BoardsHome, TaskboardApp
 from taskboard.modals import ConfirmModal
+from taskboard.people import Person
 
 _SVG = re.compile(r'<text class="[^"]*" x="([\d.]+)" y="[\d.]+" textLength="[\d.]+" '
                   r'clip-path="url\(#[^)]*-line-(\d+)\)">([^<]*)</text>')
@@ -200,11 +201,13 @@ def _forms(board):
             ("ProjectModal", lambda: modals.ProjectModal(), dict),
             ("TemplateEditor", lambda: modals.TemplateEditor(), dict),
             ("ClockModal", lambda: modals.ClockModal("Madrid", "London"), dict),
-            ("TextPrompt", lambda: modals.TextPrompt("Name", "kept"), str)]
+            ("TextPrompt", lambda: modals.TextPrompt("Name", "kept"), str),
+            # the people directory's form (batch 2026-10-21-batch-01)
+            ("PersonForm", lambda: modals.PersonForm(Person("ana.ruiz", "Ana Ruiz", "PM")), tuple)]
 
 
 @pytest.mark.parametrize("name", ["TaskModal", "ProjectModal", "TemplateEditor", "ClockModal",
-                                  "TextPrompt"])
+                                  "TextPrompt", "PersonForm"])
 async def test_TC_2407_alt_s_does_what_save_does(home, name):
     """TC-2407: `alt+s` dismisses each form with what its Save button returns."""
     app = TaskboardApp(board_path=home / "board.json")
@@ -266,6 +269,7 @@ INVENTORY: dict[str, dict[str, str]] = {
     "TemplateEditor": {"save": "alt+s", "cancel": "escape"},
     "ClockModal": {"save": "alt+s", "cancel": "escape"},
     "TextPrompt": {"save": "alt+s", "cancel": "escape"},
+    "PersonForm": {"save": "alt+s", "cancel": "escape"},
     "ConfirmModal": {"yes": "y", "no": "n"},
     # no buttons: keys only
     "CalendarModal": {}, "EmojiPicker": {}, "ProjectPicker": {}, "LinkPicker": {},
@@ -320,7 +324,7 @@ def test_TC_2407_every_modal_is_in_the_inventory():
 
 
 @pytest.mark.parametrize("name", ["TaskModal", "ProjectModal", "TemplateEditor", "ClockModal",
-                                  "TextPrompt", "ConfirmModal"])
+                                  "TextPrompt", "PersonForm", "ConfirmModal"])
 async def test_TC_2407_every_button_has_its_key(home, name):
     """TC-2407: composed, a modal's buttons are exactly the inventory's, and its key
     line names every key but `esc`/`n` cancel's own (written `esc`)."""
