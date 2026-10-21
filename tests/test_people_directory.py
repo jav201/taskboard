@@ -266,7 +266,18 @@ async def test_AT_2501_one_directory_for_every_board(home):
         app.switch_board("course")
         await pilot.pause()
         assert app.board_id == "course" and app.board.people is app.people.people
-        app.people.add("Sofia Vega", "Legal counsel")
+        await pilot.press("at", "n")                  # added the operator's way (QA-DDR-2)
+        await pilot.pause()
+        assert isinstance(app.screen, modals.PersonForm)
+        for k in "Sofia":
+            await pilot.press(k)
+        await pilot.press("space", "V", "e", "g", "a", "tab")
+        for k in "Legal":
+            await pilot.press(k)
+        await pilot.press("alt+s")
+        await pilot.pause()
+        await pilot.press("escape")
+        await pilot.pause()
         assert app.board.people["sofia.vega"].name == "Sofia Vega"
         app.board.save()
     for bid in ("main", "client-a", "course"):
@@ -274,7 +285,7 @@ async def test_AT_2501_one_directory_for_every_board(home):
         assert '"people"' not in json.dumps(raw) and "Sofia Vega" not in json.dumps(raw)
 
 
-async def test_AT_2501_an_unreadable_directory_is_said_and_kept(home):
+async def test_TC_2501_an_unreadable_directory_is_said_and_kept(home):
     from taskboard.__main__ import open_app
     fx.build(home, last="client-a")
     (home / "people.json").write_text("{oops", encoding="utf-8")
@@ -288,7 +299,7 @@ async def test_AT_2501_an_unreadable_directory_is_said_and_kept(home):
     assert (home / "people.json.corrupt").read_text(encoding="utf-8") == "{oops"
 
 
-async def test_AT_2501_an_app_without_a_registry_never_writes_a_directory(tmp_path):
+async def test_TC_2501_an_app_without_a_registry_never_writes_a_directory(tmp_path):
     from taskboard.app import TaskboardApp
     app = TaskboardApp(board_path=tmp_path / "b" / "board.json")
     async with app.run_test(size=(80, 24)) as pilot:
@@ -328,7 +339,7 @@ def test_TC_2501_an_empty_file_is_an_empty_directory_and_nothing_is_said(tmp_pat
     assert not list(tmp_path.glob("*.corrupt*"))
 
 
-async def test_AT_2501_a_copy_that_could_not_be_kept_is_said_so(home, monkeypatch):
+async def test_TC_2501_a_copy_that_could_not_be_kept_is_said_so(home, monkeypatch):
     """architect A-6: the notice never names a copy that does not exist."""
     from taskboard.__main__ import open_app
     fx.build(home, last="client-a")

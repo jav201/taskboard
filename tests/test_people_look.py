@@ -255,8 +255,17 @@ async def test_AT_2502_a_renamed_person_draws_the_new_name_and_the_note_keeps_th
     app = open_app(None)
     async with app.run_test(size=(118, 30)) as pilot:
         await pilot.pause()
+        await pilot.press("escape", "at")             # renamed the operator's way (QA-DDR-2)
+        await pilot.pause()
+        scr = app.screen
+        assert scr.people[scr.sel].id == "ana.ruiz"
+        await pilot.press("e")
+        await pilot.pause()
+        await pilot.press("end", "space", "P", "r", "i", "e", "t", "o", "enter")
+        await pilot.pause()
         await pilot.press("escape")
-        app.people.edit("ana.ruiz", "Ana Ruiz Prieto", "Client A PM", "")
+        await pilot.pause()
+        assert app.people.people["ana.ruiz"].name == "Ana Ruiz Prieto"
         app.selected_task_id = "tc5"
         app.refresh_view()
         await pilot.press("enter")
@@ -265,7 +274,7 @@ async def test_AT_2502_a_renamed_person_draws_the_new_name_and_the_note_keeps_th
         assert app.board.task_by_id("tc5").notes.startswith("Review the 40 questions with @ana.ruiz")
 
 
-async def test_AT_2506_another_board_draws_the_same_people(home):
+async def test_TC_2501_another_board_draws_the_same_people(home):
     """AT-2501, qa QA-9: the directory reaches a board opened on its own — Course's details draw
     `@Ana Ruiz` from `~/.taskboard/people.json`."""
     from taskboard.__main__ import open_app

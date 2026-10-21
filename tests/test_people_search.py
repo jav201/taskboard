@@ -110,7 +110,7 @@ async def test_AT_2505_at_lists_names_only_and_enter_filters_to_their_tasks(home
         await pilot.press("escape")
 
 
-async def test_AT_2505_at_alone_lists_everyone_and_arrows_choose(home):
+async def test_TC_2505_at_alone_lists_everyone_and_arrows_choose(home):
     app = _open(home)
     async with app.run_test(size=(118, 30)) as pilot:
         await _search(pilot, "at")
@@ -122,7 +122,7 @@ async def test_AT_2505_at_alone_lists_everyone_and_arrows_choose(home):
         assert app.search_query == "@andres.lima"
 
 
-async def test_AT_2505_alt_p_opens_their_page(home):
+async def test_TC_2505_alt_p_opens_their_page(home):
     app = _open(home)
     async with app.run_test(size=(118, 30)) as pilot:
         await _search(pilot, "at", "m", "a", "r")
@@ -133,7 +133,7 @@ async def test_AT_2505_alt_p_opens_their_page(home):
         assert app.search_query is None
 
 
-async def test_AT_2505_no_one_by_that_name_and_text_still_filters(home):
+async def test_TC_2505_no_one_by_that_name_and_text_still_filters(home):
     app = _open(home)
     async with app.run_test(size=(118, 30)) as pilot:
         await _search(pilot, "at", "z", "z")
@@ -154,7 +154,7 @@ async def test_AT_2505_no_one_by_that_name_and_text_still_filters(home):
         assert "Canary" in await screen_text(pilot, 118, 30)
 
 
-async def test_AT_2505_the_gantt_filters_by_person_too(home):
+async def test_TC_2505_the_gantt_filters_by_person_too(home):
     """qa QA-4: `/` in the gantt, `@an`, `enter`: the bar names the person."""
     app = _open(home)
     async with app.run_test(size=(118, 30)) as pilot:

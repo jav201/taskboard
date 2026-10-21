@@ -1,0 +1,3 @@
+D1 `n` in the people view adds no one · taskboard/app.py · test_AT_2501_one_directory_for_every_board: RED (KILLED) · sha256 dd25ec4db79b restored · 1 failed in 0.72s
+D2 the form's edit keeps the old name · taskboard/app.py · test_AT_2502_a_renamed_person_draws_the_new_name_and_the_note_keeps_the_handle: RED (KILLED) · sha256 dd25ec4db79b restored · 1 failed in 1.37s
+not killed: 0

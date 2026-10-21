@@ -130,7 +130,7 @@ async def test_AT_2503_at_an_enter_writes_the_handle_and_the_preview_the_name(ho
     assert task["notes"].endswith("Ask @ana.ruiz about the stores")
 
 
-async def test_AT_2503_arrows_choose_and_esc_leaves_plain_text(home):
+async def test_TC_2503_arrows_choose_and_esc_leaves_plain_text(home):
     app = _open_app(home)
     async with app.run_test(size=(118, 30)) as pilot:
         notes = await _editor(pilot, app)
@@ -150,7 +150,7 @@ async def test_AT_2503_arrows_choose_and_esc_leaves_plain_text(home):
         assert not isinstance(app.screen, TaskModal)
 
 
-async def test_AT_2503_add_a_person_in_place_for_every_board(home):
+async def test_TC_2503_add_a_person_in_place_for_every_board(home):
     app = _open_app(home)
     async with app.run_test(size=(118, 30)) as pilot:
         notes = await _editor(pilot, app)
@@ -180,7 +180,7 @@ async def test_AT_2503_add_a_person_in_place_for_every_board(home):
     assert "sofia" not in json.dumps(saved)               # esc'd editor: the task unsaved
 
 
-async def test_AT_2503_esc_in_the_new_person_goes_back_to_the_list(home):
+async def test_TC_2503_esc_in_the_new_person_goes_back_to_the_list(home):
     app = _open_app(home)
     async with app.run_test(size=(118, 30)) as pilot:
         notes = await _editor(pilot, app)
@@ -192,7 +192,7 @@ async def test_AT_2503_esc_in_the_new_person_goes_back_to_the_list(home):
         assert not (home / "people.json").read_text(encoding="utf-8").count("Sofia")
 
 
-async def test_AT_2503_a_failed_add_says_so_and_keeps_the_form(home, monkeypatch):
+async def test_TC_2503_a_failed_add_says_so_and_keeps_the_form(home, monkeypatch):
     monkeypatch.setattr(boards, "LOCK_WAIT", 0.1)
     app = _open_app(home)
     async with app.run_test(size=(118, 30), notifications=True) as pilot:
@@ -230,7 +230,7 @@ async def test_TC_2503_without_a_directory_at_is_plain_text(home):
         assert not _drop(app).display and notes.text == "@an\n"
 
 
-async def test_AT_2503_reached_by_tab_the_list_opens_inside_the_screen_and_flips_up(home):
+async def test_TC_2503_reached_by_tab_the_list_opens_inside_the_screen_and_flips_up(home):
     """ux UX-3, qa QA-2: the notes reached the operator's way (tab from the title), the
     cursor on the notes' last visible row at 80x24: the list opens ABOVE it, every row
     of it inside the screen."""
@@ -257,7 +257,7 @@ async def test_AT_2503_reached_by_tab_the_list_opens_inside_the_screen_and_flips
         assert y + h <= 24 and y < cy                    # flipped above the cursor
 
 
-async def test_AT_2503_tab_leaves_the_notes_and_the_mention_as_typed(home):
+async def test_TC_2503_tab_leaves_the_notes_and_the_mention_as_typed(home):
     """architect A-5: `tab` with the list open closes it; `enter` on the next field
     writes no mention into the notes."""
     app = _open_app(home)
@@ -283,7 +283,7 @@ async def test_TC_2503_closed_the_arrows_move_the_cursor(home):
         assert notes.cursor_location[0] == row - 1 and not _drop(app).display
 
 
-async def test_AT_2503_the_form_left_for_the_notes_closes_and_writes_nothing(home):
+async def test_TC_2503_the_form_left_for_the_notes_closes_and_writes_nothing(home):
     """code review CR-1: with the new person's form open, the focus back in the notes
     (a click) closes it; typing and `enter` there are the notes' own — no person added,
     no text replaced."""
@@ -323,7 +323,7 @@ async def test_TC_2503_with_no_one_listed_enter_is_a_new_line(home):
         assert notes.text == "@\n"
 
 
-async def test_AT_2503_a_click_away_closes_the_list(home):
+async def test_TC_2503_a_click_away_closes_the_list(home):
     """architect A-5: the list open, a click on the title closes it; `enter` there is the
     title's own and the notes keep the typed text."""
     app = _open_app(home)

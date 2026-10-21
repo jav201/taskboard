@@ -193,7 +193,7 @@ async def test_AT_2504_at_shows_who_needs_what_and_enter_opens_the_task(home, si
         assert app.selected_task_id == "tc5"
 
 
-async def test_AT_2504_enter_on_the_people_goes_to_their_tasks_and_esc_or_at_closes(home):
+async def test_TC_2504_enter_on_the_people_goes_to_their_tasks_and_esc_or_at_closes(home):
     app = _open(home)
     async with app.run_test(size=(118, 30)) as pilot:
         await pilot.pause()
@@ -208,12 +208,13 @@ async def test_AT_2504_enter_on_the_people_goes_to_their_tasks_and_esc_or_at_clo
         assert not isinstance(app.screen, PeopleDirectory)
         await pilot.press("at")
         await pilot.pause()
+        assert isinstance(app.screen, PeopleDirectory)    # the first `@` opened it (QA-DDR-4)
         await pilot.press("at")
         await pilot.pause()
         assert not isinstance(app.screen, PeopleDirectory)
 
 
-async def test_AT_2504_n_adds_e_edits_and_slash_finds(home):
+async def test_TC_2504_n_adds_e_edits_and_slash_finds(home):
     app = _open(home)
     async with app.run_test(size=(118, 30), notifications=True) as pilot:
         await pilot.pause()
@@ -254,7 +255,7 @@ async def test_AT_2504_n_adds_e_edits_and_slash_finds(home):
     assert {"id": "sofia.vega", "name": "Sofia Vega Ruiz", "role": "Legal", "note": ""} in raw["people"]
 
 
-async def test_AT_2504_the_main_screens_keys_do_not_act_behind_it(home):
+async def test_TC_2504_the_main_screens_keys_do_not_act_behind_it(home):
     app = _open(home)
     async with app.run_test(size=(118, 30)) as pilot:
         await pilot.pause()
@@ -296,7 +297,7 @@ def test_TC_2504_the_tones_say_late_today_and_who(world):
     assert f"b {views.HEX['pink']}" in [str(s.style) for s in row.spans]
 
 
-async def test_AT_2504_errors_are_said_and_change_nothing(home, monkeypatch):
+async def test_TC_2504_errors_are_said_and_change_nothing(home, monkeypatch):
     """qa QA-5: a task whose board file vanished, and a directory that cannot be written."""
     from taskboard import boards
     monkeypatch.setattr(boards, "LOCK_WAIT", 0.1)
@@ -322,7 +323,7 @@ async def test_AT_2504_errors_are_said_and_change_nothing(home, monkeypatch):
         assert (home / "people.json").read_bytes() == before
 
 
-async def test_AT_2504_at_from_the_main_screen(home):
+async def test_TC_2504_at_from_the_main_screen(home):
     """architect A-11: `@` on the main screen itself (not the home)."""
     app = _open(home)
     async with app.run_test(size=(80, 24)) as pilot:
@@ -353,7 +354,7 @@ def test_TC_2504_the_cursors_task_and_quote_are_always_shown_and_the_marker_coun
         assert n == len(unseen) > 0
 
 
-async def test_AT_2504_at_and_a_never_pile_up(home):
+async def test_TC_2504_at_and_a_never_pile_up(home):
     """code review CR-2 of increment 004: `@`, `A`, `@` brings the directory back to the
     top instead of pushing a second one."""
     app = _open(home)
@@ -390,6 +391,7 @@ def test_TC_2504_a_quote_is_never_shown_without_its_task(world, h, row):
     people = views.people_by_urgency(list(d.people.values()), items)
     t = views.render_people_directory(people, items, 0, "tasks", row, TODAY, 78, h, d.people).plain
     right = [r.split("│", 1)[1] for r in t.split("\n") if "│" in r]
+    assert any(r.lstrip().startswith("“") for r in right)        # a quote is on screen (QA-DDR-4)
     for i, r in enumerate(right):
         if r.lstrip().startswith("“"):
             assert i and any(b in right[i - 1] for b in ("Client A", "Course", "Personal")), \

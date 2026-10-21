@@ -140,7 +140,7 @@ Textual 8.2.8 names the `@` key `at` (P-1); a priority binding refused by `check
 
 ### HLR-2501 — One people directory for every board
 - **Traceability:** US-2501
-- **Ledger:** LED-2026-10-21-batch-01.1, LED-2026-10-21-batch-01.2, LED-2026-10-21-batch-01.3
+- **Ledger:** LED-2026-10-21-batch-01.1, LED-2026-10-21-batch-01.2, LED-2026-10-21-batch-01.3, LED-2026-10-21-batch-01.7
 - **Statement:** The system shall keep one directory of people in `people.json` beside the boards registry (`~/.taskboard/people.json` for the app `taskboard` opens; beside the board only for an app built without a registry — a test seam: `taskboard` always passes the home's registry, architect A-8), each person a handle, a name (1–60 characters), a role (≤ 60) and a note (≤ 200), every field one line without control characters; it shall read the file at start without ever raising — a missing, empty or blank file an empty directory, nothing written and nothing said; an unreadable one (a failed read, not JSON, not an object holding a `people` list) an empty directory after a byte copy at `people.json.corrupt` (`boards.keep_aside`, never replacing an earlier copy) and one warning notice `people.json could not be read; a copy was kept at <path>. The people directory starts empty.` — `…; no copy could be kept. …` when the copy failed; an entry with a malformed or repeated handle or no name skipped; it shall write the file only when a person is added or edited, atomically, under `people.json.lock`, as a read-modify-write of what the file holds then (another window's people kept), never over an unparseable file it could not copy aside; a failed write shall change nothing in memory and raise to its caller, which says so; every board the app opens shall draw mentions from this one directory, and no board file shall hold it; a window reads the file at start and after its own writes only, so a person another window adds shows here after a restart or this window's next add or edit (accepted, architect A-7).
 - **Rationale (informative):** D1 (one directory for every board), D2 (name + role + note), the commission's «One directory for all boards at `~/.taskboard/people.json`, written with batch-02's lock/atomic-write pattern».
 - **Validation:** `test`
@@ -150,13 +150,13 @@ Textual 8.2.8 names the `@` key `at` (P-1); a priority binding refused by `check
 - **Acceptance (black-box) — the user-verified outcome (the WHAT):**
   - **Observable outcome:** the same people on every board; a broken file never stops the app and is kept.
   - **Shipped surface:** `taskboard` → the start, `~/.taskboard/people.json`.
-  - **Acceptance test(s):** AT-2501
+  - **Acceptance test(s):** AT-2501 — realised by ONE node, `tests/test_people_directory.py::test_AT_2501_one_directory_for_every_board` (C-18; QA-DDR-1, LED .7); the threshold's other clauses are TC-2501 arms driven through the same surface (renamed from `test_AT_2501_*`, `evidence/rename-ddr.txt`)
   - **Boundary catalog (QC-3):** ☑ boundary (name 60, role 60, note 200 characters; a taken handle `ana.ruiz2`) ☑ empty (no file: an empty directory, nothing written) ☑ invalid (bad entries skipped; control bytes stripped; an unreadable file kept aside) ☑ error (the lock held: `busy`, nothing changed; a failed write: nothing changed in memory)
-  - **Negative control:** on `base_ref` AT-2501 is RED: `TaskboardApp` has no `people` (P-2; `evidence/red-001.txt` — planned).
+  - **Negative control:** on `base_ref` AT-2501 is RED: `TaskboardApp` has no `people` (P-2; `evidence/red-001.txt` — executed).
 
 ### HLR-2502 — A mention is `@handle`, and a handle never changes
 - **Traceability:** US-2501
-- **Ledger:** LED-2026-10-21-batch-01.1, LED-2026-10-21-batch-01.2, LED-2026-10-21-batch-01.3
+- **Ledger:** LED-2026-10-21-batch-01.1, LED-2026-10-21-batch-01.2, LED-2026-10-21-batch-01.3, LED-2026-10-21-batch-01.7
 - **Statement:** The system shall read a mention as `@` at a word start (not after a letter, digit, `.` or `@`, so `ana@x.com` is no mention) followed by a handle — lowercase letters and digits in words joined by `.`, `_` or `-`, never ending in one of them — and shall also read the link form `@[Name](p:handle)`; a task's people shall be read from its notes and nowhere else; a new person's handle shall be the name's letters and digits, accents folded, its words joined by `.` (`Andrés Lima` → `andres.lima`; `person` when nothing is left), with `2`, `3`, … appended while it is taken in the file or in memory; editing a person shall never change their handle.
 - **Rationale (informative):** D3 and the storage verdict `handle` (S3): short, typeable, legible without the directory, stable across renames; the link form is read because the round's tokeniser reads it.
 - **Validation:** `test`
@@ -166,13 +166,13 @@ Textual 8.2.8 names the `@` key `at` (P-1); a priority binding refused by `check
 - **Acceptance (black-box) — the user-verified outcome (the WHAT):**
   - **Observable outcome:** the note holds a word anyone can read (`@ana.ruiz`); a rename changes what is drawn, not what is stored.
   - **Shipped surface:** the notes' text (`board.json`), the directory's `id`, the details.
-  - **Acceptance test(s):** AT-2502 (Ana renamed `Ana Ruiz Prieto`: «Golden question set»'s details draw `@Ana Ruiz Prieto`, its notes still begin `Review the 40 questions with @ana.ruiz`), AT-2503
+  - **Acceptance test(s):** AT-2502 (Ana renamed `Ana Ruiz Prieto`: «Golden question set»'s details draw `@Ana Ruiz Prieto`, its notes still begin `Review the 40 questions with @ana.ruiz`) — realised by ONE node, `tests/test_people_look.py::test_AT_2502_a_renamed_person_draws_the_new_name_and_the_note_keeps_the_handle` (C-18; QA-DDR-1, LED .7); the threshold's other clauses are TC-2502 arms driven through the same surface (renamed from `test_AT_2502_*`, `evidence/rename-ddr.txt`); and AT-2503 (the mention written by the picker)
   - **Boundary catalog (QC-3):** ☑ boundary (a trailing `.`: not part of the handle) ☑ empty (no mention) ☑ invalid (`ana@x.com`, `@@ana`, `@Sofia`, an unclosed link) ☐ error — none
-  - **Negative control:** TC-2502 goes RED when the look-behind is dropped (an e-mail becomes a mention) or the handle may end in `.` (increment 001's battery — planned).
+  - **Negative control:** TC-2502 goes RED when the look-behind is dropped (an e-mail becomes a mention) or the handle may end in `.` (increment 001's battery — executed).
 
 ### HLR-2503 — `@` in the notes opens a picker under the cursor
 - **Traceability:** US-2502
-- **Ledger:** LED-2026-10-21-batch-01.1, LED-2026-10-21-batch-01.2, LED-2026-10-21-batch-01.4
+- **Ledger:** LED-2026-10-21-batch-01.1, LED-2026-10-21-batch-01.2, LED-2026-10-21-batch-01.4, LED-2026-10-21-batch-01.7
 - **Statement:** While the task editor is open with the directory and the notes' cursor follows an `@` at a word start and the text typed after it (no space, no `@`; not already a handle the directory holds), the system shall show a dropdown under the cursor, inside the screen: a head `@<typed>▌   mention a person`, at most 5 people `find` returns for the typed text (name starts, then inside the name, then the role) as `name  role` rows with the first highlighted, then `+ add '<typed>'  new person` when the typed text is not already someone's name (none for `@` alone), `type a name` when there is nothing, and the key line `↑↓   ↵ pick   esc plain text`; `↑`/`↓` shall move the highlight; `enter` shall replace `@<typed>` with `@<handle> ` and close it; `enter` on `+ add` shall turn it into the new person's form — head `New person  · for every board`, the name field prefilled with the typed text, the role field focused, key line `↵ add + mention   ⇥ name / role   esc back` — where `tab` moves between the two fields, `enter` adds the person to the directory (HLR-2501) and writes the mention, and `esc` goes back to the list; `esc` on the list shall close it leaving the typed text as typed; the focus leaving the picker — the notes for the list, the form for the new person, by `tab`, `shift+tab` or a click — shall close it, leaving the typed text as typed, and typing in the notes with the form open closes the form (architect A-5, code review CR-1 of increment 003); the mention shall replace only `@<typed>` where it still stands; a mention of someone the directory holds followed by sentence punctuation (`@ana.ruiz.`) opens nothing (CR-2); with no one listed `enter` is the notes' new line (CR-4); a failed add shall say `The person was not added: <reason>` and keep the form; while the dropdown is closed `enter`, the arrows, `tab` and `esc` shall do what they did before (a new line, the cursor, the next field, cancel); the new person's role shall be confirmed with `enter`, never `alt+s`, which keeps saving the task; the picker shall write the directory only through an add and the task only through the editor's save.
 - **Rationale (informative):** item 2 A (`EditorInline` + `MentionDrop`); D5's finding (`alt+s` is the task's Save).
 - **Validation:** `test`
@@ -182,13 +182,13 @@ Textual 8.2.8 names the `@` key `at` (P-1); a priority binding refused by `check
 - **Acceptance (black-box) — the user-verified outcome (the WHAT):**
   - **Observable outcome:** a mention is typed without leaving the note; a new person is added once, for every board.
   - **Shipped surface:** `taskboard` → `e` / `a`, the notes.
-  - **Acceptance test(s):** AT-2503
+  - **Acceptance test(s):** AT-2503 — realised by ONE node, `tests/test_people_picker.py::test_AT_2503_at_an_enter_writes_the_handle_and_the_preview_the_name` (C-18; QA-DDR-1, LED .7); the threshold's other clauses are TC-2503 arms driven through the same surface (renamed from `test_AT_2503_*`, `evidence/rename-ddr.txt`)
   - **Boundary catalog (QC-3):** ☑ boundary (5 rows then `+ add`; an exact name: no `+ add`; the dropdown at the screen's edge) ☑ empty (`@` alone: no add row; an empty directory: `type a name`) ☑ invalid (a name that looks like markup printed as typed; inside a word: no picker) ☑ error (the lock held: the add refused, said, the form kept)
-  - **Negative control:** on `base_ref` AT-2503 is RED: no dropdown (P-3; `evidence/red-003.txt` — planned).
+  - **Negative control:** on `base_ref` AT-2503 is RED: no dropdown (P-3; `evidence/red-003.txt` — executed).
 
 ### HLR-2504 — `@` opens the people view
 - **Traceability:** US-2503
-- **Ledger:** LED-2026-10-21-batch-01.1, LED-2026-10-21-batch-01.2, LED-2026-10-21-batch-01.5
+- **Ledger:** LED-2026-10-21-batch-01.1, LED-2026-10-21-batch-01.2, LED-2026-10-21-batch-01.5, LED-2026-10-21-batch-01.7
 - **Statement:** When the operator presses `@` on the main screen or on the home, the system shall show, read-only for tasks, the people view: a head row (`◆ PEOPLE · directory  who do I owe what · every board`, at the right `<n> in the directory · tasks read-only`, or `<n> people · tasks read-only` when that does not fit — and then, still too wide, the subtitle `who do I owe what` alone — `person` singular); then two panes split by `│`: on the left every person of the directory ordered by most late, then most due today, then most open, then name — two rows each, the name with `▲<late>` (red) `●<today>` (amber) and the open count, the role dimmed under it, the chosen person marked `▶` and shaded (its `▶` dimmed while the tasks pane holds the cursor, ux UX-6); on the right the chosen person's name (pink) and role, their note (or `no note`), a progress box — `╭─╮`/`│ <a block per open task: red late, amber today, grey the rest> <late> late · <today> today · <open> open │`/`╰─╯`, the words for zero late or today left out, `nothing open` when there is none — then their open tasks (neither done nor archived) of every active board and of an unlisted open board, whose notes mention them, in bands `LATE`, `TODAY`, `THIS WEEK · to Sun <d>`, `LATER`, `NO DATE`, each task a row (the cursor `▶`, the board's chip, the title, the project from a 78-cell pane, the due `▲Nd`/`today`/`Wed 21`/`—`) with, under it, the first note line that mentions the person between `“` and `”`, mentions drawn as in HLR-2506, cut with `…`; and a key row in the key bar's style `↑↓ move   ⇥ panes   ↵ their tasks   / find   n add   e edit person   esc back` while the people pane holds the cursor and `… ↵ open task …` while the tasks pane does (ux UX-1, UX-4: whole at 80 columns; words dropped from the right first when narrower); every board shall be read once when it opens; `↑`/`↓` (`k`/`j`) move in the focused pane; `tab`, `←`/`→` (`h`/`l`) switch panes (to the tasks only when there are some); `enter` on the people pane goes to that person's tasks, on a task closes the view (and the home beneath it), opens the task's board in place when it is another (a switch, with a switch's writes) and selects the task; the tasks pane scrolls to keep the cursor's task and its quote on screen (the window ending on them), never showing a quote without its task (a blank row instead), its last row `↓ <n> more below` counting the tasks under the window, never `0` (ux UX-5; code review CR-1 of increment 004); `/` asks `Find a name` and moves to the first person `find` returns (`No one in the directory matches '<q>'.` otherwise); `n` opens `PersonForm` empty and `e` with the chosen person — title `Edit person @<handle>`, fields `Name`, `Role`, `Note` each labelled, `Save`/`Cancel` with `↵ / alt+s save   ⇥ next field   esc cancel` (ux UX-8) — and a save adds or edits the person (HLR-2501), the list re-ordered with the cursor on them, a refused name saying `A person needs a name.`, a failed write `The directory was not saved: <reason>`; `escape` or `@` close the view; `@` and `A` bring their screen back to the top when it is already on the stack, never a second one (code review CR-2 of increment 004); with an empty directory it shall say `No one in the directory yet.` and `n adds a person · an @ in a task's notes mentions one`; `@` shall not act over a modal or the presentation, and no other key of the main screen shall act while the view is open; `@` shall be listed by `?`'s map and the palette as `People directory` (`KEYMAP`, off the bar), apart from view `9`'s `People`.
 - **Rationale (informative):** item 1 A (`PeoplePanes`) with the operator's objection — «robar de C el contexto» (`PersonPage`'s quote under each task) and «de B el recuadro de progreso que dice X late X open X today» (`PeopleCards`' bar and words, drawn boxed, in B's order late · today · open); D4's proposal on the page — the new view titled `PEOPLE · directory` on screen — applied. `enter` on the people pane goes to the tasks rather than opening an unseen first task (the round opened the first one).
 - **Validation:** `test`
@@ -198,13 +198,13 @@ Textual 8.2.8 names the `@` key `at` (P-1); a priority binding refused by `check
 - **Acceptance (black-box) — the user-verified outcome (the WHAT):**
   - **Observable outcome:** from one screen the operator sees who needs them, what they owe one person across every board and what they wrote about it, and lands on a task with one key.
   - **Shipped surface:** `taskboard` → `@`.
-  - **Acceptance test(s):** AT-2504
+  - **Acceptance test(s):** AT-2504 — realised by ONE node, `tests/test_people_view.py::test_AT_2504_at_shows_who_needs_what_and_enter_opens_the_task` (C-18; QA-DDR-1, LED .7); the threshold's other clauses are TC-2504 arms driven through the same surface (renamed from `test_AT_2504_*`, `evidence/rename-ddr.txt`)
   - **Boundary catalog (QC-3):** ☑ boundary (80 columns: the project column gone, quotes cut with `…`; more tasks than rows: the pane scrolls) ☑ empty (an empty directory; a person with nothing open: `nothing open`, `enter` stays) ☑ invalid (names, roles, notes and titles that look like markup printed as typed; a missing or unreadable board: no tasks from it) ☑ error (`enter` on a task whose board file vanished: the switch's missing-file notice; a failed directory write: said, nothing changed)
-  - **Negative control:** on `base_ref` AT-2504 is RED: `@` does nothing (P-7; `evidence/red-004.txt` — planned).
+  - **Negative control:** on `base_ref` AT-2504 is RED: `@` does nothing (P-7; `evidence/red-004.txt` — executed).
 
 ### HLR-2505 — `/` then `@` filters to one person's tasks
 - **Traceability:** US-2504
-- **Ledger:** LED-2026-10-21-batch-01.1, LED-2026-10-21-batch-01.2, LED-2026-10-21-batch-01.6
+- **Ledger:** LED-2026-10-21-batch-01.1, LED-2026-10-21-batch-01.2, LED-2026-10-21-batch-01.6, LED-2026-10-21-batch-01.7
 - **Statement:** When the operator presses `/` in the kanban or the gantt, the system shall show the filter window (`Filter tasks`) with, under its field, `text filters tasks · @ starts a person` and the key line `↵ / alt+s filter   esc cancel`; when the field starts with `@` it shall instead list under it `PEOPLE · names only` and the first 6 of the directory's people `find` returns for what follows the `@` (for `@` alone, the first 6 by name; no `+ add` row; `no one by that name` when none, qa QA-1), the first highlighted, with the key line `↑↓   ↵ / alt+s filter   alt+p their page   esc cancel` (ux UX-7); `↑`/`↓` move the highlight; `enter` or `alt+s` with a person highlighted shall set the filter `@<handle>`, which keeps exactly the tasks whose notes mention that handle, lights no text, and whose bar reads `/ @<Name>  <role> · tasks that mention them` (the role and its ` · ` left out when empty) with the tally; with no person listed, `enter` sets the typed `@…` as the filter, and an `@` query is always an exact handle — `@zz` or a partial `@ana` keeps no task, nothing is invented (code review CR-2 of increment 005); `/` reopened on a person's filter lists that person first (CR-1); the bar's lookup ignores case, as the filter does (CR-3); `alt+p` with a person highlighted shall close the window and open the people view on them (HLR-2504); a text query shall filter exactly as before.
 - **Rationale (informative):** item 3 A (`SearchAt`, `matches_m`, `filter_bar_m`): the same `@` as the notes, exact, no mode to remember; `/` stays in the kanban and the gantt (the round's note).
 - **Validation:** `test`
@@ -214,13 +214,13 @@ Textual 8.2.8 names the `@` key `at` (P-1); a priority binding refused by `check
 - **Acceptance (black-box) — the user-verified outcome (the WHAT):**
   - **Observable outcome:** a person's tasks, exactly, from the filter the operator already knows.
   - **Shipped surface:** `taskboard` → `/` in kanban and gantt.
-  - **Acceptance test(s):** AT-2505
+  - **Acceptance test(s):** AT-2505 — realised by ONE node, `tests/test_people_search.py::test_AT_2505_at_lists_names_only_and_enter_filters_to_their_tasks` (C-18; QA-DDR-1, LED .7); the threshold's other clauses are TC-2505 arms driven through the same surface (renamed from `test_AT_2505_*`, `evidence/rename-ddr.txt`)
   - **Boundary catalog (QC-3):** ☑ boundary (6 rows; `@` alone lists everyone) ☑ empty (`@zz`: no one; an empty directory: no one) ☑ invalid (a partial handle `@ana` typed and `enter` with no one listed: an exact-handle filter that keeps nothing, nothing invented) ☐ error — none
-  - **Negative control:** on `base_ref` AT-2505 is RED: `@an` lists nothing and the filter `ana` keeps «Canary» (P-4; `evidence/red-005.txt` — planned).
+  - **Negative control:** on `base_ref` AT-2505 is RED: `@an` lists nothing and the filter `ana` keeps «Canary» (P-4; `evidence/red-005.txt` — executed).
 
 ### HLR-2506 — A mention is drawn `@Name` in pink
 - **Traceability:** US-2505
-- **Ledger:** LED-2026-10-21-batch-01.1, LED-2026-10-21-batch-01.2, LED-2026-10-21-batch-01.3
+- **Ledger:** LED-2026-10-21-batch-01.1, LED-2026-10-21-batch-01.2, LED-2026-10-21-batch-01.3, LED-2026-10-21-batch-01.7
 - **Statement:** Where a task's notes are shown in the details (`enter`) or the editor's preview, the system shall draw each mention of a person the directory holds as `@<current name>` bold in the `pink` tone, inside any highlight of its line, and a mention of a handle the directory does not hold as typed, dimmed; on the kanban card it shall add, just before the due token (so it goes first when the row is tight), `@<first name of the first person mentioned>` with `+<n>` for the others, in `pink`; in the presentation's notes (the split view and the gantt view's cursor note) it shall write each such mention `@<Name>`, its spaces non-breaking so a wrap never splits it, bold pink; with no directory, or an empty one (`Board.people` is `{}` until someone is added), every place shall draw the notes exactly as before (code review CR-1 of increment 002); a mark is painted only where a whole mention was written — typed text that merely starts like a name (`@Anabel` for `Ana`) stays as typed (CR-3) — in every row of the presentation's note, the one-row cut included (CR-4).
 - **Rationale (informative):** item 4 A (`notes_preview_m`, `card_meta_m`, `present_note_lines_m`, `present_note_markup_m` with style A): one tone, no width change, visible in the three places; the room reads names.
 - **Validation:** `test`
@@ -230,13 +230,13 @@ Textual 8.2.8 names the `@` key `at` (P-1); a priority binding refused by `check
 - **Acceptance (black-box) — the user-verified outcome (the WHAT):**
   - **Observable outcome:** names, not handles, in the three places the operator and the room read.
   - **Shipped surface:** `taskboard` → `enter`, `4`, `R`.
-  - **Acceptance test(s):** AT-2506
+  - **Acceptance test(s):** AT-2506 — realised by ONE node, `tests/test_people_look.py::test_AT_2506_details_card_and_presentation_name_the_people` (C-18; QA-DDR-1, LED .7); the threshold's other clauses are TC-2506 arms driven through the same surface (renamed from `test_AT_2506_*`, `evidence/rename-ddr.txt`)
   - **Boundary catalog (QC-3):** ☑ boundary (a tight card: the mention goes before the due) ☑ empty (no directory: unchanged) ☑ invalid (an unknown handle dimmed; a name that looks like markup printed as typed) ☐ error — none
-  - **Negative control:** on `base_ref` AT-2506 is RED: the details show `@ana.ruiz` (`evidence/red-002.txt` — planned).
+  - **Negative control:** on `base_ref` AT-2506 is RED: the details show `@ana.ruiz` (`evidence/red-002.txt` — executed).
 
 ### HLR-2507 — Team sync carries a mention as its handle and nothing of the directory
 - **Traceability:** US-2501
-- **Ledger:** LED-2026-10-21-batch-01.1, LED-2026-10-21-batch-01.2, LED-2026-10-21-batch-01.3
+- **Ledger:** LED-2026-10-21-batch-01.1, LED-2026-10-21-batch-01.2, LED-2026-10-21-batch-01.3, LED-2026-10-21-batch-01.7
 - **Statement:** The system shall never write the directory or any of its names, roles or notes to the team folder: a push shall carry a task's notes as typed (a mention as `@handle`), as before; a teammate's pulled task whose notes hold mentions — known, unknown or malformed — shall draw in every view without error, a known handle drawn as this operator's directory names it; a note of 100 000 characters crafted against the tokeniser (`@[` repeated) shall be read in linear time (security S-1: the link form's name is bounded to 60 characters).
 - **Rationale (informative):** D4's consequence «the teammate without my directory sees `@ana.ruiz`»; the commission's «Team sync must not leak or break on mentions»; the directory holds what the operator wrote about real people.
 - **Validation:** `test`
@@ -246,9 +246,9 @@ Textual 8.2.8 names the `@` key `at` (P-1); a priority binding refused by `check
 - **Acceptance (black-box) — the user-verified outcome (the WHAT):**
   - **Observable outcome:** what the operator wrote about a person stays on their machine; a teammate's mentions never break a view.
   - **Shipped surface:** the team folder; view 9.
-  - **Acceptance test(s):** AT-2507
+  - **Acceptance test(s):** AT-2507 — realised by ONE node, `tests/test_people_directory.py::test_AT_2507_a_push_carries_mentions_as_handles_and_no_directory` (C-18; QA-DDR-1, LED .7); the threshold's other clauses are TC-2507 arms driven through the same surface (renamed from `test_AT_2507_*`, `evidence/rename-ddr.txt`)
   - **Boundary catalog (QC-3):** ☐ boundary — none ☐ empty — none ☑ invalid (malformed mentions from a teammate) ☐ error — none
-  - **Negative control:** AT-2507 goes RED when a push writes `board.people` (a mutation adding it to the record — increment 001's battery, planned).
+  - **Negative control:** AT-2507 goes RED when a push writes `board.people` (a mutation adding it to the record — increment 001's battery, executed).
 
 ---
 
@@ -259,37 +259,37 @@ Textual 8.2.8 names the `@` key `at` (P-1); a priority binding refused by `check
 
 ### LLR-2501.1 — `people.Directory.load`
 - **Traceability:** HLR-2501
-- **Ledger:** LED-2026-10-21-batch-01.1, LED-2026-10-21-batch-01.2
+- **Ledger:** LED-2026-10-21-batch-01.1, LED-2026-10-21-batch-01.2, LED-2026-10-21-batch-01.7
 - **Statement:** `taskboard/people.py` (NEW — created in increment 001) shall provide `Person(id, name, role="", note="")`, `PEOPLE_NAME = "people.json"` and `Directory(path, people=None, load_report=None)` holding `people: dict[str, Person]` (one live dict, cleared and refilled in place); `Directory.load(path)` shall never raise: missing → empty; a failed read or an unparseable file → empty with `load_report = {"unreadable": True, "backup": <boards.keep_aside's copy or None>}` (`keep_aside`, the registry's copy made public, architect A-3); an empty or blank file → empty, no report; each entry cleaned with `models.clean_strings`, its fields made one line and capped (`NAME_MAX` 60, `ROLE_MAX` 60, `NOTE_MAX` 200), skipped unless its `id` fully matches the handle pattern, is not repeated and has a name; `find(q)` and `named(name)` as HLR-2503 uses them.
 - **Validation:** `test (unit)`
 - **Executed verification:** `python -m pytest -q -p no:cacheprovider tests/test_people_directory.py -k TC_2501`
 - **Numeric pass threshold:** TC-2501: a missing file → empty, no file; the mixed file → `ana.ruiz` and `esc` only, the note one line, the role 60 `r`s; each of `{not json`, `[]`, `{"people": {}}`, `\xff\xfe` → empty, `unreadable`, the backup's bytes equal the file's, the file unchanged.
-- **Negative control:** TC-2501 goes RED when a repeated handle is kept, the cap is dropped, or the unreadable file is not copied (increment 001's battery — planned).
+- **Negative control:** TC-2501 goes RED when a repeated handle is kept, the cap is dropped, or the unreadable file is not copied (increment 001's battery — executed).
 - **Boundary catalog:** ☑ boundary (the caps) ☑ empty (no file) ☑ invalid (bad entries, bad bytes) ☐ error — none
 
 ### LLR-2501.2 — `Directory.add` and `Directory.edit`
 - **Traceability:** HLR-2501
-- **Ledger:** LED-2026-10-21-batch-01.1, LED-2026-10-21-batch-01.2, LED-2026-10-21-batch-01.3
+- **Ledger:** LED-2026-10-21-batch-01.1, LED-2026-10-21-batch-01.2, LED-2026-10-21-batch-01.3, LED-2026-10-21-batch-01.7
 - **Statement:** `Directory.add(name, role="", note="")` and `Directory.edit(handle, name, role, note)` shall clean their fields as `load` does, raise `ValueError` for a name with nothing left, and write through `_commit(change)`: under `boards.file_lock(path)`, read the file as it is now (a failed read raises; an unparseable file is kept aside first — never written over when it cannot be — else the memory's people are the base), apply `change`, `models.write_atomic` `{"version": 1, "people": [...]}` with `ensure_ascii=False`, then refill `people` in place; `add` derives the handle with `handle_for(name, taken)` against the file's handles and the memory's; a raised `OSError` leaves memory unchanged.
 - **Validation:** `test (unit)`
 - **Executed verification:** `python -m pytest -q -p no:cacheprovider tests/test_people_directory.py -k TC_2501`
 - **Numeric pass threshold:** TC-2501: `add("  Ana   Ruiz ", "Client A PM")` → `ana.ruiz`, then `ana.ruiz2`, `andres.lima`, the live dict the same object, the file `version` 1 with the three ids, no `.tmp` or `.lock` left; two directories on one file → both people kept; `edit` keeps `luis.mora`, writes back a person the file lost and refuses a string that is not a handle (code review CR-5); an unparseable file: kept at `.corrupt` then replaced; with `keep_aside` failing: `OSError`, the file unchanged; the lock held with `LOCK_WAIT` 0.2 → `OSError` naming `busy`, no file; `write_atomic` failing → memory unchanged.
-- **Negative control:** TC-2501 goes RED when the write skips the re-read (the second window erases the first's person), when the lock is dropped, when memory is updated before the write (increment 001's battery — planned).
+- **Negative control:** TC-2501 goes RED when the write skips the re-read (the second window erases the first's person), when the lock is dropped, when memory is updated before the write (increment 001's battery — executed).
 - **Boundary catalog:** ☐ boundary — none ☑ empty (a blank name refused) ☐ invalid — none ☑ error (the lock, the write, the unkeepable file)
 
 ### LLR-2501.3 — the app holds the directory; `Board.people`
 - **Traceability:** HLR-2501
-- **Ledger:** LED-2026-10-21-batch-01.1, LED-2026-10-21-batch-01.2
+- **Ledger:** LED-2026-10-21-batch-01.1, LED-2026-10-21-batch-01.2, LED-2026-10-21-batch-01.7
 - **Statement:** `taskboard/models.py` shall give `Board` an attribute `people` (`{}` by default) that the app sets and the file never holds; `taskboard/app.py` shall load `self.people = Directory.load(self.registry.path.parent / PEOPLE_NAME)` in `TaskboardApp.__init__`, set `self.board.people = self.people.people` in `_label_board` (so at mount and at every switch), carry it in `after_move`, and warn once at mount with HLR-2501's notice (`markup=False`) when the load reported it unreadable.
 - **Validation:** `test (unit)`
 - **Executed verification:** `python -m pytest -q -p no:cacheprovider tests/test_people_directory.py -k AT_2501`
 - **Numeric pass threshold:** as AT-2501.
-- **Negative control:** AT-2501 goes RED when `_label_board` does not set `people` (a switched board draws handles) or when `Board._to_dict`/`save` writes it (increment 001's battery — planned).
+- **Negative control:** AT-2501 goes RED when `_label_board` does not set `people` (a switched board draws handles) or when `Board._to_dict`/`save` writes it (increment 001's battery — executed).
 - **Boundary catalog:** ☐ boundary — none ☑ empty (an app without a registry) ☑ invalid (an unreadable file) ☐ error — none
 
 ### LLR-2502.1 — `people.MENTION_RE`, `mention_ids`, `split_mentions`, `mention_line`, `handle_for`, `fold`
 - **Traceability:** HLR-2502
-- **Ledger:** LED-2026-10-21-batch-01.1, LED-2026-10-21-batch-01.2, LED-2026-10-21-batch-01.3
+- **Ledger:** LED-2026-10-21-batch-01.1, LED-2026-10-21-batch-01.2, LED-2026-10-21-batch-01.3, LED-2026-10-21-batch-01.7
 - **Statement:** `taskboard/people.py` shall provide `MENTION_RE` (`(?<![\w.@])@(?:\[([^\]\n]{1,60})\]\(p:(<handle>)\)|(<handle>))` with `<handle>` = `[a-z0-9]+(?:[._-][a-z0-9]+)*`), `mention_ids(text)` (the handles in order, each once; no scan of a text without `@`), `split_mentions(text)` (`(piece, handle | None)` pairs whose pieces join back to the text), `mention_line(notes, handle)` (the first line mentioning it, its `-`/`*`/`•` mark dropped), `fold(s)` (lower case, accents dropped) and `handle_for(name, taken)` as HLR-2502 states.
 - **Validation:** `test (unit)`
 - **Executed verification:** `python -m pytest -q -p no:cacheprovider tests/test_people_directory.py -k TC_2502`
@@ -299,97 +299,97 @@ Textual 8.2.8 names the `@` key `at` (P-1); a priority binding refused by `check
 
 ### LLR-2503.1 — `modals.pick_rows`
 - **Traceability:** HLR-2503
-- **Ledger:** LED-2026-10-21-batch-01.1, LED-2026-10-21-batch-01.2
+- **Ledger:** LED-2026-10-21-batch-01.1, LED-2026-10-21-batch-01.2, LED-2026-10-21-batch-01.7
 - **Statement:** `taskboard/modals.py` shall provide `pick_rows(people, q, sel, w, limit) -> (rows, opts)`: `opts` the first `limit` people of `people.find(q)` as `("p", Person)`, then `("add", q.strip())` when `q` is not blank and `people.named(q)` is None; each row exactly `w` cells of Text pieces (the cursor `▶ `, the name in 14 cells — pink when highlighted — and the role muted; or `+ add '<q>'  new person`), the highlighted row shaded; `  type a name` when `opts` is empty.
 - **Validation:** `test (unit)`
 - **Executed verification:** `python -m pytest -q -p no:cacheprovider tests/test_people_picker.py -k TC_2503`
 - **Numeric pass threshold:** TC-2503: `an` → Ana, Andrés, Juana, Marta, `+ add 'an'`, every row 44 cells; `ana ruiz` → one person, no add; `""` → 5 people, no add; an empty directory → `type a name`; a name `[b]Bold[/b]` printed as typed.
-- **Negative control:** TC-2503 goes RED when `+ add` shows for an exact name or for `@` alone (increment 003's battery — planned).
+- **Negative control:** TC-2503 goes RED when `+ add` shows for an exact name or for `@` alone (increment 003's battery — executed).
 - **Boundary catalog:** ☑ boundary (the limit) ☑ empty (no people) ☑ invalid (markup-looking names) ☐ error — none
 
 ### LLR-2503.2 — `TaskModal`'s picker
 - **Traceability:** HLR-2503
-- **Ledger:** LED-2026-10-21-batch-01.1, LED-2026-10-21-batch-01.2, LED-2026-10-21-batch-01.4
+- **Ledger:** LED-2026-10-21-batch-01.1, LED-2026-10-21-batch-01.2, LED-2026-10-21-batch-01.4, LED-2026-10-21-batch-01.7
 - **Statement:** `TaskModal.__init__` shall take `people: Directory | None = None` (the app passes `self.people` for `a` and `e`); `TaskModal` shall compose a `MentionDrop` (`overlay: screen`, absolute, 48 cells, hidden) and bind `up`/`down` (`drop_move`), `enter` (`drop_pick`) as priority bindings that `check_action` lets act only while the picker is open, and `tab` (`drop_field`) — between the form's two fields while it is open; otherwise the list closed and the screen's `focus_next` (this binding replaces the screen's own `tab`); `drop_move`/`drop_pick` act on the form only while it holds the focus and on the list only while it lists someone; `on_descendant_focus` closes the picker when the focus leaves it; `_insert_mention` replaces the stored span (`_row`, `_at`, `_q`) only while it still reads `@<typed>`; on a notes change (unless the form is open) and on a cursor move while the list is open it shall re-read the text before the cursor with `MENTION_AT` (`(?:^|(?<=\s))@([^\s@]*)$`) and open, narrow or close the list; `action_cancel` steps back (form → list → closed) before cancelling the editor; an add calls `people.add` and notifies `The person was not added: <reason>` (`markup=False`) on `OSError`/`ValueError`.
 - **Validation:** `test (unit)`
 - **Executed verification:** `python -m pytest -q -p no:cacheprovider tests/test_people_picker.py`
 - **Numeric pass threshold:** as AT-2503, and `tests/test_edit_window.py`'s tab walk unchanged.
-- **Negative control:** AT-2503 goes RED when `check_action` lets `enter` act while closed (no new line), when `tab` loses `focus_next`, when `esc` cancels the editor with the list open (increment 003's battery — planned).
+- **Negative control:** AT-2503 goes RED when `check_action` lets `enter` act while closed (no new line), when `tab` loses `focus_next`, when `esc` cancels the editor with the list open (increment 003's battery — executed).
 - **Boundary catalog:** ☑ boundary (the screen's edges) ☐ empty — none ☑ invalid (inside a word; a known handle) ☑ error (the add refused)
 
 ### LLR-2504.1 — `views.person_items`, `people_by_urgency`, `progress_box`, `render_people_directory`
 - **Traceability:** HLR-2504
-- **Ledger:** LED-2026-10-21-batch-01.1, LED-2026-10-21-batch-01.2, LED-2026-10-21-batch-01.5
+- **Ledger:** LED-2026-10-21-batch-01.1, LED-2026-10-21-batch-01.2, LED-2026-10-21-batch-01.5, LED-2026-10-21-batch-01.7
 - **Statement:** `taskboard/views.py` shall provide `PersonItem(band, lane, board_name, colour, task, project, due)`, `person_items(lanes, handle, today)` over the agenda's plain lanes (`is_open` tasks mentioning the handle, banded and sorted by band, due, lane, board order), `person_counts(items) -> (late, today, open)`, `people_by_urgency(people, items)`, `notes_text(text, people)` (the Text-piece notes of HLR-2506, which `modals.notes_preview` returns), `progress_box(items, w)` (three rows), `_scroll_tasks` (whole tasks, the `↓ N more below` row), `PEOPLE_TITLE = "PEOPLE · directory"` and `render_people_directory(people, items, sel, pane, row, today, width, height, directory) -> Text` drawing HLR-2504's rows exactly `width` cells each (the left pane 32 cells from 100, else 24; the chip 10 cells from a 70-cell pane, else 9; the project from 78), every string a Text piece.
 - **Validation:** `test (unit)`
 - **Executed verification:** `python -m pytest -q -p no:cacheprovider tests/test_people_view.py -k TC_2504`
 - **Numeric pass threshold:** TC-2504: Ana's five items in the bands late, today, week, later, later; counts (1, 1, 5); the urgency order Ana, Diego, Marta, Luis, Andrés, Elena, Juana, Pablo; an archived or done task not owed; an empty box `│ nothing open │`; at widths 116, 78, 40 every one of 29 rows is the width, `1 late · 1 today · 5 open` and the quote from 78, the project only at 116; each task's next row is its quote; markup-looking strings as typed; the empty directory's two lines; the tasks pane scrolled to the fifth task.
-- **Negative control:** TC-2504 goes RED when a done task is owed, when the urgency key drops `today`, when the quote is not under its task (increment 004's battery — planned).
+- **Negative control:** TC-2504 goes RED when a done task is owed, when the urgency key drops `today`, when the quote is not under its task (increment 004's battery — executed).
 - **Boundary catalog:** ☑ boundary (widths, scrolling) ☑ empty (no people; nothing open) ☑ invalid (markup-looking strings; a missing board) ☐ error — none
 
 ### LLR-2504.2 — `app.PeopleDirectory` and `@`
 - **Traceability:** HLR-2504
-- **Ledger:** LED-2026-10-21-batch-01.1, LED-2026-10-21-batch-01.2, LED-2026-10-21-batch-01.5
+- **Ledger:** LED-2026-10-21-batch-01.1, LED-2026-10-21-batch-01.2, LED-2026-10-21-batch-01.5, LED-2026-10-21-batch-01.7
 - **Statement:** `taskboard/keymap.py` shall declare `Key("at", "@", "people_directory", "People directory", group="misc", bar=False)`; `taskboard/app.py` shall provide `board_lanes(app)` (the agenda's lanes and ids, which `AllBoardsAgenda` now reads too) and `open_on_board(app, bid, task_id)` (pop every screen, `switch_board` when another, `jump_to` when there), `people_keys(pane)` (the key row per pane), and `PeopleDirectory(Screen)` with priority bindings `escape,at` (back), `up,k`/`down,j` (move), `left,h,right,l,tab` (pane), `enter`, `slash` (find), `n`, `e`; `TaskboardApp.action_people_directory` pushes it; `check_action` lets `people_directory` act as it lets `agenda_all`, and refuses every seat action but `quit` while it is on the stack.
 - **Validation:** `test (unit)`
 - **Executed verification:** `python -m pytest -q -p no:cacheprovider tests/test_people_view.py -k "AT_2504 or D4"`
 - **Numeric pass threshold:** as AT-2504; `KEYMAP` holds `@` labelled `People directory` off the bar and `9` labelled `People`; `tests/test_all_agenda.py` unchanged.
-- **Negative control:** AT-2504 goes RED when the seat keys act behind the view or `@` acts over a modal (increment 004's battery — planned).
+- **Negative control:** AT-2504 goes RED when the seat keys act behind the view or `@` acts over a modal (increment 004's battery — executed).
 - **Boundary catalog:** ☐ boundary — none ☐ empty — none ☐ invalid — none ☑ error (the board missing at `enter`)
 
 ### LLR-2504.3 — `modals.PersonForm`, `n`, `e`, `/`
 - **Traceability:** HLR-2504
-- **Ledger:** LED-2026-10-21-batch-01.1, LED-2026-10-21-batch-01.2
+- **Ledger:** LED-2026-10-21-batch-01.1, LED-2026-10-21-batch-01.2, LED-2026-10-21-batch-01.7
 - **Statement:** `taskboard/modals.py` shall provide `PersonForm(person=None)` (`ModalScreen[tuple[str, str, str] | None]`, `ButtonKeysMixin`, `escape` cancel and `alt+s` = `press_button('save')`, inputs `#f-name`, `#f-role`, `#f-note` under the labels `Name`, `Role`, `Note`, buttons `save`/`cancel`, the key line `↵ / alt+s save   ⇥ next field   esc cancel`, `enter` in a field saves), listed in `tests/test_modal_keys.py`'s inventory; `PeopleDirectory` shall add or edit through the directory on its result and find with `TextPrompt("Find a name")`.
 - **Validation:** `test (unit)`
 - **Executed verification:** `python -m pytest -q -p no:cacheprovider tests/test_people_view.py tests/test_modal_keys.py`
 - **Numeric pass threshold:** as AT-2504's `n`/`e`/`/` arms; TC-2407's law over `PersonForm`.
-- **Negative control:** TC-2407 goes RED when `PersonForm` loses `alt+s` (increment 004's battery — planned).
+- **Negative control:** TC-2407 goes RED when `PersonForm` loses `alt+s` (increment 004's battery — executed).
 - **Boundary catalog:** ☐ boundary — none ☑ empty (a blank name refused) ☐ invalid — none ☑ error (a failed write said)
 
 ### LLR-2505.1 — `views.matches`, `filter_bar`, `_apply_search_overlay`
 - **Traceability:** HLR-2505
-- **Ledger:** LED-2026-10-21-batch-01.1, LED-2026-10-21-batch-01.2, LED-2026-10-21-batch-01.6
+- **Ledger:** LED-2026-10-21-batch-01.1, LED-2026-10-21-batch-01.2, LED-2026-10-21-batch-01.6, LED-2026-10-21-batch-01.7
 - **Statement:** `views.matches(task, board, q)` shall return `"person"` for a query `@<handle>` when the notes mention that handle and None otherwise, before any text rule; `filter_bar(query, hits, total, w, people=None)` shall write HLR-2505's person bar when the handle is in `people`; `_apply_search_overlay(..., people=None)` shall light no text for a person's query and pass `board.people` to the bar from both `render_view` branches.
 - **Validation:** `test (unit)`
 - **Executed verification:** `python -m pytest -q -p no:cacheprovider tests/test_people_search.py -k TC_2505`
 - **Numeric pass threshold:** TC-2505: `@ana.ruiz` on Client A → the four mentioning tasks, `person` or None only; `@ana` → none; `ana` keeps «Canary release plan»; the bar `/ @Ana Ruiz  Client A PM · tasks that mention them` … `3/11 tasks · esc clears`; `@zz` → `/ @zz▌`.
-- **Negative control:** TC-2505 goes RED when the person rule falls through to the text rules (increment 005's battery — planned).
+- **Negative control:** TC-2505 goes RED when the person rule falls through to the text rules (increment 005's battery — executed).
 - **Boundary catalog:** ☐ boundary — none ☑ empty (an unknown handle) ☑ invalid (a partial handle) ☐ error — none
 
 ### LLR-2505.2 — `modals.SearchPrompt` and `/`
 - **Traceability:** HLR-2505
-- **Ledger:** LED-2026-10-21-batch-01.1, LED-2026-10-21-batch-01.2, LED-2026-10-21-batch-01.6
+- **Ledger:** LED-2026-10-21-batch-01.1, LED-2026-10-21-batch-01.2, LED-2026-10-21-batch-01.6, LED-2026-10-21-batch-01.7
 - **Statement:** `taskboard/modals.py` shall provide `SearchPrompt(TextPrompt)` with keyword arguments `people` and `open_person`, priority bindings `up`/`down` (`move`) and `alt+p` (`page`), which change nothing while no person is listed, a `#sp-list` Static under the field, and `_save` dismissing `@<handle>` for a highlighted person; `TaskboardApp.action_search` shall push it with `open_person` pushing `PeopleDirectory(handle)`; `tests/test_modal_keys.py`'s law shall read a modal's buttons and bindings along its package bases, and list `SearchPrompt` with `TextPrompt`'s two buttons.
 - **Validation:** `test (unit)`
 - **Executed verification:** `python -m pytest -q -p no:cacheprovider tests/test_people_search.py tests/test_modal_keys.py`
 - **Numeric pass threshold:** as AT-2505; TC-2407's law over `SearchPrompt` (its painted key line holds `alt+s` and `esc cancel`).
-- **Negative control:** AT-2505 goes RED when `alt+p` acts on a text query or `enter` sets the text `@an` (increment 005's battery — planned).
+- **Negative control:** AT-2505 goes RED when `alt+p` acts on a text query or `enter` sets the text `@an` (increment 005's battery — executed).
 - **Boundary catalog:** ☑ boundary (6 rows) ☑ empty (no one) ☐ invalid — none ☐ error — none
 
 ### LLR-2506.1 — the preview, the details and the card
 - **Traceability:** HLR-2506
-- **Ledger:** LED-2026-10-21-batch-01.1, LED-2026-10-21-batch-01.2, LED-2026-10-21-batch-01.3
+- **Ledger:** LED-2026-10-21-batch-01.1, LED-2026-10-21-batch-01.2, LED-2026-10-21-batch-01.3, LED-2026-10-21-batch-01.7
 - **Statement:** `modals.notes_preview(text, people=None)` shall return `views.notes_text(text, people)` as one Text (with `people` None the pieces of before); `TaskModal` and `TaskDetails` shall pass their board's `people`; `views.mention_names(task, people)` shall give the names a task mentions and `_card_meta` shall append `(f"@{first name}{'+n' if more}", "pink")` before the archived mark and the due token.
 - **Validation:** `test (unit)`
 - **Executed verification:** `python -m pytest -q -p no:cacheprovider tests/test_people_look.py -k TC_2506`
 - **Numeric pass threshold:** TC-2506: the preview `Review with @Ana Ruiz` / `- send to @Diego Paz now` with both names `b #f472b6` and `send to ` in `soon`; `@an`, `@sofia.vega` dimmed; `None` → one `mut` piece; the card's last two tokens `@Ana+1`, `today`; a 12-cell card keeps `today` and drops `@Marta`.
-- **Negative control:** TC-2506 goes RED when the mention is drawn outside its highlight segment or after the due (increment 002's battery — planned).
+- **Negative control:** TC-2506 goes RED when the mention is drawn outside its highlight segment or after the due (increment 002's battery — executed).
 - **Boundary catalog:** ☑ boundary (a tight card) ☑ empty (no directory) ☑ invalid (unknown handles; markup-looking names) ☐ error — none
 
 ### LLR-2506.2 — the presentation's notes
 - **Traceability:** HLR-2506
-- **Ledger:** LED-2026-10-21-batch-01.1, LED-2026-10-21-batch-01.2, LED-2026-10-21-batch-01.3
+- **Ledger:** LED-2026-10-21-batch-01.1, LED-2026-10-21-batch-01.2, LED-2026-10-21-batch-01.3, LED-2026-10-21-batch-01.7
 - **Statement:** `views.present_mentions(text, people)` shall write known mentions `@Name` with NBSP for spaces; `present_note_lines(notes, w, people=None)` shall wrap that text; `mention_marks(people)` shall list the written forms longest first; `_present_note_markup(row, w, marks=())`, `_present_cut(..., marks=())`, `_present_stack(..., marks=())` and `_present_column(..., people=None)` shall paint each mark bold pink; `render_present` shall pass `board.people` and its marks in the split view and the gantt view's cursor note.
 - **Validation:** `test (unit)`
 - **Executed verification:** `python -m pytest -q -p no:cacheprovider tests/test_people_look.py -k "TC_2506 and present or split"`
 - **Numeric pass threshold:** TC-2506: at 24 cells `@Ana Ruiz` stays whole on one row; the split frame of Eval harness holds `@Ana Ruiz` and `@Andrés Lima`, not `@ana.ruiz`, and with no directory `@ana.ruiz`; a row's marks `bold #f472b6`.
-- **Negative control:** TC-2506 goes RED when the NBSP is a space (a wrap splits the name) (increment 002's battery — planned).
+- **Negative control:** TC-2506 goes RED when the NBSP is a space (a wrap splits the name) (increment 002's battery — executed).
 - **Boundary catalog:** ☑ boundary (a narrow column) ☑ empty (no directory) ☐ invalid — none ☐ error — none
 
 ### LLR-2507.1 — nothing of the directory leaves
 - **Traceability:** HLR-2507
-- **Ledger:** LED-2026-10-21-batch-01.1, LED-2026-10-21-batch-01.2, LED-2026-10-21-batch-01.3
+- **Ledger:** LED-2026-10-21-batch-01.1, LED-2026-10-21-batch-01.2, LED-2026-10-21-batch-01.3, LED-2026-10-21-batch-01.7
 - **Statement:** `Board.people` shall stay out of `Board._to_dict` and every saved or pushed record; no module but `people.py` shall read or write `people.json`; mention parsing of pulled notes shall be total (the tokeniser never raises; an unknown handle draws as typed).
 - **Validation:** `test (unit)`
 - **Executed verification:** `python -m pytest -q -p no:cacheprovider tests/test_people_directory.py tests/test_people_look.py -k 2507`

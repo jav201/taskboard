@@ -1,0 +1,7 @@
+# the DDR's folds, targeted: the five people suites (renamed arms, keyed AT-2501/AT-2502, strengthened arms), the modal law, the voice law; NO_COLOR unset; at d1033b0 + the DDR's uncommitted test edits
+$ python -m pytest -q -p no:cacheprovider tests/test_people_directory.py tests/test_people_look.py tests/test_people_picker.py tests/test_people_view.py tests/test_people_search.py tests/test_modal_keys.py tests/test_prism_laws.py
+........................................................................ [ 43%]
+........................................................................ [ 86%]
+......................                                                   [100%]
+166 passed in 86.91s (0:01:26)
+exit 0

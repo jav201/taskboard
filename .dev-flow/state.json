@@ -196,7 +196,7 @@
     }
   ],
   "guided": false,
-  "current_station": "P3",
+  "current_station": "P4",
   "phase_status": "in-progress",
   "stations_active": [
     "P0",
@@ -318,6 +318,11 @@
       "station": "P3",
       "date": "2026-10-21",
       "decision": "standing authorization — the orchestrator's commission of 2026-10-21. P3 increment 005 approved: search by person — @ inside /, a lone @ lists names only, alt+p opens the person's page, SearchPrompt under the modal law (HLR-2505, AT-2505); 641 passed targeted, 13/13 mutants KILLED, code-reviewer OK to advance (CR-1, CR-3 fixed; CR-2 to the contract LED .6). P4 is next, with the DDR."
+    },
+    {
+      "station": "DDR",
+      "date": "2026-10-21",
+      "decision": "standing authorization — the orchestrator's commission of 2026-10-21. DDR approved (design/DDR-2026-10-21-batch-01.md): qa-reviewer and ux-reviewer approved with conditions, folded — one test_AT node per AT-2501..AT-2507 (QA-DDR-1 HIGH, 22 arms renamed to TC), AT-2501's add and AT-2502's rename driven by keys (mutation-ddr D1, D2 KILLED), the flip-up capture mt-flip, UX-9 named on the capture page, the captures committed; UX-DDR-1 (PersonForm clipped at 80x24) logged; PC-1..PC-4 discharged. P4 is next."
     }
   ],
   "obsidian_synced": false,

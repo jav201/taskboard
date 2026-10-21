@@ -148,6 +148,8 @@ recorded full-suite run).
 - the presentation's note rows lose a lone backslash before `[` and a name ending `\` is drawn with one (increment 002's code review CR-7 and security N-1, cosmetic, pre-existing pattern): build the presentation's rows as Text pieces.
 - the filter window's button reads `Save` for a filter (ux UX-11, the shared `TextPrompt`).
 - a person another window adds shows here after a restart or this window's next write (architect A-7, accepted).
+- `PersonForm` (`n` / `e` in the people view) is clipped at 80×24: the box scrolls, Save and Cancel fall out of view and the key line is drawn over the Note field; `↵ / alt+s` and `esc` still work (DDR ux UX-DDR-1, MEDIUM; `evidence/captures/png/pv-edit_80x24.png`): compact inputs so the form fits 24 rows, then re-shoot.
+- the people suites' acceptance arms still set some state directly: AT-2501 switches board with `app.switch_board`, AT-2507 pushes with `TeamState.push` (no key), the picker's «click away» arms call `.focus()` instead of `pilot.click`, several arms select a task by `selected_task_id` (DDR qa QA-DDR-2, QA-DDR-4).
 - OPERATOR — the people view's composition (item 1: A + C's quote under each task + B's box) was never rendered as one frame in the round: its real captures are in `.dev-flow/2026-10-21-batch-01/evidence/captures/`. Named for the verdict: the box's order `late · today · open` (B's, not the objection's spoken «late open today», D-3); `enter` on the people pane goes to the tasks (D-7); `n`/`e`/`/` act (D-6).
 
 ## Open — after `2026-10-20-batch-03` (the backlog round: the operator's verdict on `prototypes/backlog_round/`)
