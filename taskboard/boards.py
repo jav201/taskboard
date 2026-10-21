@@ -8,7 +8,9 @@ The default board (`~/.taskboard/board.json`) is `Main`, in place.
 
 The registry is read like the board file: never raising, a bad entry skipped
 or defaulted, an unreadable file copied aside first. It is written atomically,
-and never for a one-board user who has no registry file yet.
+and never for a one-board user who has no registry file yet. Every write is a
+read-modify-write under a lock file (batch 2026-10-20-batch-02), so a second
+taskboard's change to the registry is never written over.
 """
 
 from __future__ import annotations
@@ -18,7 +20,10 @@ import json
 import os
 import re
 import shutil
+import stat
+import time
 import unicodedata
+from contextlib import ExitStack, contextmanager
 from dataclasses import asdict, dataclass, field
 from datetime import datetime
 from pathlib import Path
@@ -30,6 +35,8 @@ REGISTRY_NAME = "boards.json"
 MAIN_ID = "main"
 MAIN_NAME = "Main"
 NAME_MAX = 60
+LOCK_WAIT = 2.0      # seconds a writer waits for another taskboard's lock
+LOCK_STALE = 10.0    # a lock file older than this was left by an instance that died
 _ID = re.compile(r"[A-Za-z0-9_-]+")
 # names Windows will not give a folder (`con` spelled in two pieces: the English law
 # of tests/test_english.py reads a bare "con" as a Spanish word)
@@ -79,9 +86,85 @@ def _keep_aside(path: Path) -> Path | None:
             return None
 
 
+def _lock_token(lock: Path) -> bytes | None:
+    try:
+        with open(lock, "rb") as fh:
+            return fh.read(64)
+    except OSError:
+        return None
+
+
+@contextmanager
+def file_lock(path, label: str | None = None):
+    """Hold `<name>.lock` beside `path` while taskboard reads, changes and writes
+    `path`, so two instances take turns (batch 2026-10-20-batch-02). The lock is
+    created exclusively and holds a random token; on exit it is removed only while
+    it still holds this holder's token. A regular lock file whose time is more than
+    `LOCK_STALE` seconds from now is a dead instance's and is taken over; past
+    `LOCK_WAIT` seconds an `OSError` says the file — or `label`, the board's name —
+    is busy: never a wait without end. Yields a heartbeat that renews the lock's
+    time, for a holder that works for longer."""
+    lock = Path(path).resolve()
+    lock = lock.with_name(lock.name + ".lock")
+    token = os.urandom(16).hex().encode("ascii")
+    deadline = time.monotonic() + LOCK_WAIT
+    while True:
+        try:
+            fd = os.open(lock, os.O_CREAT | os.O_EXCL | os.O_WRONLY)
+        except (FileExistsError, PermissionError):
+            fd = None   # PermissionError: Windows, while another instance removes it
+        if fd is not None:
+            try:
+                os.write(fd, token)
+            except OSError:
+                os.close(fd)
+                try:
+                    os.unlink(lock)     # never a token-less lock left behind (S-6)
+                except OSError:
+                    pass                # stale in LOCK_STALE; the write's error is the one (S-11)
+                raise
+            os.close(fd)
+            break
+        try:
+            st = os.lstat(lock)
+            if stat.S_ISREG(st.st_mode) and abs(time.time() - st.st_mtime) > LOCK_STALE:
+                again = os.lstat(lock)
+                if (again.st_mtime_ns, again.st_ino) == (st.st_mtime_ns, st.st_ino):
+                    os.unlink(lock)     # not renewed nor replaced meanwhile (S-7)
+        except OSError:
+            pass        # gone, going or not ours to remove: try again
+        if time.monotonic() >= deadline:
+            raise OSError(f"{label or Path(path).name} is busy — another taskboard is "
+                          f"writing it; try again in a few seconds ({lock})")
+        time.sleep(0.05)
+
+    def beat() -> None:
+        try:
+            os.utime(lock)
+        except OSError:
+            pass
+    try:
+        yield beat
+    finally:
+        if _lock_token(lock) == token:
+            try:
+                os.unlink(lock)
+            except OSError:
+                pass    # a stale copy is taken over by the next writer
+
+
+def _expand_home(p) -> Path:
+    """`~` read as `Path.home()` — the home the suite's seam names — never the
+    environment `expanduser` reads (G-9); `~user` stays as written."""
+    s = str(p)
+    if s == "~" or s.startswith(("~/", "~" + os.sep)):
+        return Path.home() / s[2:]
+    return Path(s)
+
+
 def _key(path) -> str:
     """One spelling per file: absolute, resolved, case-normalised on Windows."""
-    return os.path.normcase(str(Path(path).expanduser().resolve()))
+    return os.path.normcase(str(_expand_home(path).resolve()))
 
 
 def _name_for(path) -> str:
@@ -129,21 +212,34 @@ class Registry:
         if not path.exists():
             return cls(path, [main_entry], MAIN_ID, main_path=str(main))
         try:
-            raw = clean_strings(json.loads(path.read_text(encoding="utf-8")))
-        except (OSError, ValueError, RecursionError):
-            raw = None
-        if not isinstance(raw, dict) or not isinstance(raw.get("boards"), list):
+            reg = cls._read(path, str(main))
+        except OSError:
+            reg = None
+        if reg is None:
             backup = _keep_aside(path)
             return cls(path, [main_entry], MAIN_ID,
                        {"unreadable": True, "backup": str(backup) if backup else None},
                        main_path=str(main))
-        reg = cls(path, [], main_path=str(main))
+        return reg
+
+    @classmethod
+    def _read(cls, path: Path, main_path: str | None) -> "Registry | None":
+        """The registry as the file holds it now, or None when it cannot be parsed
+        (not JSON, or not an object holding a `boards` list); a failed read raises."""
+        data = path.read_bytes()
+        try:
+            raw = clean_strings(json.loads(data.decode("utf-8")))
+        except (ValueError, RecursionError):
+            raw = None
+        if not isinstance(raw, dict) or not isinstance(raw.get("boards"), list):
+            return None
+        reg = cls(path, [], main_path=main_path)
         seen_paths: set[str] = set()
         for item in raw["boards"]:
             if not isinstance(item, dict):
                 continue
             p = item.get("path")
-            if not isinstance(p, str) or not p.strip() or not Path(p).expanduser().is_absolute():
+            if not isinstance(p, str) or not p.strip() or not _expand_home(p).is_absolute():
                 continue      # a relative path would resolve against wherever the app ran
             try:
                 key = _key(p)
@@ -159,10 +255,11 @@ class Registry:
                     and bid not in {e.id for e in reg.entries}):
                 bid = reg._unique_id(slug(name))
             reg.entries.append(BoardEntry(bid, name, project_color_on_load(item.get("color")),
-                                          p, _iso_or_none(item.get("last_opened")),
+                                          str(_expand_home(p)),     # no `~` past the door
+                                          _iso_or_none(item.get("last_opened")),
                                           item.get("archived") is True))
-        if not reg.entries:
-            reg.entries = [main_entry]
+        if not reg.entries and main_path:
+            reg.entries = [BoardEntry(MAIN_ID, MAIN_NAME, "violet", main_path)]
         last = raw.get("last")
         reg.last = last if isinstance(last, str) and any(e.id == last for e in reg.entries) \
             else None
@@ -223,21 +320,86 @@ class Registry:
         used = {e.color for e in self.active()}
         return next((c for c in PROJECT_COLORS if c not in used), "violet")
 
+    def _commit(self, change):
+        """Apply `change` to the registry as the file holds it NOW and write the
+        result, under the registry's lock, so another taskboard's change since this
+        one read the file is kept; then hold that result here — an entry this
+        registry already holds is updated in place, so the app's references to it
+        stay live, and one only memory holds stays in memory. A file that cannot be
+        read, or cannot be parsed and cannot be copied aside, is never written over;
+        a failed write changes nothing here. Returns `change`'s result."""
+        self.path.parent.mkdir(parents=True, exist_ok=True)
+        with file_lock(self.path):
+            fresh = None
+            if self.path.exists():
+                fresh = self._read(self.path, self.main_path)   # a failed read raises
+                if fresh is None and not self._set_aside():
+                    raise OSError(f"{self.path.name} cannot be read and could not be "
+                                  "copied aside, so it was not written")
+            if fresh is None:
+                fresh = copy.deepcopy(self)
+            result = change(fresh)
+            fresh.save()
+        mine = {e.id: e for e in self.entries}
+        entries = []
+        for e in fresh.entries:
+            old = mine.get(e.id)
+            if old is not None:
+                old.__dict__.update(e.__dict__)
+                e = old
+            entries.append(e)
+        ids = {e.id for e in entries}
+        entries += [e for e in self.entries
+                    if e.id not in ids and fresh.entry_for(e.path) is None]
+        self.entries, self.last = entries, fresh.last
+        return result
+
+    def _set_aside(self) -> bool:
+        """Whether the unparseable registry's bytes are kept: empty (nothing to
+        keep), already the copy this registry's load made, or copied now."""
+        try:
+            data = self.path.read_bytes()
+        except OSError:
+            return False
+        if not data:
+            return True
+        backup = self.load_report.get("backup")
+        try:
+            if backup and Path(backup).read_bytes() == data:
+                return True
+        except OSError:
+            pass
+        return _keep_aside(self.path) is not None
+
+    def _carry(self, fresh: "Registry", bid: str) -> BoardEntry | None:
+        """`bid` in the registry just read: its own entry, or this one's copied in
+        when the file lacks it (the default board a start added)."""
+        e = fresh.get(bid)
+        mine = self.get(bid)
+        if e is None and mine is not None and fresh.entry_for(mine.path) is None:
+            e = copy.deepcopy(mine)
+            fresh.entries.append(e)
+        return e
+
     def register(self, path) -> BoardEntry:
         """The entry for `path`: the existing one (un-archived), or a new one named
         after the file, in the first colour no active board wears."""
         entry = self.entry_for(path)
-        if entry is not None:
-            if entry.archived:
-                entry.archived = False
-                self.save()
+        if entry is not None and not entry.archived:
             return entry
-        p = str(Path(path).expanduser().resolve())
-        name = _name_for(p)
-        entry = BoardEntry(self._unique_id(slug(name)), name, self.free_color(), p)
-        self.entries.append(entry)
-        self.save()
-        return entry
+
+        def change(r):
+            e = r.entry_for(path)
+            if e is None:
+                p = str(_expand_home(path).resolve())
+                name = _name_for(p)
+                # unique against memory too: an entry only memory holds keeps its id (F5)
+                e = BoardEntry(r._unique_id(slug(name), {x.id for x in self.entries}), name,
+                               r.free_color(), p)
+                r.entries.append(e)
+            e.archived = False
+            return e.id
+        return self.get(self._commit(change))
 
     def create(self, name: str, color: str, now: datetime, settings: dict) -> BoardEntry:
         """A new board in its own folder `boards/<slug>/` beside the registry:
@@ -247,24 +409,27 @@ class Registry:
         name = clean_name(name)
         if not name:
             raise ValueError("a board needs a name")
-        bid = self.next_id(name)
-        folder = self.path.parent / "boards" / bid
-        folder.mkdir(parents=True, exist_ok=False)
-        try:
+        made = []
+
+        def change(r):
+            root = r.path.parent / "boards"
+            taken = {e.id for e in r.entries} | (
+                {p.name.lower() for p in root.iterdir()} if root.is_dir() else set())
+            bid = self._unique_id(slug(name), taken)    # unique against the file and the disk
+            folder = root / bid
+            folder.mkdir(parents=True, exist_ok=False)
+            made.append(folder)
             Board([], [], folder / "board.json", dict(settings)).save_atomic()
-            entry = BoardEntry(bid, name, color if color in PROJECT_COLORS else "violet",
-                               str((folder / "board.json").resolve()),
-                               now.isoformat(timespec="minutes"))
-            self.entries.append(entry)
-            try:
-                self.save()
-            except OSError:
-                self.entries.remove(entry)          # nothing registered (code review F1)
-                raise
+            r.entries.append(BoardEntry(bid, name, color if color in PROJECT_COLORS else "violet",
+                                        str((folder / "board.json").resolve()),
+                                        now.isoformat(timespec="minutes")))
+            return bid
+        try:
+            return self.get(self._commit(change))
         except OSError:
-            shutil.rmtree(folder, ignore_errors=True)   # the folder this call made, and only it
+            for folder in made:     # the folder this call made, and only it (code review F1)
+                shutil.rmtree(folder, ignore_errors=True)
             raise
-        return entry
 
     def next_id(self, name: str) -> str:
         """The id — and folder name — a board of this name would get: its slug,
@@ -275,27 +440,25 @@ class Registry:
 
     def edit(self, bid: str, name: str, color: str) -> None:
         name = clean_name(name)
-        entry = self.get(bid)
-        if entry is None or not name:
+        if self.get(bid) is None or not name:
             return
-        before = (entry.name, entry.color)
-        entry.name = name
-        entry.color = color if color in PROJECT_COLORS else entry.color
-        try:
-            self.save()
-        except OSError:
-            entry.name, entry.color = before        # as on disk (code review F1)
-            raise
+
+        def change(r):
+            e = self._carry(r, bid)
+            if e is not None:
+                e.name = name
+                e.color = color if color in PROJECT_COLORS else e.color
+        self._commit(change)
 
     def archive(self, bid: str) -> None:
-        entry = self.get(bid)
-        if entry is not None:
-            entry.archived = True
-            try:
-                self.save()
-            except OSError:
-                entry.archived = False              # as on disk (code review F1)
-                raise
+        if self.get(bid) is None:
+            return
+
+        def change(r):
+            e = self._carry(r, bid)
+            if e is not None:
+                e.archived = True
+        self._commit(change)
 
     def touch(self, bid: str, now: datetime) -> None:
         """Record `bid` as the board opened last — on disk only when the registry
@@ -303,13 +466,18 @@ class Registry:
         entry = self.get(bid)
         if entry is None:
             return
-        self.last = bid
-        entry.last_opened = now.isoformat(timespec="minutes")
+        stamp = now.isoformat(timespec="minutes")
+        self.last, entry.last_opened = bid, stamp
         if self.load_report.get("unreadable"):
             return      # the unreadable file stays as it was until the operator changes a board
         if len(self.entries) > 1 or self.path.exists():
+
+            def change(r):
+                e = self._carry(r, bid)
+                if e is not None:
+                    r.last, e.last_opened = bid, stamp
             try:
-                self.save()
+                self._commit(change)
             except OSError as exc:      # bookkeeping: never worth stopping a start
                 self.load_report["save_error"] = f"{type(exc).__name__}: {exc}"
 
@@ -430,16 +598,21 @@ def _backup(path: Path, day: str) -> Path | None:
     replaced (`-2`, `-3`… instead)."""
     if not path.exists():
         return None
-    data = path.read_bytes()
     n = 1
     while True:
         dest = path.with_name(f"{path.name}.pre-move-{day}" + (f"-{n}" if n > 1 else ""))
         try:
-            with open(dest, "xb") as fh:
-                fh.write(data)
-            return dest
+            out = open(dest, "xb")
         except FileExistsError:
             n += 1
+            continue
+        try:
+            with out, open(path, "rb") as src:
+                shutil.copyfileobj(src, out)
+        except BaseException:
+            dest.unlink(missing_ok=True)    # never a partial copy that looks whole (S-5)
+            raise
+        return dest
 
 
 def _log(folder: Path, day: str, entry: dict) -> None:
@@ -471,9 +644,13 @@ def move_project(src: Board, dst: Board, project_id: str, plan: MovePlan, day: s
     `.board`: the new source once it was saved (the caller adopts it), else None."""
     steps: list[str] = []
     saved = None
+    held = ExitStack()
     try:
         if plan.refusal:
             raise OSError(plan.refusal)
+        # the target is held from the stale-plan check to its save, so another
+        # taskboard's move cannot write it in between (batch 2026-10-20-batch-02)
+        beat = held.enter_context(file_lock(dst.path, names[1]))
         if _stamp(dst.path) != plan.dst_stamp:
             raise OSError("the target board changed since the move was planned")
         new_src, new_dst = copy.deepcopy(src), copy.deepcopy(dst)
@@ -481,6 +658,10 @@ def move_project(src: Board, dst: Board, project_id: str, plan: MovePlan, day: s
         for b in (src, dst):
             if _backup(b.path, day):
                 steps.append(f"copied {b.path.name}")
+            beat()      # a copy can take a while on a slow drive (security S-2, S-8)
+        if _backup(src.path.parent / "history.jsonl", day):
+            steps.append("copied history.jsonl")    # rewritten below (security N1)
+        beat()
         proj = new_src.project_by_id(project_id)
         proj.present_rank = None
         moving = [t for t in new_src.tasks if t.id in ids]
@@ -510,6 +691,7 @@ def move_project(src: Board, dst: Board, project_id: str, plan: MovePlan, day: s
         new_dst.path.parent.mkdir(parents=True, exist_ok=True)
         new_dst.save_atomic()
         steps.append("saved the target")
+        held.close()
         new_src.save_atomic()
         saved = new_src
         steps.append("saved the source")
@@ -562,3 +744,5 @@ def move_project(src: Board, dst: Board, project_id: str, plan: MovePlan, day: s
         err = OSError(f"{type(exc).__name__}: {exc}")
         err.steps, err.board = steps, saved
         raise err from exc
+    finally:
+        held.close()       # a no-op once released after the target's save

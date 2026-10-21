@@ -815,10 +815,12 @@ class ProjectPicker(ModalScreen[None]):
                 app.after_move(exc.board)
                 self.board = app.board
                 self._reload()
-            done = ", ".join(getattr(exc, "steps", [])) or "nothing"
-            app.notify(f"The move stopped: {exc}. Done: {done}. The backups "
-                       f"(*.pre-move-{date.today().isoformat()}) are beside each board file.",
-                       title="Boards", severity="error", timeout=30, markup=False)
+            steps = getattr(exc, "steps", [])
+            # the backups sentence only once a backup was made (ux UX-2, architect A-5)
+            backups = (f" The backups (*.pre-move-{date.today().isoformat()}) are beside "
+                       "each board file." if steps else "")
+            app.notify(f"The move stopped: {exc}. Done: {', '.join(steps) or 'nothing'}."
+                       + backups, title="Boards", severity="error", timeout=30, markup=False)
             return
         app.after_move(new_src)
         self.board = app.board

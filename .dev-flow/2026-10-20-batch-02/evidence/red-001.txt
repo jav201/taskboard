@@ -1,0 +1,68 @@
+# RED of increment 001 on base_ref: a clean worktree at b1b71e4310ea7944edbbb6f16f350352e0a9491b (git status: ?? tests/test_boards_concurrency.py ) + tests/test_boards_concurrency.py of increment 001, NO_COLOR unset
+# python -m pytest -q -p no:cacheprovider --color=no --tb=line tests/test_boards_concurrency.py
+C:\Users\jjgh8\anaconda3\Lib\site-packages\pytest_asyncio\plugin.py:207: PytestDeprecationWarning: The configuration option "asyncio_default_fixture_loop_scope" is unset.
+The event loop scope for asynchronous fixtures will default to the fixture caching scope. Future versions of pytest-asyncio will default the loop scope for asynchronous fixtures to function scope. Set the default fixture loop scope explicitly in order to avoid unexpected behavior in the future. Valid fixture loop scopes are: "function", "class", "module", "package", "session"
+
+  warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCOPE_UNSET))
+FFFFFFF.FFFFFFFFFFFFF                                                    [100%]
+================================== FAILURES ===================================
+C:\Users\jjgh8\AppData\Local\Temp\claude\C--Users-jjgh8-clde\3940a65a-4a09-41f4-888b-90e6e8089d9e\scratchpad\wt-dev\tests\test_boards_concurrency.py:106: AttributeError: module 'taskboard.boards' has no attribute 'file_lock'
+C:\Users\jjgh8\AppData\Local\Temp\claude\C--Users-jjgh8-clde\3940a65a-4a09-41f4-888b-90e6e8089d9e\scratchpad\wt-dev\tests\test_boards_concurrency.py:136: AttributeError: module 'taskboard.boards' has no attribute 'LOCK_STALE'
+C:\Users\jjgh8\AppData\Local\Temp\claude\C--Users-jjgh8-clde\3940a65a-4a09-41f4-888b-90e6e8089d9e\scratchpad\wt-dev\tests\test_boards_concurrency.py:165: AttributeError: module 'taskboard.boards' has no attribute 'file_lock'
+C:\Users\jjgh8\AppData\Local\Temp\claude\C--Users-jjgh8-clde\3940a65a-4a09-41f4-888b-90e6e8089d9e\scratchpad\wt-dev\tests\test_boards_concurrency.py:175: AttributeError: module 'taskboard.boards' has no attribute 'file_lock'
+C:\Users\jjgh8\AppData\Local\Temp\claude\C--Users-jjgh8-clde\3940a65a-4a09-41f4-888b-90e6e8089d9e\scratchpad\wt-dev\tests\test_boards_concurrency.py:197: AssertionError: assert ('from-a' in ['personal', 'client-retail-rag', 'course-docker', 'main'])
+C:\Users\jjgh8\AppData\Local\Temp\claude\C--Users-jjgh8-clde\3940a65a-4a09-41f4-888b-90e6e8089d9e\scratchpad\wt-dev\tests\test_boards_concurrency.py:232: Failed: DID NOT RAISE <class 'OSError'>
+C:\Users\jjgh8\anaconda3\Lib\pathlib.py:1013: FileNotFoundError: [Errno 2] No such file or directory: 'C:\\Users\\jjgh8\\AppData\\Local\\Temp\\pytest-of-jjgh8\\pytest-21573\\test_TC_2301_an_unreadable_reg0\\.taskboard\\boards.json.corrupt'
+C:\Users\jjgh8\AppData\Local\Temp\claude\C--Users-jjgh8-clde\3940a65a-4a09-41f4-888b-90e6e8089d9e\scratchpad\wt-dev\tests\test_boards_concurrency.py:300: Failed: DID NOT RAISE <class 'SystemExit'>
+C:\Users\jjgh8\AppData\Local\Temp\claude\C--Users-jjgh8-clde\3940a65a-4a09-41f4-888b-90e6e8089d9e\scratchpad\wt-dev\tests\test_boards_concurrency.py:321: AssertionError: ['personal', 'client-retail-rag', 'course-docker', 'main', 'fresh']
+C:\Users\jjgh8\AppData\Local\Temp\claude\C--Users-jjgh8-clde\3940a65a-4a09-41f4-888b-90e6e8089d9e\scratchpad\wt-dev\tests\test_boards_concurrency.py:354: Failed: DID NOT RAISE <class 'OSError'>
+C:\Users\jjgh8\AppData\Local\Temp\claude\C--Users-jjgh8-clde\3940a65a-4a09-41f4-888b-90e6e8089d9e\scratchpad\wt-dev\tests\test_boards_concurrency.py:381: Failed: DID NOT RAISE <class 'OSError'>
+C:\Users\jjgh8\AppData\Local\Temp\claude\C--Users-jjgh8-clde\3940a65a-4a09-41f4-888b-90e6e8089d9e\scratchpad\wt-dev\tests\test_boards_concurrency.py:404: AssertionError: {WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-21573/test_TC_2302_the_lock_is_held_0/.taskboar...p/pytest-of-jjgh8/pytest-21573/test_TC_2302_the_lock_is_held_0/.taskboard/boards/client-retail-rag/board.json'): False}
+C:\Users\jjgh8\AppData\Local\Temp\claude\C--Users-jjgh8-clde\3940a65a-4a09-41f4-888b-90e6e8089d9e\scratchpad\wt-dev\tests\test_boards_concurrency.py:412: AttributeError: module 'taskboard.boards' has no attribute 'LOCK_STALE'
+C:\Users\jjgh8\anaconda3\Lib\asyncio\base_events.py:687: RuntimeError: coroutine raised StopIteration
+C:\Users\jjgh8\AppData\Local\Temp\claude\C--Users-jjgh8-clde\3940a65a-4a09-41f4-888b-90e6e8089d9e\scratchpad\wt-dev\tests\test_boards_concurrency.py:460: AssertionError: assert ['copied boar...d the target'] == ['copied boar...istory.jsonl']
+C:\Users\jjgh8\anaconda3\Lib\pathlib.py:1013: FileNotFoundError: [Errno 2] No such file or directory: 'C:\\Users\\jjgh8\\AppData\\Local\\Temp\\pytest-of-jjgh8\\pytest-21573\\test_TC_2303_no_history_no_cop0\\.taskboard\\history.jsonl.pre-move-2026-10-20'
+C:\Users\jjgh8\AppData\Local\Temp\claude\C--Users-jjgh8-clde\3940a65a-4a09-41f4-888b-90e6e8089d9e\scratchpad\wt-dev\tests\test_boards_concurrency.py:507: Failed: DID NOT RAISE <class 'OSError'>
+C:\Users\jjgh8\anaconda3\Lib\pathlib.py:1013: FileNotFoundError: [Errno 2] No such file or directory: 'C:\\Users\\jjgh8\\AppData\\Local\\Temp\\pytest-of-jjgh8\\pytest-21573\\test_AT_2303_a_move_keeps_the_0\\.taskboard\\history.jsonl.pre-move-2026-10-20'
+C:\Users\jjgh8\AppData\Local\Temp\claude\C--Users-jjgh8-clde\3940a65a-4a09-41f4-888b-90e6e8089d9e\scratchpad\wt-dev\tests\test_boards_concurrency.py:542: AttributeError: module 'taskboard.boards' has no attribute '_expand_home'
+C:\\Users\\jjgh8\\AppData\\Local\\Temp\\claude\\C--Users-jjgh8-clde\\3940a65a-4a09-41f4-888b-90e6e8089d9e\\scratchpad\\wt-dev\\tests\\test_boards_concurrency.py:588: AssertionError:  Main  \u25c6 TASKBOARD \xb7 grid 2\xd71                                                                                                                    1 open \xb7 0 due
+============================== warnings summary ===============================
+tests/test_boards_concurrency.py::test_TC_2302_a_target_rewritten_while_the_move_waited_is_refused
+  C:\Users\jjgh8\anaconda3\Lib\site-packages\_pytest\threadexception.py:82: PytestUnhandledThreadExceptionWarning: Exception in thread Thread-1 (other)
+  
+  Traceback (most recent call last):
+    File "C:\Users\jjgh8\anaconda3\Lib\threading.py", line 1075, in _bootstrap_inner
+      self.run()
+    File "C:\Users\jjgh8\anaconda3\Lib\threading.py", line 1012, in run
+      self._target(*self._args, **self._kwargs)
+    File "C:\Users\jjgh8\AppData\Local\Temp\claude\C--Users-jjgh8-clde\3940a65a-4a09-41f4-888b-90e6e8089d9e\scratchpad\wt-dev\tests\test_boards_concurrency.py", line 371, in other
+      with boards.file_lock(dst_p):
+           ^^^^^^^^^^^^^^^^
+  AttributeError: module 'taskboard.boards' has no attribute 'file_lock'
+  
+    warnings.warn(pytest.PytestUnhandledThreadExceptionWarning(msg))
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ===========================
+FAILED tests/test_boards_concurrency.py::test_TC_2301_the_lock_is_exclusive_and_released
+FAILED tests/test_boards_concurrency.py::test_TC_2301_a_stale_lock_is_taken_over_and_a_fresh_one_is_not
+FAILED tests/test_boards_concurrency.py::test_TC_2301_a_lock_whose_token_cannot_be_written_is_removed
+FAILED tests/test_boards_concurrency.py::test_TC_2301_a_taken_over_holder_never_removes_the_new_lock
+FAILED tests/test_boards_concurrency.py::test_TC_2301_a_stale_registry_keeps_the_other_writers_board
+FAILED tests/test_boards_concurrency.py::test_TC_2301_a_failed_write_changes_nothing
+FAILED tests/test_boards_concurrency.py::test_TC_2301_an_unreadable_registry_is_never_written_over_without_a_copy
+FAILED tests/test_boards_concurrency.py::test_TC_2301_a_busy_registry_at_start_is_a_message_not_a_traceback
+FAILED tests/test_boards_concurrency.py::test_AT_2301_a_board_another_taskboard_made_survives
+FAILED tests/test_boards_concurrency.py::test_TC_2302_a_busy_target_stops_the_move_before_anything
+FAILED tests/test_boards_concurrency.py::test_TC_2302_a_target_rewritten_while_the_move_waited_is_refused
+FAILED tests/test_boards_concurrency.py::test_TC_2302_the_lock_is_held_for_the_target_save_only
+FAILED tests/test_boards_concurrency.py::test_TC_2302_a_stale_target_lock_is_taken_over
+FAILED tests/test_boards_concurrency.py::test_AT_2302_a_move_into_a_busy_board_stops_before_writing
+FAILED tests/test_boards_concurrency.py::test_TC_2303_the_history_is_copied_with_the_board_files
+FAILED tests/test_boards_concurrency.py::test_TC_2303_no_history_no_copy_and_a_failed_save_keeps_the_copy
+FAILED tests/test_boards_concurrency.py::test_TC_2303_a_copy_failing_midway_leaves_no_copy
+FAILED tests/test_boards_concurrency.py::test_AT_2303_a_move_keeps_the_source_history_bytes
+FAILED tests/test_boards_concurrency.py::test_TC_2305_tilde_is_the_seam_home
+FAILED tests/test_boards_concurrency.py::test_AT_2305_a_tilde_board_opens_from_the_seam_home
+20 failed, 1 passed, 1 warning in 4.50s
+exit=1

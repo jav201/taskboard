@@ -1,0 +1,6 @@
+# increment 001 after the review folds (F1, F2, F5, S-11), targeted, on fix/backlog-boards at a794b8c + the increment's working tree, NO_COLOR unset
+# python -m pytest -q -p no:cacheprovider --color=no tests/test_boards.py tests/test_boards_concurrency.py tests/test_boards_forms.py tests/test_boards_home.py tests/test_boards_move.py tests/test_archive.py tests/test_markup_sites.py tests/test_readme.py tests/test_no_live_board.py
+........................................................................ [ 72%]
+.......................................................                  [100%]
+199 passed in 152.17s (0:02:32)
+exit=0

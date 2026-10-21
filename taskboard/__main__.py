@@ -56,7 +56,11 @@ def main() -> None:
         print(f"Report written to {out}")
         return
 
-    open_app(args.board).run()
+    try:
+        app = open_app(args.board)
+    except OSError as exc:      # the registry busy or unwritable: a message, not a traceback
+        parser.exit(1, f"taskboard: {exc}\n")
+    app.run()
 
 
 if __name__ == "__main__":
