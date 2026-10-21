@@ -229,8 +229,10 @@ async def test_TC_1604_space_moves_the_cursor_and_the_ends_hold(tmp_path, monkey
 @pytest.mark.parametrize("size, hint, hint_hidden", [
     ((118, 31), "1 gantt  2 split  3 all  ⇥ next · ←→ ↑↓ move · ␣ hide · a show all · x export · esc leave",
      "1 gantt  2 split  3 all  ⇥ next · ←→ ↑↓ move · ␣ hide · a show all · x export · esc leave"),
-    ((80, 25), "1 gantt  2 split  3 all  ⇥ next · ←→ ↑↓ · ␣ hide · a show all · x export · esc",
-     "1 gantt 2 split 3 all ⇥ · ←→ · ␣ hide · a all · x export · esc"),
+    # batch 2026-10-20-batch-03 (law-driven, D-14): `? keys` ends every wording, 8 cells
+    # off the room, so 80 columns take the short wording, and with a count the compact one
+    ((80, 25), "1 gantt 2 split 3 all ⇥ · ←→ · ␣ hide · a all · x export · esc",
+     "1 gantt 2 split 3 all ⇥ ←→ ␣ x esc"),
 ])
 async def test_TC_1604_the_hint_row_carries_the_keys_and_the_count(
         tmp_path, monkeypatch, frozen, size, hint, hint_hidden):
@@ -246,12 +248,12 @@ async def test_TC_1604_the_hint_row_carries_the_keys_and_the_count(
     s = _Presenting(tmp_path, monkeypatch, size)
     async with s.app.run_test(size=s.size) as pilot:
         await s.open(pilot)
-        assert s.hint().strip() == hint
+        assert s.hint().strip() == hint + "  ? keys"
         await pilot.press("space")
         await pilot.pause()
         await pilot.press("space")
         await pilot.pause()
-        assert s.hint().strip() == hint_hidden + " · u 2 hidden"
+        assert s.hint().strip() == hint_hidden + " · u 2 hidden  ? keys"
 
 
 # --------------------------------------------------------------------------- #
@@ -360,7 +362,7 @@ async def test_AT_1602_space_hides_and_it_is_remembered_a_shows_all(tmp_path, fr
         await pilot.press("space")
         await pilot.pause()
         assert TITLE not in _plain(scr.query_one("#present-frame"))
-        assert _plain(scr.query_one("#present-hint")).rstrip().endswith("· u 1 hidden")
+        assert _plain(scr.query_one("#present-hint")).rstrip().endswith("· u 1 hidden  ? keys")
         after = _tasks(path)
         assert after["tw3"].pop("show_in_present") is False
         assert after == original

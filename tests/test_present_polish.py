@@ -184,6 +184,10 @@ LONG = "⇥ next · ←→ ↑↓ move · ␣ hide · a show all · x export · 
 MIDDLE_FIRST = {("gantt", 0): (80, 91), ("gantt", 1): (93, 104), ("gantt", 3): (93, 104),
                 ("gantt", 10): (94, 105), ("split", 0): (87, 104), ("split", 1): (100, 117),
                 ("split", 3): (100, 117), ("split", 10): (101, 118)}
+# batch 2026-10-20-batch-03 (law-driven, D-14): every wording ends with `  ? keys`,
+# so each first width moves 8 columns up
+HELP = "  ? keys"
+MIDDLE_FIRST = {k: (a + len(HELP), b + len(HELP)) for k, (a, b) in MIDDLE_FIRST.items()}
 
 
 @pytest.mark.parametrize("view, hidden", sorted(MIDDLE_FIRST))
@@ -200,9 +204,9 @@ def test_TC_2002_the_middle_wording_sits_between_the_long_and_the_short(tmp_path
     pg = view == "split"
     tail = f" · u {hidden} hidden" if hidden else ""
     first, long_first = MIDDLE_FIRST[(view, hidden)]
-    middle = "1 gantt  2 split  3 all  " + ("pgdn · " if pg else "") + MIDDLE + tail
-    short = "1 gantt 2 split 3 all " + ("pgdn · " if pg else "") + SHORT + tail
-    long_ = "1 gantt  2 split  3 all  " + ("pgdn notes · " if pg else "") + LONG + tail
+    middle = "1 gantt  2 split  3 all  " + ("pgdn · " if pg else "") + MIDDLE + tail + HELP
+    short = "1 gantt 2 split 3 all " + ("pgdn · " if pg else "") + SHORT + tail + HELP
+    long_ = "1 gantt  2 split  3 all  " + ("pgdn notes · " if pg else "") + LONG + tail + HELP
     assert scr._hint(first).plain == middle
     assert scr._hint(long_first - 1).plain == middle
     assert scr._hint(first - 1).plain == short
@@ -220,22 +224,28 @@ async def test_AT_2002_the_80_column_hint_names_next_and_show_all(tmp_path, monk
     not guess — the current view bold; at 118x31 the long one. Since batch
     2026-10-19-batch-01 (three view names, LED-2026-10-19-batch-01.2 supersedes
     HLR-2002 for the split view): `2` takes the short wording at 80 columns, and
-    `space` (one hidden, `u 1 hidden`) the compact one."""
+    `space` (one hidden, `u 1 hidden`) the compact one. Since batch 2026-10-20-batch-03
+    (D-14, LED-2026-10-20-batch-03.5 supersedes HLR-2002's 80-column clause): every
+    wording ends with `? keys`, so 80 columns take the short wording, and `?` lists
+    `next` and `show all` in words."""
     s = _Presenting(tmp_path, monkeypatch, (80, 25))
     async with s.app.run_test(size=s.size) as pilot:
         await s.open(pilot)
-        assert s.hint() == "1 gantt  2 split  3 all  " + MIDDLE
-        assert "next" in s.hint() and "show all" in s.hint()
+        assert s.hint() == "1 gantt 2 split 3 all " + SHORT + HELP
         hint = s.app.screen.query_one("#present-hint").content
         assert "bold #e6edf7" in _styles_at(hint, hint.plain.index("1 gantt"))
+        await s.press(pilot, "question_mark")
+        keys = s.app.screen.query_one("#pk-text").render().plain
+        assert "next / previous view" in keys and "show everything hidden" in keys
+        await s.press(pilot, "escape")
         await s.press(pilot, "2")
-        assert s.hint() == "1 gantt 2 split 3 all pgdn · " + SHORT
+        assert s.hint() == "1 gantt 2 split 3 all pgdn · " + SHORT + HELP
         await s.press(pilot, "space")
-        assert s.hint() == "1 gantt 2 split 3 all pgdn ⇥ ←→ ␣ x esc · u 1 hidden"
+        assert s.hint() == "1 gantt 2 split 3 all pgdn ⇥ ←→ ␣ x esc · u 1 hidden" + HELP
     s = _Presenting(tmp_path, monkeypatch, (118, 31))
     async with s.app.run_test(size=s.size) as pilot:
         await s.open(pilot)
-        assert s.hint() == "1 gantt  2 split  3 all  " + LONG
+        assert s.hint() == "1 gantt  2 split  3 all  " + LONG + HELP
 
 
 # --------------------------------------------------------------------------- #

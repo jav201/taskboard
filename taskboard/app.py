@@ -30,14 +30,15 @@ from .models import (AUTO_ARCHIVE_DAYS, IMAGE_EXTS, LINKS_MIGRATION, MILESTONES_
                      snapshot)
 from .modals import (BoardForm, ClockModal, GanttLinkMode, LinkPicker, CommandPalette, ConfirmModal,
                      HelpModal, ImageViewer, MilestoneOffer, PhaseEditor, ProjectModal,
-                     PresentHiddenPicker, ProjectPicker, StandupModal, TaskDetails, TaskModal,
+                     PresentHiddenPicker, PresentKeys, ProjectPicker, StandupModal, TaskDetails, TaskModal,
                      TeamIdentityPicker,
                      TemplateEditor, TemplatePicker, TextPrompt)
-from .keymap import KEYMAP, KeyBar, app_bindings, palette_commands
+from .keymap import KEYMAP, KeyBar, app_bindings, palette_commands, present_bindings
 from .ribbon import Ribbon
 from .team_sync import (TEAM_FILENAME, TeamState, _read_json, clean_roster,
                         probe_setup_health)
-from .views import (HEX, ago, board_hex, board_summary, home_card, home_keys, home_missing, home_title,
+from .views import (HEX, ago, board_chip_text, board_hex, board_summary, home_card, home_keys,
+                    home_missing, home_title, present_all_export,
                     clip, filtered_board, focus_tasks, gantt_group_key, group_key,
                     gantt_plan, nav_model, present_paths, present_project_id,
                     present_hidden, present_hidden_rows, present_tasks, render_present,
@@ -206,35 +207,14 @@ class PresentScreen(ModalScreen[None]):
     cursor's row, `a` shows everything hidden, `shift+↑/↓` move a project in
     view 3, `u` opens the list of hidden items — each change saved at once.
     The keys and the hidden count ride the hint row only — the frame is what
-    the room sees and what `x` exports."""
+    the room sees and what `x` exports. With a board chip (batch 2026-10-20-batch-03)
+    the hint row opens with it; `?` lists every key (`PresentKeys`); `K`/`J` reorder
+    beside `shift+↑/↓`; view 3 exports its timeline without the cursor."""
 
-    BINDINGS = [
-        Binding("escape,q", "close", "Leave", priority=True),
-        Binding("left,h", "side(-1)", "", priority=True),
-        Binding("right,l", "side(1)", "", priority=True),
-        Binding("up,k", "move(-1)", "", priority=True),
-        Binding("down,j", "move(1)", "", priority=True),
-        Binding("shift+up", "reorder(-1)", "", priority=True),
-        Binding("shift+down", "reorder(1)", "", priority=True),
-        Binding("enter", "fold", "", priority=True),
-        Binding("x", "export", "Export", priority=True),
-        # priority like the screen's other keys; today the screen's own `a`
-        # already beats the app's non-priority add-task `a` (no focusable child),
-        # and its `u` the app's non-priority undo
-        Binding("space", "hide", "", priority=True),
-        Binding("a", "show_all", "", priority=True),
-        Binding("u", "hidden_picker", "", priority=True),
-        # the app's own `1`/`2`/`3` (views) are not reached past this modal
-        # screen, and its priority `tab` (toggle_presentation) is released while
-        # a modal is open (`TaskboardApp.check_action`)
-        Binding("1", "view(0)", "", priority=True),
-        Binding("2", "view(1)", "", priority=True),
-        Binding("3", "view(2)", "", priority=True),
-        Binding("tab", "cycle(1)", "", priority=True),
-        Binding("shift+tab", "cycle(-1)", "", priority=True),
-        Binding("pagedown", "scroll(1)", "", priority=True),
-        Binding("pageup", "scroll(-1)", "", priority=True),
-    ]
+    # GENERATED from the presentation's seat (batch 2026-10-20-batch-03): every key
+    # priority, so the screen's own `a`/`u`/`1`-`3` beat the app's; the app's
+    # priority `tab` is released while a modal is open (`TaskboardApp.check_action`)
+    BINDINGS = present_bindings()
 
     DEFAULT_CSS = """
     PresentScreen {
@@ -330,15 +310,27 @@ class PresentScreen(ModalScreen[None]):
             len(present_hidden(self._board, p.id)) for p in present_order(self._board))
 
     def _hint(self, w: int) -> Text:
-        """The keys, under the frame: the view switch (the current view bright),
-        then the moves, then `u` and the hidden count — never painted in the
-        frame. The first wording that fits the hint's `w - 2` cells, longest
-        first; below `PRESENT_MIN_WIDTH` only `esc leave` and the count; whatever
-        is left over is cut with a visible `…`."""
+        """The keys, under the frame: the board's chip when it has one (batch
+        2026-10-20-batch-03), the view switch (the current view bright), then the
+        moves, then `u` and the hidden count, then `? keys` — never painted in the
+        frame. The first wording that fits, longest first; below
+        `PRESENT_MIN_WIDTH` only `esc leave` and the count; whatever is left over
+        is cut with a visible `…`."""
         room = w - 2
         if room <= 0:
             return Text()
         hidden = self._hidden_count()
+        chip = board_chip_text(self._board.label)
+        if w >= PRESENT_MIN_WIDTH and chip.cell_len:
+            # the screen's width decides narrow and the rail; the chip only takes room
+            # (code review CR-1, CR-2), and leaves the keys at least `…  ? keys`
+            if chip.cell_len > room - 9:
+                chip.truncate(room - 9, overflow="ellipsis")
+            return Text.assemble(chip, self._keys_hint(w, hidden, room - chip.cell_len))
+        return self._keys_hint(w, hidden, room)
+
+    def _keys_hint(self, w: int, hidden: int, room: int) -> Text:
+        """The hint after the chip: `w` the screen's width, `room` the cells it has."""
         if w < PRESENT_MIN_WIDTH:
             hint = Text("esc leave" + (f" · {hidden} hidden" if hidden else ""),
                         style="#8b98a5")
@@ -347,18 +339,18 @@ class PresentScreen(ModalScreen[None]):
         tail = f" · u {hidden} hidden" if hidden else ""
         if self._all() and w >= PRESENT_RAIL_MIN:
             wordings = (
-                ("  ", "⇥ next · ↑↓ move · ←→ rail/timeline · ␣ hide · ⇧↑↓ reorder · enter fold"
-                       " · a show all · x export · esc leave"),
-                ("  ", "⇥ · ↑↓ · ←→ rail · ␣ hide · ⇧↑↓ order · enter fold · a all · x · esc"),
-                (" ", "⇥ ↑↓ ←→ ␣ ⇧↑↓ enter a x esc"),
+                ("  ", "⇥ next · ↑↓ move · ←→ rail/timeline · ␣ hide · ⇧↑↓/K J reorder"
+                       " · enter fold · a show all · x export · esc leave"),
+                ("  ", "⇥ · ↑↓ · ←→ rail · ␣ hide · K J order · enter fold · a all · x · esc"),
+                (" ", "⇥ ↑↓ ←→ ␣ K J enter a x esc"),
                 (" ", "esc"),
             )
         elif self._all():
             wordings = (
-                ("  ", "⇥ next · ←→ ↑↓ move · ␣ hide · ⇧↑↓ reorder · enter fold · a show all"
-                       " · x export · esc leave"),
-                ("  ", "⇥ · ←→ ↑↓ · ␣ hide · ⇧↑↓ order · enter fold · a all · x · esc"),
-                (" ", "⇥ ←→ ↑↓ ␣ ⇧↑↓ enter a x esc"),
+                ("  ", "⇥ next · ←→ ↑↓ move · ␣ hide · ⇧↑↓/K J reorder · enter fold"
+                       " · a show all · x export · esc leave"),
+                ("  ", "⇥ · ←→ ↑↓ · ␣ hide · K J order · enter fold · a all · x · esc"),
+                (" ", "⇥ ←→ ↑↓ ␣ K J enter a x esc"),
                 (" ", "esc"),
             )
         else:
@@ -372,16 +364,21 @@ class PresentScreen(ModalScreen[None]):
                 (" ", ("pgdn " if split else "") + "⇥ ←→ ␣ x esc"),
                 (" ", "esc"),
             )
+        help_ = "  ? keys"              # `?` opens every key (batch 2026-10-20-batch-03)
         for gap, keys in wordings:
             names = sum(vis(f"{i + 1} {n}{gap}") for i, n in enumerate(PRESENT_SCREEN_VIEWS))
-            if names + vis(keys + tail) <= room:
+            if names + vis(keys + tail + help_) <= room:
                 break
         hint = Text()
         for i, name in enumerate(PRESENT_SCREEN_VIEWS):
             hint.append(f"{i + 1} {name}", style="bold #e6edf7" if i == self._view else "#5b6675")
             hint.append(gap)
         hint.append(keys + tail, style="#8b98a5")
-        hint.truncate(room, overflow="ellipsis")
+        cut = room - vis(help_)
+        hint.truncate(max(0, cut), overflow="ellipsis")
+        hint.append("  ")
+        hint.append("?", style="bold #e6edf7")
+        hint.append(" keys", style="#8b98a5")
         return hint
 
     def _shown_ids(self) -> list[str]:
@@ -594,6 +591,12 @@ class PresentScreen(ModalScreen[None]):
         self._folded.symmetric_difference_update({self._all_cur[1]})
         self._paint()
 
+    def action_keys(self) -> None:
+        """`?` — every key of the presentation (`PresentKeys`), the view's own bright."""
+        if self._narrow():
+            return
+        self.app.push_screen(PresentKeys(PRESENT_SCREEN_VIEWS[self._view]))
+
     def action_hidden_picker(self) -> None:
         """`u` — the list of hidden items (`PresentHiddenPicker`); the frame
         repaints when it closes."""
@@ -610,8 +613,11 @@ class PresentScreen(ModalScreen[None]):
             return
         h = self._frame_height()
         if self._all():
-            r = self._render_all()
-            text, w = r.timeline, r.timeline_w
+            # the timeline as laid out on screen but without the cursor, cut to its
+            # content (batch 2026-10-20-batch-03, the round's item 4)
+            proj = self._cursor_project()
+            text, w, h = present_all_export(self._board, self._today, w, h,
+                                            frozenset(self._folded), proj.id if proj else None)
             svg_path, png_path = present_paths(self._board, None, self._today, "all")
         else:
             text = self._frame_text()

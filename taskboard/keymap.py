@@ -194,6 +194,47 @@ def key_line(pairs: list[tuple[str, str]], width: int | None = None) -> Text:
     return line
 
 
+class PresentKey(NamedTuple):
+    binds: tuple[tuple[str, str], ...]   # (Textual key list, action) pairs this row binds
+    show: str                            # the keys as the `?` window prints them
+    label: str                           # the words
+    group: str                           # VIEWS · MOVE · CURATE · OUT
+    view: str | None = None              # the one view the row acts in (None = every view)
+
+
+# THE PRESENTATION'S SEAT (batch 2026-10-20-batch-03, the round's item 3 A): the bindings
+# of `app.PresentScreen` and the `?` window of `modals.PresentKeys` are both generated
+# from it, so the window lists exactly the keys that act. Apart from `KEYMAP`: `a`, `u`,
+# `x`, `1`-`3` mean other things on the main screen.
+PRESENT_KEYS: tuple[PresentKey, ...] = (
+    PresentKey((("1", "view(0)"), ("2", "view(1)"), ("3", "view(2)")),
+               "1 2 3", "gantt · split · all", "VIEWS"),
+    PresentKey((("tab", "cycle(1)"), ("shift+tab", "cycle(-1)")),
+               "⇥ ⇧⇥", "next / previous view", "VIEWS"),
+    PresentKey((("up,k", "move(-1)"), ("down,j", "move(1)")), "↑↓", "move the cursor", "MOVE"),
+    PresentKey((("left,h", "side(-1)"), ("right,l", "side(1)")),
+               "←→", "move · in all: rail ↔ timeline", "MOVE"),
+    PresentKey((("pageup", "scroll(-1)"), ("pagedown", "scroll(1)")),
+               "pgdn pgup", "scroll the notes", "MOVE", "split"),
+    PresentKey((("space", "hide"),), "␣", "hide the cursor's row", "CURATE"),
+    PresentKey((("a", "show_all"),), "a", "show everything hidden", "CURATE"),
+    PresentKey((("u", "hidden_picker"),), "u", "list what is hidden", "CURATE"),
+    # `K`/`J` beside shift+arrows: letters every terminal passes (the round's item 5 A)
+    PresentKey((("shift+up,K", "reorder(-1)"), ("shift+down,J", "reorder(1)")),
+               "⇧↑↓ K J", "move a project up / down", "CURATE", "all"),
+    PresentKey((("enter", "fold"),), "enter", "fold a project", "CURATE", "all"),
+    PresentKey((("x", "export"),), "x", "export this view · SVG + PNG", "OUT"),
+    PresentKey((("escape,q", "close"),), "esc q", "leave", "OUT"),
+    PresentKey((("question_mark", "keys"),), "?", "these keys", "OUT"),
+)
+
+
+def present_bindings() -> list[Binding]:
+    """`PresentScreen.BINDINGS`, generated: one priority binding per (keys, action)."""
+    return [Binding(keys, action, "", priority=True)
+            for row in PRESENT_KEYS for keys, action in row.binds]
+
+
 def app_bindings() -> list[Binding]:
     """The app's BINDINGS, generated. Half of the contract."""
     return [Binding(k.keys, k.action, k.label, priority=k.priority) for k in KEYMAP]

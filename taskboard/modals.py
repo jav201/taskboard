@@ -40,7 +40,7 @@ from .models import (IMAGE_EXTS, PROJECT_COLORS, PROJECT_STATUSES, TASK_PRIORITI
                      grab_clipboard_image, grab_clipboard_text, parse_iso,
                      resolve_city, save_pil_image, templates)
 from .boards import clean_name, move_plan, move_project, peek_board, slug
-from .keymap import key_line, palette_commands
+from .keymap import KEY_STYLE, PRESENT_KEYS, key_line, palette_commands
 from .views import (HEX, clip, fit, gantt_group_key, gantt_link_frame, gantt_link_order,
                     highlight_segments, valid_url)
 
@@ -1340,6 +1340,44 @@ class PresentHiddenPicker(ModalScreen[None]):
 
     def action_close(self) -> None:
         self.dismiss(None)
+
+
+class PresentKeys(ModalScreen[None]):
+    """`?` inside the presentation (batch 2026-10-20-batch-03, the round's item 3 A):
+    every key of its seat `keymap.PRESENT_KEYS`, by group; a row that acts in the
+    current view (or in every view) bright, another view's dimmed with that view in
+    brackets. Never exported: `x` writes the frame only."""
+
+    BINDINGS = [Binding("escape,question_mark,q", "dismiss", "", priority=True)]
+    DEFAULT_CSS = """
+    PresentKeys { align: center middle; }
+    #pk-box { width: 60; max-width: 96%; height: auto; max-height: 96%; padding: 0 2;
+              background: #0d1219; border: round #334154; }
+    """
+
+    def __init__(self, view: str):
+        super().__init__()
+        self.view = view
+
+    def lines(self) -> Text:
+        out = Text(no_wrap=True, overflow="ellipsis")
+        out.append("PRESENTATION KEYS", style=f"bold {HEX['bright']}")
+        out.append(f" · view {self.view}", style=HEX["mut"])
+        group = None
+        for row in PRESENT_KEYS:
+            if row.group != group:
+                group = row.group
+                out.append(f"\n{group}", style=f"bold {HEX['mut']}")
+            live = row.view is None or row.view == self.view
+            out.append(f"\n  {row.show:<10}", style=KEY_STYLE if live else HEX["dim"])
+            out.append(row.label, style=HEX["ink"] if live else HEX["dim"])
+            if row.view:
+                out.append(f"  ({row.view})", style=HEX["reached"] if live else HEX["dim"])
+        out.append("\n? / esc close · dim = another view's key", style=HEX["dim"])
+        return out
+
+    def compose(self) -> ComposeResult:
+        yield VerticalScroll(Static(self.lines(), id="pk-text"), id="pk-box")
 
 
 class GanttLinkMode(ModalScreen[tuple[str, str] | None]):

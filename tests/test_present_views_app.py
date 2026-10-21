@@ -268,19 +268,23 @@ SHORT = "⇥ · ←→ · ␣ hide · a all · x export · esc"
 MIDDLE = "⇥ next · ←→ ↑↓ · ␣ hide · a show all · x export · esc"   # 2026-10-18-batch-03
 
 
+H = "  ? keys"       # batch 2026-10-20-batch-03 (law-driven, D-14): every wording ends with it,
+N2, N1 = "1 gantt  2 split  3 all  ", "1 gantt 2 split 3 all "   # so each first width is +8
+
+
 @pytest.mark.parametrize("size, gantt, split, split_hidden", [
     # three view names and the `u` tail since batch 2026-10-19-batch-01 (the first
-    # widths of `.dev-flow/2026-10-19-batch-01/evidence/hint-widths.txt`)
-    ((118, 31), "1 gantt  2 split  3 all  " + LONG, "1 gantt  2 split  3 all  " + "pgdn notes · " + LONG,
-     "1 gantt  2 split  3 all  " + "pgdn notes · " + LONG + " · u 1 hidden"),
-    ((100, 31), "1 gantt  2 split  3 all  " + LONG, "1 gantt  2 split  3 all  " + "pgdn · " + MIDDLE,
-     "1 gantt  2 split  3 all  " + "pgdn · " + MIDDLE + " · u 1 hidden"),
-    ((99, 31), "1 gantt  2 split  3 all  " + LONG, "1 gantt  2 split  3 all  " + "pgdn · " + MIDDLE,
-     "1 gantt 2 split 3 all " + "pgdn · " + SHORT + " · u 1 hidden"),
-    ((96, 31), "1 gantt  2 split  3 all  " + LONG, "1 gantt  2 split  3 all  " + "pgdn · " + MIDDLE,
-     "1 gantt 2 split 3 all " + "pgdn · " + SHORT + " · u 1 hidden"),
-    ((80, 25), "1 gantt  2 split  3 all  " + MIDDLE, "1 gantt 2 split 3 all " + "pgdn · " + SHORT,
-     "1 gantt 2 split 3 all " + "pgdn ⇥ ←→ ␣ x esc · u 1 hidden"),
+    # widths of `.dev-flow/2026-10-19-batch-01/evidence/hint-widths.txt`), + 8 since `? keys`
+    ((118, 31), N2 + LONG + H, N2 + "pgdn notes · " + LONG + H,
+     N2 + "pgdn · " + MIDDLE + " · u 1 hidden" + H),
+    ((100, 31), N2 + LONG + H, N2 + "pgdn · " + MIDDLE + H,
+     N1 + "pgdn · " + SHORT + " · u 1 hidden" + H),
+    ((99, 31), N2 + LONG + H, N2 + "pgdn · " + MIDDLE + H,
+     N1 + "pgdn · " + SHORT + " · u 1 hidden" + H),
+    ((96, 31), N2 + MIDDLE + H, N2 + "pgdn · " + MIDDLE + H,
+     N1 + "pgdn · " + SHORT + " · u 1 hidden" + H),
+    ((80, 25), N1 + SHORT + H, N1 + "pgdn · " + SHORT + H,
+     N1 + "pgdn ⇥ ←→ ␣ x esc · u 1 hidden" + H),
 ], ids=["118", "100", "99", "96", "80"])
 async def test_TC_1808_the_hint_row_per_view(tmp_path, monkeypatch, frozen, size, gantt, split,
                                              split_hidden):

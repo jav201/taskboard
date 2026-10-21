@@ -36,3 +36,10 @@ above this line is ever edited._
 - **What changed:** Before → After. AT-2406's move arm `escape`, `P`, `m`, `enter` → `escape`, `P`, `down`, `m`, `enter` (the projects modal's cursor opens on its heading; `down` selects the project). HLR-2407's key line words: in the 62-cell project form `alt+t start date`, `alt+d due date` → `alt+t start`, `alt+d due`, so `esc cancel` keeps its word as in the other boxed forms (code review CR-1); TC-2407 now requires `esc cancel` on every modal's painted key line.
 - **Why:** increment 001's implementation and its code review (CR-1).
 - **Evidence:** `03-increments/increment-001.md`; `evidence/suite-001.txt`.
+
+### LED-2026-10-20-batch-03.5 — `? keys` and the hint's wordings (P3, increment 002)
+- **Requirement:** HLR-2403, HLR-2405, LLR-2403.2, LLR-2405.1
+- **Date:** 2026-10-20
+- **What changed:** Before → After. HLR-2403: "the hint row shall end with `? keys` at every width from `PRESENT_MIN_WIDTH`" → the same, the rest of the hint chosen and cut as before in the room `? keys` leaves, so each wording's first width moves 8 columns up; at 80 columns the gantt view takes the short wording — this supersedes, in the canon, HLR-2002's (batch 2026-10-18-batch-03) "80 columns take the middle wording naming `next` and `show all`" for the gantt view, as LED-2026-10-19-batch-01.2 did for the split view (D-14). The law-driven pins of `tests/test_present_narrow.py`, `test_present_polish.py`, `test_present_views_app.py`, `test_present_hide.py` and `test_present_all.py` move with it (increment 002's packet). HLR-2405's wordings unchanged in text; their first widths move with the same 8 cells (and `/K J` adds 4 to the long one).
+- **Why:** the two requirements cannot both hold at 80 columns; the newer operator verdict (the round's item 3 A, whose prototype fitted the hint to `w - 8`) is kept, and `?` now lists `next` and `show all` in words (engineering rule 7: the conflict surfaced, one picked, the other flagged — an OPERATOR item in `BACKLOG.md`).
+- **Evidence:** `evidence/suite-002.txt`; `03-increments/increment-002.md`.

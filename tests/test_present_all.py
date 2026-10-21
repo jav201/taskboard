@@ -482,7 +482,7 @@ async def test_AT_2104_three_views_one_cursor_and_the_export(tmp_path, frozen):
         assert any("⟦Dual-run reconciliation⟧" in r for r in s.frame()), s.frame()
         await s.press(pilot, "3")
         hint = s.hint()
-        assert hint.rstrip().endswith("· u 3 hidden"), hint
+        assert hint.rstrip().endswith("· u 3 hidden  ? keys"), hint
         for key in ("␣ hide", "⇧↑↓", "enter fold"):
             assert key in hint, (key, hint)
         await s.press(pilot, "x")
@@ -619,22 +619,27 @@ async def test_AT_2106_u_lists_the_hidden_and_brings_one_back(tmp_path, frozen):
 # `rich.cells.cell_len` over the literal strings, outside the code), pasted literally
 N2, N1 = "1 gantt  2 split  3 all  ", "1 gantt 2 split 3 all "
 ALL_WORDINGS = {
-    "all-rail": {"long": N2 + "⇥ next · ↑↓ move · ←→ rail/timeline · ␣ hide · ⇧↑↓ reorder · enter fold · a show all · x export · esc leave",
-                 "middle": N2 + "⇥ · ↑↓ · ←→ rail · ␣ hide · ⇧↑↓ order · enter fold · a all · x · esc",
-                 "compact": N1 + "⇥ ↑↓ ←→ ␣ ⇧↑↓ enter a x esc",
+    # batch 2026-10-20-batch-03 (law-driven): `K J` beside `⇧↑↓` (HLR-2405)
+    "all-rail": {"long": N2 + "⇥ next · ↑↓ move · ←→ rail/timeline · ␣ hide · ⇧↑↓/K J reorder · enter fold · a show all · x export · esc leave",
+                 "middle": N2 + "⇥ · ↑↓ · ←→ rail · ␣ hide · K J order · enter fold · a all · x · esc",
+                 "compact": N1 + "⇥ ↑↓ ←→ ␣ K J enter a x esc",
                  "esc": N1 + "esc"},
-    "all": {"long": N2 + "⇥ next · ←→ ↑↓ move · ␣ hide · ⇧↑↓ reorder · enter fold · a show all · x export · esc leave",
-            "middle": N2 + "⇥ · ←→ ↑↓ · ␣ hide · ⇧↑↓ order · enter fold · a all · x · esc",
-            "compact": N1 + "⇥ ←→ ↑↓ ␣ ⇧↑↓ enter a x esc",
+    "all": {"long": N2 + "⇥ next · ←→ ↑↓ move · ␣ hide · ⇧↑↓/K J reorder · enter fold · a show all · x export · esc leave",
+            "middle": N2 + "⇥ · ←→ ↑↓ · ␣ hide · K J order · enter fold · a all · x · esc",
+            "compact": N1 + "⇥ ←→ ↑↓ ␣ K J enter a x esc",
             "esc": N1 + "esc"},
 }
+# the first width each wording is painted at since batch 2026-10-20-batch-03 — the
+# 2026-10-19-batch-01 table (`hint-widths.txt`) + 8 for `  ? keys` (+ 12 for the long one,
+# which gained `/K J`); the rail rows start at 100, where the rail does (their middle's
+# real first width, 95 before, + 8 = 103) — literal numbers, measured once, not derived
 ALL_FIRST = {
-    ("all-rail", 0): {"middle": 100, "long": 134},
-    ("all-rail", 1): {"compact": 100, "middle": 108, "long": 147},
-    ("all-rail", 3): {"compact": 100, "middle": 108, "long": 147},
-    ("all", 0): {"esc": 36, "compact": 51, "middle": 88},
-    ("all", 1): {"esc": 36, "compact": 64},
-    ("all", 3): {"esc": 36, "compact": 64},
+    ("all-rail", 0): {"compact": 100, "middle": 103, "long": 146},
+    ("all-rail", 1): {"compact": 100, "middle": 116, "long": 159},
+    ("all-rail", 3): {"compact": 100, "middle": 116, "long": 159},
+    ("all", 0): {"esc": 36, "compact": 59, "middle": 96},
+    ("all", 1): {"esc": 36, "compact": 72},
+    ("all", 3): {"esc": 36, "compact": 72},
 }
 
 
@@ -664,12 +669,15 @@ def test_TC_2104_view_3s_hint_takes_the_first_wording_that_fits(tmp_path):
         tail = f" · u {hidden} hidden" if hidden else ""
         for w in range(36, 201):
             view = "all-rail" if w >= views.PRESENT_RAIL_MIN else "all"
+            # batch 2026-10-20-batch-03 (law-driven, D-14): `  ? keys` ends every wording,
+            # cut before it when none fits
             table = ALL_FIRST[(view, hidden)]
             tier = max((t for t, first in table.items() if first <= w), key=lambda t: table[t])
             got = scr._hint(w).plain
             want = ALL_WORDINGS[view][tier] + tail
-            if vis(want) > w - 2:                       # none fits: the last, cut with `…`
-                want = want[:w - 3] + "…"
+            if vis(want) > w - 10:                      # none fits: the last, cut with `…`
+                want = want[:w - 11] + "…"
+            want += "  ? keys"
             assert got == want, (hidden, w, got)
             assert vis(got) <= w - 2
         assert "enter fold" in scr._hint(118).plain and "␣ hide" in scr._hint(118).plain
@@ -682,7 +690,7 @@ def test_TC_2104_the_view_names_and_the_u_tail_in_views_1_2(tmp_path):
     b = pf.build(tmp_path / "b.json")
     scr = PresentScreen(b, "pcp", "Customer Portal", "tc2")
     assert scr._hint(160).plain == ("1 gantt  2 split  3 all  ⇥ next · ←→ ↑↓ move · ␣ hide · "
-                                    "a show all · x export · esc leave · u 1 hidden")
+                                    "a show all · x export · esc leave · u 1 hidden  ? keys")
     assert scr._hint(30).plain == "esc leave · 1 hidden"
     assert views.PRESENT_SCREEN_VIEWS == ("gantt", "split", "all")
     assert views.PRESENT_VIEWS == ("gantt", "split")

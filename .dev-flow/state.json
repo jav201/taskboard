@@ -302,6 +302,11 @@
       "station": "P3",
       "date": "2026-10-20",
       "decision": "P3 increment 001 approved under the batch's standing authorization: a direct, shown key for every modal button (HLR-2406, HLR-2407); 579 passed targeted, RED 26/28 on base, 17/17 mutants KILLED; code-reviewer OK to advance (CR-1..CR-4 fixed); PDR PC-2 discharged; increment 002 is next."
+    },
+    {
+      "station": "P3",
+      "date": "2026-10-20",
+      "decision": "P3 increment 002 approved under the batch's standing authorization: the presentation's chip on the hint row, ? and its seat PRESENT_KEYS, the clean view-3 export, K/J (HLR-2402..HLR-2405); 370 passed targeted, RED 12/12 on fab1206, 16/16 mutants KILLED; code-reviewer OK to advance after CR-1 fixed; D-14 recorded (LED .5); increment 003 is next."
     }
   ],
   "obsidian_synced": false,

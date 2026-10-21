@@ -126,6 +126,9 @@ def _screen(tmp_path):
     return PresentScreen(b, pb.PROJECT_ID, "Website", pb.CURSOR), mine
 
 
+HELP = "  ? keys"     # every wording from 36 columns ends with it (batch 2026-10-20-batch-03)
+
+
 def _expected(view: str, hidden: int, w: int) -> str:
     tail = f" · u {hidden} hidden" if hidden else ""
     room = w - 2
@@ -134,10 +137,14 @@ def _expected(view: str, hidden: int, w: int) -> str:
     if w < 36:
         s = "esc leave" + (f" · {hidden} hidden" if hidden else "")
         return s if len(s) <= room else s[:room - 1] + "…"
+    # batch 2026-10-20-batch-03 (law-driven): `? keys` takes its 8 cells off the room,
+    # so each wording's first width moves 8 up; none fits → the last (`esc`), cut
     table = THRESHOLDS[(view, hidden)]
-    tier = max((t for t, first in table.items() if first <= w), key=lambda t: table[t])
+    fits = [t for t, first in table.items() if first + len(HELP) <= w]
+    tier = max(fits, key=lambda t: table[t]) if fits else "esc"
     s = WORDINGS[view][tier] + tail
-    return s if len(s) <= room else s[:room - 1] + "…"    # none fits: the last, cut
+    cut = room - len(HELP)
+    return (s if len(s) <= cut else s[:cut - 1] + "…") + HELP
 
 
 def test_TC_1904_the_hint_takes_the_first_wording_that_fits(tmp_path):
@@ -178,15 +185,18 @@ def test_TC_1904_the_current_view_is_bold_and_bright(tmp_path):
                 assert want in styles, (vi, w, name, styles)
 
 
-def test_TC_1904_an_overflowing_count_is_cut_visibly(tmp_path, monkeypatch):
+def test_TC_1904_an_overflowing_count_is_cut_visibly_before_the_keys(tmp_path, monkeypatch):
     """TC-1904 (PC-2): no wording can fit a six-digit hidden count at 36
     columns — the last is cut to the row with `…`, never painted wider."""
     from taskboard import app as app_module
     scr, _ = _screen(tmp_path)
     monkeypatch.setattr(app_module, "present_hidden", lambda board, pid: list(range(123456)))
     got = scr._hint(36).plain
-    assert views.vis(got) == 34 and got.endswith("…"), got
-    assert got.startswith("1 gantt 2 split 3 all esc · u 12"), got
+    assert views.vis(got) == 34 and got.endswith("…  ? keys"), got
+    assert got.startswith("1 gantt 2 split 3 all esc"), got
+    got = scr._hint(48).plain           # wider: the count shows, cut, before `? keys`
+    assert views.vis(got) == 46 and got.startswith("1 gantt 2 split 3 all esc · u 12"), got
+    assert got.endswith("…  ? keys"), got
 
 
 # --------------------------------------------------------------------------- #
@@ -243,7 +253,7 @@ async def test_AT_1903_narrowed_the_presentation_says_how_wide_and_waits(tmp_pat
 
 async def test_AT_1904_the_hint_shortens_and_cuts_visibly(tmp_path, monkeypatch, frozen):
     """AT-1904 (US-1902, HLR-1904): three tasks hidden; at 50 columns the
-    compact wording in both views, at 40 the view switch and `esc`, below 36
+    `esc` wording and `? keys` (batch 2026-10-20-batch-03), at 40 the count cut before `? keys`, below 36
     only the way out and the count, cut with `…` at 15 — never wider than the
     row, the current view bold."""
     s = _Presenting(tmp_path, monkeypatch, (118, 31))
@@ -260,12 +270,13 @@ async def test_AT_1904_the_hint_shortens_and_cuts_visibly(tmp_path, monkeypatch,
             assert views.vis(text) <= w - 2, (w, text)
             return text
 
-        assert await at(50, 20) == "1 gantt 2 split 3 all ⇥ ←→ ␣ x esc · u 3 hidden"
+        # batch 2026-10-20-batch-03: `? keys` ends every wording, so 50 columns take `esc`
+        assert await at(50, 20) == "1 gantt 2 split 3 all esc · u 3 hidden  ? keys"
         styles = [str(sp.style) for sp in hint().spans if sp.start == 0]
         assert "bold #e6edf7" in styles, styles
         await s.press(pilot, "2")
-        assert s.hint() == "1 gantt 2 split 3 all esc · u 3 hidden"   # compact needs 54
-        assert await at(40, 20) == "1 gantt 2 split 3 all esc · u 3 hidden"
+        assert s.hint() == "1 gantt 2 split 3 all esc · u 3 hidden  ? keys"   # compact needs 62
+        assert await at(40, 20) == "1 gantt 2 split 3 all esc · u…  ? keys"
         at_split = [str(sp.style) for sp in hint().spans if sp.start == len("1 gantt ")]
         assert "bold #e6edf7" in at_split, at_split
         assert await at(30, 12) == "esc leave · 3 hidden"

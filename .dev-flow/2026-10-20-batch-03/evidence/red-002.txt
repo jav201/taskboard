@@ -1,0 +1,15 @@
+# Increment 002's RED on increment 001's commit fab1206 (a clean detached worktree; the new test file copied in), NO_COLOR unset
+# python -m pytest -q -p no:cacheprovider --color=no -rf tests/test_present_backlog_round.py
+FAILED tests/test_present_backlog_round.py::test_TC_2402_the_hint_opens_with_the_chip
+FAILED tests/test_present_backlog_round.py::test_AT_2402_the_presenter_reads_the_board_the_slide_never_does
+FAILED tests/test_present_backlog_round.py::test_TC_2403_the_bindings_are_the_seat
+FAILED tests/test_present_backlog_round.py::test_TC_2403_the_window_is_the_seat_live_by_view[all-\u21e7\u2191\u2193 K J-pgdn pgup]
+FAILED tests/test_present_backlog_round.py::test_TC_2403_the_window_is_the_seat_live_by_view[split-pgdn pgup-\u21e7\u2191\u2193 K J]
+FAILED tests/test_present_backlog_round.py::test_AT_2403_question_mark_shows_every_key
+FAILED tests/test_present_backlog_round.py::test_TC_2404_the_export_has_no_cursor_and_ends_at_its_content
+FAILED tests/test_present_backlog_round.py::test_AT_2404_the_export_reads_as_a_slide[size0-93]
+FAILED tests/test_present_backlog_round.py::test_AT_2404_the_export_reads_as_a_slide[size1-80]
+FAILED tests/test_present_backlog_round.py::test_TC_2405_the_hint_names_K_J[None]
+FAILED tests/test_present_backlog_round.py::test_TC_2405_the_hint_names_K_J[label1]
+FAILED tests/test_present_backlog_round.py::test_AT_2405_K_and_J_reorder - As...
+12 failed in 4.54s

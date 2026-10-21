@@ -194,8 +194,8 @@ Textual 8.2.8 reads `ESC` + a letter as `alt+<letter>` (P-10) and Windows Termin
 
 ### HLR-2403 — `?` lists the presentation's keys from one seat
 - **Traceability:** US-2402
-- **Ledger:** LED-2026-10-20-batch-03.1, LED-2026-10-20-batch-03.2, LED-2026-10-20-batch-03.3
-- **Statement:** The presentation's key bindings shall be generated from one seat, `keymap.PRESENT_KEYS` (rows of keys, the keys as shown, the words, a group and the one view a row acts in, if any); when the presenter presses `?` at `PRESENT_MIN_WIDTH` columns or more, the system shall open a window titled `PRESENTATION KEYS · view <name>` that lists every row of the seat under its group (`VIEWS`, `MOVE`, `CURATE`, `OUT`), a row that acts in the current view or in every view in the bright key style, another view's row dimmed with `(<view>)`, and a last line `? / esc close · dim = another view's key`; `?`, `escape` or `q` shall close it, the frame as it was; the hint row shall end with `? keys` at every width from `PRESENT_MIN_WIDTH` (below it the hint is `esc leave` alone, as today); the window is never exported.
+- **Ledger:** LED-2026-10-20-batch-03.1, LED-2026-10-20-batch-03.2, LED-2026-10-20-batch-03.3, LED-2026-10-20-batch-03.5
+- **Statement:** The presentation's key bindings shall be generated from one seat, `keymap.PRESENT_KEYS` (rows of keys, the keys as shown, the words, a group and the one view a row acts in, if any); when the presenter presses `?` at `PRESENT_MIN_WIDTH` columns or more, the system shall open a window titled `PRESENTATION KEYS · view <name>` that lists every row of the seat under its group (`VIEWS`, `MOVE`, `CURATE`, `OUT`), a row that acts in the current view or in every view in the bright key style, another view's row dimmed with `(<view>)`, and a last line `? / esc close · dim = another view's key`; `?`, `escape` or `q` shall close it, the frame as it was; the hint row shall end with `? keys` at every width from `PRESENT_MIN_WIDTH` (below it the hint is `esc leave` alone, as today), the rest of the hint chosen and cut as before in the room left (so each wording's first width moves 8 columns up — at 80 columns the gantt view takes the short wording, superseding HLR-2002's middle one there: D-14); the window is never exported.
 - **Rationale (informative):** item 3, variant A (`PresentKeys`); the seat the round asked for so the window and the bindings cannot drift (BACKLOG line 167).
 - **Validation:** `test`
 - **Executed verification:** `python -m pytest -q -p no:cacheprovider tests/test_present_backlog_round.py -k 2403`
@@ -226,7 +226,7 @@ Textual 8.2.8 reads `ESC` + a letter as `alt+<letter>` (P-10) and Windows Termin
 
 ### HLR-2405 — `K`/`J` reorder beside `shift+↑/↓`
 - **Traceability:** US-2402
-- **Ledger:** LED-2026-10-20-batch-03.1, LED-2026-10-20-batch-03.2, LED-2026-10-20-batch-03.3
+- **Ledger:** LED-2026-10-20-batch-03.1, LED-2026-10-20-batch-03.2, LED-2026-10-20-batch-03.3, LED-2026-10-20-batch-03.5
 - **Statement:** In view 3, `K` and `J` shall do what `shift+↑` and `shift+↓` do (the cursor's project one place up / down, saved); the hint's wordings shall name them: `⇧↑↓/K J reorder` (long), `K J order` (middle), `K J` (glyphs).
 - **Rationale (informative):** item 5, variant A (`PresentReorderKJ`); `[`/`]` rejected (the main screen's phase keys).
 - **Validation:** `test`
@@ -369,7 +369,7 @@ Textual 8.2.8 reads `ESC` + a letter as `alt+<letter>` (P-10) and Windows Termin
 
 ### LLR-2403.2 — `modals.PresentKeys` and `PresentScreen.action_keys`
 - **Traceability:** HLR-2403
-- **Ledger:** LED-2026-10-20-batch-03.1, LED-2026-10-20-batch-03.2, LED-2026-10-20-batch-03.3
+- **Ledger:** LED-2026-10-20-batch-03.1, LED-2026-10-20-batch-03.2, LED-2026-10-20-batch-03.3, LED-2026-10-20-batch-03.5
 - **Statement:** `taskboard/modals.py` (NEW — created in increment 002) shall provide `PresentKeys(ModalScreen[None])(view)` rendering HLR-2403's window from `PRESENT_KEYS` (60 cells wide at most, scrolling when taller than the screen) with priority bindings `escape,question_mark,q` → close; `PresentScreen.action_keys` shall push it with the current view's name unless `_narrow()`; `_hint` shall end every wording at `PRESENT_MIN_WIDTH` or more with `  ? keys`, fitted with the rest; `PresentScreen.action_keys` is a no-op below it.
 - **Validation:** `test (unit)`
 - **Executed verification:** `python -m pytest -q -p no:cacheprovider tests/test_present_backlog_round.py -k TC_2403`
@@ -389,7 +389,7 @@ Textual 8.2.8 reads `ESC` + a letter as `alt+<letter>` (P-10) and Windows Termin
 
 ### LLR-2405.1 — the `K`/`J` hint wordings
 - **Traceability:** HLR-2405
-- **Ledger:** LED-2026-10-20-batch-03.1, LED-2026-10-20-batch-03.2, LED-2026-10-20-batch-03.3
+- **Ledger:** LED-2026-10-20-batch-03.1, LED-2026-10-20-batch-03.2, LED-2026-10-20-batch-03.3, LED-2026-10-20-batch-03.5
 - **Statement:** view 3's wordings in `PresentScreen._hint` shall read, with the rail: `⇥ next · ↑↓ move · ←→ rail/timeline · ␣ hide · ⇧↑↓/K J reorder · enter fold · a show all · x export · esc leave`, `⇥ · ↑↓ · ←→ rail · ␣ hide · K J order · enter fold · a all · x · esc`, `⇥ ↑↓ ←→ ␣ K J enter a x esc`, `esc`; without it the same with `⇥ next · ←→ ↑↓ move` / `⇥ · ←→ ↑↓` / `⇥ ←→ ↑↓` in place of the moves; the bindings are the seat's (LLR-2403.1).
 - **Validation:** `test (unit)`
 - **Executed verification:** `python -m pytest -q -p no:cacheprovider tests/test_present_backlog_round.py -k TC_2405`

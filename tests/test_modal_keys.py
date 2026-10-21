@@ -273,6 +273,7 @@ INVENTORY: dict[str, dict[str, str]] = {
     "TeamIdentityPicker": {}, "PhaseEditor": {}, "ImageViewer": {}, "TaskDetails": {},
     "HelpModal": {}, "StandupModal": {}, "CommandPalette": {}, "BoardForm": {},
     "MoveTarget": {}, "MoveConfirm": {}, "HelpScreen": {}, "PresentScreen": {},
+    "PresentKeys": {},
 }
 
 

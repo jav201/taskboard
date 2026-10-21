@@ -1,0 +1,1044 @@
+diff --git a/taskboard/app.py b/taskboard/app.py
+index d5c2bff..f1ad00a 100644
+--- a/taskboard/app.py
++++ b/taskboard/app.py
+@@ -30,14 +30,15 @@ from .models import (AUTO_ARCHIVE_DAYS, IMAGE_EXTS, LINKS_MIGRATION, MILESTONES_
+                      snapshot)
+ from .modals import (BoardForm, ClockModal, GanttLinkMode, LinkPicker, CommandPalette, ConfirmModal,
+                      HelpModal, ImageViewer, MilestoneOffer, PhaseEditor, ProjectModal,
+-                     PresentHiddenPicker, ProjectPicker, StandupModal, TaskDetails, TaskModal,
++                     PresentHiddenPicker, PresentKeys, ProjectPicker, StandupModal, TaskDetails, TaskModal,
+                      TeamIdentityPicker,
+                      TemplateEditor, TemplatePicker, TextPrompt)
+-from .keymap import KEYMAP, KeyBar, app_bindings, palette_commands
++from .keymap import KEYMAP, KeyBar, app_bindings, palette_commands, present_bindings
+ from .ribbon import Ribbon
+ from .team_sync import (TEAM_FILENAME, TeamState, _read_json, clean_roster,
+                         probe_setup_health)
+-from .views import (HEX, ago, board_hex, board_summary, home_card, home_keys, home_missing, home_title,
++from .views import (HEX, ago, board_chip_text, board_hex, board_summary, home_card, home_keys,
++                    home_missing, home_title, present_all_export,
+                     clip, filtered_board, focus_tasks, gantt_group_key, group_key,
+                     gantt_plan, nav_model, present_paths, present_project_id,
+                     present_hidden, present_hidden_rows, present_tasks, render_present,
+@@ -206,35 +207,14 @@ class PresentScreen(ModalScreen[None]):
+     cursor's row, `a` shows everything hidden, `shift+↑/↓` move a project in
+     view 3, `u` opens the list of hidden items — each change saved at once.
+     The keys and the hidden count ride the hint row only — the frame is what
+-    the room sees and what `x` exports."""
+-
+-    BINDINGS = [
+-        Binding("escape,q", "close", "Leave", priority=True),
+-        Binding("left,h", "side(-1)", "", priority=True),
+-        Binding("right,l", "side(1)", "", priority=True),
+-        Binding("up,k", "move(-1)", "", priority=True),
+-        Binding("down,j", "move(1)", "", priority=True),
+-        Binding("shift+up", "reorder(-1)", "", priority=True),
+-        Binding("shift+down", "reorder(1)", "", priority=True),
+-        Binding("enter", "fold", "", priority=True),
+-        Binding("x", "export", "Export", priority=True),
+-        # priority like the screen's other keys; today the screen's own `a`
+-        # already beats the app's non-priority add-task `a` (no focusable child),
+-        # and its `u` the app's non-priority undo
+-        Binding("space", "hide", "", priority=True),
+-        Binding("a", "show_all", "", priority=True),
+-        Binding("u", "hidden_picker", "", priority=True),
+-        # the app's own `1`/`2`/`3` (views) are not reached past this modal
+-        # screen, and its priority `tab` (toggle_presentation) is released while
+-        # a modal is open (`TaskboardApp.check_action`)
+-        Binding("1", "view(0)", "", priority=True),
+-        Binding("2", "view(1)", "", priority=True),
+-        Binding("3", "view(2)", "", priority=True),
+-        Binding("tab", "cycle(1)", "", priority=True),
+-        Binding("shift+tab", "cycle(-1)", "", priority=True),
+-        Binding("pagedown", "scroll(1)", "", priority=True),
+-        Binding("pageup", "scroll(-1)", "", priority=True),
+-    ]
++    the room sees and what `x` exports. With a board chip (batch 2026-10-20-batch-03)
++    the hint row opens with it; `?` lists every key (`PresentKeys`); `K`/`J` reorder
++    beside `shift+↑/↓`; view 3 exports its timeline without the cursor."""
++
++    # GENERATED from the presentation's seat (batch 2026-10-20-batch-03): every key
++    # priority, so the screen's own `a`/`u`/`1`-`3` beat the app's; the app's
++    # priority `tab` is released while a modal is open (`TaskboardApp.check_action`)
++    BINDINGS = present_bindings()
+ 
+     DEFAULT_CSS = """
+     PresentScreen {
+@@ -330,15 +310,27 @@ class PresentScreen(ModalScreen[None]):
+             len(present_hidden(self._board, p.id)) for p in present_order(self._board))
+ 
+     def _hint(self, w: int) -> Text:
+-        """The keys, under the frame: the view switch (the current view bright),
+-        then the moves, then `u` and the hidden count — never painted in the
+-        frame. The first wording that fits the hint's `w - 2` cells, longest
+-        first; below `PRESENT_MIN_WIDTH` only `esc leave` and the count; whatever
+-        is left over is cut with a visible `…`."""
++        """The keys, under the frame: the board's chip when it has one (batch
++        2026-10-20-batch-03), the view switch (the current view bright), then the
++        moves, then `u` and the hidden count, then `? keys` — never painted in the
++        frame. The first wording that fits, longest first; below
++        `PRESENT_MIN_WIDTH` only `esc leave` and the count; whatever is left over
++        is cut with a visible `…`."""
+         room = w - 2
+         if room <= 0:
+             return Text()
+         hidden = self._hidden_count()
++        chip = board_chip_text(self._board.label)
++        if w >= PRESENT_MIN_WIDTH and chip.cell_len:
++            # the screen's width decides narrow and the rail; the chip only takes room
++            # (code review CR-1, CR-2), and leaves the keys at least `…  ? keys`
++            if chip.cell_len > room - 9:
++                chip.truncate(room - 9, overflow="ellipsis")
++            return Text.assemble(chip, self._keys_hint(w, hidden, room - chip.cell_len))
++        return self._keys_hint(w, hidden, room)
++
++    def _keys_hint(self, w: int, hidden: int, room: int) -> Text:
++        """The hint after the chip: `w` the screen's width, `room` the cells it has."""
+         if w < PRESENT_MIN_WIDTH:
+             hint = Text("esc leave" + (f" · {hidden} hidden" if hidden else ""),
+                         style="#8b98a5")
+@@ -347,18 +339,18 @@ class PresentScreen(ModalScreen[None]):
+         tail = f" · u {hidden} hidden" if hidden else ""
+         if self._all() and w >= PRESENT_RAIL_MIN:
+             wordings = (
+-                ("  ", "⇥ next · ↑↓ move · ←→ rail/timeline · ␣ hide · ⇧↑↓ reorder · enter fold"
+-                       " · a show all · x export · esc leave"),
+-                ("  ", "⇥ · ↑↓ · ←→ rail · ␣ hide · ⇧↑↓ order · enter fold · a all · x · esc"),
+-                (" ", "⇥ ↑↓ ←→ ␣ ⇧↑↓ enter a x esc"),
++                ("  ", "⇥ next · ↑↓ move · ←→ rail/timeline · ␣ hide · ⇧↑↓/K J reorder"
++                       " · enter fold · a show all · x export · esc leave"),
++                ("  ", "⇥ · ↑↓ · ←→ rail · ␣ hide · K J order · enter fold · a all · x · esc"),
++                (" ", "⇥ ↑↓ ←→ ␣ K J enter a x esc"),
+                 (" ", "esc"),
+             )
+         elif self._all():
+             wordings = (
+-                ("  ", "⇥ next · ←→ ↑↓ move · ␣ hide · ⇧↑↓ reorder · enter fold · a show all"
+-                       " · x export · esc leave"),
+-                ("  ", "⇥ · ←→ ↑↓ · ␣ hide · ⇧↑↓ order · enter fold · a all · x · esc"),
+-                (" ", "⇥ ←→ ↑↓ ␣ ⇧↑↓ enter a x esc"),
++                ("  ", "⇥ next · ←→ ↑↓ move · ␣ hide · ⇧↑↓/K J reorder · enter fold"
++                       " · a show all · x export · esc leave"),
++                ("  ", "⇥ · ←→ ↑↓ · ␣ hide · K J order · enter fold · a all · x · esc"),
++                (" ", "⇥ ←→ ↑↓ ␣ K J enter a x esc"),
+                 (" ", "esc"),
+             )
+         else:
+@@ -372,16 +364,21 @@ class PresentScreen(ModalScreen[None]):
+                 (" ", ("pgdn " if split else "") + "⇥ ←→ ␣ x esc"),
+                 (" ", "esc"),
+             )
++        help_ = "  ? keys"              # `?` opens every key (batch 2026-10-20-batch-03)
+         for gap, keys in wordings:
+             names = sum(vis(f"{i + 1} {n}{gap}") for i, n in enumerate(PRESENT_SCREEN_VIEWS))
+-            if names + vis(keys + tail) <= room:
++            if names + vis(keys + tail + help_) <= room:
+                 break
+         hint = Text()
+         for i, name in enumerate(PRESENT_SCREEN_VIEWS):
+             hint.append(f"{i + 1} {name}", style="bold #e6edf7" if i == self._view else "#5b6675")
+             hint.append(gap)
+         hint.append(keys + tail, style="#8b98a5")
+-        hint.truncate(room, overflow="ellipsis")
++        cut = room - vis(help_)
++        hint.truncate(max(0, cut), overflow="ellipsis")
++        hint.append("  ")
++        hint.append("?", style="bold #e6edf7")
++        hint.append(" keys", style="#8b98a5")
+         return hint
+ 
+     def _shown_ids(self) -> list[str]:
+@@ -594,6 +591,12 @@ class PresentScreen(ModalScreen[None]):
+         self._folded.symmetric_difference_update({self._all_cur[1]})
+         self._paint()
+ 
++    def action_keys(self) -> None:
++        """`?` — every key of the presentation (`PresentKeys`), the view's own bright."""
++        if self._narrow():
++            return
++        self.app.push_screen(PresentKeys(PRESENT_SCREEN_VIEWS[self._view]))
++
+     def action_hidden_picker(self) -> None:
+         """`u` — the list of hidden items (`PresentHiddenPicker`); the frame
+         repaints when it closes."""
+@@ -610,8 +613,11 @@ class PresentScreen(ModalScreen[None]):
+             return
+         h = self._frame_height()
+         if self._all():
+-            r = self._render_all()
+-            text, w = r.timeline, r.timeline_w
++            # the timeline as laid out on screen but without the cursor, cut to its
++            # content (batch 2026-10-20-batch-03, the round's item 4)
++            proj = self._cursor_project()
++            text, w, h = present_all_export(self._board, self._today, w, h,
++                                            frozenset(self._folded), proj.id if proj else None)
+             svg_path, png_path = present_paths(self._board, None, self._today, "all")
+         else:
+             text = self._frame_text()
+diff --git a/taskboard/keymap.py b/taskboard/keymap.py
+index 5e54251..e3e4d5f 100644
+--- a/taskboard/keymap.py
++++ b/taskboard/keymap.py
+@@ -194,6 +194,47 @@ def key_line(pairs: list[tuple[str, str]], width: int | None = None) -> Text:
+     return line
+ 
+ 
++class PresentKey(NamedTuple):
++    binds: tuple[tuple[str, str], ...]   # (Textual key list, action) pairs this row binds
++    show: str                            # the keys as the `?` window prints them
++    label: str                           # the words
++    group: str                           # VIEWS · MOVE · CURATE · OUT
++    view: str | None = None              # the one view the row acts in (None = every view)
++
++
++# THE PRESENTATION'S SEAT (batch 2026-10-20-batch-03, the round's item 3 A): the bindings
++# of `app.PresentScreen` and the `?` window of `modals.PresentKeys` are both generated
++# from it, so the window lists exactly the keys that act. Apart from `KEYMAP`: `a`, `u`,
++# `x`, `1`-`3` mean other things on the main screen.
++PRESENT_KEYS: tuple[PresentKey, ...] = (
++    PresentKey((("1", "view(0)"), ("2", "view(1)"), ("3", "view(2)")),
++               "1 2 3", "gantt · split · all", "VIEWS"),
++    PresentKey((("tab", "cycle(1)"), ("shift+tab", "cycle(-1)")),
++               "⇥ ⇧⇥", "next / previous view", "VIEWS"),
++    PresentKey((("up,k", "move(-1)"), ("down,j", "move(1)")), "↑↓", "move the cursor", "MOVE"),
++    PresentKey((("left,h", "side(-1)"), ("right,l", "side(1)")),
++               "←→", "move · in all: rail ↔ timeline", "MOVE"),
++    PresentKey((("pageup", "scroll(-1)"), ("pagedown", "scroll(1)")),
++               "pgdn pgup", "scroll the notes", "MOVE", "split"),
++    PresentKey((("space", "hide"),), "␣", "hide the cursor's row", "CURATE"),
++    PresentKey((("a", "show_all"),), "a", "show everything hidden", "CURATE"),
++    PresentKey((("u", "hidden_picker"),), "u", "list what is hidden", "CURATE"),
++    # `K`/`J` beside shift+arrows: letters every terminal passes (the round's item 5 A)
++    PresentKey((("shift+up,K", "reorder(-1)"), ("shift+down,J", "reorder(1)")),
++               "⇧↑↓ K J", "move a project up / down", "CURATE", "all"),
++    PresentKey((("enter", "fold"),), "enter", "fold a project", "CURATE", "all"),
++    PresentKey((("x", "export"),), "x", "export this view · SVG + PNG", "OUT"),
++    PresentKey((("escape,q", "close"),), "esc q", "leave", "OUT"),
++    PresentKey((("question_mark", "keys"),), "?", "these keys", "OUT"),
++)
++
++
++def present_bindings() -> list[Binding]:
++    """`PresentScreen.BINDINGS`, generated: one priority binding per (keys, action)."""
++    return [Binding(keys, action, "", priority=True)
++            for row in PRESENT_KEYS for keys, action in row.binds]
++
++
+ def app_bindings() -> list[Binding]:
+     """The app's BINDINGS, generated. Half of the contract."""
+     return [Binding(k.keys, k.action, k.label, priority=k.priority) for k in KEYMAP]
+diff --git a/taskboard/modals.py b/taskboard/modals.py
+index 7df2c35..e96e458 100644
+--- a/taskboard/modals.py
++++ b/taskboard/modals.py
+@@ -40,7 +40,7 @@ from .models import (IMAGE_EXTS, PROJECT_COLORS, PROJECT_STATUSES, TASK_PRIORITI
+                      grab_clipboard_image, grab_clipboard_text, parse_iso,
+                      resolve_city, save_pil_image, templates)
+ from .boards import clean_name, move_plan, move_project, peek_board, slug
+-from .keymap import key_line, palette_commands
++from .keymap import KEY_STYLE, PRESENT_KEYS, key_line, palette_commands
+ from .views import (HEX, clip, fit, gantt_group_key, gantt_link_frame, gantt_link_order,
+                     highlight_segments, valid_url)
+ 
+@@ -1342,6 +1342,44 @@ class PresentHiddenPicker(ModalScreen[None]):
+         self.dismiss(None)
+ 
+ 
++class PresentKeys(ModalScreen[None]):
++    """`?` inside the presentation (batch 2026-10-20-batch-03, the round's item 3 A):
++    every key of its seat `keymap.PRESENT_KEYS`, by group; a row that acts in the
++    current view (or in every view) bright, another view's dimmed with that view in
++    brackets. Never exported: `x` writes the frame only."""
++
++    BINDINGS = [Binding("escape,question_mark,q", "dismiss", "", priority=True)]
++    DEFAULT_CSS = """
++    PresentKeys { align: center middle; }
++    #pk-box { width: 60; max-width: 96%; height: auto; max-height: 96%; padding: 0 2;
++              background: #0d1219; border: round #334154; }
++    """
++
++    def __init__(self, view: str):
++        super().__init__()
++        self.view = view
++
++    def lines(self) -> Text:
++        out = Text(no_wrap=True, overflow="ellipsis")
++        out.append("PRESENTATION KEYS", style=f"bold {HEX['bright']}")
++        out.append(f" · view {self.view}", style=HEX["mut"])
++        group = None
++        for row in PRESENT_KEYS:
++            if row.group != group:
++                group = row.group
++                out.append(f"\n{group}", style=f"bold {HEX['mut']}")
++            live = row.view is None or row.view == self.view
++            out.append(f"\n  {row.show:<10}", style=KEY_STYLE if live else HEX["dim"])
++            out.append(row.label, style=HEX["ink"] if live else HEX["dim"])
++            if row.view:
++                out.append(f"  ({row.view})", style=HEX["reached"] if live else HEX["dim"])
++        out.append("\n? / esc close · dim = another view's key", style=HEX["dim"])
++        return out
++
++    def compose(self) -> ComposeResult:
++        yield VerticalScroll(Static(self.lines(), id="pk-text"), id="pk-box")
++
++
+ class GanttLinkMode(ModalScreen[tuple[str, str] | None]):
+     """`L` in the gantt — the link mode (D-A, LLR-502.3). The gantt is painted with
+     the candidate as its selection (its group unfolds) and the proposed link drawn
+diff --git a/taskboard/views.py b/taskboard/views.py
+index 6776d40..bb963ed 100644
+--- a/taskboard/views.py
++++ b/taskboard/views.py
+@@ -679,6 +679,18 @@ def board_chip(label: tuple[str, str] | None) -> str:
+     return f"[b #0d1117 on {board_hex(colour)}] {escape(fit(name, 24).rstrip())} [/] "
+ 
+ 
++def board_chip_text(label: tuple[str, str] | None) -> Text:
++    """`board_chip` as a `Text` — no markup parser reads a board's name (batch
++    2026-10-20-batch-03): ` <name cut to 24> ` bold in board-background ink on the
++    board's colour, then a space; empty without a label."""
++    if not label:
++        return Text()
++    name, colour = label
++    out = Text(f" {fit(name, 24).rstrip()} ", style=f"bold #0d1117 on {board_hex(colour)}")
++    out.append(" ")
++    return out
++
++
+ def board_hex(colour) -> str:
+     """A board's colour as a hex: a project colour's, else violet's — one rule for
+     the chip, the home's card and its strip (code review F5)."""
+@@ -6815,7 +6827,9 @@ def _all_fit(lines: list[str], height: int, width: int) -> list[str]:
+ 
+ 
+ def _all_timeline(board: Board, width: int, height: int, today: date, cur, folded,
+-                  rail_focus: bool):
++                  rail_focus: bool, anchor: str | None = None):
++    """`anchor` lays the rows out around that project instead of the cursor's (the
++    export draws no cursor but folds as the screen does — batch 2026-10-20-batch-03)."""
+     plan = _all_plan(board)
+     wide = width >= 100
+     label_w, chip_w, field_w = _present_cols(width, wide)
+@@ -6823,8 +6837,8 @@ def _all_timeline(board: Board, width: int, height: int, today: date, cur, folde
+     g = _PresentGeo(width, label_w, chip_w, field_w, ax, set(critical_chain(board)), today,
+                     wide, "dim")
+     _, _, cur_proj = _all_resolve(board, cur)
+-    open_, gap, stops, rows = _all_layout(plan, cur_proj.id if cur_proj else None, folded,
+-                                          height - 3)
++    around = anchor if anchor is not None else (cur_proj.id if cur_proj else None)
++    open_, gap, stops, rows = _all_layout(plan, around, folded, height - 3)
+     if rows and max(rows.values()) >= height:   # the overflow row takes the last row:
+         stops = [s for s in stops if rows[s] < height - 1]   # what it covers is no stop
+     if cur not in stops:
+@@ -6901,6 +6915,21 @@ def render_present_all(board: Board, cursor, today: date, width: int, height: in
+                       tw, stops, [("proj", p.id) for p in present_order(board)], drawn)
+ 
+ 
++def present_all_export(board: Board, today: date, width: int, height: int, folded=frozenset(),
++                       anchor: str | None = None) -> tuple[Text, int, int]:
++    """What `x` writes in view 3 (batch 2026-10-20-batch-03, the round's item 4
++    "limpia"): the timeline at the width the screen draws it (without the rail), laid
++    out around `anchor` — the cursor's project, so its folds are the screen's — but
++    drawn with NO cursor, and cut after its last row that holds anything but blanks
++    (a row with content is never cut). Returns (text, width, rows)."""
++    tw = width - PRESENT_RAIL_W - 1 if width >= PRESENT_RAIL_MIN else width
++    # `cur=None` with `rail_focus=True` is `_all_timeline`'s "no cursor drawn"
++    lines, _stops, _cur = _all_timeline(board, tw, height, today, None, folded, True, anchor)
++    while lines and not _strip(lines[-1]).strip():
++        lines.pop()
++    return to_text(lines, len(lines), tw), tw, len(lines)
++
++
+ def present_hidden_rows(board: Board, project_id: str | None,
+                         all_view: bool) -> list[tuple[str, str, int]]:
+     """What `u` lists, as `(kind, id, depth)`: in views 1/2 the project's hidden
+diff --git a/tests/test_modal_keys.py b/tests/test_modal_keys.py
+index 576ec7f..b3415d9 100644
+--- a/tests/test_modal_keys.py
++++ b/tests/test_modal_keys.py
+@@ -273,6 +273,7 @@ INVENTORY: dict[str, dict[str, str]] = {
+     "TeamIdentityPicker": {}, "PhaseEditor": {}, "ImageViewer": {}, "TaskDetails": {},
+     "HelpModal": {}, "StandupModal": {}, "CommandPalette": {}, "BoardForm": {},
+     "MoveTarget": {}, "MoveConfirm": {}, "HelpScreen": {}, "PresentScreen": {},
++    "PresentKeys": {},
+ }
+ 
+ 
+diff --git a/tests/test_present_all.py b/tests/test_present_all.py
+index 803fcbc..5837bbc 100644
+--- a/tests/test_present_all.py
++++ b/tests/test_present_all.py
+@@ -482,7 +482,7 @@ async def test_AT_2104_three_views_one_cursor_and_the_export(tmp_path, frozen):
+         assert any("⟦Dual-run reconciliation⟧" in r for r in s.frame()), s.frame()
+         await s.press(pilot, "3")
+         hint = s.hint()
+-        assert hint.rstrip().endswith("· u 3 hidden"), hint
++        assert hint.rstrip().endswith("· u 3 hidden  ? keys"), hint
+         for key in ("␣ hide", "⇧↑↓", "enter fold"):
+             assert key in hint, (key, hint)
+         await s.press(pilot, "x")
+@@ -619,22 +619,27 @@ async def test_AT_2106_u_lists_the_hidden_and_brings_one_back(tmp_path, frozen):
+ # `rich.cells.cell_len` over the literal strings, outside the code), pasted literally
+ N2, N1 = "1 gantt  2 split  3 all  ", "1 gantt 2 split 3 all "
+ ALL_WORDINGS = {
+-    "all-rail": {"long": N2 + "⇥ next · ↑↓ move · ←→ rail/timeline · ␣ hide · ⇧↑↓ reorder · enter fold · a show all · x export · esc leave",
+-                 "middle": N2 + "⇥ · ↑↓ · ←→ rail · ␣ hide · ⇧↑↓ order · enter fold · a all · x · esc",
+-                 "compact": N1 + "⇥ ↑↓ ←→ ␣ ⇧↑↓ enter a x esc",
++    # batch 2026-10-20-batch-03 (law-driven): `K J` beside `⇧↑↓` (HLR-2405)
++    "all-rail": {"long": N2 + "⇥ next · ↑↓ move · ←→ rail/timeline · ␣ hide · ⇧↑↓/K J reorder · enter fold · a show all · x export · esc leave",
++                 "middle": N2 + "⇥ · ↑↓ · ←→ rail · ␣ hide · K J order · enter fold · a all · x · esc",
++                 "compact": N1 + "⇥ ↑↓ ←→ ␣ K J enter a x esc",
+                  "esc": N1 + "esc"},
+-    "all": {"long": N2 + "⇥ next · ←→ ↑↓ move · ␣ hide · ⇧↑↓ reorder · enter fold · a show all · x export · esc leave",
+-            "middle": N2 + "⇥ · ←→ ↑↓ · ␣ hide · ⇧↑↓ order · enter fold · a all · x · esc",
+-            "compact": N1 + "⇥ ←→ ↑↓ ␣ ⇧↑↓ enter a x esc",
++    "all": {"long": N2 + "⇥ next · ←→ ↑↓ move · ␣ hide · ⇧↑↓/K J reorder · enter fold · a show all · x export · esc leave",
++            "middle": N2 + "⇥ · ←→ ↑↓ · ␣ hide · K J order · enter fold · a all · x · esc",
++            "compact": N1 + "⇥ ←→ ↑↓ ␣ K J enter a x esc",
+             "esc": N1 + "esc"},
+ }
++# the first width each wording is painted at since batch 2026-10-20-batch-03 — the
++# 2026-10-19-batch-01 table (`hint-widths.txt`) + 8 for `  ? keys` (+ 12 for the long one,
++# which gained `/K J`); the rail rows start at 100, where the rail does (their middle's
++# real first width, 95 before, + 8 = 103) — literal numbers, measured once, not derived
+ ALL_FIRST = {
+-    ("all-rail", 0): {"middle": 100, "long": 134},
+-    ("all-rail", 1): {"compact": 100, "middle": 108, "long": 147},
+-    ("all-rail", 3): {"compact": 100, "middle": 108, "long": 147},
+-    ("all", 0): {"esc": 36, "compact": 51, "middle": 88},
+-    ("all", 1): {"esc": 36, "compact": 64},
+-    ("all", 3): {"esc": 36, "compact": 64},
++    ("all-rail", 0): {"compact": 100, "middle": 103, "long": 146},
++    ("all-rail", 1): {"compact": 100, "middle": 116, "long": 159},
++    ("all-rail", 3): {"compact": 100, "middle": 116, "long": 159},
++    ("all", 0): {"esc": 36, "compact": 59, "middle": 96},
++    ("all", 1): {"esc": 36, "compact": 72},
++    ("all", 3): {"esc": 36, "compact": 72},
+ }
+ 
+ 
+@@ -664,12 +669,15 @@ def test_TC_2104_view_3s_hint_takes_the_first_wording_that_fits(tmp_path):
+         tail = f" · u {hidden} hidden" if hidden else ""
+         for w in range(36, 201):
+             view = "all-rail" if w >= views.PRESENT_RAIL_MIN else "all"
++            # batch 2026-10-20-batch-03 (law-driven, D-14): `  ? keys` ends every wording,
++            # cut before it when none fits
+             table = ALL_FIRST[(view, hidden)]
+             tier = max((t for t, first in table.items() if first <= w), key=lambda t: table[t])
+             got = scr._hint(w).plain
+             want = ALL_WORDINGS[view][tier] + tail
+-            if vis(want) > w - 2:                       # none fits: the last, cut with `…`
+-                want = want[:w - 3] + "…"
++            if vis(want) > w - 10:                      # none fits: the last, cut with `…`
++                want = want[:w - 11] + "…"
++            want += "  ? keys"
+             assert got == want, (hidden, w, got)
+             assert vis(got) <= w - 2
+         assert "enter fold" in scr._hint(118).plain and "␣ hide" in scr._hint(118).plain
+@@ -682,7 +690,7 @@ def test_TC_2104_the_view_names_and_the_u_tail_in_views_1_2(tmp_path):
+     b = pf.build(tmp_path / "b.json")
+     scr = PresentScreen(b, "pcp", "Customer Portal", "tc2")
+     assert scr._hint(160).plain == ("1 gantt  2 split  3 all  ⇥ next · ←→ ↑↓ move · ␣ hide · "
+-                                    "a show all · x export · esc leave · u 1 hidden")
++                                    "a show all · x export · esc leave · u 1 hidden  ? keys")
+     assert scr._hint(30).plain == "esc leave · 1 hidden"
+     assert views.PRESENT_SCREEN_VIEWS == ("gantt", "split", "all")
+     assert views.PRESENT_VIEWS == ("gantt", "split")
+diff --git a/tests/test_present_backlog_round.py b/tests/test_present_backlog_round.py
+new file mode 100644
+index 0000000..778425b
+--- /dev/null
++++ b/tests/test_present_backlog_round.py
+@@ -0,0 +1,369 @@
++"""The presentation's items of the backlog round.
++
++Batch 2026-10-20-batch-03: HLR-2402 / LLR-2402.1 · TC-2402 · AT-2402 — the board's chip
++on the hint row; HLR-2403 / LLR-2403.1, LLR-2403.2 · TC-2403 · AT-2403 — `?` and the
++presentation's key seat; HLR-2404 / LLR-2404.1 · TC-2404 · AT-2404 — the view-3 export
++without the cursor, cut to its content; HLR-2405 / LLR-2405.1 · TC-2405 · AT-2405 — `K`/`J`
++(US-2402, US-2403). The round's boards (`backlog_round_fixture`), synthetic, under this
++test's own home.
++"""
++from __future__ import annotations
++
++import html
++import re
++from collections import defaultdict
++from datetime import date
++from pathlib import Path
++
++import pytest
++
++import backlog_round_fixture as fx
++import multi_board_fixture as mb
++from taskboard import app as app_module, keymap, models, modals, views
++from taskboard.app import BoardsHome, PresentScreen, TaskboardApp
++from taskboard.boards import peek_board
++from taskboard.models import present_order
++
++_TEXT = re.compile(r'<text [^>]*clip-path="url\(#[^)]*-line-(\d+)\)"[^>]*>([^<]*)</text>')
++
++
++def svg_rows(svg: str) -> list[str]:
++    """An exported SVG's text, row by row (qa QA-2): `&#160;` read as a space, the
++    `<text>` pieces of each `line-N` joined; as many rows as the highest `line-N` + 1
++    (Rich defines one clip path fewer than its rows — qa QA-3)."""
++    rows: dict[int, list[str]] = defaultdict(list)
++    for n, body in _TEXT.findall(svg):
++        rows[int(n)].append(html.unescape(body).replace("\xa0", " "))
++    top = max(rows) + 1 if rows else 0
++    return ["".join(rows.get(i, [])) for i in range(top)]
++
++
++class _Today(date):
++    @classmethod
++    def today(cls):
++        return fx.TODAY
++
++
++@pytest.fixture
++def home(tmp_path, monkeypatch):
++    monkeypatch.setattr(Path, "home", classmethod(lambda cls: tmp_path))
++    for mod in (app_module, models, views, modals):
++        monkeypatch.setattr(mod, "date", _Today)
++    return tmp_path / ".taskboard"
++
++
++@pytest.fixture
++def png(monkeypatch):
++    """The PNG rasteriser (headless Edge) stubbed: the suite has no Edge. Records the
++    cells it was asked for — a declared seam (qa QA-16)."""
++    asked = []
++
++    def fake(svg_path, png_path, width, height):
++        asked.append((width, height))
++        return None
++    monkeypatch.setattr(app_module, "save_present_png", fake)
++    return asked
++
++
++def _round(home, last="client-a"):
++    from taskboard.__main__ import open_app
++    fx.build(home, last=last)
++    return open_app(None)
++
++
++async def _press(pilot, *keys):
++    for k in keys:
++        await pilot.press(k)
++        await pilot.pause()
++
++
++def _plain(widget) -> str:
++    c = widget.render()
++    return c.plain if hasattr(c, "plain") else str(c)
++
++
++def _hint(app) -> str:
++    return _plain(app.screen.query_one("#present-hint"))
++
++
++def _style_at(widget, needle: str) -> str:
++    """The style the widget's Text gives the first cell of `needle`."""
++    t = widget.content
++    at = t.plain.index(needle)
++    return next((str(s.style) for s in t.spans if s.start <= at < s.end), "")
++
++
++def _frame(app) -> str:
++    return _plain(app.screen.query_one("#present-frame"))
++
++
++async def _present(pilot, app, *keys):
++    if isinstance(app.screen, BoardsHome):
++        await _press(pilot, "escape")
++    await _press(pilot, "R", *keys)
++    assert isinstance(app.screen, PresentScreen)
++
++
++def _exports(home, suffix=".svg"):
++    return sorted((home / "boards" / "client-a" / "reports").glob(f"present-*{suffix}"))
++
++
++# --------------------------------------------------------------------------- #
++# HLR-2402 — the chip on the hint row
++# --------------------------------------------------------------------------- #
++async def test_TC_2402_the_hint_opens_with_the_chip(home):
++    """TC-2402: ` Client A ` bold on sky, then a space, then the hint fitted to what is
++    left; a 30-character name cut to 24 cells; no label, no chip."""
++    app = _round(home)
++    async with app.run_test(size=(118, 30)) as pilot:
++        await pilot.pause()
++        await _present(pilot, app)
++        scr = app.screen
++        hint = scr._hint(118)
++        assert hint.plain.startswith(" Client A  1 gantt"), hint.plain
++        assert hint.cell_len <= 116
++        span = next(s for s in hint.spans if "Client" in hint.plain[s.start:s.end])
++        assert "bold" in str(span.style) and f"on {views.HEX['sky']}" in str(span.style)
++        app.board.label = ("x" * 30, "sky")
++        assert scr._hint(118).plain.startswith(" " + "x" * 23 + "…  1 gantt")
++        app.board.label = None
++        assert scr._hint(118).plain.startswith("1 gantt")
++        assert "x" * 5 not in scr._frame_text().plain
++
++
++async def test_AT_2402_the_presenter_reads_the_board_the_slide_never_does(home, png):
++    """AT-2402 (US-2402): `R` on Client A — the hint row starts with the chip; the
++    frame and both exports (views 1 and 3) never hold the board's name; one board,
++    no chip."""
++    app = _round(home)
++    async with app.run_test(size=(118, 30), notifications=True) as pilot:
++        await pilot.pause()
++        await _present(pilot, app)
++        assert _hint(app).startswith(" Client A  1 gantt"), _hint(app)
++        assert "Client A" not in _frame(app)
++        await _press(pilot, "x")
++        await _press(pilot, "3", "x")
++    svgs = _exports(home)
++    assert len(svgs) == 2, svgs
++    for svg in svgs:
++        assert not any("Client A" in r for r in svg_rows(svg.read_text(encoding="utf-8")))
++    one = TaskboardApp(board_path=home / "one" / "board.json")
++    async with one.run_test(size=(118, 30)) as pilot:
++        await pilot.pause()
++        await _present(pilot, one)
++        assert _hint(one).startswith("1 gantt"), _hint(one)
++
++
++# --------------------------------------------------------------------------- #
++# HLR-2403 — `?` and the seat
++# --------------------------------------------------------------------------- #
++def _pairs(bindings) -> set:
++    out = set()
++    for b in bindings:
++        for k in b.key.split(","):
++            out.add((k.strip(), b.action))
++    return out
++
++
++#: the presentation's (key, action) pairs before the seat (batch 2026-10-19-batch-01, at
++#: `fab1206`), literal: the seat must keep every one (code review CR-6)
++OLD_PAIRS = {("escape", "close"), ("q", "close"), ("left", "side(-1)"), ("h", "side(-1)"),
++             ("right", "side(1)"), ("l", "side(1)"), ("up", "move(-1)"), ("k", "move(-1)"),
++             ("down", "move(1)"), ("j", "move(1)"), ("shift+up", "reorder(-1)"),
++             ("shift+down", "reorder(1)"), ("enter", "fold"), ("x", "export"), ("space", "hide"),
++             ("a", "show_all"), ("u", "hidden_picker"), ("1", "view(0)"), ("2", "view(1)"),
++             ("3", "view(2)"), ("tab", "cycle(1)"), ("shift+tab", "cycle(-1)"),
++             ("pagedown", "scroll(1)"), ("pageup", "scroll(-1)")}
++
++
++@pytest.mark.parametrize("label", [("Client A", "sky"), ("y" * 30, "sky")])
++def test_TC_2402_the_chip_never_costs_the_keys(tmp_path, label):
++    """TC-2402 (code review CR-1, CR-2): with a chip, from 36 columns up the hint ends
++    `? keys`, never wider than its row; view 3 from 100 columns takes the rail's
++    wording (`←→ rail`) whatever the chip."""
++    from test_present_all import _screen_all
++    scr = _screen_all(tmp_path, 1)
++    scr._board.label = label
++    for w in range(36, 140):
++        got = scr._hint(w)
++        assert got.plain.endswith("  ? keys"), (w, got.plain)
++        assert got.cell_len <= w - 2, (w, got.plain)
++        if w >= 100 and "←→" in got.plain:
++            assert "↑↓ ←→" in got.plain or "←→ rail" in got.plain, (w, got.plain)
++
++
++def test_TC_2403_the_bindings_are_the_seat():
++    """TC-2403: the presentation binds exactly the seat's (key, action) pairs, every
++    one priority — nothing bound outside the seat, nothing in the seat unbound."""
++    seat = set()
++    for row in keymap.PRESENT_KEYS:
++        for keys, action in row.binds:
++            seat |= {(k.strip(), action) for k in keys.split(",")}
++    assert _pairs(PresentScreen.BINDINGS) == seat
++    assert OLD_PAIRS <= seat, OLD_PAIRS - seat
++    assert all(b.priority for b in PresentScreen.BINDINGS)
++    assert {("K", "reorder(-1)"), ("J", "reorder(1)"), ("question_mark", "keys")} <= seat
++
++
++@pytest.mark.parametrize("view, live, dim", [("all", "⇧↑↓ K J", "pgdn pgup"),
++                                             ("split", "pgdn pgup", "⇧↑↓ K J")])
++def test_TC_2403_the_window_is_the_seat_live_by_view(view, live, dim):
++    """TC-2403: every seat row's keys appear once; a row of the current view (or of
++    every view) in the key style, another view's dimmed with its view named."""
++    text = modals.PresentKeys(view).lines()
++    for row in keymap.PRESENT_KEYS:
++        assert text.plain.count(f"  {row.show:<10}{row.label}") == 1, row.show
++    for keys, want in ((live, keymap.KEY_STYLE), (dim, views.HEX["dim"])):
++        at = text.plain.index(f"  {keys}")
++        style = next(str(s.style) for s in text.spans if s.start <= at + 2 < s.end)
++        assert style == want, (keys, style)
++    other = "split" if view == "all" else "all"
++    assert f"({other})" in text.plain
++
++
++async def test_AT_2403_question_mark_shows_every_key(home, png):
++    """AT-2403 (US-2402): `?` in view 3 opens the keys window (view all), `?` closes it
++    on the same frame; in view 1 the reorder row is another view's; `esc` closes; the
++    window never reaches an export; at 118 and 80 every view's hint ends `? keys`."""
++    app = _round(home)
++    async with app.run_test(size=(118, 30)) as pilot:
++        await pilot.pause()
++        await _present(pilot, app, "3")
++        before = _frame(app)
++        await _press(pilot, "x")
++        first = _exports(home)[0].read_bytes()
++        await _press(pilot, "question_mark")
++        assert isinstance(app.screen, modals.PresentKeys)
++        text = _plain(app.screen.query_one("#pk-text"))
++        for want in ("PRESENTATION KEYS · view all", "VIEWS", "MOVE", "CURATE", "OUT",
++                     "⇧↑↓ K J   move a project up / down", "scroll the notes  (split)"):
++            assert want in text, want
++        pk = app.screen.query_one("#pk-text")
++        assert _style_at(pk, "⇧↑↓ K J") == keymap.KEY_STYLE           # this view's: bright
++        assert _style_at(pk, "pgdn pgup") == views.HEX["dim"]          # another view's: dim
++        await _press(pilot, "question_mark")
++        assert isinstance(app.screen, PresentScreen) and _frame(app) == before
++        await _press(pilot, "x")
++        assert _exports(home)[0].read_bytes() == first
++        await _press(pilot, "1", "question_mark")
++        text = _plain(app.screen.query_one("#pk-text"))
++        assert "view gantt" in text and "move a project up / down  (all)" in text
++        assert _style_at(app.screen.query_one("#pk-text"), "⇧↑↓ K J") == views.HEX["dim"]
++        await _press(pilot, "escape")
++        assert isinstance(app.screen, PresentScreen)
++        for v in ("1", "2", "3"):
++            await _press(pilot, v)
++            assert _hint(app).rstrip().endswith("? keys"), _hint(app)
++    app = _round(home / "small")
++    async with app.run_test(size=(80, 24)) as pilot:
++        await pilot.pause()
++        await _present(pilot, app)
++        for v in ("1", "2", "3"):
++            await _press(pilot, v)
++            assert _hint(app).rstrip().endswith("? keys"), _hint(app)
++
++
++# --------------------------------------------------------------------------- #
++# HLR-2404 — the clean export
++# --------------------------------------------------------------------------- #
++def test_TC_2404_the_export_has_no_cursor_and_ends_at_its_content(tmp_path):
++    """TC-2404: Client A at 118×29 → 93 × 21, no `⟦`, no `project span`, the last row
++    not blank; a folded project exports folded; a timeline that fills the frame keeps
++    every row; an overflowing board anchored on its last project folds as the screen
++    does with the cursor there."""
++    fx.build(tmp_path, last="client-a")
++    board = peek_board(fx.board_path(tmp_path, "client-a"))
++    text, w, rows = views.present_all_export(board, fx.TODAY, 118, 29)
++    assert (w, rows) == (93, 21)
++    lines = text.plain.split("\n")
++    assert len(lines) == 21 and lines[-1].strip()
++    assert "⟦" not in text.plain and "project span" not in text.plain
++    first = present_order(board)[0]
++    folded, _w, frows = views.present_all_export(board, fx.TODAY, 118, 29, {first.id})
++    assert frows < rows
++    shown = [t.title for t in board.tasks if t.project_id == first.id and not board.is_done(t)]
++    assert shown and not any(t in folded.plain for t in shown)
++    mb.build(tmp_path / "mb", "main")
++    big = peek_board(tmp_path / "mb" / "board.json")
++    _t, _w, brows = views.present_all_export(big, mb.TODAY, 118, 29)
++    assert brows == 29
++    last = present_order(big)[-1].id
++    shot, _w, _r = views.present_all_export(big, mb.TODAY, 118, 12, frozenset(), last)
++    screen, _s, _c = views._all_timeline(big, 93, 12, mb.TODAY, ("proj", last), frozenset(),
++                                          False)
++    titles = [t.title for t in big.tasks]
++    plain_screen = views.to_text(screen, len(screen), 93).plain
++    assert ([t for t in titles if t in shot.plain]
++            == [t for t in titles if t in plain_screen])
++
++
++@pytest.mark.parametrize("size, width", [((118, 30), 93), ((80, 24), 80)])
++async def test_AT_2404_the_export_reads_as_a_slide(home, png, size, width):
++    """AT-2404 (US-2403): `R`, `3`, `x` on Client A writes 21 rows of text, neither
++    `⟦` nor `project span`, every shown project's name; the rasteriser is asked for
++    those cells; the screen keeps its cursor."""
++    app = _round(home)
++    async with app.run_test(size=size, notifications=True) as pilot:
++        await pilot.pause()
++        await _present(pilot, app, "3", "x")
++        assert "⟦" in _frame(app)
++    svg = home / "boards" / "client-a" / "reports" / "present-board-2026-10-20-all.svg"
++    rows = svg_rows(svg.read_text(encoding="utf-8"))
++    assert len(rows) == 21, len(rows)
++    joined = "\n".join(rows)
++    assert "⟦" not in joined and "project span" not in joined
++    for name in ("Ingest & index", "Eval harness", "Pilot rollout"):
++        assert name in joined, name
++    assert png == [(width, 21)]
++
++
++# --------------------------------------------------------------------------- #
++# HLR-2405 — K / J
++# --------------------------------------------------------------------------- #
++@pytest.mark.parametrize("label", [None, ("Client A", "sky")])
++async def test_TC_2405_the_hint_names_K_J(home, label):
++    """TC-2405: view 3's hint names `K J` at every wording — `⇧↑↓/K J reorder` at 160,
++    `K J order` at 118, `K J` at 80 — with and without the chip."""
++    app = _round(home)
++    async with app.run_test(size=(160, 45)) as pilot:
++        await pilot.pause()
++        await _present(pilot, app, "3")
++        app.board.label = label
++        scr = app.screen
++        want = {160: "⇧↑↓/K J reorder", 118: "K J order", 80: "K J"} if label is None else \
++            {160: "K J", 118: "K J", 80: "K J"}
++        for w, text in want.items():
++            assert text in scr._hint(w).plain, (w, scr._hint(w).plain)
++
++
++def _rail(app) -> list[str]:
++    """The rail's project names, top to bottom (view 3 from 100 columns)."""
++    names = []
++    for row in _frame(app).split("\n")[3:]:
++        m = re.match(r"^.\s*\d+ [●○] (.+?)\s*│", row)
++        if m:
++            names.append(m.group(1).strip())
++    return names
++
++
++async def test_AT_2405_K_and_J_reorder(home):
++    """AT-2405 (US-2402): `down`, `K` puts `Eval harness` first on the rail and in the
++    file; `J` puts it back second; the hint names `K J` at 118 and at 80."""
++    app = _round(home)
++    async with app.run_test(size=(118, 30)) as pilot:
++        await pilot.pause()
++        await _present(pilot, app, "3")
++        assert "K J" in _hint(app)
++        start = _rail(app)
++        await _press(pilot, "down", "K")
++        rail = _rail(app)
++        assert rail[0] == "Eval harness", rail
++        disk = present_order(peek_board(fx.board_path(home, "client-a")))
++        assert disk[0].name == "Eval harness"
++        await _press(pilot, "J")
++        assert _rail(app)[:2] == start[:2]
++    small = _round(home / "small")
++    async with small.run_test(size=(80, 24)) as pilot:
++        await pilot.pause()
++        await _present(pilot, small, "3")
++        assert "K J" in _hint(small)
+diff --git a/tests/test_present_hide.py b/tests/test_present_hide.py
+index 24a5c6a..a36fa88 100644
+--- a/tests/test_present_hide.py
++++ b/tests/test_present_hide.py
+@@ -229,8 +229,10 @@ async def test_TC_1604_space_moves_the_cursor_and_the_ends_hold(tmp_path, monkey
+ @pytest.mark.parametrize("size, hint, hint_hidden", [
+     ((118, 31), "1 gantt  2 split  3 all  ⇥ next · ←→ ↑↓ move · ␣ hide · a show all · x export · esc leave",
+      "1 gantt  2 split  3 all  ⇥ next · ←→ ↑↓ move · ␣ hide · a show all · x export · esc leave"),
+-    ((80, 25), "1 gantt  2 split  3 all  ⇥ next · ←→ ↑↓ · ␣ hide · a show all · x export · esc",
+-     "1 gantt 2 split 3 all ⇥ · ←→ · ␣ hide · a all · x export · esc"),
++    # batch 2026-10-20-batch-03 (law-driven, D-14): `? keys` ends every wording, 8 cells
++    # off the room, so 80 columns take the short wording, and with a count the compact one
++    ((80, 25), "1 gantt 2 split 3 all ⇥ · ←→ · ␣ hide · a all · x export · esc",
++     "1 gantt 2 split 3 all ⇥ ←→ ␣ x esc"),
+ ])
+ async def test_TC_1604_the_hint_row_carries_the_keys_and_the_count(
+         tmp_path, monkeypatch, frozen, size, hint, hint_hidden):
+@@ -246,12 +248,12 @@ async def test_TC_1604_the_hint_row_carries_the_keys_and_the_count(
+     s = _Presenting(tmp_path, monkeypatch, size)
+     async with s.app.run_test(size=s.size) as pilot:
+         await s.open(pilot)
+-        assert s.hint().strip() == hint
++        assert s.hint().strip() == hint + "  ? keys"
+         await pilot.press("space")
+         await pilot.pause()
+         await pilot.press("space")
+         await pilot.pause()
+-        assert s.hint().strip() == hint_hidden + " · u 2 hidden"
++        assert s.hint().strip() == hint_hidden + " · u 2 hidden  ? keys"
+ 
+ 
+ # --------------------------------------------------------------------------- #
+@@ -360,7 +362,7 @@ async def test_AT_1602_space_hides_and_it_is_remembered_a_shows_all(tmp_path, fr
+         await pilot.press("space")
+         await pilot.pause()
+         assert TITLE not in _plain(scr.query_one("#present-frame"))
+-        assert _plain(scr.query_one("#present-hint")).rstrip().endswith("· u 1 hidden")
++        assert _plain(scr.query_one("#present-hint")).rstrip().endswith("· u 1 hidden  ? keys")
+         after = _tasks(path)
+         assert after["tw3"].pop("show_in_present") is False
+         assert after == original
+diff --git a/tests/test_present_narrow.py b/tests/test_present_narrow.py
+index 3a6c5de..0e495c9 100644
+--- a/tests/test_present_narrow.py
++++ b/tests/test_present_narrow.py
+@@ -126,6 +126,9 @@ def _screen(tmp_path):
+     return PresentScreen(b, pb.PROJECT_ID, "Website", pb.CURSOR), mine
+ 
+ 
++HELP = "  ? keys"     # every wording from 36 columns ends with it (batch 2026-10-20-batch-03)
++
++
+ def _expected(view: str, hidden: int, w: int) -> str:
+     tail = f" · u {hidden} hidden" if hidden else ""
+     room = w - 2
+@@ -134,10 +137,14 @@ def _expected(view: str, hidden: int, w: int) -> str:
+     if w < 36:
+         s = "esc leave" + (f" · {hidden} hidden" if hidden else "")
+         return s if len(s) <= room else s[:room - 1] + "…"
++    # batch 2026-10-20-batch-03 (law-driven): `? keys` takes its 8 cells off the room,
++    # so each wording's first width moves 8 up; none fits → the last (`esc`), cut
+     table = THRESHOLDS[(view, hidden)]
+-    tier = max((t for t, first in table.items() if first <= w), key=lambda t: table[t])
++    fits = [t for t, first in table.items() if first + len(HELP) <= w]
++    tier = max(fits, key=lambda t: table[t]) if fits else "esc"
+     s = WORDINGS[view][tier] + tail
+-    return s if len(s) <= room else s[:room - 1] + "…"    # none fits: the last, cut
++    cut = room - len(HELP)
++    return (s if len(s) <= cut else s[:cut - 1] + "…") + HELP
+ 
+ 
+ def test_TC_1904_the_hint_takes_the_first_wording_that_fits(tmp_path):
+@@ -178,15 +185,18 @@ def test_TC_1904_the_current_view_is_bold_and_bright(tmp_path):
+                 assert want in styles, (vi, w, name, styles)
+ 
+ 
+-def test_TC_1904_an_overflowing_count_is_cut_visibly(tmp_path, monkeypatch):
++def test_TC_1904_an_overflowing_count_is_cut_visibly_before_the_keys(tmp_path, monkeypatch):
+     """TC-1904 (PC-2): no wording can fit a six-digit hidden count at 36
+     columns — the last is cut to the row with `…`, never painted wider."""
+     from taskboard import app as app_module
+     scr, _ = _screen(tmp_path)
+     monkeypatch.setattr(app_module, "present_hidden", lambda board, pid: list(range(123456)))
+     got = scr._hint(36).plain
+-    assert views.vis(got) == 34 and got.endswith("…"), got
+-    assert got.startswith("1 gantt 2 split 3 all esc · u 12"), got
++    assert views.vis(got) == 34 and got.endswith("…  ? keys"), got
++    assert got.startswith("1 gantt 2 split 3 all esc"), got
++    got = scr._hint(48).plain           # wider: the count shows, cut, before `? keys`
++    assert views.vis(got) == 46 and got.startswith("1 gantt 2 split 3 all esc · u 12"), got
++    assert got.endswith("…  ? keys"), got
+ 
+ 
+ # --------------------------------------------------------------------------- #
+@@ -243,7 +253,7 @@ async def test_AT_1903_narrowed_the_presentation_says_how_wide_and_waits(tmp_pat
+ 
+ async def test_AT_1904_the_hint_shortens_and_cuts_visibly(tmp_path, monkeypatch, frozen):
+     """AT-1904 (US-1902, HLR-1904): three tasks hidden; at 50 columns the
+-    compact wording in both views, at 40 the view switch and `esc`, below 36
++    `esc` wording and `? keys` (batch 2026-10-20-batch-03), at 40 the count cut before `? keys`, below 36
+     only the way out and the count, cut with `…` at 15 — never wider than the
+     row, the current view bold."""
+     s = _Presenting(tmp_path, monkeypatch, (118, 31))
+@@ -260,12 +270,13 @@ async def test_AT_1904_the_hint_shortens_and_cuts_visibly(tmp_path, monkeypatch,
+             assert views.vis(text) <= w - 2, (w, text)
+             return text
+ 
+-        assert await at(50, 20) == "1 gantt 2 split 3 all ⇥ ←→ ␣ x esc · u 3 hidden"
++        # batch 2026-10-20-batch-03: `? keys` ends every wording, so 50 columns take `esc`
++        assert await at(50, 20) == "1 gantt 2 split 3 all esc · u 3 hidden  ? keys"
+         styles = [str(sp.style) for sp in hint().spans if sp.start == 0]
+         assert "bold #e6edf7" in styles, styles
+         await s.press(pilot, "2")
+-        assert s.hint() == "1 gantt 2 split 3 all esc · u 3 hidden"   # compact needs 54
+-        assert await at(40, 20) == "1 gantt 2 split 3 all esc · u 3 hidden"
++        assert s.hint() == "1 gantt 2 split 3 all esc · u 3 hidden  ? keys"   # compact needs 62
++        assert await at(40, 20) == "1 gantt 2 split 3 all esc · u…  ? keys"
+         at_split = [str(sp.style) for sp in hint().spans if sp.start == len("1 gantt ")]
+         assert "bold #e6edf7" in at_split, at_split
+         assert await at(30, 12) == "esc leave · 3 hidden"
+diff --git a/tests/test_present_polish.py b/tests/test_present_polish.py
+index b1875ff..0fc77d8 100644
+--- a/tests/test_present_polish.py
++++ b/tests/test_present_polish.py
+@@ -184,6 +184,10 @@ LONG = "⇥ next · ←→ ↑↓ move · ␣ hide · a show all · x export ·
+ MIDDLE_FIRST = {("gantt", 0): (80, 91), ("gantt", 1): (93, 104), ("gantt", 3): (93, 104),
+                 ("gantt", 10): (94, 105), ("split", 0): (87, 104), ("split", 1): (100, 117),
+                 ("split", 3): (100, 117), ("split", 10): (101, 118)}
++# batch 2026-10-20-batch-03 (law-driven, D-14): every wording ends with `  ? keys`,
++# so each first width moves 8 columns up
++HELP = "  ? keys"
++MIDDLE_FIRST = {k: (a + len(HELP), b + len(HELP)) for k, (a, b) in MIDDLE_FIRST.items()}
+ 
+ 
+ @pytest.mark.parametrize("view, hidden", sorted(MIDDLE_FIRST))
+@@ -200,9 +204,9 @@ def test_TC_2002_the_middle_wording_sits_between_the_long_and_the_short(tmp_path
+     pg = view == "split"
+     tail = f" · u {hidden} hidden" if hidden else ""
+     first, long_first = MIDDLE_FIRST[(view, hidden)]
+-    middle = "1 gantt  2 split  3 all  " + ("pgdn · " if pg else "") + MIDDLE + tail
+-    short = "1 gantt 2 split 3 all " + ("pgdn · " if pg else "") + SHORT + tail
+-    long_ = "1 gantt  2 split  3 all  " + ("pgdn notes · " if pg else "") + LONG + tail
++    middle = "1 gantt  2 split  3 all  " + ("pgdn · " if pg else "") + MIDDLE + tail + HELP
++    short = "1 gantt 2 split 3 all " + ("pgdn · " if pg else "") + SHORT + tail + HELP
++    long_ = "1 gantt  2 split  3 all  " + ("pgdn notes · " if pg else "") + LONG + tail + HELP
+     assert scr._hint(first).plain == middle
+     assert scr._hint(long_first - 1).plain == middle
+     assert scr._hint(first - 1).plain == short
+@@ -220,22 +224,28 @@ async def test_AT_2002_the_80_column_hint_names_next_and_show_all(tmp_path, monk
+     not guess — the current view bold; at 118x31 the long one. Since batch
+     2026-10-19-batch-01 (three view names, LED-2026-10-19-batch-01.2 supersedes
+     HLR-2002 for the split view): `2` takes the short wording at 80 columns, and
+-    `space` (one hidden, `u 1 hidden`) the compact one."""
++    `space` (one hidden, `u 1 hidden`) the compact one. Since batch 2026-10-20-batch-03
++    (D-14, LED-2026-10-20-batch-03.5 supersedes HLR-2002's 80-column clause): every
++    wording ends with `? keys`, so 80 columns take the short wording, and `?` lists
++    `next` and `show all` in words."""
+     s = _Presenting(tmp_path, monkeypatch, (80, 25))
+     async with s.app.run_test(size=s.size) as pilot:
+         await s.open(pilot)
+-        assert s.hint() == "1 gantt  2 split  3 all  " + MIDDLE
+-        assert "next" in s.hint() and "show all" in s.hint()
++        assert s.hint() == "1 gantt 2 split 3 all " + SHORT + HELP
+         hint = s.app.screen.query_one("#present-hint").content
+         assert "bold #e6edf7" in _styles_at(hint, hint.plain.index("1 gantt"))
++        await s.press(pilot, "question_mark")
++        keys = s.app.screen.query_one("#pk-text").render().plain
++        assert "next / previous view" in keys and "show everything hidden" in keys
++        await s.press(pilot, "escape")
+         await s.press(pilot, "2")
+-        assert s.hint() == "1 gantt 2 split 3 all pgdn · " + SHORT
++        assert s.hint() == "1 gantt 2 split 3 all pgdn · " + SHORT + HELP
+         await s.press(pilot, "space")
+-        assert s.hint() == "1 gantt 2 split 3 all pgdn ⇥ ←→ ␣ x esc · u 1 hidden"
++        assert s.hint() == "1 gantt 2 split 3 all pgdn ⇥ ←→ ␣ x esc · u 1 hidden" + HELP
+     s = _Presenting(tmp_path, monkeypatch, (118, 31))
+     async with s.app.run_test(size=s.size) as pilot:
+         await s.open(pilot)
+-        assert s.hint() == "1 gantt  2 split  3 all  " + LONG
++        assert s.hint() == "1 gantt  2 split  3 all  " + LONG + HELP
+ 
+ 
+ # --------------------------------------------------------------------------- #
+diff --git a/tests/test_present_views_app.py b/tests/test_present_views_app.py
+index ad72745..8e63d31 100644
+--- a/tests/test_present_views_app.py
++++ b/tests/test_present_views_app.py
+@@ -268,19 +268,23 @@ SHORT = "⇥ · ←→ · ␣ hide · a all · x export · esc"
+ MIDDLE = "⇥ next · ←→ ↑↓ · ␣ hide · a show all · x export · esc"   # 2026-10-18-batch-03
+ 
+ 
++H = "  ? keys"       # batch 2026-10-20-batch-03 (law-driven, D-14): every wording ends with it,
++N2, N1 = "1 gantt  2 split  3 all  ", "1 gantt 2 split 3 all "   # so each first width is +8
++
++
+ @pytest.mark.parametrize("size, gantt, split, split_hidden", [
+     # three view names and the `u` tail since batch 2026-10-19-batch-01 (the first
+-    # widths of `.dev-flow/2026-10-19-batch-01/evidence/hint-widths.txt`)
+-    ((118, 31), "1 gantt  2 split  3 all  " + LONG, "1 gantt  2 split  3 all  " + "pgdn notes · " + LONG,
+-     "1 gantt  2 split  3 all  " + "pgdn notes · " + LONG + " · u 1 hidden"),
+-    ((100, 31), "1 gantt  2 split  3 all  " + LONG, "1 gantt  2 split  3 all  " + "pgdn · " + MIDDLE,
+-     "1 gantt  2 split  3 all  " + "pgdn · " + MIDDLE + " · u 1 hidden"),
+-    ((99, 31), "1 gantt  2 split  3 all  " + LONG, "1 gantt  2 split  3 all  " + "pgdn · " + MIDDLE,
+-     "1 gantt 2 split 3 all " + "pgdn · " + SHORT + " · u 1 hidden"),
+-    ((96, 31), "1 gantt  2 split  3 all  " + LONG, "1 gantt  2 split  3 all  " + "pgdn · " + MIDDLE,
+-     "1 gantt 2 split 3 all " + "pgdn · " + SHORT + " · u 1 hidden"),
+-    ((80, 25), "1 gantt  2 split  3 all  " + MIDDLE, "1 gantt 2 split 3 all " + "pgdn · " + SHORT,
+-     "1 gantt 2 split 3 all " + "pgdn ⇥ ←→ ␣ x esc · u 1 hidden"),
++    # widths of `.dev-flow/2026-10-19-batch-01/evidence/hint-widths.txt`), + 8 since `? keys`
++    ((118, 31), N2 + LONG + H, N2 + "pgdn notes · " + LONG + H,
++     N2 + "pgdn · " + MIDDLE + " · u 1 hidden" + H),
++    ((100, 31), N2 + LONG + H, N2 + "pgdn · " + MIDDLE + H,
++     N1 + "pgdn · " + SHORT + " · u 1 hidden" + H),
++    ((99, 31), N2 + LONG + H, N2 + "pgdn · " + MIDDLE + H,
++     N1 + "pgdn · " + SHORT + " · u 1 hidden" + H),
++    ((96, 31), N2 + MIDDLE + H, N2 + "pgdn · " + MIDDLE + H,
++     N1 + "pgdn · " + SHORT + " · u 1 hidden" + H),
++    ((80, 25), N1 + SHORT + H, N1 + "pgdn · " + SHORT + H,
++     N1 + "pgdn ⇥ ←→ ␣ x esc · u 1 hidden" + H),
+ ], ids=["118", "100", "99", "96", "80"])
+ async def test_TC_1808_the_hint_row_per_view(tmp_path, monkeypatch, frozen, size, gantt, split,
+                                              split_hidden):

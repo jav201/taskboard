@@ -679,6 +679,18 @@ def board_chip(label: tuple[str, str] | None) -> str:
     return f"[b #0d1117 on {board_hex(colour)}] {escape(fit(name, 24).rstrip())} [/] "
 
 
+def board_chip_text(label: tuple[str, str] | None) -> Text:
+    """`board_chip` as a `Text` — no markup parser reads a board's name (batch
+    2026-10-20-batch-03): ` <name cut to 24> ` bold in board-background ink on the
+    board's colour, then a space; empty without a label."""
+    if not label:
+        return Text()
+    name, colour = label
+    out = Text(f" {fit(name, 24).rstrip()} ", style=f"bold #0d1117 on {board_hex(colour)}")
+    out.append(" ")
+    return out
+
+
 def board_hex(colour) -> str:
     """A board's colour as a hex: a project colour's, else violet's — one rule for
     the chip, the home's card and its strip (code review F5)."""
@@ -6815,7 +6827,9 @@ def _all_fit(lines: list[str], height: int, width: int) -> list[str]:
 
 
 def _all_timeline(board: Board, width: int, height: int, today: date, cur, folded,
-                  rail_focus: bool):
+                  rail_focus: bool, anchor: str | None = None):
+    """`anchor` lays the rows out around that project instead of the cursor's (the
+    export draws no cursor but folds as the screen does — batch 2026-10-20-batch-03)."""
     plan = _all_plan(board)
     wide = width >= 100
     label_w, chip_w, field_w = _present_cols(width, wide)
@@ -6823,8 +6837,8 @@ def _all_timeline(board: Board, width: int, height: int, today: date, cur, folde
     g = _PresentGeo(width, label_w, chip_w, field_w, ax, set(critical_chain(board)), today,
                     wide, "dim")
     _, _, cur_proj = _all_resolve(board, cur)
-    open_, gap, stops, rows = _all_layout(plan, cur_proj.id if cur_proj else None, folded,
-                                          height - 3)
+    around = anchor if anchor is not None else (cur_proj.id if cur_proj else None)
+    open_, gap, stops, rows = _all_layout(plan, around, folded, height - 3)
     if rows and max(rows.values()) >= height:   # the overflow row takes the last row:
         stops = [s for s in stops if rows[s] < height - 1]   # what it covers is no stop
     if cur not in stops:
@@ -6899,6 +6913,21 @@ def render_present_all(board: Board, cursor, today: date, width: int, height: in
     joined = [rail[y] + c("│", "frame") + lines[y] for y in range(height)]
     return PresentAll(_present_finish(joined, height, width), _present_finish(lines, height, tw),
                       tw, stops, [("proj", p.id) for p in present_order(board)], drawn)
+
+
+def present_all_export(board: Board, today: date, width: int, height: int, folded=frozenset(),
+                       anchor: str | None = None) -> tuple[Text, int, int]:
+    """What `x` writes in view 3 (batch 2026-10-20-batch-03, the round's item 4
+    "limpia"): the timeline at the width the screen draws it (without the rail), laid
+    out around `anchor` — the cursor's project, so its folds are the screen's — but
+    drawn with NO cursor, and cut after its last row that holds anything but blanks
+    (a row with content is never cut). Returns (text, width, rows)."""
+    tw = width - PRESENT_RAIL_W - 1 if width >= PRESENT_RAIL_MIN else width
+    # `cur=None` with `rail_focus=True` is `_all_timeline`'s "no cursor drawn"
+    lines, _stops, _cur = _all_timeline(board, tw, height, today, None, folded, True, anchor)
+    while lines and not _strip(lines[-1]).strip():
+        lines.pop()
+    return to_text(lines, len(lines), tw), tw, len(lines)
 
 
 def present_hidden_rows(board: Board, project_id: str | None,
