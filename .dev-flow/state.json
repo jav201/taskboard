@@ -196,8 +196,8 @@
     }
   ],
   "guided": false,
-  "current_station": "P0",
-  "phase_status": "not-started",
+  "current_station": "P3",
+  "phase_status": "in-progress",
   "stations_active": [
     "P0",
     "ARQ",
@@ -268,7 +268,33 @@
   },
   "base_ref": "eac7d4227b919c995fec153f68aac6f0dfad3c96",
   "artifacts": {},
-  "decisions_log": [],
+  "decisions_log": [
+    {
+      "station": "P0",
+      "date": "2026-10-21",
+      "decision": "standing authorization — the orchestrator's commission of 2026-10-21 (PLAN.md header). P0 closed: rollover to base_ref eac7d42, triggers A1 A2 A3 B1 B4 C3 C6 C8 D1 E1 fired (ARQ, PDR, DDR taken up), premises P-1..P-8 TRUE, five stories READY; ARQ is next."
+    },
+    {
+      "station": "ARQ",
+      "date": "2026-10-21",
+      "decision": "standing authorization — the orchestrator's commission of 2026-10-21 (PLAN.md header). ARQ approved with conditions by the spawned architect (A-1, A-2 folded into docs/ARCHITECTURE.md: people.py in models, people.json and its lock, Board.people, the people view, the changed signatures); P1 is next."
+    },
+    {
+      "station": "P1",
+      "date": "2026-10-21",
+      "decision": "standing authorization — the orchestrator's commission of 2026-10-21. P1 contract approved: HLR-2501..HLR-2507 with 14 LLRs and the IFC, premises P-1..P-8 TRUE, scan answered in §6.3 (LED .1); P2 is next."
+    },
+    {
+      "station": "P2",
+      "date": "2026-10-21",
+      "decision": "standing authorization — the orchestrator's commission of 2026-10-21. P2 approve: architect, qa-reviewer, ux-reviewer and security-reviewer each approve with conditions; the requirement-defect majors QA-1 and UX-1 and every minor folded the same day as LED .2 (02-review.md); PDR is next."
+    },
+    {
+      "station": "PDR",
+      "date": "2026-10-21",
+      "decision": "standing authorization — the orchestrator's commission of 2026-10-21. PDR approved with conditions PC-1..PC-4 (design/PDR-2026-10-21-batch-01.md): real captures incl. item 1's composed frame; S-1 re-check by security at increment 001; each split increment green on its own and touched suites; RED and mutation per increment. P3 is next."
+    }
+  ],
   "obsidian_synced": false,
   "created_at": "2026-10-21T10:57:12.832223"
 }

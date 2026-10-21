@@ -73,7 +73,7 @@ Port the round's chosen variants into the app — the directory (D1–D3, the ha
 
 ## Roadmap + increment plan
 
-- 001 — the directory (HLR-2501, HLR-2502, HLR-2507): `taskboard/people.py` (new), `taskboard/models.py`, `taskboard/app.py`; `tests/test_people_directory.py` (new), `tests/people_round_fixture.py` (new). 3 source files.
+- 001 — the directory (HLR-2501, HLR-2502, HLR-2507): `taskboard/people.py` (new), `taskboard/models.py`, `taskboard/app.py`, `taskboard/boards.py` (`keep_aside`, architect A-3); `tests/test_people_directory.py` (new), `tests/people_round_fixture.py` (new), `tests/test_boards_concurrency.py` (the patched name). 4 source files.
 - 002 — the look (HLR-2506): `taskboard/views.py`, `taskboard/modals.py`; `tests/test_people_look.py` (new). 2 source files.
 - 003 — the picker (HLR-2503): `taskboard/modals.py`, `taskboard/app.py`; `tests/test_people_picker.py` (new). 2 source files.
 - 004 — the people view (HLR-2504): `taskboard/views.py`, `taskboard/app.py`, `taskboard/keymap.py`, `taskboard/modals.py`; `tests/test_people_view.py` (new), `tests/test_modal_keys.py`, `tests/test_keymap.py`, `tests/test_readme.py`; `README.md` (docs). 4 source files.
