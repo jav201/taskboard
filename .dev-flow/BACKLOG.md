@@ -140,6 +140,7 @@ recorded full-suite run).
 - a plain board save (`Board.save`/`save_atomic` outside a move) takes no lock: two instances editing one board still last-write-win, and a move rewrites the source's `history.jsonl` outside any lock (security S-5) — the commission locked the registry and the move's target only.
 - a team pull unarchives a shared project outside the projects modal (`taskboard/team_sync.py:289-290`) and can leave its `present_rank` tied (board order breaks the tie) — increment 002's rule covers the modal's `x`.
 - the registry adopts a fresh entry into the in-memory one by id; a memory-only entry whose id another instance reuses for another file would follow that file (architect A-7, LOW; `register` now avoids memory's ids, code review F5).
+- AT-2204 checks that the presentation's head row names a project of the Personal board after `down`, `R`, not the project of the task `down` moved to (qa-reviewer at P4, G-1).
 - a lock wait blocks the screen for up to 2 s, and an unwritable folder is reported as "busy" (ux UX-6, security S-9, code review F3/F6 — accepted); the visual round's notes: a waiting indicator, a notice that another taskboard is running, feedback that an unarchive changed the presentation's order (ux-reviewer, P2).
 
 ## Open — after `2026-10-20-batch-01` (several boards: the operator's verdict on the multi-board round)
