@@ -184,8 +184,8 @@
     }
   ],
   "guided": false,
-  "current_station": "P4",
-  "phase_status": "in-progress",
+  "current_station": "P5",
+  "phase_status": "closed",
   "stations_active": [
     "P0",
     "ARQ",
@@ -311,6 +311,11 @@
       "station": "DDR",
       "date": "2026-10-20",
       "decision": "DDR sealed approved under the batch's standing authorization (DDR-2026-10-20-batch-02): architect and qa-reviewer approved with LOW conditions A-9, A-10, QA-11..QA-14, all folded before the seal (docs/ARCHITECTURE.md aligned; AT-2301 types, AT-2204 moves the cursor, M22 killed, _cursor_rows narrowed; mutation-ddr-001/003: 26 + 7 KILLED); PC-1..PC-4 discharged by re-reading; P4's gate run is next."
+    },
+    {
+      "station": "P4",
+      "date": "2026-10-20",
+      "decision": "P4 approved under the batch's standing authorization: the gate run by the orchestrator at 0206fcd in three sequential chunks, 1377 + 827 + 758 = 2962 passed, 0 failed, 0 skipped (suite-p4-chunk00..02.txt), equal to the 2962 collected; qa-reviewer's evaluation Result PASS-WITH-NOTES (G-1 to BACKLOG; G-2, G-3 accepted); the close is next."
     }
   ],
   "obsidian_synced": false,

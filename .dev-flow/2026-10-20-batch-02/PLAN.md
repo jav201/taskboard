@@ -21,7 +21,7 @@ orchestrator presents the full plan in-conversation at each phase gate.
 | Project | taskboard |
 | Batch | 2026-10-20-batch-02 |
 | Objective | Backlog fixes after the multi-board batch (non-visual): `~` in the boards registry resolved through `Path.home()`; a byte copy of the source `history.jsonl` before a move; registry writes as a read-modify-write under a short advisory lock and the move's target board locked while it is rewritten; an unarchived project placed after the last shown presentation rank; `ProjectPicker._move_target`'s unused parameter removed; test hardening (test_boards_forms, AT-2204, AT-2104, `u` in view 2, fewer private reads) |
-| Last updated | P4 · 2026-10-20 |
+| Last updated | P5 · 2026-10-20 |
 | Standing authorization | standing authorization — the orchestrator's commission of 2026-10-20 (the runtime cannot prompt), relaying the operator's words «Haz lo del backlog por favor.»; the orchestrator scoped this batch to the NON-VISUAL items of `.dev-flow/BACKLOG.md` lines 138–167 (visual items go to a separate prototype round). Quoted from the commission: «Gates close under this authorization; do NOT push, do NOT merge — stop at the batch close and report», «WORK IN A NEW WORKTREE … `-b fix/backlog-boards main`», «Max 4 SOURCE files per increment (tests uncapped)», «Do not add any warning/notification UI», «Keep it simple, stdlib only, Windows-safe; a stale lock must not block forever», «spawn independent reviewers as the flow requires … do not self-review», «run the full suite in 3 SEQUENTIAL chunks … never in parallel». Read as: every gate of this batch is autonomous (reviewer roles are spawned sub-agents carrying their `agents/<role>.md`); commits on the local branch `fix/backlog-boards` are authorized, each ending with the commission's co-author line; **push and merge are NOT authorized**; synthetic data only; the operator's name nowhere (`username_subject`); the main checkout's dirty and untracked files and the other worktrees are not touched; tests never touch the real home. |
 | First gate | step 1, on `fix/backlog-boards` at `b1b71e4` before the rollover: exit 0 — 0 block · 49 notice · 63 not applicable; `V7`: bundle identical to its manifest both directions, 57 declared files, `2026-10-12-rev102`. Step 3 (after the rollover): exit 0 — 0 block · 70 notice · 47 not applicable (`evidence/gate-step1.txt`, `evidence/gate-step3.txt`). |
 | Premises / RC-1 | RC-1 (a): `git fetch origin` → `origin/main` = `b1b71e4310ea7944edbbb6f16f350352e0a9491b` = local `main` = the worktree's `HEAD`; no rebase owed; `base_ref` stamped `b1b71e4310ea7944edbbb6f16f350352e0a9491b`. RC-1 (b): not already shipped — on `origin/main` `grep -n "lock" taskboard/boards.py` → nothing; `history.jsonl` is never passed to `_backup` (`taskboard/boards.py:485-486`); `_move_target` still takes `_boards` (`taskboard/modals.py:786`). RC-2: `git ls-remote --exit-code --heads origin` → exit 0; newest commit on `origin/main` 2026-10-20 17:57 −0600. Premises: `01-requirements.md` §2.7 (P-1..P-7, all TRUE, `evidence/premises.txt`). |
@@ -54,7 +54,7 @@ The trigger evaluation `state.json`'s `triggers.record` points at: one row per t
 
 ## Where we are
 
-P3 — P0, ARQ, P1 (one iterate-to-refine, LED .2), P2 (approve, iteration 2) and the PDR (approved with conditions PC-1..PC-4) are done; increment 001 (`boards.py`, the stopped-move notice, the busy start) is next, carrying PC-1..PC-3.
+P5 — closed. Increments 001–003, the DDR (approved) and P4 (PASS-WITH-NOTES: 2962 passed in three chunks) are done on the local branch `fix/backlog-boards`; the canon folded; push and merge are not authorized — the orchestrator's, on the operator's word.
 
 ## Objective
 
@@ -75,7 +75,8 @@ Close the non-visual backlog items left by 2026-10-20-batch-01 and 2026-10-19-ba
 | PDR | approved with conditions | `design/PDR-2026-10-20-batch-02.md`: PC-1..PC-4 open |
 | P3 | done | 001 `d7c3dea`, 002 `9cec898`, 003 `e1c936d`; code review OK to advance each; security APPROVE at 001 |
 | DDR | approved | `design/DDR-2026-10-20-batch-02.md`: A-9, A-10, QA-11..QA-14 folded before the seal |
-| P4 | in progress | the gate run in three chunks |
+| P4 | PASS-WITH-NOTES | the gate run by the orchestrator at `0206fcd`: 1377 + 827 + 758 = 2962 passed |
+| P5 | closed | `05-close.md`; the canon folded (14 ids); push and merge not authorized |
 
 ## Roadmap + increment plan
 
@@ -127,6 +128,10 @@ Close the non-visual backlog items left by 2026-10-20-batch-01 and 2026-10-19-ba
 
 **P0 (step 3, after the rollover):** 0 block · 70 notice — the step-3 placeholder NOTICEs over the unfilled seeds; `V30`; the historical NOTICEs above.
 
+**P3 … DDR gates:** 0 block, but for `V2`'s station-expected BLOCKs at increment 001's gate (AT-2304 and AT-2306 have no node until increments 002 and 003 — the runbook's P3 entry red), cleared by increment 003; `V53` while the contract named nodes not yet written; `V22` LLR-2306.2 owns no IFC node (it constrains the tests).
+
+**P4 and the close:** 0 block; `V50`, `V51`, `V54` on the seeded close record until it was written; `V57` (the unfilled `Gated tree` row, filled by close step 7; then `record predates this tree by 1 commit(s)` at the final gate) expected; the historical NOTICEs (`V9`, `V13`, `V22`, `V23`, `V42`, `V53`) over closed batches; `V30` the bundle run.
+
 **ARQ … PDR gates:** 0 block · 68 notice — `V62` between each `--station` move and this plan's rewrite (cleared by the rewrite); `V53` while the contract names test nodes not yet written (P3 writes them); `V22` LLR-2306.2 owns no IFC node (it constrains the tests, transforms no data — a question, not a gate); `V23` the seeded DDR record's placeholders (filled at the DDR); the increment-001 seed's placeholders (`V31`, `V32`, `V36`–`V38`, `V41`) until its packet is written; the historical NOTICEs.
 
 ## Test ledger
@@ -134,3 +139,9 @@ Close the non-visual backlog items left by 2026-10-20-batch-01 and 2026-10-19-ba
 | Suite / command | Last run | Result |
 |---|---|---|
 | `evidence/premises.py` on `base_ref` | 2026-10-20 | P-1..P-7 TRUE — `evidence/premises.txt` |
+| `tests/test_boards_concurrency.py` on `base_ref` (increment 001's RED) | 2026-10-20 | 20 failed, 1 passed — `evidence/red-001.txt` |
+| increment 001, targeted (9 files) | 2026-10-20 | 199 passed — `evidence/suite-001.txt` |
+| increment 002's RED on `d7c3dea`; targeted (7 files) | 2026-10-20 | 3 failed — `evidence/red-002.txt`; 310 passed — `evidence/suite-002.txt` |
+| increment 003's RED on `9cec898`; targeted (4 files) | 2026-10-20 | 1 failed — `evidence/red-003.txt`; 104 passed — `evidence/suite-003.txt` |
+| the batteries | 2026-10-20 | 25/25, 6/6, 7/7 KILLED; at the DDR 26/26, 7/7 — `evidence/mutation-00{1,2,3}.txt`, `evidence/mutation-ddr-00{1,3}.txt` |
+| the whole suite at P4 (three sequential chunks over `ls tests/test_*.py | sort`, a clean worktree at `0206fcd`, the orchestrator) | 2026-10-20 | 1377 + 827 + 758 = 2962 passed, 0 failed, 0 skipped — `evidence/suite-p4-chunk00..02.txt` |

@@ -1,0 +1,9 @@
+# Phase-4 gate run, chunk 01 of 3 — run and collected by the orchestrator, in the clean worktree <scratchpad>/wt-dev at 0206fcd (0 changed files), NO_COLOR unset; the suite's test files (ls tests/test_*.py | sort, 97 files) split into thirds, run as three sequential pytest processes (the host's memory) — this chunk's files: suite-p4-chunk01-files.txt
+# python -m pytest -q -p no:cacheprovider --color=no -rs <the chunk's files>
+........................................................................ [ 69%]
+........................................................................ [ 78%]
+........................................................................ [ 87%]
+........................................................................ [ 95%]
+...................................                                      [100%]
+827 passed in 337.77s (0:05:37)
+chunk01 exit 0

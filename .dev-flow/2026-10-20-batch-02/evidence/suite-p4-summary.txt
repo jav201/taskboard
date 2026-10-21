@@ -1,0 +1,8 @@
+# Phase-4 gate run summary (the orchestrator): three sequential chunks at 0206fcd, a clean worktree, NO_COLOR unset
+chunk00 exit 0
+1377 passed in 262.14s (0:04:22)
+chunk01 exit 0
+827 passed in 337.77s (0:05:37)
+chunk02 exit 0
+758 passed in 129.73s (0:02:09)
+total: 1377 + 827 + 758 = 2962 passed, 0 failed, 0 skipped — equal to the 2962 collected (collect-p4.txt); base 2936 + 26 new nodes
