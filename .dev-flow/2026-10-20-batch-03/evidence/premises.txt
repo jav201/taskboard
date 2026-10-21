@@ -1,0 +1,12 @@
+P-1 `A` in KEYMAP: False | in the home: False | in R: False
+P-2 label ('Main', 'fuchsia') | hint holds the board name: False | frame holds it: False
+P-3 `?` in view 3 changes the screen stack: False
+P-4 view-3 export: 29 rows x 93 cells | `⟦` in it: True | 'project span' in it: True | trailing blank rows: 0
+P-5 K/J bound in R: False | in KEYMAP: False | reorder keys in R: ['shift+down', 'shift+tab', 'shift+up']
+P-4b Client A view-3 export: 29 rows x 93 cells, 8 of them blank at the end | `⟦` in it: True
+P-6 message rows on screen: 1 for 128 chars in a 128-cell label | `y` answers: False | `enter` answers: False | buttons: ['yes', 'no']
+P-7 label ('Personal', 'green') | identity picker title names the board: False | MilestoneOffer.__init__ takes ['board', 'candidates', 'today']
+P-8 second window on one board: notices [] | files under the home besides the boards: []
+P-9 --board PATH registers: ['personal', 'client-retail-rag', 'course-docker', 'main'] -> ['personal', 'client-retail-rag', 'course-docker', 'main', 'board-copy'] | `--open` in the CLI: False
+P-10 ESC s read by Textual 8.2.8's parser as: ['alt+s']
+P-11 an App subclass's on_unmount runs at exit: True
