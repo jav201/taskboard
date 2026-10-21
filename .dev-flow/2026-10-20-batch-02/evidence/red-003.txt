@@ -1,0 +1,15 @@
+# RED of increment 003 on its base: a clean worktree at 9cec89882fc0e186b18a7810dd2d5926c495d4a5 (increment 002's commit; taskboard/ and the hardened test files untouched) + increment 003's tests/test_hygiene.py, NO_COLOR unset
+# python -m pytest -q -p no:cacheprovider --color=no --tb=short tests/test_hygiene.py
+.F                                                                       [100%]
+================================== FAILURES ===================================
+________________________ test_AT_2306_the_hygiene_law _________________________
+tests\test_hygiene.py:48: in test_AT_2306_the_hygiene_law
+    assert hits == [], hits
+E   AssertionError: ['test_boards_forms.py']
+E   assert ['test_boards_forms.py'] == []
+E     
+E     Left contains one more item: 'test_boards_forms.py'
+E     Use -v to get more diff
+=========================== short test summary info ===========================
+FAILED tests/test_hygiene.py::test_AT_2306_the_hygiene_law - AssertionError: ...
+1 failed, 1 passed in 1.47s

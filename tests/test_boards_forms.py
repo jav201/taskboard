@@ -20,7 +20,6 @@ from taskboard.models import DEFAULT_PHASES, PROJECT_COLORS, Board
 
 NOW = datetime(2026, 10, 20, 9, 30)
 SETTINGS = {"migrations": {"links": 1, "milestones": 1}, "seen_view_renumber_2026_07": True}
-PAYLOADS = ["[@click=app.quit]x[/]", "tail\\", "[bold", "x[/]"]
 
 
 class _Today(date):
@@ -195,7 +194,7 @@ async def test_TC_2205_a_typed_name_paints_literally(home):
         scr = app.screen
         idx = [e.name for e in scr.entries].index(payload)
         card = scr.query_one(f"#card-{idx}")
-        assert card._border_title.plain == "▶ " + payload     # as Textual holds it
+        assert Text.from_markup(card.border_title).plain == "▶ " + payload   # the public title
         assert r"\[@click" in card.border_title                # its markup escapes the bracket
         assert app.is_running
 

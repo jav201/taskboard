@@ -394,6 +394,17 @@ class _Show:
         raise AssertionError((target, self.scr._all_cur))
 
 
+def _cursor_rows(rows):
+    """What the timeline's cursor rows name: each timeline row holding the cursor's
+    `⟦` but the ruler's tick row, read as the project or task title it starts with."""
+    out = []
+    for r in _timeline(rows):
+        if "⟦" not in r or "▸" in r:
+            continue
+        out.append(r.lstrip("⟦ ").lstrip("■▎ ").split("  ")[0].strip())
+    return out
+
+
 def _rail(rows):
     return [r[:views.PRESENT_RAIL_W] for r in rows]
 
@@ -462,9 +473,10 @@ async def test_AT_2104_three_views_one_cursor_and_the_export(tmp_path, frozen):
         await s.press(pilot, "tab")
         assert "Billing Migration" in s.frame()[0] and "gantt" in s.frame()[0]
         await s.press(pilot, "3", "right")
+        assert _cursor_rows(s.frame()) == ["Billing Migration"], _timeline(s.frame())
         assert any("project span ▸" in r for r in _timeline(s.frame())[:3])
         await s.press(pilot, "down")
-        assert s.scr._all_cur == ("task", "tb2")
+        assert _cursor_rows(s.frame()) == ["Dual-run reconciliation"], _timeline(s.frame())
         assert any("selected task ▸" in r for r in _timeline(s.frame())[:3])
         await s.press(pilot, "1")
         assert any("⟦Dual-run reconciliation⟧" in r for r in s.frame()), s.frame()
@@ -491,7 +503,8 @@ async def test_AT_2102_the_order_and_hidden_projects_survive_a_restart(tmp_path,
     async with s.app.run_test(size=s.size) as pilot:
         await s.open(pilot)
         await s.press(pilot, "3", "down")
-        assert s.scr._all_cur == ("proj", "pmr")
+        assert [r for r in _rail(s.frame()) if r.startswith("▶")] == \
+            [next(r for r in _rail(s.frame()) if "Mobile Release" in r)], _rail(s.frame())
         await s.press(pilot, "shift+up", "shift+up")
         await s.goto(pilot, "pbr")
         await s.press(pilot, "space")
@@ -585,6 +598,11 @@ async def test_AT_2106_u_lists_the_hidden_and_brings_one_back(tmp_path, frozen):
         await s.press(pilot, "escape")
         frame = "\n".join(s.frame())
         assert "Tax rules for new regions" in frame and "Refund edge cases" not in frame
+        await s.press(pilot, "2", "u")              # view 2 lists what is hidden too (G-4)
+        rows = s.app.screen.query_one("#picker-rows").content.plain.split("\n")
+        assert [r.strip("▶ ") for r in rows] == ["○ Refund edge cases"], rows
+        await s.press(pilot, "escape")
+        assert type(s.app.screen).__name__ == "PresentScreen"
         await s.press(pilot, "3", "u")
         rows = [r.strip("▶ ") for r in
                 s.app.screen.query_one("#picker-rows").content.plain.split("\n")]

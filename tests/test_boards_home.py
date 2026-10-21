@@ -480,7 +480,7 @@ async def test_AT_2204_the_home(home):
         await _press(pilot, "B")
         assert _scr(app) == "BoardsHome"
         await _press(pilot, "escape")
-        app.selected_task_id = "tp1"
+        assert app.selected_task_id is not None         # the board opens on a task: R by keys
         await _press(pilot, "R")
         assert _scr(app) == "PresentScreen"
         await _press(pilot, "B")
@@ -493,7 +493,9 @@ async def test_AT_2204_the_home(home):
         bar = keymap_plain(app)
         assert bar.startswith("? Map  ; More  q Quit  B Boards"), bar
         await _press(pilot, "question_mark")
-        assert "Boards" in _all_text(app.screen)
+        keys = app.screen.query_one("#help-keys").content
+        keys = keys.plain if hasattr(keys, "plain") else str(keys)
+        assert re.search(r"(^|\s)B\s+Boards\b", keys), keys    # the key itself (qa QA-03)
 
 
 def keymap_plain(app) -> str:

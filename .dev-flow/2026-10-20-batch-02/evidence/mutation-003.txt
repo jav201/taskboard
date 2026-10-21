@@ -1,0 +1,10 @@
+arms: 7
+H1 B left out of the help's keys (the word kept) · taskboard/modals.py · test_AT_2204_the_home: RED (KILLED) · sha256 4c15c208b5be restored · 1 failed in 2.40s
+H2 the cursor's echo on every other row · taskboard/views.py · test_AT_2104_three_views_one_cursor_and_the_export: RED (KILLED) · sha256 056bc2455c48 restored · 1 failed in 1.61s
+H3 u inert in view 2 · taskboard/app.py · test_AT_2106_u_lists_the_hidden_and_brings_one_back: RED (KILLED) · sha256 dc230856cc1a restored · 1 failed in 1.53s
+H4 the rail's cursor on the next row · taskboard/views.py · test_AT_2102_the_order_and_hidden_projects_survive_a_restart: RED (KILLED) · sha256 056bc2455c48 restored · 1 failed in 1.25s
+H5 PAYLOADS back in test_boards_forms · tests/test_boards_forms.py · test_AT_2306_the_hygiene_law: RED (KILLED) · sha256 a8cd058d8c85 restored · 1 failed in 0.52s
+H6 the private border title read again · tests/test_boards_forms.py · test_AT_2306_the_hygiene_law: RED (KILLED) · sha256 a8cd058d8c85 restored · 1 failed in 0.53s
+H7 _move_target's unused parameter back · taskboard/modals.py · test_AT_2306_the_hygiene_law: RED (KILLED) · sha256 4c15c208b5be restored · 1 failed in 0.54s
+not killed: 0
+exit=0

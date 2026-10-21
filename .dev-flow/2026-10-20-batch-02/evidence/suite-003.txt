@@ -1,0 +1,6 @@
+# increment 003, targeted (the hardened files), on fix/backlog-boards at 9cec898 + the increment's working tree, NO_COLOR unset
+# python -m pytest -q -p no:cacheprovider --color=no tests/test_hygiene.py tests/test_boards_forms.py tests/test_boards_home.py tests/test_present_all.py
+........................................................................ [ 69%]
+................................                                         [100%]
+104 passed in 119.41s (0:01:59)
+exit=0

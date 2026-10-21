@@ -1,0 +1,153 @@
+diff --git a/tests/test_boards_forms.py b/tests/test_boards_forms.py
+index 0df0e97..d42431d 100644
+--- a/tests/test_boards_forms.py
++++ b/tests/test_boards_forms.py
+@@ -20,7 +20,6 @@ from taskboard.models import DEFAULT_PHASES, PROJECT_COLORS, Board
+ 
+ NOW = datetime(2026, 10, 20, 9, 30)
+ SETTINGS = {"migrations": {"links": 1, "milestones": 1}, "seen_view_renumber_2026_07": True}
+-PAYLOADS = ["[@click=app.quit]x[/]", "tail\\", "[bold", "x[/]"]
+ 
+ 
+ class _Today(date):
+@@ -195,7 +194,7 @@ async def test_TC_2205_a_typed_name_paints_literally(home):
+         scr = app.screen
+         idx = [e.name for e in scr.entries].index(payload)
+         card = scr.query_one(f"#card-{idx}")
+-        assert card._border_title.plain == "▶ " + payload     # as Textual holds it
++        assert Text.from_markup(card.border_title).plain == "▶ " + payload   # the public title
+         assert r"\[@click" in card.border_title                # its markup escapes the bracket
+         assert app.is_running
+ 
+diff --git a/tests/test_boards_home.py b/tests/test_boards_home.py
+index 3981135..1775a71 100644
+--- a/tests/test_boards_home.py
++++ b/tests/test_boards_home.py
+@@ -480,7 +480,7 @@ async def test_AT_2204_the_home(home):
+         await _press(pilot, "B")
+         assert _scr(app) == "BoardsHome"
+         await _press(pilot, "escape")
+-        app.selected_task_id = "tp1"
++        assert app.selected_task_id is not None         # the board opens on a task: R by keys
+         await _press(pilot, "R")
+         assert _scr(app) == "PresentScreen"
+         await _press(pilot, "B")
+@@ -493,7 +493,9 @@ async def test_AT_2204_the_home(home):
+         bar = keymap_plain(app)
+         assert bar.startswith("? Map  ; More  q Quit  B Boards"), bar
+         await _press(pilot, "question_mark")
+-        assert "Boards" in _all_text(app.screen)
++        keys = app.screen.query_one("#help-keys").content
++        keys = keys.plain if hasattr(keys, "plain") else str(keys)
++        assert re.search(r"(^|\s)B\s+Boards\b", keys), keys    # the key itself (qa QA-03)
+ 
+ 
+ def keymap_plain(app) -> str:
+diff --git a/tests/test_hygiene.py b/tests/test_hygiene.py
+index a153d2c..d5695d0 100644
+--- a/tests/test_hygiene.py
++++ b/tests/test_hygiene.py
+@@ -3,13 +3,47 @@ LLR-2306.2 · TC-2306 · AT-2306 (US-2304). A test that reads private state pass
+ while the screen is wrong; a dead parameter or import hides what a caller means."""
+ from __future__ import annotations
+ 
++import ast
+ import inspect
++from pathlib import Path
+ 
+ from taskboard.modals import ProjectPicker
+ 
++TESTS = Path(__file__).resolve().parent
++
+ 
+ def test_TC_2306_move_target_takes_the_project_and_the_board():
+     """TC-2306 (LLR-2306.1): `_move_target` reads no picker copy of the boards
+     (code review N2 of 2026-10-20-batch-01); the target is read when chosen."""
+     assert list(inspect.signature(ProjectPicker._move_target).parameters) == \
+         ["self", "proj", "bid"]
++
++
++def _unread_names(path: Path) -> list[str]:
++    """Names a module binds by an import or a plain module-level assignment and
++    never reads (its `test_*` functions and fixtures are pytest's to read)."""
++    tree = ast.parse(path.read_text(encoding="utf-8"))
++    bound = []
++    for node in tree.body:
++        if isinstance(node, (ast.Import, ast.ImportFrom)):
++            for a in node.names:
++                name = (a.asname or a.name).split(".")[0]
++                if name != "annotations":
++                    bound.append(name)
++        elif isinstance(node, ast.Assign):
++            bound += [t.id for t in node.targets if isinstance(t, ast.Name)]
++    read = {n.id for n in ast.walk(tree) if isinstance(n, ast.Name) and isinstance(n.ctx, ast.Load)}
++    read |= {n.value.id for n in ast.walk(tree)
++             if isinstance(n, ast.Attribute) and isinstance(n.value, ast.Name)}
++    return [n for n in bound if n not in read]
++
++
++def test_AT_2306_the_hygiene_law():
++    """AT-2306 (US-2304): `_move_target(proj, bid)`; no test reads Textual's private
++    border title; `tests/test_boards_forms.py` binds nothing it never reads."""
++    assert list(inspect.signature(ProjectPicker._move_target).parameters) == \
++        ["self", "proj", "bid"]
++    needle = "._border" + "_title"            # built, so this file is not a hit itself
++    hits = [p.name for p in sorted(TESTS.glob("*.py")) if needle in p.read_text(encoding="utf-8")]
++    assert hits == [], hits
++    assert _unread_names(TESTS / "test_boards_forms.py") == []
+diff --git a/tests/test_present_all.py b/tests/test_present_all.py
+index e6b7223..6dd0606 100644
+--- a/tests/test_present_all.py
++++ b/tests/test_present_all.py
+@@ -394,6 +394,17 @@ class _Show:
+         raise AssertionError((target, self.scr._all_cur))
+ 
+ 
++def _cursor_rows(rows):
++    """What the timeline's cursor rows name: each timeline row holding the cursor's
++    `⟦` but the ruler's tick row, read as the project or task title it starts with."""
++    out = []
++    for r in _timeline(rows):
++        if "⟦" not in r or "▸" in r:
++            continue
++        out.append(r.lstrip("⟦ ").lstrip("■▎ ").split("  ")[0].strip())
++    return out
++
++
+ def _rail(rows):
+     return [r[:views.PRESENT_RAIL_W] for r in rows]
+ 
+@@ -462,9 +473,10 @@ async def test_AT_2104_three_views_one_cursor_and_the_export(tmp_path, frozen):
+         await s.press(pilot, "tab")
+         assert "Billing Migration" in s.frame()[0] and "gantt" in s.frame()[0]
+         await s.press(pilot, "3", "right")
++        assert _cursor_rows(s.frame()) == ["Billing Migration"], _timeline(s.frame())
+         assert any("project span ▸" in r for r in _timeline(s.frame())[:3])
+         await s.press(pilot, "down")
+-        assert s.scr._all_cur == ("task", "tb2")
++        assert _cursor_rows(s.frame()) == ["Dual-run reconciliation"], _timeline(s.frame())
+         assert any("selected task ▸" in r for r in _timeline(s.frame())[:3])
+         await s.press(pilot, "1")
+         assert any("⟦Dual-run reconciliation⟧" in r for r in s.frame()), s.frame()
+@@ -491,7 +503,8 @@ async def test_AT_2102_the_order_and_hidden_projects_survive_a_restart(tmp_path,
+     async with s.app.run_test(size=s.size) as pilot:
+         await s.open(pilot)
+         await s.press(pilot, "3", "down")
+-        assert s.scr._all_cur == ("proj", "pmr")
++        assert [r for r in _rail(s.frame()) if r.startswith("▶")] == \
++            [next(r for r in _rail(s.frame()) if "Mobile Release" in r)], _rail(s.frame())
+         await s.press(pilot, "shift+up", "shift+up")
+         await s.goto(pilot, "pbr")
+         await s.press(pilot, "space")
+@@ -585,6 +598,11 @@ async def test_AT_2106_u_lists_the_hidden_and_brings_one_back(tmp_path, frozen):
+         await s.press(pilot, "escape")
+         frame = "\n".join(s.frame())
+         assert "Tax rules for new regions" in frame and "Refund edge cases" not in frame
++        await s.press(pilot, "2", "u")              # view 2 lists what is hidden too (G-4)
++        rows = s.app.screen.query_one("#picker-rows").content.plain.split("\n")
++        assert [r.strip("▶ ") for r in rows] == ["○ Refund edge cases"], rows
++        await s.press(pilot, "escape")
++        assert type(s.app.screen).__name__ == "PresentScreen"
+         await s.press(pilot, "3", "u")
+         rows = [r.strip("▶ ") for r in
+                 s.app.screen.query_one("#picker-rows").content.plain.split("\n")]
