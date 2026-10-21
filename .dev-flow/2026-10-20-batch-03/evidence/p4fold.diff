@@ -1,0 +1,28 @@
+diff --git a/taskboard/app.py b/taskboard/app.py
+index 719f45e..5b1f14e 100644
+--- a/taskboard/app.py
++++ b/taskboard/app.py
+@@ -1041,7 +1041,7 @@ class TaskboardApp(App):
+             if self.board_id is None:
+                 n = len(self.registry.active())
+                 self.notify(f"Opened {strip_controls(str(self.board.path))} without adding it "
+-                            f"to your boards (--open). B lists your {n} "
++                            f"to the boards (--open). B lists the {n} "
+                             f"board{'' if n == 1 else 's'}; this file is not one of them.",
+                             title="Boards", timeout=15, markup=False)
+ 
+diff --git a/tests/test_boards_backlog_round.py b/tests/test_boards_backlog_round.py
+index 87fcc16..0d7f052 100644
+--- a/tests/test_boards_backlog_round.py
++++ b/tests/test_boards_backlog_round.py
+@@ -401,8 +401,8 @@ async def test_AT_2410_open_without_registering(home, monkeypatch):
+         head = _svg_rows(app.export_screenshot(), 118, 30)[0]
+         assert head.startswith(" board-copy · not listed "), head
+         assert app.board.label == ("board-copy · not listed", "pink")
+-        assert any(n == (f"Opened {fx.copy_path(home)} without adding it to your boards "
+-                         "(--open). B lists your 3 boards; this file is not one of them.")
++        assert any(n == (f"Opened {fx.copy_path(home)} without adding it to the boards "
++                         "(--open). B lists the 3 boards; this file is not one of them.")
+                    for n in _notes(app)), _notes(app)
+         await _press(pilot, "B")
+         assert isinstance(app.screen, BoardsHome)

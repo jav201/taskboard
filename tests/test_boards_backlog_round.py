@@ -401,8 +401,8 @@ async def test_AT_2410_open_without_registering(home, monkeypatch):
         head = _svg_rows(app.export_screenshot(), 118, 30)[0]
         assert head.startswith(" board-copy · not listed "), head
         assert app.board.label == ("board-copy · not listed", "pink")
-        assert any(n == (f"Opened {fx.copy_path(home)} without adding it to your boards "
-                         "(--open). B lists your 3 boards; this file is not one of them.")
+        assert any(n == (f"Opened {fx.copy_path(home)} without adding it to the boards "
+                         "(--open). B lists the 3 boards; this file is not one of them.")
                    for n in _notes(app)), _notes(app)
         await _press(pilot, "B")
         assert isinstance(app.screen, BoardsHome)

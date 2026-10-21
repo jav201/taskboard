@@ -1041,7 +1041,7 @@ class TaskboardApp(App):
             if self.board_id is None:
                 n = len(self.registry.active())
                 self.notify(f"Opened {strip_controls(str(self.board.path))} without adding it "
-                            f"to your boards (--open). B lists your {n} "
+                            f"to the boards (--open). B lists the {n} "
                             f"board{'' if n == 1 else 's'}; this file is not one of them.",
                             title="Boards", timeout=15, markup=False)
 

@@ -24,6 +24,12 @@ ARMS = [
      "            app.jump_to(it.task.id)\n            app.selected_task.title += ' (edited)'\n"
      "            app.board.save()\n",
      T + "test_AT_2401_one_screen_for_every_board"),
+    ("D5 the --open notice in the second person (P4's escaped regression)", A,
+     'f"to the boards (--open). B lists the {n} "', 'f"to your boards (--open). B lists your {n} "',
+     "tests/test_prism_laws.py::test_no_literal_in_the_source_can_emit_the_second_person"),
+    ("D5b the --open notice in the second person (AT)", A,
+     'f"to the boards (--open). B lists the {n} "', 'f"to your boards (--open). B lists your {n} "',
+     "tests/test_boards_backlog_round.py::test_AT_2410_open_without_registering"),
 ]
 print("arms:", len(ARMS), flush=True)
 bad = 0
