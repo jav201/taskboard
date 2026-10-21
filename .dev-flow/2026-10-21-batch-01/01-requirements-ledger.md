@@ -29,3 +29,10 @@ above this line is ever edited._
 - **What changed:** Before → After. HLR-2507's timing threshold: «under 0.5 s» (wall-clock) → under 2 s of CPU time, with a 40 000-distinct-handle craft added (increment 001's code review CR-1, CR-2: a quadratic dedupe at ~6 s, a wall-clock bound flaky under load) and the full note through the presentation's lines and colouring (security N-2 / test gap). LLR-2501.2: `edit` refuses a non-handle and writes back a person the file lost (CR-5). HLR-2506/LLR-2506.x: an empty directory draws as none in the preview too (increment 002's CR-1); a mark only at a whole mention (CR-3); the one-row cut painted (CR-4); the marks' pattern compiled once (security N-2).
 - **Why:** increment 001's and 002's independent reviews (code-reviewer OK to advance both, with notes; security-reviewer APPROVE on S-1, N-1 accepted, N-2 fixed).
 - **Evidence:** `03-increments/increment-001.md`, `03-increments/increment-002.md` §4b; `evidence/mutation-001.txt`, `evidence/mutation-002.txt`.
+
+### LED-2026-10-21-batch-01.4 — increment 003's code-review drifts (P3)
+- **Requirement:** HLR-2503, LLR-2503.2
+- **Date:** 2026-10-21
+- **What changed:** Before → After. «`tab` with the list open closes it; the list's keys act only while the notes hold the focus» → the focus leaving the picker by any path closes it (the list or the form), typing in the notes closes an open form, the mention replaces only the still-standing `@<typed>` span (code review CR-1, HIGH: the form's `enter` added a person and replaced the operator's text after `shift+tab`); a held handle with sentence punctuation opens nothing (CR-2, HIGH: `@ana.ruiz.` created `ana.ruiz2`); `enter` with no one listed is a new line (CR-4).
+- **Why:** increment 003's independent review (code-reviewer FIX FIRST on CR-1, CR-2).
+- **Evidence:** `03-increments/increment-003.md` §4b; `evidence/mutation-003.txt` (M3, M12, M13, M14).

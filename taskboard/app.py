@@ -2977,7 +2977,7 @@ class TaskboardApp(App):
         if self.view_mode == "setup":
             self.action_setup_add()
             return
-        self.push_screen(TaskModal(self.board), self._on_task_added)
+        self.push_screen(TaskModal(self.board, people=self.people), self._on_task_added)
 
     def _on_task_added(self, data: dict | None) -> None:
         if not data:
@@ -3004,7 +3004,7 @@ class TaskboardApp(App):
         task = self.selected_task
         if task is None:
             return
-        self.push_screen(TaskModal(self.board, task),
+        self.push_screen(TaskModal(self.board, task, people=self.people),
                         lambda data, t=task: self._on_task_edited(t, data))
 
     def _on_task_edited(self, task: Task, data: dict | None) -> None:

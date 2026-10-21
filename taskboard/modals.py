@@ -13,6 +13,7 @@ from __future__ import annotations
 
 import calendar
 import os
+import re
 from datetime import date, timedelta
 from pathlib import Path
 
@@ -40,6 +41,7 @@ from .models import (IMAGE_EXTS, PROJECT_COLORS, PROJECT_STATUSES, TASK_PRIORITI
                      grab_clipboard_image, grab_clipboard_text, parse_iso,
                      resolve_city, save_pil_image, templates)
 from .boards import clean_name, move_plan, move_project, peek_board, slug
+from .people import Directory, mention_ids
 from .keymap import KEY_STYLE, PRESENT_KEYS, key_line, palette_commands
 from .views import (HEX, board_chip_text, clip, fit, gantt_group_key, gantt_link_frame,
                     gantt_link_order, notes_text, valid_url)
@@ -377,20 +379,94 @@ TASK_KEYS = [("alt+s", "save"), ("alt+i", "image"), ("alt+t", "start"), ("alt+d"
              ("esc", "cancel")]
 
 
+# the `@` picker in the notes (batch 2026-10-21-batch-01, the round's item 2, variant A):
+# an `@` at a word start, then what is typed after it up to the cursor
+MENTION_AT = re.compile(r"(?:^|(?<=\s))@([^\s@]*)$")
+DROP_W = 44              # the dropdown's rows, inside its border and padding
+DROP_ROWS = 5            # people listed at most; `+ add` comes after them
+PICK_KEYS = [("↑↓", ""), ("↵", "pick"), ("esc", "plain text")]
+# the new person's role is confirmed with ↵, never alt+s: in the editor alt+s saves the
+# task (the round's D5 finding)
+ADD_KEYS = [("↵", "add + mention"), ("⇥", "name / role"), ("esc", "back")]
+
+
+def pick_rows(people: Directory, q: str, sel: int, w: int,
+              limit: int) -> tuple[list[Text], list[tuple[str, object]]]:
+    """The picker's rows and what each picks: the people `q` finds (name starts,
+    then inside the name, then the role), at most `limit`, then `+ add 'q'` when `q`
+    is not already someone's name. Every name and role is a Text piece."""
+    opts: list[tuple[str, object]] = [("p", p) for p in people.find(q)[:limit]]
+    if q.strip() and people.named(q) is None:
+        opts.append(("add", q.strip()))
+    rows = []
+    for i, (kind, v) in enumerate(opts):
+        on = i == sel
+        r = Text(no_wrap=True)
+        r.append("▶ " if on else "  ", HEX["accent"])
+        if kind == "p":
+            r.append(fit(v.name, 14), f"b {HEX['pink']}" if on else f"b {HEX['ink']}")
+            r.append(" " + fit(v.role, max(0, w - 17)), HEX["mut"])
+        else:
+            r.append("+ add ", f"b {HEX['green']}")
+            r.append(f"'{v}'", f"b {HEX['ink']}")
+            r.append("  new person", HEX["dim"])
+        r.truncate(w, pad=True)
+        if on:
+            r.stylize("on #1c2533")
+        rows.append(r)
+    if not opts:
+        rows.append(Text(fit("  type a name", w), HEX["dim"]))
+    return rows, opts
+
+
+class MentionDrop(Vertical):
+    """The dropdown under the notes' cursor: the people an `@` finds, or the new
+    person's name and role. Drawn over the editor (`overlay: screen`)."""
+
+    DEFAULT_CSS = f"""
+    MentionDrop {{ overlay: screen; position: absolute; width: {DROP_W + 4}; height: auto;
+                   background: #111827; border: round {HEX['pink']}; padding: 0 1;
+                   display: none; }}
+    MentionDrop #md-head {{ height: 1; }}
+    MentionDrop #md-list {{ height: auto; }}
+    MentionDrop Input {{ display: none; height: 3; border: tall #334154; }}
+    MentionDrop #md-keys {{ height: 1; }}
+    """
+
+    def compose(self) -> ComposeResult:
+        yield Static(id="md-head")
+        yield Static(id="md-list")
+        yield Input(placeholder="full name", id="md-name")
+        yield Input(placeholder="role, e.g. Legal counsel", id="md-role")
+        yield Static(id="md-keys")
+
+
 class TaskModal(ClipboardPasteMixin, EmojiPickerMixin, DatePickerMixin, ButtonKeysMixin,
                 ModalScreen[dict | None]):
-    """Returns a dict of task fields on save, or None on cancel."""
+    """Returns a dict of task fields on save, or None on cancel. With the people
+    directory, an `@` at a word start in the notes opens the mention picker."""
 
     BINDINGS = [("escape", "cancel", "Cancel"),
                 Binding("ctrl+v", "paste_text", "Paste", priority=True),
                 Binding("ctrl+e", "pick_emoji", "Emoji", priority=True),
                 *FORM_KEYS, *DATE_KEYS,
-                Binding("alt+i", "press_button('paste-img')", "Paste image", priority=True)]
+                Binding("alt+i", "press_button('paste-img')", "Paste image", priority=True),
+                # the picker's own keys: they act only while it is open (check_action)
+                Binding("up", "drop_move(-1)", "", priority=True, show=False),
+                Binding("down", "drop_move(1)", "", priority=True, show=False),
+                Binding("enter", "drop_pick", "", priority=True, show=False),
+                Binding("tab", "drop_field", "", priority=True, show=False)]
 
-    def __init__(self, board: Board, task: Task | None = None):
+    def __init__(self, board: Board, task: Task | None = None,
+                 people: Directory | None = None):
         super().__init__()
         self.board = board
         self._edit_task = task
+        self._people = people
+        # the picker: None (closed), "list" or "add"; the query after `@`, its column,
+        # the highlighted row and the rows' choices
+        self._mention: str | None = None
+        self._q, self._at, self._row, self._sel, self._opts = "", 0, 0, 0, []
         # stable folder key for pasted images; a NEW task adopts it as its id on
         # save, so images live at images/<task-id>/.
         self._img_key = task.id if task else _new_id()
@@ -476,6 +552,7 @@ class TaskModal(ClipboardPasteMixin, EmojiPickerMixin, DatePickerMixin, ButtonKe
                     yield Button("Save", variant="success", id="save")
                     yield Button("Cancel", variant="default", id="cancel")
             yield Static(id="task-keys")
+        yield MentionDrop(id="mdrop")
 
     def on_mount(self) -> None:
         self._fit_width(self.app.size.width)
@@ -494,10 +571,141 @@ class TaskModal(ClipboardPasteMixin, EmojiPickerMixin, DatePickerMixin, ButtonKe
             self.query_one("#task-preview", Static).update(
                 notes_preview(event.text_area.text, self.board.people))
             self.call_after_refresh(self._follow_cursor)
+            if self._people is not None:
+                if self._mention == "add" and event.text_area.has_focus:
+                    self._close_drop()          # typing in the notes leaves the form (CR-1)
+                if self._mention != "add":
+                    self.call_after_refresh(self._scan)
 
     def on_text_area_selection_changed(self, event: TextArea.SelectionChanged) -> None:
         if event.text_area.id == "f-notes":
             self._follow_cursor()
+            if self._mention == "list":
+                self._scan()
+
+    # ---- the `@` picker (batch 2026-10-21-batch-01) ---------------------------
+    def check_action(self, action: str, parameters: tuple[object, ...]) -> bool | None:
+        if action in ("drop_move", "drop_pick"):
+            # the form acts only while it holds the focus, the list only while the notes
+            # do and it lists something — otherwise the key is the field's (architect
+            # A-5; code review CR-1, CR-4)
+            if self._mention == "add":
+                return self.query_one("#mdrop", MentionDrop).has_focus_within
+            return self._mention == "list" and bool(self._opts)
+        return True
+
+    def on_descendant_focus(self, event: events.DescendantFocus) -> None:
+        """The focus leaving the picker — the list's notes, or the new person's form —
+        by `shift+tab` or a click closes it; the typed text stays as typed (architect
+        A-5, code review CR-1)."""
+        here = (self.query_one("#mdrop", MentionDrop).has_focus_within if self._mention == "add"
+                else self.query_one("#f-notes", TextArea).has_focus)
+        if self._mention is not None and not here:
+            self._close_drop()
+
+    def _scan(self) -> None:
+        """Open, narrow or close the picker from the text before the notes' cursor:
+        an `@` at a word start and what follows it, unless that is already a
+        mention of someone the directory holds."""
+        if self._mention == "add":
+            return
+        notes = self.query_one("#f-notes", TextArea)
+        row, col = notes.cursor_location
+        m = MENTION_AT.search(notes.document.get_line(row)[:col])
+        # a mention of someone held — `@ana.ruiz.` too: the dot ends the sentence, not
+        # the handle (HLR-2502; code review CR-2) — opens nothing
+        if m is None or any(self._people.get(h) for h in mention_ids("@" + m.group(1))):
+            self._close_drop()
+            return
+        if (self._mention, self._q) != ("list", m.group(1)):
+            self._sel = 0
+        self._mention, self._q, self._at, self._row = "list", m.group(1), m.start(), row
+        self._draw_drop()
+
+    def _draw_drop(self) -> None:
+        drop = self.query_one("#mdrop", MentionDrop)
+        name = drop.query_one("#md-name", Input)
+        role = drop.query_one("#md-role", Input)
+        listing = drop.query_one("#md-list", Static)
+        head = Text(no_wrap=True)
+        if self._mention == "list":
+            rows, self._opts = pick_rows(self._people, self._q, self._sel, DROP_W, DROP_ROWS)
+            if self._opts and self._sel >= len(self._opts):      # code review CR-3
+                self._sel = len(self._opts) - 1
+                rows, self._opts = pick_rows(self._people, self._q, self._sel, DROP_W, DROP_ROWS)
+            head.append("@", f"b {HEX['pink']}")
+            head.append(self._q, f"b {HEX['ink']}")
+            head.append("▌", HEX["accent"])
+            head.append("   mention a person", HEX["dim"])
+            listing.update(Text.assemble(Text("\n").join(rows)))
+            keys = PICK_KEYS
+        else:
+            head.append("New person", f"b {HEX['green']}")
+            head.append("  · for every board", HEX["dim"])
+            keys = ADD_KEYS
+        head.truncate(DROP_W)
+        drop.query_one("#md-head", Static).update(head)
+        listing.display = self._mention == "list"
+        name.display = role.display = self._mention == "add"
+        drop.query_one("#md-keys", Static).update(key_line(keys, DROP_W))
+        drop.display = True
+        off = self.query_one("#f-notes", TextArea).cursor_screen_offset
+        sw, sh = self.app.size
+        x = max(0, min(off.x - len(self._q) - 1, sw - (DROP_W + 4)))
+        y = off.y + 1 if off.y + 11 <= sh else max(0, off.y - 10)
+        drop.styles.offset = (x, y)
+
+    def _close_drop(self) -> None:
+        self._mention = None
+        self.query_one("#mdrop", MentionDrop).display = False
+
+    def _insert_mention(self, handle: str) -> None:
+        """`@<typed>` → `@<handle> `, only where the typed text still stands; a line
+        changed meanwhile is left alone (code review CR-1)."""
+        notes = self.query_one("#f-notes", TextArea)
+        end = self._at + 1 + len(self._q)
+        self._close_drop()
+        if notes.document.get_line(self._row)[self._at:end] == "@" + self._q:
+            notes.replace(f"@{handle} ", (self._row, self._at), (self._row, end))
+        notes.focus()
+
+    def action_drop_move(self, delta: int) -> None:
+        if self._mention == "list":
+            self._sel = max(0, min(len(self._opts) - 1, self._sel + delta))
+            self._draw_drop()
+
+    def action_drop_field(self) -> None:
+        """`tab`: between the new person's name and role while they are open; the
+        screen's own `tab` (the next field) otherwise — this binding replaces it."""
+        if self._mention != "add":
+            self.focus_next()               # leaving the notes closes the list (on_descendant_focus)
+            return
+        name = self.query_one("#md-name", Input)
+        (self.query_one("#md-role", Input) if name.has_focus else name).focus()
+
+    def action_drop_pick(self) -> None:
+        if self._mention == "add":
+            name = self.query_one("#md-name", Input).value
+            role = self.query_one("#md-role", Input).value
+            try:
+                person = self._people.add(name, role)
+            except (OSError, ValueError) as err:
+                self.notify(f"The person was not added: {err}", title="People",
+                            severity="error", markup=False)
+                return
+            self._insert_mention(person.id)
+            return
+        if not self._opts:
+            return
+        kind, v = self._opts[self._sel]
+        if kind == "p":
+            self._insert_mention(v.id)
+            return
+        self._mention = "add"
+        self.query_one("#md-name", Input).value = v
+        self.query_one("#md-role", Input).value = ""
+        self._draw_drop()
+        self.query_one("#md-role", Input).focus()
 
     def _follow_cursor(self) -> None:
         """Keep the preview on the part of the note being written. The preview
@@ -546,7 +754,16 @@ class TaskModal(ClipboardPasteMixin, EmojiPickerMixin, DatePickerMixin, ButtonKe
                     markup=False)
 
     def action_cancel(self) -> None:
-        self.dismiss(None)
+        """`esc`: the picker's step back first — from the new person to the list,
+        from the list to plain text — then the editor's cancel."""
+        if self._mention == "add":
+            self._mention = "list"
+            self._draw_drop()
+            self.query_one("#f-notes", TextArea).focus()
+        elif self._mention == "list":
+            self._close_drop()
+        else:
+            self.dismiss(None)
 
     def _val(self, wid: str) -> str:
         node = self.query_one(f"#{wid}")

@@ -1,0 +1,14 @@
+M1 `+ add` for an exact name and for `@` alone · taskboard/modals.py · test_TC_2503_rows_list_the_finds_then_add_when_no_name_matches: RED (KILLED) · sha256 ce1658d605f6 restored · 1 failed in 0.43s
+M2 the picker's keys act while it is closed (enter no new line) · taskboard/modals.py · test_AT_2503_arrows_choose_and_esc_leaves_plain_text: RED (KILLED) · sha256 ce1658d605f6 restored · 1 failed in 1.72s
+M3 the list kept open when a click leaves the notes (architect A-5) · taskboard/modals.py · test_AT_2503_a_click_away_closes_the_list: RED (KILLED) · sha256 ce1658d605f6 restored · 1 failed in 1.59s
+M5 a known handle reopens the list · taskboard/modals.py · test_TC_2503_no_picker_inside_a_word_or_on_a_known_handle[\n@ana.ruiz]: RED (KILLED) · sha256 ce1658d605f6 restored · 1 failed in 1.75s
+M6 never flipped above the cursor · taskboard/modals.py · test_AT_2503_reached_by_tab_the_list_opens_inside_the_screen_and_flips_up: RED (KILLED) · sha256 ce1658d605f6 restored · 1 failed in 2.62s
+M7 the mention written without its trailing space · taskboard/modals.py · test_AT_2503_at_an_enter_writes_the_handle_and_the_preview_the_name[size0]: RED (KILLED) · sha256 ce1658d605f6 restored · 1 failed in 2.47s
+M8 esc on the list cancels the editor · taskboard/modals.py · test_AT_2503_arrows_choose_and_esc_leaves_plain_text: RED (KILLED) · sha256 ce1658d605f6 restored · 1 failed in 2.35s
+M9 a refused add swallowed silently · taskboard/modals.py · test_AT_2503_a_failed_add_says_so_and_keeps_the_form: RED (KILLED) · sha256 ce1658d605f6 restored · 1 failed in 1.75s
+M10 the app hands the editor no directory · taskboard/app.py · test_AT_2503_add_a_person_in_place_for_every_board: RED (KILLED) · sha256 5d0742b1827a restored · 1 failed in 1.56s
+M11 `tab` in the form loses the role field · taskboard/modals.py · test_AT_2503_add_a_person_in_place_for_every_board: RED (KILLED) · sha256 ce1658d605f6 restored · 1 failed in 3.64s
+M12 the form acts with the focus elsewhere and is not closed (code review CR-1) · taskboard/modals.py · test_AT_2503_the_form_left_for_the_notes_closes_and_writes_nothing: RED (KILLED) · sha256 ce1658d605f6 restored · 1 failed in 1.71s
+M13 a sentence-final dot reopens the list (code review CR-2) · taskboard/modals.py · test_TC_2503_no_picker_inside_a_word_or_on_a_known_handle[\nAsk @ana.ruiz.]: RED (KILLED) · sha256 ce1658d605f6 restored · 1 failed in 1.88s
+M14 an empty list swallows enter (code review CR-4) · taskboard/modals.py · test_TC_2503_with_no_one_listed_enter_is_a_new_line: RED (KILLED) · sha256 ce1658d605f6 restored · 1 failed in 1.14s
+not killed: 0

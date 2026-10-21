@@ -1,0 +1,4 @@
+# RED on increment 002's commit caef748: this increment's test file over that commit's source
+ERROR tests/test_people_picker.py
+!!!!!!!!!!!!!!!!!!! Interrupted: 1 error during collection !!!!!!!!!!!!!!!!!!!!
+1 error in 0.56s
