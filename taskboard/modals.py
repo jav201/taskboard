@@ -781,9 +781,9 @@ class ProjectPicker(ModalScreen[None]):
         boards = {e.id: peek_board(e.path) for e in others}
         n = sum(1 for t in self.board.tasks if t.project_id == proj.id)
         app.push_screen(MoveTarget(proj, n, others, boards),
-                        lambda bid, p=proj: self._move_target(p, bid, boards))
+                        lambda bid, p=proj: self._move_target(p, bid))
 
-    def _move_target(self, proj: Project, bid: str | None, _boards: dict) -> None:
+    def _move_target(self, proj: Project, bid: str | None) -> None:
         if not bid:
             return
         app = self.app
@@ -841,6 +841,13 @@ class ProjectPicker(ModalScreen[None]):
         if not proj.archived and self._refused(proj):     # judged again at yes
             return
         proj.archived = not proj.archived
+        if not proj.archived and proj.present_rank is not None:
+            # a rank another project took while this one was archived: back after the
+            # last shown rank, never tied (architect A-10); no tie, its place kept (ux UX-1)
+            ranks = [p.present_rank for p in self.board.visible_projects(False)
+                     if p is not proj and p.present_rank is not None]
+            if proj.present_rank in ranks:
+                proj.present_rank = max(ranks) + 1
         for t in self.board.tasks:
             if t.project_id == proj.id:
                 t.archived = proj.archived

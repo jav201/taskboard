@@ -1,0 +1,12 @@
+# RED of increment 002 on its base: a clean worktree at d7c3dea3999482e6d2b8e9390f8d0b3cb1d36d8b (increment 001's commit; taskboard/ untouched) + increment 002's tests/test_present_all.py and tests/test_hygiene.py, NO_COLOR unset
+# python -m pytest -q -p no:cacheprovider --color=no --tb=line tests/test_present_all.py tests/test_hygiene.py -k "2304 or 2306"
+FFF                                                                      [100%]
+================================== FAILURES ===================================
+C:\Users\jjgh8\AppData\Local\Temp\claude\C--Users-jjgh8-clde\3940a65a-4a09-41f4-888b-90e6e8089d9e\scratchpad\wt-dev\tests\test_present_all.py:886: assert (0, 1, 0) == (2, 1, 0)
+C:\Users\jjgh8\AppData\Local\Temp\claude\C--Users-jjgh8-clde\3940a65a-4a09-41f4-888b-90e6e8089d9e\scratchpad\wt-dev\tests\test_present_all.py:922: AssertionError: {'pbm': 2, 'pbr': 4, 'pcp': 0, 'pdp': 1, ...}
+C:\Users\jjgh8\AppData\Local\Temp\claude\C--Users-jjgh8-clde\3940a65a-4a09-41f4-888b-90e6e8089d9e\scratchpad\wt-dev\tests\test_hygiene.py:14: AssertionError: assert ['self', 'pro...d', '_boards'] == ['self', 'proj', 'bid']
+=========================== short test summary info ===========================
+FAILED tests/test_present_all.py::test_TC_2304_the_unarchive_rank_rule - asse...
+FAILED tests/test_present_all.py::test_AT_2304_an_unarchived_project_never_ties_a_rank
+FAILED tests/test_hygiene.py::test_TC_2306_move_target_takes_the_project_and_the_board
+3 failed, 49 deselected in 3.32s

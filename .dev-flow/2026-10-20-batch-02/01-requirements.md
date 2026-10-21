@@ -54,7 +54,7 @@ The registry and the move shipped in 2026-10-20-batch-01 write files a second in
 1. A board created, renamed, recoloured, archived or registered by one instance never erases one another instance wrote to the registry.
 2. A move into a board another instance is moving into waits briefly or stops before writing anything.
 3. A move keeps a byte copy of the source board's history before rewriting it.
-4. An unarchived project comes back after the last shown presentation rank.
+4. An unarchived project never ties a presentation rank: its place kept, or after the last shown rank when another took it.
 5. A `~` path in the registry is read from the user's home as the suite's seam sees it.
 6. The tests read the screen, not private state, where the screen shows it, and the code keeps no dead parameter.
 
@@ -180,9 +180,9 @@ Two instances run on one machine and one filesystem (a lock file on a network sh
   - **Boundary catalog (QC-3):** ☑ boundary (a second move the same day: `-2`) ☑ empty (no `history.jsonl`: no copy, no step) ☐ invalid — none (the bytes are copied as they are) ☐ error — none beyond HLR-2206
   - **Negative control:** on `base_ref` AT-2303 is RED: no `history.jsonl.pre-move-*` exists after a move (P-3; `evidence/red-001.txt` — planned).
 
-### HLR-2304 — An unarchived project ranks after the last shown rank
+### HLR-2304 — An unarchived project never ties a presentation rank
 - **Traceability:** US-2303
-- **Ledger:** LED-2026-10-20-batch-02.1, LED-2026-10-20-batch-02.2
+- **Ledger:** LED-2026-10-20-batch-02.1, LED-2026-10-20-batch-02.2, LED-2026-10-20-batch-02.3
 - **Statement:** When the operator unarchives a project that holds a `present_rank`, the system shall keep that rank when no other project the presentation lists holds the same rank, and otherwise set it to one more than the largest `present_rank` among the other projects the presentation lists, before the board is saved; archiving and unarchiving a project without a rank shall leave its rank unset.
 - **Rationale (informative):** A-10: today the unarchived project keeps a rank another project has taken, and board order then puts it first (P-4); an archive undone at once keeps its place (ux UX-1).
 - **Validation:** `test`
@@ -190,7 +190,7 @@ Two instances run on one machine and one filesystem (a lock file on a network sh
 - **Numeric pass threshold:** AT-2304: the round's presentation board (`tests/present_portfolio_board.py`) at 160×45, the selection on its cursor task; `R`, `3`, `shift+down`, `escape` (every shown project ranked); `P`, `down` (Customer Portal), `x`, `tab`, `enter`, `escape` (archived with its tasks); `R`, `3`, `shift+down`, `escape` (the others re-ranked, one of them on Customer Portal's old rank); `P`, `down`, `x`, `escape` (unarchived); `R`, `3` → in view 3 the timeline lists `Customer Portal` after every other ranked project, and the file's `present_rank` values are pairwise distinct with Customer Portal's the largest. An archive and an unarchive with no reorder between keep Customer Portal's rank and place (TC-2304).
 - **Priority:** medium
 - **Acceptance (black-box) — the user-verified outcome (the WHAT):**
-  - **Observable outcome:** the presenter's order stays as set; the project unarchived comes last.
+  - **Observable outcome:** the presenter's order stays as set; a project whose rank was taken while it was archived comes back last, never tied.
   - **Shipped surface:** `P` → `x`; `R` → `3`; the board file.
   - **Acceptance test(s):** AT-2304
   - **Boundary catalog (QC-3):** ☑ boundary (no tie: the rank kept; a tie: the largest shown rank + 1, a rank held by a project hidden in the presentation counted; the unarchived project the only ranked one: kept) ☑ empty (no project ranked: the rank stays unset) ☐ invalid — none ☐ error — none

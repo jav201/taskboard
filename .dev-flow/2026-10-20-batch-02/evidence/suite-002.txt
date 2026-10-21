@@ -1,0 +1,6 @@
+# increment 002, targeted, on fix/backlog-boards at d7c3dea + the increment's working tree, NO_COLOR unset
+# python -m pytest -q -p no:cacheprovider --color=no tests/test_present_all.py tests/test_hygiene.py tests/test_archive.py tests/test_boards_move.py tests/test_markup_sites.py tests/test_app.py tests/test_present_hide.py
+........................................................................ [ 92%]
+......................                                                   [100%]
+310 passed in 285.83s (0:04:45)
+exit=0

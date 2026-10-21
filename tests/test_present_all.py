@@ -851,3 +851,78 @@ async def test_TC_2106_the_presentation_stays_in_view_behind_the_picker(tmp_path
         shot = s.app.export_screenshot().replace("&#160;", " ")
         assert "Hidden from the presentation" in shot
         assert "PRESENT" in shot and "Mobile Release 3.2" in shot and "Schema registry" in shot
+
+
+# --------------------------------------------------------------------------- #
+# TC-2304 / AT-2304 — an unarchived project never ties a rank (batch 2026-10-20-batch-02,
+# HLR-2304 / LLR-2304.1, US-2303)
+# --------------------------------------------------------------------------- #
+async def test_TC_2304_the_unarchive_rank_rule(tmp_path, frozen):
+    """TC-2304 (LLR-2304.1): through the projects modal's own toggle — a rank taken
+    while archived → after the largest shown rank; no tie → kept; the only ranked
+    project → kept; no rank → none; archiving keeps the rank."""
+    from taskboard.app import TaskboardApp
+    from taskboard.modals import ProjectPicker
+    path = tmp_path / "board.json"
+    pd = Project("pd", id="pd", archived=True)
+    pd.present_rank = 9                     # archived: its rank is never counted
+    Board([Project(n, id=n) for n in ("pa", "pb", "pc")] + [pd], [], path).save()
+    app = TaskboardApp(board_path=str(path))
+    async with app.run_test(size=(120, 40)) as pilot:
+        await pilot.pause()
+        b = app.board
+        pa, pb_, pc = (b.project_by_id(x) for x in ("pa", "pb", "pc"))
+        app.push_screen(ProjectPicker(b))
+        await pilot.pause()
+        pick = app.screen
+
+        def toggle(p):
+            pick._do_archive_toggle(p)
+        models.set_present_order(b, ["pa", "pb", "pc"])
+        toggle(pa)                                     # archived: the rank kept
+        assert pa.archived and pa.present_rank == 0
+        models.set_present_order(b, ["pc", "pb"])      # pc takes rank 0
+        toggle(pa)
+        assert (pa.present_rank, pb_.present_rank, pc.present_rank) == (2, 1, 0)
+        toggle(pb_)                                    # archive and back at once: kept
+        toggle(pb_)
+        assert pb_.present_rank == 1
+        for p in (pb_, pc):
+            p.present_rank = None
+        toggle(pa)
+        toggle(pa)                                     # the only ranked project: kept
+        assert pa.present_rank == 2
+        toggle(pc)
+        toggle(pc)                                     # no rank: none
+        assert pc.present_rank is None
+    saved = {p["id"]: p.get("present_rank") for p in
+             json.loads(path.read_text(encoding="utf-8"))["projects"]}
+    assert saved == {"pa": 2, "pb": None, "pc": None, "pd": 9}, saved
+
+
+async def test_AT_2304_an_unarchived_project_never_ties_a_rank(tmp_path, frozen):
+    """AT-2304 (US-2303): every shown project ranked in view 3, Customer Portal
+    archived, the others re-ranked (one onto its old rank), Customer Portal
+    unarchived: view 3 lists it after every other ranked project and no two
+    projects share a rank. The selection on the round's cursor task is set-up
+    (qa QA-10), as `_Show.open` sets it for every presentation node."""
+    s = _Show(tmp_path, (160, 45))
+    async with s.app.run_test(size=s.size) as pilot:
+        await s.open(pilot)
+        await s.press(pilot, "3", "shift+down", "escape")
+        assert all(isinstance(p.get("present_rank"), int) for p in s.projects().values())
+        await s.press(pilot, "P", "down", "x", "tab", "enter", "escape")
+        assert s.projects()["pcp"]["archived"] is True
+        await s.press(pilot, "R", "3", "shift+down", "escape")
+        await s.press(pilot, "P", "down", "x", "escape")
+        assert s.projects()["pcp"].get("archived", False) is False
+        await s.press(pilot, "R", "3")
+        tl = "\n".join(_timeline(s.frame()))
+    ranks = {k: p.get("present_rank") for k, p in s.projects().items()}
+    assert len(set(ranks.values())) == len(ranks), ranks
+    assert ranks["pcp"] == max(ranks.values()), ranks
+    shown = [n for n in ("Customer Portal", "Billing Migration", "Mobile Release 3.2",
+                         "Data Platform", "Brand Refresh") if "■ " + n in tl]
+    assert "Customer Portal" in shown, tl
+    pos = {n: tl.index("■ " + n) for n in shown}
+    assert all(pos["Customer Portal"] > pos[n] for n in shown if n != "Customer Portal"), pos

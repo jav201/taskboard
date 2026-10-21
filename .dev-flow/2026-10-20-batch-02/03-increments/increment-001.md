@@ -1,4 +1,4 @@
-# Increment 001 — <REQ-ID> · `<Short title>`
+# Increment 001 — LLR-2301.1, LLR-2301.2, LLR-2302.1, LLR-2303.1, LLR-2305.1 · `two taskboards, the move's lock and history copy, ~ through Path.home()`
 
 > **Artifact language**
 > This template is the canonical **English scaffold**. Generate the artifact in the batch's development
