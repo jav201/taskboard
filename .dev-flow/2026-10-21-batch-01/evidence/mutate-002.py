@@ -1,0 +1,66 @@
+"""Mutation battery of increment 002 (how a mention looks), batch 2026-10-21-batch-01, from
+the project root:  python .dev-flow/2026-10-21-batch-01/evidence/mutate-002.py"""
+import pathlib
+import sys
+
+sys.path.insert(0, str(pathlib.Path(__file__).parent))
+from mutlib import run  # noqa: E402
+
+T = "tests/test_people_look.py::"
+V, MO = "taskboard/views.py", "taskboard/modals.py"
+run([
+    ("M1 a known mention drawn as typed (no name)", V,
+     '                    out.append("@" + person.name, f"b {HEX[\'pink\']}")',
+     '                    out.append(piece, f"b {HEX[\'pink\']}")',
+     T + "test_TC_2506_the_preview_draws_a_known_mention_as_its_name_in_pink"),
+    ("M2 the mention drawn outside its highlight segment", V,
+     '                    out.append(piece, HEX["dim" if handle else tone])',
+     '                    out.append(piece, HEX["dim" if handle else "mut"])',
+     T + "test_TC_2506_the_preview_draws_a_known_mention_as_its_name_in_pink"),
+    ("M3 an unknown handle not dimmed", V,
+     '                    out.append(piece, HEX["dim" if handle else tone])',
+     '                    out.append(piece, HEX[tone])',
+     T + "test_TC_2506_an_unknown_handle_stays_as_typed_and_dimmed"),
+    ("M4 the card's token after the due", V,
+     "    if task.archived:\n        toks.append((ARCHIVED_MARK, \"ash\"))\n    else:\n        dtok, dcol = reldue_token(task, today, board, include_done=True)\n        if dtok:\n            toks.append((dtok, dcol))\n    return toks",
+     "    if task.archived:\n        toks.append((ARCHIVED_MARK, \"ash\"))\n    else:\n        dtok, dcol = reldue_token(task, today, board, include_done=True)\n        if dtok:\n            toks.insert(-1 if names else len(toks), (dtok, dcol))\n    return toks",
+     T + "test_TC_2506_the_card_names_the_first_person_and_counts_the_rest_before_the_due"),
+    ("M5 the count of the others dropped", V,
+     '(f"+{len(names) - 1}" if len(names) > 1 else "")', '""',
+     T + "test_TC_2506_the_card_names_the_first_person_and_counts_the_rest_before_the_due"),
+    ("M6 NBSP made a plain space (a wrap splits the name)", V,
+     'return m.group(0) if p is None else "@" + p.name.replace(" ", NBSP)',
+     'return m.group(0) if p is None else "@" + p.name',
+     T + "test_TC_2506_present_lines_write_the_name_and_never_split_it"),
+    ("M7 the presentation's marks not painted", V,
+     '            body += c(escape(txt[last:m.start()]), "ink") + c(escape(m.group(0)), "pink", bold=True)',
+     '            body += c(escape(txt[last:m.start()]), "ink") + c(escape(m.group(0)), "ink")',
+     T + "test_TC_2506_a_present_row_paints_each_mention_pink_bold"),
+    ("M8 the split view given no people", V,
+     "        cols = [_present_column(ts, cursor, room, cw, board.people)",
+     "        cols = [_present_column(ts, cursor, room, cw, None)",
+     T + "test_TC_2506_the_split_view_shows_names"),
+    ("M9 the details given no people", MO,
+     "                yield Static(notes_preview(t.notes, self._board.people))",
+     "                yield Static(notes_preview(t.notes))",
+     T + "test_AT_2506_details_card_and_presentation_name_the_people[size0]"),
+    ("M10 the drawn name read from the stored text, not the directory (a rename lost)", V,
+     '                    out.append("@" + person.name, f"b {HEX[\'pink\']}")',
+     '                    out.append("@" + " ".join(w.capitalize() for w in handle.split(".")), f"b {HEX[\'pink\']}")',
+     T + "test_AT_2502_a_renamed_person_draws_the_new_name_and_the_note_keeps_the_handle"),
+    ("M11 an empty directory dims every @word (code review CR-1)", V,
+     "            if not people:                      # no directory, or an empty one: as before",
+     "            if people is None:",
+     T + "test_TC_2506_without_a_directory_the_preview_is_unchanged[empty]"),
+    ("M12 a mark painted inside a longer word (code review CR-3)", V,
+     '+ r")(?!\\w)")', '+ r")")',
+     T + "test_TC_2506_a_present_row_paints_each_mention_pink_bold"),
+    ("M13 the one-row cut unpainted (code review CR-4)", V,
+     '        return [_pad(_paint_marks(first, marks) + c(escape(clip(tag, w)), "reached"), w)]',
+     '        return [_pad(c(escape(first), "ink") + c(escape(clip(tag, w)), "reached"), w)]',
+     T + "test_TC_2506_a_note_cut_to_one_row_still_paints_its_mention"),
+    ("M14 the card's token read as markup (code review CR-2)", V,
+     "    names = mention_names(task, board.people)\n",
+     "    names = [f'[b]{n}' for n in mention_names(task, board.people)]\n",
+     T + "test_TC_2506_a_name_that_looks_like_markup_is_printed_as_typed"),
+])

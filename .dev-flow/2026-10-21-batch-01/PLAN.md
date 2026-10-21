@@ -74,7 +74,7 @@ Port the round's chosen variants into the app — the directory (D1–D3, the ha
 | P1 | approved | LED .1, .2 |
 | P2 | approved | all four lenses approve with conditions, folded (LED .2) |
 | PDR | approved with conditions | PC-1..PC-4 |
-| P3 | in progress | increment 001 done (code-reviewer OK; security APPROVE S-1) |
+| P3 | in progress | increments 001, 002 done (code-reviewer OK each; security APPROVE S-1 both sides) |
 
 ## Roadmap + increment plan
 
@@ -131,7 +131,7 @@ Port the round's chosen variants into the app — the directory (D1–D3, the ha
 
 **ARQ … PDR gates:** 0 block · 105 notice — the seeds' placeholder NOTICEs (`V31`–`V38`, `V41`, `V43`–`V51`, `V54`) until their artifacts are written; `V53` while the contract names test nodes not yet written (P3 writes them); `V62` between a `--station` move and this plan's rewrite (the four moves were run back to back, the plan rewritten at P3); `V30`; the historical NOTICEs (`V9`, `V13`, `V22`, `V23`, `V42`).
 
-**P3:** declared per increment below as it lands.
+**P3:** 3..5 BLOCKs `V2` (AT-2503..AT-2506 with no node yet) — the station-expected red (`commands/dev-flow.md` §*Two-layer validation model*) while the increments land one by one; they leave as each test file lands; the remaining NOTICEs as at the PDR.
 
 ## Test ledger
 
@@ -142,3 +142,5 @@ Port the round's chosen variants into the app — the directory (D1–D3, the ha
 | the draft's full suite, three chunks (scratch) | 2026-10-21 | 1398 + 918 + 797 passed — draft only, not evidence |
 | `evidence/suite-001.txt` (increment 001, targeted) | 2026-10-21 | 391 passed |
 | `evidence/mutation-001.txt` | 2026-10-21 | 17/17 KILLED |
+| `evidence/suite-002.txt` (increment 002, targeted) | 2026-10-21 | 802 passed |
+| `evidence/mutation-002.txt` | 2026-10-21 | 14/14 KILLED |

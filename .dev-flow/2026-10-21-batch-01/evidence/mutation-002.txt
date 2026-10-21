@@ -1,0 +1,15 @@
+M1 a known mention drawn as typed (no name) · taskboard/views.py · test_TC_2506_the_preview_draws_a_known_mention_as_its_name_in_pink: RED (KILLED) · sha256 c31fba9642b6 restored · 1 failed in 0.53s
+M2 the mention drawn outside its highlight segment · taskboard/views.py · test_TC_2506_the_preview_draws_a_known_mention_as_its_name_in_pink: RED (KILLED) · sha256 c31fba9642b6 restored · 1 failed in 0.51s
+M3 an unknown handle not dimmed · taskboard/views.py · test_TC_2506_an_unknown_handle_stays_as_typed_and_dimmed: RED (KILLED) · sha256 c31fba9642b6 restored · 1 failed in 0.51s
+M4 the card's token after the due · taskboard/views.py · test_TC_2506_the_card_names_the_first_person_and_counts_the_rest_before_the_due: RED (KILLED) · sha256 c31fba9642b6 restored · 1 failed in 0.52s
+M5 the count of the others dropped · taskboard/views.py · test_TC_2506_the_card_names_the_first_person_and_counts_the_rest_before_the_due: RED (KILLED) · sha256 c31fba9642b6 restored · 1 failed in 0.54s
+M6 NBSP made a plain space (a wrap splits the name) · taskboard/views.py · test_TC_2506_present_lines_write_the_name_and_never_split_it: RED (KILLED) · sha256 c31fba9642b6 restored · 1 failed in 0.52s
+M7 the presentation's marks not painted · taskboard/views.py · test_TC_2506_a_present_row_paints_each_mention_pink_bold: RED (KILLED) · sha256 c31fba9642b6 restored · 1 failed in 0.53s
+M8 the split view given no people · taskboard/views.py · test_TC_2506_the_split_view_shows_names: RED (KILLED) · sha256 c31fba9642b6 restored · 1 failed in 0.56s
+M9 the details given no people · taskboard/modals.py · test_AT_2506_details_card_and_presentation_name_the_people[size0]: RED (KILLED) · sha256 66a75822e52c restored · 1 failed in 1.27s
+M10 the drawn name read from the stored text, not the directory (a rename lost) · taskboard/views.py · test_AT_2502_a_renamed_person_draws_the_new_name_and_the_note_keeps_the_handle: RED (KILLED) · sha256 c31fba9642b6 restored · 1 failed in 1.23s
+M11 an empty directory dims every @word (code review CR-1) · taskboard/views.py · test_TC_2506_without_a_directory_the_preview_is_unchanged[empty]: RED (KILLED) · sha256 c31fba9642b6 restored · 1 failed in 0.54s
+M12 a mark painted inside a longer word (code review CR-3) · taskboard/views.py · test_TC_2506_a_present_row_paints_each_mention_pink_bold: RED (KILLED) · sha256 c31fba9642b6 restored · 1 failed in 0.57s
+M13 the one-row cut unpainted (code review CR-4) · taskboard/views.py · test_TC_2506_a_note_cut_to_one_row_still_paints_its_mention: RED (KILLED) · sha256 c31fba9642b6 restored · 1 failed in 0.51s
+M14 the card's token read as markup (code review CR-2) · taskboard/views.py · test_TC_2506_a_name_that_looks_like_markup_is_printed_as_typed: RED (KILLED) · sha256 c31fba9642b6 restored · 1 failed in 0.52s
+not killed: 0

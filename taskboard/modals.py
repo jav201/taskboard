@@ -42,7 +42,7 @@ from .models import (IMAGE_EXTS, PROJECT_COLORS, PROJECT_STATUSES, TASK_PRIORITI
 from .boards import clean_name, move_plan, move_project, peek_board, slug
 from .keymap import KEY_STYLE, PRESENT_KEYS, key_line, palette_commands
 from .views import (HEX, board_chip_text, clip, fit, gantt_group_key, gantt_link_frame,
-                    gantt_link_order, highlight_segments, valid_url)
+                    gantt_link_order, notes_text, valid_url)
 
 # Imported at MODULE load (before the app starts) on purpose: textual-image
 # detects the terminal's graphics support by QUERYING the terminal, which only
@@ -349,23 +349,20 @@ class DatePickerMixin:
 TASK_CHIPS_ONE_ROW = 137        # 122 + the milestone box (batch 2026-10-04-batch-02, p3_chip_threshold.py)
 
 
-def notes_preview(text: str) -> Text:
+def notes_preview(text: str, people: dict | None = None) -> Text:
     """The notes as the board paints them: each line through the board's one
     highlight tokeniser, `highlight_segments` (a highlight never crosses a line
-    there either), each segment a Text PIECE in its tone.
+    there either), each segment a Text PIECE in its tone — `views.notes_text`.
 
     No parser reads the notes (S1, S-4): escaping and re-parsing them doubled
     backslashes and turned `:smile:` into an emoji, and handed to a Static as a
     str Textual's own parser read `[B]` or `[LINK=…` as tags — a note holding one
-    crashed the editor and could arrive by team sync."""
-    out = Text()
-    for i, ln in enumerate(text.split("\n")):
-        if i:
-            out.append("\n")
-        if ln.strip():
-            for segment, tone in highlight_segments(ln):
-                out.append(segment, HEX[tone])
-    return out
+    crashed the editor and could arrive by team sync.
+
+    With `people` (the directory's people by handle, batch 2026-10-21-batch-01), a
+    mention of a person it holds is drawn `@Name` bold pink, inside any highlight;
+    a mention of a handle it does not hold stays as typed, dimmed."""
+    return Text.assemble(notes_text(text, people))      # one Text of plain pieces
 
 
 # a key per button, beside text fields `alt+<letter>` (batch 2026-10-20-batch-03, D-6)
@@ -465,7 +462,7 @@ class TaskModal(ClipboardPasteMixin, EmojiPickerMixin, DatePickerMixin, ButtonKe
                     preview = VerticalScroll(id="task-preview-scroll")
                     preview.can_focus = False      # read-only: never a tab stop
                     with preview:
-                        yield Static(notes_preview(t.notes if t else ""),
+                        yield Static(notes_preview(t.notes if t else "", self.board.people),
                                      id="task-preview")
             with Horizontal(id="task-foot"):
                 with Vertical(classes="task-foot-col"):
@@ -495,7 +492,7 @@ class TaskModal(ClipboardPasteMixin, EmojiPickerMixin, DatePickerMixin, ButtonKe
     def on_text_area_changed(self, event: TextArea.Changed) -> None:
         if event.text_area.id == "f-notes":
             self.query_one("#task-preview", Static).update(
-                notes_preview(event.text_area.text))
+                notes_preview(event.text_area.text, self.board.people))
             self.call_after_refresh(self._follow_cursor)
 
     def on_text_area_selection_changed(self, event: TextArea.SelectionChanged) -> None:
@@ -1956,7 +1953,7 @@ class TaskDetails(ModalScreen[None]):
             yield from self._links()
             yield Label("[b]Notes[/b]  [dim]highlight: ==…== yellow, !!…!! red, ++…++ green[/dim]")
             if t.notes:
-                yield Static(notes_preview(t.notes))
+                yield Static(notes_preview(t.notes, self._board.people))
             else:
                 yield Static("[dim]—[/dim]")
             yield Label("[b]URLs[/b]")

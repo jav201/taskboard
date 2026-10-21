@@ -140,7 +140,7 @@ Textual 8.2.8 names the `@` key `at` (P-1); a priority binding refused by `check
 
 ### HLR-2501 — One people directory for every board
 - **Traceability:** US-2501
-- **Ledger:** LED-2026-10-21-batch-01.1, LED-2026-10-21-batch-01.2
+- **Ledger:** LED-2026-10-21-batch-01.1, LED-2026-10-21-batch-01.2, LED-2026-10-21-batch-01.3
 - **Statement:** The system shall keep one directory of people in `people.json` beside the boards registry (`~/.taskboard/people.json` for the app `taskboard` opens; beside the board only for an app built without a registry — a test seam: `taskboard` always passes the home's registry, architect A-8), each person a handle, a name (1–60 characters), a role (≤ 60) and a note (≤ 200), every field one line without control characters; it shall read the file at start without ever raising — a missing, empty or blank file an empty directory, nothing written and nothing said; an unreadable one (a failed read, not JSON, not an object holding a `people` list) an empty directory after a byte copy at `people.json.corrupt` (`boards.keep_aside`, never replacing an earlier copy) and one warning notice `people.json could not be read; a copy was kept at <path>. The people directory starts empty.` — `…; no copy could be kept. …` when the copy failed; an entry with a malformed or repeated handle or no name skipped; it shall write the file only when a person is added or edited, atomically, under `people.json.lock`, as a read-modify-write of what the file holds then (another window's people kept), never over an unparseable file it could not copy aside; a failed write shall change nothing in memory and raise to its caller, which says so; every board the app opens shall draw mentions from this one directory, and no board file shall hold it; a window reads the file at start and after its own writes only, so a person another window adds shows here after a restart or this window's next add or edit (accepted, architect A-7).
 - **Rationale (informative):** D1 (one directory for every board), D2 (name + role + note), the commission's «One directory for all boards at `~/.taskboard/people.json`, written with batch-02's lock/atomic-write pattern».
 - **Validation:** `test`
@@ -156,7 +156,7 @@ Textual 8.2.8 names the `@` key `at` (P-1); a priority binding refused by `check
 
 ### HLR-2502 — A mention is `@handle`, and a handle never changes
 - **Traceability:** US-2501
-- **Ledger:** LED-2026-10-21-batch-01.1, LED-2026-10-21-batch-01.2
+- **Ledger:** LED-2026-10-21-batch-01.1, LED-2026-10-21-batch-01.2, LED-2026-10-21-batch-01.3
 - **Statement:** The system shall read a mention as `@` at a word start (not after a letter, digit, `.` or `@`, so `ana@x.com` is no mention) followed by a handle — lowercase letters and digits in words joined by `.`, `_` or `-`, never ending in one of them — and shall also read the link form `@[Name](p:handle)`; a task's people shall be read from its notes and nowhere else; a new person's handle shall be the name's letters and digits, accents folded, its words joined by `.` (`Andrés Lima` → `andres.lima`; `person` when nothing is left), with `2`, `3`, … appended while it is taken in the file or in memory; editing a person shall never change their handle.
 - **Rationale (informative):** D3 and the storage verdict `handle` (S3): short, typeable, legible without the directory, stable across renames; the link form is read because the round's tokeniser reads it.
 - **Validation:** `test`
@@ -220,8 +220,8 @@ Textual 8.2.8 names the `@` key `at` (P-1); a priority binding refused by `check
 
 ### HLR-2506 — A mention is drawn `@Name` in pink
 - **Traceability:** US-2505
-- **Ledger:** LED-2026-10-21-batch-01.1, LED-2026-10-21-batch-01.2
-- **Statement:** Where a task's notes are shown in the details (`enter`) or the editor's preview, the system shall draw each mention of a person the directory holds as `@<current name>` bold in the `pink` tone, inside any highlight of its line, and a mention of a handle the directory does not hold as typed, dimmed; on the kanban card it shall add, just before the due token (so it goes first when the row is tight), `@<first name of the first person mentioned>` with `+<n>` for the others, in `pink`; in the presentation's notes (the split view and the gantt view's cursor note) it shall write each such mention `@<Name>`, its spaces non-breaking so a wrap never splits it, bold pink; with no directory every place shall draw the notes exactly as before.
+- **Ledger:** LED-2026-10-21-batch-01.1, LED-2026-10-21-batch-01.2, LED-2026-10-21-batch-01.3
+- **Statement:** Where a task's notes are shown in the details (`enter`) or the editor's preview, the system shall draw each mention of a person the directory holds as `@<current name>` bold in the `pink` tone, inside any highlight of its line, and a mention of a handle the directory does not hold as typed, dimmed; on the kanban card it shall add, just before the due token (so it goes first when the row is tight), `@<first name of the first person mentioned>` with `+<n>` for the others, in `pink`; in the presentation's notes (the split view and the gantt view's cursor note) it shall write each such mention `@<Name>`, its spaces non-breaking so a wrap never splits it, bold pink; with no directory, or an empty one (`Board.people` is `{}` until someone is added), every place shall draw the notes exactly as before (code review CR-1 of increment 002); a mark is painted only where a whole mention was written — typed text that merely starts like a name (`@Anabel` for `Ana`) stays as typed (CR-3) — in every row of the presentation's note, the one-row cut included (CR-4).
 - **Rationale (informative):** item 4 A (`notes_preview_m`, `card_meta_m`, `present_note_lines_m`, `present_note_markup_m` with style A): one tone, no width change, visible in the three places; the room reads names.
 - **Validation:** `test`
 - **Executed verification:** `python -m pytest -q -p no:cacheprovider tests/test_people_look.py`
@@ -236,12 +236,12 @@ Textual 8.2.8 names the `@` key `at` (P-1); a priority binding refused by `check
 
 ### HLR-2507 — Team sync carries a mention as its handle and nothing of the directory
 - **Traceability:** US-2501
-- **Ledger:** LED-2026-10-21-batch-01.1, LED-2026-10-21-batch-01.2
+- **Ledger:** LED-2026-10-21-batch-01.1, LED-2026-10-21-batch-01.2, LED-2026-10-21-batch-01.3
 - **Statement:** The system shall never write the directory or any of its names, roles or notes to the team folder: a push shall carry a task's notes as typed (a mention as `@handle`), as before; a teammate's pulled task whose notes hold mentions — known, unknown or malformed — shall draw in every view without error, a known handle drawn as this operator's directory names it; a note of 100 000 characters crafted against the tokeniser (`@[` repeated) shall be read in linear time (security S-1: the link form's name is bounded to 60 characters).
 - **Rationale (informative):** D4's consequence «the teammate without my directory sees `@ana.ruiz`»; the commission's «Team sync must not leak or break on mentions»; the directory holds what the operator wrote about real people.
 - **Validation:** `test`
 - **Executed verification:** `python -m pytest -q -p no:cacheprovider tests/test_people_directory.py tests/test_people_look.py -k 2507`
-- **Numeric pass threshold:** AT-2507: Client A pushed with the directory loaded → the team folder holds only `board.u1.json`, which holds `@ana.ruiz` and `@elena.vidal` and none of `Ana Ruiz`, `Client A PM`, `Prefers a written agenda`, `Elena Vidal`, `Steering committee chair`, `people`; TC-2507: five pulled tasks with the notes `with @ana.ruiz`, `@[x](p:`, `@@@ @`, `@[Ana](p:ana.ruiz)`, `@` + 500 letters draw in view 9, their card tokens and previews (`@Ana` for the first and fourth only); TC-2507: `"@[" * 50000`, `"@[" + "x" * 99000` and `"a@" * 50000` each go through `mention_ids`, `split_mentions`, `notes_text` and `_card_meta` in under 0.5 s (unbounded: ~25 s).
+- **Numeric pass threshold:** AT-2507: Client A pushed with the directory loaded → the team folder holds only `board.u1.json`, which holds `@ana.ruiz` and `@elena.vidal` and none of `Ana Ruiz`, `Client A PM`, `Prefers a written agenda`, `Elena Vidal`, `Steering committee chair`, `people`; TC-2507: five pulled tasks with the notes `with @ana.ruiz`, `@[x](p:`, `@@@ @`, `@[Ana](p:ana.ruiz)`, `@` + 500 letters draw in view 9, their card tokens and previews (`@Ana` for the first and fourth only); TC-2507: `"@[" * 50000`, `"@[" + "x" * 99000` and `"a@" * 50000` and 40 000 distinct handles each go through `mention_ids`, `split_mentions`, `mention_line`, `notes_text`, `_card_meta`, the full note's `present_note_lines` and its rows' colouring in under 2 s of CPU time (unbounded: ~25 s; quadratic dedupe: ~6 s) — CPU time, not wall-clock, so a loaded host never fails it (code review CR-2 of increment 001).
 - **Priority:** high
 - **Acceptance (black-box) — the user-verified outcome (the WHAT):**
   - **Observable outcome:** what the operator wrote about a person stays on their machine; a teammate's mentions never break a view.
@@ -269,11 +269,11 @@ Textual 8.2.8 names the `@` key `at` (P-1); a priority binding refused by `check
 
 ### LLR-2501.2 — `Directory.add` and `Directory.edit`
 - **Traceability:** HLR-2501
-- **Ledger:** LED-2026-10-21-batch-01.1, LED-2026-10-21-batch-01.2
+- **Ledger:** LED-2026-10-21-batch-01.1, LED-2026-10-21-batch-01.2, LED-2026-10-21-batch-01.3
 - **Statement:** `Directory.add(name, role="", note="")` and `Directory.edit(handle, name, role, note)` shall clean their fields as `load` does, raise `ValueError` for a name with nothing left, and write through `_commit(change)`: under `boards.file_lock(path)`, read the file as it is now (a failed read raises; an unparseable file is kept aside first — never written over when it cannot be — else the memory's people are the base), apply `change`, `models.write_atomic` `{"version": 1, "people": [...]}` with `ensure_ascii=False`, then refill `people` in place; `add` derives the handle with `handle_for(name, taken)` against the file's handles and the memory's; a raised `OSError` leaves memory unchanged.
 - **Validation:** `test (unit)`
 - **Executed verification:** `python -m pytest -q -p no:cacheprovider tests/test_people_directory.py -k TC_2501`
-- **Numeric pass threshold:** TC-2501: `add("  Ana   Ruiz ", "Client A PM")` → `ana.ruiz`, then `ana.ruiz2`, `andres.lima`, the live dict the same object, the file `version` 1 with the three ids, no `.tmp` or `.lock` left; two directories on one file → both people kept; `edit` keeps `luis.mora`; an unparseable file: kept at `.corrupt` then replaced; with `keep_aside` failing: `OSError`, the file unchanged; the lock held with `LOCK_WAIT` 0.2 → `OSError` naming `busy`, no file; `write_atomic` failing → memory unchanged.
+- **Numeric pass threshold:** TC-2501: `add("  Ana   Ruiz ", "Client A PM")` → `ana.ruiz`, then `ana.ruiz2`, `andres.lima`, the live dict the same object, the file `version` 1 with the three ids, no `.tmp` or `.lock` left; two directories on one file → both people kept; `edit` keeps `luis.mora`, writes back a person the file lost and refuses a string that is not a handle (code review CR-5); an unparseable file: kept at `.corrupt` then replaced; with `keep_aside` failing: `OSError`, the file unchanged; the lock held with `LOCK_WAIT` 0.2 → `OSError` naming `busy`, no file; `write_atomic` failing → memory unchanged.
 - **Negative control:** TC-2501 goes RED when the write skips the re-read (the second window erases the first's person), when the lock is dropped, when memory is updated before the write (increment 001's battery — planned).
 - **Boundary catalog:** ☐ boundary — none ☑ empty (a blank name refused) ☐ invalid — none ☑ error (the lock, the write, the unkeepable file)
 
@@ -289,7 +289,7 @@ Textual 8.2.8 names the `@` key `at` (P-1); a priority binding refused by `check
 
 ### LLR-2502.1 — `people.MENTION_RE`, `mention_ids`, `split_mentions`, `mention_line`, `handle_for`, `fold`
 - **Traceability:** HLR-2502
-- **Ledger:** LED-2026-10-21-batch-01.1, LED-2026-10-21-batch-01.2
+- **Ledger:** LED-2026-10-21-batch-01.1, LED-2026-10-21-batch-01.2, LED-2026-10-21-batch-01.3
 - **Statement:** `taskboard/people.py` shall provide `MENTION_RE` (`(?<![\w.@])@(?:\[([^\]\n]{1,60})\]\(p:(<handle>)\)|(<handle>))` with `<handle>` = `[a-z0-9]+(?:[._-][a-z0-9]+)*`), `mention_ids(text)` (the handles in order, each once; no scan of a text without `@`), `split_mentions(text)` (`(piece, handle | None)` pairs whose pieces join back to the text), `mention_line(notes, handle)` (the first line mentioning it, its `-`/`*`/`•` mark dropped), `fold(s)` (lower case, accents dropped) and `handle_for(name, taken)` as HLR-2502 states.
 - **Validation:** `test (unit)`
 - **Executed verification:** `python -m pytest -q -p no:cacheprovider tests/test_people_directory.py -k TC_2502`
@@ -369,7 +369,7 @@ Textual 8.2.8 names the `@` key `at` (P-1); a priority binding refused by `check
 
 ### LLR-2506.1 — the preview, the details and the card
 - **Traceability:** HLR-2506
-- **Ledger:** LED-2026-10-21-batch-01.1, LED-2026-10-21-batch-01.2
+- **Ledger:** LED-2026-10-21-batch-01.1, LED-2026-10-21-batch-01.2, LED-2026-10-21-batch-01.3
 - **Statement:** `modals.notes_preview(text, people=None)` shall return `views.notes_text(text, people)` as one Text (with `people` None the pieces of before); `TaskModal` and `TaskDetails` shall pass their board's `people`; `views.mention_names(task, people)` shall give the names a task mentions and `_card_meta` shall append `(f"@{first name}{'+n' if more}", "pink")` before the archived mark and the due token.
 - **Validation:** `test (unit)`
 - **Executed verification:** `python -m pytest -q -p no:cacheprovider tests/test_people_look.py -k TC_2506`
@@ -379,7 +379,7 @@ Textual 8.2.8 names the `@` key `at` (P-1); a priority binding refused by `check
 
 ### LLR-2506.2 — the presentation's notes
 - **Traceability:** HLR-2506
-- **Ledger:** LED-2026-10-21-batch-01.1, LED-2026-10-21-batch-01.2
+- **Ledger:** LED-2026-10-21-batch-01.1, LED-2026-10-21-batch-01.2, LED-2026-10-21-batch-01.3
 - **Statement:** `views.present_mentions(text, people)` shall write known mentions `@Name` with NBSP for spaces; `present_note_lines(notes, w, people=None)` shall wrap that text; `mention_marks(people)` shall list the written forms longest first; `_present_note_markup(row, w, marks=())`, `_present_cut(..., marks=())`, `_present_stack(..., marks=())` and `_present_column(..., people=None)` shall paint each mark bold pink; `render_present` shall pass `board.people` and its marks in the split view and the gantt view's cursor note.
 - **Validation:** `test (unit)`
 - **Executed verification:** `python -m pytest -q -p no:cacheprovider tests/test_people_look.py -k "TC_2506 and present or split"`
@@ -389,7 +389,7 @@ Textual 8.2.8 names the `@` key `at` (P-1); a priority binding refused by `check
 
 ### LLR-2507.1 — nothing of the directory leaves
 - **Traceability:** HLR-2507
-- **Ledger:** LED-2026-10-21-batch-01.1, LED-2026-10-21-batch-01.2
+- **Ledger:** LED-2026-10-21-batch-01.1, LED-2026-10-21-batch-01.2, LED-2026-10-21-batch-01.3
 - **Statement:** `Board.people` shall stay out of `Board._to_dict` and every saved or pushed record; no module but `people.py` shall read or write `people.json`; mention parsing of pulled notes shall be total (the tokeniser never raises; an unknown handle draws as typed).
 - **Validation:** `test (unit)`
 - **Executed verification:** `python -m pytest -q -p no:cacheprovider tests/test_people_directory.py tests/test_people_look.py -k 2507`

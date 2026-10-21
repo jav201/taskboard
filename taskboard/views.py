@@ -14,6 +14,7 @@ alignment survives across monospace fonts (M22 ambiguous-glyph trap).
 from __future__ import annotations
 
 import copy
+import functools
 import math
 import os
 import re
@@ -33,6 +34,7 @@ from rich.table import Table
 from rich.text import Text
 
 from . import history
+from .people import MENTION_RE, mention_ids, split_mentions
 from .models import (Board, CASCADE_DEFAULT_MODE, CASCADE_MODES, PROJECT_COLORS, Project, Task,
                      critical_chain, days_in_phase, is_open, link_conflicts, link_marks,
                      open_predecessors, parse_iso, present_order, unblocks_count, _md)
@@ -3194,6 +3196,60 @@ def highlight_segments(text: str) -> list[tuple[str, str]]:
     return out
 
 
+NBSP = "\u00a0"
+
+
+def mention_names(task: Task, people: dict) -> list[str]:
+    """The names of the directory's people (`people`, handle → Person) a task's notes
+    mention, first mention first (batch
+    2026-10-21-batch-01); a handle the directory does not hold is not a person."""
+    return [people[h].name for h in mention_ids(task.notes) if h in people]
+
+
+def present_mentions(text: str, people: dict | None) -> str:
+    """`text` with each mention of a person the directory holds written `@Name`, the
+    name's spaces made non-breaking so a wrap never splits it (the presentation's
+    notes, item 4 A); any other text is left as typed."""
+    if not people:
+        return text or ""
+
+    def name(m: re.Match) -> str:
+        p = people.get(m.group(2) or m.group(3))
+        return m.group(0) if p is None else "@" + p.name.replace(" ", NBSP)
+    return MENTION_RE.sub(name, text or "")
+
+
+def mention_marks(people: dict | None) -> tuple[str, ...]:
+    """What `present_mentions` writes for each person, longest first: the pieces
+    `_present_note_markup` paints."""
+    return tuple(sorted({"@" + p.name.replace(" ", NBSP) for p in (people or {}).values()},
+                        key=len, reverse=True))
+
+
+def notes_text(text: str, people: dict | None = None) -> Text:
+    """A note as Text pieces, never parsed: each line through `highlight_segments`;
+    with `people`, a mention of someone it holds drawn `@Name` bold pink inside any
+    highlight, a mention of a handle it does not hold kept as typed and dimmed
+    (`modals.notes_preview` is this, batch 2026-10-21-batch-01)."""
+    out = Text()
+    for i, ln in enumerate(text.split("\n")):
+        if i:
+            out.append("\n")
+        if not ln.strip():
+            continue
+        for segment, tone in highlight_segments(ln):
+            if not people:                      # no directory, or an empty one: as before
+                out.append(segment, HEX[tone])
+                continue
+            for piece, handle in split_mentions(segment):
+                person = people.get(handle) if handle else None
+                if person is not None:
+                    out.append("@" + person.name, f"b {HEX['pink']}")
+                else:
+                    out.append(piece, HEX["dim" if handle else tone])
+    return out
+
+
 def _highlight_markup(text: str) -> str:
     """Render ==text== (yellow), !!text!! (red), ++text++ (green). The
     non-highlighted text is returned in the 'mut' tone so the caller can use the
@@ -4835,6 +4891,12 @@ def _card_meta(task, board, today, marks, tag) -> list[tuple[str, str]]:
     toks.extend(_link_tokens(task, board, marks))
     if tag:
         toks.append(tag)
+    names = mention_names(task, board.people)
+    if names:
+        # `@Ana+1` just before the last token (the due), so it goes before the date
+        # does when the row is tight (batch 2026-10-21-batch-01, item 4 A)
+        toks.append((f"@{names[0].split()[0]}" + (f"+{len(names) - 1}" if len(names) > 1 else ""),
+                     "pink"))
     if task.archived:
         toks.append((ARCHIVED_MARK, "ash"))
     else:
@@ -6211,13 +6273,14 @@ PRESENT_NARROW = tuple(r.format(PRESENT_MIN_WIDTH) for r in (
 _PRESENT_ITEM = re.compile(r"\d{1,3}\. ")
 
 
-def present_note_lines(notes: str, w: int) -> list[tuple[str, str]]:
+def present_note_lines(notes: str, w: int, people: dict | None = None) -> list[tuple[str, str]]:
     """A task's notes as (lead, text) rows that fit `w` cells: every line break
     kept, a run of blank lines collapsed to one blank row, `- ` / `* ` / `• `
     items drawn `• ` and `1. ` items keeping their number, each item's wrapped
-    rows hanging under its text (the prototype's `wrap_notes`)."""
+    rows hanging under its text (the prototype's `wrap_notes`); with `people`, a
+    mention is written `@Name` (`present_mentions`)."""
     out: list[tuple[str, str]] = []
-    for para in (notes or "").strip().split("\n"):
+    for para in present_mentions(notes, people).strip().split("\n"):
         body = para.strip()
         if not body:
             if out and out[-1][1]:
@@ -6260,17 +6323,36 @@ def _wrap_cells(text: str, w: int) -> list[str]:
     return rows + ([line] if line else [])
 
 
-def _present_note_markup(row: tuple[str, str], w: int) -> str:
+@functools.lru_cache(maxsize=8)
+def _marks_re(marks: tuple[str, ...]) -> re.Pattern:
+    """`marks` as one pattern, built once per directory, not per row (security N-2); a
+    mark ends at a word end, so `@Anabel` is not painted as `@Ana` (code review CR-3)."""
+    return re.compile("(?:" + "|".join(re.escape(k) for k in marks) + r")(?!\w)")
+
+
+def _paint_marks(txt: str, marks: tuple[str, ...]) -> str:
+    """`txt` as `ink` markup, each of `marks` (`mention_marks`) in it bold pink."""
+    body, last = "", 0
+    if marks:
+        for m in _marks_re(marks).finditer(txt):
+            body += c(escape(txt[last:m.start()]), "ink") + c(escape(m.group(0)), "pink", bold=True)
+            last = m.end()
+    return body + c(escape(txt[last:]), "ink")
+
+
+def _present_note_markup(row: tuple[str, str], w: int, marks: tuple[str, ...] = ()) -> str:
+    """One note row; each of `marks` (`mention_marks`) in it painted bold pink."""
     lead, txt = row
-    return _pad(c(escape(lead), "mut") + c(escape(clip(txt, w - vis(lead))), "ink"), w)
+    return _pad(c(escape(lead), "mut") + _paint_marks(clip(txt, w - vis(lead)), marks), w)
 
 
-def _present_cut(rows: list[tuple[str, str]], k: int, w: int) -> list[str]:
+def _present_cut(rows: list[tuple[str, str]], k: int, w: int,
+                 marks: tuple[str, ...] = ()) -> list[str]:
     """`k` rows of a note, `w` cells each; a cut is always declared: the last
     row says `… +N lines`, and a note kept to one row is its first line, cut,
     with ` … +N lines` beside it."""
     if k >= len(rows):
-        return [_present_note_markup(r, w) for r in rows]
+        return [_present_note_markup(r, w, marks) for r in rows]
     if k <= 0:
         return []
     if k == 1:
@@ -6278,9 +6360,9 @@ def _present_cut(rows: list[tuple[str, str]], k: int, w: int) -> list[str]:
         first = (rows[0][0] + rows[0][1]).rstrip()
         if vis(first) > w - vis(tag):     # the cut mark already says "more": no second "…"
             first = set_cell_size(first, max(0, w - vis(tag)))
-        return [_pad(c(escape(first), "ink") + c(escape(clip(tag, w)), "reached"), w)]
+        return [_pad(_paint_marks(first, marks) + c(escape(clip(tag, w)), "reached"), w)]
     more = c(escape(clip(f"… +{len(rows) - k + 1} lines", w)), "reached")
-    return [_present_note_markup(r, w) for r in rows[:k - 1]] + [_pad(more, w)]
+    return [_present_note_markup(r, w, marks) for r in rows[:k - 1]] + [_pad(more, w)]
 
 
 def _present_scrolled(rows: list[str], room: int, page: int, w: int) -> list[str]:
@@ -6379,15 +6461,16 @@ class _PresentColumn(NamedTuple):
         return self.cur >= 0 and 3 <= self.ks[self.cur] < len(self.notes[self.cur])
 
 
-def _present_column(tasks: list[Task], cursor: Task | None, room: int, w: int) -> _PresentColumn:
-    notes = [present_note_lines(t.notes, w - 2) for t in tasks]
+def _present_column(tasks: list[Task], cursor: Task | None, room: int, w: int,
+                    people: dict | None = None) -> _PresentColumn:
+    notes = [present_note_lines(t.notes, w - 2, people) for t in tasks]
     cur = next((i for i, t in enumerate(tasks) if cursor is not None and t.id == cursor.id), -1)
     return _PresentColumn(tasks, notes, cur,
                           present_alloc([len(n) for n in notes], cur, max(0, room - len(tasks))))
 
 
 def _present_stack(col: _PresentColumn, room: int, w: int, hue: str, today: date,
-                   scroll: int, whole: bool) -> list[str]:
+                   scroll: int, whole: bool, marks: tuple[str, ...] = ()) -> list[str]:
     """One column of the split view, exactly `room` rows of `w` cells: a block
     per task — its heading, then its note in the rows `present_alloc` gives it.
     `scroll` is a page: it pages the cursor's note (`note_scrolls`), or, with
@@ -6402,10 +6485,10 @@ def _present_stack(col: _PresentColumn, room: int, w: int, hue: str, today: date
         for i, t in enumerate(tasks):
             out.append(_present_heading(t, w, i == cur, hue, today, not notes[i]))
             if i == cur and note_scroll and sizes[i] < len(notes[i]):
-                body = [_present_note_markup(r, w - 2) for r in notes[i]]
+                body = [_present_note_markup(r, w - 2, marks) for r in notes[i]]
                 seg = _present_scrolled(body, sizes[i], note_scroll, w - 2)
             else:
-                seg = _present_cut(notes[i], sizes[i], w - 2)
+                seg = _present_cut(notes[i], sizes[i], w - 2, marks)
             out += [_pad(bars[i] + s, w) for s in seg]
         return out
 
@@ -6579,9 +6662,12 @@ def render_present(board: Board, project_id: str | None, cursor_id: str | None,
         room = max(0, height - len(lines))
         half = (len(open_t) + 1) // 2 if wide else len(open_t)
         cw = (width - 2 - 3) // 2 if wide else width - 2
-        cols = [_present_column(ts, cursor, room, cw) for ts in (open_t[:half], open_t[half:])]
+        cols = [_present_column(ts, cursor, room, cw, board.people)
+                for ts in (open_t[:half], open_t[half:])]
         whole = not any(col.note_scrolls() for col in cols)
-        a, b = (_present_stack(col, room, cw, proj.color, today, scroll, whole) for col in cols)
+        marks = mention_marks(board.people)
+        a, b = (_present_stack(col, room, cw, proj.color, today, scroll, whole, marks)
+                for col in cols)
         if wide:
             lines += [_pad(" " + a[y] + c(" │ ", "frame") + b[y], width) for y in range(room)]
         else:
@@ -6593,9 +6679,9 @@ def render_present(board: Board, project_id: str | None, cursor_id: str | None,
         on = cursor is not None and t.id == cursor.id
         lines.append(_present_brief(t, p, on, width))
         if on:
-            rows = present_note_lines(t.notes, width - 6)
+            rows = present_note_lines(t.notes, width - 6, board.people)
             lines += [_pad("  " + c("· ", "dim") + r, width)
-                      for r in _present_cut(rows, room, width - 6)]
+                      for r in _present_cut(rows, room, width - 6, mention_marks(board.people))]
     return _present_finish(lines, height, width)
 
 

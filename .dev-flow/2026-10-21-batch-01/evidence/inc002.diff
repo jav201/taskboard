@@ -1,0 +1,604 @@
+diff --git a/taskboard/modals.py b/taskboard/modals.py
+index 32194a0..e33604a 100644
+--- a/taskboard/modals.py
++++ b/taskboard/modals.py
+@@ -42,7 +42,7 @@ from .models import (IMAGE_EXTS, PROJECT_COLORS, PROJECT_STATUSES, TASK_PRIORITI
+ from .boards import clean_name, move_plan, move_project, peek_board, slug
+ from .keymap import KEY_STYLE, PRESENT_KEYS, key_line, palette_commands
+ from .views import (HEX, board_chip_text, clip, fit, gantt_group_key, gantt_link_frame,
+-                    gantt_link_order, highlight_segments, valid_url)
++                    gantt_link_order, notes_text, valid_url)
+ 
+ # Imported at MODULE load (before the app starts) on purpose: textual-image
+ # detects the terminal's graphics support by QUERYING the terminal, which only
+@@ -349,23 +349,20 @@ class DatePickerMixin:
+ TASK_CHIPS_ONE_ROW = 137        # 122 + the milestone box (batch 2026-10-04-batch-02, p3_chip_threshold.py)
+ 
+ 
+-def notes_preview(text: str) -> Text:
++def notes_preview(text: str, people: dict | None = None) -> Text:
+     """The notes as the board paints them: each line through the board's one
+     highlight tokeniser, `highlight_segments` (a highlight never crosses a line
+-    there either), each segment a Text PIECE in its tone.
++    there either), each segment a Text PIECE in its tone — `views.notes_text`.
+ 
+     No parser reads the notes (S1, S-4): escaping and re-parsing them doubled
+     backslashes and turned `:smile:` into an emoji, and handed to a Static as a
+     str Textual's own parser read `[B]` or `[LINK=…` as tags — a note holding one
+-    crashed the editor and could arrive by team sync."""
+-    out = Text()
+-    for i, ln in enumerate(text.split("\n")):
+-        if i:
+-            out.append("\n")
+-        if ln.strip():
+-            for segment, tone in highlight_segments(ln):
+-                out.append(segment, HEX[tone])
+-    return out
++    crashed the editor and could arrive by team sync.
++
++    With `people` (the directory's people by handle, batch 2026-10-21-batch-01), a
++    mention of a person it holds is drawn `@Name` bold pink, inside any highlight;
++    a mention of a handle it does not hold stays as typed, dimmed."""
++    return Text.assemble(notes_text(text, people))      # one Text of plain pieces
+ 
+ 
+ # a key per button, beside text fields `alt+<letter>` (batch 2026-10-20-batch-03, D-6)
+@@ -465,7 +462,7 @@ class TaskModal(ClipboardPasteMixin, EmojiPickerMixin, DatePickerMixin, ButtonKe
+                     preview = VerticalScroll(id="task-preview-scroll")
+                     preview.can_focus = False      # read-only: never a tab stop
+                     with preview:
+-                        yield Static(notes_preview(t.notes if t else ""),
++                        yield Static(notes_preview(t.notes if t else "", self.board.people),
+                                      id="task-preview")
+             with Horizontal(id="task-foot"):
+                 with Vertical(classes="task-foot-col"):
+@@ -495,7 +492,7 @@ class TaskModal(ClipboardPasteMixin, EmojiPickerMixin, DatePickerMixin, ButtonKe
+     def on_text_area_changed(self, event: TextArea.Changed) -> None:
+         if event.text_area.id == "f-notes":
+             self.query_one("#task-preview", Static).update(
+-                notes_preview(event.text_area.text))
++                notes_preview(event.text_area.text, self.board.people))
+             self.call_after_refresh(self._follow_cursor)
+ 
+     def on_text_area_selection_changed(self, event: TextArea.SelectionChanged) -> None:
+@@ -1956,7 +1953,7 @@ class TaskDetails(ModalScreen[None]):
+             yield from self._links()
+             yield Label("[b]Notes[/b]  [dim]highlight: ==…== yellow, !!…!! red, ++…++ green[/dim]")
+             if t.notes:
+-                yield Static(notes_preview(t.notes))
++                yield Static(notes_preview(t.notes, self._board.people))
+             else:
+                 yield Static("[dim]—[/dim]")
+             yield Label("[b]URLs[/b]")
+diff --git a/taskboard/views.py b/taskboard/views.py
+index a9785ac..0081e8d 100644
+--- a/taskboard/views.py
++++ b/taskboard/views.py
+@@ -14,6 +14,7 @@ alignment survives across monospace fonts (M22 ambiguous-glyph trap).
+ from __future__ import annotations
+ 
+ import copy
++import functools
+ import math
+ import os
+ import re
+@@ -33,6 +34,7 @@ from rich.table import Table
+ from rich.text import Text
+ 
+ from . import history
++from .people import MENTION_RE, mention_ids, split_mentions
+ from .models import (Board, CASCADE_DEFAULT_MODE, CASCADE_MODES, PROJECT_COLORS, Project, Task,
+                      critical_chain, days_in_phase, is_open, link_conflicts, link_marks,
+                      open_predecessors, parse_iso, present_order, unblocks_count, _md)
+@@ -3194,6 +3196,60 @@ def highlight_segments(text: str) -> list[tuple[str, str]]:
+     return out
+ 
+ 
++NBSP = "\u00a0"
++
++
++def mention_names(task: Task, people: dict) -> list[str]:
++    """The names of the directory's people (`people`, handle → Person) a task's notes
++    mention, first mention first (batch
++    2026-10-21-batch-01); a handle the directory does not hold is not a person."""
++    return [people[h].name for h in mention_ids(task.notes) if h in people]
++
++
++def present_mentions(text: str, people: dict | None) -> str:
++    """`text` with each mention of a person the directory holds written `@Name`, the
++    name's spaces made non-breaking so a wrap never splits it (the presentation's
++    notes, item 4 A); any other text is left as typed."""
++    if not people:
++        return text or ""
++
++    def name(m: re.Match) -> str:
++        p = people.get(m.group(2) or m.group(3))
++        return m.group(0) if p is None else "@" + p.name.replace(" ", NBSP)
++    return MENTION_RE.sub(name, text or "")
++
++
++def mention_marks(people: dict | None) -> tuple[str, ...]:
++    """What `present_mentions` writes for each person, longest first: the pieces
++    `_present_note_markup` paints."""
++    return tuple(sorted({"@" + p.name.replace(" ", NBSP) for p in (people or {}).values()},
++                        key=len, reverse=True))
++
++
++def notes_text(text: str, people: dict | None = None) -> Text:
++    """A note as Text pieces, never parsed: each line through `highlight_segments`;
++    with `people`, a mention of someone it holds drawn `@Name` bold pink inside any
++    highlight, a mention of a handle it does not hold kept as typed and dimmed
++    (`modals.notes_preview` is this, batch 2026-10-21-batch-01)."""
++    out = Text()
++    for i, ln in enumerate(text.split("\n")):
++        if i:
++            out.append("\n")
++        if not ln.strip():
++            continue
++        for segment, tone in highlight_segments(ln):
++            if not people:                      # no directory, or an empty one: as before
++                out.append(segment, HEX[tone])
++                continue
++            for piece, handle in split_mentions(segment):
++                person = people.get(handle) if handle else None
++                if person is not None:
++                    out.append("@" + person.name, f"b {HEX['pink']}")
++                else:
++                    out.append(piece, HEX["dim" if handle else tone])
++    return out
++
++
+ def _highlight_markup(text: str) -> str:
+     """Render ==text== (yellow), !!text!! (red), ++text++ (green). The
+     non-highlighted text is returned in the 'mut' tone so the caller can use the
+@@ -4835,6 +4891,12 @@ def _card_meta(task, board, today, marks, tag) -> list[tuple[str, str]]:
+     toks.extend(_link_tokens(task, board, marks))
+     if tag:
+         toks.append(tag)
++    names = mention_names(task, board.people)
++    if names:
++        # `@Ana+1` just before the last token (the due), so it goes before the date
++        # does when the row is tight (batch 2026-10-21-batch-01, item 4 A)
++        toks.append((f"@{names[0].split()[0]}" + (f"+{len(names) - 1}" if len(names) > 1 else ""),
++                     "pink"))
+     if task.archived:
+         toks.append((ARCHIVED_MARK, "ash"))
+     else:
+@@ -6211,13 +6273,14 @@ PRESENT_NARROW = tuple(r.format(PRESENT_MIN_WIDTH) for r in (
+ _PRESENT_ITEM = re.compile(r"\d{1,3}\. ")
+ 
+ 
+-def present_note_lines(notes: str, w: int) -> list[tuple[str, str]]:
++def present_note_lines(notes: str, w: int, people: dict | None = None) -> list[tuple[str, str]]:
+     """A task's notes as (lead, text) rows that fit `w` cells: every line break
+     kept, a run of blank lines collapsed to one blank row, `- ` / `* ` / `• `
+     items drawn `• ` and `1. ` items keeping their number, each item's wrapped
+-    rows hanging under its text (the prototype's `wrap_notes`)."""
++    rows hanging under its text (the prototype's `wrap_notes`); with `people`, a
++    mention is written `@Name` (`present_mentions`)."""
+     out: list[tuple[str, str]] = []
+-    for para in (notes or "").strip().split("\n"):
++    for para in present_mentions(notes, people).strip().split("\n"):
+         body = para.strip()
+         if not body:
+             if out and out[-1][1]:
+@@ -6260,17 +6323,36 @@ def _wrap_cells(text: str, w: int) -> list[str]:
+     return rows + ([line] if line else [])
+ 
+ 
+-def _present_note_markup(row: tuple[str, str], w: int) -> str:
++@functools.lru_cache(maxsize=8)
++def _marks_re(marks: tuple[str, ...]) -> re.Pattern:
++    """`marks` as one pattern, built once per directory, not per row (security N-2); a
++    mark ends at a word end, so `@Anabel` is not painted as `@Ana` (code review CR-3)."""
++    return re.compile("(?:" + "|".join(re.escape(k) for k in marks) + r")(?!\w)")
++
++
++def _paint_marks(txt: str, marks: tuple[str, ...]) -> str:
++    """`txt` as `ink` markup, each of `marks` (`mention_marks`) in it bold pink."""
++    body, last = "", 0
++    if marks:
++        for m in _marks_re(marks).finditer(txt):
++            body += c(escape(txt[last:m.start()]), "ink") + c(escape(m.group(0)), "pink", bold=True)
++            last = m.end()
++    return body + c(escape(txt[last:]), "ink")
++
++
++def _present_note_markup(row: tuple[str, str], w: int, marks: tuple[str, ...] = ()) -> str:
++    """One note row; each of `marks` (`mention_marks`) in it painted bold pink."""
+     lead, txt = row
+-    return _pad(c(escape(lead), "mut") + c(escape(clip(txt, w - vis(lead))), "ink"), w)
++    return _pad(c(escape(lead), "mut") + _paint_marks(clip(txt, w - vis(lead)), marks), w)
+ 
+ 
+-def _present_cut(rows: list[tuple[str, str]], k: int, w: int) -> list[str]:
++def _present_cut(rows: list[tuple[str, str]], k: int, w: int,
++                 marks: tuple[str, ...] = ()) -> list[str]:
+     """`k` rows of a note, `w` cells each; a cut is always declared: the last
+     row says `… +N lines`, and a note kept to one row is its first line, cut,
+     with ` … +N lines` beside it."""
+     if k >= len(rows):
+-        return [_present_note_markup(r, w) for r in rows]
++        return [_present_note_markup(r, w, marks) for r in rows]
+     if k <= 0:
+         return []
+     if k == 1:
+@@ -6278,9 +6360,9 @@ def _present_cut(rows: list[tuple[str, str]], k: int, w: int) -> list[str]:
+         first = (rows[0][0] + rows[0][1]).rstrip()
+         if vis(first) > w - vis(tag):     # the cut mark already says "more": no second "…"
+             first = set_cell_size(first, max(0, w - vis(tag)))
+-        return [_pad(c(escape(first), "ink") + c(escape(clip(tag, w)), "reached"), w)]
++        return [_pad(_paint_marks(first, marks) + c(escape(clip(tag, w)), "reached"), w)]
+     more = c(escape(clip(f"… +{len(rows) - k + 1} lines", w)), "reached")
+-    return [_present_note_markup(r, w) for r in rows[:k - 1]] + [_pad(more, w)]
++    return [_present_note_markup(r, w, marks) for r in rows[:k - 1]] + [_pad(more, w)]
+ 
+ 
+ def _present_scrolled(rows: list[str], room: int, page: int, w: int) -> list[str]:
+@@ -6379,15 +6461,16 @@ class _PresentColumn(NamedTuple):
+         return self.cur >= 0 and 3 <= self.ks[self.cur] < len(self.notes[self.cur])
+ 
+ 
+-def _present_column(tasks: list[Task], cursor: Task | None, room: int, w: int) -> _PresentColumn:
+-    notes = [present_note_lines(t.notes, w - 2) for t in tasks]
++def _present_column(tasks: list[Task], cursor: Task | None, room: int, w: int,
++                    people: dict | None = None) -> _PresentColumn:
++    notes = [present_note_lines(t.notes, w - 2, people) for t in tasks]
+     cur = next((i for i, t in enumerate(tasks) if cursor is not None and t.id == cursor.id), -1)
+     return _PresentColumn(tasks, notes, cur,
+                           present_alloc([len(n) for n in notes], cur, max(0, room - len(tasks))))
+ 
+ 
+ def _present_stack(col: _PresentColumn, room: int, w: int, hue: str, today: date,
+-                   scroll: int, whole: bool) -> list[str]:
++                   scroll: int, whole: bool, marks: tuple[str, ...] = ()) -> list[str]:
+     """One column of the split view, exactly `room` rows of `w` cells: a block
+     per task — its heading, then its note in the rows `present_alloc` gives it.
+     `scroll` is a page: it pages the cursor's note (`note_scrolls`), or, with
+@@ -6402,10 +6485,10 @@ def _present_stack(col: _PresentColumn, room: int, w: int, hue: str, today: date
+         for i, t in enumerate(tasks):
+             out.append(_present_heading(t, w, i == cur, hue, today, not notes[i]))
+             if i == cur and note_scroll and sizes[i] < len(notes[i]):
+-                body = [_present_note_markup(r, w - 2) for r in notes[i]]
++                body = [_present_note_markup(r, w - 2, marks) for r in notes[i]]
+                 seg = _present_scrolled(body, sizes[i], note_scroll, w - 2)
+             else:
+-                seg = _present_cut(notes[i], sizes[i], w - 2)
++                seg = _present_cut(notes[i], sizes[i], w - 2, marks)
+             out += [_pad(bars[i] + s, w) for s in seg]
+         return out
+ 
+@@ -6579,9 +6662,12 @@ def render_present(board: Board, project_id: str | None, cursor_id: str | None,
+         room = max(0, height - len(lines))
+         half = (len(open_t) + 1) // 2 if wide else len(open_t)
+         cw = (width - 2 - 3) // 2 if wide else width - 2
+-        cols = [_present_column(ts, cursor, room, cw) for ts in (open_t[:half], open_t[half:])]
++        cols = [_present_column(ts, cursor, room, cw, board.people)
++                for ts in (open_t[:half], open_t[half:])]
+         whole = not any(col.note_scrolls() for col in cols)
+-        a, b = (_present_stack(col, room, cw, proj.color, today, scroll, whole) for col in cols)
++        marks = mention_marks(board.people)
++        a, b = (_present_stack(col, room, cw, proj.color, today, scroll, whole, marks)
++                for col in cols)
+         if wide:
+             lines += [_pad(" " + a[y] + c(" │ ", "frame") + b[y], width) for y in range(room)]
+         else:
+@@ -6593,9 +6679,9 @@ def render_present(board: Board, project_id: str | None, cursor_id: str | None,
+         on = cursor is not None and t.id == cursor.id
+         lines.append(_present_brief(t, p, on, width))
+         if on:
+-            rows = present_note_lines(t.notes, width - 6)
++            rows = present_note_lines(t.notes, width - 6, board.people)
+             lines += [_pad("  " + c("· ", "dim") + r, width)
+-                      for r in _present_cut(rows, room, width - 6)]
++                      for r in _present_cut(rows, room, width - 6, mention_marks(board.people))]
+     return _present_finish(lines, height, width)
+ 
+ 
+diff --git a/tests/test_people_look.py b/tests/test_people_look.py
+new file mode 100644
+index 0000000..d1fc4b5
+--- /dev/null
++++ b/tests/test_people_look.py
+@@ -0,0 +1,301 @@
++"""How a mention looks: `@Name` in pink in the details, the kanban card and the
++presentation (batch 2026-10-21-batch-01, the round's item 4, variant A).
++
++HLR-2506 / LLR-2506.1, LLR-2506.2 · TC-2506 · AT-2506 (US-2505); HLR-2507 / TC-2507 —
++a teammate's task carrying mentions draws in the team view and breaks nothing. Why it
++matters: the notes store `@ana.ruiz` (the handle), but the operator reads names — in the
++details, on the card at a glance, and in front of a room. A mention of a handle the
++directory does not hold is shown as typed, never as someone else. Synthetic people only.
++"""
++from __future__ import annotations
++
++import html
++import re
++from datetime import date
++from pathlib import Path
++
++import pytest
++from rich.text import Text
++
++import people_round_fixture as fx
++from taskboard import app as app_module, models, modals, views
++from taskboard.models import Board, Task
++from taskboard.people import Directory, Person
++
++_SVG = re.compile(r'<text class="[^"]*" x="([\d.]+)" y="[\d.]+" textLength="[\d.]+" '
++                  r'clip-path="url\(#[^)]*-line-(\d+)\)">([^<]*)</text>')
++PINK = views.HEX["pink"]
++NB = " "
++
++
++def svg_rows(svg: str, width: int, height: int) -> list[str]:
++    rows = [[" "] * width for _ in range(height)]
++    for x, line, body in _SVG.findall(svg):
++        y, col = int(line), round(float(x) / 12.2)
++        if y >= height:
++            continue
++        for i, ch in enumerate(html.unescape(body).replace("\xa0", " ")):
++            if col + i < width:
++                rows[y][col + i] = ch
++    return ["".join(r).rstrip() for r in rows]
++
++
++async def screen_text(pilot, w, h) -> str:
++    await pilot.pause(0.4)
++    return "\n".join(svg_rows(pilot.app.export_screenshot(), w, h))
++
++
++class _Today(date):
++    @classmethod
++    def today(cls):
++        return fx.TODAY
++
++
++@pytest.fixture
++def home(tmp_path, monkeypatch):
++    monkeypatch.setattr(Path, "home", classmethod(lambda cls: tmp_path))
++    for mod in (app_module, models, views, modals):
++        monkeypatch.setattr(mod, "date", _Today)
++    return tmp_path / ".taskboard"
++
++
++PEOPLE = {h: Person(h, n, r, note) for h, n, r, note in fx.PEOPLE}
++
++
++def _spans(t: Text) -> dict[str, str]:
++    return {t.plain[s.start:s.end]: str(s.style) for s in t.spans}
++
++
++# --------------------------------------------------------------------------- #
++# TC-2506 — the details / editor preview (LLR-2506.1)
++# --------------------------------------------------------------------------- #
++def test_TC_2506_the_preview_draws_a_known_mention_as_its_name_in_pink():
++    t = modals.notes_preview("Review with @ana.ruiz\n- ==send to @diego.paz== now", PEOPLE)
++    assert t.plain == "Review with @Ana Ruiz\n- send to @Diego Paz now"
++    st = _spans(t)
++    assert st["@Ana Ruiz"] == f"b {PINK}" and st["@Diego Paz"] == f"b {PINK}"
++    assert st["send to "] == views.HEX["soon"]          # the highlight around it survives
++
++
++def test_TC_2506_an_unknown_handle_stays_as_typed_and_dimmed():
++    t = modals.notes_preview("Ask @an and @sofia.vega, mail ana@x.com", PEOPLE)
++    assert t.plain == "Ask @an and @sofia.vega, mail ana@x.com"
++    st = _spans(t)
++    assert st["@an"] == views.HEX["dim"] and st["@sofia.vega"] == views.HEX["dim"]
++    assert st[", mail ana@x.com"] == views.HEX["mut"]
++
++
++@pytest.mark.parametrize("people", [None, {}], ids=["none", "empty"])
++def test_TC_2506_without_a_directory_the_preview_is_unchanged(people):
++    """code review CR-1: an app with no people (the board's `{}`) draws as before."""
++    t = modals.notes_preview("Ask @ana.ruiz", people)
++    assert t.plain == "Ask @ana.ruiz" and _spans(t) == {"Ask @ana.ruiz": views.HEX["mut"]}
++
++
++def test_TC_2506_a_name_that_looks_like_markup_is_printed_as_typed():
++    """code review CR-2: the preview (Text pieces), and the two markup paths — the card's
++    token and the presentation's painted row — print a markup-looking name as typed."""
++    evil = {"x.y": Person("x.y", "[b]Bold[/b] [/]")}
++    t = modals.notes_preview("see @x.y", evil)
++    assert t.plain == "see @[b]Bold[/b] [/]"
++    b = Board([], [Task(title="T", phase="Doing", due_date="2026-10-20", notes="@x.y", id="t1")],
++              Path("unused.json"))
++    b.people = evil
++    row2 = Text.from_markup(views.kanban_card(b.tasks[0], b, 40, False, today=fx.TODAY)[1]).plain
++    assert "@[b]Bold[/b]" in row2
++    marks = views.mention_marks(evil)
++    row = Text.from_markup(views._present_note_markup(("", views.present_mentions("hi @x.y", evil)),
++                                                      40, marks)).plain
++    assert row.rstrip() == f"hi @[b]Bold[/b]{NB}[/]"
++
++
++# --------------------------------------------------------------------------- #
++# TC-2506 — the kanban card (LLR-2506.1)
++# --------------------------------------------------------------------------- #
++def _board(notes: str, due: str | None = "2026-10-20") -> Board:
++    b = Board([], [Task(title="Golden question set", phase="Doing", due_date=due, notes=notes,
++                        id="t1")], Path("unused.json"))
++    b.people = PEOPLE
++    return b
++
++
++def test_TC_2506_the_card_names_the_first_person_and_counts_the_rest_before_the_due():
++    b = _board("with @ana.ruiz and @andres.lima, @ana.ruiz again, @nobody")
++    toks = views._card_meta(b.tasks[0], b, fx.TODAY, {}, None)
++    assert toks[-2:] == [("@Ana+1", "pink"), ("today", toks[-1][1])]
++    b.people = {}
++    assert all("@" not in tok for tok, _ in views._card_meta(b.tasks[0], b, fx.TODAY, {}, None))
++
++
++def test_TC_2506_one_person_has_no_count_and_a_tight_card_keeps_the_due():
++    b = _board("@marta.gil needs it")
++    assert ("@Marta", "pink") in views._card_meta(b.tasks[0], b, fx.TODAY, {}, None)
++    wide = views.kanban_card(b.tasks[0], b, 30, False, today=fx.TODAY)
++    tight = views.kanban_card(b.tasks[0], b, 12, False, today=fx.TODAY)
++    plain = lambda m: Text.from_markup(m).plain
++    assert "@Marta" in plain(wide[1]) and "today" in plain(wide[1])
++    assert "@Marta" not in plain(tight[1]) and "today" in plain(tight[1])
++
++
++# --------------------------------------------------------------------------- #
++# TC-2506 — the presentation's notes (LLR-2506.2)
++# --------------------------------------------------------------------------- #
++def test_TC_2506_present_lines_write_the_name_and_never_split_it():
++    rows = views.present_note_lines("Review the 40 questions with @ana.ruiz in Tuesday's sync",
++                                    24, PEOPLE)
++    flat = [r for _lead, r in rows]
++    assert any(f"@Ana{NB}Ruiz" in r for r in flat)
++    assert all(not r.endswith("@Ana") for r in flat)
++    assert views.present_note_lines("with @ana.ruiz", 40) == [("", "with @ana.ruiz")]
++
++
++def test_TC_2506_a_present_row_paints_each_mention_pink_bold():
++    marks = views.mention_marks(PEOPLE)
++    assert [len(m) for m in marks] == sorted((len(m) for m in marks), reverse=True)   # QA-10
++    assert set(marks) == {"@" + p.name.replace(" ", NB) for p in PEOPLE.values()}
++    row = views._present_note_markup(("• ", f"@Andrés{NB}Lima adds @Ana{NB}Ruiz"), 40, marks)
++    t = Text.from_markup(row)
++    st = _spans(t)
++    assert st[f"@Andrés{NB}Lima"] == f"bold {PINK}" and st[f"@Ana{NB}Ruiz"] == f"bold {PINK}"
++    assert views._present_note_markup(("", "plain"), 10) == views._present_note_markup(("", "plain"), 10, ())
++    # code review CR-3: typed text that only starts like a name is not painted
++    ana = views.mention_marks({"ana": Person("ana", "Ana")})
++    t2 = Text.from_markup(views._present_note_markup(("", "mail @Anabel, ask @Ana"), 40, ana))
++    pink = [(s.start, t2.plain[s.start:s.end]) for s in t2.spans if str(s.style) == f"bold {PINK}"]
++    assert pink == [(t2.plain.index("ask @Ana") + 4, "@Ana")]          # only the whole word
++
++
++def test_TC_2506_a_note_cut_to_one_row_still_paints_its_mention():
++    """code review CR-4: the one-row cut paints the mention like every other row."""
++    marks = views.mention_marks(PEOPLE)
++    rows = views.present_note_lines("with @ana.ruiz\n- two\n- three", 40, PEOPLE)
++    row = Text.from_markup(views._present_cut(rows, 1, 40, marks)[0])
++    assert row.plain.startswith(f"with @Ana{NB}Ruiz") and "+2 lines" in row.plain
++    assert _spans(row)[f"@Ana{NB}Ruiz"] == f"bold {PINK}"
++
++
++def test_TC_2506_the_split_view_shows_names(tmp_path):
++    fx.build(tmp_path)
++    b = Board.load(fx.board_path(tmp_path, "client-a"))
++    b.people = Directory.load(tmp_path / "people.json").people
++    proj = next(p for p in b.projects if p.name == "Eval harness")
++    frame = views.render_present(b, proj.id, "tc5", fx.TODAY, 118, 30, view="split").plain
++    assert f"@Ana{NB}Ruiz" in frame and f"@Andrés{NB}Lima" in frame and "@ana.ruiz" not in frame
++    b.people = {}
++    assert "@ana.ruiz" in views.render_present(b, proj.id, "tc5", fx.TODAY, 118, 30,
++                                               view="split").plain
++
++
++# --------------------------------------------------------------------------- #
++# AT-2506 — the three places in the real app
++# --------------------------------------------------------------------------- #
++@pytest.mark.parametrize("size", [(118, 30), (80, 24)])
++async def test_AT_2506_details_card_and_presentation_name_the_people(home, size):
++    from taskboard.__main__ import open_app
++    fx.build(home, last="client-a")
++    app = open_app(None)
++    async with app.run_test(size=size) as pilot:
++        await pilot.pause()
++        await pilot.press("escape")                     # the home
++        app.selected_task_id = "tc5"
++        app.refresh_view()
++        await pilot.press("enter")                      # the details
++        text = await screen_text(pilot, *size)
++        assert "@Ana Ruiz" in text and "@Andrés Lima" in text and "@ana.ruiz" not in text
++        await pilot.press("escape")
++        await pilot.press("4")                          # kanban
++        text = await screen_text(pilot, *size)
++        # at 80 columns the card is too narrow: the mention goes first, the due stays
++        # (the round's own 80x24 capture)
++        assert ("@Ana+1" in text) is (size[0] == 118) and "today" in text
++        await pilot.press("R", "2")                     # the presentation, split
++        text = await screen_text(pilot, *size)
++        assert "@Ana Ruiz" in text and "@ana.ruiz" not in text
++
++
++# --------------------------------------------------------------------------- #
++# TC-2507 — a teammate's mentions in the team view
++# --------------------------------------------------------------------------- #
++def test_TC_2507_foreign_tasks_with_mentions_draw_in_the_team_view(tmp_path):
++    from taskboard.team_sync import TeamState
++    team = tmp_path / "team"
++    team.mkdir()
++    b = Board.load(tmp_path / "board.json")
++    b.people = PEOPLE
++    pid = b.projects[0].id
++    import json
++    (team / "team.json").write_text(json.dumps({
++        "version": 1, "phases": b.phases, "projects": [{"id": pid, "name": "P"}],
++        "roster": [{"id": "u1", "name": "username_subject"}, {"id": "u2", "name": "Teammate B"}]}),
++        encoding="utf-8")
++    weird = ["with @ana.ruiz", "@[x](p:", "@@@ @", "@[Ana](p:ana.ruiz)", "@" + "a" * 500]
++    (team / "board.u2.json").write_text(json.dumps({"user": "u2", "tasks": [
++        {"id": f"f{i}", "title": f"Foreign {i}", "project_id": pid, "phase": b.phases[0],
++         "notes": n} for i, n in enumerate(weird)]}), encoding="utf-8")
++    state = TeamState(team, user_id="u1")
++    assert state.pull()
++    out = views.render_people(b, False, None, today=fx.TODAY, width=118, height=60,
++                              team_state=state, team_filter="todo").plain
++    assert "Foreign 0" in out and "Foreign 4" in out
++    foreign = [t for t, _uid in state.foreign_tasks()]
++    assert len(foreign) == len(weird)
++    metas = [views._card_meta(t, b, fx.TODAY, {}, None) for t in foreign]
++    assert ("@Ana", "pink") in metas[0] and ("@Ana", "pink") in metas[3]
++    assert all(("@Ana", "pink") not in m for m in (metas[1], metas[2], metas[4]))
++    assert [modals.notes_preview(t.notes, PEOPLE).plain for t in foreign][:4] == [
++        "with @Ana Ruiz", "@[x](p:", "@@@ @", "@Ana Ruiz"]
++
++
++# --------------------------------------------------------------------------- #
++# AT-2502 — a rename changes what is drawn, never what is stored (architect A-4)
++# --------------------------------------------------------------------------- #
++async def test_AT_2502_a_renamed_person_draws_the_new_name_and_the_note_keeps_the_handle(home):
++    from taskboard.__main__ import open_app
++    fx.build(home, last="client-a")
++    app = open_app(None)
++    async with app.run_test(size=(118, 30)) as pilot:
++        await pilot.pause()
++        await pilot.press("escape")
++        app.people.edit("ana.ruiz", "Ana Ruiz Prieto", "Client A PM", "")
++        app.selected_task_id = "tc5"
++        app.refresh_view()
++        await pilot.press("enter")
++        text = await screen_text(pilot, 118, 30)
++        assert "@Ana Ruiz Prieto" in text
++        assert app.board.task_by_id("tc5").notes.startswith("Review the 40 questions with @ana.ruiz")
++
++
++async def test_AT_2506_another_board_draws_the_same_people(home):
++    """AT-2501, qa QA-9: the directory reaches a board opened on its own — Course's details draw
++    `@Ana Ruiz` from `~/.taskboard/people.json`."""
++    from taskboard.__main__ import open_app
++    fx.build(home, last="course")
++    app = open_app(None)
++    async with app.run_test(size=(118, 30)) as pilot:
++        await pilot.pause()
++        await pilot.press("escape")
++        assert app.board_id == "course"
++        app.selected_task_id = "tk5"
++        app.refresh_view()
++        await pilot.press("enter")
++        text = await screen_text(pilot, 118, 30)
++        assert "Guest talk by @Ana Ruiz" in text and "@Juana Soto" in text
++
++
++@pytest.mark.parametrize("text", ["@[" * 50000, "@[" + "x" * 99000, "a@" * 50000],
++                         ids=["at-bracket-x50000", "one-open-link", "a-at-x50000"])
++def test_TC_2507_a_crafted_note_draws_in_linear_time(text):
++    """security S-1: the preview's pieces and the card's token over 100 000 crafted
++    characters take well under 2 s of CPU (unbounded tokeniser: ~25 s per render; CPU
++    time, so a loaded host does not make it flaky — code review CR-2)."""
++    import time
++    board = Board([], [Task(title="t", notes=text, id="t1")], Path("unused.json"))
++    board.people = PEOPLE
++    t0 = time.process_time()
++    views.notes_text(text, board.people)
++    views._card_meta(board.tasks[0], board, fx.TODAY, {}, None)
++    rows = views.present_note_lines(text, 40, board.people)        # the full note (security)
++    marks = views.mention_marks(board.people)
++    for r in rows[:2000]:
++        views._present_note_markup(r, 40, marks)                    # and its colouring
++    assert time.process_time() - t0 < 2.0
