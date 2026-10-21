@@ -1,0 +1,7 @@
+# RED on base_ref eac7d42: the increment's tests over the base source (git rev-parse: 76c6011, taskboard/ = base)
+    from taskboard import app as app_module, boards, models, modals, people, views
+E   ImportError: cannot import name 'people' from 'taskboard' (C:\Users\jjgh8\Github\taskboard-wt\people-impl\taskboard\__init__.py)
+=========================== short test summary info ===========================
+ERROR tests/test_people_directory.py
+!!!!!!!!!!!!!!!!!!! Interrupted: 1 error during collection !!!!!!!!!!!!!!!!!!!!
+1 error in 0.66s

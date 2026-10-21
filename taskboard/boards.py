@@ -66,10 +66,11 @@ def clean_name(name) -> str:
     return strip_controls(str(name)).strip()[:NAME_MAX].strip()
 
 
-def _keep_aside(path: Path) -> Path | None:
-    """A byte copy of an unreadable registry at the first free name of
-    `boards.json.corrupt`, `.corrupt-2`, …: an earlier copy is never replaced and
-    the current bytes always kept. An empty file has nothing to keep."""
+def keep_aside(path: Path) -> Path | None:
+    """A byte copy of an unreadable file — the registry, the people directory — at
+    the first free name of `<name>.corrupt`, `.corrupt-2`, …: an earlier copy is
+    never replaced and the current bytes always kept. An empty file has nothing to
+    keep."""
     try:
         data = path.read_bytes()
     except OSError:
@@ -230,7 +231,7 @@ class Registry:
         except OSError:
             reg = None
         if reg is None:
-            backup = _keep_aside(path)
+            backup = keep_aside(path)
             return cls(path, [main_entry], MAIN_ID,
                        {"unreadable": True, "backup": str(backup) if backup else None},
                        main_path=str(main))
@@ -383,7 +384,7 @@ class Registry:
                 return True
         except OSError:
             pass
-        return _keep_aside(self.path) is not None
+        return keep_aside(self.path) is not None
 
     def _carry(self, fresh: "Registry", bid: str) -> BoardEntry | None:
         """`bid` in the registry just read: its own entry, or this one's copied in

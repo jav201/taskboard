@@ -1,0 +1,18 @@
+M1 the write skips the re-read (a second window erases the first) · taskboard/people.py · test_TC_2501_two_windows_never_erase_each_others_people: RED (KILLED) · sha256 e15ffd8318fb restored · 1 failed in 0.44s
+M2 the lock dropped · taskboard/people.py · test_TC_2501_a_held_lock_makes_the_write_wait_then_fail_and_change_nothing: RED (KILLED) · sha256 e15ffd8318fb restored · 1 failed in 0.45s
+M3 memory updated before the write · taskboard/people.py · test_TC_2501_a_failed_write_changes_nothing_in_memory: RED (KILLED) · sha256 e15ffd8318fb restored · 1 failed in 0.45s
+M4 a repeated handle kept · taskboard/people.py · test_TC_2501_the_file_is_read_and_bad_entries_are_skipped: RED (KILLED) · sha256 e15ffd8318fb restored · 1 failed in 0.42s
+M5 the role cap dropped · taskboard/people.py · test_TC_2501_the_file_is_read_and_bad_entries_are_skipped: RED (KILLED) · sha256 e15ffd8318fb restored · 1 failed in 0.43s
+M6 an unreadable file not kept aside · taskboard/people.py · test_TC_2501_an_unreadable_file_is_kept_aside_and_the_directory_starts_empty[{not json]: RED (KILLED) · sha256 e15ffd8318fb restored · 1 failed in 0.44s
+M7 the look-behind dropped (an e-mail becomes a mention) · taskboard/people.py · test_TC_2502_mentions_are_read_at_word_starts[mail ana@x.com or @@ana-ids3]: RED (KILLED) · sha256 e15ffd8318fb restored · 1 failed in 0.42s
+M8 a handle may end in a dot · taskboard/people.py · test_TC_2502_mentions_are_read_at_word_starts[Ask @ana.ruiz.-ids1]: RED (KILLED) · sha256 e15ffd8318fb restored · 1 failed in 0.42s
+M9 the taken handle not numbered · taskboard/people.py · test_TC_2502_a_taken_handle_gets_the_next_number: RED (KILLED) · sha256 e15ffd8318fb restored · 1 failed in 0.43s
+M10 _label_board does not hand the directory over · taskboard/app.py · test_AT_2501_one_directory_for_every_board: RED (KILLED) · sha256 9ed96c4fe013 restored · 1 failed in 0.57s
+M11 the board saves the directory · taskboard/models.py · test_AT_2501_one_directory_for_every_board: RED (KILLED) · sha256 3d567bd379b5 restored · 1 failed in 0.72s
+M12 the unreadable notice not said · taskboard/app.py · test_AT_2501_an_unreadable_directory_is_said_and_kept: RED (KILLED) · sha256 9ed96c4fe013 restored · 1 failed in 0.55s
+M13 an empty file reported unreadable · taskboard/people.py · test_TC_2501_an_empty_file_is_an_empty_directory_and_nothing_is_said: RED (KILLED) · sha256 e15ffd8318fb restored · 1 failed in 0.44s
+M14 the link's name unbounded (security S-1) · taskboard/people.py · test_TC_2507_a_crafted_note_is_tokenised_in_linear_time[at-bracket-x50000]: RED (KILLED) · sha256 e15ffd8318fb restored · 1 failed in 74.87s (0:01:14)
+M16 the dedupe made quadratic again (code review CR-1) · taskboard/people.py · test_TC_2507_a_crafted_note_is_tokenised_in_linear_time[distinct-x40000]: RED (KILLED) · sha256 e15ffd8318fb restored · 1 failed in 13.18s
+M17 edit writes a non-handle (code review CR-5) · taskboard/people.py · test_TC_2501_edit_writes_back_a_person_the_file_lost_and_refuses_a_non_handle: RED (KILLED) · sha256 e15ffd8318fb restored · 1 failed in 0.47s
+M15 a push carries the directory (the guard on team sync's record) · taskboard/team_sync.py · test_AT_2507_a_push_carries_mentions_as_handles_and_no_directory: RED (KILLED) · sha256 86655304d1ce restored · 1 failed in 0.45s
+not killed: 0

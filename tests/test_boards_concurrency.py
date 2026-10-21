@@ -273,7 +273,7 @@ def test_TC_2301_an_unreadable_registry_is_never_written_over_without_a_copy(hom
     assert (home / "boards.json.corrupt").read_bytes() == b"{not json"
     assert b.get("course-docker").name == "Docker course" and "personal" in _ids(reg_path)
     reg_path.write_bytes(b"[1, 2")
-    monkeypatch.setattr(boards, "_keep_aside", lambda path: None)
+    monkeypatch.setattr(boards, "keep_aside", lambda path: None)
     with pytest.raises(OSError):
         b.edit("course-docker", "Again", "blue")
     assert reg_path.read_bytes() == b"[1, 2"

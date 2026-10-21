@@ -1,4 +1,4 @@
-# Increment 001 — <REQ-ID> · `<Short title>`
+# Increment 001 — LLR-2501.1, LLR-2501.2, LLR-2501.3, LLR-2502.1, LLR-2507.1 · `the people directory`
 
 > **Artifact language**
 > This template is the canonical **English scaffold**. Generate the artifact in the batch's development
@@ -30,202 +30,103 @@
 |---|---|
 | Batch | `2026-10-21-batch-01` |
 | Increment | `001` |
-| Lane (if the batch forked) | `<lane name>` · `<modules owned by this lane>` |
-| Requirement(s) | `<R-NNN vN / LLR-NNN.n>` |
-| Acceptance | `<AT-NNN>` · white-box `<TC-NNN>` · unit `<layer-0 nodes>` |
-| Agent | `software-dev` |
+| Lane (if the batch forked) | none — one lane |
+| Requirement(s) | `HLR-2501`, `HLR-2502`, `HLR-2507` / `LLR-2501.1`, `LLR-2501.2`, `LLR-2501.3`, `LLR-2502.1`, `LLR-2507.1` |
+| Acceptance | `AT-2501`, `AT-2507` · white-box `TC-2501`, `TC-2502`, `TC-2507` · unit: the tokeniser, the handle, the directory's load and writes (Layer 0) |
+| Agent | `software-dev` (the orchestrator, self-implemented; drafted before the PDR in this worktree, ported here block by block from the frozen draft) |
 | Date | `2026-10-21` |
 
 ---
 
 ## 1 · What changed
 
-*(BLUF: state the outcome first, then the mechanism. Name the shipped surface the user reaches.)*
-
----
+The people directory. A new module `taskboard/people.py` in the `models` layer holds `Person` (handle, name, role, note) and `Directory`. The directory is read from `people.json` beside the registry and never raises: a missing, empty or blank file gives an empty directory; an unreadable one is copied aside first. It is written only by `add` and `edit`, as the registry is: under its lock, re-reading the file, atomically. The module also holds the mention tokeniser (`MENTION_RE`, `mention_ids`, `split_mentions`, `mention_line`) and `handle_for`. The link form's name is bounded and the handles are deduplicated in linear time (security S-1, code review CR-1). `Board.people` is a memory-only attribute. The app loads the directory at start, hands its one live dict to every board it opens, and warns once when the file is unreadable. `boards._keep_aside` becomes the public `keep_aside` (architect A-3).
 
 ## 2 · Files modified
 
-**The budget counts SOURCE files only. Tests are not capped. Product docs and `.dev-flow/**` are outside the count.**
-
-One row per file. `Kind` is one of `source` · `test` · `doc` · `config` · `generated` · `fixture`; `Traces to` names the US/HLR/LLR (or `R-<AREA>-<NNN>`) ids the file serves, and `doc` rows leave it empty.
-
 | File | Kind | Traces to | Change |
 |---|---|---|---|
+| `taskboard/people.py` | source | LLR-2501.1, LLR-2501.2, LLR-2502.1, LLR-2507.1 | new: `Person`, `Directory` (`load`, `_read`, `get`, `find`, `named`, `_commit`, `_set_aside`, `add`, `edit`), `PEOPLE_NAME`, the caps, `MENTION_RE`, `mention_ids`, `split_mentions`, `mention_line`, `fold`, `handle_for` |
+| `taskboard/models.py` | source | LLR-2501.3, LLR-2507.1 | `Board.people = {}` (set by the app, never saved) |
+| `taskboard/app.py` | source | LLR-2501.3 | `self.people = Directory.load(...)` in `__init__`; `_label_board` sets `board.people`; `after_move` carries it; `_warn_registry` says an unreadable directory |
+| `taskboard/boards.py` | source | LLR-2501.1 | `_keep_aside` → `keep_aside` (public, its docstring generalised; architect A-3) |
+| `tests/test_people_directory.py` | test | HLR-2501, HLR-2502, HLR-2507, LLR-2501.1, LLR-2501.2, LLR-2501.3, LLR-2502.1, LLR-2507.1 | new: 45 nodes (TC-2501, TC-2502, AT-2501, AT-2507, TC-2507) |
+| `tests/people_round_fixture.py` | test | HLR-2501 | new: the round's synthetic boards and eight people, copied from `prototypes/people_round/fixture.py` so no test imports a prototype |
+| `tests/test_boards_concurrency.py` | test | LLR-2501.1 | the monkeypatched name `_keep_aside` → `keep_aside` (the rename, law-driven) |
+| `.dev-flow/2026-10-21-batch-01/evidence/mutate-001.py`, `mutlib.py` | doc | HLR-2501, HLR-2502, HLR-2507 | the increment's mutation battery and the batch's runner |
 
 | Count | Value |
 |---|---|
-| **SOURCE files** | **`<N>` / 4** |
-| Test files | `<N>` (uncapped) |
-| Doc files | `<N>` (outside the count) |
-
-- ⚠ **At exactly 4 source files:** state here why this increment could not be cut smaller.
-- ⚠ **Above 4:** this does not auto-block, but the reason goes here **and** the design/close review looks at it.
-- ✗ If a file belongs to another lane's file set, stop: lanes may not share a file.
-
----
+| **SOURCE files** | **4 / 4** — at the cap: the new module, the board's attribute, the app's hand-off, and `boards.py` for the public `keep_aside` (A-3); the last could not move to a later increment because `people.py` imports it |
+| Test files | 3 (uncapped) |
 
 ## 3 · How to test
 
-```bash
-<the exact commands, copy-pasteable>
-```
-
----
+`python -m pytest -q -p no:cacheprovider tests/test_people_directory.py` (with `NO_COLOR` unset); the targeted set of `suite-001.txt`; `python .dev-flow/2026-10-21-batch-01/evidence/mutate-001.py`.
 
 ## 4 · Test results
 
-| Layer | Owed in | Nodes | Result |
-|---|---|---|---|
-| **0 · unit** (cyclomatic ≥3, or crosses a declared module boundary) | `core` · `full` | `<nodes>` | <N passed> |
-| **A · white-box** `TC-NNN` ↔ LLR | `core` · `full` | `<nodes>` | <N passed> |
-| **B · black-box** `AT-NNN` ↔ story, through the shipped surface | `core` · `full` | `<nodes>` | <N passed> |
-
-### RED counterfactual — executed, not predicted
-
-| Field | Value |
-|---|---|
-| Mutation applied | `<what was changed to make the assertion fail>` |
-| Instrument | project code: your own hand or a script in the project's stack, the restore checked by hash · a batch whose subject is the flow: `python scripts/devflow-mutate.py --select ID,ID`, run from the bundle root — field guide §`Mutation verdicts` |
-| Where it ran | **the tree, and who ran it** — the orchestrator when a spawned sub-agent wrote the code (`stations/p3-implementation.md` §Phase 3); never a tree another lane or session is reading |
-| Transcript | `<paste: the RED output, plus confirmation the mutation actually applied>` |
-| Restore proven by | **file hash returned to its pre-mutation value** (`git status` alone is insufficient, and vacuous for an untracked file) |
-| Bytecode cache | cleared / run with `PYTHONDONTWRITEBYTECODE=1` (C-46) |
-| Arms resolved at baseline | `<N>` — **assert the expected count.** An arm the harness cannot see is an arm it cannot report inert; a whitespace-delimited node pattern silently drops every *parametrized* arm |
-| Verdict granularity | **per resolved node id**, never the process exit code — a runner exits non-zero if ANY arm fails, so an inert arm hides behind a sibling that failed |
-| Arms that stayed GREEN | `<name them, or 'none'>` — `3 passed` unread in a transcript is how four arms once survived a fully removed gate |
-
-| Field | Value |
-|---|---|
-| **RED counterfactual** | `<the mutation that made THIS increment's OWN new assertion fail, by position and operation · where its transcript is stored · the restore digest that returned the file to its pre-mutation bytes — or: none — no new assertion in this increment>` |
-
-| Field | Value |
-|---|---|
-| **Mutation verdicts** | `<per resolved node: the mutation by position and operation · KILLED / CRASH / SURVIVED / BAD (the mutation's anchor did not apply) · the arms that stayed GREEN, named · the transcript's path under artifact_homes.evidence and the restore digest — or: none — no mutation battery in this increment>` |
-
-### Instrument RED-proof — every instrument shown able to report FAILURE first
-
-| Instrument | Known-bad input fed to it | The FAILURE it reported |
+| Layer | Nodes | Result |
 |---|---|---|
-| `<test / counter / mutation harness / grep / parser>` | `<the corruption planted in its MECHANISM, not in its verdict>` | `<the failure it printed, verbatim — and where>` |
+| 0, A and B | `tests/test_people_directory.py` — 45 nodes, among them `test_TC_2501_the_file_is_read_and_bad_entries_are_skipped`, `test_TC_2501_two_windows_never_erase_each_others_people`, `test_TC_2501_a_held_lock_makes_the_write_wait_then_fail_and_change_nothing`, `test_TC_2502_mentions_are_read_at_word_starts`, `test_AT_2501_one_directory_for_every_board`, `test_AT_2507_a_push_carries_mentions_as_handles_and_no_directory`, `test_TC_2507_a_crafted_note_is_tokenised_in_linear_time` | 391 passed with the touched files' suites (`suite-001.txt`: the boards suites, `test_team_sync.py`, `test_markup_census.py`, `test_app.py`) |
+| full suite | owed at the P4 gate run (the draft's full run, three chunks, was green: 1398 + 918 + 797 — scratch, not evidence) | not-run |
 
 | Field | Value |
 |---|---|
-| **Instrument RED-proof** | `<N instruments, each shown RED before its first PASS was believed — or: none — no instrument beyond the suite>` |
+| **RED counterfactual** | on `base_ref` (`taskboard/` at `eac7d42`, this increment's tests copied in): collection error, `ImportError: cannot import name 'people'` — the whole file RED (`red-001.txt`); each assertion's own RED is the battery below |
+| **Mutation verdicts** | 17 arms, one run, each restore proven by digest: the re-read under the lock skipped · KILLED; the lock dropped · KILLED; memory held before the write · KILLED; a repeated handle kept · KILLED; the role cap dropped · KILLED; an unreadable file not kept aside · KILLED; the look-behind dropped · KILLED; a handle ending in `.` · KILLED; the taken handle not numbered · KILLED; `_label_board` not handing the directory over · KILLED; the board saving the directory · KILLED; the unreadable notice dropped · KILLED; an empty file reported unreadable · KILLED; the link's name unbounded (S-1) · KILLED; the quadratic dedupe (CR-1) · KILLED; `edit` writing a non-handle (CR-5) · KILLED; a push carrying the directory (team sync's record) · KILLED — arms that stayed GREEN: none (`mutation-001.txt`; its first runs printed SURVIVED for M8 and M11 and BAD for M7: the tests were strengthened — `Ask @ana.ruiz.` and the quoted `"people"` key — and the node id corrected) |
+| **Instrument RED-proof** | 1 instrument: `evidence/mutlib.py` (the 2026-10-20-batch-03 runner, unchanged in logic); its RED seen here: a `BAD (anchor found 0 times)` and two `GREEN (SURVIVED)` arms before the fixes |
+| **Emitted-form assertion** | 1 artifact: `people.json` — read back as JSON (`version` 1, the ids in order) and by a second `Directory.load` (TC-2501) |
+| **Reverse census** | 4 probes: B1 `grep -rln "keep_aside\|_label_board\|after_move\|_to_dict" tests/` → the boards suites (`test_boards*.py`), `test_app.py`, `test_team_sync.py`-adjacent fixtures — rerun in `suite-001.txt`; the private name `_keep_aside` patched in `test_boards_concurrency.py:276` → renamed (law-driven, the only foreign hit); B4 `people.json`, `people.json.lock`, `people.json.corrupt` → read by `Directory` only (`grep -rn "people.json" taskboard/` → `people.py`, `app.py` via `PEOPLE_NAME`); A3 `Board.people` consumed by no module yet (increment 002 draws it) — 1 foreign hit, re-validated |
+| **Evidence files** | the table under §4 *Evidence files*: each artifact's path and SHA-256 |
+| **Correction population** | none — no shipped assertion changed (the patched name is a rename) |
 
-### Emitted-form assertion — assert the bytes the producer EMITS (C-42)
-
-| Artifact emitted | The assertion, run against the EMITTED form | What it returned |
-|---|---|---|
-| `<the file / report / screen / record>` | `<the command or predicate, pasted>` | `<its actual output, verbatim>` |
-
-| Field | Value |
-|---|---|
-| **Emitted-form assertion** | `<N artifacts, each asserted against the form its producer emitted — or: none — this increment emits no artifact>` |
-
-### Evidence files — bytes at a declared home, verbatim, hash-verified (C-59)
+### Evidence files
 
 | Evidence artifact | Path — under `artifact_homes.evidence` | SHA-256 |
 |---|---|---|
-| `<the transcript / capture / snapshot / .PRE copy>` | `<the path, as stored>` | `<the 64-hex digest of the bytes AT THAT PATH>` |
+| suite-001.txt | .dev-flow/2026-10-21-batch-01/evidence/suite-001.txt | 1656e14f731ff122917ada8e9b90c1b776d3086471f5fd984498aff7daaf4dde |
+| red-001.txt | .dev-flow/2026-10-21-batch-01/evidence/red-001.txt | 433ad5b0dd0905edfe4b2027faeeccb7342c804a7c0588d216e219fd6a6b16bb |
+| mutation-001.txt | .dev-flow/2026-10-21-batch-01/evidence/mutation-001.txt | c903c36c142bfab22b31377add0c936e7d3f9df1d2883bdc86c65654e9025414 |
+| mutate-001.py | .dev-flow/2026-10-21-batch-01/evidence/mutate-001.py | 3513464b6fe9f2900f523f6514a5e058c4c8b0aa2dcddc017eba0448001932ff |
+| mutlib.py | .dev-flow/2026-10-21-batch-01/evidence/mutlib.py | fe8c686fee4d010d551fa90d95879768dc0b6893637b8a5e25e2c829030a784b |
+| inc001.diff | .dev-flow/2026-10-21-batch-01/evidence/inc001.diff | e91cba468748d998cb7f5ab8f040b2848809012d122cfd34501ce8447bbdbbcc |
+
+## 4b · Independent review
 
 | Field | Value |
 |---|---|
-| **Evidence files** | `<N artifacts, each at the declared home and cited with the digest of its stored bytes — or: none — this increment cites no evidence file>` |
-
-### Load-bearing emptiness — what is this resting on that is only true today? (C-55)
-
-| Field | Value |
-|---|---|
-| Does any claim here rest on the tree holding NO instance of some case? | `<yes: name it / no>` |
-| If the result is an ABSENCE, what made the search wide enough | `<the over-broad property — and the guard that protects it>` |
-| Guard labelled as protecting a CONCLUSION, not a behaviour | `<node id — else the next reader "improves" it away>` |
-| Conjunctive criteria: one mutation per conjunct | `<per-conjunct verdicts, or 'no conjunctive criterion'>` |
-| Synthetic instance of the absent case | `<fixture / in-memory module that contains what the tree lacks>` |
-| **Positive control for every probe that returned an ABSENCE** | `<the known-present case, and the NON-absent output the same unmodified probe returned on it>` — uniformity over heterogeneous inputs (N-of-N) is one failure repeated, not a measurement |
-
-### Reverse census — trigger family B, and A3
-
-| Probe | Command | Result |
-|---|---|---|
-| B1 symbols asserted by **other** tests | `grep -rl <symbol> tests/` | `<files, and whose they are>` |
-| B2 file moved on disk | `<glob probe over the old path>` | `<readers found>` |
-| B3 byte-identical golden captures this source | `grep <source> tests/goldens/**` | `<hits>` |
-| B4 artifact produced here is consumed elsewhere | `<who reads the path/format written>` | `<consumers>` |
-| A3 interface consumed by another module changed | `grep <symbol>` outside its owning module | `<hits>` |
-
-| Field | Value |
-|---|---|
-| **Reverse census** | `<N probes run of B1 · B2 · B3 · B4 · A3, each with its command and its verdict — N hits, and where every hit was re-validated — or: none — this increment touches no code symbol or shared surface>` |
-
-### Correction population — enumerated BEFORE the first site was edited
-
-| Correction | Population — the assertion category | Enumeration method (the command) | Count | Sites edited | Sites left, and why |
-|---|---|---|---|---|---|
-| `<the claim being corrected>` | `<what kind of thing must be true everywhere>` | `<the command, pasted>` | `<N>` | `<…>` | `<…>` |
-
-| Field | Value |
-|---|---|
-| **Correction population** | `<N corrections, each enumerated with its method before its first site was edited — or: none — no correction>` |
-
-#### Supersession-completeness inspection (V-3)
-
-| Superseded marker | grep result | All surviving refs negative? | Evidence (file:line) |
-|-------------------|-------------|------------------------------|----------------------|
-| `<marker>` | `<N hits>` | yes/no | `<…>` |
-
-### Signed-balance test ledger
-
-`post = base − deleted + added` → `<post> = <base> − <D> + <A>`  ✓ reconciles
-
----
-
-## 4b · Independent review — the lens the author cannot be
-
-| Field | Value |
-|---|---|
-| **Independent review** | `<who reviewed · the verdict · how every HIGH was resolved — or: WAIVED-BY-OPERATOR — and the reason, in the operator's own words>` |
-
-*Example of a filled cell:* `` `code-reviewer` · PASS-WITH-NOTES, 0 HIGH / 5 MEDIUM · all five
-folded into this increment — F1 severity census, F2 block truncation, F3 blocklist, F4 scope
-state, F5 this table ``
-
----
+| **Independent review** | `code-reviewer` — spawned as a generic agent with agents/code-reviewer.md · **OK to advance**, 0 HIGH; CR-1 (quadratic dedupe) and CR-2 (a wall-clock bound flaky under load) MEDIUM, both fixed (`dict.fromkeys`; CPU time, 2 s, a 40 000-handle craft); CR-3 (the `\xff\xfe` case now bytes), CR-4 (one handle pattern `_H`), CR-5 (`edit` refuses a non-handle; the write-back tested), CR-7 (cleanups) fixed; CR-6 (`Søren` → `s.ren`) recorded as a known limit (§6). `security-reviewer` (PDR PC-2) — spawned with agents/security-reviewer.md · **APPROVE** S-1: re-timed 100 000-character crafts at 0.001–0.033 s per call, `split_mentions` joining back exactly |
 
 ## 5 · Risks
 
-*(What could break that this increment does not cover. Be specific enough to act on.)*
-
----
+A person another window adds shows here after a restart or this window's next write (A-7, accepted). The `.corrupt` copy follows the umask on POSIX, and a file that stays unreadable gets one more copy per start (S-2, S-3, accepted and logged).
 
 ## 6 · Pending items / spec deviations
 
-*(Anything surfaced and not closed here. Every line lands in the canonical backlog at batch close —
-if the increment surfaced it, the backlog owns it.)*
-
----
+The full suite is owed at P4. `handle_for` splits a word at a letter NFKD cannot fold (`Søren` → `s.ren`, `Łukasz` → `ukasz`; code review CR-6): a known limit, recorded for `BACKLOG.md`. The render-side timing check (`notes_text`, `_card_meta`) lands with them in increment 002.
 
 ## 7 · Suggested next task
 
----
+Increment 002 — how a mention looks (HLR-2506).
 
 ## Increment gate checklist
 
-| # | Item | Owed in | ✓/⚠/✗ | Evidence (node id · command output · file:line) |
-|---|---|---|---|---|
-| 1 | ≤4 source files, or reason declared | all | | |
-| 2 | Tests written in this same increment | all | | |
-| 3 | Layer 0 written where the criterion applies | `core` · `full` ‹one complete run owned by the orchestrator ~ Layer 0› | | |
-| 4 | **RED counterfactual** declared — the mutation that made this increment's OWN new assertion fail, where its transcript is stored, and the restore digest, or `none` (C-20/C-40; read by `V44`) | `core` · `full` ‹RED counterfactual mandatory ~ RED counterfactual› | | |
-| 5 | **Reverse census** declared — the five probes run with their commands and verdicts, the ones that did NOT fire named with their probe, or `none` (C-26/C-48; read by `V43`) | `core` · `full` ‹reverse census of the touched symbol ~ Reverse census› | | |
-| 6 | `code-reviewer` passed — a HIGH blocks; the verdict, the reviewer and each HIGH's resolution are declared in **§4b** (`ABSENT` is the empty state there, not a value) | `core` · `full` ‹RED counterfactual mandatory ~ code-reviewer› | | |
-| 7 | No file from another lane touched | all | | |
-| 8 | Frozen interfaces untouched (or returned to the trunk) | all | | |
-| 9 | Coverage claims verified **on disk**, not from intent | all | | |
-| 10 | Load-bearing emptiness declared, with its synthetic instance (C-55) | all | | |
-| 11 | **Mutation verdicts** declared — **per arm**, inert arms named, registry ids cited, or `none` (C-40 rider; read by `V37`) | all | | |
-| 12 | **Instrument RED-proof** declared — every instrument shown able to report a FAILURE before its first PASS was believed, or `none` (C-57) | all | | |
-| 13 | **Correction population** declared — enumerated with its method before the first site was edited, or `none` (C-14) | all | | |
-| 14 | **Emitted-form assertion** declared — per artifact emitted, the assertion run against the EMITTED form and what it returned, or `none` (C-42; read by `V38`) | all | | |
-| 15 | **Independent review** names somebody — in one of the forms §4b publishes; a cell naming nobody is empty (`V36`). §4b is the grammar's one home | all | | |
-| 16 | **Evidence files** declared — every cited artifact at the home `artifact_homes.evidence` names, cited with the digest of its STORED bytes, or `none` (C-59; read by `V41`) | all | | |
+| # | Item | ✓/⚠/✗ | Evidence |
+|---|---|---|---|
+| 1 | SOURCE budget | ✓ | §2: 4 source files, at the cap, the reason declared |
+| 2 | Tests in this increment | ✓ | `tests/test_people_directory.py` |
+| 3 | Layer 0 where it applies | ✓ | the tokeniser, the handle, the load's table |
+| 4 | RED counterfactual | ✓ | §4, `red-001.txt` and the battery |
+| 5 | Reverse census | ✓ | §4: 4 probes, 1 foreign hit renamed |
+| 6 | `code-reviewer` passed | ✓ | §4b |
+| 7 | No file from another lane | ✓ | one lane |
+| 8 | Frozen interfaces untouched | ✓ | none frozen |
+| 9 | Coverage verified on disk | ⚠ | `suite-001.txt` (targeted); the full run owed at P4 |
+| 10 | Load-bearing emptiness | ✓ | the census's greps quoted |
+| 11 | Mutation verdicts | ✓ | §4: 17/17 KILLED |
+| 12 | Instrument RED-proof | ✓ | §4 |
+| 13 | Correction population | ✓ | §4: none, declared |
+| 14 | Emitted-form assertion | ✓ | §4: `people.json` read back |
+| 15 | Independent review | ✓ | §4b |
+| 16 | Evidence files | ✓ | §4: the digests |

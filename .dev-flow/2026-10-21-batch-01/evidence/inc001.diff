@@ -1,0 +1,906 @@
+diff --git a/taskboard/app.py b/taskboard/app.py
+index 5b1f14e..35457d9 100644
+--- a/taskboard/app.py
++++ b/taskboard/app.py
+@@ -18,6 +18,7 @@ from textual.widgets import Static
+ 
+ from . import history
+ from .boards import Registry, announce, name_for, open_elsewhere, peek_board, renew, withdraw
++from .people import PEOPLE_NAME, Directory
+ from .models import (AUTO_ARCHIVE_DAYS, IMAGE_EXTS, LINKS_MIGRATION, MILESTONES_MIGRATION,
+                      Board, Project, Task,
+                      archive_refusal, chain_template, default_board_path, is_open,
+@@ -950,6 +951,9 @@ class TaskboardApp(App):
+         self.registry = registry or Registry.single(self.board.path)
+         entry = self.registry.entry_for(self.board.path)
+         self.board_id = entry.id if entry is not None else None
++        # one people directory for every board, beside the registry: the home's
++        # `~/.taskboard/people.json` (batch 2026-10-21-batch-01)
++        self.people = Directory.load(self.registry.path.parent / PEOPLE_NAME)
+         self._team_timer = None
+         self.view_mode = "swimlanes"
+         self.kanban_presentation = "grouped"
+@@ -1052,6 +1056,7 @@ class TaskboardApp(App):
+         """The chip (HLR-2203): the open board's name and colour, only when more
+         than one board is active; an unlisted board (`--open`, batch
+         2026-10-20-batch-03) always, as `<name> · not listed`."""
++        self.board.people = self.people.people
+         entry = self.registry.get(self.board_id) if self.board_id else None
+         if self.board_id is None:
+             self.board.label = (f"{name_for(self.board.path)} · not listed", "pink")
+@@ -1099,6 +1104,7 @@ class TaskboardApp(App):
+         source — its label kept — and the undo stack, whose snapshots name the
+         moved tasks, is cleared."""
+         new_src.label = self.board.label
++        new_src.people = self.board.people
+         self.board = new_src
+         self._undo_stack = []
+         self.refresh_view()
+@@ -1140,6 +1146,12 @@ class TaskboardApp(App):
+             self.notify(f"A board's file is missing ({missing}); another board was opened.",
+                         title="Boards", severity="warning", timeout=15, markup=False)
+         self._notify_save_error(self.registry.load_report.pop("save_error", None))
++        if self.people.load_report.get("unreadable"):
++            where = self.people.load_report.get("backup")
++            kept = f"a copy was kept at {where}" if where else "no copy could be kept"
++            self.notify(f"{PEOPLE_NAME} could not be read; {kept}. "
++                        "The people directory starts empty.", title="People",
++                        severity="warning", timeout=15, markup=False)
+         backup = self.registry.load_report.get("backup")
+         if self.registry.load_report.get("unreadable"):
+             where = backup or "nowhere (the copy failed)"
+diff --git a/taskboard/boards.py b/taskboard/boards.py
+index 1ca710e..5c0ffbc 100644
+--- a/taskboard/boards.py
++++ b/taskboard/boards.py
+@@ -66,10 +66,11 @@ def clean_name(name) -> str:
+     return strip_controls(str(name)).strip()[:NAME_MAX].strip()
+ 
+ 
+-def _keep_aside(path: Path) -> Path | None:
+-    """A byte copy of an unreadable registry at the first free name of
+-    `boards.json.corrupt`, `.corrupt-2`, …: an earlier copy is never replaced and
+-    the current bytes always kept. An empty file has nothing to keep."""
++def keep_aside(path: Path) -> Path | None:
++    """A byte copy of an unreadable file — the registry, the people directory — at
++    the first free name of `<name>.corrupt`, `.corrupt-2`, …: an earlier copy is
++    never replaced and the current bytes always kept. An empty file has nothing to
++    keep."""
+     try:
+         data = path.read_bytes()
+     except OSError:
+@@ -230,7 +231,7 @@ class Registry:
+         except OSError:
+             reg = None
+         if reg is None:
+-            backup = _keep_aside(path)
++            backup = keep_aside(path)
+             return cls(path, [main_entry], MAIN_ID,
+                        {"unreadable": True, "backup": str(backup) if backup else None},
+                        main_path=str(main))
+@@ -383,7 +384,7 @@ class Registry:
+                 return True
+         except OSError:
+             pass
+-        return _keep_aside(self.path) is not None
++        return keep_aside(self.path) is not None
+ 
+     def _carry(self, fresh: "Registry", bid: str) -> BoardEntry | None:
+         """`bid` in the registry just read: its own entry, or this one's copied in
+diff --git a/taskboard/models.py b/taskboard/models.py
+index c40aa43..9ed5e36 100644
+--- a/taskboard/models.py
++++ b/taskboard/models.py
+@@ -962,6 +962,10 @@ class Board:
+         # its views' head rows open with. Set by the app, never written to the
+         # file (batch 2026-10-20-batch-01, LLR-2203.1).
+         self.label: tuple[str, str] | None = None
++        # the people directory by handle (`ana.ruiz` → its `people.Person`), what a
++        # mention is drawn as. Set by the app, shared by every board it opens, never
++        # written to the file (batch 2026-10-21-batch-01).
++        self.people: dict = {}
+ 
+     @property
+     def load_report(self) -> dict:
+diff --git a/taskboard/people.py b/taskboard/people.py
+new file mode 100644
+index 0000000..f21282a
+--- /dev/null
++++ b/taskboard/people.py
+@@ -0,0 +1,256 @@
++"""The people directory and the `@` mentions (batch 2026-10-21-batch-01).
++
++One directory for every board, `people.json` beside the boards registry
++(`~/.taskboard/people.json`): a person is a handle, a name, a role and an
++optional one-line note. The handle is the person's stable id and the form a
++mention takes in the notes — `@ana.ruiz` — derived from the name when the
++person is added and never changed, so renaming someone changes only how their
++mentions are drawn. A note's people are read from its text; nothing else holds
++them.
++
++The file is read like the registry: never raising, a bad entry skipped, an
++unreadable file copied aside first. It is written atomically, under its lock
++file, as a read-modify-write, so another taskboard's change is never written
++over (the registry's pattern, batch 2026-10-20-batch-02). It never leaves the
++home: team sync pushes board tasks, and a mention travels in a note as its
++handle text only.
++"""
++
++from __future__ import annotations
++
++import json
++import re
++import unicodedata
++from dataclasses import asdict, dataclass
++from pathlib import Path
++
++from .boards import file_lock, keep_aside
++from .models import clean_strings, strip_controls, write_atomic
++
++PEOPLE_NAME = "people.json"
++NAME_MAX = 60
++ROLE_MAX = 60
++NOTE_MAX = 200
++
++#: a handle: lowercase letters and digits in words joined by `.`, `_` or `-` (one
++#: spelling, so a handle is always a mention; code review CR-4)
++_H = r"[a-z0-9]+(?:[._-][a-z0-9]+)*"
++_HANDLE = re.compile(_H)
++#: a mention: `@handle` at a word start (never inside `ana@x.com`), or the link form
++#: `@[Name](p:handle)`, read too so an imported note is understood
++#  (the link's name is bounded: an unbounded one rescans the line at every `@[` — a
++#  crafted note of `@[` repeated took seconds per render; security S-1)
++MENTION_RE = re.compile(r"(?<![\w.@])@(?:\[([^\]\n]{1,60})\]\(p:(" + _H + r")\)|(" + _H + r"))")
++
++
++@dataclass
++class Person:
++    id: str          # the handle: `ana.ruiz`
++    name: str
++    role: str = ""
++    note: str = ""
++
++
++def fold(s: str) -> str:
++    """Lower case, accents dropped: `Andrés` → `andres`."""
++    return "".join(ch for ch in unicodedata.normalize("NFKD", s.lower())
++                   if not unicodedata.combining(ch))
++
++
++def _clean(value, cap: int) -> str:
++    """One line of text as stored: no control byte, no line break, at most `cap`."""
++    if not isinstance(value, str):
++        return ""
++    return " ".join(strip_controls(value).split())[:cap].strip()
++
++
++def mention_ids(text: str) -> list[str]:
++    """The handles a text mentions, first mention first, each once."""
++    if "@" not in (text or ""):
++        return []
++    # a dict keeps the first-seen order in linear time (code review CR-1)
++    return list(dict.fromkeys(m.group(2) or m.group(3) for m in MENTION_RE.finditer(text)))
++
++
++def split_mentions(text: str) -> list[tuple[str, str | None]]:
++    """`text` as (piece, handle) pairs: a mention's raw text with its handle, the
++    text between with None."""
++    if "@" not in text:
++        return [(text, None)] if text else []
++    out: list[tuple[str, str | None]] = []
++    last = 0
++    for m in MENTION_RE.finditer(text):
++        if m.start() > last:
++            out.append((text[last:m.start()], None))
++        out.append((m.group(0), m.group(2) or m.group(3)))
++        last = m.end()
++    if last < len(text):
++        out.append((text[last:], None))
++    return out
++
++
++def mention_line(notes: str, handle: str) -> str:
++    """The first note line that mentions `handle`, its list mark dropped: what was
++    written about the person there. Empty when no line does."""
++    for ln in (notes or "").splitlines():
++        if handle in mention_ids(ln):
++            return ln.strip().lstrip("-*• ").strip()
++    return ""
++
++
++class Directory:
++    """The people of every board, in memory as the file held them when read or
++    last written here. `people` is one live dict (handle → Person) the app hands
++    to every board it opens, so a person added or renamed shows at once."""
++
++    def __init__(self, path, people: list[Person] | None = None,
++                 load_report: dict | None = None) -> None:
++        self.path = Path(path)
++        self.people: dict[str, Person] = {}
++        self.load_report = load_report or {}
++        self._hold(people or [])
++
++    def _hold(self, people: list[Person]) -> None:
++        self.people.clear()
++        self.people.update((p.id, p) for p in people)
++
++    # ---- reading -----------------------------------------------------------
++    @classmethod
++    def load(cls, path) -> "Directory":
++        """Never raises. Missing → empty; unreadable → empty, after copying the
++        file to `people.json.corrupt`."""
++        path = Path(path)
++        try:
++            if not path.exists() or not path.read_bytes().strip():
++                return cls(path)            # nothing written yet, or nothing to keep
++            people = cls._read(path)
++        except OSError:
++            people = None
++        if people is None:
++            backup = keep_aside(path)
++            return cls(path, [], {"unreadable": True,
++                                  "backup": str(backup) if backup else None})
++        return cls(path, people)
++
++    @staticmethod
++    def _read(path: Path) -> list[Person] | None:
++        """The people the file holds now, or None when it cannot be parsed (not
++        JSON, or not an object with a `people` list); a failed read raises. An
++        entry without a valid unique handle or a name is skipped."""
++        data = path.read_bytes()
++        try:
++            raw = clean_strings(json.loads(data.decode("utf-8")))
++        except (ValueError, RecursionError):
++            return None
++        if not isinstance(raw, dict) or not isinstance(raw.get("people"), list):
++            return None
++        out: list[Person] = []
++        seen: set[str] = set()
++        for item in raw["people"]:
++            if not isinstance(item, dict):
++                continue
++            pid, name = item.get("id"), _clean(item.get("name"), NAME_MAX)
++            if not (isinstance(pid, str) and _HANDLE.fullmatch(pid)) or pid in seen or not name:
++                continue
++            seen.add(pid)
++            out.append(Person(pid, name, _clean(item.get("role"), ROLE_MAX),
++                              _clean(item.get("note"), NOTE_MAX)))
++        return out
++
++    def get(self, handle: str) -> Person | None:
++        return self.people.get(handle)
++
++    def find(self, q: str) -> list[Person]:
++        """Every person, by name; with `q`, those whose name has a word starting
++        with it first, then those whose name holds it, then those whose role does."""
++        q = fold(q.strip())
++        people = sorted(self.people.values(), key=lambda p: (fold(p.name), p.id))
++        if not q:
++            return people
++        start = [p for p in people if any(w.startswith(q) for w in fold(p.name).split())]
++        inside = [p for p in people if q in fold(p.name) and p not in start]
++        role = [p for p in people if q in fold(p.role) and p not in start and p not in inside]
++        return start + inside + role
++
++    def named(self, name: str) -> Person | None:
++        """The person whose name is `name`, ignoring case and accents."""
++        key = fold(_clean(name, NAME_MAX))
++        return next((p for p in self.people.values() if fold(p.name) == key), None)
++
++    # ---- writing -----------------------------------------------------------
++    def _commit(self, change) -> object:
++        """Apply `change` to the people as the file holds them NOW and write the
++        result, under the file's lock; then hold that result here. A file that
++        cannot be parsed and cannot be copied aside is never written over; a
++        failed write raises `OSError` and changes nothing here."""
++        self.path.parent.mkdir(parents=True, exist_ok=True)
++        with file_lock(self.path):
++            people = None
++            if self.path.exists():
++                people = self._read(self.path)          # a failed read raises
++                if people is None and not self._set_aside():
++                    raise OSError(f"{self.path.name} cannot be read and could not be "
++                                  "copied aside, so it was not written")
++            fresh = {p.id: p for p in (people if people is not None
++                                       else list(self.people.values()))}
++            result = change(fresh)
++            data = {"version": 1, "people": [asdict(p) for p in fresh.values()]}
++            write_atomic(self.path, json.dumps(data, indent=2, ensure_ascii=False))
++        self._hold(list(fresh.values()))
++        return result
++
++    def _set_aside(self) -> bool:
++        """Whether the unparseable file's bytes are kept: empty (nothing to keep),
++        already the copy this directory's load made, or copied now."""
++        try:
++            data = self.path.read_bytes()
++        except OSError:
++            return False
++        backup = self.load_report.get("backup")
++        try:
++            if not data or (backup and Path(backup).read_bytes() == data):
++                return True
++        except OSError:
++            pass
++        return keep_aside(self.path) is not None
++
++    def add(self, name: str, role: str = "", note: str = "") -> Person:
++        """A new person: the handle comes from the name (`Ana Ruiz` → `ana.ruiz`,
++        `ana.ruiz2` when taken — in the file or here). Raises `ValueError` for a
++        name with nothing left once cleaned, `OSError` when it cannot be saved."""
++        name = _clean(name, NAME_MAX)
++        if not name:
++            raise ValueError("a person needs a name")
++
++        def change(fresh: dict[str, Person]) -> Person:
++            p = Person(handle_for(name, set(fresh) | set(self.people)), name,
++                       _clean(role, ROLE_MAX), _clean(note, NOTE_MAX))
++            fresh[p.id] = p
++            return p
++        return self._commit(change)
++
++    def edit(self, handle: str, name: str, role: str, note: str) -> Person:
++        """A person's name, role and note; the handle never changes. A person the
++        file no longer holds is written back. Raises like `add`."""
++        name = _clean(name, NAME_MAX)
++        if not name:
++            raise ValueError("a person needs a name")
++        if not _HANDLE.fullmatch(handle):               # code review CR-5
++            raise ValueError(f"not a handle: {handle!r}")
++
++        def change(fresh: dict[str, Person]) -> Person:
++            p = Person(handle, name, _clean(role, ROLE_MAX), _clean(note, NOTE_MAX))
++            fresh[handle] = p
++            return p
++        return self._commit(change)
++
++
++def handle_for(name: str, taken) -> str:
++    """The handle a new person gets: the name's letters and digits, accents
++    folded, words joined by `.` (`Andrés Lima` → `andres.lima`; `person` when
++    nothing is left), then `2`, `3`, … until it is not in `taken`."""
++    base = ".".join(re.findall(r"[a-z0-9]+", fold(name))) or "person"
++    h, n = base, 2
++    while h in taken:
++        h, n = f"{base}{n}", n + 1
++    return h
+diff --git a/tests/people_round_fixture.py b/tests/people_round_fixture.py
+new file mode 100644
+index 0000000..446e6bc
+--- /dev/null
++++ b/tests/people_round_fixture.py
+@@ -0,0 +1,157 @@
++"""THROWAWAY prototype fixture — the people round's synthetic boards and directory.
++
++A REAL registry (`boards.json` in the shipped format, read by the shipped
++`Registry.load`) in a temporary folder, never `~/.taskboard`:
++
++    <root>/board.json                    "Personal"  (the default board, id `main`)
++    <root>/boards/client-a/board.json    "Client A"
++    <root>/boards/course/board.json      "Course"
++    <root>/people.json                   the directory the round proposes (D1)
++
++Mentions are stored in the notes as handles (`@ana.ruiz`, the storage form the
++round recommends); the prototype's tokeniser also reads `@[Name](p:id)`.
++TODAY is pinned (a Tuesday). Synthetic people and tasks only.
++"""
++from __future__ import annotations
++
++import json
++from datetime import date, datetime, timedelta
++from pathlib import Path
++
++from taskboard.models import LINKS_MIGRATION, MILESTONES_MIGRATION, Board, Project, Task
++
++TODAY = date(2026, 10, 20)
++PHASES = ["Backlog", "Next", "Doing", "Review", "Done"]
++
++# handle (the stable id), name, role, note
++PEOPLE = [
++    ("ana.ruiz", "Ana Ruiz", "Client A PM", "Prefers a written agenda the day before"),
++    ("andres.lima", "Andrés Lima", "Store ops lead", ""),
++    ("diego.paz", "Diego Paz", "Client A data engineer", ""),
++    ("elena.vidal", "Elena Vidal", "Client A sponsor", "Steering committee chair"),
++    ("juana.soto", "Juana Soto", "Course student lead", ""),
++    ("luis.mora", "Luis Mora", "Course TA", "Reviews every lab before publish"),
++    ("marta.gil", "Marta Gil", "Accountant", "Invoices go out by the 25th"),
++    ("pablo.ortiz", "Pablo Ortiz", "Physio", ""),
++]
++
++
++def settings() -> dict:
++    return {"migrations": {"links": LINKS_MIGRATION, "milestones": MILESTONES_MIGRATION},
++            "seen_view_renumber_2026_07": True}
++
++
++def _d(off):
++    return None if off is None else (TODAY + timedelta(days=off)).isoformat()
++
++
++BOARDS = [
++    ("main", "Personal", "green", ".", -30),
++    ("client-a", "Client A", "sky", "boards/client-a", -2),
++    ("course", "Course", "violet", "boards/course", -54),
++]
++
++PROJECTS = {
++    "main": [("ph", "Home & paperwork", "green", None, None),
++             ("pf", "Fitness block", "lime", -14, 30)],
++    "client-a": [("ci", "Ingest & index", "sky", -21, 10),
++                 ("ce", "Eval harness", "blue", -7, 24),
++                 ("cr", "Pilot rollout", "indigo", -3, 32),
++                 ("cd", "Docs & handover", "cyan", 2, 40)],
++    "course": [("d4", "Module 4 · Volumes", "violet", -10, 5),
++               ("d5", "Module 5 · Compose", "fuchsia", 3, 26)],
++}
++
++N_CHUNK = ("Waiting on @ana.ruiz to confirm the sample stores\n"
++           "- 400-token chunks beat 800 on the golden set\n"
++           "- ==send the table to @diego.paz== before the sync")
++N_GOLDEN = ("Review the 40 questions with @ana.ruiz in Tuesday's sync\n"
++            "- @andres.lima adds the store-ops wording\n"
++            "- !!12 questions still have no answer key!!")
++N_STEER = ("Agenda to @elena.vidal by Monday\n"
++           "- demo: hybrid search on the pilot stores\n"
++           "- ask @ana.ruiz for the go/no-go criteria")
++N_INDEX = ("Index rebuild after the chunking choice\n"
++           "- @diego.paz owns the nightly job")
++N_EVAL = "Draft with @ana.ruiz; ++sign-off by the sponsor++ (@elena.vidal)"
++N_STORES = "Shortlist from @andres.lima\n- 6 stores, 2 per region"
++N_INVOICE = "Hours from the tracker; @marta.gil needs it by the 25th"
++N_TAX = "Bring the receipts folder to @marta.gil\n- ask about the home-office share"
++N_PHYSIO = "@pablo.ortiz · Thursday or Friday morning"
++N_LAB = "@luis.mora reviews it before the publish\n- check on Windows and WSL"
++N_TALK = "Guest talk by @ana.ruiz: RAG in retail, 20 min\n- @juana.soto collects questions"
++N_CANARY = "Roll the new index to one store first\n- rollback plan in the runbook"
++
++# key, project, title, phase, prio, start, due, deps, milestone, notes
++TASKS = {
++    "main": [
++        ("p1", "ph", "Renew passport", "Next", "high", None, 1, [], False, ""),
++        ("p2", "ph", "Tax filing papers", "Next", "high", None, -2, [], False, N_TAX),
++        ("p3", "ph", "Fix the balcony door", "Doing", "low", None, -3, [], False, ""),
++        ("p4", "pf", "Week 3 plan", "Doing", "normal", -2, 0, [], False, ""),
++        ("p5", "pf", "10k race", "Backlog", "high", None, 30, ["p4"], True, ""),
++        ("p6", "pf", "Book physio", "Next", "normal", None, 5, [], False, N_PHYSIO),
++    ],
++    "client-a": [
++        ("c1", "ci", "Parse catalog PDFs", "Done", "normal", -21, -10, [], False, ""),
++        ("c2", "ci", "Chunking experiments", "Review", "normal", -9, -1, [], False, N_CHUNK),
++        ("c3", "ci", "Hybrid search index", "Doing", "high", -4, 3, ["c2"], False, N_INDEX),
++        ("c4", "ci", "Store-ops glossary", "Next", "low", None, 8, [], False, ""),
++        ("c5", "ce", "Golden question set", "Doing", "high", -6, 0, [], False, N_GOLDEN),
++        ("c6", "ce", "Judge rubric", "Next", "normal", 1, 9, ["c5"], False, ""),
++        ("c7", "ce", "Eval report v1", "Backlog", "high", None, 14, ["c6"], True, N_EVAL),
++        ("c8", "cr", "Steering committee", "Next", "high", 2, 2, [], False, N_STEER),
++        ("c9", "cr", "Pilot store list", "Doing", "normal", -3, 4, [], False, N_STORES),
++        ("ca", "cr", "Canary release plan", "Backlog", "normal", 6, 18, ["c9"], False, N_CANARY),
++        ("cb", "cd", "Invoice October", "Next", "normal", None, 5, [], False, N_INVOICE),
++        ("cc", "cd", "Handover call", "Backlog", "normal", 21, 21, [], False, ""),
++    ],
++    "course": [
++        ("k1", "d4", "Bind vs named volumes page", "Done", "normal", -10, -4, [], False, ""),
++        ("k2", "d4", "Volume oracle script", "Review", "high", -3, -2, ["k1"], False, N_LAB),
++        ("k3", "d4", "Module 4 publish", "Next", "high", None, 5, ["k2"], True, ""),
++        ("k4", "d5", "Compose file anatomy", "Backlog", "normal", 3, 3, [], False, ""),
++        ("k5", "d5", "Guest talk: RAG in retail", "Next", "normal", None, 9, [], False, N_TALK),
++        ("k6", "d5", "Module 5 publish", "Backlog", "high", None, 26, ["k5"], True, ""),
++    ],
++}
++
++
++def board_path(root: Path, bid: str) -> Path:
++    rel = next(r for b, _n, _c, r, _h in BOARDS if b == bid)
++    return root / rel / "board.json"
++
++
++def build_board(root: Path, bid: str) -> Board:
++    projects = {}
++    for key, name, colour, s, d in PROJECTS[bid]:
++        projects[key] = Project(name=name, color=colour, start_date=_d(s), due_date=_d(d),
++                                id=f"p{key}")
++    tasks = []
++    for key, pk, title, phase, prio, s, d, deps, ms, notes in TASKS[bid]:
++        tasks.append(Task(title=title, project_id=projects[pk].id, phase=phase, priority=prio,
++                          start_date=_d(s), due_date=_d(d), depends_on=[f"t{x}" for x in deps],
++                          milestone=ms, notes=notes,
++                          phase_changed=(TODAY - timedelta(days=2)).isoformat(), id=f"t{key}"))
++    path = board_path(root, bid)
++    path.parent.mkdir(parents=True, exist_ok=True)
++    return Board(list(projects.values()), tasks, path, settings(), PHASES)
++
++
++def build(root: Path, last: str = "client-a") -> Path:
++    now = datetime.now()
++    entries = []
++    for bid, name, colour, _rel, hours in BOARDS:
++        build_board(root, bid).save()
++        entries.append({"id": bid, "name": name, "color": colour,
++                        "path": str(board_path(root, bid).resolve()),
++                        "last_opened": (now + timedelta(hours=hours)).isoformat(timespec="minutes"),
++                        "archived": False})
++    reg = root / "boards.json"
++    reg.write_text(json.dumps({"version": 1, "last": last, "boards": entries}, indent=2),
++                   encoding="utf-8")
++    (root / "people.json").write_text(json.dumps(
++        {"version": 1, "people": [{"id": h, "name": n, "role": r, "note": note}
++                                  for h, n, r, note in PEOPLE]}, indent=2, ensure_ascii=False),
++        encoding="utf-8")
++    return reg
+diff --git a/tests/test_boards_concurrency.py b/tests/test_boards_concurrency.py
+index 56801f8..1f6ddae 100644
+--- a/tests/test_boards_concurrency.py
++++ b/tests/test_boards_concurrency.py
+@@ -273,7 +273,7 @@ def test_TC_2301_an_unreadable_registry_is_never_written_over_without_a_copy(hom
+     assert (home / "boards.json.corrupt").read_bytes() == b"{not json"
+     assert b.get("course-docker").name == "Docker course" and "personal" in _ids(reg_path)
+     reg_path.write_bytes(b"[1, 2")
+-    monkeypatch.setattr(boards, "_keep_aside", lambda path: None)
++    monkeypatch.setattr(boards, "keep_aside", lambda path: None)
+     with pytest.raises(OSError):
+         b.edit("course-docker", "Again", "blue")
+     assert reg_path.read_bytes() == b"[1, 2"
+diff --git a/tests/test_people_directory.py b/tests/test_people_directory.py
+new file mode 100644
+index 0000000..8517e39
+--- /dev/null
++++ b/tests/test_people_directory.py
+@@ -0,0 +1,358 @@
++"""The people directory and the mention tokeniser (batch 2026-10-21-batch-01).
++
++HLR-2501 / LLR-2501.1, LLR-2501.2 · TC-2501 · AT-2501 (US-2501) — one directory for
++every board at `~/.taskboard/people.json`, read never raising, written atomically
++under its lock as a read-modify-write; HLR-2502 / LLR-2502.1 · TC-2502 — a mention is
++`@handle` at a word start, the handle derived from the name and never changed;
++HLR-2507 / LLR-2507.1 · TC-2507 · AT-2507 — team sync carries a mention as its handle
++text and nothing of the directory. Why it matters: the directory holds what the
++operator wrote about real people; losing a person to a second window's write, or
++pushing a role or a note to a teammate's folder, are the failures this pins.
++Synthetic people only, under the seam's home.
++"""
++from __future__ import annotations
++
++import json
++from datetime import date
++from pathlib import Path
++
++import pytest
++
++import people_round_fixture as fx
++from taskboard import app as app_module, boards, models, modals, people, views
++from taskboard.models import Board
++from taskboard.people import Directory, handle_for, mention_ids, mention_line, split_mentions
++from taskboard.team_sync import TeamState
++
++
++class _Today(date):
++    @classmethod
++    def today(cls):
++        return fx.TODAY
++
++
++@pytest.fixture
++def home(tmp_path, monkeypatch):
++    monkeypatch.setattr(Path, "home", classmethod(lambda cls: tmp_path))
++    for mod in (app_module, models, views, modals):
++        monkeypatch.setattr(mod, "date", _Today)
++    return tmp_path / ".taskboard"
++
++
++def _write(path: Path, data) -> Path:
++    path.parent.mkdir(parents=True, exist_ok=True)
++    path.write_text(data if isinstance(data, str) else json.dumps(data), encoding="utf-8")
++    return path
++
++
++# --------------------------------------------------------------------------- #
++# TC-2501 — reading (LLR-2501.1)
++# --------------------------------------------------------------------------- #
++def test_TC_2501_a_missing_file_is_an_empty_directory_and_nothing_is_written(tmp_path):
++    d = Directory.load(tmp_path / "people.json")
++    assert d.people == {} and d.load_report == {}
++    assert not (tmp_path / "people.json").exists()
++
++
++def test_TC_2501_the_file_is_read_and_bad_entries_are_skipped(tmp_path):
++    """A wrong handle, a repeated handle, a nameless or non-object entry is skipped;
++    control bytes and line breaks go; each field is capped."""
++    p = _write(tmp_path / "people.json", {"version": 1, "people": [
++        {"id": "ana.ruiz", "name": "Ana Ruiz", "role": "Client A PM", "note": "Agenda\nfirst"},
++        {"id": "ana.ruiz", "name": "Second Ana"},
++        {"id": "Bad Handle", "name": "Bad"},
++        {"id": "x.", "name": "Trailing dot"},
++        {"id": "nobody", "name": "  "},
++        "not an object",
++        {"id": "esc", "name": "Esc\x1b[31mape", "role": "r" * 90, "note": 7},
++        {"id": "long.one", "name": "n" * 61, "note": "x" * 201},
++        {"id": "exact", "name": "m" * 60, "note": "y" * 200},
++    ]})
++    d = Directory.load(p)
++    assert list(d.people) == ["ana.ruiz", "esc", "long.one", "exact"]
++    assert (d.get("long.one").name, d.get("long.one").note) == ("n" * 60, "x" * 200)   # QA-7
++    assert (d.get("exact").name, d.get("exact").note) == ("m" * 60, "y" * 200)
++    assert d.get("ana.ruiz").note == "Agenda first"
++    assert d.get("esc").name == "Esc[31mape" and d.get("esc").role == "r" * 60
++    assert d.get("esc").note == ""
++    assert d.get("ana.ruiz").name == "Ana Ruiz"
++
++
++@pytest.mark.parametrize("raw", [b"{not json", b"[]", b'{"people": {}}', b"\xff\xfe"])
++def test_TC_2501_an_unreadable_file_is_kept_aside_and_the_directory_starts_empty(tmp_path, raw):
++    p = tmp_path / "people.json"
++    p.write_bytes(raw)                                # bytes: `\xff\xfe` is no UTF-8 (CR-3)
++    before = p.read_bytes()
++    d = Directory.load(p)
++    assert d.people == {} and d.load_report["unreadable"] is True
++    assert Path(d.load_report["backup"]).read_bytes() == before
++    assert p.read_bytes() == before                 # never rewritten by a read
++
++
++# --------------------------------------------------------------------------- #
++# TC-2501 — writing (LLR-2501.2)
++# --------------------------------------------------------------------------- #
++def test_TC_2501_add_derives_the_handle_and_writes_the_file(tmp_path):
++    d = Directory.load(tmp_path / "people.json")
++    live = d.people                                  # the live dict boards hold
++    ana = d.add("  Ana   Ruiz ", "Client A PM")
++    assert (ana.id, ana.name, ana.role, ana.note) == ("ana.ruiz", "Ana Ruiz", "Client A PM", "")
++    assert d.add("Ana Ruiz", "Namesake").id == "ana.ruiz2"
++    assert d.add("Andrés Lima").id == "andres.lima"
++    assert live is d.people and live["andres.lima"].name == "Andrés Lima"
++    raw = json.loads((tmp_path / "people.json").read_text(encoding="utf-8"))
++    assert raw["version"] == 1
++    assert [p["id"] for p in raw["people"]] == ["ana.ruiz", "ana.ruiz2", "andres.lima"]
++    assert not list(tmp_path.glob("*.tmp")) and not list(tmp_path.glob("*.lock"))
++
++
++@pytest.mark.parametrize("name, handle", [("Ana Ruiz", "ana.ruiz"), ("O'Brien-Smith Jo", "o.brien.smith.jo"),
++                                          ("José  María", "jose.maria"), ("李", "person"),
++                                          ("Ana . Ruiz", "ana.ruiz"), ("R2 D2", "r2.d2")])
++def test_TC_2502_a_handle_is_the_name_folded_and_always_a_mention(name, handle):
++    h = handle_for(name, set())
++    assert h == handle
++    assert mention_ids(f"see @{h}.") == [h]          # the handle reads back as a mention
++
++
++def test_TC_2502_a_taken_handle_gets_the_next_number():
++    assert handle_for("Ana Ruiz", {"ana.ruiz", "ana.ruiz2"}) == "ana.ruiz3"
++
++
++def test_TC_2501_a_name_with_nothing_left_is_refused(tmp_path):
++    d = Directory.load(tmp_path / "people.json")
++    with pytest.raises(ValueError):
++        d.add(" \x07 ")
++    assert not (tmp_path / "people.json").exists()
++
++
++def test_TC_2501_two_windows_never_erase_each_others_people(tmp_path):
++    """A read-modify-write: a second directory that read the file before the first
++    one's add keeps that add when it writes its own."""
++    p = tmp_path / "people.json"
++    one, two = Directory.load(p), Directory.load(p)
++    one.add("Ana Ruiz")
++    two.add("Marta Gil", "Accountant")
++    assert sorted(Directory.load(p).people) == ["ana.ruiz", "marta.gil"]
++    assert sorted(two.people) == ["ana.ruiz", "marta.gil"]
++    # and the handle is unique against what the file holds now
++    assert one.add("Marta Gil").id == "marta.gil2"
++
++
++def test_TC_2501_edit_writes_back_a_person_the_file_lost_and_refuses_a_non_handle(tmp_path):
++    """code review CR-5: a person another window's file no longer holds is written back;
++    a string that is not a handle is never written."""
++    p = tmp_path / "people.json"
++    d = Directory.load(p)
++    d.add("Luis Mora")
++    p.write_text('{"version": 1, "people": []}', encoding="utf-8")
++    d.edit("luis.mora", "Luis Mora", "Course TA", "")
++    assert [x.id for x in Directory.load(p).people.values()] == ["luis.mora"]
++    with pytest.raises(ValueError):
++        d.edit("Not A Handle", "X", "", "")
++    assert list(Directory.load(p).people) == ["luis.mora"]
++
++
++def test_TC_2501_edit_keeps_the_handle(tmp_path):
++    d = Directory.load(tmp_path / "people.json")
++    d.add("Luis Mora", "Course TA")
++    p = d.edit("luis.mora", "Luis Moreno", "Head TA", "Reviews every lab")
++    assert (p.id, p.name, p.role, p.note) == ("luis.mora", "Luis Moreno", "Head TA",
++                                              "Reviews every lab")
++    assert {h: p.name for h, p in d.people.items()} == {"luis.mora": "Luis Moreno"}
++    assert Directory.load(tmp_path / "people.json").get("luis.mora").name == "Luis Moreno"
++
++
++def test_TC_2501_an_unparseable_file_that_cannot_be_kept_is_never_written_over(tmp_path, monkeypatch):
++    p = _write(tmp_path / "people.json", "{broken")
++    d = Directory(p)
++    monkeypatch.setattr(people, "keep_aside", lambda path: None)
++    with pytest.raises(OSError):
++        d.add("Ana Ruiz")
++    assert p.read_text(encoding="utf-8") == "{broken" and d.people == {}
++
++
++def test_TC_2501_an_unparseable_file_is_kept_aside_before_it_is_replaced(tmp_path):
++    p = _write(tmp_path / "people.json", "{broken")
++    d = Directory(p)
++    d.add("Ana Ruiz")
++    assert (tmp_path / "people.json.corrupt").read_text(encoding="utf-8") == "{broken"
++    assert list(Directory.load(p).people) == ["ana.ruiz"]
++
++
++def test_TC_2501_a_held_lock_makes_the_write_wait_then_fail_and_change_nothing(tmp_path, monkeypatch):
++    monkeypatch.setattr(boards, "LOCK_WAIT", 0.2)
++    p = tmp_path / "people.json"
++    d = Directory.load(p)
++    with boards.file_lock(p):
++        with pytest.raises(OSError, match="busy"):
++            d.add("Ana Ruiz")
++    assert d.people == {} and not p.exists()
++
++
++def test_TC_2501_a_failed_write_changes_nothing_in_memory(tmp_path, monkeypatch):
++    d = Directory.load(tmp_path / "people.json")
++    d.add("Ana Ruiz")
++
++    def boom(path, text):
++        raise OSError("disk full")
++    monkeypatch.setattr(people, "write_atomic", boom)
++    with pytest.raises(OSError):
++        d.add("Marta Gil")
++    assert list(d.people) == ["ana.ruiz"] and d.people["ana.ruiz"].name == "Ana Ruiz"
++
++
++# --------------------------------------------------------------------------- #
++# TC-2502 — the tokeniser (LLR-2502.1)
++# --------------------------------------------------------------------------- #
++@pytest.mark.parametrize("text, ids", [
++    ("Ask @ana.ruiz about the stores.", ["ana.ruiz"]),
++    ("Ask @ana.ruiz.", ["ana.ruiz"]),                 # a trailing dot is not the handle's
++    ("@ana.ruiz, @diego.paz and @ana.ruiz again", ["ana.ruiz", "diego.paz"]),
++    ("mail ana@x.com or @@ana", []),
++    ("@Sofia is not a handle", []),
++    ("(@elena.vidal)", ["elena.vidal"]),
++    ("==send it to @diego.paz==", ["diego.paz"]),
++    ("imported @[Ana Ruiz](p:ana.ruiz) note", ["ana.ruiz"]),
++    ("a.@b c_@d", []),
++    ("", []),
++])
++def test_TC_2502_mentions_are_read_at_word_starts(text, ids):
++    assert mention_ids(text) == ids
++
++
++def test_TC_2502_split_mentions_keeps_every_character():
++    text = "Ask @ana.ruiz and @[Ana Ruiz](p:ana.ruiz) — ana@x.com"
++    parts = split_mentions(text)
++    assert "".join(p for p, _h in parts) == text
++    assert [h for _p, h in parts if h] == ["ana.ruiz", "ana.ruiz"]
++
++
++def test_TC_2502_mention_line_is_the_first_line_naming_the_person():
++    notes = "Agenda to @elena.vidal by Monday\n- demo\n- ask @ana.ruiz for the criteria"
++    assert mention_line(notes, "ana.ruiz") == "ask @ana.ruiz for the criteria"
++    assert mention_line(notes, "elena.vidal") == "Agenda to @elena.vidal by Monday"
++    assert mention_line(notes, "marta.gil") == ""
++
++
++def test_TC_2502_find_puts_name_starts_first_then_inside_then_role(tmp_path):
++    p = fx.build(tmp_path)
++    d = Directory.load(p.parent / "people.json")
++    assert [x.id for x in d.find("an")] == ["ana.ruiz", "andres.lima", "juana.soto",
++                                              "marta.gil"]
++    assert [x.id for x in d.find("andres")] == ["andres.lima"]      # accents folded
++    assert [x.id for x in d.find("pm")] == ["ana.ruiz"]              # the role
++    assert len(d.find("")) == 8 and d.find("zz") == []
++    assert d.named("ANDRES LIMA").id == "andres.lima" and d.named("Nobody") is None
++
++
++# --------------------------------------------------------------------------- #
++# AT-2501 — the app holds one directory for every board
++# --------------------------------------------------------------------------- #
++async def test_AT_2501_one_directory_for_every_board(home):
++    """`open_app` on the round's boards: the directory is `~/.taskboard/people.json`,
++    every board the app opens draws from the same names, and no board file holds
++    them."""
++    from taskboard.__main__ import open_app
++    fx.build(home, last="client-a")
++    app = open_app(None)
++    async with app.run_test(size=(118, 30)) as pilot:
++        await pilot.pause()
++        assert app.people.path == home / "people.json"
++        assert len(app.people.people) == 8
++        assert app.board.people is app.people.people
++        app.pop_screen()                              # the home
++        await pilot.pause()
++        app.switch_board("course")
++        await pilot.pause()
++        assert app.board_id == "course" and app.board.people is app.people.people
++        app.people.add("Sofia Vega", "Legal counsel")
++        assert app.board.people["sofia.vega"].name == "Sofia Vega"
++        app.board.save()
++    for bid in ("main", "client-a", "course"):
++        raw = json.loads(fx.board_path(home, bid).read_text(encoding="utf-8"))
++        assert '"people"' not in json.dumps(raw) and "Sofia Vega" not in json.dumps(raw)
++
++
++async def test_AT_2501_an_unreadable_directory_is_said_and_kept(home):
++    from taskboard.__main__ import open_app
++    fx.build(home, last="client-a")
++    (home / "people.json").write_text("{oops", encoding="utf-8")
++    app = open_app(None)
++    async with app.run_test(size=(118, 30), notifications=True) as pilot:
++        await pilot.pause()
++        notes = [str(n.message) for n in app._notifications]
++        assert any(n.startswith("people.json could not be read; a copy was kept at ")
++                   and n.endswith("The people directory starts empty.") for n in notes)
++        assert app.people.people == {}
++    assert (home / "people.json.corrupt").read_text(encoding="utf-8") == "{oops"
++
++
++async def test_AT_2501_an_app_without_a_registry_never_writes_a_directory(tmp_path):
++    from taskboard.app import TaskboardApp
++    app = TaskboardApp(board_path=tmp_path / "b" / "board.json")
++    async with app.run_test(size=(80, 24)) as pilot:
++        await pilot.pause()
++        assert app.people.path == tmp_path / "b" / "people.json"
++    assert not (tmp_path / "b" / "people.json").exists()
++
++
++# --------------------------------------------------------------------------- #
++# TC-2507 / AT-2507 — team sync carries the handle text and nothing of the directory
++# --------------------------------------------------------------------------- #
++def test_AT_2507_a_push_carries_mentions_as_handles_and_no_directory(tmp_path):
++    root = tmp_path / "home"
++    fx.build(root)
++    board = Board.load(fx.board_path(root, "client-a"))
++    board.people = Directory.load(root / "people.json").people
++    team = tmp_path / "team"
++    team.mkdir()
++    state = TeamState(team, user_id="u1",
++                      config={"projects": [{"id": p.id} for p in board.projects]})
++    assert state.push(board)
++    files = sorted(x.name for x in team.iterdir())
++    assert files == ["board.u1.json"]
++    text = (team / "board.u1.json").read_text(encoding="utf-8")
++    assert "@ana.ruiz" in text and "@elena.vidal" in text
++    for leaked in ("Ana Ruiz", "Client A PM", "Prefers a written agenda", "Elena Vidal",
++                   "Steering committee chair", "people"):
++        assert leaked not in text, leaked
++
++
++def test_TC_2501_an_empty_file_is_an_empty_directory_and_nothing_is_said(tmp_path):
++    """architect A-6: a 0-byte (or blank) file holds nothing to keep — no notice, no copy."""
++    for raw in ("", "  \n"):
++        p = _write(tmp_path / "people.json", raw)
++        d = Directory.load(p)
++        assert d.people == {} and d.load_report == {}
++    assert not list(tmp_path.glob("*.corrupt*"))
++
++
++async def test_AT_2501_a_copy_that_could_not_be_kept_is_said_so(home, monkeypatch):
++    """architect A-6: the notice never names a copy that does not exist."""
++    from taskboard.__main__ import open_app
++    fx.build(home, last="client-a")
++    (home / "people.json").write_text("{oops", encoding="utf-8")
++    monkeypatch.setattr(people, "keep_aside", lambda path: None)
++    app = open_app(None)
++    async with app.run_test(size=(118, 30), notifications=True) as pilot:
++        await pilot.pause()
++        notes = [str(n.message) for n in app._notifications]
++        assert "people.json could not be read; no copy could be kept. The people directory " \
++               "starts empty." in notes
++
++
++@pytest.mark.parametrize("text", ["@[" * 50000, "@[" + "x" * 99000, "a@" * 50000,
++                                  "".join(f"@h{i} " for i in range(40000))],
++                         ids=["at-bracket-x50000", "one-open-link", "a-at-x50000", "distinct-x40000"])
++def test_TC_2507_a_crafted_note_is_tokenised_in_linear_time(text):
++    """security S-1, code review CR-1: one pasted or pulled line of `@[` repeated, or of
++    40 000 distinct handles, must not freeze a render. Linear, these take about 0.1 s of
++    CPU; quadratic, ~25 s and ~6 s. The bound is CPU time, 2 s, so a loaded host does
++    not make it flaky (CR-2) and a quadratic regression still fails it."""
++    import time
++    t0 = time.process_time()
++    mention_ids(text)
++    split_mentions(text)
++    mention_line(text, "ana.ruiz")
++    assert time.process_time() - t0 < 2.0

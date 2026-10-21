@@ -21,7 +21,7 @@ orchestrator presents the full plan in-conversation at each phase gate.
 | Project | taskboard |
 | Batch | 2026-10-21-batch-01 |
 | Objective | The people round, as the operator's verdict on prototypes/people_round chose: one directory of people (name, role, note) for every board at `~/.taskboard/people.json`; `@` mentions in the notes stored as handles (`@ana.ruiz`), picked from a dropdown under the cursor (variant A); a people view on `@` with two panes (variant A) carrying each task's mentioning note line (from C) and the person's progress box (from B); `/` with `@` filters to a person's tasks (variant A); mentions drawn `@Name` in pink in the details, the kanban card and the presentation (variant A) |
-| Last updated | P0 · 2026-10-21 |
+| Last updated | P3 · 2026-10-21 |
 | Standing authorization | standing authorization — the orchestrator's commission of 2026-10-21 (the runtime cannot prompt), relaying the operator's request as quoted on the round page and the operator's verdict on the people round, verbatim: «D1: de acuerdo · D2: de acuerdo · D3: de acuerdo · D4: de acuerdo · D5: de acuerdo · formato (storage): handle · 1 view: A · OBJECIÓN: «Estoy de acuerdo con A y robar de C el contexto, pero también robar de B el recuadro de progreso que dice X late X open X today.» · 2 picker: A · 3 search: A · 4 look: A · notes: (none)». Quoted from the commission: «Gates close under it. Do NOT push or merge; stop at the batch close and report», «WORKTREE: … -b feat/people proto/people», «THE DESIGN = the round … port the chosen variants into the real app», «compose it faithfully from the A, B, C renders, and include it in the captures so the operator reviews it», «D4 "de acuerdo" includes whatever the page proposed about the existing team view `9` … apply its proposal», «Also log in BACKLOG.md (not in scope): the presentation's split view shows `!!…!!` and `++…++` markers raw», «max 4 SOURCE files per increment (tests uncapped)», «Every modal button has a direct shown key … `tests/test_modal_keys.py` law must cover new modals», «One directory for all boards at `~/.taskboard/people.json`, written with batch-02's lock/atomic-write pattern», «Team sync must not leak or break on mentions. Synthetic people only», «spawn independent agents (architect at PDR, code-reviewer, qa-reviewer, ux-reviewer, security-reviewer for the new file store) … no self-review», «Real-app captures of each shipped item at 118x30 and 80x24», «full suite in 3 SEQUENTIAL chunks». Read as: every gate of this batch is autonomous (reviewer roles are spawned sub-agents carrying their `agents/<role>.md`); commits on the local branch `feat/people` are authorized, each ending with the commission's co-author line; **push and merge are NOT authorized**; synthetic data only; the operator's name nowhere (`username_subject`); the main checkout (its uncommitted `.gitattributes`) and the other worktrees are not touched; tests never touch the real home. |
 | First gate | step 1, on `eac7d42` (`proto/people`, the round on top of `main` `03bae95`), before the rollover: exit 1 — 126 block · 87 notice · 61 not applicable, every BLOCK `V59` naming a file of the commits after the closed batch's `base_ref` `1fd667b` (the round's `prototypes/people_round/` and main's backlog commits), which no closed packet carries; `V7`: bundle identical to its manifest both directions, 57 declared files, `2026-10-12-rev102` (`evidence/gate-step1.txt`). The rollover re-stamps `base_ref` to `eac7d42`; step 3 (after it): exit 0 — 0 block · 107 notice · 47 not applicable (`evidence/gate-step3.txt`). |
 | Premises / RC-1 | RC-1 (a): `git fetch origin` → `origin/main` = `03bae952cfb319f7509c17968534bf0f75e65da3`, an ancestor of the worktree's `HEAD` `eac7d42` (`proto/people`); the commission names that base, so no rebase; `base_ref` stamped `eac7d4227b919c995fec153f68aac6f0dfad3c96`. RC-1 (b): not already shipped — on `HEAD` `@` is bound nowhere, no `people.json`, `@` in the notes is text (P-1, P-2, P-3, P-7). RC-2: `git ls-remote --exit-code --heads origin` → exit 0; newest commit on `origin/main` 2026-10-21 08:19 −0600. Premises: `01-requirements.md` §2.7 (P-1..P-8, all TRUE, `evidence/premises.txt`). |
@@ -54,7 +54,7 @@ The trigger evaluation `state.json`'s `triggers.record` points at: one row per t
 
 ## Where we are
 
-P0 — the batch is open on `feat/people` at `eac7d42` under the standing authorization; the triggers took ARQ, PDR and DDR up. Next: ARQ (the module map's amendment), then P1's contract and the reviewers.
+P3 — ARQ, P1, P2 and the PDR closed under the standing authorization (`db3d562`): the four spawned reviewers approved with conditions, folded as LED .2 and the PDR's PC-1..PC-4. Increments are ported from the frozen draft block by block, each with its own RED, battery, targeted suites and independent review; increment 001 (the directory) is done, 002 is next.
 
 ## Objective
 
@@ -70,6 +70,11 @@ Port the round's chosen variants into the app — the directory (D1–D3, the ha
 | US-2504 | READY | increment 005 |
 | US-2505 | READY | increment 002 |
 | P0 | done | triggers evaluated; refinement done |
+| ARQ | approved with conditions | A-1, A-2 folded into `docs/ARCHITECTURE.md` |
+| P1 | approved | LED .1, .2 |
+| P2 | approved | all four lenses approve with conditions, folded (LED .2) |
+| PDR | approved with conditions | PC-1..PC-4 |
+| P3 | in progress | increment 001 done (code-reviewer OK; security APPROVE S-1) |
 
 ## Roadmap + increment plan
 
@@ -124,9 +129,16 @@ Port the round's chosen variants into the app — the directory (D1–D3, the ha
 
 **P0 (step 3, after the rollover):** 0 block · 107 notice — the step-3 placeholder NOTICEs over the unfilled seeds (`V27`, `V31`–`V38`, `V41`, `V43`–`V51`, `V54`), `V53`, `V30`, the historical NOTICEs above (`V9`, `V13`, `V22`, `V23`, `V42`).
 
+**ARQ … PDR gates:** 0 block · 105 notice — the seeds' placeholder NOTICEs (`V31`–`V38`, `V41`, `V43`–`V51`, `V54`) until their artifacts are written; `V53` while the contract names test nodes not yet written (P3 writes them); `V62` between a `--station` move and this plan's rewrite (the four moves were run back to back, the plan rewritten at P3); `V30`; the historical NOTICEs (`V9`, `V13`, `V22`, `V23`, `V42`).
+
+**P3:** declared per increment below as it lands.
+
 ## Test ledger
 
 | Suite / command | Last run | Result |
 |---|---|---|
 | `evidence/premises.py` on `base_ref` | 2026-10-21 | P-1..P-8 TRUE — `evidence/premises.txt` |
 | the drafted increments (this worktree, before the PDR), targeted | 2026-10-21 | the five new suites and the touched laws green — draft only, not evidence |
+| the draft's full suite, three chunks (scratch) | 2026-10-21 | 1398 + 918 + 797 passed — draft only, not evidence |
+| `evidence/suite-001.txt` (increment 001, targeted) | 2026-10-21 | 391 passed |
+| `evidence/mutation-001.txt` | 2026-10-21 | 17/17 KILLED |

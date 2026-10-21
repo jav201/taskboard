@@ -962,6 +962,10 @@ class Board:
         # its views' head rows open with. Set by the app, never written to the
         # file (batch 2026-10-20-batch-01, LLR-2203.1).
         self.label: tuple[str, str] | None = None
+        # the people directory by handle (`ana.ruiz` → its `people.Person`), what a
+        # mention is drawn as. Set by the app, shared by every board it opens, never
+        # written to the file (batch 2026-10-21-batch-01).
+        self.people: dict = {}
 
     @property
     def load_report(self) -> dict:
