@@ -293,6 +293,31 @@
       "station": "PDR",
       "date": "2026-10-21",
       "decision": "standing authorization — the orchestrator's commission of 2026-10-21. PDR approved with conditions PC-1..PC-4 (design/PDR-2026-10-21-batch-01.md): real captures incl. item 1's composed frame; S-1 re-check by security at increment 001; each split increment green on its own and touched suites; RED and mutation per increment. P3 is next."
+    },
+    {
+      "station": "P3",
+      "date": "2026-10-21",
+      "decision": "standing authorization — the orchestrator's commission of 2026-10-21. P3 increment 001 approved: the people directory people.json, the @handle tokeniser, Board.people, boards.keep_aside (HLR-2501, HLR-2502, HLR-2507); 391 passed targeted, 17/17 mutants KILLED, code-reviewer OK to advance (CR-1..CR-5, CR-7 fixed), security-reviewer APPROVE on S-1 (PC-2 discharged). P3 continues."
+    },
+    {
+      "station": "P3",
+      "date": "2026-10-21",
+      "decision": "standing authorization — the orchestrator's commission of 2026-10-21. P3 increment 002 approved: a mention drawn @Name in pink in the details, the card and the presentation (HLR-2506, AT-2502); 802 passed targeted, 14/14 mutants KILLED, code-reviewer OK to advance (CR-1..CR-4 fixed, CR-5 to the contract LED .3), security-reviewer APPROVE on the render side (N-2 fixed, N-1 logged). P3 continues."
+    },
+    {
+      "station": "P3",
+      "date": "2026-10-21",
+      "decision": "standing authorization — the orchestrator's commission of 2026-10-21. P3 increment 003 approved: the @ picker in the editor's notes (HLR-2503); 363 passed targeted, 13/13 mutants KILLED, code-reviewer OK to advance on the re-read after FIX FIRST (CR-1, CR-2 HIGH fixed and verified by the reviewer's probes; LED .4). P3 continues."
+    },
+    {
+      "station": "P3",
+      "date": "2026-10-21",
+      "decision": "standing authorization — the orchestrator's commission of 2026-10-21. P3 increment 004 approved: the people view on @ — A's panes with C's quote and B's box, PEOPLE · directory (D4), PersonForm (HLR-2504); 435 passed targeted, 19/19 mutants KILLED, code-reviewer OK to advance on the re-read after FIX FIRST (CR-1 HIGH scroll, CR-2 pile-up fixed and verified; LED .5). P3 continues."
+    },
+    {
+      "station": "P3",
+      "date": "2026-10-21",
+      "decision": "standing authorization — the orchestrator's commission of 2026-10-21. P3 increment 005 approved: search by person — @ inside /, a lone @ lists names only, alt+p opens the person's page, SearchPrompt under the modal law (HLR-2505, AT-2505); 641 passed targeted, 13/13 mutants KILLED, code-reviewer OK to advance (CR-1, CR-3 fixed; CR-2 to the contract LED .6). P4 is next, with the DDR."
     }
   ],
   "obsidian_synced": false,

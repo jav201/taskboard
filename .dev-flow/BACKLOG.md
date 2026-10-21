@@ -135,6 +135,21 @@ recorded full-suite run).
   increment-002's packet; the operator's visual re-verdict on the amended frames + the new chrome
   is PENDING in the Open section above.
 
+## Open — after `2026-10-21-batch-01` (the people round: the operator's verdict on `prototypes/people_round/`)
+
+- ✓ done in `2026-10-21-batch-01` (on the local branch `feat/people`, not pushed) — **the people round** (the verdict «D1–D5: de acuerdo · formato: handle · 1 view: A · OBJECIÓN: «… robar de C el contexto, pero también robar de B el recuadro de progreso …» · 2 picker: A · 3 search: A · 4 look: A»): one directory `~/.taskboard/people.json` for every board; `@handle` mentions picked from a dropdown in the editor's notes; `@` the people view (`PEOPLE · directory`: A's two panes, C's quote under each task, B's `late · today · open` box); `/` then `@` filters to a person's tasks; `@Name` in pink in the details, the card and the presentation. Increments 001–005.
+- the presentation's split view draws the notes' `!!…!!` and `++…++` markers raw (the people round's finding, pre-existing: `views._present_note_markup` paints the text `ink` with no `highlight_segments`; the rest of the app colours them). Logged by the commission, not fixed.
+- deleting a person from the directory (none of the round's variants offered it; a person no note mentions any more stays listed with `nothing open`).
+- mentions in the views the verdict did not name — the focus view's note snippet, the swimlanes, the HTML report — still show the stored `@handle`.
+- D4 (the round): the team roster (view `9`, `People`) and the directory stay apart; a teammate who is also a contact appears in both until a round merges them.
+- `handle_for` splits a word at a letter NFKD cannot fold (`Søren` → `s.ren`, `Łukasz` → `ukasz`; increment 001's code review CR-6): a known limit.
+- the `.corrupt` copy `boards.keep_aside` makes follows the umask on POSIX (0644), and a still-unreadable `people.json` or `boards.json` gets one more copy per start (security S-2, S-3; accepted for this batch).
+- format characters (U+200B–U+200F, U+202A–U+202E) survive `strip_controls` in names and notes (security S-5, a pre-existing rule).
+- the presentation's note rows lose a lone backslash before `[` and a name ending `\` is drawn with one (increment 002's code review CR-7 and security N-1, cosmetic, pre-existing pattern): build the presentation's rows as Text pieces.
+- the filter window's button reads `Save` for a filter (ux UX-11, the shared `TextPrompt`).
+- a person another window adds shows here after a restart or this window's next write (architect A-7, accepted).
+- OPERATOR — the people view's composition (item 1: A + C's quote under each task + B's box) was never rendered as one frame in the round: its real captures are in `.dev-flow/2026-10-21-batch-01/evidence/captures/`. Named for the verdict: the box's order `late · today · open` (B's, not the objection's spoken «late open today», D-3); `enter` on the people pane goes to the tasks (D-7); `n`/`e`/`/` act (D-6).
+
 ## Open — after `2026-10-20-batch-03` (the backlog round: the operator's verdict on `prototypes/backlog_round/`)
 
 - ✓ done in `2026-10-20-batch-03` (on the local branch `feat/backlog-round`, not pushed) — **the backlog round** (the operator: «Haz lo del backlog por favor.»; the verdict «1 agenda: C · 2 chip: B · 3 help: A · 4 export: limpia · 5 reorder: A · 6 confirm: B · OBJECIÓN … · 7 startup: A · 8 twice: A · 9 register: A»): `A` the agenda of every board; the board's chip on the presentation's hint row; `?` in `R`; the clean `-all` export; `K`/`J`; a direct, shown key for every modal button (`y`/`n`, `alt+s`/`alt+i`/`alt+t`/`alt+d`); the chip in the start-up modals; one notice when a board is open in another window; `--open PATH`. Increments 001–004.

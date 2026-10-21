@@ -54,7 +54,7 @@ The trigger evaluation `state.json`'s `triggers.record` points at: one row per t
 
 ## Where we are
 
-P3 — ARQ, P1, P2 and the PDR closed under the standing authorization (`db3d562`): the four spawned reviewers approved with conditions, folded as LED .2 and the PDR's PC-1..PC-4. Increments are ported from the frozen draft block by block, each with its own RED, battery, targeted suites and independent review; increment 001 (the directory) is done, 002 is next.
+P3 — ARQ, P1, P2 and the PDR closed under the standing authorization (`db3d562`): the four spawned reviewers approved with conditions, folded as LED .2 and the PDR's PC-1..PC-4. Increments are ported from the frozen draft block by block, each with its own RED, battery, targeted suites and independent review; increments 001..005 are done; the DDR with the real captures (PC-1) and P4 are next.
 
 ## Objective
 
@@ -74,7 +74,7 @@ Port the round's chosen variants into the app — the directory (D1–D3, the ha
 | P1 | approved | LED .1, .2 |
 | P2 | approved | all four lenses approve with conditions, folded (LED .2) |
 | PDR | approved with conditions | PC-1..PC-4 |
-| P3 | in progress | increments 001..004 done (code-reviewer OK each — 003, 004 after one FIX FIRST; security APPROVE S-1 both sides) |
+| P3 | done | increments 001..005 done (code-reviewer OK each — 003, 004 after one FIX FIRST; security APPROVE S-1 both sides) |
 
 ## Roadmap + increment plan
 
@@ -148,3 +148,5 @@ Port the round's chosen variants into the app — the directory (D1–D3, the ha
 | `evidence/mutation-003.txt` | 2026-10-21 | 13/13 KILLED |
 | `evidence/suite-004.txt` (increment 004, targeted) | 2026-10-21 | 435 passed |
 | `evidence/mutation-004.txt` | 2026-10-21 | 19/19 KILLED |
+| `evidence/suite-005.txt` (increment 005, targeted) | 2026-10-21 | 641 passed |
+| `evidence/mutation-005.txt` | 2026-10-21 | 13/13 KILLED |

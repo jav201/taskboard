@@ -3718,7 +3718,11 @@ _SEARCH_CONT = Style(dim=True)
 
 
 def matches(task: Task, board: Board, q: str) -> str | None:
-    """Why a task matches, strongest first: title > project > notes."""
+    """Why a task matches, strongest first: title > project > notes. A query
+    `@handle` is a person (batch 2026-10-21-batch-01, the round's item 3 A): the
+    tasks whose notes mention exactly that handle, `person`, and nothing else."""
+    if q.startswith("@"):
+        return "person" if q[1:] in mention_ids(task.notes) else None
     p = board.project_by_id(task.project_id)
     if q in task.title.lower():
         return "title"
@@ -3744,9 +3748,18 @@ def filtered_board(board: Board, query: str, show_archived: bool) -> Board:
     return proxy
 
 
-def filter_bar(query: str, hits: int, total: int, w: int) -> list[str]:
-    """The `/` bar: query + cursor left, tally right."""
-    left = c("/", "accent", bold=True) + " " + escape(query) + c("▌", "accent")
+def filter_bar(query: str, hits: int, total: int, w: int,
+               people: dict | None = None) -> list[str]:
+    """The `/` bar: query + cursor left, tally right; a person's query (`@handle` of
+    someone in `people`) says who: `/ @Name  role · tasks that mention them`."""
+    # handles are lowercase, and the filter lowercases the query (code review CR-3)
+    person = (people or {}).get(query[1:].lower()) if query.startswith("@") else None
+    if person is not None:
+        left = (c("/", "accent", bold=True) + " " + c(escape("@" + person.name), "pink", bold=True)
+                + c(escape(f"  {person.role + ' · ' if person.role else ''}"
+                           "tasks that mention them"), "mut"))
+    else:
+        left = c("/", "accent", bold=True) + " " + escape(query) + c("▌", "accent")
     right = c(f"{hits}/{total} tasks", "mut") + c(" · esc clears", "dim")
     return [header(left, right, w), head_rule(w)]
 
@@ -3809,13 +3822,15 @@ def _highlight_grid(grid: list[list[list]], query: str) -> None:
 
 
 def _apply_search_overlay(text: Text, query: str, hits: int, total: int,
-                          w: int) -> Text:
-    """Insert the `/` bar under the view header and reverse-lit matches."""
+                          w: int, people: dict | None = None) -> Text:
+    """Insert the `/` bar under the view header and reverse-lit matches (a
+    person's query lights nothing: the cards draw names, not the handle)."""
     lines = text.split("\n")
     h = len(lines)
     grid = _search_to_grid(text, w, h)
-    _highlight_grid(grid, query)
-    bar_text = Text.from_markup("\n".join(filter_bar(query, hits, total, w)),
+    if not query.startswith("@"):
+        _highlight_grid(grid, query)
+    bar_text = Text.from_markup("\n".join(filter_bar(query, hits, total, w, people)),
                                 emoji=False)
     bar_grid = _search_to_grid(bar_text, w, 2)
     grid = [grid[0]] + bar_grid + grid[1:]
@@ -7398,7 +7413,7 @@ def render_view(mode, board, show_archived, selected_id, today=None,
             if line_map is not None:
                 for tid in list(line_map.keys()):
                     line_map[tid] += 2
-            return _apply_search_overlay(text, query, hits, total, w)
+            return _apply_search_overlay(text, query, hits, total, w, board.people)
         return render_kanban(board, show_archived, selected_id, today, width, height,
                              line_map, presentation, sort=kanban_sort,
                              group=kanban_group, collapsed=kanban_collapsed,
@@ -7414,7 +7429,7 @@ def render_view(mode, board, show_archived, selected_id, today=None,
             if line_map is not None:
                 for tid in list(line_map.keys()):
                     line_map[tid] += 2
-            return _apply_search_overlay(text, query, hits, total, w)
+            return _apply_search_overlay(text, query, hits, total, w, board.people)
         return render_gantt(board, show_archived, selected_id, today, width, height,
                             line_map, tick=tick, focus=gantt_focus,
                             previous=gantt_previous)

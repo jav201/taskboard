@@ -43,3 +43,10 @@ above this line is ever edited._
 - **What changed:** Before → After. «scrolls by whole tasks … never opening on a quote without its task» → the window ends on the cursor's task and its quote, an orphan quote at its top drawn blank, the marker counting the tasks under the window and never `0` (code review CR-1, HIGH: at 78×20 the cursor's own quote was cut under `↓ 0 more below`); `@` and `A` bring an existing screen to the top instead of stacking another (CR-2: `@ A @ A …` piled screens without limit, each re-reading every board).
 - **Why:** increment 004's independent review (code-reviewer FIX FIRST on CR-1).
 - **Evidence:** `03-increments/increment-004.md` §4b; `evidence/mutation-004.txt` (M4, M17, M18, M19).
+
+### LED-2026-10-21-batch-01.6 — increment 005's code-review drifts (P3)
+- **Requirement:** HLR-2505, LLR-2505.1, LLR-2505.2
+- **Date:** 2026-10-21
+- **What changed:** Before → After. «with no person listed, `enter` filters by the typed text as before» and the boundary row «`@ana` … a text filter» → an `@` query is always an exact handle, `@ana` keeps nothing (the code's behaviour, code review CR-2: the contract and the code disagreed); `/` reopened on a person's filter lists that person (CR-1: it said `no one by that name`); the bar's lookup ignores case (CR-3); LLR-2505.2's `check_action` gate on `move`/`page` dropped as unobservable (its mutant could not be killed: with no one listed both keys already change nothing).
+- **Why:** increment 005's independent review (code-reviewer OK to advance, CR-1, CR-2 MEDIUM, CR-3 LOW) and its mutation battery.
+- **Evidence:** `03-increments/increment-005.md` §4b; `evidence/mutation-005.txt`.

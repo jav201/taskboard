@@ -204,8 +204,8 @@ Textual 8.2.8 names the `@` key `at` (P-1); a priority binding refused by `check
 
 ### HLR-2505 — `/` then `@` filters to one person's tasks
 - **Traceability:** US-2504
-- **Ledger:** LED-2026-10-21-batch-01.1, LED-2026-10-21-batch-01.2
-- **Statement:** When the operator presses `/` in the kanban or the gantt, the system shall show the filter window (`Filter tasks`) with, under its field, `text filters tasks · @ starts a person` and the key line `↵ / alt+s filter   esc cancel`; when the field starts with `@` it shall instead list under it `PEOPLE · names only` and the first 6 of the directory's people `find` returns for what follows the `@` (for `@` alone, the first 6 by name; no `+ add` row; `no one by that name` when none, qa QA-1), the first highlighted, with the key line `↑↓   ↵ / alt+s filter   alt+p their page   esc cancel` (ux UX-7); `↑`/`↓` move the highlight; `enter` or `alt+s` with a person highlighted shall set the filter `@<handle>`, which keeps exactly the tasks whose notes mention that handle, lights no text, and whose bar reads `/ @<Name>  <role> · tasks that mention them` (the role and its ` · ` left out when empty) with the tally; with no person listed, `enter` filters by the typed text as before; `alt+p` with a person highlighted shall close the window and open the people view on them (HLR-2504); a text query shall filter exactly as before.
+- **Ledger:** LED-2026-10-21-batch-01.1, LED-2026-10-21-batch-01.2, LED-2026-10-21-batch-01.6
+- **Statement:** When the operator presses `/` in the kanban or the gantt, the system shall show the filter window (`Filter tasks`) with, under its field, `text filters tasks · @ starts a person` and the key line `↵ / alt+s filter   esc cancel`; when the field starts with `@` it shall instead list under it `PEOPLE · names only` and the first 6 of the directory's people `find` returns for what follows the `@` (for `@` alone, the first 6 by name; no `+ add` row; `no one by that name` when none, qa QA-1), the first highlighted, with the key line `↑↓   ↵ / alt+s filter   alt+p their page   esc cancel` (ux UX-7); `↑`/`↓` move the highlight; `enter` or `alt+s` with a person highlighted shall set the filter `@<handle>`, which keeps exactly the tasks whose notes mention that handle, lights no text, and whose bar reads `/ @<Name>  <role> · tasks that mention them` (the role and its ` · ` left out when empty) with the tally; with no person listed, `enter` sets the typed `@…` as the filter, and an `@` query is always an exact handle — `@zz` or a partial `@ana` keeps no task, nothing is invented (code review CR-2 of increment 005); `/` reopened on a person's filter lists that person first (CR-1); the bar's lookup ignores case, as the filter does (CR-3); `alt+p` with a person highlighted shall close the window and open the people view on them (HLR-2504); a text query shall filter exactly as before.
 - **Rationale (informative):** item 3 A (`SearchAt`, `matches_m`, `filter_bar_m`): the same `@` as the notes, exact, no mode to remember; `/` stays in the kanban and the gantt (the round's note).
 - **Validation:** `test`
 - **Executed verification:** `python -m pytest -q -p no:cacheprovider tests/test_people_search.py`
@@ -215,7 +215,7 @@ Textual 8.2.8 names the `@` key `at` (P-1); a priority binding refused by `check
   - **Observable outcome:** a person's tasks, exactly, from the filter the operator already knows.
   - **Shipped surface:** `taskboard` → `/` in kanban and gantt.
   - **Acceptance test(s):** AT-2505
-  - **Boundary catalog (QC-3):** ☑ boundary (6 rows; `@` alone lists everyone) ☑ empty (`@zz`: no one; an empty directory: no one) ☑ invalid (a partial handle `@ana` typed and `enter` with no one listed: a text filter, nothing invented) ☐ error — none
+  - **Boundary catalog (QC-3):** ☑ boundary (6 rows; `@` alone lists everyone) ☑ empty (`@zz`: no one; an empty directory: no one) ☑ invalid (a partial handle `@ana` typed and `enter` with no one listed: an exact-handle filter that keeps nothing, nothing invented) ☐ error — none
   - **Negative control:** on `base_ref` AT-2505 is RED: `@an` lists nothing and the filter `ana` keeps «Canary» (P-4; `evidence/red-005.txt` — planned).
 
 ### HLR-2506 — A mention is drawn `@Name` in pink
@@ -349,7 +349,7 @@ Textual 8.2.8 names the `@` key `at` (P-1); a priority binding refused by `check
 
 ### LLR-2505.1 — `views.matches`, `filter_bar`, `_apply_search_overlay`
 - **Traceability:** HLR-2505
-- **Ledger:** LED-2026-10-21-batch-01.1, LED-2026-10-21-batch-01.2
+- **Ledger:** LED-2026-10-21-batch-01.1, LED-2026-10-21-batch-01.2, LED-2026-10-21-batch-01.6
 - **Statement:** `views.matches(task, board, q)` shall return `"person"` for a query `@<handle>` when the notes mention that handle and None otherwise, before any text rule; `filter_bar(query, hits, total, w, people=None)` shall write HLR-2505's person bar when the handle is in `people`; `_apply_search_overlay(..., people=None)` shall light no text for a person's query and pass `board.people` to the bar from both `render_view` branches.
 - **Validation:** `test (unit)`
 - **Executed verification:** `python -m pytest -q -p no:cacheprovider tests/test_people_search.py -k TC_2505`
@@ -359,8 +359,8 @@ Textual 8.2.8 names the `@` key `at` (P-1); a priority binding refused by `check
 
 ### LLR-2505.2 — `modals.SearchPrompt` and `/`
 - **Traceability:** HLR-2505
-- **Ledger:** LED-2026-10-21-batch-01.1, LED-2026-10-21-batch-01.2
-- **Statement:** `taskboard/modals.py` shall provide `SearchPrompt(TextPrompt)` with keyword arguments `people` and `open_person`, priority bindings `up`/`down` (`move`) and `alt+p` (`page`) that `check_action` lets act only while the field starts with `@`, a `#sp-list` Static under the field, and `_save` dismissing `@<handle>` for a highlighted person; `TaskboardApp.action_search` shall push it with `open_person` pushing `PeopleDirectory(handle)`; `tests/test_modal_keys.py`'s law shall read a modal's buttons and bindings along its package bases, and list `SearchPrompt` with `TextPrompt`'s two buttons.
+- **Ledger:** LED-2026-10-21-batch-01.1, LED-2026-10-21-batch-01.2, LED-2026-10-21-batch-01.6
+- **Statement:** `taskboard/modals.py` shall provide `SearchPrompt(TextPrompt)` with keyword arguments `people` and `open_person`, priority bindings `up`/`down` (`move`) and `alt+p` (`page`), which change nothing while no person is listed, a `#sp-list` Static under the field, and `_save` dismissing `@<handle>` for a highlighted person; `TaskboardApp.action_search` shall push it with `open_person` pushing `PeopleDirectory(handle)`; `tests/test_modal_keys.py`'s law shall read a modal's buttons and bindings along its package bases, and list `SearchPrompt` with `TextPrompt`'s two buttons.
 - **Validation:** `test (unit)`
 - **Executed verification:** `python -m pytest -q -p no:cacheprovider tests/test_people_search.py tests/test_modal_keys.py`
 - **Numeric pass threshold:** as AT-2505; TC-2407's law over `SearchPrompt` (its painted key line holds `alt+s` and `esc cancel`).

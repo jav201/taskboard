@@ -26,7 +26,7 @@ import backlog_round_fixture as fx
 from taskboard import app as app_module, keymap, models, modals, views
 from taskboard.app import BoardsHome, TaskboardApp
 from taskboard.modals import ConfirmModal
-from taskboard.people import Person
+from taskboard.people import Directory, Person
 
 _SVG = re.compile(r'<text class="[^"]*" x="([\d.]+)" y="[\d.]+" textLength="[\d.]+" '
                   r'clip-path="url\(#[^)]*-line-(\d+)\)">([^<]*)</text>')
@@ -203,11 +203,14 @@ def _forms(board):
             ("ClockModal", lambda: modals.ClockModal("Madrid", "London"), dict),
             ("TextPrompt", lambda: modals.TextPrompt("Name", "kept"), str),
             # the people directory's form (batch 2026-10-21-batch-01)
-            ("PersonForm", lambda: modals.PersonForm(Person("ana.ruiz", "Ana Ruiz", "PM")), tuple)]
+            ("PersonForm", lambda: modals.PersonForm(Person("ana.ruiz", "Ana Ruiz", "PM")), tuple),
+            ("SearchPrompt", lambda: modals.SearchPrompt(
+                "Filter tasks", "kept", people=Directory(Path("never-written.json")),
+                open_person=lambda h: None), str)]
 
 
 @pytest.mark.parametrize("name", ["TaskModal", "ProjectModal", "TemplateEditor", "ClockModal",
-                                  "TextPrompt", "PersonForm"])
+                                  "TextPrompt", "PersonForm", "SearchPrompt"])
 async def test_TC_2407_alt_s_does_what_save_does(home, name):
     """TC-2407: `alt+s` dismisses each form with what its Save button returns."""
     app = TaskboardApp(board_path=home / "board.json")
@@ -270,6 +273,7 @@ INVENTORY: dict[str, dict[str, str]] = {
     "ClockModal": {"save": "alt+s", "cancel": "escape"},
     "TextPrompt": {"save": "alt+s", "cancel": "escape"},
     "PersonForm": {"save": "alt+s", "cancel": "escape"},
+    "SearchPrompt": {"save": "alt+s", "cancel": "escape"},    # TextPrompt's buttons, inherited
     "ConfirmModal": {"yes": "y", "no": "n"},
     # no buttons: keys only
     "CalendarModal": {}, "EmojiPicker": {}, "ProjectPicker": {}, "LinkPicker": {},
@@ -291,9 +295,15 @@ def _package_modals() -> dict[str, type]:
     return found
 
 
+def _own(cls) -> list[type]:
+    """The class and its bases inside the package: a subclass inherits its base's
+    buttons and keys (Textual merges BINDINGS along the MRO; batch 2026-10-21-batch-01)."""
+    return [k for k in cls.__mro__ if k.__module__.startswith("taskboard.")]
+
+
 def _bound(cls) -> set[str]:
     keys = set()
-    for b in cls.BINDINGS:
+    for b in [b for k in _own(cls) for b in vars(k).get("BINDINGS", [])]:
         key = b.key if hasattr(b, "key") else b[0]
         keys.update(k.strip() for k in key.split(","))
     return keys
@@ -318,13 +328,13 @@ def test_TC_2407_every_modal_is_in_the_inventory():
     assert set(found) - set(INVENTORY) == set(), "add the new modal to INVENTORY"
     assert set(INVENTORY) - set(found) == set()
     for name, cls in found.items():
-        has_buttons = "Button(" in inspect.getsource(cls)
+        has_buttons = any("Button(" in inspect.getsource(k) for k in _own(cls))
         assert has_buttons is bool(INVENTORY[name]), name
         assert set(INVENTORY[name].values()) <= _bound(cls), name
 
 
 @pytest.mark.parametrize("name", ["TaskModal", "ProjectModal", "TemplateEditor", "ClockModal",
-                                  "TextPrompt", "PersonForm", "ConfirmModal"])
+                                  "TextPrompt", "PersonForm", "SearchPrompt", "ConfirmModal"])
 async def test_TC_2407_every_button_has_its_key(home, name):
     """TC-2407: composed, a modal's buttons are exactly the inventory's, and its key
     line names every key but `esc`/`n` cancel's own (written `esc`)."""

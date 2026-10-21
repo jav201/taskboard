@@ -1,0 +1,18 @@
+# RED on increment 004's commit b473003: this increment's tests over that commit's source
+FAILED tests/test_people_search.py::test_TC_2505_a_person_query_matches_exactly_their_mentions
+FAILED tests/test_people_search.py::test_TC_2505_the_bar_names_the_person_and_their_role
+FAILED tests/test_people_search.py::test_AT_2505_at_lists_names_only_and_enter_filters_to_their_tasks[size0]
+FAILED tests/test_people_search.py::test_AT_2505_at_lists_names_only_and_enter_filters_to_their_tasks[size1]
+FAILED tests/test_people_search.py::test_AT_2505_at_alone_lists_everyone_and_arrows_choose
+FAILED tests/test_people_search.py::test_AT_2505_alt_p_opens_their_page - ass...
+FAILED tests/test_people_search.py::test_AT_2505_no_one_by_that_name_and_text_still_filters
+FAILED tests/test_people_search.py::test_AT_2505_the_gantt_filters_by_person_too
+FAILED tests/test_modal_keys.py::test_TC_2407_alt_s_does_what_save_does[SearchPrompt]
+FAILED tests/test_modal_keys.py::test_TC_2407_every_modal_is_in_the_inventory
+FAILED tests/test_modal_keys.py::test_TC_2407_every_button_has_its_key[SearchPrompt]
+11 failed, 29 passed in 36.24s
+# the search file alone, the law file apart
+FAILED tests/test_modal_keys.py::test_TC_2407_alt_s_does_what_save_does[SearchPrompt]
+FAILED tests/test_modal_keys.py::test_TC_2407_every_modal_is_in_the_inventory
+FAILED tests/test_modal_keys.py::test_TC_2407_every_button_has_its_key[SearchPrompt]
+3 failed, 29 passed in 30.08s

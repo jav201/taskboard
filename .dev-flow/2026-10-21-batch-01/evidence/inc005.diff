@@ -1,0 +1,448 @@
+diff --git a/README.md b/README.md
+index e0f388e..979e8bf 100644
+--- a/README.md
++++ b/README.md
+@@ -228,8 +228,8 @@ the board (free space or write access in its folder, or run `taskboard --board`
+ - In notes, `@` at the start of a word mentions a person: a list under the cursor narrows as
+   you type, `enter` writes the person's handle (`@ana.ruiz`) and `+ add` creates a new person
+   (name and role, `enter` to add) for every board. A mention reads as `@Ana Ruiz` in pink in the
+-  details, the preview and the presentation, and as `@Ana` on the kanban card; `@` on the
+-  main screen lists everyone.
++  details, the preview and the presentation, and as `@Ana` on the kanban card. In the kanban or
++  the gantt, `/` then `@` filters to one person's tasks; `@` on the main screen lists everyone.
+ - A task with a URL shows `↗`; `o` opens its http(s) links in your browser.
+ - In the editor, **Paste image** saves the clipboard image as a real file; `i` views a task's
+   images inline, and `o` inside the viewer opens them in your default app.
+diff --git a/taskboard/app.py b/taskboard/app.py
+index 90b08f1..b3f45f4 100644
+--- a/taskboard/app.py
++++ b/taskboard/app.py
+@@ -29,7 +29,7 @@ from .models import (AUTO_ARCHIVE_DAYS, IMAGE_EXTS, LINKS_MIGRATION, MILESTONES_
+                      set_milestone, strip_controls, templates, waiting_ids,
+                      CASCADE_MODES, apply_plan, plan_move, resolve_mode, restore,
+                      snapshot)
+-from .modals import (BoardForm, PersonForm, ClockModal, GanttLinkMode, LinkPicker, CommandPalette, ConfirmModal,
++from .modals import (BoardForm, PersonForm, SearchPrompt, ClockModal, GanttLinkMode, LinkPicker, CommandPalette, ConfirmModal,
+                      HelpModal, ImageViewer, MilestoneOffer, PhaseEditor, ProjectModal,
+                      PresentHiddenPicker, PresentKeys, ProjectPicker, StandupModal, TaskDetails, TaskModal,
+                      TeamIdentityPicker,
+@@ -3124,8 +3124,10 @@ class TaskboardApp(App):
+         so the underlying data is never touched."""
+         if self.view_mode not in ("kanban", "gantt"):
+             return
+-        self.push_screen(TextPrompt("Filter tasks", initial=self.search_query or "",
+-                                    placeholder="type to filter…"),
++        self.push_screen(SearchPrompt("Filter tasks", initial=self.search_query or "",
++                                      placeholder="type to filter…",
++                                      people=self.people,
++                                      open_person=lambda h: self.push_screen(PeopleDirectory(h))),
+                          self._on_search_set)
+ 
+     def _on_search_set(self, query: str | None) -> None:
+diff --git a/taskboard/modals.py b/taskboard/modals.py
+index 3e2b506..1b250be 100644
+--- a/taskboard/modals.py
++++ b/taskboard/modals.py
+@@ -1981,6 +1981,82 @@ class PersonForm(ButtonKeysMixin, ModalScreen[tuple[str, str, str] | None]):
+         self.dismiss(None)
+ 
+ 
++SEARCH_TEXT_KEYS = [("↵ / alt+s", "filter"), ("esc", "cancel")]
++# fits the boxed modal's 54 cells whole, `esc cancel` kept (code review CR-1 of 2026-10-20)
++SEARCH_PERSON_KEYS = [("↑↓", ""), ("↵ / alt+s", "filter"), ("alt+p", "their page"),
++                      ("esc", "cancel")]
++
++
++class SearchPrompt(TextPrompt):
++    """`/` — the filter, with people (batch 2026-10-21-batch-01, the round's item 3,
++    variant A): text filters the tasks as before; an `@` starts a person — the
++    list shows the directory's names only (`@` alone, all of them), `↑`/`↓`
++    choose, `enter` / `alt+s` filter to the tasks that mention them (`@handle`),
++    `alt+p` opens their page in the people view (`open_person`)."""
++
++    BINDINGS = [Binding("up", "move(-1)", "", priority=True, show=False),
++                Binding("down", "move(1)", "", priority=True, show=False),
++                Binding("alt+p", "page", "", priority=True, show=False)]
++    DEFAULT_CSS = "#sp-list { height: auto; margin: 0 0 1 0; }"
++
++    def __init__(self, title: str, initial: str = "", placeholder: str = "", *,
++                 people: Directory, open_person) -> None:
++        super().__init__(title, initial, placeholder)
++        self._people = people
++        self._open_person = open_person
++        self._sel, self._opts = 0, []
++
++    def on_mount(self) -> None:
++        super().on_mount()
++        self.query_one("#modal-box").mount(Static(id="sp-list"), after="#f-text")
++        self.call_after_refresh(self._draw)
++
++    def _person_mode(self) -> bool:
++        return str(self.query_one("#f-text", Input).value).startswith("@")
++
++    def on_input_changed(self, event: Input.Changed) -> None:
++        self._sel = 0
++        self._draw()
++
++    def _draw(self) -> None:
++        listing = self.query_one("#sp-list", Static)
++        if self._person_mode():
++            q = str(self.query_one("#f-text", Input).value)[1:]
++            held = self._people.get(q.lower())
++            # `/` reopened on a person's filter (`@ana.ruiz`) lists that person first
++            # (code review CR-1 of increment 005)
++            rows, opts = pick_rows(self._people, held.name if held else q, self._sel,
++                                   MODAL_KEYS_W - 2, 6)
++            self._opts = [v for kind, v in opts if kind == "p"]
++            rows = rows[:len(self._opts)] or [Text("  no one by that name", HEX["dim"])]
++            listing.update(Text.assemble(Text("\n").join(
++                [Text("PEOPLE · names only", f"b {HEX['pink']}")] + rows)))
++            keys = SEARCH_PERSON_KEYS
++        else:
++            self._opts = []
++            listing.update(Text.assemble(("text filters tasks · ", HEX["dim"]),
++                                         ("@", f"b {HEX['pink']}"),
++                                         (" starts a person", HEX["dim"])))
++            keys = SEARCH_TEXT_KEYS
++        self.query_one(".modal-keys", Label).update(key_line(keys, MODAL_KEYS_W))
++
++    def action_move(self, delta: int) -> None:
++        self._sel = max(0, min(len(self._opts) - 1, self._sel + delta))
++        self._draw()
++
++    def _save(self) -> None:
++        if self._person_mode() and self._opts:
++            self.dismiss("@" + self._opts[self._sel].id)
++        else:
++            super()._save()
++
++    def action_page(self) -> None:
++        if self._opts:
++            handle = self._opts[self._sel].id
++            self.dismiss(None)
++            self._open_person(handle)
++
++
+ class PhaseEditor(ModalScreen[None]):
+     """Manage the board's ORDERED phases: add / rename / reorder / delete.
+ 
+diff --git a/taskboard/views.py b/taskboard/views.py
+index 0a44e07..79d95a0 100644
+--- a/taskboard/views.py
++++ b/taskboard/views.py
+@@ -3718,7 +3718,11 @@ _SEARCH_CONT = Style(dim=True)
+ 
+ 
+ def matches(task: Task, board: Board, q: str) -> str | None:
+-    """Why a task matches, strongest first: title > project > notes."""
++    """Why a task matches, strongest first: title > project > notes. A query
++    `@handle` is a person (batch 2026-10-21-batch-01, the round's item 3 A): the
++    tasks whose notes mention exactly that handle, `person`, and nothing else."""
++    if q.startswith("@"):
++        return "person" if q[1:] in mention_ids(task.notes) else None
+     p = board.project_by_id(task.project_id)
+     if q in task.title.lower():
+         return "title"
+@@ -3744,9 +3748,18 @@ def filtered_board(board: Board, query: str, show_archived: bool) -> Board:
+     return proxy
+ 
+ 
+-def filter_bar(query: str, hits: int, total: int, w: int) -> list[str]:
+-    """The `/` bar: query + cursor left, tally right."""
+-    left = c("/", "accent", bold=True) + " " + escape(query) + c("▌", "accent")
++def filter_bar(query: str, hits: int, total: int, w: int,
++               people: dict | None = None) -> list[str]:
++    """The `/` bar: query + cursor left, tally right; a person's query (`@handle` of
++    someone in `people`) says who: `/ @Name  role · tasks that mention them`."""
++    # handles are lowercase, and the filter lowercases the query (code review CR-3)
++    person = (people or {}).get(query[1:].lower()) if query.startswith("@") else None
++    if person is not None:
++        left = (c("/", "accent", bold=True) + " " + c(escape("@" + person.name), "pink", bold=True)
++                + c(escape(f"  {person.role + ' · ' if person.role else ''}"
++                           "tasks that mention them"), "mut"))
++    else:
++        left = c("/", "accent", bold=True) + " " + escape(query) + c("▌", "accent")
+     right = c(f"{hits}/{total} tasks", "mut") + c(" · esc clears", "dim")
+     return [header(left, right, w), head_rule(w)]
+ 
+@@ -3809,13 +3822,15 @@ def _highlight_grid(grid: list[list[list]], query: str) -> None:
+ 
+ 
+ def _apply_search_overlay(text: Text, query: str, hits: int, total: int,
+-                          w: int) -> Text:
+-    """Insert the `/` bar under the view header and reverse-lit matches."""
++                          w: int, people: dict | None = None) -> Text:
++    """Insert the `/` bar under the view header and reverse-lit matches (a
++    person's query lights nothing: the cards draw names, not the handle)."""
+     lines = text.split("\n")
+     h = len(lines)
+     grid = _search_to_grid(text, w, h)
+-    _highlight_grid(grid, query)
+-    bar_text = Text.from_markup("\n".join(filter_bar(query, hits, total, w)),
++    if not query.startswith("@"):
++        _highlight_grid(grid, query)
++    bar_text = Text.from_markup("\n".join(filter_bar(query, hits, total, w, people)),
+                                 emoji=False)
+     bar_grid = _search_to_grid(bar_text, w, 2)
+     grid = [grid[0]] + bar_grid + grid[1:]
+@@ -7398,7 +7413,7 @@ def render_view(mode, board, show_archived, selected_id, today=None,
+             if line_map is not None:
+                 for tid in list(line_map.keys()):
+                     line_map[tid] += 2
+-            return _apply_search_overlay(text, query, hits, total, w)
++            return _apply_search_overlay(text, query, hits, total, w, board.people)
+         return render_kanban(board, show_archived, selected_id, today, width, height,
+                              line_map, presentation, sort=kanban_sort,
+                              group=kanban_group, collapsed=kanban_collapsed,
+@@ -7414,7 +7429,7 @@ def render_view(mode, board, show_archived, selected_id, today=None,
+             if line_map is not None:
+                 for tid in list(line_map.keys()):
+                     line_map[tid] += 2
+-            return _apply_search_overlay(text, query, hits, total, w)
++            return _apply_search_overlay(text, query, hits, total, w, board.people)
+         return render_gantt(board, show_archived, selected_id, today, width, height,
+                             line_map, tick=tick, focus=gantt_focus,
+                             previous=gantt_previous)
+diff --git a/tests/test_modal_keys.py b/tests/test_modal_keys.py
+index 65a3777..999642f 100644
+--- a/tests/test_modal_keys.py
++++ b/tests/test_modal_keys.py
+@@ -26,7 +26,7 @@ import backlog_round_fixture as fx
+ from taskboard import app as app_module, keymap, models, modals, views
+ from taskboard.app import BoardsHome, TaskboardApp
+ from taskboard.modals import ConfirmModal
+-from taskboard.people import Person
++from taskboard.people import Directory, Person
+ 
+ _SVG = re.compile(r'<text class="[^"]*" x="([\d.]+)" y="[\d.]+" textLength="[\d.]+" '
+                   r'clip-path="url\(#[^)]*-line-(\d+)\)">([^<]*)</text>')
+@@ -203,11 +203,14 @@ def _forms(board):
+             ("ClockModal", lambda: modals.ClockModal("Madrid", "London"), dict),
+             ("TextPrompt", lambda: modals.TextPrompt("Name", "kept"), str),
+             # the people directory's form (batch 2026-10-21-batch-01)
+-            ("PersonForm", lambda: modals.PersonForm(Person("ana.ruiz", "Ana Ruiz", "PM")), tuple)]
++            ("PersonForm", lambda: modals.PersonForm(Person("ana.ruiz", "Ana Ruiz", "PM")), tuple),
++            ("SearchPrompt", lambda: modals.SearchPrompt(
++                "Filter tasks", "kept", people=Directory(Path("never-written.json")),
++                open_person=lambda h: None), str)]
+ 
+ 
+ @pytest.mark.parametrize("name", ["TaskModal", "ProjectModal", "TemplateEditor", "ClockModal",
+-                                  "TextPrompt", "PersonForm"])
++                                  "TextPrompt", "PersonForm", "SearchPrompt"])
+ async def test_TC_2407_alt_s_does_what_save_does(home, name):
+     """TC-2407: `alt+s` dismisses each form with what its Save button returns."""
+     app = TaskboardApp(board_path=home / "board.json")
+@@ -270,6 +273,7 @@ INVENTORY: dict[str, dict[str, str]] = {
+     "ClockModal": {"save": "alt+s", "cancel": "escape"},
+     "TextPrompt": {"save": "alt+s", "cancel": "escape"},
+     "PersonForm": {"save": "alt+s", "cancel": "escape"},
++    "SearchPrompt": {"save": "alt+s", "cancel": "escape"},    # TextPrompt's buttons, inherited
+     "ConfirmModal": {"yes": "y", "no": "n"},
+     # no buttons: keys only
+     "CalendarModal": {}, "EmojiPicker": {}, "ProjectPicker": {}, "LinkPicker": {},
+@@ -291,9 +295,15 @@ def _package_modals() -> dict[str, type]:
+     return found
+ 
+ 
++def _own(cls) -> list[type]:
++    """The class and its bases inside the package: a subclass inherits its base's
++    buttons and keys (Textual merges BINDINGS along the MRO; batch 2026-10-21-batch-01)."""
++    return [k for k in cls.__mro__ if k.__module__.startswith("taskboard.")]
++
++
+ def _bound(cls) -> set[str]:
+     keys = set()
+-    for b in cls.BINDINGS:
++    for b in [b for k in _own(cls) for b in vars(k).get("BINDINGS", [])]:
+         key = b.key if hasattr(b, "key") else b[0]
+         keys.update(k.strip() for k in key.split(","))
+     return keys
+@@ -318,13 +328,13 @@ def test_TC_2407_every_modal_is_in_the_inventory():
+     assert set(found) - set(INVENTORY) == set(), "add the new modal to INVENTORY"
+     assert set(INVENTORY) - set(found) == set()
+     for name, cls in found.items():
+-        has_buttons = "Button(" in inspect.getsource(cls)
++        has_buttons = any("Button(" in inspect.getsource(k) for k in _own(cls))
+         assert has_buttons is bool(INVENTORY[name]), name
+         assert set(INVENTORY[name].values()) <= _bound(cls), name
+ 
+ 
+ @pytest.mark.parametrize("name", ["TaskModal", "ProjectModal", "TemplateEditor", "ClockModal",
+-                                  "TextPrompt", "PersonForm", "ConfirmModal"])
++                                  "TextPrompt", "PersonForm", "SearchPrompt", "ConfirmModal"])
+ async def test_TC_2407_every_button_has_its_key(home, name):
+     """TC-2407: composed, a modal's buttons are exactly the inventory's, and its key
+     line names every key but `esc`/`n` cancel's own (written `esc`)."""
+diff --git a/tests/test_people_search.py b/tests/test_people_search.py
+new file mode 100644
+index 0000000..231e5df
+--- /dev/null
++++ b/tests/test_people_search.py
+@@ -0,0 +1,166 @@
++"""Search by person: `@` inside the `/` filter (batch 2026-10-21-batch-01, the round's
++item 3, variant A).
++
++HLR-2505 / LLR-2505.1, LLR-2505.2 · TC-2505 · AT-2505 (US-2504). Why it matters: the
++text filter `ana` also finds «Canary release plan»; a person's filter must find exactly
++the tasks whose notes mention them, and `@` alone must be a names-only list — the same
++language as the notes, with no mode to remember. Synthetic people only.
++"""
++from __future__ import annotations
++
++from datetime import date
++from pathlib import Path
++
++import pytest
++from rich.text import Text
++
++import people_round_fixture as fx
++from taskboard import app as app_module, models, modals, views
++from taskboard.app import PeopleDirectory
++from taskboard.models import Board
++from taskboard.people import Directory
++from test_people_look import screen_text
++
++
++class _Today(date):
++    @classmethod
++    def today(cls):
++        return fx.TODAY
++
++
++@pytest.fixture
++def home(tmp_path, monkeypatch):
++    monkeypatch.setattr(Path, "home", classmethod(lambda cls: tmp_path))
++    for mod in (app_module, models, views, modals):
++        monkeypatch.setattr(mod, "date", _Today)
++    return tmp_path / ".taskboard"
++
++
++@pytest.fixture
++def client_a(tmp_path):
++    fx.build(tmp_path)
++    b = Board.load(fx.board_path(tmp_path, "client-a"))
++    b.people = Directory.load(tmp_path / "people.json").people
++    return b
++
++
++# --------------------------------------------------------------------------- #
++# TC-2505 — the filter and its bar (LLR-2505.1)
++# --------------------------------------------------------------------------- #
++def test_TC_2505_a_person_query_matches_exactly_their_mentions(client_a):
++    hits = sorted(t.title for t in client_a.tasks if views.matches(t, client_a, "@ana.ruiz"))
++    assert hits == ["Chunking experiments", "Eval report v1", "Golden question set",
++                    "Steering committee"]
++    assert all(views.matches(t, client_a, "@ana.ruiz") in (None, "person") for t in client_a.tasks)
++    assert not any(views.matches(t, client_a, "@ana") for t in client_a.tasks)   # exact handle
++    text = sorted(t.title for t in client_a.tasks if views.matches(t, client_a, "ana"))
++    assert "Canary release plan" in text                                        # text: unchanged
++    fb = views.filtered_board(client_a, "@ana.ruiz", False)
++    assert "Canary release plan" not in [t.title for t in fb.tasks]
++
++
++def test_TC_2505_the_bar_names_the_person_and_their_role(client_a):
++    bar = Text.from_markup(views.filter_bar("@ana.ruiz", 3, 11, 118, client_a.people)[0]).plain
++    assert bar.startswith("/ @Ana Ruiz  Client A PM · tasks that mention them")
++    assert bar.rstrip().endswith("3/11 tasks · esc clears")
++    typed = Text.from_markup(views.filter_bar("@Ana.Ruiz", 3, 11, 118, client_a.people)[0]).plain
++    assert typed.startswith("/ @Ana Ruiz  Client A PM")                 # CR-3 of 005
++    raw = Text.from_markup(views.filter_bar("@zz", 0, 11, 118, client_a.people)[0]).plain
++    assert raw.startswith("/ @zz▌")
++    assert Text.from_markup(views.filter_bar("ana", 5, 11, 118)[0]).plain.startswith("/ ana▌")
++
++
++# --------------------------------------------------------------------------- #
++# AT-2505 — `/` in the real app
++# --------------------------------------------------------------------------- #
++def _open(home):
++    from taskboard.__main__ import open_app
++    fx.build(home, last="client-a")
++    return open_app(None)
++
++
++async def _search(pilot, *keys):
++    await pilot.pause()
++    await pilot.press("escape", "4", "slash")
++    await pilot.pause()
++    for k in keys:
++        await pilot.press(k)
++    await pilot.pause(0.2)
++
++
++@pytest.mark.parametrize("size", [(118, 30), (80, 24)])
++async def test_AT_2505_at_lists_names_only_and_enter_filters_to_their_tasks(home, size):
++    app = _open(home)
++    async with app.run_test(size=size) as pilot:
++        await _search(pilot, "at", "a", "n")
++        assert isinstance(app.screen, modals.SearchPrompt)
++        text = await screen_text(pilot, *size)
++        assert "PEOPLE · names only" in text and "▶ Ana Ruiz" in text
++        assert "+ add" not in text and "esc cancel" in text and "alt+p their page" in text
++        await pilot.press("enter")
++        text = await screen_text(pilot, *size)
++        assert app.search_query == "@ana.ruiz"
++        assert "/ @Ana Ruiz" in text
++        for title in ("Steering", "Golden", "Chunking"):
++            assert title in text
++        assert "Canary" not in text and "Invoice" not in text
++        await pilot.press("slash")                       # reopened on the person's filter
++        text = await screen_text(pilot, *size)
++        assert "▶ Ana Ruiz" in text and "no one by that name" not in text   # CR-1 of 005
++        await pilot.press("escape")
++
++
++async def test_AT_2505_at_alone_lists_everyone_and_arrows_choose(home):
++    app = _open(home)
++    async with app.run_test(size=(118, 30)) as pilot:
++        await _search(pilot, "at")
++        text = await screen_text(pilot, 118, 30)
++        assert "▶ Ana Ruiz" in text and "Diego Paz" in text and "Luis Mora" in text
++        assert "Marta Gil" not in text and "Pablo Ortiz" not in text     # QA-1: the first 6
++        await pilot.press("down", "enter")
++        await pilot.pause()
++        assert app.search_query == "@andres.lima"
++
++
++async def test_AT_2505_alt_p_opens_their_page(home):
++    app = _open(home)
++    async with app.run_test(size=(118, 30)) as pilot:
++        await _search(pilot, "at", "m", "a", "r")
++        await pilot.press("alt+p")
++        await pilot.pause()
++        scr = app.screen
++        assert isinstance(scr, PeopleDirectory) and scr.people[scr.sel].id == "marta.gil"
++        assert app.search_query is None
++
++
++async def test_AT_2505_no_one_by_that_name_and_text_still_filters(home):
++    app = _open(home)
++    async with app.run_test(size=(118, 30)) as pilot:
++        await _search(pilot, "at", "z", "z")
++        assert "no one by that name" in await screen_text(pilot, 118, 30)
++        await pilot.press("alt+p")                 # nothing to open
++        assert isinstance(app.screen, modals.SearchPrompt)
++        await pilot.press("enter")
++        await pilot.pause()
++        assert app.search_query == "@zz"
++        await pilot.press("escape", "slash", "ctrl+a")
++        for k in "ana":
++            await pilot.press(k)
++        text = await screen_text(pilot, 118, 30)
++        assert "text filters tasks · @ starts a person" in text and "↵ / alt+s filter" in text
++        await pilot.press("enter")
++        await pilot.pause()
++        assert app.search_query == "ana"
++        assert "Canary" in await screen_text(pilot, 118, 30)
++
++
++async def test_AT_2505_the_gantt_filters_by_person_too(home):
++    """qa QA-4: `/` in the gantt, `@an`, `enter`: the bar names the person."""
++    app = _open(home)
++    async with app.run_test(size=(118, 30)) as pilot:
++        await pilot.pause()
++        await pilot.press("escape", "3", "slash", "at", "a", "n", "enter")
++        text = await screen_text(pilot, 118, 30)
++        assert app.view_mode == "gantt" and app.search_query == "@ana.ruiz"
++        assert "/ @Ana Ruiz  Client A PM · tasks that mention them" in text
++        assert "Canary" not in text

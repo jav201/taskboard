@@ -1981,6 +1981,82 @@ class PersonForm(ButtonKeysMixin, ModalScreen[tuple[str, str, str] | None]):
         self.dismiss(None)
 
 
+SEARCH_TEXT_KEYS = [("↵ / alt+s", "filter"), ("esc", "cancel")]
+# fits the boxed modal's 54 cells whole, `esc cancel` kept (code review CR-1 of 2026-10-20)
+SEARCH_PERSON_KEYS = [("↑↓", ""), ("↵ / alt+s", "filter"), ("alt+p", "their page"),
+                      ("esc", "cancel")]
+
+
+class SearchPrompt(TextPrompt):
+    """`/` — the filter, with people (batch 2026-10-21-batch-01, the round's item 3,
+    variant A): text filters the tasks as before; an `@` starts a person — the
+    list shows the directory's names only (`@` alone, all of them), `↑`/`↓`
+    choose, `enter` / `alt+s` filter to the tasks that mention them (`@handle`),
+    `alt+p` opens their page in the people view (`open_person`)."""
+
+    BINDINGS = [Binding("up", "move(-1)", "", priority=True, show=False),
+                Binding("down", "move(1)", "", priority=True, show=False),
+                Binding("alt+p", "page", "", priority=True, show=False)]
+    DEFAULT_CSS = "#sp-list { height: auto; margin: 0 0 1 0; }"
+
+    def __init__(self, title: str, initial: str = "", placeholder: str = "", *,
+                 people: Directory, open_person) -> None:
+        super().__init__(title, initial, placeholder)
+        self._people = people
+        self._open_person = open_person
+        self._sel, self._opts = 0, []
+
+    def on_mount(self) -> None:
+        super().on_mount()
+        self.query_one("#modal-box").mount(Static(id="sp-list"), after="#f-text")
+        self.call_after_refresh(self._draw)
+
+    def _person_mode(self) -> bool:
+        return str(self.query_one("#f-text", Input).value).startswith("@")
+
+    def on_input_changed(self, event: Input.Changed) -> None:
+        self._sel = 0
+        self._draw()
+
+    def _draw(self) -> None:
+        listing = self.query_one("#sp-list", Static)
+        if self._person_mode():
+            q = str(self.query_one("#f-text", Input).value)[1:]
+            held = self._people.get(q.lower())
+            # `/` reopened on a person's filter (`@ana.ruiz`) lists that person first
+            # (code review CR-1 of increment 005)
+            rows, opts = pick_rows(self._people, held.name if held else q, self._sel,
+                                   MODAL_KEYS_W - 2, 6)
+            self._opts = [v for kind, v in opts if kind == "p"]
+            rows = rows[:len(self._opts)] or [Text("  no one by that name", HEX["dim"])]
+            listing.update(Text.assemble(Text("\n").join(
+                [Text("PEOPLE · names only", f"b {HEX['pink']}")] + rows)))
+            keys = SEARCH_PERSON_KEYS
+        else:
+            self._opts = []
+            listing.update(Text.assemble(("text filters tasks · ", HEX["dim"]),
+                                         ("@", f"b {HEX['pink']}"),
+                                         (" starts a person", HEX["dim"])))
+            keys = SEARCH_TEXT_KEYS
+        self.query_one(".modal-keys", Label).update(key_line(keys, MODAL_KEYS_W))
+
+    def action_move(self, delta: int) -> None:
+        self._sel = max(0, min(len(self._opts) - 1, self._sel + delta))
+        self._draw()
+
+    def _save(self) -> None:
+        if self._person_mode() and self._opts:
+            self.dismiss("@" + self._opts[self._sel].id)
+        else:
+            super()._save()
+
+    def action_page(self) -> None:
+        if self._opts:
+            handle = self._opts[self._sel].id
+            self.dismiss(None)
+            self._open_person(handle)
+
+
 class PhaseEditor(ModalScreen[None]):
     """Manage the board's ORDERED phases: add / rename / reorder / delete.
 

@@ -228,8 +228,8 @@ the board (free space or write access in its folder, or run `taskboard --board` 
 - In notes, `@` at the start of a word mentions a person: a list under the cursor narrows as
   you type, `enter` writes the person's handle (`@ana.ruiz`) and `+ add` creates a new person
   (name and role, `enter` to add) for every board. A mention reads as `@Ana Ruiz` in pink in the
-  details, the preview and the presentation, and as `@Ana` on the kanban card; `@` on the
-  main screen lists everyone.
+  details, the preview and the presentation, and as `@Ana` on the kanban card. In the kanban or
+  the gantt, `/` then `@` filters to one person's tasks; `@` on the main screen lists everyone.
 - A task with a URL shows `↗`; `o` opens its http(s) links in your browser.
 - In the editor, **Paste image** saves the clipboard image as a real file; `i` views a task's
   images inline, and `o` inside the viewer opens them in your default app.

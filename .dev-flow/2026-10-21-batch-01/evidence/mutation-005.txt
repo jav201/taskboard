@@ -1,0 +1,14 @@
+M1 the person rule falls through to the text rules · taskboard/views.py · test_TC_2505_a_person_query_matches_exactly_their_mentions: RED (KILLED) · sha256 b171e01dbd3e restored · 1 failed in 0.52s
+M2 a partial handle matches (substring, not exact) · taskboard/views.py · test_TC_2505_a_person_query_matches_exactly_their_mentions: RED (KILLED) · sha256 b171e01dbd3e restored · 1 failed in 0.51s
+M3 the bar never names the person · taskboard/views.py · test_TC_2505_the_bar_names_the_person_and_their_role: RED (KILLED) · sha256 b171e01dbd3e restored · 1 failed in 0.56s
+M4 the kanban's bar given no people · taskboard/views.py · test_AT_2505_at_lists_names_only_and_enter_filters_to_their_tasks[size0]: RED (KILLED) · sha256 b171e01dbd3e restored · 1 failed in 2.07s
+M5 the gantt's bar given no people (qa QA-4) · taskboard/views.py · test_AT_2505_the_gantt_filters_by_person_too: RED (KILLED) · sha256 b171e01dbd3e restored · 1 failed in 1.42s
+M6 the list capped at 8 (qa QA-1) · taskboard/modals.py · test_AT_2505_at_alone_lists_everyone_and_arrows_choose: RED (KILLED) · sha256 e73bfebbdfd5 restored · 1 failed in 1.55s
+M7 `+ add` offered in the filter · taskboard/modals.py · test_AT_2505_at_lists_names_only_and_enter_filters_to_their_tasks[size0]: RED (KILLED) · sha256 e73bfebbdfd5 restored · 1 failed in 1.65s
+M8 enter filters by the typed text, not the person · taskboard/modals.py · test_AT_2505_at_lists_names_only_and_enter_filters_to_their_tasks[size0]: RED (KILLED) · sha256 e73bfebbdfd5 restored · 1 failed in 2.09s
+M9 alt+p opens nothing · taskboard/modals.py · test_AT_2505_alt_p_opens_their_page: RED (KILLED) · sha256 e73bfebbdfd5 restored · 1 failed in 1.35s
+M11 the law reads only a modal's own source again · tests/test_modal_keys.py · test_TC_2407_every_modal_is_in_the_inventory: RED (KILLED) · sha256 56cece42ea3a restored · 1 failed in 1.21s
+M12 SearchPrompt without alt+s (the law) · taskboard/modals.py · test_TC_2407_every_button_has_its_key[SearchPrompt]: RED (KILLED) · sha256 e73bfebbdfd5 restored · 1 failed in 1.04s
+M13 `/` reopened on a person lists no one (code review CR-1) · taskboard/modals.py · test_AT_2505_at_lists_names_only_and_enter_filters_to_their_tasks[size0]: RED (KILLED) · sha256 e73bfebbdfd5 restored · 1 failed in 2.57s
+M14 the bar's lookup case-sensitive (code review CR-3) · taskboard/views.py · test_TC_2505_the_bar_names_the_person_and_their_role: RED (KILLED) · sha256 b171e01dbd3e restored · 1 failed in 0.51s
+not killed: 0

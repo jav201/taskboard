@@ -29,7 +29,7 @@ from .models import (AUTO_ARCHIVE_DAYS, IMAGE_EXTS, LINKS_MIGRATION, MILESTONES_
                      set_milestone, strip_controls, templates, waiting_ids,
                      CASCADE_MODES, apply_plan, plan_move, resolve_mode, restore,
                      snapshot)
-from .modals import (BoardForm, PersonForm, ClockModal, GanttLinkMode, LinkPicker, CommandPalette, ConfirmModal,
+from .modals import (BoardForm, PersonForm, SearchPrompt, ClockModal, GanttLinkMode, LinkPicker, CommandPalette, ConfirmModal,
                      HelpModal, ImageViewer, MilestoneOffer, PhaseEditor, ProjectModal,
                      PresentHiddenPicker, PresentKeys, ProjectPicker, StandupModal, TaskDetails, TaskModal,
                      TeamIdentityPicker,
@@ -3124,8 +3124,10 @@ class TaskboardApp(App):
         so the underlying data is never touched."""
         if self.view_mode not in ("kanban", "gantt"):
             return
-        self.push_screen(TextPrompt("Filter tasks", initial=self.search_query or "",
-                                    placeholder="type to filter…"),
+        self.push_screen(SearchPrompt("Filter tasks", initial=self.search_query or "",
+                                      placeholder="type to filter…",
+                                      people=self.people,
+                                      open_person=lambda h: self.push_screen(PeopleDirectory(h))),
                          self._on_search_set)
 
     def _on_search_set(self, query: str | None) -> None:
