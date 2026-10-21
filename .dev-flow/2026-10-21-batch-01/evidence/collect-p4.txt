@@ -1,0 +1,16 @@
+# collect-only at 27d155f
+3152 tests collected in 2.88s
+test_people_directory 45 tests collected in 0.25s
+test_people_look 19 tests collected in 0.23s
+test_people_picker 19 tests collected in 0.24s
+test_people_view 32 tests collected in 0.25s
+test_people_search 8 tests collected in 0.24s
+test_modal_keys 32 tests collected in 0.24s
+test_keymap 24 tests collected in 0.23s
+test_readme 9 tests collected in 0.23s
+test_boards_concurrency 22 tests collected in 0.06s
+at base_ref eac7d42:
+test_modal_keys 11 defs
+test_keymap 24 defs
+test_readme 9 defs
+test_boards_concurrency 22 defs

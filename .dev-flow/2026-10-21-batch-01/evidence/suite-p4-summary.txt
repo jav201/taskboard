@@ -1,0 +1,7 @@
+# full suite in three sequential chunks at 27d155f (0 dirty paths), NO_COLOR unset, 106 test files
+chunk00 exit 0
+1398 passed in 261.55s (0:04:21)
+chunk01 exit 0
+957 passed in 395.95s (0:06:35)
+chunk02 exit 0
+797 passed in 146.68s (0:02:26)

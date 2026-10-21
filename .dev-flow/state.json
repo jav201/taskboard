@@ -196,7 +196,7 @@
     }
   ],
   "guided": false,
-  "current_station": "P4",
+  "current_station": "P5",
   "phase_status": "in-progress",
   "stations_active": [
     "P0",
@@ -323,6 +323,11 @@
       "station": "DDR",
       "date": "2026-10-21",
       "decision": "standing authorization — the orchestrator's commission of 2026-10-21. DDR approved (design/DDR-2026-10-21-batch-01.md): qa-reviewer and ux-reviewer approved with conditions, folded — one test_AT node per AT-2501..AT-2507 (QA-DDR-1 HIGH, 22 arms renamed to TC), AT-2501's add and AT-2502's rename driven by keys (mutation-ddr D1, D2 KILLED), the flip-up capture mt-flip, UX-9 named on the capture page, the captures committed; UX-DDR-1 (PersonForm clipped at 80x24) logged; PC-1..PC-4 discharged. P4 is next."
+    },
+    {
+      "station": "P4",
+      "date": "2026-10-21",
+      "decision": "standing authorization — the orchestrator's commission of 2026-10-21. P4 PASS-WITH-NOTES (04-validation.md): the full suite in three sequential chunks at 27d155f, 1398 + 957 + 797 = 3152 passed, 0 failed, 0 skipped, equal to the 3152 collected; ledger 3025 − 0 + 127 = 3152; qa-reviewer evaluated the orchestrator's run, 9 of 11 checklist rows, gaps G-1..G-5 minor. P5 is next."
     }
   ],
   "obsidian_synced": false,

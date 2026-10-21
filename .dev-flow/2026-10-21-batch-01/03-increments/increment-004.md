@@ -53,7 +53,8 @@
 | `README.md` | doc | HLR-2504 | the `@` key row; mentions in the notes; `people.json`, `people.json.corrupt` |
 | `tests/test_people_view.py` | test | HLR-2504, LLR-2504.1, LLR-2504.2, LLR-2504.3 | new: TC-2504, AT-2504, D4 |
 | `tests/test_modal_keys.py` | test | LLR-2504.3 | the law's inventory, forms and button lists gain `PersonForm` |
-| `tests/test_keymap.py`, `tests/test_readme.py` | test | LLR-2504.2 | the README laws spell `@` (`at`) — law-driven |
+| `tests/test_keymap.py` | test | LLR-2504.2 | the README law spells `@` (`at`) — law-driven |
+| `tests/test_readme.py` | test | LLR-2504.2 | the README law spells `@` (`at`) — law-driven (one row per file since the close: V59 reads a cell per file) |
 | `.dev-flow/2026-10-21-batch-01/evidence/mutate-004.py` | doc | HLR-2504 | the increment's battery |
 
 | Count | Value |
