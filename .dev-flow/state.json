@@ -1,9 +1,9 @@
 {
   "project": "taskboard",
   "language": "en",
-  "batch_id": "2026-10-20-batch-01",
-  "batch_objective": "Multi-board (variant C, home cards, of the multi-board round): several boards in one taskboard -- a boards registry with one folder per board and today's board as `Main` in place, the active board's chip in the head row, the Home cards behind `B` (shown at launch when more than one board is open), create / rename+recolour / archive boards, `--board PATH` registering its board, and moving a project to another board from the projects modal (backups, a move log, crossing links dropped and logged, team mode refused)",
-  "owner": "C:/Users/jjgh8/Github/taskboard",
+  "batch_id": "2026-10-20-batch-02",
+  "batch_objective": "Backlog fixes after the multi-board batch (non-visual): `~` in the boards registry resolved through `Path.home()`; a byte copy of the source `history.jsonl` before a move; registry writes as a read-modify-write under a short advisory lock and the move's target board locked while it is rewritten; an unarchived project placed after the last shown presentation rank; `ProjectPicker._move_target`'s unused parameter removed; test hardening (test_boards_forms, AT-2204, AT-2104, `u` in view 2, fewer private reads)",
+  "owner": "C:/Users/jjgh8/Github/taskboard-wt/backlog-fix",
   "mode": "core",
   "mode_history": [
     {
@@ -175,11 +175,17 @@
       "to": "core",
       "date": "2026-10-20",
       "reason": "batch 2026-10-20-batch-01 opened by rollover from 2026-10-19-batch-01; mode core declared by the commission"
+    },
+    {
+      "from": null,
+      "to": "core",
+      "date": "2026-10-20",
+      "reason": "batch 2026-10-20-batch-02 opened by rollover from 2026-10-20-batch-01; mode core declared by the commission"
     }
   ],
   "guided": false,
-  "current_station": "P5",
-  "phase_status": "closed",
+  "current_station": "P3",
+  "phase_status": "in-progress",
   "stations_active": [
     "P0",
     "ARQ",
@@ -193,7 +199,7 @@
   ],
   "iterations_per_station": {
     "P0": 0,
-    "P1": 2,
+    "P1": 1,
     "P2": 0,
     "P3": 0,
     "P4": 0,
@@ -203,130 +209,90 @@
     "PDR": 0
   },
   "triggers": {
-    "evaluated_at": "2026-10-20T14:20:21",
+    "evaluated_at": "2026-10-20T20:02:28",
     "fired": [
-      "A1",
       "A2",
       "A3",
       "B1",
-      "B2",
-      "B3",
       "B4",
-      "C1",
       "C5",
       "C6",
-      "C8",
       "D1",
       "E1"
     ],
     "not_fired": [
+      "A1",
       "A4",
+      "B2",
+      "B3",
+      "C1",
       "C2",
       "C3",
       "C4",
       "C7",
+      "C8",
       "D2",
       "E2",
       "E3",
       "F1",
       "F2"
     ],
-    "record": ".dev-flow/2026-10-20-batch-01/PLAN.md#triggers"
+    "record": ".dev-flow/2026-10-20-batch-02/PLAN.md#triggers"
   },
   "artifact_homes": {
-    "requirements": "repo:.dev-flow/2026-10-20-batch-01/01-requirements.md",
-    "requirements_ledger": "repo:.dev-flow/2026-10-20-batch-01/01-requirements-ledger.md",
-    "traceability": "repo:.dev-flow/2026-10-20-batch-01/06-docs/traceability-matrix.md",
+    "requirements": "repo:.dev-flow/2026-10-20-batch-02/01-requirements.md",
+    "requirements_ledger": "repo:.dev-flow/2026-10-20-batch-02/01-requirements-ledger.md",
+    "traceability": "repo:.dev-flow/2026-10-20-batch-02/06-docs/traceability-matrix.md",
     "tests": "repo:tests/",
     "module_map": "repo:docs/ARCHITECTURE.md",
-    "increments": "repo:.dev-flow/2026-10-20-batch-01/03-increments/",
-    "evidence": "repo:.dev-flow/2026-10-20-batch-01/evidence/",
+    "increments": "repo:.dev-flow/2026-10-20-batch-02/03-increments/",
+    "evidence": "repo:.dev-flow/2026-10-20-batch-02/evidence/",
     "backlog": "repo:.dev-flow/BACKLOG.md",
-    "design_pdr": "vault:taskboard/design/PDR-2026-10-20-batch-01.md",
-    "design_ddr": "vault:taskboard/design/DDR-2026-10-20-batch-01.md",
-    "postmortem": "vault:taskboard/dev-flow-batches/2026-10-20-batch-01/",
-    "metrics": "vault:taskboard/dev-flow-batches/2026-10-20-batch-01/README.md",
+    "design_pdr": "vault:taskboard/design/PDR-2026-10-20-batch-02.md",
+    "design_ddr": "vault:taskboard/design/DDR-2026-10-20-batch-02.md",
+    "postmortem": "vault:taskboard/dev-flow-batches/2026-10-20-batch-02/",
+    "metrics": "vault:taskboard/dev-flow-batches/2026-10-20-batch-02/README.md",
     "requirements_canon": "repo:REQUIREMENTS.md"
   },
-  "base_ref": "783397ed64cbb4adcf129c60d1f7381a4dbe5325",
+  "base_ref": "b1b71e4310ea7944edbbb6f16f350352e0a9491b",
   "artifacts": {},
   "decisions_log": [
     {
       "station": "P0",
       "date": "2026-10-20",
-      "decision": "P0 approved under the batch's standing authorization: four stories READY (US-2201..US-2204), triggers evaluated (A1-A3, B1-B4, C1, C5, C6, C8, D1, E1 fired; ARQ, PDR, DDR taken up), RC-1/RC-2 done, premises P-1..P-10 TRUE; ARQ is next."
+      "decision": "P0 approved under the batch's standing authorization: four stories READY (US-2301..US-2304), triggers evaluated (A2, A3, B1, B4, C5, C6, D1, E1 fired; ARQ, PDR, DDR taken up), RC-1/RC-2 done, premises P-1..P-7 TRUE; ARQ is next."
     },
     {
       "station": "ARQ",
       "date": "2026-10-20",
-      "decision": "ARQ approved under the batch's standing authorization: the module map amended for boards.py, the registry, the home, the move; architect iteration 1 iterate (A-1 the team ids' owner, A-2..A-5) fixed, iteration 2 approve (A-30 aligned), iteration 3 approve (A-33 fixed); P1 is next."
+      "decision": "ARQ approved under the batch's standing authorization: the module map amended for file_lock, the registry's read-modify-write, the move's lock and history copy and the ~ normalisation; architect approve with conditions (A-1's map row, fixed: ~ normalised on load, the stored path absolute; file_lock's row aligned with security S-2/S-3); P1 is next."
     },
     {
       "station": "P1",
       "date": "2026-10-20",
-      "decision": "P1 drafted under the batch's standing authorization: US-2201..2204 -> HLR-2201..2206 -> LLR-2201.1..2206.1, AT/TC-2201..2206, P-1..P-10, IFC Part A (LED .1); the P1 scan flagged session, migration, form, escape (answered in 6.3); P2 is next."
+      "decision": "P1 drafted under the batch's standing authorization: US-2301..2304 -> HLR-2301..2306 -> LLR-2301.1..2306.2, AT/TC-2301..2306, P-1..P-7, IFC Part A (LED .1); the P1 scan flagged escape (answered in 6.3); P2 is next."
     },
     {
       "station": "P2",
       "date": "2026-10-20",
-      "decision": "P2 iteration 1 iterate-to-refine under the batch's standing authorization: qa QA-1 blocker, security S-1/S-2 HIGH (BLOCK-UNTIL), architect A-6..A-11 and ux UX-1..UX-3 majors are requirement defects; back to P1."
+      "decision": "P2 iterate-to-refine under the batch's standing authorization: qa-reviewer QA-1 (AT-2304 vacuous on base, HIGH requirement defect), architect A-1 (the ~ fix at the wrong sites, HIGH), security BLOCK-UNTIL S-1 (an unreadable registry written over without a copy, HIGH), ux UX-1/UX-2 (major); back to P1 for LED .2."
     },
     {
       "station": "P1",
       "date": "2026-10-20",
-      "decision": "P1 amended under the batch's standing authorization (LED .2): every iteration-1 finding folded (02-review.md); P2 is next."
+      "decision": "P1 refined under the batch's standing authorization (iteration 1): LED .2 folds A-1..A-6, QA-1..QA-7, S-1..S-5, UX-1..UX-7 into HLR-2301..2306 and their LLRs; P2 iteration 2 is next."
     },
     {
       "station": "P2",
       "date": "2026-10-20",
-      "decision": "P2 iteration 2 iterate-to-refine under the batch's standing authorization: qa QA-20 blocker, architect A-27..A-29, qa QA-21/QA-23, ux UX-10 majors; back to P1."
-    },
-    {
-      "station": "P1",
-      "date": "2026-10-20",
-      "decision": "P1 amended under the batch's standing authorization (LED .3): every iteration-2 finding folded; P2 is next."
-    },
-    {
-      "station": "P2",
-      "date": "2026-10-20",
-      "decision": "P2 approved under the batch's standing authorization: iteration 3 approve by architect, qa-reviewer, ux-reviewer and security-reviewer; residues A-33, S-12, QA-25, QA-26 folded; PDR is next."
+      "decision": "P2 approved under the batch's standing authorization (iteration 2): architect approve (A-1 discharged; A-7, A-8 LOW), qa-reviewer approve (QA-1 discharged, re-probed RED on base), security-reviewer approve with conditions (S-1 discharged by the contract; S-6..S-9 LOW), ux-reviewer approve with conditions (UX-8, UX-9 minor); 02-review.md written; the PDR is next."
     },
     {
       "station": "PDR",
       "date": "2026-10-20",
-      "decision": "PDR sealed approved with conditions under the batch's standing authorization (PDR-2026-10-20-batch-01): PC-1 (the key-bar word losses per width in packet 002), PC-2 (BLOCK-UNTIL S-1, S-2 at 004), PC-3 (the mutations of the design's section 5 killed per increment); PC-4 and PC-5 discharged at the seal; P3 is next."
-    },
-    {
-      "station": "P3",
-      "date": "2026-10-20",
-      "decision": "P3 increment 001 approved under the batch's standing authorization: the registry and switching in place (HLR-2201, HLR-2202), 22/22 mutants killed, code review PASS-WITH-NOTES with F1-F7 folded, 2855 passed; P3 continues."
-    },
-    {
-      "station": "P3",
-      "date": "2026-10-20",
-      "decision": "P3 increment 002 approved under the batch's standing authorization: the chip, the home and B (HLR-2203, HLR-2204, AT-2202), 27/27 mutants killed, code review PASS-WITH-NOTES after its F1 HIGH was fixed and re-read, 2893 passed; PDR PC-1 (the key-bar word losses per width) recorded in the packet's census; P3 continues."
-    },
-    {
-      "station": "P3",
-      "date": "2026-10-20",
-      "decision": "P3 increment 003 approved under the batch's standing authorization: board create/edit/archive (HLR-2205), 23/23 mutants killed, code review PASS-WITH-NOTES after its F1 HIGH was fixed and re-read; the full suite was stopped by the host's memory reaper at ~73% with no failure and not restarted (its instruction) — a targeted run 391 passed, the whole suite owed at P4; P3 continues."
-    },
-    {
-      "station": "P3",
-      "date": "2026-10-20",
-      "decision": "P3 increment 004 approved under the batch's standing authorization: moving a project to another board (HLR-2206), 33/33 mutants killed; code review BLOCK-UNTIL F1 (two boards in one folder) fixed and re-read, PASS-WITH-NOTES (N2 open, LOW); security APPROVE (S-1, S-2 lifted; N1 LOW in BACKLOG); LLR-2206.1 amended by LED .4; a targeted run of 44 files 1756 passed, the whole suite owed at P4; P3's increments are done, the DDR is next."
-    },
-    {
-      "station": "DDR",
-      "date": "2026-10-20",
-      "decision": "DDR sealed approved under the batch's standing authorization (DDR-2026-10-20-batch-01): architect approved after A-01..A-05 folded (HLR-2206 and LLR-2206.1 via LED .5, docs/ARCHITECTURE.md aligned, rows 1/2/7 corrected), qa-reviewer approved after QA-01 (9 AT-row mutations armed on their AT nodes, 9/9 KILLED, mutation-ddr.txt) and QA-02; AT-2204 joined into one node (C-18); PC-1..PC-3 discharged by re-reading; the full-suite run carried into P4, waiting on the operator's go-ahead."
-    },
-    {
-      "station": "P4",
-      "date": "2026-10-20",
-      "decision": "P4 approved under the batch's standing authorization (the operator's go-ahead for the gate run): the qa-reviewer's evaluation folded (G-5..G-9), the gate run by the orchestrator at b88322d in three sequential chunks, 1388 + 796 + 752 = 2936 passed, 0 failed, 0 skipped (suite-p4-chunk00..02.txt), Result PASS-WITH-NOTES (G-1..G-4, G-8, G-9 accepted or in BACKLOG); the close is next."
+      "decision": "PDR sealed approved with conditions under the batch's standing authorization (PDR-2026-10-20-batch-02): architect, qa-reviewer, ux-reviewer, security-reviewer over design-proposal.md; PC-1 (QA-8, QA-9), PC-2 (S-6..S-8), PC-3 (UX-8) at increment 001, PC-4 (UX-9) at increment 002; P3 increment 001 is next."
     }
   ],
   "obsidian_synced": false,
-  "created_at": "2026-10-20T14:01:47.830719"
+  "created_at": "2026-10-20T19:54:55.447862"
 }

@@ -1,0 +1,7 @@
+P-1 Path.home(): True | expanduser('~/x') under the seam home: False | boards._key('~/x') under the env home: True
+P-2 ids on disk after A creates and B (loaded before) edits: ['main', 'notes'] | A's board lost: True
+P-3 steps: ['copied board.json', 'copied board.json', 'saved the target', 'saved the source', 'moved the history lines', 'wrote the move logs'] | history copies: []
+P-4 ranks: {'pa': 0, 'pb': 1, 'pc': 0} | order: ['pa', 'pc', 'pb']
+P-5 signature: (self, proj: 'Project', bid: 'str | None', _boards: 'dict') -> 'None' | `_boards` read in the body: False
+P-6 second O_EXCL create: FileExistsError
+P-7 public border_title: '▶ \\[@click=app.quit]x\\[/]' | Text.from_markup(...).plain: '▶ [@click=app.quit]x[/]'
