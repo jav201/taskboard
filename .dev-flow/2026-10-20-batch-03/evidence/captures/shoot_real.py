@@ -86,7 +86,7 @@ class Shot(TaskboardApp):
         await asyncio.sleep(0.8)
         ready = os.environ.get("PROTO_READY_FILE")
         if ready:
-            Path(ready).write_text(f"ready {self.screen_stack!r}", encoding="utf-8")
+            Path(ready).write_text(f"{HOME}\nready {self.screen_stack!r}", encoding="utf-8")
         if self._seconds:
             self.set_timer(self._seconds, self.exit)
 

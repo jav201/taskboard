@@ -1,0 +1,76 @@
+﻿ok   agenda 118x30 (1095 x 627, 3 colours sampled) via CopyFromScreen (PrintWindow gave 3 colours)
+ok   agenda 118x30 (1095 x 627, 21 colours sampled) via PrintWindow
+ok   agenda 118x30 (1095 x 627, 21 colours sampled) via PrintWindow
+ok   agenda 80x24 (753 x 513, 19 colours sampled) via PrintWindow
+ok   agenda-open 118x30 (1095 x 627, 38 colours sampled) via PrintWindow
+ok   agenda-open 80x24 (753 x 513, 19 colours sampled) via PrintWindow
+ok   present-chip 118x30 (1095 x 627, 27 colours sampled) via PrintWindow
+ok   present-chip 80x24 (753 x 513, 12 colours sampled) via PrintWindow
+ok   present-keys 118x30 (1095 x 627, 5 colours sampled) via CopyFromScreen (PrintWindow gave 5 colours)
+ok   present-keys 80x24 (753 x 513, 9 colours sampled) via PrintWindow
+ok   present-kj 118x30 (1095 x 627, 18 colours sampled) via PrintWindow
+ok   present-kj 80x24 (753 x 513, 9 colours sampled) via PrintWindow
+ok   present-export 118x30 (1095 x 627, 25 colours sampled) via PrintWindow
+ok   present-export 80x24 (753 x 513, 11 colours sampled) via PrintWindow
+ok   confirm 118x30 (1095 x 627, 27 colours sampled) via PrintWindow
+ok   confirm 80x24 (753 x 513, 16 colours sampled) via PrintWindow
+ok   move-confirm 118x30 (1095 x 627, 33 colours sampled) via PrintWindow
+ok   move-confirm 80x24 (753 x 513, 23 colours sampled) via PrintWindow
+ok   task-editor 118x30 (1095 x 627, 24 colours sampled) via PrintWindow
+ok   task-editor 80x24 (753 x 513, 14 colours sampled) via PrintWindow
+ok   project-form 118x30 (1095 x 627, 34 colours sampled) via PrintWindow
+ok   project-form 80x24 (753 x 513, 18 colours sampled) via PrintWindow
+ok   clocks 118x30 (1095 x 627, 10 colours sampled) via PrintWindow
+ok   clocks 80x24 (753 x 513, 10 colours sampled) via PrintWindow
+ok   offer 118x30 (1095 x 627, 8 colours sampled) via PrintWindow
+ok   offer 80x24 (753 x 513, 6 colours sampled) via CopyFromScreen (PrintWindow gave 6 colours)
+ok   identity 118x30 (1095 x 627, 7 colours sampled) via CopyFromScreen (PrintWindow gave 7 colours)
+ok   identity 80x24 (753 x 513, 7 colours sampled) via CopyFromScreen (PrintWindow gave 7 colours)
+ok   twice 118x30 (1095 x 627, 43 colours sampled) via PrintWindow
+ok   twice 80x24 (753 x 513, 20 colours sampled) via PrintWindow
+ok   open 118x30 (1095 x 627, 46 colours sampled) via PrintWindow
+ok   open 80x24 (753 x 513, 23 colours sampled) via PrintWindow
+ok   confirm 80x24 (753 x 513, 16 colours sampled) via PrintWindow - window closed
+ok   agenda 118x30 (1095 x 627, 21 colours sampled) via PrintWindow - window closed
+ok   agenda 80x24 (753 x 513, 19 colours sampled) via PrintWindow - window closed
+ok   agenda-open 118x30 (1095 x 627, 38 colours sampled) via PrintWindow - window closed
+ok   agenda-open 80x24 (753 x 513, 19 colours sampled) via PrintWindow - window closed
+ok   present-chip 118x30 (1095 x 627, 15 colours sampled) via PrintWindow - window closed
+ok   present-chip 80x24 (753 x 513, 12 colours sampled) via PrintWindow - window closed
+ok   present-keys 118x30 (1095 x 627, 5 colours sampled) via CopyFromScreen (PrintWindow gave 5 colours) - window closed
+ok   present-keys 80x24 (753 x 513, 9 colours sampled) via PrintWindow - window closed
+ok   present-kj 118x30 (1095 x 627, 18 colours sampled) via PrintWindow - window closed
+ok   present-kj 80x24 (753 x 513, 9 colours sampled) via PrintWindow - window closed
+ok   present-export 118x30 (1095 x 627, 25 colours sampled) via PrintWindow - window closed
+ok   present-export 80x24 (753 x 513, 11 colours sampled) via PrintWindow - window closed
+ok   confirm 118x30 (1095 x 627, 27 colours sampled) via PrintWindow - window closed
+ok   confirm 80x24 (753 x 513, 16 colours sampled) via PrintWindow - window closed
+ok   move-confirm 118x30 (1095 x 627, 33 colours sampled) via PrintWindow - window closed
+ok   move-confirm 80x24 (753 x 513, 23 colours sampled) via PrintWindow - window closed
+ok   task-editor 118x30 (1095 x 627, 24 colours sampled) via PrintWindow - window closed
+ok   task-editor 80x24 (753 x 513, 14 colours sampled) via PrintWindow - window closed
+ok   project-form 118x30 (1095 x 627, 34 colours sampled) via PrintWindow - window closed
+ok   project-form 80x24 (753 x 513, 18 colours sampled) via PrintWindow - window closed
+ok   clocks 118x30 (1095 x 627, 10 colours sampled) via PrintWindow - window closed
+ok   clocks 80x24 (753 x 513, 10 colours sampled) via PrintWindow - window closed
+ok   offer 118x30 (1095 x 627, 8 colours sampled) via PrintWindow - window closed
+ok   offer 80x24 (753 x 513, 6 colours sampled) via CopyFromScreen (PrintWindow gave 6 colours) - window closed
+ok   identity 118x30 (1095 x 627, 7 colours sampled) via CopyFromScreen (PrintWindow gave 7 colours) - window closed
+ok   identity 80x24 (753 x 513, 7 colours sampled) via CopyFromScreen (PrintWindow gave 7 colours) - window closed
+ok   twice 118x30 (1095 x 627, 43 colours sampled) via PrintWindow - window closed
+ok   twice 80x24 (753 x 513, 20 colours sampled) via PrintWindow - window closed
+ok   open 118x30 (1095 x 627, 46 colours sampled) via PrintWindow - window closed
+ok   open 80x24 (753 x 513, 23 colours sampled) via PrintWindow - window closed
+FAIL confirm 80x24 : never ready
+ok   confirm 80x24 (753 x 513, 16 colours sampled) via PrintWindow - window closed
+ok   confirm 80x24 (753 x 513, 16 colours sampled) via PrintWindow - window closed
+# 2026-10-21 note (harness fix, operator report via the orchestrator): earlier runs left every
+# tb03-* Windows Terminal window open (the app's exit timer did not close the tab) and their
+# synthetic homes (TEMP\b03-cap-*) behind. shoot_real.ps1 now posts WM_CLOSE to the shot's own
+# window, found by its unique title inside WindowsTerminal only, waits until it is gone (10 s max,
+# a FAIL line otherwise), also on the never-ready and wrong-count paths; it removes the shot's
+# home (its path read from the ready file, only TEMP\b03-cap-*), and at the end exits 1 if any
+# tb03-* window remains. Each shot takes ~7 s. The 35 leftover homes were removed by hand.
+# The black PNGs earlier in this log were taken while the targeted pytest runs loaded the
+# machine; with nothing else of this batch running, every scene rendered (the "ok ... window
+# closed" block above is the recorded set).
