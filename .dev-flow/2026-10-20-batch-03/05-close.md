@@ -27,8 +27,8 @@
 
 | Field | Value |
 |---|---|
-| Gate record | `<the validator command, the exit code THAT run printed, and 0 block · date>` |
-| Gated tree | `<the 40-hex HEAD at the gate · clean — or: dirty — the files>` |
+| Gate record | `python "C:/Users/jjgh8/.claude/skills/dev-flow/scripts/devflow-validate.py" .` from the project root · exit 1 · no summary line · 2026-10-21 |
+| Gated tree | `3c9b2c0ac14a6ef7d6c3d6efc927c267486138ca` · clean (the close record itself excluded) |
 | Requirements canon | `REQUIREMENTS.md` (`repo:REQUIREMENTS.md`) — HLR-2401..2410 and LLR-2401.1..2410.2 folded (close step 1: 24 folded, 0 kept, 0 refused) |
 
 ---

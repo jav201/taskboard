@@ -53,7 +53,11 @@ The presentation (`R`) takes the round's items 2, 3, 4 and 5. Its key bindings a
 | `taskboard/app.py` | source | LLR-2402.1, LLR-2403.1, LLR-2403.2, LLR-2404.1, LLR-2405.1 | `PresentScreen.BINDINGS = present_bindings()`; `_hint` (the chip) over `_keys_hint` (`? keys`, view 3's `K J` wordings); `action_keys`; `action_export`'s view 3 |
 | `tests/test_present_backlog_round.py` | test | HLR-2402, HLR-2403, HLR-2404, HLR-2405, LLR-2402.1, LLR-2403.1, LLR-2403.2, LLR-2404.1, LLR-2405.1 | new: TC-2402..TC-2405, AT-2402..AT-2405 |
 | `tests/test_modal_keys.py` | test | HLR-2407 | the inventory gains `PresentKeys` (no buttons) |
-| `tests/test_present_narrow.py`, `tests/test_present_polish.py`, `tests/test_present_views_app.py`, `tests/test_present_hide.py`, `tests/test_present_all.py` | test | HLR-2403, HLR-2405 | law-driven (LED .5, D-14): every expected hint ends `  ? keys`, its wording chosen in the room left (first widths + 8, the long view-3 one + 12), view 3's wordings with `K J`; AT-2002 now checks that `?` lists `next` and `show all`; `ALL_FIRST` re-pinned as literal measured numbers (+8, the long one +12; code review CR-3); TC-1904's overflow arm renamed and given a 48-column count (CR-5) |
+| `tests/test_present_narrow.py` | test | HLR-2403, HLR-2405 | law-driven (LED .5, D-14): every expected hint ends `  ? keys`, its wording chosen in the room left (first widths + 8, the long view-3 one + 12), view 3's wordings with `K J`; AT-2002 now checks that `?` lists `next` and `show all`; `ALL_FIRST` re-pinned as literal measured numbers (+8, the long one +12; code review CR-3); TC-1904's overflow arm renamed and given a 48-column count (CR-5) |
+| `tests/test_present_polish.py` | test | HLR-2403, HLR-2405 | as the row above |
+| `tests/test_present_views_app.py` | test | HLR-2403, HLR-2405 | as the row above |
+| `tests/test_present_hide.py` | test | HLR-2403, HLR-2405 | as the row above |
+| `tests/test_present_all.py` | test | HLR-2403, HLR-2405 | as the row above |
 | `.dev-flow/2026-10-20-batch-03/evidence/mutate-002.py` | doc | HLR-2402, HLR-2403, HLR-2404, HLR-2405 | the increment's mutation battery |
 
 | Count | Value |

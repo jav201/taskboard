@@ -51,7 +51,9 @@ The round's item 1, variant C: `A` opens one read-only screen with every board's
 | `taskboard/keymap.py` | source | LLR-2401.2 | `Key("A", …, "agenda_all", bar=False)` |
 | `tests/test_all_agenda.py` | test | HLR-2401, LLR-2401.1, LLR-2401.2 | new: TC-2401 ×5 nodes, AT-2401 |
 | `tests/test_boards_home.py` | test | HLR-2401 | the home's key row compared whole with the round's capture (`A all boards`) |
-| `README.md`, `docs/ARCHITECTURE.md`, `.dev-flow/BACKLOG.md` | doc | HLR-2401, HLR-2402, HLR-2403, HLR-2404, HLR-2405, HLR-2406, HLR-2407, HLR-2408, HLR-2409, HLR-2410 | the batch's keys, CLI, `open/` folder, module and decision rows, the round's findings logged |
+| `README.md` | doc | HLR-2401, HLR-2402, HLR-2403, HLR-2404, HLR-2405, HLR-2406, HLR-2407, HLR-2408, HLR-2409, HLR-2410 | the batch's keys, CLI, `open/` folder, module and decision rows, the round's findings logged |
+| `docs/ARCHITECTURE.md` | doc | HLR-2401, HLR-2402, HLR-2403, HLR-2404, HLR-2405, HLR-2406, HLR-2407, HLR-2408, HLR-2409, HLR-2410 | as the row above |
+| `.dev-flow/BACKLOG.md` | doc | HLR-2401, HLR-2402, HLR-2403, HLR-2404, HLR-2405, HLR-2406, HLR-2407, HLR-2408, HLR-2409, HLR-2410 | as the row above |
 | `.dev-flow/2026-10-20-batch-03/evidence/mutate-004.py` | doc | HLR-2401 | the increment's mutation battery |
 
 | Count | Value |
