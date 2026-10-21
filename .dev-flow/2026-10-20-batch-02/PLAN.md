@@ -21,7 +21,7 @@ orchestrator presents the full plan in-conversation at each phase gate.
 | Project | taskboard |
 | Batch | 2026-10-20-batch-02 |
 | Objective | Backlog fixes after the multi-board batch (non-visual): `~` in the boards registry resolved through `Path.home()`; a byte copy of the source `history.jsonl` before a move; registry writes as a read-modify-write under a short advisory lock and the move's target board locked while it is rewritten; an unarchived project placed after the last shown presentation rank; `ProjectPicker._move_target`'s unused parameter removed; test hardening (test_boards_forms, AT-2204, AT-2104, `u` in view 2, fewer private reads) |
-| Last updated | P3 · 2026-10-20 |
+| Last updated | P4 · 2026-10-20 |
 | Standing authorization | standing authorization — the orchestrator's commission of 2026-10-20 (the runtime cannot prompt), relaying the operator's words «Haz lo del backlog por favor.»; the orchestrator scoped this batch to the NON-VISUAL items of `.dev-flow/BACKLOG.md` lines 138–167 (visual items go to a separate prototype round). Quoted from the commission: «Gates close under this authorization; do NOT push, do NOT merge — stop at the batch close and report», «WORK IN A NEW WORKTREE … `-b fix/backlog-boards main`», «Max 4 SOURCE files per increment (tests uncapped)», «Do not add any warning/notification UI», «Keep it simple, stdlib only, Windows-safe; a stale lock must not block forever», «spawn independent reviewers as the flow requires … do not self-review», «run the full suite in 3 SEQUENTIAL chunks … never in parallel». Read as: every gate of this batch is autonomous (reviewer roles are spawned sub-agents carrying their `agents/<role>.md`); commits on the local branch `fix/backlog-boards` are authorized, each ending with the commission's co-author line; **push and merge are NOT authorized**; synthetic data only; the operator's name nowhere (`username_subject`); the main checkout's dirty and untracked files and the other worktrees are not touched; tests never touch the real home. |
 | First gate | step 1, on `fix/backlog-boards` at `b1b71e4` before the rollover: exit 0 — 0 block · 49 notice · 63 not applicable; `V7`: bundle identical to its manifest both directions, 57 declared files, `2026-10-12-rev102`. Step 3 (after the rollover): exit 0 — 0 block · 70 notice · 47 not applicable (`evidence/gate-step1.txt`, `evidence/gate-step3.txt`). |
 | Premises / RC-1 | RC-1 (a): `git fetch origin` → `origin/main` = `b1b71e4310ea7944edbbb6f16f350352e0a9491b` = local `main` = the worktree's `HEAD`; no rebase owed; `base_ref` stamped `b1b71e4310ea7944edbbb6f16f350352e0a9491b`. RC-1 (b): not already shipped — on `origin/main` `grep -n "lock" taskboard/boards.py` → nothing; `history.jsonl` is never passed to `_backup` (`taskboard/boards.py:485-486`); `_move_target` still takes `_boards` (`taskboard/modals.py:786`). RC-2: `git ls-remote --exit-code --heads origin` → exit 0; newest commit on `origin/main` 2026-10-20 17:57 −0600. Premises: `01-requirements.md` §2.7 (P-1..P-7, all TRUE, `evidence/premises.txt`). |
@@ -64,16 +64,18 @@ Close the non-visual backlog items left by 2026-10-20-batch-01 and 2026-10-19-ba
 
 | Story / station | Status | Notes |
 |---|---|---|
-| US-2301 | READY | increment 001 |
-| US-2302 | READY | increment 001 |
-| US-2303 | READY | increment 002 |
-| US-2304 | READY | increments 001 (`~`), 002 (the parameter), 003 (tests) |
+| US-2301 | DONE | increment 001 |
+| US-2302 | DONE | increment 001 |
+| US-2303 | DONE | increment 002 |
+| US-2304 | DONE | increments 001 (`~`), 002 (the parameter), 003 (tests) |
 | P0 | done | triggers evaluated; refinement done |
 | ARQ | approved | `docs/ARCHITECTURE.md` amended (A-1's row fixed) |
 | P1 | approved after one iterate-to-refine | LED .1, .2 |
 | P2 | approved | iteration 2: architect, qa approve; security, ux approve with conditions |
 | PDR | approved with conditions | `design/PDR-2026-10-20-batch-02.md`: PC-1..PC-4 open |
-| P3 | in progress | increment 001 next |
+| P3 | done | 001 `d7c3dea`, 002 `9cec898`, 003 `e1c936d`; code review OK to advance each; security APPROVE at 001 |
+| DDR | approved | `design/DDR-2026-10-20-batch-02.md`: A-9, A-10, QA-11..QA-14 folded before the seal |
+| P4 | in progress | the gate run in three chunks |
 
 ## Roadmap + increment plan
 

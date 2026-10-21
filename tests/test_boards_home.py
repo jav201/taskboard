@@ -480,9 +480,10 @@ async def test_AT_2204_the_home(home):
         await _press(pilot, "B")
         assert _scr(app) == "BoardsHome"
         await _press(pilot, "escape")
-        assert app.selected_task_id is not None         # the board opens on a task: R by keys
-        await _press(pilot, "R")
+        await _press(pilot, "down", "R")               # the cursor moved by a key, then R (QA-12)
         assert _scr(app) == "PresentScreen"
+        head = app.screen.query_one("#present-frame").content.plain.split("\n")[0]
+        assert any(name in head for _k, name, *_ in mb.PROJECTS["personal"]), head
         await _press(pilot, "B")
         assert _scr(app) == "PresentScreen"
         await _press(pilot, "escape", "P")

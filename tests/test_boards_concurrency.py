@@ -330,7 +330,7 @@ async def test_AT_2301_a_board_another_taskboard_made_survives(home):
         await pilot.pause()
         Registry.load(reg_path, home / "board.json").create("Other desk", "sky", NOW, SETTINGS)
         await _press(pilot, "n")
-        app.screen.query_one("#bf-name").value = "Fresh"
+        await _press(pilot, *"Fresh")                 # typed (qa QA-11)
         await _press(pilot, "tab", "enter")
         assert {"other-desk", "fresh", "personal", "client-retail-rag", "course-docker",
                 "main"} <= set(_ids(reg_path)), _ids(reg_path)
@@ -341,7 +341,7 @@ async def test_AT_2301_a_board_another_taskboard_made_survives(home):
         (home / "boards.json.lock").write_bytes(b"another taskboard")
         old = reg_path.read_bytes()
         await _press(pilot, "n")
-        app.screen.query_one("#bf-name").value = "Late"
+        await _press(pilot, *"Late")
         await _press(pilot, "tab", "enter")
         assert any(m.startswith("The board was not created: boards.json is busy")
                    for m in _notes(app)), _notes(app)

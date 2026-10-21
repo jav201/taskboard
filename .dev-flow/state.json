@@ -184,7 +184,7 @@
     }
   ],
   "guided": false,
-  "current_station": "P3",
+  "current_station": "P4",
   "phase_status": "in-progress",
   "stations_active": [
     "P0",
@@ -291,6 +291,26 @@
       "station": "PDR",
       "date": "2026-10-20",
       "decision": "PDR sealed approved with conditions under the batch's standing authorization (PDR-2026-10-20-batch-02): architect, qa-reviewer, ux-reviewer, security-reviewer over design-proposal.md; PC-1 (QA-8, QA-9), PC-2 (S-6..S-8), PC-3 (UX-8) at increment 001, PC-4 (UX-9) at increment 002; P3 increment 001 is next."
+    },
+    {
+      "station": "P3",
+      "date": "2026-10-20",
+      "decision": "P3 increment 001 approved under the batch's standing authorization: boards.py lock, registry read-modify-write, the move's target lock and history copy, ~ through Path.home(), the notice and the busy start (HLR-2301, 2302, 2303, 2305); RED on base 20 failed for the stated reasons; 25/25 mutants killed; targeted 199 passed; code-reviewer OK to advance after F1/F2/F5 folds, security APPROVE (PC-2 discharged, S-11 folded); PC-1..PC-3 discharged; V2's AT-2304/AT-2306 station-expected until increments 002/003."
+    },
+    {
+      "station": "P3",
+      "date": "2026-10-20",
+      "decision": "P3 increment 002 approved under the batch's standing authorization: the unarchive rank rule and _move_target(proj, bid) (HLR-2304, HLR-2306/LLR-2306.1); RED 3 failed on increment 001's commit; 6/6 mutants killed; targeted 310 passed; code-reviewer OK to advance, no findings; PC-4 discharged by LED .3."
+    },
+    {
+      "station": "P3",
+      "date": "2026-10-20",
+      "decision": "P3 increment 003 approved under the batch's standing authorization: the hardened tests and the hygiene law (HLR-2306/LLR-2306.2), BACKLOG.md marked; AT-2306 RED on increment 002's commit; 7/7 mutants killed; targeted 104 passed; code-reviewer OK to advance, no findings; P3's increments are done, the DDR is next."
+    },
+    {
+      "station": "DDR",
+      "date": "2026-10-20",
+      "decision": "DDR sealed approved under the batch's standing authorization (DDR-2026-10-20-batch-02): architect and qa-reviewer approved with LOW conditions A-9, A-10, QA-11..QA-14, all folded before the seal (docs/ARCHITECTURE.md aligned; AT-2301 types, AT-2204 moves the cursor, M22 killed, _cursor_rows narrowed; mutation-ddr-001/003: 26 + 7 KILLED); PC-1..PC-4 discharged by re-reading; P4's gate run is next."
     }
   ],
   "obsidian_synced": false,

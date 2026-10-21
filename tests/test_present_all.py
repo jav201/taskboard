@@ -399,8 +399,8 @@ def _cursor_rows(rows):
     `⟦` but the ruler's tick row, read as the project or task title it starts with."""
     out = []
     for r in _timeline(rows):
-        if "⟦" not in r or "▸" in r:
-            continue
+        if "⟦" not in r or "selected task ▸" in r or "project span ▸" in r:
+            continue                                # the ruler's tick row (qa QA-14)
         out.append(r.lstrip("⟦ ").lstrip("■▎ ").split("  ")[0].strip())
     return out
 

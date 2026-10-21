@@ -1,0 +1,29 @@
+arms: 26
+M1 O_EXCL dropped · taskboard/boards.py · test_TC_2301_the_lock_is_exclusive_and_released: RED (KILLED) · sha256 8a7c345bed41 restored · 1 failed in 0.55s
+M2 release removed · taskboard/boards.py · test_TC_2301_the_lock_is_exclusive_and_released: RED (KILLED) · sha256 8a7c345bed41 restored · 1 failed in 0.66s
+M3 stale test inverted · taskboard/boards.py · test_TC_2301_a_stale_lock_is_taken_over_and_a_fresh_one_is_not: RED (KILLED) · sha256 8a7c345bed41 restored · 1 failed in 0.66s
+M4 abs dropped (a future time never stale) · taskboard/boards.py · test_TC_2301_a_stale_lock_is_taken_over_and_a_fresh_one_is_not: RED (KILLED) · sha256 8a7c345bed41 restored · 1 failed in 0.70s
+M5 release not owner-checked · taskboard/boards.py · test_TC_2301_a_taken_over_holder_never_removes_the_new_lock: RED (KILLED) · sha256 8a7c345bed41 restored · 1 failed in 0.44s
+M6 token-less lock left (S-6) · taskboard/boards.py · test_TC_2301_a_lock_whose_token_cannot_be_written_is_removed: RED (KILLED) · sha256 8a7c345bed41 restored · 1 failed in 0.42s
+M7 commit ignores the file · taskboard/boards.py · test_TC_2301_a_stale_registry_keeps_the_other_writers_board: RED (KILLED) · sha256 8a7c345bed41 restored · 1 failed in 0.60s
+M7b commit ignores the file (AT) · taskboard/boards.py · test_AT_2301_a_board_another_taskboard_made_survives: RED (KILLED) · sha256 8a7c345bed41 restored · 1 failed in 1.31s
+M8 commit takes no lock · taskboard/boards.py · test_TC_2301_a_failed_write_changes_nothing: RED (KILLED) · sha256 8a7c345bed41 restored · 1 failed in 0.47s
+M8b commit takes no lock (AT) · taskboard/boards.py · test_AT_2301_a_board_another_taskboard_made_survives: RED (KILLED) · sha256 8a7c345bed41 restored · 1 failed in 2.44s
+M9 adoption replaces objects · taskboard/boards.py · test_TC_2301_a_stale_registry_keeps_the_other_writers_board: RED (KILLED) · sha256 8a7c345bed41 restored · 1 failed in 0.53s
+M10 copy-aside skipped · taskboard/boards.py · test_TC_2301_an_unreadable_registry_is_never_written_over_without_a_copy: RED (KILLED) · sha256 8a7c345bed41 restored · 1 failed in 0.53s
+M11 history copy removed · taskboard/boards.py · test_TC_2303_the_history_is_copied_with_the_board_files: RED (KILLED) · sha256 8a7c345bed41 restored · 1 failed in 0.57s
+M11b history copy removed (AT) · taskboard/boards.py · test_AT_2303_a_move_keeps_the_source_history_bytes: RED (KILLED) · sha256 8a7c345bed41 restored · 1 failed in 1.32s
+M12 partial copy kept · taskboard/boards.py · test_TC_2303_a_copy_failing_midway_leaves_no_copy: RED (KILLED) · sha256 8a7c345bed41 restored · 1 failed in 0.41s
+M13 move takes no lock · taskboard/boards.py · test_TC_2302_a_busy_target_stops_the_move_before_anything: RED (KILLED) · sha256 8a7c345bed41 restored · 1 failed in 0.44s
+M13b move takes no lock (AT) · taskboard/boards.py · test_AT_2302_a_move_into_a_busy_board_stops_before_writing: RED (KILLED) · sha256 8a7c345bed41 restored · 1 failed in 1.39s
+M14 stale-plan check before the lock (QA-8) · taskboard/boards.py · test_TC_2302_a_target_rewritten_while_the_move_waited_is_refused: RED (KILLED) · sha256 8a7c345bed41 restored · 1 failed in 0.65s
+M15 lock held past the target save · taskboard/boards.py · test_TC_2302_the_lock_is_held_for_the_target_save_only: RED (KILLED) · sha256 8a7c345bed41 restored · 1 failed in 0.43s
+M16 expanduser back at _key · taskboard/boards.py · test_TC_2305_tilde_is_the_seam_home: RED (KILLED) · sha256 8a7c345bed41 restored · 1 failed in 0.48s
+M17 the stored path left raw · taskboard/boards.py · test_AT_2305_a_tilde_board_opens_from_the_seam_home: RED (KILLED) · sha256 8a7c345bed41 restored · 1 failed in 0.77s
+M18 the backups sentence always · taskboard/modals.py · test_AT_2302_a_move_into_a_busy_board_stops_before_writing: RED (KILLED) · sha256 4c15c208b5be restored · 1 failed in 1.40s
+M20 create's id from memory and disk only (F1) · taskboard/boards.py · test_TC_2301_a_stale_registry_keeps_the_other_writers_board: RED (KILLED) · sha256 8a7c345bed41 restored · 1 failed in 0.58s
+M21 register ignores memory's ids (F5) · taskboard/boards.py · test_TC_2301_an_entry_only_memory_holds_keeps_its_id_and_file: RED (KILLED) · sha256 8a7c345bed41 restored · 1 failed in 0.45s
+M22 touch always commits (qa QA-13) · taskboard/boards.py · test_TC_2301_a_one_board_start_takes_no_lock_and_writes_nothing: RED (KILLED) · sha256 8a7c345bed41 restored · 1 failed in 0.45s
+M19 the busy start a traceback · taskboard/__main__.py · test_TC_2301_a_busy_registry_at_start_is_a_message_not_a_traceback: RED (KILLED) · sha256 d0d2a6fc274f restored · 1 failed in 0.69s
+not killed: 0
+exit=0
