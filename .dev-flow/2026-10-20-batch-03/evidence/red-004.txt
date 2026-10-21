@@ -1,0 +1,8 @@
+# Increment 004's RED on increment 003's commit b05799c (a clean detached worktree; the new test file copied in), NO_COLOR unset
+# python -m pytest -q -p no:cacheprovider --color=no -rf tests/test_all_agenda.py
+FAILED tests/test_all_agenda.py::test_TC_2401_buckets_and_dues - AttributeErr...
+FAILED tests/test_all_agenda.py::test_TC_2401_every_row_is_the_width_and_board_text_is_literal[118]
+FAILED tests/test_all_agenda.py::test_TC_2401_every_row_is_the_width_and_board_text_is_literal[80]
+FAILED tests/test_all_agenda.py::test_TC_2401_where_A_acts_and_what_it_holds
+FAILED tests/test_all_agenda.py::test_AT_2401_one_screen_for_every_board - As...
+5 failed in 1.60s

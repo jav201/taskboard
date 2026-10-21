@@ -33,11 +33,12 @@ from .modals import (BoardForm, ClockModal, GanttLinkMode, LinkPicker, CommandPa
                      PresentHiddenPicker, PresentKeys, ProjectPicker, StandupModal, TaskDetails, TaskModal,
                      TeamIdentityPicker,
                      TemplateEditor, TemplatePicker, TextPrompt)
-from .keymap import KEYMAP, KeyBar, app_bindings, palette_commands, present_bindings
+from .keymap import KEYMAP, KeyBar, app_bindings, key_line, palette_commands, present_bindings
 from .ribbon import Ribbon
 from .team_sync import (TEAM_FILENAME, TeamState, _read_json, clean_roster,
                         probe_setup_health)
-from .views import (HEX, ago, board_chip_text, board_hex, board_summary, home_card, home_keys,
+from .views import (HEX, ago, agenda_buckets, all_agenda, board_chip_text, board_hex,
+                    board_summary, home_card, home_keys, render_all_agenda,
                     home_missing, home_title, present_all_export,
                     clip, filtered_board, focus_tasks, gantt_group_key, group_key,
                     gantt_plan, nav_model, present_paths, present_project_id,
@@ -826,6 +827,105 @@ class BoardsHome(Screen[None]):
         self.app.exit()
 
 
+AGENDA_KEYS = [("←→", "day"), ("↑↓", "task"), ("↵", "open on its board"), ("esc", "back")]
+
+
+class AllBoardsAgenda(Screen[None]):
+    """`A` — every board's dues this week, read-only (batch 2026-10-20-batch-03, the
+    round's item 1, variant C): a lane per board with a dot per due in each bucket
+    (`LATE`, `TODAY`, each day to Sunday), the chosen bucket's tasks below. Every
+    board is read once, when it opens; `enter` opens a task on its board."""
+
+    BINDINGS = [Binding("escape,A", "back", "", priority=True),
+                Binding("left,h", "side(-1)", "", priority=True),
+                Binding("right,l", "side(1)", "", priority=True),
+                Binding("up,k", "move(-1)", "", priority=True),
+                Binding("down,j", "move(1)", "", priority=True),
+                Binding("enter", "jump", "", priority=True)]
+    DEFAULT_CSS = """
+    AllBoardsAgenda { background: #0d1117; overflow-y: hidden; }
+    #ag-body { padding: 0 1; height: 1fr; }
+    #ag-keys { dock: bottom; height: 1; padding: 0 1; background: #0b0f17; }
+    """
+
+    def __init__(self) -> None:
+        super().__init__()
+        self.day, self.row = 1, 0
+        self.lanes: list = []
+        self.ids: list = []          # each lane's registry id (None: the unlisted board)
+        self.items: list = []
+
+    def compose(self) -> ComposeResult:
+        app = self.app
+        for e in app.registry.active():
+            if e.id == app.board_id:
+                board, state = app.board, ""
+            elif Path(e.path).exists():
+                board = peek_board(e.path)
+                state = "file unreadable" if board.load_report.get("file_unreadable") else ""
+                board = None if state else board
+            else:
+                board, state = None, "file missing"
+            self.lanes.append((e.name, e.color, board, state))
+            self.ids.append(e.id)
+        if app.board_id is None:                    # an unlisted board (`--open`)
+            label = app.board.label or ("this board", "pink")
+            self.lanes.append((label[0], label[1], app.board, ""))
+            self.ids.append(None)
+        self.today = date.today()                  # a snapshot: read once, as the boards are
+        self.items = all_agenda(self.lanes, self.today)
+        yield Static(id="ag-body")
+        yield Static(id="ag-keys")
+
+    def on_mount(self) -> None:
+        self._paint()
+
+    def on_resize(self, _event) -> None:
+        self._paint()
+
+    def _chosen(self) -> list:
+        key = agenda_buckets(self.today)[self.day][0]
+        return [x for x in self.items if x.bucket == key]
+
+    def _paint(self) -> None:
+        w, h = self.app.size
+        # a Text built from plain pieces (views); `Text.assemble` keeps it one, as the
+        # home does, so no markup parser ever reads a board's text here
+        self.query_one("#ag-body", Static).update(Text.assemble(
+            render_all_agenda(self.lanes, self.items, self.day, self.row, self.today,
+                              w - 2, h - 1)))
+        keys = key_line(AGENDA_KEYS + [("·", "read-only: nothing here edits a task")])
+        if keys.cell_len > w - 2:                     # the tail goes first, never a key
+            keys = key_line(AGENDA_KEYS, w - 2)
+        self.query_one("#ag-keys", Static).update(keys)
+
+    def action_side(self, delta: int) -> None:
+        self.day = max(0, min(len(agenda_buckets(self.today)) - 1, self.day + delta))
+        self.row = 0
+        self._paint()
+
+    def action_move(self, delta: int) -> None:
+        self.row = max(0, min(len(self._chosen()) - 1, self.row + delta))
+        self._paint()
+
+    def action_jump(self) -> None:
+        chosen = self._chosen()
+        if not chosen:
+            return
+        it = chosen[min(self.row, len(chosen) - 1)]
+        bid = self.ids[it.lane]
+        app = self.app
+        while len(app.screen_stack) > 1:            # the agenda, and the home beneath it
+            app.pop_screen()
+        if bid is not None and bid != app.board_id:
+            app.switch_board(bid)
+        if app.board_id == bid or bid is None:
+            app.jump_to(it.task.id)
+
+    def action_back(self) -> None:
+        self.app.pop_screen()
+
+
 class TaskboardApp(App):
     """Frameless kanban desktop widget."""
 
@@ -901,9 +1001,15 @@ class TaskboardApp(App):
         """While a modal is open, release the board's priority arrow/vim bindings
         so the modal's own widgets (e.g. the ProjectPicker list, Select dropdowns)
         receive them instead of moving the hidden board selection; `B` (`boards`)
-        too, so the home never opens over another screen. While the home is on the
-        stack, it holds the keys: no action of the key seat but `quit` acts."""
-        if action in SEAT_ACTIONS and any(isinstance(sc, BoardsHome)
+        too, so the home never opens over another screen. While the home or the
+        agenda of every board is on the stack, it holds the keys: no action of the
+        key seat but `quit` acts. `agenda_all` is always allowed here: a pushed modal
+        holds its own keys, so `A` acts only on a non-modal screen."""
+        if action == "agenda_all":
+            # the main screen and the home (batch 2026-10-20-batch-03): a pushed modal
+            # (the presentation among them) holds its own keys, so `A` never reaches past one
+            return True
+        if action in SEAT_ACTIONS and any(isinstance(sc, (BoardsHome, AllBoardsAgenda))
                                           for sc in self.screen_stack):
             # the home holds the keys — and the modals over it (its form, its
             # confirmation, a board's start-up modal) keep their own: no key of
@@ -1000,6 +1106,10 @@ class TaskboardApp(App):
     def action_boards(self) -> None:
         """`B`: the home."""
         self.push_screen(BoardsHome())
+
+    def action_agenda_all(self) -> None:
+        """`A`: the agenda of every board (batch 2026-10-20-batch-03)."""
+        self.push_screen(AllBoardsAgenda())
 
     def _open_board(self, at_mount: bool = False) -> bool:
         """The start a board gets — at mount, and again at every switch to

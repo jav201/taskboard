@@ -132,11 +132,17 @@ between the short and the full layer. Every key below is also in the command pal
 | `s` `g` `z` | Kanban | Sort, group, collapse the last phase |
 | `F` / `/` / `esc` | Focus, filter | Kanban and gantt: focus one project / filter tasks / clear |
 | `Tab` | Layout | Cycle the layouts of kanban, focus and lanes |
+| `A` | All boards | The agenda of every board: a lane per board with a dot per due day, the chosen day's tasks below; `enter` opens a task on its board (also on the home) |
 | `R` / `S` | Present / Standup | Present the selected task's project, or every project (`3`), with gantt + brief, export SVG+PNG / show the week's standup |
 | `I` | Templates | Insert a process template (a named chain of tasks) into the selected task's project |
 | `comma` | Save chain | Save the selected chain as a template (chain map) |
 | `c` | Clocks | Choose the ribbon's two city clocks |
 | `space` / `ctrl+s` | Setup | In Setup: toggle a control / save; `Enter` edits a row, `a` / `x` add or remove a row, `Tab` changes section, `esc` discards |
+
+Every dialog names its keys on its own last line, and each of its buttons has one: a
+confirmation takes `y` (yes) and `n` or `esc` (no) — `Enter` alone does nothing there — and
+the forms that hold text fields take `alt+s` (save), `alt+i` (paste an image), `alt+t` / `alt+d`
+(the start / due calendar) and `esc` (cancel), so a letter you type is always text.
 
 In the task and project editors, `Ctrl+E` inserts an emoji and `Ctrl+V` pastes text.
 
@@ -255,13 +261,16 @@ has three views, and `R` always opens on the first:
 `tab` and `shift+tab` (`⇥`, `⇧⇥`) cycle through the views; `↑`/`↓` move the cursor (and
 `←`/`→` in views 1 and 2). Views 1 and 2 share one cursor; leaving view 3 shows its cursor's
 project in views 1 and 2. `x` exports the view on screen to an SVG and a PNG in the `reports`
-folder (the split view's files end in `-split`; view 3 exports its timeline without the rail,
-to files ending in `-all`); `esc` leaves. The keys live in the hint row under the frame, never
-in the frame, so the room and the export see only the projects.
+folder (the split view's files end in `-split`; view 3 exports its timeline without the rail
+and without the cursor, cut to its last row, to files ending in `-all`); `esc` leaves. The
+keys live in the hint row under the frame, never in the frame, so the room and the export see
+only the projects; with several boards the hint row opens with the board's name, which the
+frame and the exports never show. `?` opens a window with every key of the presentation, the
+current view's bright and another view's dimmed.
 
 `space` hides the cursor's row from the presentation — a task, or in view 3 a whole project on
 its header (on the rail, `space` hides or shows the project again) — and `a` shows everything
-hidden again. In view 3 `shift+↑`/`shift+↓` move the cursor's project up or down; that order
+hidden again. In view 3 `shift+↑`/`shift+↓` — or `K`/`J`, for terminals that drop `shift+arrow` — move the cursor's project up or down; that order
 is the presentation's own (the board's other views keep the board's order). `u` lists what is
 hidden — the project's tasks in views 1 and 2, every hidden project and task in view 3 — and
 brings items back one by one with `space`. The hint row counts the hidden items (`u N
@@ -290,7 +299,8 @@ On the home:
 |-----|------|
 | `n` | New board: a name and a colour (`Tab` cycles the colours); the form shows the file it will create, `~/.taskboard/boards/<name>/board.json`. The new board opens empty |
 | `e` | Rename or recolour the board under the cursor |
-| `x` | Archive the board under the cursor (it asks first; `Tab`, `Enter` confirms). It leaves the home; its folder is not touched. `taskboard --board PATH` brings it back. The open board cannot be archived |
+| `x` | Archive the board under the cursor (it asks first; `y` confirms, `n` or `esc` cancels). It leaves the home; its folder is not touched. `taskboard --board PATH` brings it back. The open board cannot be archived |
+| `A` | The agenda of every board (see `A` above) |
 
 **Moving a project to another board.** In the projects manager (`P`), `m` moves the project under
 the cursor, with all its tasks — done and archived ones too — to another board. You pick the
@@ -352,6 +362,7 @@ Everything lives under `~/.taskboard/` (or beside the file you pass with `--boar
 | `move-<date>.json` | The projects moved that day, beside each board involved: tasks, links kept, links dropped |
 | `images/<task id>/` | Pasted images, as plain files |
 | `reports/` | HTML reports and the presentation's SVG + PNG exports |
+| `open/` | One small file per window per open board (when it opened, its process id), removed when the window leaves the board; another window opening the same board says so once |
 
 Never commit a real board: the repo's pre-commit hook (`tools/precommit_privacy.py`) refuses
 files that carry your board's text.
@@ -362,6 +373,7 @@ files that carry your board's text.
 |---------|------|
 | `taskboard` | Run the app: the home when you have several boards, else `~/.taskboard/board.json` |
 | `taskboard --board PATH` | Run it on another board file, and add that file to your boards (an archived one comes back) |
+| `taskboard --open PATH` | Open an existing board file without adding it to your boards: the head row says `<name> · not listed`, the home does not open at start, and projects cannot be moved out of it |
 | `taskboard --report [PROJECT]` | Write a report and exit |
 
 `python -m taskboard` is the same command.

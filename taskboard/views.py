@@ -6968,7 +6968,163 @@ RENDERERS = {
 # borders, titles and the grid) is `app.BoardsHome`.
 # ---------------------------------------------------------------------------
 HOME_KEYS = (("←→↑↓", "move"), ("↵", "open"), ("n", "new"), ("e", "name/colour"),
-             ("x", "archive"), ("esc", "back"), ("q", "quit"))
+             ("x", "archive"), ("A", "all boards"), ("esc", "back"), ("q", "quit"))
+
+
+# ---------------------------------------------------------------------------
+# the agenda of every board (batch 2026-10-20-batch-03, the round's item 1, variant C:
+# `prototypes/backlog_round/proto.py` `AgendaRuler`, made pure). The screen is
+# `app.AllBoardsAgenda`; it passes plain lanes — no registry type reaches `views`.
+# ---------------------------------------------------------------------------
+class AgendaItem(NamedTuple):
+    bucket: object          # "late" or the due date
+    lane: int               # the lane's index
+    board_name: str
+    colour: str
+    task: Task
+    project: str
+    due: date
+
+
+def _week_end(today: date) -> date:
+    return today + timedelta(days=6 - today.weekday())
+
+
+def agenda_buckets(today: date) -> list[tuple[object, str]]:
+    """`LATE`, `TODAY`, then each later day to Sunday (`Wed 21`; never `%-d`)."""
+    days = [today + timedelta(days=k) for k in range((_week_end(today) - today).days + 1)]
+    return [("late", "LATE")] + [(d, "TODAY" if d == today else f"{d:%a} {d.day}")
+                                 for d in days]
+
+
+def all_agenda(lanes, today: date) -> list[AgendaItem]:
+    """Every open task with a due date on or before Sunday, of every lane's board
+    (`lanes = [(name, colour, board | None, state)]`), late before today, ordered by
+    due date, then lane, then the board's own order."""
+    out = []
+    end = _week_end(today)
+    for li, (name, colour, board, _state) in enumerate(lanes):
+        if board is None:
+            continue
+        names = {p.id: p.name for p in board.projects}
+        for t in board.tasks:
+            d = parse_iso(t.due_date)
+            if d is None or d > end or not is_open(board, t):
+                continue
+            out.append(AgendaItem("late" if d < today else d, li, name, colour, t,
+                                  names.get(t.project_id, ""), d))
+    return sorted(out, key=lambda x: (x.due, x.lane))     # stable: board order kept
+
+
+def _agenda_when(d: date, today: date) -> tuple[str, str]:
+    if d < today:
+        return f"▲{(today - d).days}d", HEX["over"]
+    if d == today:
+        return "today", HEX["soon"]
+    return f"{d:%a} {d.day}", HEX["hd"]
+
+
+def _agenda_head(lanes, items, today: date, inner: int) -> Text:
+    n = {"late": sum(1 for x in items if x.bucket == "late"),
+         "today": sum(1 for x in items if x.bucket == today)}
+    n["week"] = len(items) - n["late"] - n["today"]
+    boards = len(lanes)
+    t = Text(no_wrap=True)
+    left = "◆ ALL BOARDS"
+    sub = f"  {boards} board{'' if boards == 1 else 's'} · read-only"
+    right = f"▲{n['late']} late · {n['today']} today · {n['week']} to Sun {_week_end(today).day}"
+    t.append(left, style=f"bold {HEX['bright']}")
+    t.append(sub, style=HEX["mut"])
+    t.append(" " * max(1, inner - len(left) - len(sub) - len(right)))
+    t.append(right, style=HEX["dim"])
+    t.truncate(inner)
+    t.pad_right(inner - t.cell_len)
+    return t
+
+
+def _agenda_row(it: AgendaItem, on: bool, inner: int, today: date) -> Text:
+    bw = 12 if inner >= 100 else 10
+    pw = 22 if inner >= 100 else 0
+    hexc = board_hex(it.colour)
+    r = Text(no_wrap=True)
+    r.append("▶ " if on else "  ", style=HEX["accent"])
+    r.append("▌", style=hexc)
+    r.append(fit(it.board_name, bw), style=hexc)
+    r.append(" ")
+    if pw:
+        r.append(fit(it.project, pw), style=HEX["dim"])
+        r.append(" ")
+    wl, wc = _agenda_when(it.due, today)
+    tw = max(1, inner - 3 - bw - 1 - (pw + 1 if pw else 0) - 8)
+    r.append(fit(it.task.title, tw), style=f"bold {HEX['bright']}" if on else HEX["ink"])
+    r.append(f"{wl:>8}", style=wc)
+    r.truncate(inner)
+    r.pad_right(inner - r.cell_len)
+    if on:
+        r.stylize("on #1d2a3a")
+    return r
+
+
+def render_all_agenda(lanes, items, day: int, row: int, today: date, width: int,
+                      height: int) -> Text:
+    """The agenda's rows (without its key row), each exactly `width` cells: the head,
+    the bucket row (the chosen one `▼` and shaded), a lane per board (`●` per due,
+    `·` none; a board with a `state` dimmed, its state shown from 100 cells), a rule,
+    the chosen bucket's head and its tasks scrolled to keep `row` on screen. Every
+    board string is a plain Text piece cut with `fit`, never markup."""
+    inner = max(1, width)
+    bks = agenda_buckets(today)
+    day = max(0, min(len(bks) - 1, day))
+    lw = 12 if inner >= 100 else 10
+    cw = max(3, min(13, (inner - lw) // len(bks)))
+    rows = [_agenda_head(lanes, items, today, inner), Text(" " * inner)]
+    r = Text(" " * lw, no_wrap=True)
+    for i, (_k, lab) in enumerate(bks):
+        on = i == day
+        col = HEX["over"] if i == 0 else HEX["soon"] if i == 1 else HEX["hd"]
+        r.append(fit(("▼ " if on else "  ") + lab, cw),
+                 style=f"bold {col}" + (" on #16202c" if on else ""))
+    rows.append(r)
+    for li, (name, colour, _board, state) in enumerate(lanes):
+        hexc = board_hex(colour)
+        r = Text(no_wrap=True)
+        r.append("▌", style=HEX["dim"] if state else hexc)
+        r.append(fit(name, lw - 1), style=HEX["dim"] if state else f"bold {hexc}")
+        if state and inner >= 100:
+            r.append(fit(state, cw * len(bks)), style=HEX["dim"])
+        else:
+            for i, (key, _lab) in enumerate(bks):
+                n = sum(1 for x in items if x.lane == li and x.bucket == key)
+                bg = " on #16202c" if i == day else ""
+                dots = ("●" * min(n, cw - 4) + ("+" if n > cw - 4 else "")) if n else "·"
+                r.append("  ", style=bg.strip() or None)
+                r.append(fit(dots, cw - 2), style=(hexc if n else HEX["frame"]) + bg)
+        rows.append(r)
+    rows.append(Text("─" * inner, style=HEX["frame"]))
+    key, lab = bks[day]
+    chosen = [x for x in items if x.bucket == key]
+    n_b = len({x.lane for x in chosen})
+    head = Text(no_wrap=True)
+    col = HEX["over"] if day == 0 else HEX["soon"] if day == 1 else HEX["hd"]
+    head.append(f"{lab.upper()} · {len(chosen)} due", style=f"bold {col}")
+    head.append(f" across {n_b} board{'' if n_b == 1 else 's'}", style=HEX["mut"])
+    rows.append(head)
+    room = max(1, height - len(rows))
+    row = max(0, min(row, len(chosen) - 1))
+    start = max(0, min(row - room + 1, len(chosen) - room))
+    for ri in range(start, min(len(chosen), start + room)):
+        rows.append(_agenda_row(chosen[ri], ri == row, inner, today))
+    if not chosen:
+        rows.append(Text("  nothing due", style=HEX["dim"]))
+    out = Text()
+    for i, t in enumerate(rows[:max(1, height)]):
+        t = t.copy()
+        t.truncate(inner)
+        t.pad_right(inner - t.cell_len)
+        if i:
+            out.append("\n")
+        out.append_text(t)
+    return out
 
 
 def board_summary(board: Board, today: date) -> dict:
@@ -7109,10 +7265,18 @@ def home_title(n: int, late: int, today: date, w: int) -> Text:
 
 
 def home_keys(w: int) -> Text:
-    k = Text(no_wrap=True)
-    for key, lab in HOME_KEYS:
-        k.append(key, style=f"b {HEX['bright']}")
-        k.append(f" {lab}  ", style=HEX["mut"])
+    """The home's key row; too narrow, the words go first, from the right, so every
+    key stays (batch 2026-10-20-batch-03: `A all boards` joined it, as the multi-board round drew it)."""
+    words = len(HOME_KEYS)
+    while True:
+        k = Text(no_wrap=True)
+        for i, (key, lab) in enumerate(HOME_KEYS):
+            k.append(key, style=f"b {HEX['bright']}")
+            k.append(f" {lab}  " if i < words else "  ", style=HEX["mut"])
+        if k.cell_len - 2 <= w - 2 or not words:
+            break
+        words -= 1
+    k.rstrip()
     k.truncate(w - 2)
     return k
 

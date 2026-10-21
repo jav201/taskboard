@@ -138,6 +138,9 @@ KEYMAP: tuple[Key, ...] = (
     Key("f", "f", "manage_phases", "Phases", group="misc", bar=False),
     Key("c", "c", "clocks", "Clocks", group="misc", bar=False),
     Key("R", "R", "present", "Present", group="misc", bar=False),
+    # `A` — the agenda of every board (batch 2026-10-20-batch-03, the round's item 1 C):
+    # global, off the bar, like `R`; the home's key row names it too
+    Key("A", "A", "agenda_all", "All boards", group="misc", bar=False),
     # `I` — insert a process template (batch 2026-10-07-batch-07, HLR-1301):
     # global, palette-only, like `R` (shifted, not scoped to a view).
     Key("I", "I", "templates", "Templates", group="misc", bar=False),

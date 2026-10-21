@@ -50,3 +50,10 @@ above this line is ever edited._
 - **What changed:** Before → After. LLR-2409.1: "None for anything but a JSON object holding a parseable string `since`" → "… a parseable string `since` without an offset" (an offset-aware time crashed the sort of the start's notice: security S-13, code review CR-1). LLR-2410.2's bracketed name `[b]x[/b].json` → `[x]copy.json` (a `/` cannot name a Windows file; code review CR-5), the notice's `markup=False` asserted by its flag (security S-14); the registered-path boundary of HLR-2410 gains its node (code review CR-3).
 - **Why:** increment 003's code review and security re-read.
 - **Evidence:** `03-increments/increment-003.md`; `evidence/mutation-003.txt` (M11b–M11d).
+
+### LED-2026-10-20-batch-03.7 — increment 004's drifts (P3, increment 004)
+- **Requirement:** HLR-2401, LLR-2401.2
+- **Date:** 2026-10-20
+- **What changed:** Before → After. LLR-2401.2: "`check_action` lets `agenda_all` act on the main screen and while the home is the top screen …; `BoardsHome` binds `A`" → `agenda_all` always allowed by `check_action`: Textual's modal binding chain already keeps the app's `A` from reaching past a pushed modal (measured: a guard on the stack's depth SURVIVED its mutation — it was unobservable), and the app's own binding acts on the home, so the home needs no binding of its own. AT-2401 at 80×24: "the home's key row still holds `A all boards` and `q quit`" → "… ends `A all boards  esc back  q`", the multi-board round's approved C capture (`prototypes/multi_board/out/C-80-open.svg`), which `tests/test_boards_home.py` now compares row for row, key row included.
+- **Why:** increment 004's implementation and its mutation battery.
+- **Evidence:** `03-increments/increment-004.md`; `evidence/mutation-004.txt`.

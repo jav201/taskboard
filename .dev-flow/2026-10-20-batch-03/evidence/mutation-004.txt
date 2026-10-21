@@ -1,0 +1,18 @@
+arms: 15
+M1 the lane order dropped from the sort · taskboard/views.py · test_TC_2401_buckets_and_dues: RED (KILLED) · sha256 ef656496870e restored · 1 failed in 0.50s
+M1b the lane order dropped (AT) · taskboard/views.py · test_AT_2401_one_screen_for_every_board: RED (KILLED) · sha256 ef656496870e restored · 1 failed in 1.19s
+M2 done tasks listed · taskboard/views.py · test_TC_2401_buckets_and_dues: RED (KILLED) · sha256 ef656496870e restored · 1 failed in 0.50s
+M3 Sunday excluded · taskboard/views.py · test_TC_2401_buckets_and_dues: RED (KILLED) · sha256 ef656496870e restored · 1 failed in 0.48s
+M4 the project column at 80 · taskboard/views.py · test_TC_2401_every_row_is_the_width_and_board_text_is_literal[80]: RED (KILLED) · sha256 ef656496870e restored · 1 failed in 0.48s
+M5 a missing board's lane not marked · taskboard/views.py · test_TC_2401_every_row_is_the_width_and_board_text_is_literal[118]: RED (KILLED) · sha256 ef656496870e restored · 1 failed in 0.49s
+M6 `A` refused on the home (the seat rule) · taskboard/app.py · test_AT_2401_one_screen_for_every_board: RED (KILLED) · sha256 74257dc02c89 restored · 1 failed in 1.24s
+M7 the seat keys alive behind the agenda · taskboard/app.py · test_TC_2401_where_A_acts_and_what_it_holds: RED (KILLED) · sha256 74257dc02c89 restored · 1 failed in 1.49s
+M8 the jump never switches · taskboard/app.py · test_AT_2401_one_screen_for_every_board: RED (KILLED) · sha256 74257dc02c89 restored · 1 failed in 1.93s
+M9 the home's key row without `A` · taskboard/views.py · test_AT_2401_one_screen_for_every_board: RED (KILLED) · sha256 ef656496870e restored · 1 failed in 3.42s
+M10 the agenda's key row cut at its tail · taskboard/app.py · test_AT_2401_one_screen_for_every_board: RED (KILLED) · sha256 74257dc02c89 restored · 1 failed in 4.01s
+M12 the unlisted board's lane dropped (code review CR-1) · taskboard/app.py · test_TC_2401_the_unlisted_board_is_the_last_lane: RED (KILLED) · sha256 74257dc02c89 restored · 1 failed in 0.66s
+M13 the unlisted lane's jump skipped (CR-1) · taskboard/app.py · test_TC_2401_the_unlisted_board_is_the_last_lane: RED (KILLED) · sha256 74257dc02c89 restored · 1 failed in 1.49s
+M14 a failed switch leaves the agenda open (CR-2) · taskboard/app.py · test_TC_2401_where_A_acts_and_what_it_holds: RED (KILLED) · sha256 74257dc02c89 restored · 1 failed in 2.25s
+M11 `A` not in the seat · taskboard/keymap.py · test_AT_2401_one_screen_for_every_board: RED (KILLED) · sha256 d27571d2c0e3 restored · 1 failed in 1.31s
+not killed: 0
+exit=0

@@ -312,6 +312,11 @@
       "station": "P3",
       "date": "2026-10-20",
       "decision": "P3 increment 003 approved under the batch's standing authorization: the start-up modals' chip, one notice when a board is open in another window (presence markers), --open (HLR-2408..HLR-2410); 916 passed targeted with the notice census, RED 14/14 on 5d50baa, 24/24 mutants KILLED; code-reviewer OK to advance after CR-1 fixed; security-reviewer APPROVE (PDR PC-4 discharged); increment 004 is next."
+    },
+    {
+      "station": "P3",
+      "date": "2026-10-20",
+      "decision": "P3 increment 004 approved under the batch's standing authorization: the agenda of every board (HLR-2401) and the docs; 654 passed targeted, RED 5/5 on b05799c, 15/15 mutants KILLED; code-reviewer OK to advance, MEDIUM CR-1/CR-2 tested (M12-M14 KILLED), CR-3/5/6/7 applied, CR-4 logged; LED .7 recorded; the DDR is next."
     }
   ],
   "obsidian_synced": false,

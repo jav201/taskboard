@@ -25,7 +25,6 @@ ROUND = Path(__file__).resolve().parents[1] / "prototypes" / "multi_board" / "ou
 EVIDENCE = Path(__file__).resolve().parents[1] / ".dev-flow" / "2026-10-20-batch-01" / "evidence"
 PAYLOADS = ["[@click=app.quit]x[/]", "tail\\", "[bold", "x[/]"]
 NOW = datetime(2026, 10, 20, 9, 30)
-KEY_ROW = "←→↑↓ move  ↵ open  n new  e name/colour  x archive  esc back  q quit"
 
 
 class _Today(date):
@@ -453,8 +452,8 @@ CAPTURES = [((160, 45), "C-160-open.svg"), ((118, 30), "C-118-open.svg"),
 async def test_AT_2204_the_home(home):
     """AT-2204 (US-2202), one node for the whole chain (C-18): at start over the
     round's four boards the home's rows equal the round's approved C capture at
-    160, 118 and 80 columns but its key row, which loses option D's `A all boards`
-    and reads the shipped keys; then `3` and `a` do nothing on the home; `B` opens
+    160, 118 and 80 columns key row included (since batch 2026-10-20-batch-03 the
+    agenda's `A all boards` is shipped); then `3` and `a` do nothing on the home; `B` opens
     it from a view but not over the presentation or the projects modal; the bar
     and `?` list `B`."""
     mb.build(home, "personal")
@@ -467,9 +466,10 @@ async def test_AT_2204_the_home(home):
             assert _scr(app) == "BoardsHome"
             got = _svg_rows(app.export_screenshot(), w, h)
         want = _svg_rows((ROUND / svg).read_text(encoding="utf-8"), w, h)
-        diff = [(y, g, x) for y, (g, x) in enumerate(zip(got[:-1], want[:-1])) if g != x]
+        # batch 2026-10-20-batch-03: `A all boards` is on the home (the agenda, the
+        # round's option D) — the key row now equals the round's own, row for row
+        diff = [(y, g, x) for y, (g, x) in enumerate(zip(got, want)) if g != x]
         assert not diff, (svg, diff)
-        assert got[-1] == " " + KEY_ROW, svg
     mb.build(home, "personal")
     app = _open()
     async with app.run_test(size=(160, 45)) as pilot:

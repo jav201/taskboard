@@ -1,0 +1,732 @@
+diff --git a/README.md b/README.md
+index 459f5f6..07edfa3 100644
+--- a/README.md
++++ b/README.md
+@@ -132,12 +132,18 @@ between the short and the full layer. Every key below is also in the command pal
+ | `s` `g` `z` | Kanban | Sort, group, collapse the last phase |
+ | `F` / `/` / `esc` | Focus, filter | Kanban and gantt: focus one project / filter tasks / clear |
+ | `Tab` | Layout | Cycle the layouts of kanban, focus and lanes |
++| `A` | All boards | The agenda of every board: a lane per board with a dot per due day, the chosen day's tasks below; `enter` opens a task on its board (also on the home) |
+ | `R` / `S` | Present / Standup | Present the selected task's project, or every project (`3`), with gantt + brief, export SVG+PNG / show the week's standup |
+ | `I` | Templates | Insert a process template (a named chain of tasks) into the selected task's project |
+ | `comma` | Save chain | Save the selected chain as a template (chain map) |
+ | `c` | Clocks | Choose the ribbon's two city clocks |
+ | `space` / `ctrl+s` | Setup | In Setup: toggle a control / save; `Enter` edits a row, `a` / `x` add or remove a row, `Tab` changes section, `esc` discards |
+ 
++Every dialog names its keys on its own last line, and each of its buttons has one: a
++confirmation takes `y` (yes) and `n` or `esc` (no) — `Enter` alone does nothing there — and
++the forms that hold text fields take `alt+s` (save), `alt+i` (paste an image), `alt+t` / `alt+d`
++(the start / due calendar) and `esc` (cancel), so a letter you type is always text.
++
+ In the task and project editors, `Ctrl+E` inserts an emoji and `Ctrl+V` pastes text.
+ 
+ ## Working with tasks
+@@ -255,13 +261,16 @@ has three views, and `R` always opens on the first:
+ `tab` and `shift+tab` (`⇥`, `⇧⇥`) cycle through the views; `↑`/`↓` move the cursor (and
+ `←`/`→` in views 1 and 2). Views 1 and 2 share one cursor; leaving view 3 shows its cursor's
+ project in views 1 and 2. `x` exports the view on screen to an SVG and a PNG in the `reports`
+-folder (the split view's files end in `-split`; view 3 exports its timeline without the rail,
+-to files ending in `-all`); `esc` leaves. The keys live in the hint row under the frame, never
+-in the frame, so the room and the export see only the projects.
++folder (the split view's files end in `-split`; view 3 exports its timeline without the rail
++and without the cursor, cut to its last row, to files ending in `-all`); `esc` leaves. The
++keys live in the hint row under the frame, never in the frame, so the room and the export see
++only the projects; with several boards the hint row opens with the board's name, which the
++frame and the exports never show. `?` opens a window with every key of the presentation, the
++current view's bright and another view's dimmed.
+ 
+ `space` hides the cursor's row from the presentation — a task, or in view 3 a whole project on
+ its header (on the rail, `space` hides or shows the project again) — and `a` shows everything
+-hidden again. In view 3 `shift+↑`/`shift+↓` move the cursor's project up or down; that order
++hidden again. In view 3 `shift+↑`/`shift+↓` — or `K`/`J`, for terminals that drop `shift+arrow` — move the cursor's project up or down; that order
+ is the presentation's own (the board's other views keep the board's order). `u` lists what is
+ hidden — the project's tasks in views 1 and 2, every hidden project and task in view 3 — and
+ brings items back one by one with `space`. The hint row counts the hidden items (`u N
+@@ -290,7 +299,8 @@ On the home:
+ |-----|------|
+ | `n` | New board: a name and a colour (`Tab` cycles the colours); the form shows the file it will create, `~/.taskboard/boards/<name>/board.json`. The new board opens empty |
+ | `e` | Rename or recolour the board under the cursor |
+-| `x` | Archive the board under the cursor (it asks first; `Tab`, `Enter` confirms). It leaves the home; its folder is not touched. `taskboard --board PATH` brings it back. The open board cannot be archived |
++| `x` | Archive the board under the cursor (it asks first; `y` confirms, `n` or `esc` cancels). It leaves the home; its folder is not touched. `taskboard --board PATH` brings it back. The open board cannot be archived |
++| `A` | The agenda of every board (see `A` above) |
+ 
+ **Moving a project to another board.** In the projects manager (`P`), `m` moves the project under
+ the cursor, with all its tasks — done and archived ones too — to another board. You pick the
+@@ -352,6 +362,7 @@ Everything lives under `~/.taskboard/` (or beside the file you pass with `--boar
+ | `move-<date>.json` | The projects moved that day, beside each board involved: tasks, links kept, links dropped |
+ | `images/<task id>/` | Pasted images, as plain files |
+ | `reports/` | HTML reports and the presentation's SVG + PNG exports |
++| `open/` | One small file per window per open board (when it opened, its process id), removed when the window leaves the board; another window opening the same board says so once |
+ 
+ Never commit a real board: the repo's pre-commit hook (`tools/precommit_privacy.py`) refuses
+ files that carry your board's text.
+@@ -362,6 +373,7 @@ files that carry your board's text.
+ |---------|------|
+ | `taskboard` | Run the app: the home when you have several boards, else `~/.taskboard/board.json` |
+ | `taskboard --board PATH` | Run it on another board file, and add that file to your boards (an archived one comes back) |
++| `taskboard --open PATH` | Open an existing board file without adding it to your boards: the head row says `<name> · not listed`, the home does not open at start, and projects cannot be moved out of it |
+ | `taskboard --report [PROJECT]` | Write a report and exit |
+ 
+ `python -m taskboard` is the same command.
+diff --git a/docs/ARCHITECTURE.md b/docs/ARCHITECTURE.md
+index c6d52d6..8e1558b 100644
+--- a/docs/ARCHITECTURE.md
++++ b/docs/ARCHITECTURE.md
+@@ -31,7 +31,7 @@ taskboard is a local, single-user terminal app. Everything it touches crosses on
+ | External actor / service | Direction | What crosses | Notes |
+ |---|---|---|---|
+ | the operator's terminal | in / out | key presses, the painted screen | Textual; the only interactive surface |
+-| the board file `board.json` (default `~/.taskboard/board.json`) | in / out | projects, tasks, settings | read at mount and at every board switch, written on every mutation (`Board.save`); a corrupt file is quarantined |
++| the board file `board.json` (default `~/.taskboard/board.json`) | in / out | projects, tasks, settings | read at mount and at every board switch, written on every mutation (`Board.save`); a corrupt file is quarantined; `taskboard --open PATH` opens any board file outside the registry, read-write, without registering it (batch 2026-10-20-batch-03) |
+ | the boards registry `boards.json` beside the default board (`~/.taskboard/boards.json`) | in / out | per board: id, name, colour, path, last opened, archived; the last board opened | read at start (`boards.Registry.load`, never raising; a missing file is a registry of the default board alone, `Main`); written atomically only when it changes — a second board registered or created, a switch, a rename, an archive (batch 2026-10-20-batch-01) |
+ | the board folders `~/.taskboard/boards/<id>/` | in / out | a created board's file (and, beside it, its own history, images, reports) | `boards.Registry.create`; one folder per board, never overwritten (batch 2026-10-20-batch-01) |
+ | a project move's records beside each board file | out | `<board file>.pre-move-<date>[-N]` and, beside the source, `history.jsonl.pre-move-<date>[-N]` (byte copies taken before anything is written; the history's streamed, batch 2026-10-20-batch-02) and `move-<date>.json` (a list of moves: project, from, to, tasks, links kept, links dropped; a file there that is not a list is left alone and `move-<date>-<N>.json` takes the entry) | `boards.move_project` (batch 2026-10-20-batch-01) |
+@@ -123,7 +123,7 @@ taskboard is a local, single-user terminal app. Everything it touches crosses on
+ | `boards.json` registry record | `models` (`boards.py`) | `app` (`open_app`, `TaskboardApp`, `BoardsHome`), `modals` (`BoardForm`, `MoveTarget`, `MoveConfirm`), tests | `{"version": 1, "last": <id>, "boards": [{"id", "name", "color", "path", "last_opened", "archived"}]}`; on load an entry needs a non-empty `path` (skipped otherwise, and when its resolved path repeats an earlier entry's); a missing, empty or duplicate `id` is replaced by a fresh slug of the name; the name is non-empty text (else the file's own name), the colour a project colour (`project_color_on_load`), `last_opened` an ISO time or none, `archived` true only for the JSON `true`; nothing valid → the default board alone (`main`, `Main`); an entry's path must be absolute once a leading `~` is normalised to `Path.home()` on load (never the environment's home; the stored path is then absolute, batch 2026-10-20-batch-02); ids are ASCII letters, digits, `-`, `_`; names cleaned of control characters and cut to 60; an unreadable file is copied to the first free `boards.json.corrupt[-N]` and never rewritten at an opening (batch 2026-10-20-batch-01) | no |
+ | `Registry` (`load`, `single`, `get`, `active`, `opening`, `entry_for`, `register`, `touch`, `create`, `edit`, `archive`, `free_color`, `next_id`, `save`) and `BoardEntry` | `models` (`boards.py`) | `app`, `modals`, `__main__`, tests | `Registry.load(path, main_path)` never raises; `save` writes atomically (a temporary file beside it, then `os.replace`); `touch` persists only when the registry holds more than one board or its file already exists, and never after an unreadable read, so a one-board user never gets a `boards.json`; `opening` passes over a board whose file is missing (batch 2026-10-20-batch-01); `register`, `create`, `edit`, `archive` and `touch` write as a read-modify-write under `file_lock(boards.json)`: the file re-read fresh, the one change applied, the result written atomically and adopted in memory (entries updated in place, so a caller's entry objects stay live; an entry only memory holds is kept); at the commit a failed read raises and an unparseable file is copied aside first, else nothing is written; a failed write leaves memory as it was, but for `touch`, which keeps its opening in memory and reports the error as `save_error`; `register` of a path held un-archived writes nothing; `__main__.main` turns a busy registry at start into `exit 1` with the message (batch 2026-10-20-batch-02) | no |
+ | `file_lock(path, label=None)` | `models` (`boards.py`) | `boards.Registry`, `boards.move_project`, tests | a context manager: an advisory lock `<name>.lock` beside the resolved `path`, created exclusively (`os.O_CREAT | os.O_EXCL`) holding a random token, removed on exit only while it holds that token; a regular lock file whose time is more than `LOCK_STALE` seconds from now is a dead instance's and is taken over; past `LOCK_WAIT` seconds it raises `OSError` naming the file (or the board's name) as busy — never an endless wait; it yields a heartbeat that renews the lock's time; it serialises taskboard's own writers only (a plain `Board.save` takes no lock) (batch 2026-10-20-batch-02) | no |
+-| `peek_board(path) -> Board` | `models` (`boards.py`) | `app.BoardsHome`, `modals.MoveTarget`, `boards.move_project`, tests | `Board.load` when the file exists and parses to an object; an unreadable file → an empty `Board` with `file_unreadable`, without the loader's `.corrupt` copy; a missing file → an empty unsaved `Board` — `Board.load` would seed and SAVE sample data there; never writing (batch 2026-10-20-batch-01) | no |
++| `peek_board(path) -> Board` | `models` (`boards.py`) | `app.BoardsHome`, `app.AllBoardsAgenda`, `modals.MoveTarget`, `boards.move_project`, tests | `Board.load` when the file exists and parses to an object; an unreadable file → an empty `Board` with `file_unreadable`, without the loader's `.corrupt` copy; a missing file → an empty unsaved `Board` — `Board.load` would seed and SAVE sample data there; never writing (batch 2026-10-20-batch-01) | no |
+ | `move_plan(src, dst, project_id, src_team, dst_team)` / `move_project(src, dst, project_id, plan, day, names)` | `models` (`boards.py`) | `modals.MoveConfirm` (the plan it shows), `modals.ProjectPicker` (`m`), tests | the plan: the tasks moving, the links kept inside, the links crossing (each `(waiter, waits on)`), the target's (mtime_ns, size), and a refusal reason or none (the same file — by resolved path or `os.path.samefile`; two boards in one folder; a missing or unreadable target; team mode on either side sharing the project or unreadable; an id that cannot name a folder; an id or image folder the target holds; a phase the target lacks); the move works on copies — the byte copies (exclusive), the target then the source saved atomically, then the image folders (only from the source's own `images/`), the history lines and the logs — and returns the new source board; the source's `history.jsonl` is byte-copied (`history.jsonl.pre-move-<date>`, exclusive) with the board files before anything is written, and the target board file is held under `file_lock` from the stale-plan check to the target's save (batch 2026-10-20-batch-02); `OSError.steps` names what was done, and past the source save any failure is raised as an `OSError` carrying `.steps` and the new source in `.board`; the caller (`ProjectPicker`) reads the target again from its registry path when it is chosen (batch 2026-10-20-batch-01) | no |
+ | `TaskboardApp.move_team_ids(board)`, `TaskboardApp.after_move(new_src)` | `app` | `modals.ProjectPicker` (a runtime `self.app` call) | the project ids a board's `team.json` shares, read fresh from `board.settings["team_shared_dir"]` (empty out of team mode, None when unreadable) — `app` reads the team folder so `boards` need not; the open board replaced by the move's new source, the undo stack cleared, the view refreshed (batch 2026-10-20-batch-01) | no |
+ | `Board.label` | `models` | `views.header` call sites (the chip), `app.PresentScreen._hint`, `modals.MilestoneOffer`, `modals.TeamIdentityPicker` (via the app), `app` (sets it) | `(name, colour)` of the open board when the registry holds more than one active board (batch 2026-10-20-batch-01), or `(<name> · not listed, "pink")` for an unlisted board (`--open`) whatever the count (batch 2026-10-20-batch-03), else `None`; runtime only, never written to the board file | no |
+@@ -154,6 +154,6 @@ taskboard is a local, single-user terminal app. Everything it touches crosses on
+ | the agenda of every board is a full `Screen` in `app` (`AllBoardsAgenda`) beside the home, its render pure in `views`; it reads every active board once at open (`peek_board`) and writes nothing; while it is on the stack no seat action but `quit` acts, as for the home (batch 2026-10-20-batch-03, the round's item 1 C) | a view of the main screen (one board's data model); a modal | the agenda must edit |
+ | a modal's every button has a direct key written on the modal: a letter where nothing is typed (`ConfirmModal`'s `y`/`n`), `alt+<letter>` where a text field holds the keys (`alt+s` save, `alt+i` paste image, `alt+t`/`alt+d` the calendars), `esc` cancel; a law holds every `ModalScreen` of the package to it (batch 2026-10-20-batch-03, the operator's objection to the round's item 6) | `tab`, `enter` as the only path; `ctrl+<letter>` (several are the editors' own: `ctrl+v`, `ctrl+e`) | a terminal in use drops `alt` |
+ | two windows on one board are told, never stopped: a presence marker per window per open board under `~/.taskboard/open/`, one notice at opening; stale after 120 s without renewal, like the lock's stale rule (batch 2026-10-20-batch-03, the round's item 8 A) | a lock on the board while open (it would block the second window); one shared marker file (two windows would erase each other's); a lasting "open twice" chip (the round's B: wrong once the other window closes) | the board file's own saves need serialising |
+-| the home is a full `Screen` in `app` (`BoardsHome`), its card bodies pure renders in `views`; while it is anywhere on the screen stack (its own modals over it too) no action of the key seat (`KEYMAP`) but `quit` acts — and `agenda_all` while the home is the top screen (batch 2026-10-20-batch-03, architect A-17) — Textual's own actions (`focus_next`) stay live; `B` (`boards`) is released, like the cursor keys, whenever a screen is pushed, so it never opens over the presentation or a modal | the home as a modal; the home in `modals` | the home must open over another screen |
++| the home is a full `Screen` in `app` (`BoardsHome`), its card bodies pure renders in `views`; while it is anywhere on the screen stack (its own modals over it too) no action of the key seat (`KEYMAP`) but `quit` acts — and `agenda_all` on any non-modal screen, a pushed modal holding its own keys (batch 2026-10-20-batch-03, architect A-17; ledger LED .7) — Textual's own actions (`focus_next`) stay live; `B` (`boards`) is released, like the cursor keys, whenever a screen is pushed, so it never opens over the presentation or a modal | the home as a modal; the home in `modals` | the home must open over another screen |
+ | two instances: registry writes are read-modify-write under a short advisory lock file (`file_lock`, stdlib only, Windows-safe, a stale lock taken over after `LOCK_STALE`), and a move holds the same lock on its target board file while it re-checks and rewrites it; no lock on a plain board save, and no notice of another instance (batch 2026-10-20-batch-02) | `msvcrt`/`fcntl` byte-range locks (two platforms, a lock that dies with its handle but cannot be inspected); last-write-wins as before; a watcher that warns of another instance (the prototype round's, visual) | the board file's own saves need serialising, or a lock left by a live instance is taken over in practice |
+ | a move between boards is not on the undo stack: two files change, so the way back is the byte copy of each taken first (`.pre-move-<date>`); the source board's undo stack is cleared after a move | an undoable move | the undo stack learns multi-file steps |
+diff --git a/taskboard/app.py b/taskboard/app.py
+index d2bb88a..719f45e 100644
+--- a/taskboard/app.py
++++ b/taskboard/app.py
+@@ -33,11 +33,12 @@ from .modals import (BoardForm, ClockModal, GanttLinkMode, LinkPicker, CommandPa
+                      PresentHiddenPicker, PresentKeys, ProjectPicker, StandupModal, TaskDetails, TaskModal,
+                      TeamIdentityPicker,
+                      TemplateEditor, TemplatePicker, TextPrompt)
+-from .keymap import KEYMAP, KeyBar, app_bindings, palette_commands, present_bindings
++from .keymap import KEYMAP, KeyBar, app_bindings, key_line, palette_commands, present_bindings
+ from .ribbon import Ribbon
+ from .team_sync import (TEAM_FILENAME, TeamState, _read_json, clean_roster,
+                         probe_setup_health)
+-from .views import (HEX, ago, board_chip_text, board_hex, board_summary, home_card, home_keys,
++from .views import (HEX, ago, agenda_buckets, all_agenda, board_chip_text, board_hex,
++                    board_summary, home_card, home_keys, render_all_agenda,
+                     home_missing, home_title, present_all_export,
+                     clip, filtered_board, focus_tasks, gantt_group_key, group_key,
+                     gantt_plan, nav_model, present_paths, present_project_id,
+@@ -826,6 +827,105 @@ class BoardsHome(Screen[None]):
+         self.app.exit()
+ 
+ 
++AGENDA_KEYS = [("←→", "day"), ("↑↓", "task"), ("↵", "open on its board"), ("esc", "back")]
++
++
++class AllBoardsAgenda(Screen[None]):
++    """`A` — every board's dues this week, read-only (batch 2026-10-20-batch-03, the
++    round's item 1, variant C): a lane per board with a dot per due in each bucket
++    (`LATE`, `TODAY`, each day to Sunday), the chosen bucket's tasks below. Every
++    board is read once, when it opens; `enter` opens a task on its board."""
++
++    BINDINGS = [Binding("escape,A", "back", "", priority=True),
++                Binding("left,h", "side(-1)", "", priority=True),
++                Binding("right,l", "side(1)", "", priority=True),
++                Binding("up,k", "move(-1)", "", priority=True),
++                Binding("down,j", "move(1)", "", priority=True),
++                Binding("enter", "jump", "", priority=True)]
++    DEFAULT_CSS = """
++    AllBoardsAgenda { background: #0d1117; overflow-y: hidden; }
++    #ag-body { padding: 0 1; height: 1fr; }
++    #ag-keys { dock: bottom; height: 1; padding: 0 1; background: #0b0f17; }
++    """
++
++    def __init__(self) -> None:
++        super().__init__()
++        self.day, self.row = 1, 0
++        self.lanes: list = []
++        self.ids: list = []          # each lane's registry id (None: the unlisted board)
++        self.items: list = []
++
++    def compose(self) -> ComposeResult:
++        app = self.app
++        for e in app.registry.active():
++            if e.id == app.board_id:
++                board, state = app.board, ""
++            elif Path(e.path).exists():
++                board = peek_board(e.path)
++                state = "file unreadable" if board.load_report.get("file_unreadable") else ""
++                board = None if state else board
++            else:
++                board, state = None, "file missing"
++            self.lanes.append((e.name, e.color, board, state))
++            self.ids.append(e.id)
++        if app.board_id is None:                    # an unlisted board (`--open`)
++            label = app.board.label or ("this board", "pink")
++            self.lanes.append((label[0], label[1], app.board, ""))
++            self.ids.append(None)
++        self.today = date.today()                  # a snapshot: read once, as the boards are
++        self.items = all_agenda(self.lanes, self.today)
++        yield Static(id="ag-body")
++        yield Static(id="ag-keys")
++
++    def on_mount(self) -> None:
++        self._paint()
++
++    def on_resize(self, _event) -> None:
++        self._paint()
++
++    def _chosen(self) -> list:
++        key = agenda_buckets(self.today)[self.day][0]
++        return [x for x in self.items if x.bucket == key]
++
++    def _paint(self) -> None:
++        w, h = self.app.size
++        # a Text built from plain pieces (views); `Text.assemble` keeps it one, as the
++        # home does, so no markup parser ever reads a board's text here
++        self.query_one("#ag-body", Static).update(Text.assemble(
++            render_all_agenda(self.lanes, self.items, self.day, self.row, self.today,
++                              w - 2, h - 1)))
++        keys = key_line(AGENDA_KEYS + [("·", "read-only: nothing here edits a task")])
++        if keys.cell_len > w - 2:                     # the tail goes first, never a key
++            keys = key_line(AGENDA_KEYS, w - 2)
++        self.query_one("#ag-keys", Static).update(keys)
++
++    def action_side(self, delta: int) -> None:
++        self.day = max(0, min(len(agenda_buckets(self.today)) - 1, self.day + delta))
++        self.row = 0
++        self._paint()
++
++    def action_move(self, delta: int) -> None:
++        self.row = max(0, min(len(self._chosen()) - 1, self.row + delta))
++        self._paint()
++
++    def action_jump(self) -> None:
++        chosen = self._chosen()
++        if not chosen:
++            return
++        it = chosen[min(self.row, len(chosen) - 1)]
++        bid = self.ids[it.lane]
++        app = self.app
++        while len(app.screen_stack) > 1:            # the agenda, and the home beneath it
++            app.pop_screen()
++        if bid is not None and bid != app.board_id:
++            app.switch_board(bid)
++        if app.board_id == bid or bid is None:
++            app.jump_to(it.task.id)
++
++    def action_back(self) -> None:
++        self.app.pop_screen()
++
++
+ class TaskboardApp(App):
+     """Frameless kanban desktop widget."""
+ 
+@@ -901,9 +1001,15 @@ class TaskboardApp(App):
+         """While a modal is open, release the board's priority arrow/vim bindings
+         so the modal's own widgets (e.g. the ProjectPicker list, Select dropdowns)
+         receive them instead of moving the hidden board selection; `B` (`boards`)
+-        too, so the home never opens over another screen. While the home is on the
+-        stack, it holds the keys: no action of the key seat but `quit` acts."""
+-        if action in SEAT_ACTIONS and any(isinstance(sc, BoardsHome)
++        too, so the home never opens over another screen. While the home or the
++        agenda of every board is on the stack, it holds the keys: no action of the
++        key seat but `quit` acts. `agenda_all` is always allowed here: a pushed modal
++        holds its own keys, so `A` acts only on a non-modal screen."""
++        if action == "agenda_all":
++            # the main screen and the home (batch 2026-10-20-batch-03): a pushed modal
++            # (the presentation among them) holds its own keys, so `A` never reaches past one
++            return True
++        if action in SEAT_ACTIONS and any(isinstance(sc, (BoardsHome, AllBoardsAgenda))
+                                           for sc in self.screen_stack):
+             # the home holds the keys — and the modals over it (its form, its
+             # confirmation, a board's start-up modal) keep their own: no key of
+@@ -1001,6 +1107,10 @@ class TaskboardApp(App):
+         """`B`: the home."""
+         self.push_screen(BoardsHome())
+ 
++    def action_agenda_all(self) -> None:
++        """`A`: the agenda of every board (batch 2026-10-20-batch-03)."""
++        self.push_screen(AllBoardsAgenda())
++
+     def _open_board(self, at_mount: bool = False) -> bool:
+         """The start a board gets — at mount, and again at every switch to
+         another board (batch 2026-10-20-batch-01, LLR-2202.1)."""
+diff --git a/taskboard/keymap.py b/taskboard/keymap.py
+index e3e4d5f..aaf1a59 100644
+--- a/taskboard/keymap.py
++++ b/taskboard/keymap.py
+@@ -138,6 +138,9 @@ KEYMAP: tuple[Key, ...] = (
+     Key("f", "f", "manage_phases", "Phases", group="misc", bar=False),
+     Key("c", "c", "clocks", "Clocks", group="misc", bar=False),
+     Key("R", "R", "present", "Present", group="misc", bar=False),
++    # `A` — the agenda of every board (batch 2026-10-20-batch-03, the round's item 1 C):
++    # global, off the bar, like `R`; the home's key row names it too
++    Key("A", "A", "agenda_all", "All boards", group="misc", bar=False),
+     # `I` — insert a process template (batch 2026-10-07-batch-07, HLR-1301):
+     # global, palette-only, like `R` (shifted, not scoped to a view).
+     Key("I", "I", "templates", "Templates", group="misc", bar=False),
+diff --git a/taskboard/views.py b/taskboard/views.py
+index bb963ed..a9785ac 100644
+--- a/taskboard/views.py
++++ b/taskboard/views.py
+@@ -6968,7 +6968,163 @@ RENDERERS = {
+ # borders, titles and the grid) is `app.BoardsHome`.
+ # ---------------------------------------------------------------------------
+ HOME_KEYS = (("←→↑↓", "move"), ("↵", "open"), ("n", "new"), ("e", "name/colour"),
+-             ("x", "archive"), ("esc", "back"), ("q", "quit"))
++             ("x", "archive"), ("A", "all boards"), ("esc", "back"), ("q", "quit"))
++
++
++# ---------------------------------------------------------------------------
++# the agenda of every board (batch 2026-10-20-batch-03, the round's item 1, variant C:
++# `prototypes/backlog_round/proto.py` `AgendaRuler`, made pure). The screen is
++# `app.AllBoardsAgenda`; it passes plain lanes — no registry type reaches `views`.
++# ---------------------------------------------------------------------------
++class AgendaItem(NamedTuple):
++    bucket: object          # "late" or the due date
++    lane: int               # the lane's index
++    board_name: str
++    colour: str
++    task: Task
++    project: str
++    due: date
++
++
++def _week_end(today: date) -> date:
++    return today + timedelta(days=6 - today.weekday())
++
++
++def agenda_buckets(today: date) -> list[tuple[object, str]]:
++    """`LATE`, `TODAY`, then each later day to Sunday (`Wed 21`; never `%-d`)."""
++    days = [today + timedelta(days=k) for k in range((_week_end(today) - today).days + 1)]
++    return [("late", "LATE")] + [(d, "TODAY" if d == today else f"{d:%a} {d.day}")
++                                 for d in days]
++
++
++def all_agenda(lanes, today: date) -> list[AgendaItem]:
++    """Every open task with a due date on or before Sunday, of every lane's board
++    (`lanes = [(name, colour, board | None, state)]`), late before today, ordered by
++    due date, then lane, then the board's own order."""
++    out = []
++    end = _week_end(today)
++    for li, (name, colour, board, _state) in enumerate(lanes):
++        if board is None:
++            continue
++        names = {p.id: p.name for p in board.projects}
++        for t in board.tasks:
++            d = parse_iso(t.due_date)
++            if d is None or d > end or not is_open(board, t):
++                continue
++            out.append(AgendaItem("late" if d < today else d, li, name, colour, t,
++                                  names.get(t.project_id, ""), d))
++    return sorted(out, key=lambda x: (x.due, x.lane))     # stable: board order kept
++
++
++def _agenda_when(d: date, today: date) -> tuple[str, str]:
++    if d < today:
++        return f"▲{(today - d).days}d", HEX["over"]
++    if d == today:
++        return "today", HEX["soon"]
++    return f"{d:%a} {d.day}", HEX["hd"]
++
++
++def _agenda_head(lanes, items, today: date, inner: int) -> Text:
++    n = {"late": sum(1 for x in items if x.bucket == "late"),
++         "today": sum(1 for x in items if x.bucket == today)}
++    n["week"] = len(items) - n["late"] - n["today"]
++    boards = len(lanes)
++    t = Text(no_wrap=True)
++    left = "◆ ALL BOARDS"
++    sub = f"  {boards} board{'' if boards == 1 else 's'} · read-only"
++    right = f"▲{n['late']} late · {n['today']} today · {n['week']} to Sun {_week_end(today).day}"
++    t.append(left, style=f"bold {HEX['bright']}")
++    t.append(sub, style=HEX["mut"])
++    t.append(" " * max(1, inner - len(left) - len(sub) - len(right)))
++    t.append(right, style=HEX["dim"])
++    t.truncate(inner)
++    t.pad_right(inner - t.cell_len)
++    return t
++
++
++def _agenda_row(it: AgendaItem, on: bool, inner: int, today: date) -> Text:
++    bw = 12 if inner >= 100 else 10
++    pw = 22 if inner >= 100 else 0
++    hexc = board_hex(it.colour)
++    r = Text(no_wrap=True)
++    r.append("▶ " if on else "  ", style=HEX["accent"])
++    r.append("▌", style=hexc)
++    r.append(fit(it.board_name, bw), style=hexc)
++    r.append(" ")
++    if pw:
++        r.append(fit(it.project, pw), style=HEX["dim"])
++        r.append(" ")
++    wl, wc = _agenda_when(it.due, today)
++    tw = max(1, inner - 3 - bw - 1 - (pw + 1 if pw else 0) - 8)
++    r.append(fit(it.task.title, tw), style=f"bold {HEX['bright']}" if on else HEX["ink"])
++    r.append(f"{wl:>8}", style=wc)
++    r.truncate(inner)
++    r.pad_right(inner - r.cell_len)
++    if on:
++        r.stylize("on #1d2a3a")
++    return r
++
++
++def render_all_agenda(lanes, items, day: int, row: int, today: date, width: int,
++                      height: int) -> Text:
++    """The agenda's rows (without its key row), each exactly `width` cells: the head,
++    the bucket row (the chosen one `▼` and shaded), a lane per board (`●` per due,
++    `·` none; a board with a `state` dimmed, its state shown from 100 cells), a rule,
++    the chosen bucket's head and its tasks scrolled to keep `row` on screen. Every
++    board string is a plain Text piece cut with `fit`, never markup."""
++    inner = max(1, width)
++    bks = agenda_buckets(today)
++    day = max(0, min(len(bks) - 1, day))
++    lw = 12 if inner >= 100 else 10
++    cw = max(3, min(13, (inner - lw) // len(bks)))
++    rows = [_agenda_head(lanes, items, today, inner), Text(" " * inner)]
++    r = Text(" " * lw, no_wrap=True)
++    for i, (_k, lab) in enumerate(bks):
++        on = i == day
++        col = HEX["over"] if i == 0 else HEX["soon"] if i == 1 else HEX["hd"]
++        r.append(fit(("▼ " if on else "  ") + lab, cw),
++                 style=f"bold {col}" + (" on #16202c" if on else ""))
++    rows.append(r)
++    for li, (name, colour, _board, state) in enumerate(lanes):
++        hexc = board_hex(colour)
++        r = Text(no_wrap=True)
++        r.append("▌", style=HEX["dim"] if state else hexc)
++        r.append(fit(name, lw - 1), style=HEX["dim"] if state else f"bold {hexc}")
++        if state and inner >= 100:
++            r.append(fit(state, cw * len(bks)), style=HEX["dim"])
++        else:
++            for i, (key, _lab) in enumerate(bks):
++                n = sum(1 for x in items if x.lane == li and x.bucket == key)
++                bg = " on #16202c" if i == day else ""
++                dots = ("●" * min(n, cw - 4) + ("+" if n > cw - 4 else "")) if n else "·"
++                r.append("  ", style=bg.strip() or None)
++                r.append(fit(dots, cw - 2), style=(hexc if n else HEX["frame"]) + bg)
++        rows.append(r)
++    rows.append(Text("─" * inner, style=HEX["frame"]))
++    key, lab = bks[day]
++    chosen = [x for x in items if x.bucket == key]
++    n_b = len({x.lane for x in chosen})
++    head = Text(no_wrap=True)
++    col = HEX["over"] if day == 0 else HEX["soon"] if day == 1 else HEX["hd"]
++    head.append(f"{lab.upper()} · {len(chosen)} due", style=f"bold {col}")
++    head.append(f" across {n_b} board{'' if n_b == 1 else 's'}", style=HEX["mut"])
++    rows.append(head)
++    room = max(1, height - len(rows))
++    row = max(0, min(row, len(chosen) - 1))
++    start = max(0, min(row - room + 1, len(chosen) - room))
++    for ri in range(start, min(len(chosen), start + room)):
++        rows.append(_agenda_row(chosen[ri], ri == row, inner, today))
++    if not chosen:
++        rows.append(Text("  nothing due", style=HEX["dim"]))
++    out = Text()
++    for i, t in enumerate(rows[:max(1, height)]):
++        t = t.copy()
++        t.truncate(inner)
++        t.pad_right(inner - t.cell_len)
++        if i:
++            out.append("\n")
++        out.append_text(t)
++    return out
+ 
+ 
+ def board_summary(board: Board, today: date) -> dict:
+@@ -7109,10 +7265,18 @@ def home_title(n: int, late: int, today: date, w: int) -> Text:
+ 
+ 
+ def home_keys(w: int) -> Text:
+-    k = Text(no_wrap=True)
+-    for key, lab in HOME_KEYS:
+-        k.append(key, style=f"b {HEX['bright']}")
+-        k.append(f" {lab}  ", style=HEX["mut"])
++    """The home's key row; too narrow, the words go first, from the right, so every
++    key stays (batch 2026-10-20-batch-03: `A all boards` joined it, as the multi-board round drew it)."""
++    words = len(HOME_KEYS)
++    while True:
++        k = Text(no_wrap=True)
++        for i, (key, lab) in enumerate(HOME_KEYS):
++            k.append(key, style=f"b {HEX['bright']}")
++            k.append(f" {lab}  " if i < words else "  ", style=HEX["mut"])
++        if k.cell_len - 2 <= w - 2 or not words:
++            break
++        words -= 1
++    k.rstrip()
+     k.truncate(w - 2)
+     return k
+ 
+diff --git a/tests/test_all_agenda.py b/tests/test_all_agenda.py
+new file mode 100644
+index 0000000..b13dc7a
+--- /dev/null
++++ b/tests/test_all_agenda.py
+@@ -0,0 +1,229 @@
++"""The agenda of every board (`A`).
++
++Batch 2026-10-20-batch-03: HLR-2401 / LLR-2401.1, LLR-2401.2 · TC-2401 · AT-2401
++(US-2401) — the round's item 1, variant C: a lane per board, a dot per due in each bucket
++(`LATE`, `TODAY`, each day to Sunday), the chosen bucket's tasks; `enter` opens a task on
++its board. The round's boards (`backlog_round_fixture`), synthetic, under this test's own
++home; the calendar frozen on Tuesday 2026-10-20.
++"""
++from __future__ import annotations
++
++from datetime import date, datetime
++from pathlib import Path
++
++import pytest
++
++import backlog_round_fixture as fx
++from taskboard import app as app_module, models, modals, views
++from taskboard.app import BoardsHome, PresentScreen, TaskboardApp
++from taskboard.boards import peek_board
++from taskboard.models import Task
++from test_modal_keys import _svg_rows
++
++NOW = datetime(2026, 10, 20, 9, 30)
++
++
++class _Today(date):
++    @classmethod
++    def today(cls):
++        return fx.TODAY
++
++
++class _Now(datetime):
++    @classmethod
++    def now(cls, tz=None):
++        return NOW
++
++
++@pytest.fixture
++def home(tmp_path, monkeypatch):
++    import taskboard.__main__ as entry
++    monkeypatch.setattr(Path, "home", classmethod(lambda cls: tmp_path))
++    for mod in (app_module, models, views, modals):
++        monkeypatch.setattr(mod, "date", _Today)
++    monkeypatch.setattr(app_module, "datetime", _Now)
++    monkeypatch.setattr(entry, "datetime", _Now)
++    return tmp_path / ".taskboard"
++
++
++def _lanes(root):
++    out = []
++    for bid, name, colour, _rel, _h in fx.BOARDS:
++        out.append((name, colour, peek_board(fx.board_path(root, bid)), ""))
++    return out
++
++
++async def _press(pilot, *keys):
++    for k in keys:
++        await pilot.press(k)
++        await pilot.pause()
++
++
++async def _rows(pilot, w, h) -> list[str]:
++    await pilot.pause(0.5)
++    return _svg_rows(pilot.app.export_screenshot(), w, h)
++
++
++def _on_agenda(app) -> bool:
++    return type(app.screen).__name__ == "AllBoardsAgenda"
++
++
++def _open():
++    from taskboard.__main__ import open_app
++    return open_app(None)
++
++
++# --------------------------------------------------------------------------- #
++# TC-2401 — the pure render (LLR-2401.1)
++# --------------------------------------------------------------------------- #
++def test_TC_2401_buckets_and_dues(tmp_path):
++    """TC-2401: seven buckets to Sunday 25 (two on a Sunday); 3 late, 2 today, 8 to
++    Sunday, ordered by due then lane; no done, archived or later task."""
++    b = views.agenda_buckets(fx.TODAY)
++    assert [lab for _k, lab in b] == ["LATE", "TODAY", "Wed 21", "Thu 22", "Fri 23", "Sat 24",
++                                      "Sun 25"]
++    assert [lab for _k, lab in views.agenda_buckets(date(2026, 10, 25))] == ["LATE", "TODAY"]
++    fx.build(tmp_path)
++    items = views.all_agenda(_lanes(tmp_path), fx.TODAY)
++    late = [x for x in items if x.bucket == "late"]
++    today = [x for x in items if x.bucket == fx.TODAY]
++    assert (len(late), len(today), len(items) - len(late) - len(today)) == (3, 2, 8)
++    assert [x.task.title for x in today] == ["Week 3 plan", "Golden question set"]
++    assert all(x.due <= date(2026, 10, 25) for x in items)
++    titles = {x.task.title for x in items}
++    assert "Parse catalog PDFs" not in titles and "10k race" not in titles   # done; later
++
++
++@pytest.mark.parametrize("width", [118, 80])
++def test_TC_2401_every_row_is_the_width_and_board_text_is_literal(tmp_path, width):
++    """TC-2401: every rendered row is exactly the width; the project column only from
++    100 cells; a markup-looking title printed as typed; a missing board's lane dimmed
++    with its state from 100 cells; `1 board`, `1 due` singular."""
++    fx.build(tmp_path)
++    lanes = _lanes(tmp_path)
++    lanes[0][2].tasks.append(Task("[b]x[/b]", phase="Doing", due_date="2026-10-20", id="tz"))
++    lanes.append(("Gone", "pink", None, "file missing"))
++    items = views.all_agenda(lanes, fx.TODAY)
++    text = views.render_all_agenda(lanes, items, 1, 0, fx.TODAY, width, 30)
++    rows = text.plain.split("\n")
++    assert all(views.cell_len(r) == width for r in rows), [views.cell_len(r) for r in rows]
++    assert "[b]x[/b]" in text.plain
++    assert ("Fitness block" in text.plain) is (width >= 100)
++    gone = next(r for r in rows if "Gone" in r)
++    assert ("file missing" in gone) is (width >= 100) and "●" not in gone
++    one = views.render_all_agenda(lanes[:1], views.all_agenda(lanes[:1], fx.TODAY), 2, 0,
++                                  fx.TODAY, width, 30).plain
++    assert "1 board · read-only" in one and "WED 21 · 1 due across 1 board" in one
++
++
++# --------------------------------------------------------------------------- #
++# TC-2401 — the screen and `A` (LLR-2401.2)
++# --------------------------------------------------------------------------- #
++async def test_TC_2401_where_A_acts_and_what_it_holds(home):
++    """TC-2401 (app): `A` does nothing over a confirmation or the presentation; on the
++    home it opens over it; with the agenda open the main screen's keys do nothing;
++    `enter` on a task whose board file is gone says so and keeps the open board; `A`
++    closes the agenda."""
++    fx.build(home, last="client-a")
++    app = _open()
++    async with app.run_test(size=(118, 30), notifications=True) as pilot:
++        await pilot.pause()
++        assert isinstance(app.screen, BoardsHome)
++        await _press(pilot, "A")
++        assert _on_agenda(app) and len(app.screen_stack) == 3
++        await _press(pilot, "A")
++        assert isinstance(app.screen, BoardsHome)
++        await _press(pilot, "escape", "A")              # from the main screen, the home gone
++        assert _on_agenda(app) and len(app.screen_stack) == 2
++        tasks = len(app.board.tasks)
++        await _press(pilot, "a", "d", "1", "B", "x")
++        assert _on_agenda(app) and len(app.board.tasks) == tasks
++        await _press(pilot, "escape")
++        app.push_screen(modals.ConfirmModal("Delete 'x'?"))
++        await pilot.pause()
++        await _press(pilot, "A")
++        assert type(app.screen).__name__ == "ConfirmModal"
++        await _press(pilot, "n", "R")
++        assert isinstance(app.screen, PresentScreen)
++        await _press(pilot, "A")
++        assert isinstance(app.screen, PresentScreen)
++        await _press(pilot, "escape", "A")
++        assert _on_agenda(app)
++        fx.board_path(home, "main").unlink()
++        await _press(pilot, "enter")          # Week 3 plan, on Personal — whose file is gone
++        assert app.board_id == "client-a"
++        assert any("its file is missing" in str(n.message) for n in app._notifications)
++        assert not _on_agenda(app) and len(app.screen_stack) == 1    # nothing left open over it
++
++
++async def test_TC_2401_the_unlisted_board_is_the_last_lane(home):
++    """TC-2401 (app, LLR-2401.2): a board opened with `--open` is the agenda's last
++    lane, under its chip's name; `enter` on its due opens it there, with no switch."""
++    fx.build(home, last="client-a")
++    loose = home.parent / "loose.json"
++    loose.write_bytes(fx.board_path(home, "main").read_bytes())
++    from taskboard.__main__ import open_app
++    app = open_app(None, unlisted=str(loose))
++    async with app.run_test(size=(118, 30)) as pilot:
++        await pilot.pause()
++        assert app.board_id is None
++        await _press(pilot, "A")
++        agenda = app.screen
++        assert agenda.lanes[-1][0] == "loose · not listed" and agenda.ids[-1] is None
++        rows = await _rows(pilot, 118, 30)
++        assert rows[6].strip(" ▌").startswith("loose"), rows[3:7]     # the lane column cuts the name
++        chosen = agenda._chosen()
++        mine = next(i for i, x in enumerate(chosen) if x.lane == len(agenda.lanes) - 1)
++        await _press(pilot, *["down"] * mine, "enter")
++        assert not _on_agenda(app) and len(app.screen_stack) == 1
++        assert app.board_id is None and app.board.path == loose
++        assert app.selected_task.title == chosen[mine].task.title
++
++
++# --------------------------------------------------------------------------- #
++# AT-2401 — through the shipped surface (US-2401)
++# --------------------------------------------------------------------------- #
++async def test_AT_2401_one_screen_for_every_board(home):
++    """AT-2401 (US-2401): `A` on the home shows every board's week — the lanes in the
++    registry's order, today's two dues — `enter` opens `Week 3 plan` on Personal; `A`,
++    `down`, `enter` opens `Golden question set` on Client A; the board files keep their
++    bytes; at 80×24 the home names `A all boards` and keeps `q` (the round's capture), and the agenda keeps
++    every key."""
++    fx.build(home, last="client-a")
++    files = {bid: fx.board_path(home, bid).read_bytes() for bid, *_ in fx.BOARDS}
++    app = _open()
++    async with app.run_test(size=(118, 30)) as pilot:
++        await pilot.pause()
++        await _press(pilot, "A")
++        rows = await _rows(pilot, 118, 30)
++        text = "\n".join(rows)
++        for want in ("◆ ALL BOARDS", "3 boards · read-only", "▲3 late · 2 today · 8 to Sun 25",
++                     "LATE", "▼ TODAY", "Wed 21", "Sun 25", "TODAY · 2 due across 2 boards"):
++            assert want in text, want
++        assert rows[29].rstrip().endswith("· read-only: nothing here edits a task"), rows[29]
++        lanes = [r.strip(" ▌").split()[0] for r in rows[3:6]]
++        assert lanes == ["Personal", "Client", "Course"], rows[3:6]
++        assert text.index("Week 3 plan") < text.index("Golden question set")
++        await _press(pilot, "enter")
++        assert not (_on_agenda(app) or isinstance(app.screen, BoardsHome))
++        head = (await _rows(pilot, 118, 30))[0]
++        assert head.startswith(" Personal "), head
++        assert app.selected_task.title == "Week 3 plan"
++        await _press(pilot, "A", "down", "enter")
++        head = (await _rows(pilot, 118, 30))[0]
++        assert head.startswith(" Client A "), head
++        assert app.selected_task.title == "Golden question set"
++    for bid, data in files.items():
++        assert fx.board_path(home, bid).read_bytes() == data, bid
++    app = _open()
++    async with app.run_test(size=(80, 24)) as pilot:
++        await pilot.pause()
++        keys = (await _rows(pilot, 80, 24))[23]
++        assert keys.rstrip().endswith("A all boards  esc back  q"), keys    # the round C capture at 80
++        await _press(pilot, "A")
++        rows = await _rows(pilot, 80, 24)
++        for k in ("←→", "↑↓", "↵", "esc"):
++            assert k in rows[23], rows[23]
++        assert "read-only" not in rows[23] and not rows[23].rstrip().endswith("·"), rows[23]   # the tail went whole
++        assert "Fitness block" not in "\n".join(rows)
++        assert "Week 3 plan" in "\n".join(rows)
+diff --git a/tests/test_boards_home.py b/tests/test_boards_home.py
+index c5855f3..accdf57 100644
+--- a/tests/test_boards_home.py
++++ b/tests/test_boards_home.py
+@@ -25,7 +25,6 @@ ROUND = Path(__file__).resolve().parents[1] / "prototypes" / "multi_board" / "ou
+ EVIDENCE = Path(__file__).resolve().parents[1] / ".dev-flow" / "2026-10-20-batch-01" / "evidence"
+ PAYLOADS = ["[@click=app.quit]x[/]", "tail\\", "[bold", "x[/]"]
+ NOW = datetime(2026, 10, 20, 9, 30)
+-KEY_ROW = "←→↑↓ move  ↵ open  n new  e name/colour  x archive  esc back  q quit"
+ 
+ 
+ class _Today(date):
+@@ -453,8 +452,8 @@ CAPTURES = [((160, 45), "C-160-open.svg"), ((118, 30), "C-118-open.svg"),
+ async def test_AT_2204_the_home(home):
+     """AT-2204 (US-2202), one node for the whole chain (C-18): at start over the
+     round's four boards the home's rows equal the round's approved C capture at
+-    160, 118 and 80 columns but its key row, which loses option D's `A all boards`
+-    and reads the shipped keys; then `3` and `a` do nothing on the home; `B` opens
++    160, 118 and 80 columns key row included (since batch 2026-10-20-batch-03 the
++    agenda's `A all boards` is shipped); then `3` and `a` do nothing on the home; `B` opens
+     it from a view but not over the presentation or the projects modal; the bar
+     and `?` list `B`."""
+     mb.build(home, "personal")
+@@ -467,9 +466,10 @@ async def test_AT_2204_the_home(home):
+             assert _scr(app) == "BoardsHome"
+             got = _svg_rows(app.export_screenshot(), w, h)
+         want = _svg_rows((ROUND / svg).read_text(encoding="utf-8"), w, h)
+-        diff = [(y, g, x) for y, (g, x) in enumerate(zip(got[:-1], want[:-1])) if g != x]
++        # batch 2026-10-20-batch-03: `A all boards` is on the home (the agenda, the
++        # round's option D) — the key row now equals the round's own, row for row
++        diff = [(y, g, x) for y, (g, x) in enumerate(zip(got, want)) if g != x]
+         assert not diff, (svg, diff)
+-        assert got[-1] == " " + KEY_ROW, svg
+     mb.build(home, "personal")
+     app = _open()
+     async with app.run_test(size=(160, 45)) as pilot:

@@ -1,0 +1,17 @@
+# Increment 004, targeted: the new tests, every suite B1 names for KEYMAP (A joins it) and the home (its key row), the boards suites, the markup census and the README laws (the docs), NO_COLOR unset, on the working tree
+# python -m pytest -q -p no:cacheprovider --color=no tests/test_all_agenda.py tests/test_boards_home.py tests/test_boards_backlog_round.py tests/test_modal_keys.py tests/test_keymap.py tests/test_readme.py tests/test_help_keys.py tests/test_app.py tests/test_archive.py tests/test_dependencies.py tests/test_kanban_priority.py tests/test_legend.py tests/test_links.py tests/test_link_picker.py tests/test_momentum.py tests/test_report.py tests/test_markup_census.py tests/test_markup_sites.py tests/test_boards.py tests/test_boards_move.py
+C:\Users\jjgh8\anaconda3\Lib\site-packages\pytest_asyncio\plugin.py:207: PytestDeprecationWarning: The configuration option "asyncio_default_fixture_loop_scope" is unset.
+The event loop scope for asynchronous fixtures will default to the fixture caching scope. Future versions of pytest-asyncio will default the loop scope for asynchronous fixtures to function scope. Set the default fixture loop scope explicitly in order to avoid unexpected behavior in the future. Valid fixture loop scopes are: "function", "class", "module", "package", "session"
+
+  warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCOPE_UNSET))
+........................................................................ [ 11%]
+........................................................................ [ 22%]
+........................................................................ [ 33%]
+........................................................................ [ 44%]
+........................................................................ [ 55%]
+........................................................................ [ 66%]
+........................................................................ [ 77%]
+........................................................................ [ 88%]
+........................................................................ [ 99%]
+......                                                                   [100%]
+654 passed in 261.28s (0:04:21)
