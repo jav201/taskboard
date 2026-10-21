@@ -150,6 +150,13 @@ recorded full-suite run).
 - checkboxes and selects in the forms are reached by `tab` (fields, not buttons; qa QA-15).
 - the inventory law (`tests/test_modal_keys.py`) finds a modal's buttons by its source text: a button yielded by a helper would not be seen (code review CR-5 of increment 001).
 - the agenda's `enter` lands silently with no selection when the task's `id` is not stored in the file (a hand-edited or very old board: `Task.from_dict` mints a new id per load) or another window deleted it between `A` and `enter`; a `markup=False` notice after `jump_to` would say so (code review CR-4 of increment 004).
+- the DDR's ux minors, seen in the real captures (`.dev-flow/2026-10-20-batch-03/evidence/captures/png/`), for the operator to sort (ux UX-DDR-3..UX-DDR-8):
+  - bare glyphs on narrow hint rows: the presentation's at 80 (`⇥ ↔ ␣ x esc`, `K J enter a x esc`), `x · esc` without words in present-kj at 118; the board's key bar at 80 (`5 6 7 8 9 0 ↲ a e d L`, a lone `q` at the right edge) — the bar predates this batch.
+  - the confirmation's board path breaks mid-word (`.task` / `board\board.json`); in MoveConfirm at 80 the last word `back.` falls outside the paragraph's indent.
+  - MoveConfirm says `1 links inside the project stay` (singular wanted).
+  - the milestone offer at 80: the dim project/date text is unreadable on the selected row's blue.
+  - the offer's and the picker's chip sit tight against the title; the picker's `roster` wraps alone and its box sits top-left at 118 (with the logged blank screen behind the start-up modals).
+  - the task editor's `++…++` hint runs into its `Preview` header with no gap (predates this batch).
 - with a 27-cell chip at 36 columns the presentation hint shows two ellipses side by side (code review R-1 of increment 002); the chip law of TC-2402 covers view 3 only (R-2).
 
 ## Open — after `2026-10-20-batch-02` (the backlog's non-visual items)

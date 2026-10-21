@@ -74,3 +74,9 @@ ok   confirm 80x24 (753 x 513, 16 colours sampled) via PrintWindow - window clos
 # The black PNGs earlier in this log were taken while the targeted pytest runs loaded the
 # machine; with nothing else of this batch running, every scene rendered (the "ok ... window
 # closed" block above is the recorded set).
+ok   project-form 118x30 (1095 x 627, 38 colours sampled) via PrintWindow - window closed
+ok   project-form 80x24 (753 x 513, 18 colours sampled) via PrintWindow - window closed
+ok   task-editor 118x30 (1095 x 627, 21 colours sampled) via PrintWindow - window closed
+ok   task-editor 80x24 (753 x 513, 14 colours sampled) via PrintWindow - window closed
+ok   clocks 118x30 (1095 x 627, 10 colours sampled) via PrintWindow - window closed
+ok   clocks 80x24 (753 x 513, 10 colours sampled) via PrintWindow - window closed

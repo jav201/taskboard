@@ -1,0 +1,90 @@
+diff --git a/taskboard/modals.py b/taskboard/modals.py
+index 0274676..32194a0 100644
+--- a/taskboard/modals.py
++++ b/taskboard/modals.py
+@@ -375,8 +375,9 @@ DATE_KEYS = [Binding("alt+t", "press_button('cal-f-start')", "Start date", prior
+ # the boxed modals' key line fits their box: `.modal` is 62 wide, its border and
+ # padding take 6, a scrollbar up to 2
+ MODAL_KEYS_W = 54
+-TASK_KEYS = [("alt+s", "save"), ("alt+i", "paste image"), ("alt+t", "start date"),
+-             ("alt+d", "due date"), ("esc", "cancel")]
++# short words, so `esc cancel` stays whole at 80 columns (DDR ux UX-DDR-2)
++TASK_KEYS = [("alt+s", "save"), ("alt+i", "image"), ("alt+t", "start"), ("alt+d", "due"),
++             ("esc", "cancel")]
+ 
+ 
+ class TaskModal(ClipboardPasteMixin, EmojiPickerMixin, DatePickerMixin, ButtonKeysMixin,
+diff --git a/taskboard/taskboard.tcss b/taskboard/taskboard.tcss
+index e5c83be..3d6b8bd 100644
+--- a/taskboard/taskboard.tcss
++++ b/taskboard/taskboard.tcss
+@@ -60,9 +60,10 @@ KeyBar {
+ #modal-box, #confirm-box {
+     align: center middle;
+ }
+-/* the confirmation's message wraps in its box, never cut (batch 2026-10-20-batch-03:
+-   the round's capture cut «…its folder is not») */
+-#confirm-box .modal-title {
++/* a form's key line stays on screen when its box scrolls (batch 2026-10-20-batch-03,
++   DDR ux UX-DDR-1: the project form's line sat below the fold at 30 rows) */
++.modal > .modal-keys {
++    dock: bottom;
+     width: 100%;
+ }
+ /* titles are bold bright: the accent is kept for the field being edited
+@@ -72,6 +73,11 @@ KeyBar {
+     text-style: bold;
+     margin-bottom: 1;
+ }
++/* the confirmation's message wraps in its box, never cut (batch 2026-10-20-batch-03:
++   the round's capture cut «…its folder is not») */
++#confirm-box .modal-title {
++    width: 100%;
++}
+ .modal Label {
+     color: #8b98a5;
+     margin-top: 1;
+diff --git a/tests/test_modal_keys.py b/tests/test_modal_keys.py
+index b3415d9..a9bfa5d 100644
+--- a/tests/test_modal_keys.py
++++ b/tests/test_modal_keys.py
+@@ -361,10 +361,8 @@ async def test_AT_2407_alt_s_saves_and_letters_type(home, size):
+         if (w, h) == (80, 24):
+             # the key line's row costs the notes one row at most: 11 at `base_ref` (ux UX-3)
+             assert app.screen.query_one("#f-notes").size.height >= 10
+-        for key in ("alt+s", "alt+i", "alt+t", "alt+d", "esc"):
+-            assert key in last, (key, last)
+-        if w >= 118:
+-            assert "alt+s save   alt+i paste image   alt+t start date   alt+d due date" in last
++        # every key with its word at both sizes, `esc cancel` whole (DDR ux UX-DDR-2)
++        assert last.strip() == "alt+s save   alt+i image   alt+t start   alt+d due   esc cancel", last
+         await _press(pilot, *"Draft", "space", "s")
+         assert isinstance(app.screen, modals.TaskModal)
+         await _press(pilot, "alt+s")
+@@ -379,7 +377,12 @@ async def test_AT_2407_alt_s_saves_and_letters_type(home, size):
+         assert not isinstance(app.screen, ModalScreen)
+         assert (home / "board.json").read_bytes() == kept       # cancelled: nothing written
+         # the project form opens on its box (as shipped); `tab` reaches the name
+-        await _press(pilot, "p", "tab", *"Site", "alt+s")
++        await _press(pilot, "p")
++        # the form's box scrolls at these heights: its key line stays on screen, docked
++        # at the box's foot (DDR ux UX-DDR-1)
++        painted = await _screen(pilot, w, h)
++        assert "alt+s save   alt+t start   alt+d due   esc cancel" in painted, painted
++        await _press(pilot, "tab", *"Site", "alt+s")
+         assert any(p.name == "Site" for p in app.board.projects)
+         await _press(pilot, "c")
+         assert isinstance(app.screen, modals.ClockModal)
+diff --git a/tests/test_present_backlog_round.py b/tests/test_present_backlog_round.py
+index 778425b..5ff81e1 100644
+--- a/tests/test_present_backlog_round.py
++++ b/tests/test_present_backlog_round.py
+@@ -362,6 +362,8 @@ async def test_AT_2405_K_and_J_reorder(home):
+         assert disk[0].name == "Eval harness"
+         await _press(pilot, "J")
+         assert _rail(app)[:2] == start[:2]
++        disk = present_order(peek_board(fx.board_path(home, "client-a")))
++        assert [p.name for p in disk[:2]] == start[:2]           # `J` saved too (DDR qa QA-DDR-2)
+     small = _round(home / "small")
+     async with small.run_test(size=(80, 24)) as pilot:
+         await pilot.pause()

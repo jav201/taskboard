@@ -1,0 +1,8 @@
+arms: 5
+D1 the form's key line not docked (ux UX-DDR-1), 118x30 · taskboard/taskboard.tcss · test_AT_2407_alt_s_saves_and_letters_type[size0]: RED (KILLED) · sha256 6287c526f38b restored · 1 failed in 3.25s
+D1b the form's key line not docked, 80x24 · taskboard/taskboard.tcss · test_AT_2407_alt_s_saves_and_letters_type[size1]: RED (KILLED) · sha256 6287c526f38b restored · 1 failed in 3.12s
+D2 the editor's long words back (ux UX-DDR-2) · taskboard/modals.py · test_AT_2407_alt_s_saves_and_letters_type[size1]: RED (KILLED) · sha256 bc2c8572e5b8 restored · 1 failed in 1.25s
+D3 `J` not saved (qa QA-DDR-2) · taskboard/app.py · test_AT_2405_K_and_J_reorder: RED (KILLED) · sha256 9a372db2cf50 restored · 1 failed in 1.32s
+D4 the agenda's jump writes the board (qa QA-DDR-1, DDR-C1) · taskboard/app.py · test_AT_2401_one_screen_for_every_board: RED (KILLED) · sha256 9a372db2cf50 restored · 1 failed in 1.75s
+not killed: 0
+exit=0

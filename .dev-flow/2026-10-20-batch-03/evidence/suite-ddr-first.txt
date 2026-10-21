@@ -1,0 +1,32 @@
+# The DDR's folds, targeted: the folded nodes and every suite B1 names for the task editor, the forms, the modal CSS and the reorder (grep TASK_KEYS|paste image|start date|modal-keys|ProjectModal|TaskModal|ClockModal|TemplateEditor|tcss), the markup census and the README laws; NO_COLOR unset, on the working tree
+# python -m pytest -q -p no:cacheprovider --color=no tests/test_modal_keys.py tests/test_present_backlog_round.py tests/test_all_agenda.py tests/test_app.py tests/test_cascade_app.py tests/test_colour_budget_app.py tests/test_details_grid.py tests/test_edit_window.py tests/test_emoji_picker.py tests/test_gantt_polish.py tests/test_markup_sites.py tests/test_markup_census.py tests/test_milestones.py tests/test_present_all.py tests/test_present_hide.py tests/test_present_milestone.py tests/test_template_new.py tests/test_readme.py
+C:\Users\jjgh8\anaconda3\Lib\site-packages\pytest_asyncio\plugin.py:207: PytestDeprecationWarning: The configuration option "asyncio_default_fixture_loop_scope" is unset.
+The event loop scope for asynchronous fixtures will default to the fixture caching scope. Future versions of pytest-asyncio will default the loop scope for asynchronous fixtures to function scope. Set the default fixture loop scope explicitly in order to avoid unexpected behavior in the future. Valid fixture loop scopes are: "function", "class", "module", "package", "session"
+
+  warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCOPE_UNSET))
+........................................................................ [ 14%]
+........................................................................ [ 28%]
+........................................................................ [ 42%]
+.......................................F................................ [ 56%]
+........................................................................ [ 71%]
+........................................................................ [ 85%]
+........................................................................ [ 99%]
+..                                                                       [100%]
+================================== FAILURES ===================================
+_____________ test_TC_204_modal_titles_and_the_key_map_are_bright _____________
+
+    def test_TC_204_modal_titles_and_the_key_map_are_bright():
+        """TC-204 (LLR-202.2). `.modal-title` is bright (bold) in the stylesheet;
+        the focused input borders keep the accent (the field being edited); the
+        help key map writes no accent. RED on the base tree: `.modal-title` and
+        the key map's keys are `#2dd4bf`."""
+        from taskboard import app as app_module
+        css = Path(app_module.__file__).with_name("taskboard.tcss").read_text(encoding="utf-8")
+        block = css[css.index(".modal-title {"):].split("}")[0]
+>       assert "color: #e6edf7" in block and "bold" in block
+E       AssertionError: assert ('color: #e6edf7' in '.modal-title {\n    width: 100%;\n')
+
+tests\test_colour_budget_app.py:541: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_colour_budget_app.py::test_TC_204_modal_titles_and_the_key_map_are_bright
+1 failed, 505 passed in 408.17s (0:06:48)

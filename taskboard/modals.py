@@ -375,8 +375,9 @@ DATE_KEYS = [Binding("alt+t", "press_button('cal-f-start')", "Start date", prior
 # the boxed modals' key line fits their box: `.modal` is 62 wide, its border and
 # padding take 6, a scrollbar up to 2
 MODAL_KEYS_W = 54
-TASK_KEYS = [("alt+s", "save"), ("alt+i", "paste image"), ("alt+t", "start date"),
-             ("alt+d", "due date"), ("esc", "cancel")]
+# short words, so `esc cancel` stays whole at 80 columns (DDR ux UX-DDR-2)
+TASK_KEYS = [("alt+s", "save"), ("alt+i", "image"), ("alt+t", "start"), ("alt+d", "due"),
+             ("esc", "cancel")]
 
 
 class TaskModal(ClipboardPasteMixin, EmojiPickerMixin, DatePickerMixin, ButtonKeysMixin,

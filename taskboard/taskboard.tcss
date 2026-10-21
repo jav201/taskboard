@@ -60,9 +60,10 @@ KeyBar {
 #modal-box, #confirm-box {
     align: center middle;
 }
-/* the confirmation's message wraps in its box, never cut (batch 2026-10-20-batch-03:
-   the round's capture cut «…its folder is not») */
-#confirm-box .modal-title {
+/* a form's key line stays on screen when its box scrolls (batch 2026-10-20-batch-03,
+   DDR ux UX-DDR-1: the project form's line sat below the fold at 30 rows) */
+.modal > .modal-keys {
+    dock: bottom;
     width: 100%;
 }
 /* titles are bold bright: the accent is kept for the field being edited
@@ -71,6 +72,11 @@ KeyBar {
     color: #e6edf7;
     text-style: bold;
     margin-bottom: 1;
+}
+/* the confirmation's message wraps in its box, never cut (batch 2026-10-20-batch-03:
+   the round's capture cut «…its folder is not») */
+#confirm-box .modal-title {
+    width: 100%;
 }
 .modal Label {
     color: #8b98a5;

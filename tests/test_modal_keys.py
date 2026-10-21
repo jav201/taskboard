@@ -361,10 +361,8 @@ async def test_AT_2407_alt_s_saves_and_letters_type(home, size):
         if (w, h) == (80, 24):
             # the key line's row costs the notes one row at most: 11 at `base_ref` (ux UX-3)
             assert app.screen.query_one("#f-notes").size.height >= 10
-        for key in ("alt+s", "alt+i", "alt+t", "alt+d", "esc"):
-            assert key in last, (key, last)
-        if w >= 118:
-            assert "alt+s save   alt+i paste image   alt+t start date   alt+d due date" in last
+        # every key with its word at both sizes, `esc cancel` whole (DDR ux UX-DDR-2)
+        assert last.strip() == "alt+s save   alt+i image   alt+t start   alt+d due   esc cancel", last
         await _press(pilot, *"Draft", "space", "s")
         assert isinstance(app.screen, modals.TaskModal)
         await _press(pilot, "alt+s")
@@ -379,7 +377,12 @@ async def test_AT_2407_alt_s_saves_and_letters_type(home, size):
         assert not isinstance(app.screen, ModalScreen)
         assert (home / "board.json").read_bytes() == kept       # cancelled: nothing written
         # the project form opens on its box (as shipped); `tab` reaches the name
-        await _press(pilot, "p", "tab", *"Site", "alt+s")
+        await _press(pilot, "p")
+        # the form's box scrolls at these heights: its key line stays on screen, docked
+        # at the box's foot (DDR ux UX-DDR-1)
+        painted = await _screen(pilot, w, h)
+        assert "alt+s save   alt+t start   alt+d due   esc cancel" in painted, painted
+        await _press(pilot, "tab", *"Site", "alt+s")
         assert any(p.name == "Site" for p in app.board.projects)
         await _press(pilot, "c")
         assert isinstance(app.screen, modals.ClockModal)

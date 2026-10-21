@@ -190,7 +190,7 @@
     }
   ],
   "guided": false,
-  "current_station": "P3",
+  "current_station": "P4",
   "phase_status": "in-progress",
   "stations_active": [
     "P0",
@@ -317,6 +317,11 @@
       "station": "P3",
       "date": "2026-10-20",
       "decision": "P3 increment 004 approved under the batch's standing authorization: the agenda of every board (HLR-2401) and the docs; 654 passed targeted, RED 5/5 on b05799c, 15/15 mutants KILLED; code-reviewer OK to advance, MEDIUM CR-1/CR-2 tested (M12-M14 KILLED), CR-3/5/6/7 applied, CR-4 logged; LED .7 recorded; the DDR is next."
+    },
+    {
+      "station": "DDR",
+      "date": "2026-10-21",
+      "decision": "DDR approved under the batch's standing authorization: architect, qa-reviewer and ux-reviewer returned approved with conditions; every condition folded and re-read (UX-DDR-1 form key line docked, UX-DDR-2 short editor words, QA-DDR-1/DDR-C1 and QA-DDR-2 armed, A-DDR-1/2/5 ARCHITECTURE rows, A-DDR-3 ledgered); an escaped increment-001 CSS-order regression (TC-204) found and fixed; mutation-ddr 5/5 KILLED, suite-ddr 506 passed; LED .8; PC-1..PC-5 discharged; P4 is next."
     }
   ],
   "obsidian_synced": false,

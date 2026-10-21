@@ -362,6 +362,8 @@ async def test_AT_2405_K_and_J_reorder(home):
         assert disk[0].name == "Eval harness"
         await _press(pilot, "J")
         assert _rail(app)[:2] == start[:2]
+        disk = present_order(peek_board(fx.board_path(home, "client-a")))
+        assert [p.name for p in disk[:2]] == start[:2]           # `J` saved too (DDR qa QA-DDR-2)
     small = _round(home / "small")
     async with small.run_test(size=(80, 24)) as pilot:
         await pilot.pause()
