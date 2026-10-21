@@ -37,10 +37,10 @@
 
 The round's nine chosen variants, ported from `prototypes/backlog_round/proto.py` into the shipped classes, in four increments on one branch (`feat/backlog-round`, one lane):
 
-- **001 — the modal keys (HLR-2406, HLR-2407; item 6 and its objection).** `key_line` (new); `ConfirmModal` gains `y`/`n` and `#confirm-keys` (the round's `ConfirmKeys.on_mount`, moved into `compose`) and `#confirm-box .modal-title { width: 100% }`; `TaskModal`, `ProjectModal`, `TemplateEditor`, `ClockModal`, `TextPrompt` gain their `alt` keys and key lines; `#task-keys` in the editor. 2 source files (`modals.py`, `taskboard.tcss`); tests in a new `tests/test_modal_keys.py`, the inventory law among them.
+- **001 — the modal keys (HLR-2406, HLR-2407; item 6 and its objection).** `key_line` (new); `ConfirmModal` gains `y`/`n` and `#confirm-keys` (the round's `ConfirmKeys.on_mount`, moved into `compose`) and `#confirm-box .modal-title { width: 100% }`; `TaskModal`, `ProjectModal`, `TemplateEditor`, `ClockModal`, `TextPrompt` gain their `alt` keys and key lines; `#task-keys` in the editor. 3 source files (`modals.py`, `taskboard.tcss`, `keymap.py` — `key_line` lives in `keymap`, read by the modals and the agenda); `MoveConfirm` takes `y`/`n` (ux UX-2); tests in a new `tests/test_modal_keys.py`, the inventory law among them, and the move suites' `enter` → `y` (law-driven).
 - **002 — the presentation (HLR-2402..HLR-2405; items 2, 3, 4, 5).** `keymap.PRESENT_KEYS`/`present_bindings` (the round's `PRESENT_KEYS` table, now also the bindings); `PresentScreen.BINDINGS = present_bindings()`, `_hint` with the chip (`PresentChipHint`), `? keys` (`_HelpHint`) and `K J` (`PresentReorderKJ`) in its wordings, `action_keys` (`PresentHelpModal`), `action_export` on `views.present_all_export` (the round's `_export` variant); `modals.PresentKeys` (the round's, generated from the seat); `views.board_chip_text`. 4 source files (`app.py`, `views.py`, `modals.py`, `keymap.py`); tests in `tests/test_present_backlog_round.py` (new) on `tests/backlog_round_fixture.py` (the round's fixture, copied).
 - **003 — the boards (HLR-2408..HLR-2410; items 7, 8, 9).** `MilestoneOffer`/`TeamIdentityPicker` titles with the chip (`OfferNamedA`, `IdentityNamedA`); `boards.announce`/`renew`/`withdraw`/`open_elsewhere` (new) and the app's lifecycle and notice (`warn_twice`); `--open` and the unlisted board (`opened_unlisted`). 4 source files (`boards.py`, `app.py`, `__main__.py`, `modals.py`); tests in `tests/test_boards_backlog_round.py` (new).
-- **004 — the agenda (HLR-2401; item 1, variant C).** `views.agenda_buckets`/`all_agenda`/`render_all_agenda` (the round's `AgendaRuler.body` and `gather`, made pure); `app.AllBoardsAgenda` (its screen), `A` in `KEYMAP`, `check_action`; the docs (`README.md`, `docs/ARCHITECTURE.md`'s final pass, `.dev-flow/BACKLOG.md`). 3 source files (`app.py`, `views.py`, `keymap.py`); tests in `tests/test_all_agenda.py` (new).
+- **004 — the agenda (HLR-2401; item 1, variant C).** `views.agenda_buckets`/`all_agenda`/`render_all_agenda` (the round's `AgendaRuler.body` and `gather`, made pure); `app.AllBoardsAgenda` (its screen), `A` in `KEYMAP`, `check_action`; the docs (`README.md`, `docs/ARCHITECTURE.md`'s final pass, `.dev-flow/BACKLOG.md`). 3 source files (`app.py`, `views.py` — the agenda and `HOME_KEYS`' `A all boards` —, `keymap.py`); `A` on the home too (ux UX-1); tests in `tests/test_all_agenda.py` (new).
 
 Out: the black window on `Personal`/`Course` and the blank screen behind the start-up modals (logged); editing from the agenda; the chip in the presentation's frame.
 
@@ -81,7 +81,8 @@ A (AllBoardsAgenda)  lanes = registry.active() × (app.board | peek_board | None
 | `keymap.PRESENT_KEYS`, `PresentKey`, `present_bindings` (new) | — | LLR-2403.1 | `app.PresentScreen`, `modals.PresentKeys`, tests | no — one lane |
 | `PresentScreen.BINDINGS` | a hand-written list | `present_bindings()` (the same pairs plus `K`, `J`, `?`) | Textual; the presentation suites | no |
 | `views.board_chip_text`, `present_all_export`, `agenda_buckets`, `all_agenda`, `render_all_agenda`, `AgendaItem` (new) | — | LLR-2402.1, LLR-2404.1, LLR-2401.1 | `app`, `modals`, tests | no |
-| `modals.key_line`, `PresentKeys` (new) | — | LLR-2406.1, LLR-2403.2 | the modals, `app.PresentScreen` | no |
+| `keymap.key_line`, `modals.ButtonKeysMixin.action_press_button(id)`, `modals.PresentKeys` (new) | — | LLR-2406.1, LLR-2407.1, LLR-2403.2 | the modals, `app.AllBoardsAgenda`, `app.PresentScreen` | no |
+| `MoveConfirm` keys | `enter` moves | `y` moves, `n`/`esc` cancel, `enter` nothing (ux UX-2) | `modals.ProjectPicker`; the move suites | no |
 | `TeamIdentityPicker(roster)` | one parameter | `(roster, label=None)` | `app._init_team_mode`, tests | no |
 | `boards.announce`, `renew`, `withdraw`, `open_elsewhere`, `presence_dir`, `PRESENCE_STALE` (new) | — | LLR-2409.1 | `app.TaskboardApp`, tests | no |
 | `__main__.open_app(board)` | one parameter | `(board, unlisted=None)` | `main`, tests | no |
@@ -102,10 +103,10 @@ A (AllBoardsAgenda)  lanes = registry.active() × (app.board | peek_board | None
 | TC-2405 | A | the three view-3 wordings name `K J` | a wording without `K J` |
 | AT-2405 | B | `down`, `K` puts `Eval harness` first on the rail and in the file; `J` back | `K` unbound |
 | TC-2406 | 0/A | `key_line`'s text, spans and fit; `y`/`n`/`escape`/`enter`; the wrap | `y` unbound; the wrap rule dropped; a key dropped before the words |
-| AT-2406 | B | the home's archive: the whole message, the key line, `enter` nothing, `n` cancels, `y` archives; `d`, `y` deletes | `y` unbound; the `width: 100%` rule dropped |
+| AT-2406 | B | the home's archive: the whole message, the key line, `enter` nothing, `n` cancels, `y` archives; `d`, `y` deletes; the move's `y`, `enter` nothing | `y` unbound; the `width: 100%` rule dropped; `MoveConfirm`'s `enter` bound back to yes |
 | TC-2407 | 0/A | each form's `alt` keys do what the button does; the inventory law over every `ModalScreen` subclass | a key unbound; a modal missing from the law's table; a button with no key |
-| AT-2407 | B | `a`, `Draft s`, `alt+s` saves `Draft s`; `alt+d` opens the calendar; `p`, `alt+s`; the editor's key line at 118 and 80 | `alt+s` unbound; `alt+s` bound without priority (the field eats it — to be measured); the key line dropped |
-| TC-2408 | A | the offer's and the picker's titles open with the chip; none with one board; markup-looking names literal | the chip dropped; the app passing no label |
+| AT-2407 | B | `a`, `Draft s`, `alt+s` saves `Draft s`; `alt+d` opens the calendar; `p`, `alt+s`; the editor's key line at 118 and 80 | `alt+s` unbound; a key bound to another button; a key missing from the screen; the key line dropped |
+| TC-2408 | A | the offer's and the picker's titles open with the chip; none with no label; markup-looking names literal; the picker's key line | the chip dropped; the app passing no label; the picker's key line dropped |
 | AT-2408 | B | a start with Client A's offer pending: ` Client A  ◆ Milestones …`; the team picker opened from the home names its board | the chip dropped |
 | TC-2409 | 0/A | `announce`/`open_elsewhere`/`renew`/`withdraw` with fresh, stale (119/121 s, future), invalid and foreign files; unwritable folder; the lifecycle at a failed switch and at the 30th tick | the stale test inverted; `mine` counted; the hash prefix ignored; the withdraw at a switch removed |
 | AT-2409 | B | a second app on Client A shows the notice with `since 09:30`; after the first exits, a third shows none; a switch moves the marker | `open_elsewhere` not called; `withdraw` at exit removed |
@@ -127,6 +128,8 @@ A (AllBoardsAgenda)  lanes = registry.active() × (app.board | peek_board | None
 | focus on the confirm button (round's 6 A) | a stray `enter` would delete a project; the operator chose B |
 | `ctrl+<letter>` for the forms' buttons | `ctrl+v`/`ctrl+e` are the editors' own already; `ctrl+s` saves nowhere yet; `alt+<letter>` keeps one family for "a button" |
 | keys inside the buttons' labels (`Save alt+s`) | the editor's action column is 16 cells; one key line in the key bar's style is the house's form (`MoveConfirm`, `BoardForm`, `MoveTarget`) |
+| `alt` keys calling the modals' save code directly | the key and the button could drift; one `press_button(<id>)` route keeps them one path (architect A-7) |
+| `enter` kept as `MoveConfirm`'s yes | two confirmation conventions in one app; the operator's objection makes B the standard (ux UX-2) |
 | one shared presence file per board | two windows would overwrite and erase each other's; one file per window never collides |
 | a liveness probe by pid | `os.kill(pid, 0)` is not a probe on Windows; the age rule is batch-02's lock rule |
 | the markers beside each board file | a new file in every board folder (the suite lists board folders; the operator copies them); the home's `open/` folder is one place |
@@ -150,3 +153,5 @@ Risks: a marker outlives a crash ≤ 120 s (a false notice); a suspended window 
 ## 8 · Parallelisation plan *(only if the batch forks)*
 
 none — one lane, four increments in order.
+
+**After the P2/PDR review, iteration 1 (LED-2026-10-20-batch-03.2):** the conditions are carried by the requirements — the export laid out around the screen's cursor (architect A-1), `--open`'s writes stated and its check before `--report` (A-2, A-11, security S-3), the label condition (A-3), plain lanes (A-4), `press_button` (A-7), `name_for` (A-8), Windows-safe dates (A-6, qa QA-4, ux UX-7), the agenda on the home (UX-1), `MoveConfirm`'s `y` (UX-2), the law that reads the screen (UX-4, QA-6), the marker reader's total parse and `lstat` rule (S-2, S-4, S-5, S-7), `markup=False` on the new notices (S-1), the SVG read row by row (QA-2, QA-3), the jump to another board (QA-1). The visual design the round never rendered — the `alt` key lines, the editor's last row, `MoveConfirm`'s key line — is captured in real Windows Terminal at 118×30 and 80×24 and handed to the operator at the close as not yet verdicted (ux UX-3, condition C2).

@@ -190,7 +190,7 @@
     }
   ],
   "guided": false,
-  "current_station": "ARQ",
+  "current_station": "P3",
   "phase_status": "in-progress",
   "stations_active": [
     "P0",
@@ -205,7 +205,7 @@
   ],
   "iterations_per_station": {
     "P0": 0,
-    "P1": 0,
+    "P1": 1,
     "P2": 0,
     "P3": 0,
     "P4": 0,
@@ -267,6 +267,36 @@
       "station": "P0",
       "date": "2026-10-20",
       "decision": "P0 intake closed under the batch's standing authorization (the orchestrator's commission of 2026-10-20 relaying «Haz lo del backlog por favor.» and the operator's verdict on the backlog round): the rollover done, triggers evaluated (A2, A3, B1, B4, C5, C6, C8, D1, E1 fired; ARQ, PDR, DDR taken up), premises P-1..P-11 TRUE; ARQ is next."
+    },
+    {
+      "station": "ARQ",
+      "date": "2026-10-20",
+      "decision": "ARQ approved under the batch's standing authorization: docs/ARCHITECTURE.md amended (the presentation's key seat, key_line, the agenda screen, the presence markers, --open, Board.label's two shapes); architect iteration 1 approve with conditions A-3/A-5/A-8, iteration 2 approve (A-16, A-17, A-19 routed); P1 is next."
+    },
+    {
+      "station": "P1",
+      "date": "2026-10-20",
+      "decision": "P1 requirements drafted under the batch's standing authorization (LED-2026-10-20-batch-03.1: HLR-2401..HLR-2410 and their LLRs, the IFC, premises P-1..P-11 TRUE, the P1 scan answered in §6.3); P2 is next."
+    },
+    {
+      "station": "P2",
+      "date": "2026-10-20",
+      "decision": "P2 iteration 1 iterate-to-refine under the batch's standing authorization: requirement defects architect A-1..A-3, qa-reviewer QA-1..QA-6, ux-reviewer UX-1/UX-2/UX-4; security approve with conditions S-1..S-3; back to P1 for LED-2026-10-20-batch-03.2."
+    },
+    {
+      "station": "P1",
+      "date": "2026-10-20",
+      "decision": "P1 refined under the batch's standing authorization: LED-2026-10-20-batch-03.2 folds the iteration-1 findings, LED-2026-10-20-batch-03.3 the iteration-2 minors; P2 is next."
+    },
+    {
+      "station": "P2",
+      "date": "2026-10-20",
+      "decision": "P2 approved under the batch's standing authorization, iteration 2: architect, qa-reviewer, ux-reviewer and security-reviewer approve (02-review.md); PDR is next."
+    },
+    {
+      "station": "PDR",
+      "date": "2026-10-20",
+      "decision": "PDR approved with conditions under the batch's standing authorization (design/PDR-2026-10-20-batch-03.md, PC-1..PC-5); P3 is next."
     }
   ],
   "obsidian_synced": false,
