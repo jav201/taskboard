@@ -1,0 +1,8 @@
+P-1 Textual names the `@` key 'at' | `at` in KEYMAP: False | a Binding on "at" anywhere in app/modals: False
+P-2 `people.json` named in taskboard/: False | a module taskboard/people.py: False
+P-5 view 9's key label: ['People'] | its render: 'The V2 people-lanes view: one lane per roster member.' | its head row writes 'PEOPLE': True
+P-6 team push writes the board's own dict (`_to_dict`): True | names people.json: False
+P-8 boards.file_lock: True | models.write_atomic: True
+P-3 notes end with 'Ask @an' | screen TaskModal | a widget whose id names a mention: False | widgets 55
+P-4 / ana on Client A matches ['Canary release plan', 'Chunking experiments', 'Eval report v1', 'Golden question set', 'Steering committee'] | `@ana.ruiz` filter matches ['Chunking experiments', 'Eval report v1', 'Golden question set', 'Steering committee']
+P-7 `@` on the main screen changes the screen stack: False
