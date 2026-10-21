@@ -27,8 +27,8 @@
 
 | Field | Value |
 |---|---|
-| Gate record | `python "C:/Users/jjgh8/.claude/skills/dev-flow/scripts/devflow-validate.py" .` from the project root · exit 1 · no summary line · 2026-10-21 |
-| Gated tree | `3c9b2c0ac14a6ef7d6c3d6efc927c267486138ca` · clean (the close record itself excluded) |
+| Gate record | `python "C:/Users/jjgh8/.claude/skills/dev-flow/scripts/devflow-validate.py" .` from the project root · exit 0 · no summary line · 2026-10-21 |
+| Gated tree | `bf5e9fd639f92f0676647c1cefa65cd10d4d32d3` · clean (the close record itself excluded) |
 | Requirements canon | `REQUIREMENTS.md` (`repo:REQUIREMENTS.md`) — HLR-2401..2410 and LLR-2401.1..2410.2 folded (close step 1: 24 folded, 0 kept, 0 refused) |
 
 ---
