@@ -1,0 +1,69 @@
+﻿ok   ag-now 118x30 (1095 x 627, 17 colours sampled) via PrintWindow
+ok   ag-now 80x24 (753 x 513, 13 colours sampled) via PrintWindow
+ok   ag-A 118x30 (1095 x 627, 22 colours sampled) via PrintWindow
+ok   ag-A 80x24 (753 x 513, 13 colours sampled) via PrintWindow
+ok   ag-A-open 118x30 (1095 x 627, 38 colours sampled) via PrintWindow
+ok   ag-A-open 80x24 (753 x 513, 19 colours sampled) via PrintWindow
+ok   ag-B 118x30 (1095 x 627, 28 colours sampled) via PrintWindow
+ok   ag-B 80x24 (753 x 513, 18 colours sampled) via PrintWindow
+ok   ag-C 118x30 (1095 x 627, 26 colours sampled) via PrintWindow
+ok   ag-C 80x24 (753 x 513, 19 colours sampled) via PrintWindow
+ok   pc-now 118x30 (1095 x 627, 15 colours sampled) via PrintWindow
+ok   pc-now 80x24 (753 x 513, 12 colours sampled) via PrintWindow
+ok   pc-B 118x30 (1095 x 627, 15 colours sampled) via PrintWindow
+ok   pc-B 80x24 (753 x 513, 12 colours sampled) via PrintWindow
+ok   pc-C 118x30 (1095 x 627, 16 colours sampled) via PrintWindow
+ok   pc-C 80x24 (753 x 513, 13 colours sampled) via PrintWindow
+ok   ph-now 118x30 (1095 x 627, 16 colours sampled) via PrintWindow
+ok   ph-now 80x24 (753 x 513, 9 colours sampled) via PrintWindow
+ok   ph-A 118x30 (1095 x 627, 5 colours sampled) via PrintWindow
+ok   ph-A 80x24 (753 x 513, 10 colours sampled) via PrintWindow
+ok   ph-B 118x30 (1095 x 627, 25 colours sampled) via PrintWindow
+ok   ph-B 80x24 (753 x 513, 10 colours sampled) via PrintWindow
+ok   ex-now 118x30 (1095 x 627, 21 colours sampled) via PrintWindow
+ok   ex-now 80x24 (753 x 513, 11 colours sampled) via PrintWindow
+ok   ro-now 118x30 (1095 x 627, 15 colours sampled) via PrintWindow
+ok   ro-now 80x24 (753 x 513, 9 colours sampled) via PrintWindow
+ok   ro-A 118x30 (1095 x 627, 15 colours sampled) via PrintWindow
+ok   ro-A 80x24 (753 x 513, 9 colours sampled) via PrintWindow
+ok   ro-A-moved 118x30 (1095 x 627, 17 colours sampled) via PrintWindow
+ok   ro-A-moved 80x24 (753 x 513, 9 colours sampled) via PrintWindow
+ok   cf-now 118x30 (1095 x 627, 22 colours sampled) via PrintWindow
+ok   cf-now 80x24 (753 x 513, 17 colours sampled) via PrintWindow
+ok   cf-A 118x30 (1095 x 627, 23 colours sampled) via PrintWindow
+ok   cf-A 80x24 (753 x 513, 17 colours sampled) via PrintWindow
+ok   cf-B 118x30 (1095 x 627, 22 colours sampled) via PrintWindow
+ok   cf-B 80x24 (753 x 513, 16 colours sampled) via PrintWindow
+ok   su-now-offer 118x30 (1095 x 627, 8 colours sampled) via PrintWindow
+ok   su-now-offer 80x24 (753 x 513, 6 colours sampled) via PrintWindow
+ok   su-A-offer 118x30 (1095 x 627, 8 colours sampled) via PrintWindow
+ok   su-A-offer 80x24 (753 x 513, 6 colours sampled) via PrintWindow
+ok   su-B-offer 118x30 (1095 x 627, 8 colours sampled) via PrintWindow
+ok   su-B-offer 80x24 (753 x 513, 7 colours sampled) via PrintWindow
+ok   su-now-id 118x30 (1095 x 627, 8 colours sampled) via PrintWindow
+ok   su-now-id 80x24 (753 x 513, 8 colours sampled) via PrintWindow
+ok   su-A-id 118x30 (1095 x 627, 8 colours sampled) via PrintWindow
+ok   su-A-id 80x24 (753 x 513, 8 colours sampled) via PrintWindow
+ok   su-B-id 118x30 (1095 x 627, 8 colours sampled) via PrintWindow
+ok   su-B-id 80x24 (753 x 513, 8 colours sampled) via PrintWindow
+ok   in-now 118x30 (1095 x 627, 38 colours sampled) via PrintWindow
+ok   in-now 80x24 (753 x 513, 19 colours sampled) via PrintWindow
+ok   in-A 118x30 (1095 x 627, 43 colours sampled) via PrintWindow
+ok   in-A 80x24 (753 x 513, 20 colours sampled) via PrintWindow
+ok   in-B 118x30 (1095 x 627, 46 colours sampled) via PrintWindow
+ok   in-B 80x24 (753 x 513, 23 colours sampled) via PrintWindow
+ok   rg-now 118x30 (1095 x 627, 17 colours sampled) via PrintWindow
+ok   rg-now 80x24 (753 x 513, 3 colours sampled) via PrintWindow
+ok   rg-A 118x30 (1095 x 627, 3 colours sampled) via PrintWindow
+ok   rg-A 80x24 (753 x 513, 3 colours sampled) via PrintWindow
+ok   ag-A-open 118x30 (1095 x 627, 3 colours sampled) via PrintWindow
+ok   ag-A-open 80x24 (753 x 513, 3 colours sampled) via PrintWindow
+ok   ag-A-open 118x30 (1095 x 627, 3 colours sampled) via PrintWindow
+ok   ag-A-open 80x24 (753 x 513, 3 colours sampled) via PrintWindow
+ok   ag-A-open 118x30 (1095 x 627, 3 colours sampled) via PrintWindow
+ok   ag-A-open 118x30 (1095 x 627, 3 colours sampled) via CopyFromScreen (PrintWindow gave 3 colours)
+ok   dbg-switch 118x30 (1095 x 627, 3 colours sampled) via CopyFromScreen (PrintWindow gave 3 colours)
+ok   dbg-switch2 118x30 (1095 x 627, 3 colours sampled) via CopyFromScreen (PrintWindow gave 3 colours)
+ok   dbg-personal 118x30 (1095 x 627, 3 colours sampled) via CopyFromScreen (PrintWindow gave 3 colours)
+ok   dbg-course 118x30 (1095 x 627, 3 colours sampled) via CopyFromScreen (PrintWindow gave 3 colours)
+ok   dbg-pk 118x30 (1095 x 627, 3 colours sampled) via CopyFromScreen (PrintWindow gave 3 colours)

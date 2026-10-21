@@ -1,0 +1,12 @@
+{
+  "118x30": {
+    "now_rows": 29,
+    "now_width": 93,
+    "clean_rows": 21
+  },
+  "80x24": {
+    "now_rows": 23,
+    "now_width": 80,
+    "clean_rows": 21
+  }
+}
