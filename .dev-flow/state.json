@@ -197,7 +197,7 @@
   ],
   "guided": false,
   "current_station": "P5",
-  "phase_status": "in-progress",
+  "phase_status": "closed",
   "stations_active": [
     "P0",
     "ARQ",
@@ -328,6 +328,11 @@
       "station": "P4",
       "date": "2026-10-21",
       "decision": "standing authorization — the orchestrator's commission of 2026-10-21. P4 PASS-WITH-NOTES (04-validation.md): the full suite in three sequential chunks at 27d155f, 1398 + 957 + 797 = 3152 passed, 0 failed, 0 skipped, equal to the 3152 collected; ledger 3025 − 0 + 127 = 3152; qa-reviewer evaluated the orchestrator's run, 9 of 11 checklist rows, gaps G-1..G-5 minor. P5 is next."
+    },
+    {
+      "station": "P5",
+      "date": "2026-10-21",
+      "decision": "standing authorization — the orchestrator's commission of 2026-10-21. P5 closed: the canon folded (21), the close record written (05-close.md), the backlog reconciled (13 open items in the new section); not pushed, not merged — the branch feat/people waits for the orchestrator."
     }
   ],
   "obsidian_synced": false,

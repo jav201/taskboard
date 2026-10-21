@@ -54,7 +54,7 @@ The trigger evaluation `state.json`'s `triggers.record` points at: one row per t
 
 ## Where we are
 
-P3 — ARQ, P1, P2 and the PDR closed under the standing authorization (`db3d562`): the four spawned reviewers approved with conditions, folded as LED .2 and the PDR's PC-1..PC-4. Increments are ported from the frozen draft block by block, each with its own RED, battery, targeted suites and independent review; increments 001..005 are done; the DDR is approved (`design/DDR-2026-10-21-batch-01.md`, the real captures in `evidence/captures/`); P4 passed with notes (3152 passed, `04-validation.md`); P5, the close, is next.
+P3 — ARQ, P1, P2 and the PDR closed under the standing authorization (`db3d562`): the four spawned reviewers approved with conditions, folded as LED .2 and the PDR's PC-1..PC-4. Increments are ported from the frozen draft block by block, each with its own RED, battery, targeted suites and independent review; increments 001..005 are done; the DDR is approved (`design/DDR-2026-10-21-batch-01.md`, the real captures in `evidence/captures/`); P4 passed with notes (3152 passed, `04-validation.md`); the batch is closed (`05-close.md`); push and merge are the orchestrator's.
 
 ## Objective
 
@@ -75,6 +75,7 @@ Port the round's chosen variants into the app — the directory (D1–D3, the ha
 | P2 | approved | all four lenses approve with conditions, folded (LED .2) |
 | PDR | approved with conditions | PC-1..PC-4 |
 | P3 | done | increments 001..005 done (code-reviewer OK each — 003, 004 after one FIX FIRST; security APPROVE S-1 both sides) |
+| P5 | closed | `05-close.md`; canon folded (21); final gate 0 block |
 | P4 | PASS-WITH-NOTES | 3152 passed in three chunks at `27d155f`, 0 failed, 0 skipped; qa-reviewer 9 of 11 ✓ (`04-validation.md`) |
 | DDR | approved | qa + ux approved with conditions, folded (LED .7): one node per AT (QA-DDR-1 HIGH), AT-2501/AT-2502 keyed, `mt-flip` shot, UX-9 named; UX-DDR-1 logged |
 
