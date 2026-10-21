@@ -445,13 +445,13 @@ async def test_AT_2302_a_move_into_a_busy_board_stops_before_writing(home):
         assert type(app.screen).__name__ == "MoveConfirm"
         lock.write_bytes(b"another taskboard")
         before = _snap(home)
-        await _press(pilot, "enter")
+        await _press(pilot, "y")               # y confirms (batch-03, ux UX-2)
         msg = next(m for m in _notes(app) if m.startswith("The move stopped"))
         assert msg.startswith("The move stopped: Client · Retail RAG is busy"), msg
         assert "Done: nothing." in msg and "backups" not in msg, msg
         assert _snap(home) == before
         lock.unlink()
-        await _press(pilot, "m", "down", "enter", "enter")
+        await _press(pilot, "m", "down", "enter", "y")   # y confirms (batch-03)
         assert any(m.startswith("Moved Retail RAG · pilot to Client · Retail RAG")
                    for m in _notes(app)), _notes(app)
     assert len([p for p in json.loads(dst_p.read_text(encoding="utf-8"))["tasks"]
@@ -532,7 +532,7 @@ async def test_AT_2303_a_move_keeps_the_source_history_bytes(home):
     app = _open()
     async with app.run_test(size=(160, 45), notifications=True) as pilot:
         await pilot.pause()
-        await _press(pilot, "escape", "P", "down", "m", "down", "enter", "enter")
+        await _press(pilot, "escape", "P", "down", "m", "down", "enter", "y")   # y confirms (batch-03)
         assert any(m.startswith("Moved Retail RAG · pilot") for m in _notes(app)), _notes(app)
     assert (src_p.parent / f"history.jsonl.pre-move-{DAY}").read_bytes() == HIST
     assert not list(dst_p.parent.glob("history.jsonl.pre-move-*"))

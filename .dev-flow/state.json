@@ -297,6 +297,11 @@
       "station": "PDR",
       "date": "2026-10-20",
       "decision": "PDR approved with conditions under the batch's standing authorization (design/PDR-2026-10-20-batch-03.md, PC-1..PC-5); P3 is next."
+    },
+    {
+      "station": "P3",
+      "date": "2026-10-20",
+      "decision": "P3 increment 001 approved under the batch's standing authorization: a direct, shown key for every modal button (HLR-2406, HLR-2407); 579 passed targeted, RED 26/28 on base, 17/17 mutants KILLED; code-reviewer OK to advance (CR-1..CR-4 fixed); PDR PC-2 discharged; increment 002 is next."
     }
   ],
   "obsidian_synced": false,

@@ -40,7 +40,7 @@ from .models import (IMAGE_EXTS, PROJECT_COLORS, PROJECT_STATUSES, TASK_PRIORITI
                      grab_clipboard_image, grab_clipboard_text, parse_iso,
                      resolve_city, save_pil_image, templates)
 from .boards import clean_name, move_plan, move_project, peek_board, slug
-from .keymap import palette_commands
+from .keymap import key_line, palette_commands
 from .views import (HEX, clip, fit, gantt_group_key, gantt_link_frame, gantt_link_order,
                     highlight_segments, valid_url)
 
@@ -317,6 +317,15 @@ class ClipboardPasteMixin:
             target.insert(text)
 
 
+class ButtonKeysMixin:
+    """A modal's button keys (batch 2026-10-20-batch-03, D-6): a key bound to
+    `press_button('<id>')` presses that button, so the key and the button can never
+    do different things. Each modal wires its keys in its own BINDINGS."""
+
+    def action_press_button(self, button_id: str) -> None:
+        self.query_one(f"#{button_id}", Button).press()
+
+
 class DatePickerMixin:
     """Calendar-button handler: opens CalendarModal for a date field and writes
     the picked 'YYYY-MM-DD' back into that field's Input. Button ids are
@@ -359,13 +368,26 @@ def notes_preview(text: str) -> Text:
     return out
 
 
-class TaskModal(ClipboardPasteMixin, EmojiPickerMixin, DatePickerMixin,
+# a key per button, beside text fields `alt+<letter>` (batch 2026-10-20-batch-03, D-6)
+FORM_KEYS = [Binding("alt+s", "press_button('save')", "Save", priority=True)]
+DATE_KEYS = [Binding("alt+t", "press_button('cal-f-start')", "Start date", priority=True),
+             Binding("alt+d", "press_button('cal-f-due')", "Due date", priority=True)]
+# the boxed modals' key line fits their box: `.modal` is 62 wide, its border and
+# padding take 6, a scrollbar up to 2
+MODAL_KEYS_W = 54
+TASK_KEYS = [("alt+s", "save"), ("alt+i", "paste image"), ("alt+t", "start date"),
+             ("alt+d", "due date"), ("esc", "cancel")]
+
+
+class TaskModal(ClipboardPasteMixin, EmojiPickerMixin, DatePickerMixin, ButtonKeysMixin,
                 ModalScreen[dict | None]):
     """Returns a dict of task fields on save, or None on cancel."""
 
     BINDINGS = [("escape", "cancel", "Cancel"),
                 Binding("ctrl+v", "paste_text", "Paste", priority=True),
-                Binding("ctrl+e", "pick_emoji", "Emoji", priority=True)]
+                Binding("ctrl+e", "pick_emoji", "Emoji", priority=True),
+                *FORM_KEYS, *DATE_KEYS,
+                Binding("alt+i", "press_button('paste-img')", "Paste image", priority=True)]
 
     def __init__(self, board: Board, task: Task | None = None):
         super().__init__()
@@ -455,15 +477,19 @@ class TaskModal(ClipboardPasteMixin, EmojiPickerMixin, DatePickerMixin,
                     yield Button("Paste image", variant="primary", id="paste-img")
                     yield Button("Save", variant="success", id="save")
                     yield Button("Cancel", variant="default", id="cancel")
+            yield Static(id="task-keys")
 
     def on_mount(self) -> None:
-        self._fold_chips(self.app.size.width)
+        self._fit_width(self.app.size.width)
 
     def on_resize(self, event: events.Resize) -> None:
-        self._fold_chips(event.size.width)
+        self._fit_width(event.size.width)
 
-    def _fold_chips(self, width: int) -> None:
+    def _fit_width(self, width: int) -> None:
+        """The chip row folds below `TASK_CHIPS_ONE_ROW`; the key line drops words to
+        fit (`#task-box` pads one cell each side)."""
         self.query_one("#task-chips").set_class(width < TASK_CHIPS_ONE_ROW, "-folded")
+        self.query_one("#task-keys", Static).update(key_line(TASK_KEYS, width - 2))
 
     def on_text_area_changed(self, event: TextArea.Changed) -> None:
         if event.text_area.id == "f-notes":
@@ -557,13 +583,14 @@ class TaskModal(ClipboardPasteMixin, EmojiPickerMixin, DatePickerMixin,
         self.dismiss(data)
 
 
-class ProjectModal(ClipboardPasteMixin, EmojiPickerMixin, DatePickerMixin,
+class ProjectModal(ClipboardPasteMixin, EmojiPickerMixin, DatePickerMixin, ButtonKeysMixin,
                    ModalScreen[dict | None]):
     """Returns a dict of project fields on save, or None on cancel."""
 
     BINDINGS = [("escape", "cancel", "Cancel"),
                 Binding("ctrl+v", "paste_text", "Paste", priority=True),
-                Binding("ctrl+e", "pick_emoji", "Emoji", priority=True)]
+                Binding("ctrl+e", "pick_emoji", "Emoji", priority=True),
+                *FORM_KEYS, *DATE_KEYS]
 
     def __init__(self, project: Project | None = None):
         super().__init__()
@@ -611,6 +638,10 @@ class ProjectModal(ClipboardPasteMixin, EmojiPickerMixin, DatePickerMixin,
             with Horizontal(classes="modal-buttons"):
                 yield Button("Save", variant="success", id="save")
                 yield Button("Cancel", variant="default", id="cancel")
+            # the box is 62 wide: short words keep `esc cancel` (code review CR-1)
+            yield Label(key_line([("alt+s", "save"), ("alt+t", "start"), ("alt+d", "due"),
+                                  ("esc", "cancel")], MODAL_KEYS_W),
+                        classes="modal-keys")
 
     def on_button_pressed(self, event: Button.Pressed) -> None:
         bid = event.button.id or ""
@@ -1061,7 +1092,7 @@ class TemplatePicker(ModalScreen[tuple[str, str] | None]):
         self.dismiss(None)
 
 
-class TemplateEditor(ModalScreen[dict | None]):
+class TemplateEditor(ButtonKeysMixin, ModalScreen[dict | None]):
     """`I` → `New template...` — author a process from scratch (HLR-1501,
     LLR-1501.1). ONE name field and ONE multi-line tasks field (one task per
     line); Save returns ``{"name", "tasks"}`` — the name stripped and the tasks
@@ -1070,7 +1101,7 @@ class TemplateEditor(ModalScreen[dict | None]):
     and toasts nothing (S1: the name is user text and is never painted here as
     markup)."""
 
-    BINDINGS = [("escape", "cancel", "Cancel")]
+    BINDINGS = [("escape", "cancel", "Cancel"), *FORM_KEYS]
 
     DEFAULT_CSS = """
     TemplateEditor { align: center middle; }
@@ -1088,6 +1119,8 @@ class TemplateEditor(ModalScreen[dict | None]):
             with Horizontal(classes="modal-buttons"):
                 yield Button("Save", variant="success", id="save")
                 yield Button("Cancel", variant="default", id="cancel")
+            yield Label(key_line([("alt+s", "save"), ("esc", "cancel")], MODAL_KEYS_W),
+                        classes="modal-keys")
 
     def on_mount(self) -> None:
         self.query_one("#f-name", Input).focus()
@@ -1505,11 +1538,11 @@ class TeamIdentityPicker(ModalScreen[str | None]):
         self.dismiss(None)
 
 
-class ClockModal(ClipboardPasteMixin, ModalScreen[dict | None]):
+class ClockModal(ClipboardPasteMixin, ButtonKeysMixin, ModalScreen[dict | None]):
     """Pick the two ribbon clocks by CITY (type to find one). Returns city names."""
 
     BINDINGS = [("escape", "cancel", "Cancel"),
-                Binding("ctrl+v", "paste_text", "Paste", priority=True)]
+                Binding("ctrl+v", "paste_text", "Paste", priority=True), *FORM_KEYS]
 
     def __init__(self, clock1: str, clock2: str):
         super().__init__()
@@ -1531,6 +1564,8 @@ class ClockModal(ClipboardPasteMixin, ModalScreen[dict | None]):
             with Horizontal(classes="modal-buttons"):
                 yield Button("Save", variant="success", id="save")
                 yield Button("Cancel", variant="default", id="cancel")
+            yield Label(key_line([("alt+s", "save"), ("esc", "cancel")], MODAL_KEYS_W),
+                        classes="modal-keys")
 
     def on_button_pressed(self, event: Button.Pressed) -> None:
         if event.button.id == "save":
@@ -1545,10 +1580,14 @@ class ClockModal(ClipboardPasteMixin, ModalScreen[dict | None]):
         self.dismiss(None)
 
 
-class ConfirmModal(ModalScreen[bool]):
-    """Small yes/no confirm."""
+class ConfirmModal(ButtonKeysMixin, ModalScreen[bool]):
+    """Small yes/no confirm: `y` confirms, `n` or `esc` cancel, and a key line says
+    so (batch 2026-10-20-batch-03, the round's item 6 B); the focus stays on the box,
+    so a stray `enter` answers nothing. The message wraps in the box."""
 
-    BINDINGS = [("escape", "no", "No")]
+    BINDINGS = [("escape", "no", "No"),
+                Binding("y", "press_button('yes')", "Confirm", priority=True),
+                Binding("n", "press_button('no')", "Cancel", priority=True)]
 
     def __init__(self, message: str, confirm: str = "Delete",
                  variant: str = "error"):
@@ -1563,6 +1602,8 @@ class ConfirmModal(ModalScreen[bool]):
             with Horizontal(classes="modal-buttons"):
                 yield Button(Text(self.confirm), variant=self.variant, id="yes")
                 yield Button("Cancel", variant="default", id="no")
+            yield Label(key_line([("y", self.confirm.lower()), ("n / esc", "cancel"),
+                                  ("⇥", "the buttons")]), id="confirm-keys")
 
     def on_button_pressed(self, event: Button.Pressed) -> None:
         self.dismiss(event.button.id == "yes")
@@ -1571,11 +1612,11 @@ class ConfirmModal(ModalScreen[bool]):
         self.dismiss(False)
 
 
-class TextPrompt(ModalScreen[str | None]):
+class TextPrompt(ButtonKeysMixin, ModalScreen[str | None]):
     """One-line text prompt. Dismisses with the STRIPPED text on Save/Enter and
     None on Cancel/Esc, so the caller can tell "left it blank" from "cancelled"."""
 
-    BINDINGS = [("escape", "cancel", "Cancel")]
+    BINDINGS = [("escape", "cancel", "Cancel"), *FORM_KEYS]
 
     def __init__(self, title: str, initial: str = "", placeholder: str = ""):
         super().__init__()
@@ -1590,6 +1631,9 @@ class TextPrompt(ModalScreen[str | None]):
             with Horizontal(classes="modal-buttons"):
                 yield Button("Save", variant="success", id="save")
                 yield Button("Cancel", variant="default", id="cancel")
+            # `enter` in the field saves too (on_input_submitted; ux UX-13)
+            yield Label(key_line([("↵ / alt+s", "save"), ("esc", "cancel")], MODAL_KEYS_W),
+                        classes="modal-keys")
 
     def on_mount(self) -> None:
         self.query_one("#f-text", Input).focus()
@@ -2499,7 +2543,8 @@ class MoveConfirm(ModalScreen[bool]):
     and the keys are always on screen."""
 
     BINDINGS = [Binding("escape", "no", "", priority=True),
-                Binding("enter", "yes", "", priority=True, show=False)]
+                Binding("y", "yes", "", priority=True, show=False),
+                Binding("n", "no", "", priority=True, show=False)]
 
     def __init__(self, plan, project: Project, src_board: Board, src_entry, dst_entry,
                  day: str):
@@ -2543,10 +2588,11 @@ class MoveConfirm(ModalScreen[bool]):
                     f"  and the dropped links are listed in move-{self.day}.json beside each.\n"
                     "  u cannot undo a move or the edits before it — the backups are the way "
                     "back.\n", style=HEX["dim"])
-        foot.append("\n  ↵ ", style=f"b {HEX['bright']}")
-        foot.append(f"move{f' and drop {n} links' if n else ''}", style=HEX["mut"])
-        foot.append("   esc ", style=f"b {HEX['bright']}")
-        foot.append("cancel", style=HEX["mut"])
+        # `y` as every confirmation's (batch 2026-10-20-batch-03, ux UX-2): a stray
+        # `enter` moves nothing
+        foot.append("\n  ")
+        foot.append_text(key_line([("y", f"move{f' and drop {n} links' if n else ''}"),
+                                   ("n / esc", "cancel")]))
         with Vertical(id="mc-box"):
             yield Static(head, id="mc-head")
             with VerticalScroll(id="mc-links"):

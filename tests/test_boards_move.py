@@ -287,7 +287,7 @@ async def test_TC_2206_a_failure_after_the_source_save(home, monkeypatch, step):
     app = open_app(None)
     async with app.run_test(size=(160, 45)) as pilot:
         await pilot.pause()
-        for k in ("escape", "P", "down", "m", "down", "enter", "enter"):
+        for k in ("escape", "P", "down", "m", "down", "enter", "y"):   # y confirms (batch-03, ux UX-2)
             await pilot.press(k)
             await pilot.pause()
         assert "pmr" not in {p.id for p in app.board.projects}
@@ -343,6 +343,12 @@ async def test_TC_2206_the_confirmation_is_the_rounds_box_and_the_undo_line(home
                           160, 45))
     undo = "u cannot undo a move or the edits before it — the backups are the way back."
     assert [r.strip() for r in got].count(undo) == 1
+    # batch 2026-10-20-batch-03 (ux UX-2): the keys row takes the confirmation standard,
+    # `y` moves and `n / esc` cancel, where the round's said `↵ move … esc cancel`
+    keys = [r for r in want if "↵ move" in r]
+    assert len(keys) == 1
+    want = [r.replace("↵ move", "y move").replace("esc cancel", "n / esc cancel")
+            if r in keys else r for r in want]
     assert [r for r in got if r.strip() != undo] == want
 
 
@@ -361,7 +367,7 @@ async def test_TC_2206_many_crossing_links_keep_the_keys_on_screen(home):
             await pilot.press(k)
             await pilot.pause()
         rows = _svg_rows(app.export_screenshot(), 80, 24)
-        assert any("↵ move and drop 8 links" in r for r in rows), rows
+        assert any("y move and drop 8 links" in r for r in rows), rows
 
 
 async def test_TC_2206_markup_in_names_paints_literally(home):
@@ -442,11 +448,11 @@ async def test_AT_2206_move_a_project_to_another_board(home):
                          for i in ("mc-head", "mc-links-text", "mc-foot"))
         for want in ("7 tasks move (5 open, 2 done) · 3 links inside the project stay",
                      "2 links cross the boards and will be dropped:", "Case study: retail RAG",
-                     "Compose template", "u cannot undo a move", "↵ move and drop 2 links"):
+                     "Compose template", "u cannot undo a move", "y move and drop 2 links"):
             assert want in text, want
         app._undo_stack.append({"task_id": "tw1", "fields": {}})
         old = {p: p.read_bytes() for p in (src_p, dst_p)}
-        await pilot.press("enter")
+        await pilot.press("y")                 # y confirms (batch-03, ux UX-2)
         await pilot.pause()
         listed = [o.prompt.plain if hasattr(o.prompt, "plain") else str(o.prompt)
                   for o in app.screen.query_one("#proj-list")._options]

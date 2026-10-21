@@ -29,3 +29,10 @@ above this line is ever edited._
 - **What changed:** Before → After. LLR-2407.1's TC-2407 threshold → the HLR's strong law (ux UX-21, qa QA-18); AT-2407 "at 118 the last word may go" → whole at 118 (UX-22, QA-21), the `I` arm key by key, and the editor's notes at 80×24 at most one row shorter, nothing clipped (UX-3); both start-up titles wrap, and `board_chip_text` carries the space after the chip (UX-16, UX-23); AT-2401 at 80×24 checks the home's `A all boards`/`q quit` and the agenda's every key (UX-24, QA-23); AT-2406's move arm on a fresh app (QA-22); TC-2409 a second window by `--open` (QA-8); `agenda_all` acts while the home is the TOP screen only (architect A-17); `boards.expand_home` public for `__main__` (A-19); `name_for`'s result stripped of control characters (security S-11); §6.3's `escape` answer names the two `markup=False` notices. Every HLR/LLR is re-listed because the batch's ledger rows are appended per requirement.
 - **Why:** the P2 review and the PDR of 2026-10-20, iteration 2 (architect: ARQ, P2 approve, PDR approve with condition A-18; qa-reviewer: P2 approve, PDR approved with conditions QA-18, QA-20, QA-24; ux-reviewer: P2 approve, PDR approved with conditions C2, C4; security-reviewer: P2 and PDR approve, S-1..S-3 re-read at increment 003).
 - **Evidence:** the reviewers' iteration-2 returns (`02-review.md` §Findings).
+
+### LED-2026-10-20-batch-03.4 — increment 001's threshold drifts (P3, increment 001)
+- **Requirement:** HLR-2406, HLR-2407, LLR-2406.1, LLR-2407.1
+- **Date:** 2026-10-20
+- **What changed:** Before → After. AT-2406's move arm `escape`, `P`, `m`, `enter` → `escape`, `P`, `down`, `m`, `enter` (the projects modal's cursor opens on its heading; `down` selects the project). HLR-2407's key line words: in the 62-cell project form `alt+t start date`, `alt+d due date` → `alt+t start`, `alt+d due`, so `esc cancel` keeps its word as in the other boxed forms (code review CR-1); TC-2407 now requires `esc cancel` on every modal's painted key line.
+- **Why:** increment 001's implementation and its code review (CR-1).
+- **Evidence:** `03-increments/increment-001.md`; `evidence/suite-001.txt`.

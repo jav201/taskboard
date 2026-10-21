@@ -1,0 +1,20 @@
+arms: 17
+M1 y unbound in ConfirmModal · taskboard/modals.py · test_TC_2406_a_confirmation_answers_y_and_n_and_not_enter[y-answer0]: RED (KILLED) · sha256 d53b0cd4e2d5 restored · 1 failed in 0.70s
+M1b y unbound (AT) · taskboard/modals.py · test_AT_2406_a_confirmation_is_one_written_key[size0]: RED (KILLED) · sha256 d53b0cd4e2d5 restored · 1 failed in 1.70s
+M2 the wrap rule dropped · taskboard/taskboard.tcss · test_TC_2406_the_message_wraps_and_is_whole: RED (KILLED) · sha256 1327221ef6ee restored · 1 failed in 0.58s
+M2b the wrap rule dropped (AT) · taskboard/taskboard.tcss · test_AT_2406_a_confirmation_is_one_written_key[size1]: RED (KILLED) · sha256 1327221ef6ee restored · 1 failed in 1.31s
+M3 a key dropped before the words · taskboard/keymap.py · test_TC_2406_key_line_is_the_key_bar_style_and_keeps_its_keys: RED (KILLED) · sha256 e035d7e78d93 restored · 1 failed in 0.40s
+M4 the slash styled as a key · taskboard/keymap.py · test_TC_2406_key_line_is_the_key_bar_style_and_keeps_its_keys: RED (KILLED) · sha256 e035d7e78d93 restored · 1 failed in 0.40s
+M5 alt+s presses cancel · taskboard/modals.py · test_TC_2407_alt_s_does_what_save_does[TaskModal]: RED (KILLED) · sha256 d53b0cd4e2d5 restored · 1 failed in 0.91s
+M5b alt+s presses cancel (AT) · taskboard/modals.py · test_AT_2407_alt_s_saves_and_letters_type[size0]: RED (KILLED) · sha256 d53b0cd4e2d5 restored · 1 failed in 1.92s
+M6 alt+t opens the due calendar · taskboard/modals.py · test_TC_2407_alt_t_and_alt_d_open_the_calendars[TaskModal-alt+t-f-start]: RED (KILLED) · sha256 d53b0cd4e2d5 restored · 1 failed in 0.75s
+M7 alt+i unbound · taskboard/modals.py · test_TC_2407_alt_i_pastes_an_image: RED (KILLED) · sha256 d53b0cd4e2d5 restored · 1 failed in 0.79s
+M8 ProjectModal without its date keys · taskboard/modals.py · test_TC_2407_alt_t_and_alt_d_open_the_calendars[ProjectModal-alt+d-f-due]: RED (KILLED) · sha256 d53b0cd4e2d5 restored · 1 failed in 0.76s
+M9 ConfirmModal's key line dropped · taskboard/modals.py · test_TC_2407_every_button_has_its_key[ConfirmModal]: RED (KILLED) · sha256 d53b0cd4e2d5 restored · 1 failed in 1.14s
+M10 the editor's key line left empty · taskboard/modals.py · test_AT_2407_alt_s_saves_and_letters_type[size1]: RED (KILLED) · sha256 d53b0cd4e2d5 restored · 1 failed in 1.23s
+M11 MoveConfirm confirms on enter again · taskboard/modals.py · test_TC_2406_the_move_confirms_on_y_never_on_enter: RED (KILLED) · sha256 d53b0cd4e2d5 restored · 1 failed in 0.41s
+M11b MoveConfirm confirms on enter again (AT) · taskboard/modals.py · test_AT_2406_a_confirmation_is_one_written_key[size0]: RED (KILLED) · sha256 d53b0cd4e2d5 restored · 1 failed in 3.14s
+M12 TextPrompt's key line without alt+s · taskboard/modals.py · test_TC_2407_every_button_has_its_key[TextPrompt]: RED (KILLED) · sha256 d53b0cd4e2d5 restored · 1 failed in 1.11s
+M13 a button key not bound (the law) · taskboard/modals.py · test_TC_2407_every_modal_is_in_the_inventory: RED (KILLED) · sha256 d53b0cd4e2d5 restored · 1 failed in 0.50s
+not killed: 0
+exit=0

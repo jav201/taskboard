@@ -60,6 +60,11 @@ KeyBar {
 #modal-box, #confirm-box {
     align: center middle;
 }
+/* the confirmation's message wraps in its box, never cut (batch 2026-10-20-batch-03:
+   the round's capture cut «…its folder is not») */
+#confirm-box .modal-title {
+    width: 100%;
+}
 /* titles are bold bright: the accent is kept for the field being edited
    (the colour budget, batch 2026-10-02-batch-02, HLR-202) */
 .modal-title {
@@ -274,6 +279,10 @@ KeyBar {
 }
 #task-actions Button {
     width: 100%;
+}
+/* the editor's key line: every button's key (batch 2026-10-20-batch-03, D-6) */
+#task-keys {
+    height: 1;
 }
 
 /* calendar picker */

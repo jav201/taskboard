@@ -1,0 +1,36 @@
+# Increment 001's RED on base_ref's code: a clean detached worktree at ee7a285 (taskboard/ = 1fd667b's), the two new test files copied in, NO_COLOR unset
+# python -m pytest -q -p no:cacheprovider --color=no -rf tests/test_modal_keys.py
+                f"Unable to parse {query_selector!r} as a query; check for syntax errors"
+                f"Unable to parse {query_selector!r} as a query; check for syntax errors"
+                f"Unable to parse {query_selector!r} as a query; check for syntax errors"
+                f"Unable to parse {query_selector!r} as a query; check for syntax errors"
+                f"Unable to parse {query_selector!r} as a query; check for syntax errors"
+                f"Unable to parse {query_selector!r} as a query; check for syntax errors"
+FAILED tests/test_modal_keys.py::test_TC_2406_key_line_is_the_key_bar_style_and_keeps_its_keys
+FAILED tests/test_modal_keys.py::test_TC_2406_a_confirmation_answers_y_and_n_and_not_enter[y-answer0]
+FAILED tests/test_modal_keys.py::test_TC_2406_a_confirmation_answers_y_and_n_and_not_enter[n-answer1]
+FAILED tests/test_modal_keys.py::test_TC_2406_the_message_wraps_and_is_whole
+FAILED tests/test_modal_keys.py::test_AT_2406_a_confirmation_is_one_written_key[size0]
+FAILED tests/test_modal_keys.py::test_AT_2406_a_confirmation_is_one_written_key[size1]
+FAILED tests/test_modal_keys.py::test_TC_2407_alt_s_does_what_save_does[TaskModal]
+FAILED tests/test_modal_keys.py::test_TC_2407_alt_s_does_what_save_does[ProjectModal]
+FAILED tests/test_modal_keys.py::test_TC_2407_alt_s_does_what_save_does[TemplateEditor]
+FAILED tests/test_modal_keys.py::test_TC_2407_alt_s_does_what_save_does[ClockModal]
+FAILED tests/test_modal_keys.py::test_TC_2407_alt_s_does_what_save_does[TextPrompt]
+FAILED tests/test_modal_keys.py::test_TC_2407_alt_t_and_alt_d_open_the_calendars[TaskModal-alt+t-f-start]
+FAILED tests/test_modal_keys.py::test_TC_2407_alt_t_and_alt_d_open_the_calendars[TaskModal-alt+d-f-due]
+FAILED tests/test_modal_keys.py::test_TC_2407_alt_t_and_alt_d_open_the_calendars[ProjectModal-alt+t-f-start]
+FAILED tests/test_modal_keys.py::test_TC_2407_alt_t_and_alt_d_open_the_calendars[ProjectModal-alt+d-f-due]
+FAILED tests/test_modal_keys.py::test_TC_2407_alt_i_pastes_an_image - Asserti...
+FAILED tests/test_modal_keys.py::test_TC_2406_the_move_confirms_on_y_never_on_enter
+FAILED tests/test_modal_keys.py::test_TC_2407_every_modal_is_in_the_inventory
+FAILED tests/test_modal_keys.py::test_TC_2407_every_button_has_its_key[TaskModal]
+FAILED tests/test_modal_keys.py::test_TC_2407_every_button_has_its_key[ProjectModal]
+FAILED tests/test_modal_keys.py::test_TC_2407_every_button_has_its_key[TemplateEditor]
+FAILED tests/test_modal_keys.py::test_TC_2407_every_button_has_its_key[ClockModal]
+FAILED tests/test_modal_keys.py::test_TC_2407_every_button_has_its_key[TextPrompt]
+FAILED tests/test_modal_keys.py::test_TC_2407_every_button_has_its_key[ConfirmModal]
+FAILED tests/test_modal_keys.py::test_AT_2407_alt_s_saves_and_letters_type[size0]
+FAILED tests/test_modal_keys.py::test_AT_2407_alt_s_saves_and_letters_type[size1]
+26 failed, 2 passed in 14.46s
+# the 2 that pass on base are boundary arms by design: escape and enter already answer False / nothing (TC-2406)

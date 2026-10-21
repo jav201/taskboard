@@ -1,0 +1,939 @@
+diff --git a/taskboard/keymap.py b/taskboard/keymap.py
+index 541a787..5e54251 100644
+--- a/taskboard/keymap.py
++++ b/taskboard/keymap.py
+@@ -21,6 +21,7 @@ from __future__ import annotations
+ 
+ from typing import NamedTuple
+ 
++from rich.text import Text
+ from textual.binding import Binding
+ from textual.widgets import Static
+ 
+@@ -164,6 +165,35 @@ KEYMAP: tuple[Key, ...] = (
+ )
+ 
+ 
++def key_line(pairs: list[tuple[str, str]], width: int | None = None) -> Text:
++    """A screen's key line (batch 2026-10-20-batch-03, D-6): every key in the key
++    bar's style — bold bright, its word muted — three spaces between pairs; a ` / `
++    between alternative keys (`n / esc`) is dim. Fitted to `width` the way the bar
++    degrades: the words go first, from the right, then the keys."""
++    def build(n_keys: int, n_words: int) -> Text:
++        out = Text(no_wrap=True)
++        for i, (key, word) in enumerate(pairs[:n_keys]):
++            if i:
++                out.append("   ")
++            for j, part in enumerate(key.split(" / ")):
++                if j:
++                    out.append(" / ", style=HEX["dim"])
++                out.append(part, style=KEY_STYLE)
++            if word and i < n_words:
++                out.append(f" {word}", style=HEX["mut"])
++        return out
++
++    n_keys = n_words = len(pairs)
++    line = build(n_keys, n_words)
++    while width is not None and line.cell_len > width and (n_words or n_keys):
++        if n_words:
++            n_words -= 1
++        else:
++            n_keys -= 1
++        line = build(n_keys, n_words)
++    return line
++
++
+ def app_bindings() -> list[Binding]:
+     """The app's BINDINGS, generated. Half of the contract."""
+     return [Binding(k.keys, k.action, k.label, priority=k.priority) for k in KEYMAP]
+diff --git a/taskboard/modals.py b/taskboard/modals.py
+index 3de5aae..7df2c35 100644
+--- a/taskboard/modals.py
++++ b/taskboard/modals.py
+@@ -40,7 +40,7 @@ from .models import (IMAGE_EXTS, PROJECT_COLORS, PROJECT_STATUSES, TASK_PRIORITI
+                      grab_clipboard_image, grab_clipboard_text, parse_iso,
+                      resolve_city, save_pil_image, templates)
+ from .boards import clean_name, move_plan, move_project, peek_board, slug
+-from .keymap import palette_commands
++from .keymap import key_line, palette_commands
+ from .views import (HEX, clip, fit, gantt_group_key, gantt_link_frame, gantt_link_order,
+                     highlight_segments, valid_url)
+ 
+@@ -317,6 +317,15 @@ class ClipboardPasteMixin:
+             target.insert(text)
+ 
+ 
++class ButtonKeysMixin:
++    """A modal's button keys (batch 2026-10-20-batch-03, D-6): a key bound to
++    `press_button('<id>')` presses that button, so the key and the button can never
++    do different things. Each modal wires its keys in its own BINDINGS."""
++
++    def action_press_button(self, button_id: str) -> None:
++        self.query_one(f"#{button_id}", Button).press()
++
++
+ class DatePickerMixin:
+     """Calendar-button handler: opens CalendarModal for a date field and writes
+     the picked 'YYYY-MM-DD' back into that field's Input. Button ids are
+@@ -359,13 +368,26 @@ def notes_preview(text: str) -> Text:
+     return out
+ 
+ 
+-class TaskModal(ClipboardPasteMixin, EmojiPickerMixin, DatePickerMixin,
++# a key per button, beside text fields `alt+<letter>` (batch 2026-10-20-batch-03, D-6)
++FORM_KEYS = [Binding("alt+s", "press_button('save')", "Save", priority=True)]
++DATE_KEYS = [Binding("alt+t", "press_button('cal-f-start')", "Start date", priority=True),
++             Binding("alt+d", "press_button('cal-f-due')", "Due date", priority=True)]
++# the boxed modals' key line fits their box: `.modal` is 62 wide, its border and
++# padding take 6, a scrollbar up to 2
++MODAL_KEYS_W = 54
++TASK_KEYS = [("alt+s", "save"), ("alt+i", "paste image"), ("alt+t", "start date"),
++             ("alt+d", "due date"), ("esc", "cancel")]
++
++
++class TaskModal(ClipboardPasteMixin, EmojiPickerMixin, DatePickerMixin, ButtonKeysMixin,
+                 ModalScreen[dict | None]):
+     """Returns a dict of task fields on save, or None on cancel."""
+ 
+     BINDINGS = [("escape", "cancel", "Cancel"),
+                 Binding("ctrl+v", "paste_text", "Paste", priority=True),
+-                Binding("ctrl+e", "pick_emoji", "Emoji", priority=True)]
++                Binding("ctrl+e", "pick_emoji", "Emoji", priority=True),
++                *FORM_KEYS, *DATE_KEYS,
++                Binding("alt+i", "press_button('paste-img')", "Paste image", priority=True)]
+ 
+     def __init__(self, board: Board, task: Task | None = None):
+         super().__init__()
+@@ -455,15 +477,19 @@ class TaskModal(ClipboardPasteMixin, EmojiPickerMixin, DatePickerMixin,
+                     yield Button("Paste image", variant="primary", id="paste-img")
+                     yield Button("Save", variant="success", id="save")
+                     yield Button("Cancel", variant="default", id="cancel")
++            yield Static(id="task-keys")
+ 
+     def on_mount(self) -> None:
+-        self._fold_chips(self.app.size.width)
++        self._fit_width(self.app.size.width)
+ 
+     def on_resize(self, event: events.Resize) -> None:
+-        self._fold_chips(event.size.width)
++        self._fit_width(event.size.width)
+ 
+-    def _fold_chips(self, width: int) -> None:
++    def _fit_width(self, width: int) -> None:
++        """The chip row folds below `TASK_CHIPS_ONE_ROW`; the key line drops words to
++        fit (`#task-box` pads one cell each side)."""
+         self.query_one("#task-chips").set_class(width < TASK_CHIPS_ONE_ROW, "-folded")
++        self.query_one("#task-keys", Static).update(key_line(TASK_KEYS, width - 2))
+ 
+     def on_text_area_changed(self, event: TextArea.Changed) -> None:
+         if event.text_area.id == "f-notes":
+@@ -557,13 +583,14 @@ class TaskModal(ClipboardPasteMixin, EmojiPickerMixin, DatePickerMixin,
+         self.dismiss(data)
+ 
+ 
+-class ProjectModal(ClipboardPasteMixin, EmojiPickerMixin, DatePickerMixin,
++class ProjectModal(ClipboardPasteMixin, EmojiPickerMixin, DatePickerMixin, ButtonKeysMixin,
+                    ModalScreen[dict | None]):
+     """Returns a dict of project fields on save, or None on cancel."""
+ 
+     BINDINGS = [("escape", "cancel", "Cancel"),
+                 Binding("ctrl+v", "paste_text", "Paste", priority=True),
+-                Binding("ctrl+e", "pick_emoji", "Emoji", priority=True)]
++                Binding("ctrl+e", "pick_emoji", "Emoji", priority=True),
++                *FORM_KEYS, *DATE_KEYS]
+ 
+     def __init__(self, project: Project | None = None):
+         super().__init__()
+@@ -611,6 +638,10 @@ class ProjectModal(ClipboardPasteMixin, EmojiPickerMixin, DatePickerMixin,
+             with Horizontal(classes="modal-buttons"):
+                 yield Button("Save", variant="success", id="save")
+                 yield Button("Cancel", variant="default", id="cancel")
++            # the box is 62 wide: short words keep `esc cancel` (code review CR-1)
++            yield Label(key_line([("alt+s", "save"), ("alt+t", "start"), ("alt+d", "due"),
++                                  ("esc", "cancel")], MODAL_KEYS_W),
++                        classes="modal-keys")
+ 
+     def on_button_pressed(self, event: Button.Pressed) -> None:
+         bid = event.button.id or ""
+@@ -1061,7 +1092,7 @@ class TemplatePicker(ModalScreen[tuple[str, str] | None]):
+         self.dismiss(None)
+ 
+ 
+-class TemplateEditor(ModalScreen[dict | None]):
++class TemplateEditor(ButtonKeysMixin, ModalScreen[dict | None]):
+     """`I` → `New template...` — author a process from scratch (HLR-1501,
+     LLR-1501.1). ONE name field and ONE multi-line tasks field (one task per
+     line); Save returns ``{"name", "tasks"}`` — the name stripped and the tasks
+@@ -1070,7 +1101,7 @@ class TemplateEditor(ModalScreen[dict | None]):
+     and toasts nothing (S1: the name is user text and is never painted here as
+     markup)."""
+ 
+-    BINDINGS = [("escape", "cancel", "Cancel")]
++    BINDINGS = [("escape", "cancel", "Cancel"), *FORM_KEYS]
+ 
+     DEFAULT_CSS = """
+     TemplateEditor { align: center middle; }
+@@ -1088,6 +1119,8 @@ class TemplateEditor(ModalScreen[dict | None]):
+             with Horizontal(classes="modal-buttons"):
+                 yield Button("Save", variant="success", id="save")
+                 yield Button("Cancel", variant="default", id="cancel")
++            yield Label(key_line([("alt+s", "save"), ("esc", "cancel")], MODAL_KEYS_W),
++                        classes="modal-keys")
+ 
+     def on_mount(self) -> None:
+         self.query_one("#f-name", Input).focus()
+@@ -1505,11 +1538,11 @@ class TeamIdentityPicker(ModalScreen[str | None]):
+         self.dismiss(None)
+ 
+ 
+-class ClockModal(ClipboardPasteMixin, ModalScreen[dict | None]):
++class ClockModal(ClipboardPasteMixin, ButtonKeysMixin, ModalScreen[dict | None]):
+     """Pick the two ribbon clocks by CITY (type to find one). Returns city names."""
+ 
+     BINDINGS = [("escape", "cancel", "Cancel"),
+-                Binding("ctrl+v", "paste_text", "Paste", priority=True)]
++                Binding("ctrl+v", "paste_text", "Paste", priority=True), *FORM_KEYS]
+ 
+     def __init__(self, clock1: str, clock2: str):
+         super().__init__()
+@@ -1531,6 +1564,8 @@ class ClockModal(ClipboardPasteMixin, ModalScreen[dict | None]):
+             with Horizontal(classes="modal-buttons"):
+                 yield Button("Save", variant="success", id="save")
+                 yield Button("Cancel", variant="default", id="cancel")
++            yield Label(key_line([("alt+s", "save"), ("esc", "cancel")], MODAL_KEYS_W),
++                        classes="modal-keys")
+ 
+     def on_button_pressed(self, event: Button.Pressed) -> None:
+         if event.button.id == "save":
+@@ -1545,10 +1580,14 @@ class ClockModal(ClipboardPasteMixin, ModalScreen[dict | None]):
+         self.dismiss(None)
+ 
+ 
+-class ConfirmModal(ModalScreen[bool]):
+-    """Small yes/no confirm."""
++class ConfirmModal(ButtonKeysMixin, ModalScreen[bool]):
++    """Small yes/no confirm: `y` confirms, `n` or `esc` cancel, and a key line says
++    so (batch 2026-10-20-batch-03, the round's item 6 B); the focus stays on the box,
++    so a stray `enter` answers nothing. The message wraps in the box."""
+ 
+-    BINDINGS = [("escape", "no", "No")]
++    BINDINGS = [("escape", "no", "No"),
++                Binding("y", "press_button('yes')", "Confirm", priority=True),
++                Binding("n", "press_button('no')", "Cancel", priority=True)]
+ 
+     def __init__(self, message: str, confirm: str = "Delete",
+                  variant: str = "error"):
+@@ -1563,6 +1602,8 @@ class ConfirmModal(ModalScreen[bool]):
+             with Horizontal(classes="modal-buttons"):
+                 yield Button(Text(self.confirm), variant=self.variant, id="yes")
+                 yield Button("Cancel", variant="default", id="no")
++            yield Label(key_line([("y", self.confirm.lower()), ("n / esc", "cancel"),
++                                  ("⇥", "the buttons")]), id="confirm-keys")
+ 
+     def on_button_pressed(self, event: Button.Pressed) -> None:
+         self.dismiss(event.button.id == "yes")
+@@ -1571,11 +1612,11 @@ class ConfirmModal(ModalScreen[bool]):
+         self.dismiss(False)
+ 
+ 
+-class TextPrompt(ModalScreen[str | None]):
++class TextPrompt(ButtonKeysMixin, ModalScreen[str | None]):
+     """One-line text prompt. Dismisses with the STRIPPED text on Save/Enter and
+     None on Cancel/Esc, so the caller can tell "left it blank" from "cancelled"."""
+ 
+-    BINDINGS = [("escape", "cancel", "Cancel")]
++    BINDINGS = [("escape", "cancel", "Cancel"), *FORM_KEYS]
+ 
+     def __init__(self, title: str, initial: str = "", placeholder: str = ""):
+         super().__init__()
+@@ -1590,6 +1631,9 @@ class TextPrompt(ModalScreen[str | None]):
+             with Horizontal(classes="modal-buttons"):
+                 yield Button("Save", variant="success", id="save")
+                 yield Button("Cancel", variant="default", id="cancel")
++            # `enter` in the field saves too (on_input_submitted; ux UX-13)
++            yield Label(key_line([("↵ / alt+s", "save"), ("esc", "cancel")], MODAL_KEYS_W),
++                        classes="modal-keys")
+ 
+     def on_mount(self) -> None:
+         self.query_one("#f-text", Input).focus()
+@@ -2499,7 +2543,8 @@ class MoveConfirm(ModalScreen[bool]):
+     and the keys are always on screen."""
+ 
+     BINDINGS = [Binding("escape", "no", "", priority=True),
+-                Binding("enter", "yes", "", priority=True, show=False)]
++                Binding("y", "yes", "", priority=True, show=False),
++                Binding("n", "no", "", priority=True, show=False)]
+ 
+     def __init__(self, plan, project: Project, src_board: Board, src_entry, dst_entry,
+                  day: str):
+@@ -2543,10 +2588,11 @@ class MoveConfirm(ModalScreen[bool]):
+                     f"  and the dropped links are listed in move-{self.day}.json beside each.\n"
+                     "  u cannot undo a move or the edits before it — the backups are the way "
+                     "back.\n", style=HEX["dim"])
+-        foot.append("\n  ↵ ", style=f"b {HEX['bright']}")
+-        foot.append(f"move{f' and drop {n} links' if n else ''}", style=HEX["mut"])
+-        foot.append("   esc ", style=f"b {HEX['bright']}")
+-        foot.append("cancel", style=HEX["mut"])
++        # `y` as every confirmation's (batch 2026-10-20-batch-03, ux UX-2): a stray
++        # `enter` moves nothing
++        foot.append("\n  ")
++        foot.append_text(key_line([("y", f"move{f' and drop {n} links' if n else ''}"),
++                                   ("n / esc", "cancel")]))
+         with Vertical(id="mc-box"):
+             yield Static(head, id="mc-head")
+             with VerticalScroll(id="mc-links"):
+diff --git a/taskboard/taskboard.tcss b/taskboard/taskboard.tcss
+index 0bcf32d..e5c83be 100644
+--- a/taskboard/taskboard.tcss
++++ b/taskboard/taskboard.tcss
+@@ -60,6 +60,11 @@ KeyBar {
+ #modal-box, #confirm-box {
+     align: center middle;
+ }
++/* the confirmation's message wraps in its box, never cut (batch 2026-10-20-batch-03:
++   the round's capture cut «…its folder is not») */
++#confirm-box .modal-title {
++    width: 100%;
++}
+ /* titles are bold bright: the accent is kept for the field being edited
+    (the colour budget, batch 2026-10-02-batch-02, HLR-202) */
+ .modal-title {
+@@ -275,6 +280,10 @@ KeyBar {
+ #task-actions Button {
+     width: 100%;
+ }
++/* the editor's key line: every button's key (batch 2026-10-20-batch-03, D-6) */
++#task-keys {
++    height: 1;
++}
+ 
+ /* calendar picker */
+ #cal-box {
+diff --git a/tests/backlog_round_fixture.py b/tests/backlog_round_fixture.py
+new file mode 100644
+index 0000000..fe5dcc8
+--- /dev/null
++++ b/tests/backlog_round_fixture.py
+@@ -0,0 +1,147 @@
++"""The backlog round's synthetic boards, copied from
++`prototypes/backlog_round/fixture.py` for the suite (batch 2026-10-20-batch-03), its
++boards and registry unchanged, so no test imports a prototype.
++
++A REAL registry (`boards.json` in the shipped format, read by the shipped
++`Registry.load`) under the folder a test names, never `~/.taskboard` itself:
++
++    <root>/board.json                    "Personal"  (the default board, id `main`)
++    <root>/boards/client-a/board.json    "Client A"
++    <root>/boards/course/board.json      "Course"
++    <root>/elsewhere/board-copy.json     a copy of Client A, for `--open` / `--board`
++
++TODAY is pinned (a Tuesday); the agenda's "rest of the week" runs to Sunday 25.
++Synthetic data only.
++"""
++from __future__ import annotations
++
++import json
++import shutil
++from datetime import date, datetime, timedelta
++from pathlib import Path
++
++from taskboard.models import LINKS_MIGRATION, MILESTONES_MIGRATION, Board, Project, Task
++
++TODAY = date(2026, 10, 20)
++PHASES = ["Backlog", "Next", "Doing", "Review", "Done"]
++
++
++def settings(offer: bool = False) -> dict:
++    mig = {"links": LINKS_MIGRATION}
++    if not offer:
++        mig["milestones"] = MILESTONES_MIGRATION
++    return {"migrations": mig, "seen_view_renumber_2026_07": True}
++
++
++def _d(off):
++    return None if off is None else (TODAY + timedelta(days=off)).isoformat()
++
++
++# id, name, colour, relative folder, last opened (hours before now)
++BOARDS = [
++    ("main", "Personal", "green", ".", -30),
++    ("client-a", "Client A", "sky", "boards/client-a", -2),
++    ("course", "Course", "violet", "boards/course", -54),
++]
++
++PROJECTS = {
++    "main": [("ph", "Home & paperwork", "green", None, None),
++             ("pf", "Fitness block", "lime", -14, 30)],
++    "client-a": [("ci", "Ingest & index", "sky", -21, 10),
++                 ("ce", "Eval harness", "blue", -7, 24),
++                 ("cr", "Pilot rollout", "indigo", -3, 32),
++                 ("cd", "Docs & handover", "cyan", 2, 40)],
++    "course": [("d4", "Module 4 · Volumes", "violet", -10, 5),
++               ("d5", "Module 5 · Compose", "fuchsia", 3, 26)],
++}
++
++NOTE = ("Owner: username_subject\n- agree the sample with the store team\n"
++        "- numbers by Friday\nRisk: the catalog export is late")
++
++# key, project, title, phase, prio, start, due, deps, milestone, notes
++TASKS = {
++    "main": [
++        ("p1", "ph", "Renew passport", "Next", "high", None, 1, [], False, ""),
++        ("p2", "ph", "Car insurance quote", "Backlog", "normal", None, 4, [], False, ""),
++        ("p3", "ph", "Fix the balcony door", "Doing", "low", None, -3, [], False, ""),
++        ("p4", "pf", "Week 3 plan", "Doing", "normal", -2, 0, [], False, ""),
++        ("p5", "pf", "10k race", "Backlog", "high", None, 30, ["p4"], True, ""),
++        ("p6", "pf", "Book physio", "Next", "normal", None, 5, [], False, ""),
++    ],
++    "client-a": [
++        ("c1", "ci", "Parse catalog PDFs", "Done", "normal", -21, -10, [], False, ""),
++        ("c2", "ci", "Chunking experiments", "Review", "normal", -9, -1, [], False, NOTE),
++        ("c3", "ci", "Hybrid search index", "Doing", "high", -4, 3, ["c2"], False, NOTE),
++        ("c4", "ci", "Store-ops glossary", "Next", "low", None, 8, [], False, ""),
++        ("c5", "ce", "Golden question set", "Doing", "high", -6, 0, [], False, NOTE),
++        ("c6", "ce", "Judge rubric", "Next", "normal", 1, 9, ["c5"], False, ""),
++        ("c7", "ce", "Eval report v1", "Backlog", "high", None, 14, ["c6"], True, ""),
++        ("c8", "cr", "Steering committee", "Next", "high", 2, 2, [], False, ""),
++        ("c9", "cr", "Pilot store list", "Doing", "normal", -3, 4, [], False, ""),
++        ("ca", "cr", "Staff training", "Backlog", "normal", 6, 18, ["c9"], False, ""),
++        ("cb", "cd", "Runbook draft", "Backlog", "normal", 2, 20, [], False, ""),
++        ("cc", "cd", "Handover call", "Backlog", "normal", 21, 21, ["cb"], False, ""),
++    ],
++    "course": [
++        ("k1", "d4", "Bind vs named volumes page", "Done", "normal", -10, -4, [], False, ""),
++        ("k2", "d4", "Volume oracle script", "Review", "high", -3, -2, ["k1"], False, ""),
++        ("k3", "d4", "Module 4 publish", "Next", "high", None, 5, ["k2"], True, ""),
++        ("k4", "d5", "Compose file anatomy", "Backlog", "normal", 3, 3, [], False, ""),
++        ("k5", "d5", "Healthcheck lab", "Backlog", "normal", 10, 20, ["k4"], False, ""),
++        ("k6", "d5", "Module 5 publish", "Backlog", "high", None, 26, ["k5"], True, ""),
++    ],
++}
++
++
++def board_path(root: Path, bid: str) -> Path:
++    rel = next(r for b, _n, _c, r, _h in BOARDS if b == bid)
++    return root / rel / "board.json"
++
++
++def build_board(root: Path, bid: str, offer: bool = False) -> Board:
++    projects = {}
++    for key, name, colour, s, d in PROJECTS[bid]:
++        projects[key] = Project(name=name, color=colour, start_date=_d(s), due_date=_d(d),
++                                id=f"p{key}")
++    tasks = []
++    for key, pk, title, phase, prio, s, d, deps, ms, notes in TASKS[bid]:
++        tasks.append(Task(title=title, project_id=projects[pk].id, phase=phase, priority=prio,
++                          start_date=_d(s), due_date=_d(d), depends_on=[f"t{x}" for x in deps],
++                          milestone=ms, notes=notes,
++                          phase_changed=(TODAY - timedelta(days=2)).isoformat(), id=f"t{key}"))
++    path = board_path(root, bid)
++    path.parent.mkdir(parents=True, exist_ok=True)
++    return Board(list(projects.values()), tasks, path, settings(offer and bid == "client-a"),
++                 PHASES)
++
++
++def build(root: Path, last: str = "client-a", offer: bool = False,
++          with_copy: bool = False) -> Path:
++    """Write the boards and the registry under `root`; return the registry path.
++    `offer`: Client A has not answered the milestone offer yet (item 7).
++    `with_copy`: a copy of Client A's file sits in `elsewhere/`, and the registry
++    lists it as `taskboard --board elsewhere/board-copy.json` left it (item 9)."""
++    now = datetime.now()
++    entries = []
++    for bid, name, colour, _rel, hours in BOARDS:
++        build_board(root, bid, offer).save()
++        entries.append({"id": bid, "name": name, "color": colour,
++                        "path": str(board_path(root, bid).resolve()),
++                        "last_opened": (now + timedelta(hours=hours)).isoformat(timespec="minutes"),
++                        "archived": False})
++    copy = copy_path(root)
++    copy.parent.mkdir(parents=True, exist_ok=True)
++    shutil.copyfile(board_path(root, "client-a"), copy)
++    if with_copy:
++        entries.append({"id": "board-copy", "name": "board-copy", "color": "pink",
++                        "path": str(copy.resolve()),
++                        "last_opened": (now - timedelta(minutes=40)).isoformat(timespec="minutes"),
++                        "archived": False})
++    reg = root / "boards.json"
++    reg.write_text(json.dumps({"version": 1, "last": last, "boards": entries}, indent=2),
++                   encoding="utf-8")
++    return reg
++
++
++def copy_path(root: Path) -> Path:
++    return root / "elsewhere" / "board-copy.json"
+diff --git a/tests/test_boards_concurrency.py b/tests/test_boards_concurrency.py
+index 2b3f025..56801f8 100644
+--- a/tests/test_boards_concurrency.py
++++ b/tests/test_boards_concurrency.py
+@@ -445,13 +445,13 @@ async def test_AT_2302_a_move_into_a_busy_board_stops_before_writing(home):
+         assert type(app.screen).__name__ == "MoveConfirm"
+         lock.write_bytes(b"another taskboard")
+         before = _snap(home)
+-        await _press(pilot, "enter")
++        await _press(pilot, "y")               # y confirms (batch-03, ux UX-2)
+         msg = next(m for m in _notes(app) if m.startswith("The move stopped"))
+         assert msg.startswith("The move stopped: Client · Retail RAG is busy"), msg
+         assert "Done: nothing." in msg and "backups" not in msg, msg
+         assert _snap(home) == before
+         lock.unlink()
+-        await _press(pilot, "m", "down", "enter", "enter")
++        await _press(pilot, "m", "down", "enter", "y")   # y confirms (batch-03)
+         assert any(m.startswith("Moved Retail RAG · pilot to Client · Retail RAG")
+                    for m in _notes(app)), _notes(app)
+     assert len([p for p in json.loads(dst_p.read_text(encoding="utf-8"))["tasks"]
+@@ -532,7 +532,7 @@ async def test_AT_2303_a_move_keeps_the_source_history_bytes(home):
+     app = _open()
+     async with app.run_test(size=(160, 45), notifications=True) as pilot:
+         await pilot.pause()
+-        await _press(pilot, "escape", "P", "down", "m", "down", "enter", "enter")
++        await _press(pilot, "escape", "P", "down", "m", "down", "enter", "y")   # y confirms (batch-03)
+         assert any(m.startswith("Moved Retail RAG · pilot") for m in _notes(app)), _notes(app)
+     assert (src_p.parent / f"history.jsonl.pre-move-{DAY}").read_bytes() == HIST
+     assert not list(dst_p.parent.glob("history.jsonl.pre-move-*"))
+diff --git a/tests/test_boards_move.py b/tests/test_boards_move.py
+index 7ca3017..a5579ac 100644
+--- a/tests/test_boards_move.py
++++ b/tests/test_boards_move.py
+@@ -287,7 +287,7 @@ async def test_TC_2206_a_failure_after_the_source_save(home, monkeypatch, step):
+     app = open_app(None)
+     async with app.run_test(size=(160, 45)) as pilot:
+         await pilot.pause()
+-        for k in ("escape", "P", "down", "m", "down", "enter", "enter"):
++        for k in ("escape", "P", "down", "m", "down", "enter", "y"):   # y confirms (batch-03, ux UX-2)
+             await pilot.press(k)
+             await pilot.pause()
+         assert "pmr" not in {p.id for p in app.board.projects}
+@@ -343,6 +343,12 @@ async def test_TC_2206_the_confirmation_is_the_rounds_box_and_the_undo_line(home
+                           160, 45))
+     undo = "u cannot undo a move or the edits before it — the backups are the way back."
+     assert [r.strip() for r in got].count(undo) == 1
++    # batch 2026-10-20-batch-03 (ux UX-2): the keys row takes the confirmation standard,
++    # `y` moves and `n / esc` cancel, where the round's said `↵ move … esc cancel`
++    keys = [r for r in want if "↵ move" in r]
++    assert len(keys) == 1
++    want = [r.replace("↵ move", "y move").replace("esc cancel", "n / esc cancel")
++            if r in keys else r for r in want]
+     assert [r for r in got if r.strip() != undo] == want
+ 
+ 
+@@ -361,7 +367,7 @@ async def test_TC_2206_many_crossing_links_keep_the_keys_on_screen(home):
+             await pilot.press(k)
+             await pilot.pause()
+         rows = _svg_rows(app.export_screenshot(), 80, 24)
+-        assert any("↵ move and drop 8 links" in r for r in rows), rows
++        assert any("y move and drop 8 links" in r for r in rows), rows
+ 
+ 
+ async def test_TC_2206_markup_in_names_paints_literally(home):
+@@ -442,11 +448,11 @@ async def test_AT_2206_move_a_project_to_another_board(home):
+                          for i in ("mc-head", "mc-links-text", "mc-foot"))
+         for want in ("7 tasks move (5 open, 2 done) · 3 links inside the project stay",
+                      "2 links cross the boards and will be dropped:", "Case study: retail RAG",
+-                     "Compose template", "u cannot undo a move", "↵ move and drop 2 links"):
++                     "Compose template", "u cannot undo a move", "y move and drop 2 links"):
+             assert want in text, want
+         app._undo_stack.append({"task_id": "tw1", "fields": {}})
+         old = {p: p.read_bytes() for p in (src_p, dst_p)}
+-        await pilot.press("enter")
++        await pilot.press("y")                 # y confirms (batch-03, ux UX-2)
+         await pilot.pause()
+         listed = [o.prompt.plain if hasattr(o.prompt, "plain") else str(o.prompt)
+                   for o in app.screen.query_one("#proj-list")._options]
+diff --git a/tests/test_modal_keys.py b/tests/test_modal_keys.py
+new file mode 100644
+index 0000000..576ec7f
+--- /dev/null
++++ b/tests/test_modal_keys.py
+@@ -0,0 +1,391 @@
++"""A direct key for every modal button, written on the modal.
++
++Batch 2026-10-20-batch-03: HLR-2406 / LLR-2406.1 · TC-2406 · AT-2406 (US-2404) — a
++confirmation answers `y`/`n`, says so, and shows its whole message; HLR-2407 /
++LLR-2407.1 · TC-2407 · AT-2407 (US-2404) — beside text fields every button has an
++`alt+<letter>` key on a key line, and the inventory law holds every `ModalScreen` of
++the package to it. The operator's objection to the round's item 6: «Para tener un
++acceso directo a los botones. (y cuando hay bloques de entrada de texto usar una
++combinación específica)». Synthetic data only, under this test's own home.
++"""
++from __future__ import annotations
++
++import html
++import inspect
++import json
++import re
++from datetime import date
++from pathlib import Path
++
++import pytest
++from rich.text import Text
++from textual.screen import ModalScreen
++from textual.widgets import Button
++
++import backlog_round_fixture as fx
++from taskboard import app as app_module, keymap, models, modals, views
++from taskboard.app import BoardsHome, TaskboardApp
++from taskboard.modals import ConfirmModal
++
++_SVG = re.compile(r'<text class="[^"]*" x="([\d.]+)" y="[\d.]+" textLength="[\d.]+" '
++                  r'clip-path="url\(#[^)]*-line-(\d+)\)">([^<]*)</text>')
++
++
++def _svg_rows(svg: str, width: int, height: int) -> list[str]:
++    """The text rows of a Textual `export_screenshot` SVG, each `<text>` at its column."""
++    rows = [[" "] * width for _ in range(height)]
++    for x, line, body in _SVG.findall(svg):
++        y, col = int(line), round(float(x) / 12.2)
++        if y >= height:
++            continue
++        for i, ch in enumerate(html.unescape(body).replace("\xa0", " ")):
++            if col + i < width:
++                rows[y][col + i] = ch
++    return ["".join(r).rstrip() for r in rows]
++
++
++async def _screen(pilot, w, h) -> str:
++    await pilot.pause(0.5)          # a pushed screen paints before it is read
++    return "\n".join(_svg_rows(pilot.app.export_screenshot(), w, h))
++
++
++def _flat(text: str) -> str:
++    """The screen's words in one line: a wrapped message reads as one sentence."""
++    return " ".join(text.split())
++
++
++class _Today(date):
++    @classmethod
++    def today(cls):
++        return fx.TODAY
++
++
++@pytest.fixture
++def home(tmp_path, monkeypatch):
++    monkeypatch.setattr(Path, "home", classmethod(lambda cls: tmp_path))
++    for mod in (app_module, models, views, modals):
++        monkeypatch.setattr(mod, "date", _Today)
++    return tmp_path / ".taskboard"
++
++
++def _round_app(home, last="client-a"):
++    from taskboard.__main__ import open_app
++    fx.build(home, last=last)
++    return open_app(None)
++
++
++async def _press(pilot, *keys):
++    for k in keys:
++        await pilot.press(k)
++        await pilot.pause()
++
++
++def _notes(app) -> list:
++    return [str(n.message) for n in app._notifications]
++
++
++# --------------------------------------------------------------------------- #
++# TC-2406 — `key_line` and `ConfirmModal`'s keys (LLR-2406.1)
++# --------------------------------------------------------------------------- #
++def test_TC_2406_key_line_is_the_key_bar_style_and_keeps_its_keys():
++    """TC-2406: each key bold bright, its word muted, three spaces apart, a ` / `
++    inside a key dim; fitted, the words go from the right before any key."""
++    key_line = keymap.key_line
++    line = key_line([("y", "archive"), ("n / esc", "cancel")])
++    assert line.plain == "y archive   n / esc cancel"
++    styles = {line.plain[s.start:s.end]: str(s.style) for s in line.spans}
++    assert styles["y"] == keymap.KEY_STYLE and styles["esc"] == keymap.KEY_STYLE
++    assert styles[" archive"] == views.HEX["mut"] and styles[" / "] == views.HEX["dim"]
++    pairs = [("alt+s", "save"), ("alt+i", "paste image"), ("esc", "cancel")]
++    assert key_line(pairs, 30).plain == "alt+s save   alt+i   esc"
++    assert key_line(pairs, 20).plain == "alt+s   alt+i   esc"
++    assert key_line(pairs, 12).plain == "alt+s"          # the keys go last, from the right
++    assert key_line([]).plain == ""
++
++
++@pytest.mark.parametrize("key, answer", [("y", [True]), ("n", [False]), ("escape", [False]),
++                                         ("enter", [])])
++async def test_TC_2406_a_confirmation_answers_y_and_n_and_not_enter(home, key, answer):
++    """TC-2406: `y` → True, `n` and `esc` → False; `enter` alone answers nothing
++    while the box holds the focus."""
++    app = TaskboardApp(board_path=home / "board.json")
++    async with app.run_test(size=(118, 30)) as pilot:
++        await pilot.pause()
++        got = []
++        app.push_screen(ConfirmModal("Delete 'x'?"), got.append)
++        await pilot.pause()
++        await _press(pilot, key)
++        assert got == answer
++        assert isinstance(app.screen, ConfirmModal) is (answer == [])
++
++
++async def test_TC_2406_the_message_wraps_and_is_whole(home):
++    """TC-2406: a 128-character message takes two rows or more in the box, its last
++    words on screen (the round cut it at «…its folder is not»)."""
++    msg = ("Archive Personal? It leaves the home; its folder is not touched. "
++           "taskboard --board /x/boards/personal/board.json brings it back.")
++    app = TaskboardApp(board_path=home / "board.json")
++    async with app.run_test(size=(118, 30)) as pilot:
++        await pilot.pause()
++        app.push_screen(ConfirmModal(msg, confirm="Archive", variant="warning"))
++        await pilot.pause()
++        label = app.screen.query_one("#confirm-box .modal-title")
++        assert label.size.height >= 2
++        assert "brings it back." in _flat(await _screen(pilot, 118, 30))
++
++
++# --------------------------------------------------------------------------- #
++# AT-2406 — the home's archive and a task's delete by keys (US-2404)
++# --------------------------------------------------------------------------- #
++@pytest.mark.parametrize("size", [(118, 30), (80, 24)])
++async def test_AT_2406_a_confirmation_is_one_written_key(home, size):
++    """AT-2406 (US-2404): the home's `x` shows the whole message and its key line;
++    `enter` does nothing, `n` cancels, `y` archives; a task's `d`, `y` deletes it."""
++    w, h = size
++    app = _round_app(home)
++    path = str((home / "board.json").resolve())
++    async with app.run_test(size=size, notifications=True) as pilot:
++        await pilot.pause()
++        assert isinstance(app.screen, BoardsHome)
++        await _press(pilot, "left", "x")
++        assert isinstance(app.screen, ConfirmModal)
++        r = app.screen.query_one("#confirm-box").region     # the box as painted, cropped
++        rows = (await _screen(pilot, w, h)).splitlines()
++        flat = _flat(" ".join(row[r.x + 1:r.right - 1] for row in rows[r.y + 1:r.bottom - 1]))
++        msg = (f"Archive Personal? It leaves the home; its folder is not touched. "
++               f"taskboard --board {path} brings it back.")
++        # every character of it, in order: a path wider than the box breaks inside itself
++        assert "".join(msg.split()) in "".join(flat.split())
++        assert "y archive n / esc cancel ⇥ the buttons" in flat
++        await _press(pilot, "enter")
++        assert isinstance(app.screen, ConfirmModal)
++        await _press(pilot, "n")
++        assert isinstance(app.screen, BoardsHome)
++        assert app.registry.get("main").archived is False
++        await _press(pilot, "x", "y")
++        assert any(n.startswith("Archived Personal") for n in _notes(app))
++        reg = json.loads((home / "boards.json").read_text(encoding="utf-8"))
++        assert next(e for e in reg["boards"] if e["id"] == "main")["archived"] is True
++        await _press(pilot, "escape")
++        task = app.selected_task
++        assert task is not None
++        await _press(pilot, "d")
++        assert isinstance(app.screen, ConfirmModal)
++        await _press(pilot, "y")
++        assert app.board.task_by_id(task.id) is None
++    # the move's confirmation, on a fresh app over the same fixture (qa QA-22; ux UX-2)
++    import shutil
++    shutil.rmtree(home)
++    app = _round_app(home)
++    async with app.run_test(size=size, notifications=True) as pilot:
++        await pilot.pause()
++        await _press(pilot, "escape", "P", "down", "m", "enter")
++        assert type(app.screen).__name__ == "MoveConfirm", _notes(app)
++        flat = _flat(await _screen(pilot, w, h))
++        assert "y move" in flat and "n / esc cancel" in flat
++        before = len(app.board.projects)
++        await _press(pilot, "enter")
++        assert type(app.screen).__name__ == "MoveConfirm"       # a stray enter moves nothing
++        await _press(pilot, "y")
++        assert type(app.screen).__name__ != "MoveConfirm"
++        assert len(app.board.projects) == before - 1
++        assert any(n.startswith("Moved ") for n in _notes(app)), _notes(app)
++
++
++# --------------------------------------------------------------------------- #
++# TC-2407 — the forms' `alt` keys and the inventory law (LLR-2407.1)
++# --------------------------------------------------------------------------- #
++def _forms(board):
++    return [("TaskModal", lambda: modals.TaskModal(board), dict),
++            ("ProjectModal", lambda: modals.ProjectModal(), dict),
++            ("TemplateEditor", lambda: modals.TemplateEditor(), dict),
++            ("ClockModal", lambda: modals.ClockModal("Madrid", "London"), dict),
++            ("TextPrompt", lambda: modals.TextPrompt("Name", "kept"), str)]
++
++
++@pytest.mark.parametrize("name", ["TaskModal", "ProjectModal", "TemplateEditor", "ClockModal",
++                                  "TextPrompt"])
++async def test_TC_2407_alt_s_does_what_save_does(home, name):
++    """TC-2407: `alt+s` dismisses each form with what its Save button returns."""
++    app = TaskboardApp(board_path=home / "board.json")
++    async with app.run_test(size=(118, 30)) as pilot:
++        await pilot.pause()
++        make, kind = next((m, k) for n, m, k in _forms(app.board) if n == name)
++        by_key, by_button = [], []
++        app.push_screen(make(), by_key.append)
++        await pilot.pause()
++        await _press(pilot, "alt+s")
++        app.push_screen(make(), by_button.append)
++        await pilot.pause()
++        app.screen.query_one("#save", Button).press()     # the button itself, scrolled or not
++        await pilot.pause()
++        assert len(by_key) == 1 and isinstance(by_key[0], kind)
++        strip = (lambda d: {k: v for k, v in d.items() if k != "id"}) if kind is dict else str
++        assert strip(by_key[0]) == strip(by_button[0])
++
++
++@pytest.mark.parametrize("name, key, field", [("TaskModal", "alt+t", "f-start"),
++                                              ("TaskModal", "alt+d", "f-due"),
++                                              ("ProjectModal", "alt+t", "f-start"),
++                                              ("ProjectModal", "alt+d", "f-due")])
++async def test_TC_2407_alt_t_and_alt_d_open_the_calendars(home, monkeypatch, name, key, field):
++    """TC-2407: `alt+t` / `alt+d` open the start / due calendar, as the 📅 buttons."""
++    asked = []
++    monkeypatch.setattr(modals.DatePickerMixin, "_open_calendar",
++                        lambda self, fid: asked.append(fid))
++    app = TaskboardApp(board_path=home / "board.json")
++    async with app.run_test(size=(118, 30)) as pilot:
++        await pilot.pause()
++        make = next(m for n, m, _k in _forms(app.board) if n == name)
++        app.push_screen(make())
++        await pilot.pause()
++        await _press(pilot, key)
++        assert asked == [field]
++
++
++async def test_TC_2407_alt_i_pastes_an_image(home, monkeypatch):
++    """TC-2407: the editor's `alt+i` is its Paste image button."""
++    monkeypatch.setattr(modals, "grab_clipboard_image", lambda: None)
++    app = TaskboardApp(board_path=home / "board.json")
++    async with app.run_test(size=(118, 30), notifications=True) as pilot:
++        await pilot.pause()
++        app.push_screen(modals.TaskModal(app.board))
++        await pilot.pause()
++        await _press(pilot, "alt+i")
++        assert "No image found in the clipboard." in _notes(app)
++
++
++#: THE INVENTORY (D-6): every `ModalScreen` subclass of the package, and how each of
++#: its buttons is reached by a direct key. A modal without buttons acts on keys alone
++#: (its own BINDINGS; its key line or hint says them). A new modal must be added here.
++INVENTORY: dict[str, dict[str, str]] = {
++    "TaskModal": {"paste-img": "alt+i", "save": "alt+s", "cancel": "escape",
++                  "cal-f-start": "alt+t", "cal-f-due": "alt+d"},
++    "ProjectModal": {"save": "alt+s", "cancel": "escape", "cal-f-start": "alt+t",
++                     "cal-f-due": "alt+d"},
++    "TemplateEditor": {"save": "alt+s", "cancel": "escape"},
++    "ClockModal": {"save": "alt+s", "cancel": "escape"},
++    "TextPrompt": {"save": "alt+s", "cancel": "escape"},
++    "ConfirmModal": {"yes": "y", "no": "n"},
++    # no buttons: keys only
++    "CalendarModal": {}, "EmojiPicker": {}, "ProjectPicker": {}, "LinkPicker": {},
++    "TemplatePicker": {}, "MilestoneOffer": {}, "PresentHiddenPicker": {}, "GanttLinkMode": {},
++    "TeamIdentityPicker": {}, "PhaseEditor": {}, "ImageViewer": {}, "TaskDetails": {},
++    "HelpModal": {}, "StandupModal": {}, "CommandPalette": {}, "BoardForm": {},
++    "MoveTarget": {}, "MoveConfirm": {}, "HelpScreen": {}, "PresentScreen": {},
++}
++
++
++def _package_modals() -> dict[str, type]:
++    found = {}
++    for mod in (modals, app_module):
++        for name, obj in vars(mod).items():
++            if (inspect.isclass(obj) and issubclass(obj, ModalScreen) and obj is not ModalScreen
++                    and obj.__module__ == mod.__name__):
++                found[name] = obj
++    return found
++
++
++def _bound(cls) -> set[str]:
++    keys = set()
++    for b in cls.BINDINGS:
++        key = b.key if hasattr(b, "key") else b[0]
++        keys.update(k.strip() for k in key.split(","))
++    return keys
++
++
++def test_TC_2406_the_move_confirms_on_y_never_on_enter():
++    """TC-2406 (ux UX-2): `MoveConfirm` takes the confirmation standard — `y` yes,
++    `n`/`esc` no, no `enter`."""
++    bound = {}
++    for b in modals.MoveConfirm.BINDINGS:
++        for k in b.key.split(","):
++            bound[k.strip()] = b.action
++    assert bound.get("y") == "yes" and bound.get("n") == "no" and bound.get("escape") == "no"
++    assert "enter" not in bound
++
++
++def test_TC_2407_every_modal_is_in_the_inventory():
++    """TC-2407: the law's table is the package's set of modals, both ways — a modal
++    added without its row fails here; a modal whose source yields a Button has a
++    row naming its buttons, and each named key is bound on it."""
++    found = _package_modals()
++    assert set(found) - set(INVENTORY) == set(), "add the new modal to INVENTORY"
++    assert set(INVENTORY) - set(found) == set()
++    for name, cls in found.items():
++        has_buttons = "Button(" in inspect.getsource(cls)
++        assert has_buttons is bool(INVENTORY[name]), name
++        assert set(INVENTORY[name].values()) <= _bound(cls), name
++
++
++@pytest.mark.parametrize("name", ["TaskModal", "ProjectModal", "TemplateEditor", "ClockModal",
++                                  "TextPrompt", "ConfirmModal"])
++async def test_TC_2407_every_button_has_its_key(home, name):
++    """TC-2407: composed, a modal's buttons are exactly the inventory's, and its key
++    line names every key but `esc`/`n` cancel's own (written `esc`)."""
++    app = TaskboardApp(board_path=home / "board.json")
++    async with app.run_test(size=(160, 45)) as pilot:
++        await pilot.pause()
++        make = dict((n, m) for n, m, _k in _forms(app.board))
++        make["ConfirmModal"] = lambda: ConfirmModal("Delete 'x'?")
++        app.push_screen(make[name]())
++        await pilot.pause()
++        ids = {b.id for b in app.screen.query(Button)}
++        assert ids == set(INVENTORY[name])
++        rows = (await _screen(pilot, 160, 45)).splitlines()
++        # the key line is the painted row the modal's key-line widget sits on
++        line = app.screen.query_one("#confirm-keys, .modal-keys, #task-keys")
++        painted = rows[line.region.y]
++        for key in INVENTORY[name].values():
++            # cancel is `esc cancel` on every modal, the word kept (code review CR-1)
++            shown = {"escape": "esc cancel", "n": "n / esc cancel"}.get(key, key)
++            assert shown in painted, (name, key, painted)
++
++
++# --------------------------------------------------------------------------- #
++# AT-2407 — the forms by keys (US-2404)
++# --------------------------------------------------------------------------- #
++@pytest.mark.parametrize("size", [(118, 30), (80, 24)])
++async def test_AT_2407_alt_s_saves_and_letters_type(home, size):
++    """AT-2407 (US-2404): `a`, `Draft s`, `alt+s` saves a task titled `Draft s` (the
++    `s` typed, never a save); `e`, `alt+d` opens its calendar; `p`, `Site`, `alt+s`
++    saves a project; the editor's last row names every button's key."""
++    w, h = size
++    app = TaskboardApp(board_path=home / "board.json")
++    async with app.run_test(size=size) as pilot:
++        await pilot.pause()
++        await _press(pilot, "a")
++        assert isinstance(app.screen, modals.TaskModal)
++        last = (await _screen(pilot, w, h)).splitlines()[h - 1]
++        if (w, h) == (80, 24):
++            # the key line's row costs the notes one row at most: 11 at `base_ref` (ux UX-3)
++            assert app.screen.query_one("#f-notes").size.height >= 10
++        for key in ("alt+s", "alt+i", "alt+t", "alt+d", "esc"):
++            assert key in last, (key, last)
++        if w >= 118:
++            assert "alt+s save   alt+i paste image   alt+t start date   alt+d due date" in last
++        await _press(pilot, *"Draft", "space", "s")
++        assert isinstance(app.screen, modals.TaskModal)
++        await _press(pilot, "alt+s")
++        assert not isinstance(app.screen, modals.TaskModal)
++        mine = [t for t in app.board.tasks if t.title == "Draft s"]
++        assert len(mine) == 1
++        assert app.selected_task_id == mine[0].id          # the new task is selected
++        kept = (home / "board.json").read_bytes()
++        await _press(pilot, "e", "alt+d")
++        assert isinstance(app.screen, modals.CalendarModal)
++        await _press(pilot, "escape", "escape")
++        assert not isinstance(app.screen, ModalScreen)
++        assert (home / "board.json").read_bytes() == kept       # cancelled: nothing written
++        # the project form opens on its box (as shipped); `tab` reaches the name
++        await _press(pilot, "p", "tab", *"Site", "alt+s")
++        assert any(p.name == "Site" for p in app.board.projects)
++        await _press(pilot, "c")
++        assert isinstance(app.screen, modals.ClockModal)
++        await _press(pilot, "alt+s")
++        assert not isinstance(app.screen, ModalScreen) and "clock1" in app.board.settings
++        await _press(pilot, "I", "enter")
++        assert isinstance(app.screen, modals.TemplateEditor)
++        await _press(pilot, *"Weekly", "tab", *"Kickoff", "alt+s")
++        assert not isinstance(app.screen, ModalScreen)
++        assert any(t.get("name") == "Weekly" for t in app.board.settings.get("templates", []))

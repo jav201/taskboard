@@ -21,6 +21,7 @@ from __future__ import annotations
 
 from typing import NamedTuple
 
+from rich.text import Text
 from textual.binding import Binding
 from textual.widgets import Static
 
@@ -162,6 +163,35 @@ KEYMAP: tuple[Key, ...] = (
     Key("space", "␣", "setup_toggle", "Toggle", views=("setup",), group="setup"),
     Key("ctrl+s", "^s", "setup_save", "Save", views=("setup",), group="setup"),
 )
+
+
+def key_line(pairs: list[tuple[str, str]], width: int | None = None) -> Text:
+    """A screen's key line (batch 2026-10-20-batch-03, D-6): every key in the key
+    bar's style — bold bright, its word muted — three spaces between pairs; a ` / `
+    between alternative keys (`n / esc`) is dim. Fitted to `width` the way the bar
+    degrades: the words go first, from the right, then the keys."""
+    def build(n_keys: int, n_words: int) -> Text:
+        out = Text(no_wrap=True)
+        for i, (key, word) in enumerate(pairs[:n_keys]):
+            if i:
+                out.append("   ")
+            for j, part in enumerate(key.split(" / ")):
+                if j:
+                    out.append(" / ", style=HEX["dim"])
+                out.append(part, style=KEY_STYLE)
+            if word and i < n_words:
+                out.append(f" {word}", style=HEX["mut"])
+        return out
+
+    n_keys = n_words = len(pairs)
+    line = build(n_keys, n_words)
+    while width is not None and line.cell_len > width and (n_words or n_keys):
+        if n_words:
+            n_words -= 1
+        else:
+            n_keys -= 1
+        line = build(n_keys, n_words)
+    return line
 
 
 def app_bindings() -> list[Binding]:
