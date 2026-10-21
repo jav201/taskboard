@@ -17,7 +17,7 @@ from textual.screen import ModalScreen, Screen
 from textual.widgets import Static
 
 from . import history
-from .boards import Registry, peek_board
+from .boards import Registry, announce, name_for, open_elsewhere, peek_board, renew, withdraw
 from .models import (AUTO_ARCHIVE_DAYS, IMAGE_EXTS, LINKS_MIGRATION, MILESTONES_MIGRATION,
                      Board, Project, Task,
                      archive_refusal, chain_template, default_board_path, is_open,
@@ -881,6 +881,7 @@ class TaskboardApp(App):
         self.team_filter: str = "equipo"   # session-level classification filter
         self._setup_state: dict | None = None   # staged team config while in setup view
         self._pre_setup_view: str = "swimlanes"
+        self._presence = None              # this window's marker of the open board
 
     # keys that act on the BOARD. They stay live on pushed screens (e.g. a
     # modal) and were indicated by nothing. FALSE, not None: Textual drops a
@@ -924,19 +925,58 @@ class TaskboardApp(App):
 
     def on_mount(self) -> None:
         self._label_board()
-        if len(self.registry.active()) > 1:
+        if len(self.registry.active()) > 1 and self.board_id is not None:
             # FIRST: the opened board's own modals (team identity, the milestone
-            # offer) then sit above the home and answer for that board (D11)
+            # offer) then sit above the home and answer for that board (D11); an
+            # unlisted board (`--open`) opens without the home
             self.push_screen(BoardsHome())
         if self._open_board(at_mount=True):
             self._warn_registry()
+            if self.board_id is None:
+                n = len(self.registry.active())
+                self.notify(f"Opened {strip_controls(str(self.board.path))} without adding it "
+                            f"to your boards (--open). B lists your {n} "
+                            f"board{'' if n == 1 else 's'}; this file is not one of them.",
+                            title="Boards", timeout=15, markup=False)
+
+    def on_unmount(self) -> None:
+        withdraw(self._presence)          # this window leaves the board
 
     def _label_board(self) -> None:
         """The chip (HLR-2203): the open board's name and colour, only when more
-        than one board is active."""
+        than one board is active; an unlisted board (`--open`, batch
+        2026-10-20-batch-03) always, as `<name> · not listed`."""
         entry = self.registry.get(self.board_id) if self.board_id else None
+        if self.board_id is None:
+            self.board.label = (f"{name_for(self.board.path)} · not listed", "pink")
+            return
         self.board.label = ((entry.name, entry.color)
                             if entry is not None and len(self.registry.active()) > 1 else None)
+
+    def _board_name(self) -> str:
+        entry = self.registry.get(self.board_id) if self.board_id else None
+        return entry.name if entry is not None else name_for(self.board.path)
+
+    def _enter_presence(self) -> None:
+        """This window's marker moves to the board just opened; another window's
+        fresh marker of it is said once (batch 2026-10-20-batch-03, the round's item 8 A)."""
+        others = open_elsewhere(self.board.path)
+        withdraw(self._presence)
+        self._presence = announce(self.board.path, datetime.now())
+        if not others:
+            return
+        known = sorted(t for t in others if t is not None)
+        since = ""
+        if known:
+            t = known[0]
+            when = (f"{t:%H:%M}" if t.date() == date.today()
+                    else f"{t:%b} {t.day} {t:%H:%M}")
+            since = f" (since {when})" if len(others) == 1 else f" (the first since {when})"
+        where = ("another taskboard window" if len(others) == 1
+                 else f"{len(others)} other taskboard windows")
+        self.notify(f"{self._board_name()} is already open in {where}{since}. Both save the "
+                    "same file: the last save wins. Close one of them.",
+                    title="Boards · open twice", severity="warning", timeout=30, markup=False)
 
     @staticmethod
     def move_team_ids(board: Board) -> set[str] | None:
@@ -977,6 +1017,7 @@ class TaskboardApp(App):
             # ONE shared clock interval for the whole app (never per-widget).
             self.set_interval(TICK_SECONDS, self._tick)
         self._warn_if_rescued()
+        self._enter_presence()
         self._init_team_mode()
         # LAST: the one-time milestone offer covers whatever start opened (the
         # identity picker included) until it is answered (D-615)
@@ -1197,7 +1238,8 @@ class TaskboardApp(App):
             return
         roster = self.team_state.roster()
         if roster:
-            self.push_screen(TeamIdentityPicker(roster), self._on_identity_picked)
+            self.push_screen(TeamIdentityPicker(roster, self.board.label),
+                             self._on_identity_picked)
         else:
             # roster-less shared dir cannot identify the owner
             self.team_state = None
@@ -1303,6 +1345,9 @@ class TaskboardApp(App):
         if ribbons:
             ribbons.first(Ribbon).update_clock()
         self._tick_n += 1
+        if self._tick_n % 30 == 0 and self._presence is not None and not renew(self._presence):
+            # the marker went (removed by hand, or as stale by another window): back
+            self._presence = announce(self.board.path, datetime.now())
         if self.view_mode in ("gantt", "swimlanes"):
             # gantt: advance the flow packet. lanes: breathe the today rule.
             # Both keep scroll and selection exactly where they were.

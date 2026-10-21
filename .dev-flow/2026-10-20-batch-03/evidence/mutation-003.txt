@@ -1,0 +1,27 @@
+arms: 24
+M1 the stale test inverted · taskboard/boards.py · test_TC_2409_the_markers: RED (KILLED) · sha256 40c9076e9169 restored · 1 failed in 0.52s
+M2 abs dropped (a future time never stale) · taskboard/boards.py · test_TC_2409_the_markers: RED (KILLED) · sha256 40c9076e9169 restored · 1 failed in 0.47s
+M3 its own marker counted · taskboard/boards.py · test_TC_2409_the_markers: RED (KILLED) · sha256 40c9076e9169 restored · 1 failed in 0.46s
+M4 the name pattern ignored · taskboard/boards.py · test_TC_2409_the_markers: RED (KILLED) · sha256 40c9076e9169 restored · 1 failed in 0.52s
+M5 a regular-file check dropped · taskboard/boards.py · test_TC_2409_the_markers: RED (KILLED) · sha256 40c9076e9169 restored · 1 failed in 0.50s
+M6 an empty marker left after a failed write · taskboard/boards.py · test_TC_2409_the_markers: RED (KILLED) · sha256 40c9076e9169 restored · 1 failed in 0.50s
+M7 no presence at opening · taskboard/app.py · test_AT_2409_a_second_window_is_told_once: RED (KILLED) · sha256 8704e10b425f restored · 1 failed in 0.66s
+M8 the marker left at exit · taskboard/app.py · test_AT_2409_a_second_window_is_told_once: RED (KILLED) · sha256 8704e10b425f restored · 1 failed in 0.74s
+M9 the marker left at a switch · taskboard/app.py · test_AT_2409_a_second_window_is_told_once: RED (KILLED) · sha256 8704e10b425f restored · 1 failed in 0.97s
+M10 a gone marker never re-announced · taskboard/app.py · test_TC_2409_the_lifecycle: RED (KILLED) · sha256 8704e10b425f restored · 1 failed in 0.88s
+M11 the notice parsed as markup (S-1) · taskboard/app.py · test_TC_2409_the_lifecycle: RED (KILLED) · sha256 8704e10b425f restored · 1 failed in 5.04s
+M11b the --open notice parsed as markup (S-14) · taskboard/app.py · test_TC_2410_the_unlisted_board_in_the_app: RED (KILLED) · sha256 8704e10b425f restored · 1 failed in 0.75s
+M11c an offset `since` kept (S-13) · taskboard/boards.py · test_TC_2409_the_markers: RED (KILLED) · sha256 40c9076e9169 restored · 1 failed in 0.53s
+M11d renew without the time (code review CR-2) · taskboard/boards.py · test_TC_2409_the_markers: RED (KILLED) · sha256 40c9076e9169 restored · 1 failed in 0.54s
+M12 --open's check removed (S-3) · taskboard/__main__.py · test_TC_2410_a_path_that_is_no_board_is_refused[missing-True]: RED (KILLED) · sha256 681d93b792c5 restored · 1 failed in 0.48s
+M12b --open's check removed · taskboard/__main__.py · test_TC_2410_a_path_that_is_no_board_is_refused[text-False]: RED (KILLED) · sha256 681d93b792c5 restored · 1 failed in 0.54s
+M13 --open registers · taskboard/__main__.py · test_TC_2410_open_app_registers_nothing: RED (KILLED) · sha256 681d93b792c5 restored · 1 failed in 0.47s
+M13b --open registers (AT) · taskboard/__main__.py · test_AT_2410_open_without_registering: RED (KILLED) · sha256 681d93b792c5 restored · 1 failed in 0.59s
+M14 the home opened over an unlisted board · taskboard/app.py · test_AT_2410_open_without_registering: RED (KILLED) · sha256 8704e10b425f restored · 1 failed in 0.64s
+M15 the move out of an unlisted board offered · taskboard/modals.py · test_AT_2410_open_without_registering: RED (KILLED) · sha256 f06e186a4f69 restored · 1 failed in 1.56s
+M16 no `not listed` label · taskboard/app.py · test_TC_2410_the_unlisted_board_in_the_app: RED (KILLED) · sha256 8704e10b425f restored · 1 failed in 0.47s
+M17 the offer's chip dropped · taskboard/modals.py · test_AT_2408_the_start_up_modals_say_their_board: RED (KILLED) · sha256 f06e186a4f69 restored · 1 failed in 0.59s
+M18 the app passes the picker no label · taskboard/app.py · test_AT_2408_the_start_up_modals_say_their_board: RED (KILLED) · sha256 8704e10b425f restored · 1 failed in 1.09s
+M19 the picker's key line dropped · taskboard/modals.py · test_TC_2408_the_titles_open_with_the_chip: RED (KILLED) · sha256 f06e186a4f69 restored · 1 failed in 0.69s
+not killed: 0
+exit=0

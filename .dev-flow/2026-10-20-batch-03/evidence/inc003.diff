@@ -1,0 +1,859 @@
+diff --git a/taskboard/__main__.py b/taskboard/__main__.py
+index ebee38a..574e1f0 100644
+--- a/taskboard/__main__.py
++++ b/taskboard/__main__.py
+@@ -3,34 +3,56 @@
+ from __future__ import annotations
+ 
+ import argparse
++import json
+ from datetime import datetime
+ 
+ from .app import TaskboardApp
+-from .boards import Registry, registry_path
+-from .models import Board, default_board_path
++from .boards import Registry, expand_home, registry_path
++from .models import Board, default_board_path, strip_controls
+ 
+ 
+-def open_app(board: str | None) -> TaskboardApp:
++def open_app(board: str | None, unlisted: str | None = None) -> TaskboardApp:
+     """The app as `taskboard` starts it (batch 2026-10-20-batch-01): the user's
+-    registry; `--board PATH` registered and opened, else the board opened last."""
++    registry; `--board PATH` registered and opened, else the board opened last;
++    `--open PATH` (batch 2026-10-20-batch-03) opened without being registered and
++    without being recorded as the board opened last."""
+     registry = Registry.load(registry_path(), default_board_path())
++    if unlisted:
++        return TaskboardApp(board_path=expand_home(unlisted), registry=registry)
+     now = datetime.now()
+     entry = registry.register(board) if board else registry.opening()
+     registry.touch(entry.id, now)
+     return TaskboardApp(board_path=entry.path, registry=registry)
+ 
+ 
++def _a_board_file(path: str) -> bool:
++    """`--open`'s file: a regular file that parses to a JSON object — anything else
++    is refused before the loader could seed or quarantine it (security S-3, S-8)."""
++    p = expand_home(path)
++    try:
++        return p.is_file() and isinstance(json.loads(p.read_text(encoding="utf-8")), dict)
++    except (OSError, ValueError, RecursionError):
++        return False
++
++
+ def main() -> None:
+     parser = argparse.ArgumentParser(
+         prog="taskboard",
+         description="A frameless kanban desktop-widget task board (Textual).",
+     )
+-    parser.add_argument(
++    where = parser.add_mutually_exclusive_group()
++    where.add_argument(
+         "--board",
+         metavar="PATH",
+         default=None,
+         help=f"JSON store to use, added to the boards list (default: {default_board_path()})",
+     )
++    where.add_argument(
++        "--open",
++        metavar="PATH",
++        default=None,
++        help="open an existing board file without adding it to the boards list",
++    )
+     parser.add_argument(
+         "--report",
+         metavar="PROJECT",
+@@ -40,11 +62,17 @@ def main() -> None:
+         help="write an HTML report of the board (or of one PROJECT) and exit",
+     )
+     args = parser.parse_args()
++    if args.open is not None and not _a_board_file(args.open):
++        # before --report and before anything is built: the loader would seed a
++        # missing path (security S-3)
++        parser.exit(2, f"taskboard: no board file at {strip_controls(args.open)} "
++                       "(--open opens an existing one)\n")
+ 
+     if args.report is not None:
+         # Report and exit: no TUI. The board is READ, never written.
+         from .report import write_report
+-        board = Board.load(args.board or default_board_path())
++        source = args.board or args.open            # the two are exclusive
++        board = Board.load(expand_home(source) if source else default_board_path())
+         wanted = args.report or None
+         if wanted is not None:
+             names = [p.name for p in board.visible_projects(False)]
+@@ -57,7 +85,7 @@ def main() -> None:
+         return
+ 
+     try:
+-        app = open_app(args.board)
++        app = open_app(args.board, args.open)
+     except OSError as exc:      # the registry busy or unwritable: a message, not a traceback
+         parser.exit(1, f"taskboard: {exc}\n")
+     app.run()
+diff --git a/taskboard/app.py b/taskboard/app.py
+index f1ad00a..d2bb88a 100644
+--- a/taskboard/app.py
++++ b/taskboard/app.py
+@@ -17,7 +17,7 @@ from textual.screen import ModalScreen, Screen
+ from textual.widgets import Static
+ 
+ from . import history
+-from .boards import Registry, peek_board
++from .boards import Registry, announce, name_for, open_elsewhere, peek_board, renew, withdraw
+ from .models import (AUTO_ARCHIVE_DAYS, IMAGE_EXTS, LINKS_MIGRATION, MILESTONES_MIGRATION,
+                      Board, Project, Task,
+                      archive_refusal, chain_template, default_board_path, is_open,
+@@ -881,6 +881,7 @@ class TaskboardApp(App):
+         self.team_filter: str = "equipo"   # session-level classification filter
+         self._setup_state: dict | None = None   # staged team config while in setup view
+         self._pre_setup_view: str = "swimlanes"
++        self._presence = None              # this window's marker of the open board
+ 
+     # keys that act on the BOARD. They stay live on pushed screens (e.g. a
+     # modal) and were indicated by nothing. FALSE, not None: Textual drops a
+@@ -924,20 +925,59 @@ class TaskboardApp(App):
+ 
+     def on_mount(self) -> None:
+         self._label_board()
+-        if len(self.registry.active()) > 1:
++        if len(self.registry.active()) > 1 and self.board_id is not None:
+             # FIRST: the opened board's own modals (team identity, the milestone
+-            # offer) then sit above the home and answer for that board (D11)
++            # offer) then sit above the home and answer for that board (D11); an
++            # unlisted board (`--open`) opens without the home
+             self.push_screen(BoardsHome())
+         if self._open_board(at_mount=True):
+             self._warn_registry()
++            if self.board_id is None:
++                n = len(self.registry.active())
++                self.notify(f"Opened {strip_controls(str(self.board.path))} without adding it "
++                            f"to your boards (--open). B lists your {n} "
++                            f"board{'' if n == 1 else 's'}; this file is not one of them.",
++                            title="Boards", timeout=15, markup=False)
++
++    def on_unmount(self) -> None:
++        withdraw(self._presence)          # this window leaves the board
+ 
+     def _label_board(self) -> None:
+         """The chip (HLR-2203): the open board's name and colour, only when more
+-        than one board is active."""
++        than one board is active; an unlisted board (`--open`, batch
++        2026-10-20-batch-03) always, as `<name> · not listed`."""
+         entry = self.registry.get(self.board_id) if self.board_id else None
++        if self.board_id is None:
++            self.board.label = (f"{name_for(self.board.path)} · not listed", "pink")
++            return
+         self.board.label = ((entry.name, entry.color)
+                             if entry is not None and len(self.registry.active()) > 1 else None)
+ 
++    def _board_name(self) -> str:
++        entry = self.registry.get(self.board_id) if self.board_id else None
++        return entry.name if entry is not None else name_for(self.board.path)
++
++    def _enter_presence(self) -> None:
++        """This window's marker moves to the board just opened; another window's
++        fresh marker of it is said once (batch 2026-10-20-batch-03, the round's item 8 A)."""
++        others = open_elsewhere(self.board.path)
++        withdraw(self._presence)
++        self._presence = announce(self.board.path, datetime.now())
++        if not others:
++            return
++        known = sorted(t for t in others if t is not None)
++        since = ""
++        if known:
++            t = known[0]
++            when = (f"{t:%H:%M}" if t.date() == date.today()
++                    else f"{t:%b} {t.day} {t:%H:%M}")
++            since = f" (since {when})" if len(others) == 1 else f" (the first since {when})"
++        where = ("another taskboard window" if len(others) == 1
++                 else f"{len(others)} other taskboard windows")
++        self.notify(f"{self._board_name()} is already open in {where}{since}. Both save the "
++                    "same file: the last save wins. Close one of them.",
++                    title="Boards · open twice", severity="warning", timeout=30, markup=False)
++
+     @staticmethod
+     def move_team_ids(board: Board) -> set[str] | None:
+         """The project ids `board`'s team configuration shares (HLR-2206): empty
+@@ -977,6 +1017,7 @@ class TaskboardApp(App):
+             # ONE shared clock interval for the whole app (never per-widget).
+             self.set_interval(TICK_SECONDS, self._tick)
+         self._warn_if_rescued()
++        self._enter_presence()
+         self._init_team_mode()
+         # LAST: the one-time milestone offer covers whatever start opened (the
+         # identity picker included) until it is answered (D-615)
+@@ -1197,7 +1238,8 @@ class TaskboardApp(App):
+             return
+         roster = self.team_state.roster()
+         if roster:
+-            self.push_screen(TeamIdentityPicker(roster), self._on_identity_picked)
++            self.push_screen(TeamIdentityPicker(roster, self.board.label),
++                             self._on_identity_picked)
+         else:
+             # roster-less shared dir cannot identify the owner
+             self.team_state = None
+@@ -1303,6 +1345,9 @@ class TaskboardApp(App):
+         if ribbons:
+             ribbons.first(Ribbon).update_clock()
+         self._tick_n += 1
++        if self._tick_n % 30 == 0 and self._presence is not None and not renew(self._presence):
++            # the marker went (removed by hand, or as stale by another window): back
++            self._presence = announce(self.board.path, datetime.now())
+         if self.view_mode in ("gantt", "swimlanes"):
+             # gantt: advance the flow packet. lanes: breathe the today rule.
+             # Both keep scroll and selection exactly where they were.
+diff --git a/taskboard/boards.py b/taskboard/boards.py
+index 29462a6..1ca710e 100644
+--- a/taskboard/boards.py
++++ b/taskboard/boards.py
+@@ -16,6 +16,7 @@ taskboard's change to the registry is never written over.
+ from __future__ import annotations
+ 
+ import copy
++import hashlib
+ import json
+ import os
+ import re
+@@ -37,6 +38,8 @@ MAIN_NAME = "Main"
+ NAME_MAX = 60
+ LOCK_WAIT = 2.0      # seconds a writer waits for another taskboard's lock
+ LOCK_STALE = 10.0    # a lock file older than this was left by an instance that died
++PRESENCE_STALE = 120.0   # a presence marker not renewed for this long is a dead window's
++_PRESENCE_READ = 4096    # a marker's JSON is read from at most this many bytes
+ _ID = re.compile(r"[A-Za-z0-9_-]+")
+ # names Windows will not give a folder (`con` spelled in two pieces: the English law
+ # of tests/test_english.py reads a bare "con" as a Spanish word)
+@@ -153,6 +156,11 @@ def file_lock(path, label: str | None = None):
+                 pass    # a stale copy is taken over by the next writer
+ 
+ 
++def expand_home(p) -> Path:
++    """`~` read as `Path.home()` (the public name, for `__main__` — architect A-19)."""
++    return _expand_home(p)
++
++
+ def _expand_home(p) -> Path:
+     """`~` read as `Path.home()` — the home the suite's seam names — never the
+     environment `expanduser` reads (G-9); `~user` stays as written."""
+@@ -172,6 +180,12 @@ def _name_for(path) -> str:
+     return (p.parent.name if p.stem == "board" else p.stem) or MAIN_NAME
+ 
+ 
++def name_for(path) -> str:
++    """The name a registered board of this file gets (batch 2026-10-20-batch-03: an
++    unlisted board's chip and notices), its control characters stripped."""
++    return strip_controls(_name_for(path))
++
++
+ def _iso_or_none(value) -> str | None:
+     if not isinstance(value, str):
+         return None
+@@ -488,6 +502,114 @@ class Registry:
+         write_atomic(self.path, json.dumps(data, indent=2, ensure_ascii=False))
+ 
+ 
++# ---- presence: a board open in another window (batch 2026-10-20-batch-03) --------
++def presence_dir() -> Path:
++    """`~/.taskboard/open/`: the home's (Main's folder), never another board's."""
++    return default_board_path().parent / "open"
++
++
++def _presence_stem(path) -> str:
++    return hashlib.sha256(_key(path).encode("utf-8")).hexdigest()[:16]
++
++
++def announce(path, now: datetime) -> Path | None:
++    """This window's marker for the board at `path`: `<file hash>-<token>.json`,
++    created exclusively, holding `{"since", "pid"}`; a failed write removes it. None
++    when it cannot be made — presence never stops a start."""
++    try:
++        folder = presence_dir()
++        folder.mkdir(parents=True, exist_ok=True)
++        marker = folder / f"{_presence_stem(path)}-{os.urandom(16).hex()}.json"
++        fd = os.open(marker, os.O_CREAT | os.O_EXCL | os.O_WRONLY)
++    except OSError:
++        return None
++    try:
++        os.write(fd, json.dumps({"since": now.isoformat(timespec="minutes"),
++                                 "pid": os.getpid()}).encode("utf-8"))
++    except OSError:
++        os.close(fd)
++        try:
++            os.unlink(marker)       # never an empty marker that reads as a window (S-7)
++        except OSError:
++            pass
++        return None
++    os.close(fd)
++    return marker
++
++
++def renew(marker: Path | None) -> bool:
++    """Renew the marker's time; False when it is gone."""
++    if marker is None:
++        return False
++    try:
++        os.utime(marker)
++        return True
++    except OSError:
++        return False
++
++
++def withdraw(marker: Path | None) -> None:
++    """Remove this window's own marker; errors ignored."""
++    if marker is None:
++        return
++    try:
++        os.unlink(marker)
++    except OSError:
++        pass
++
++
++def _since(marker: Path) -> datetime | None:
++    """A marker's `since`, read from at most its first 4096 bytes; anything but a JSON
++    object holding a parseable string `since` is None (S-2)."""
++    try:
++        with open(marker, "rb") as fh:
++            data = json.loads(fh.read(_PRESENCE_READ).decode("utf-8"))
++        since = datetime.fromisoformat(data["since"]) if isinstance(data.get("since"), str) \
++            else None
++        # a local time only, as taskboard writes it: an offset could not be ordered
++        # beside the others (security S-13)
++        return since if since is None or since.tzinfo is None else None
++    except (OSError, ValueError, TypeError, AttributeError, KeyError, RecursionError):
++        return None
++
++
++def open_elsewhere(path, mine: Path | None = None) -> list[datetime | None]:
++    """The `since` (or None) of every fresh marker of the board at `path` but `mine`. A
++    marker is read only as a regular file (`lstat`) whose whole name is this board's
++    pattern; one more than `PRESENCE_STALE` seconds from now (its mtime, never its
++    `since`) is a dead window's and is removed once a second `lstat` shows it
++    unchanged. Nothing raises."""
++    stem = _presence_stem(path)
++    pattern = re.compile(re.escape(stem) + r"-[0-9a-f]{32}\.json")
++    try:
++        names = os.listdir(presence_dir())
++    except OSError:
++        return []
++    out = []
++    for name in sorted(names):
++        if not pattern.fullmatch(name):
++            continue
++        marker = presence_dir() / name
++        if mine is not None and marker == mine:
++            continue
++        try:
++            st = os.lstat(marker)
++        except OSError:
++            continue
++        if not stat.S_ISREG(st.st_mode):
++            continue
++        if abs(time.time() - st.st_mtime) > PRESENCE_STALE:
++            try:
++                again = os.lstat(marker)
++                if (again.st_mtime_ns, again.st_ino) == (st.st_mtime_ns, st.st_ino):
++                    os.unlink(marker)       # a dead window's (S-5: unchanged meanwhile)
++            except OSError:
++                pass
++            continue
++        out.append(_since(marker))
++    return out
++
++
+ def peek_board(path) -> Board:
+     """A board read without writing: `Board.load` for a file that exists (it
+     writes nothing then), an empty unsaved board for one that does not —
+diff --git a/taskboard/modals.py b/taskboard/modals.py
+index e96e458..0274676 100644
+--- a/taskboard/modals.py
++++ b/taskboard/modals.py
+@@ -41,8 +41,8 @@ from .models import (IMAGE_EXTS, PROJECT_COLORS, PROJECT_STATUSES, TASK_PRIORITI
+                      resolve_city, save_pil_image, templates)
+ from .boards import clean_name, move_plan, move_project, peek_board, slug
+ from .keymap import KEY_STYLE, PRESENT_KEYS, key_line, palette_commands
+-from .views import (HEX, clip, fit, gantt_group_key, gantt_link_frame, gantt_link_order,
+-                    highlight_segments, valid_url)
++from .views import (HEX, board_chip_text, clip, fit, gantt_group_key, gantt_link_frame,
++                    gantt_link_order, highlight_segments, valid_url)
+ 
+ # Imported at MODULE load (before the app starts) on purpose: textual-image
+ # detects the terminal's graphics support by QUERYING the terminal, which only
+@@ -804,6 +804,12 @@ class ProjectPicker(ModalScreen[None]):
+         if proj is None:
+             return
+         app = self.app
++        if app.board_id is None:
++            # an unlisted board (`--open`, batch 2026-10-20-batch-03): no registry entry
++            # to record the move from
++            app.notify("This board is not listed (--open): open it with --board to move "
++                       "its projects.", title="Boards", severity="warning", markup=False)
++            return
+         others = [e for e in app.registry.active() if e.id != app.board_id]
+         if not others:
+             app.notify("There is no other board to move it to — B, then n, creates one.",
+@@ -1157,6 +1163,7 @@ class MilestoneOffer(ModalScreen[list | None]):
+     #offer-box { width: 96; max-width: 100%; height: auto; max-height: 100%;
+                  padding: 0 1; background: #0d1219; border: round #334154; }
+     #offer-box Label { margin: 0; }
++    #offer-box .modal-title { width: 100%; }
+     #offer-list { height: auto; border: none; padding: 0; }
+     """
+ 
+@@ -1202,7 +1209,9 @@ class MilestoneOffer(ModalScreen[list | None]):
+     def compose(self) -> ComposeResult:
+         n = len(self._rows)
+         with Vertical(id="offer-box"):
+-            yield Label(Text.assemble(("◆ Milestones", "bold"), " · convert one-day tasks?",
++            # the board's chip first (batch 2026-10-20-batch-03, the round's item 7 A)
++            yield Label(Text.assemble(board_chip_text(self.board.label),
++                                      ("◆ Milestones", "bold"), " · convert one-day tasks?",
+                                       (f"   {n} candidate{'s' if n != 1 else ''} · shown once",
+                                        HEX["mut"])), classes="modal-title")
+             yield Label(Text("Converting keeps the task, its links and its history; "
+@@ -1541,16 +1550,23 @@ class TeamIdentityPicker(ModalScreen[str | None]):
+     """
+ 
+     BINDINGS = [("escape", "cancel", "Cancel")]
++    DEFAULT_CSS = """
++    #identity-box .modal-title { width: 100%; }
++    """
+ 
+-    def __init__(self, roster: list[dict]):
++    def __init__(self, roster: list[dict], label: tuple[str, str] | None = None):
+         super().__init__()
+         self._roster = roster
++        self._label = label
+ 
+     def compose(self) -> ComposeResult:
+         with VerticalScroll(id="identity-box", classes="modal"):
+-            yield Label("[b]Operator identity[/b]  —  pick from the team roster",
+-                        classes="modal-title")
++            # the board's chip first (batch 2026-10-20-batch-03, the round's item 7 A)
++            yield Label(Text.assemble(board_chip_text(self._label),
++                                      ("Operator identity", "bold"),
++                                      "  —  pick from the team roster"), classes="modal-title")
+             yield OptionList(id="identity-list")
++            yield Label(key_line([("↵", "pick"), ("esc", "cancel")]), id="identity-keys")
+ 
+     def on_mount(self) -> None:
+         ol = self.query_one("#identity-list", OptionList)
+diff --git a/tests/test_boards_backlog_round.py b/tests/test_boards_backlog_round.py
+new file mode 100644
+index 0000000..87fcc16
+--- /dev/null
++++ b/tests/test_boards_backlog_round.py
+@@ -0,0 +1,412 @@
++"""The boards' items of the backlog round.
++
++Batch 2026-10-20-batch-03: HLR-2408 / LLR-2408.1 · TC-2408 · AT-2408 — the start-up
++modals name their board (US-2405); HLR-2409 / LLR-2409.1, LLR-2409.2 · TC-2409 · AT-2409
++— one notice when a board is open in another window (US-2406); HLR-2410 / LLR-2410.1,
++LLR-2410.2 · TC-2410 · AT-2410 — `--open PATH` (US-2407). "Another window" is a second
++`TaskboardApp` in this process on the same files: the code a second process runs. The
++round's boards (`backlog_round_fixture`), synthetic, under this test's own home.
++"""
++from __future__ import annotations
++
++import json
++import os
++import sys
++import time
++from datetime import date, datetime
++from pathlib import Path
++
++import pytest
++
++import backlog_round_fixture as fx
++import kg_board
++from test_modal_keys import _svg_rows
++from taskboard import app as app_module, boards, models, modals, views
++from taskboard.app import BoardsHome, TaskboardApp
++from taskboard.boards import Registry
++from taskboard.models import Board
++
++NOW = datetime(2026, 10, 20, 9, 30)
++
++
++class _Today(date):
++    @classmethod
++    def today(cls):
++        return fx.TODAY
++
++
++class _Now(datetime):
++    @classmethod
++    def now(cls, tz=None):
++        return NOW
++
++
++@pytest.fixture
++def home(tmp_path, monkeypatch):
++    import taskboard.__main__ as entry
++    monkeypatch.setattr(Path, "home", classmethod(lambda cls: tmp_path))
++    for mod in (app_module, models, views, modals):
++        monkeypatch.setattr(mod, "date", _Today)
++    monkeypatch.setattr(app_module, "datetime", _Now)
++    monkeypatch.setattr(entry, "datetime", _Now)
++    return tmp_path / ".taskboard"
++
++
++def _open(board=None, unlisted=None):
++    from taskboard.__main__ import open_app
++    return open_app(board, unlisted)
++
++
++async def _press(pilot, *keys):
++    for k in keys:
++        await pilot.press(k)
++        await pilot.pause()
++
++
++def _notes(app) -> list:
++    return [str(n.message) for n in app._notifications]
++
++
++def _markers() -> list:
++    d = boards.presence_dir()
++    return sorted(p.name for p in d.iterdir()) if d.is_dir() else []
++
++
++def _title(screen) -> str:
++    c = screen.query(".modal-title").first().render()
++    return c.plain if hasattr(c, "plain") else str(c)
++
++
++# --------------------------------------------------------------------------- #
++# HLR-2408 — the start-up modals' chip
++# --------------------------------------------------------------------------- #
++async def test_TC_2408_the_titles_open_with_the_chip(home):
++    """TC-2408: the offer of a labelled board and the identity picker given a label
++    open their titles with the chip and a space; no label, no chip; a markup-looking
++    name printed as typed; the picker shows `↵ pick   esc cancel`."""
++    fx.build(home)
++    board = Board.load(fx.board_path(home, "client-a"))
++    cands = [(t, True) for t in board.tasks[:1]]
++    app = TaskboardApp(board_path=home / "x" / "board.json")
++    async with app.run_test(size=(118, 30)) as pilot:
++        await pilot.pause()
++        board.label = ("Client A", "sky")
++        app.push_screen(modals.MilestoneOffer(board, cands, fx.TODAY))
++        await pilot.pause()
++        assert _title(app.screen).startswith(" Client A  ◆ Milestones · convert one-day tasks?")
++        app.pop_screen()
++        board.label = None
++        app.push_screen(modals.MilestoneOffer(board, cands, fx.TODAY))
++        await pilot.pause()
++        assert _title(app.screen).startswith("◆ Milestones")
++        app.pop_screen()
++        roster = [{"id": "u1", "name": "username_subject"}]
++        app.push_screen(modals.TeamIdentityPicker(roster, ("[b]Course[/b]", "violet")))
++        await pilot.pause()
++        assert _title(app.screen).startswith(" [b]Course[/b]  Operator identity")
++        keys = app.screen.query_one("#identity-keys").render().plain
++        assert keys == "↵ pick   esc cancel"
++        app.pop_screen()
++        app.push_screen(modals.TeamIdentityPicker(roster))
++        await pilot.pause()
++        assert _title(app.screen).startswith("Operator identity")
++
++
++@pytest.mark.milestone_offer
++async def test_AT_2408_the_start_up_modals_say_their_board(home, tmp_path):
++    """AT-2408 (US-2405): a start with Client A's offer pending shows the offer titled
++    with ` Client A `; Course in team mode with no identity, opened from the home,
++    shows the picker titled ` Course ` with its keys; a one-board start's offer has
++    no chip."""
++    fx.build(home, last="client-a", offer=True)
++    team = tmp_path / "team"
++    team.mkdir()
++    team_json = dict(kg_board.TEAM)
++    team_json["roster"] = [{"id": "u1", "name": "username_subject", "hue": "sky"},
++                           {"id": "u2", "name": "Teammate B", "hue": "amber"}]
++    (team / "team.json").write_text(json.dumps(team_json), encoding="utf-8")
++    course = Board.load(fx.board_path(home, "course"))
++    course.settings["team_shared_dir"] = str(team)
++    course.save()
++    app = _open()
++    async with app.run_test(size=(118, 30)) as pilot:
++        await pilot.pause()
++        assert type(app.screen).__name__ == "MilestoneOffer"
++        assert _title(app.screen).startswith(" Client A  ◆ Milestones · convert one-day tasks?")
++        await _press(pilot, "escape")
++        assert isinstance(app.screen, BoardsHome)
++        await _press(pilot, "left", "down", "enter")
++        assert type(app.screen).__name__ == "TeamIdentityPicker", app.screen_stack
++        assert _title(app.screen).startswith(" Course ") and "Operator identity" in _title(app.screen)
++        assert app.screen.query_one("#identity-keys").render().plain == "↵ pick   esc cancel"
++    one = home.parent / "one"
++    path = one / "board.json"
++    b = fx.build_board(one, "client-a", offer=True)
++    b.path = path
++    path.parent.mkdir(parents=True, exist_ok=True)
++    b.save()
++    app = TaskboardApp(board_path=path)
++    async with app.run_test(size=(118, 30)) as pilot:
++        await pilot.pause()
++        assert type(app.screen).__name__ == "MilestoneOffer"
++        assert _title(app.screen).startswith("◆ Milestones")
++
++
++# --------------------------------------------------------------------------- #
++# HLR-2409 — open twice
++# --------------------------------------------------------------------------- #
++def _age(p: Path, seconds: float) -> None:
++    t = time.time() - seconds
++    os.utime(p, (t, t))
++
++
++def test_TC_2409_the_markers(home, monkeypatch):
++    """TC-2409: two announces are two files; another window's fresh marker counts,
++    one 121 s old (or 121 s in the future) is removed, 119 s counts; a marker of the
++    wrong shape counts with no time; a directory and a foreign name are left alone;
++    `withdraw` removes only its own; a failed create or write leaves nothing; two
++    spellings of one file share one pattern."""
++    p = home / "b" / "board.json"
++    a, b = boards.announce(p, NOW), boards.announce(p, NOW)
++    assert a and b and a != b and a.parent == home / "open"
++    assert json.loads(a.read_text(encoding="utf-8"))["since"] == "2026-10-20T09:30"
++    assert boards.open_elsewhere(p, a) == [NOW]
++    rel = Path(os.path.relpath(p, Path.cwd())) if p.drive == Path.cwd().drive else p
++    assert boards.open_elsewhere(Path(str(p).upper()), a) == [NOW]
++    assert boards.open_elsewhere(rel, a) == [NOW]
++    _age(b, 121)
++    assert boards.open_elsewhere(p, a) == [] and not b.exists()
++    c = boards.announce(p, NOW)
++    _age(c, 119)
++    assert boards.open_elsewhere(p, a) == [NOW]
++    t = time.time() + 121
++    os.utime(c, (t, t))
++    assert boards.open_elsewhere(p, a) == [] and not c.exists()
++    stem = a.name.split("-")[0]
++    for body in (b"not json", b"[]", b'{"since": 5}', b'{"since": null}',
++                 b'{"since": "2026-10-20T09:30+05:00"}',     # an offset: unordered (S-13)
++                 b'{"since": "' + b"9" * 10_000_000 + b'"}'):
++        m = home / "open" / f"{stem}-{'e' * 32}.json"
++        m.write_bytes(body)
++        assert boards.open_elsewhere(p, a) == [None], body[:20]
++        m.unlink()
++    (home / "open" / f"{stem}-{'d' * 32}.json").mkdir()
++    (home / "open" / "other.json").write_text("{}", encoding="utf-8")
++    assert boards.open_elsewhere(p, a) == []
++    assert (home / "open" / f"{stem}-{'d' * 32}.json").is_dir()
++    assert (home / "open" / "other.json").exists()
++    m = boards.announce(p, NOW)                      # renewal keeps a live window fresh
++    _age(m, 119)
++    assert boards.renew(m) and abs(time.time() - m.stat().st_mtime) < 5
++    assert boards.renew(None) is False
++    boards.withdraw(m)
++    boards.withdraw(a)
++    assert not a.exists() and (home / "open" / "other.json").exists()
++    assert boards.name_for(p) == "b" and boards.name_for(home / "x" / "copy.json") == "copy"
++
++    def deny(*a, **k):
++        raise PermissionError("read-only")
++    monkeypatch.setattr(boards.os, "open", deny)
++    assert boards.announce(p, NOW) is None
++    monkeypatch.undo()
++    monkeypatch.setattr(Path, "home", classmethod(lambda cls: home.parent))
++    before = set(os.listdir(home / "open"))
++    monkeypatch.setattr(boards.os, "write", deny)
++    assert boards.announce(p, NOW) is None
++    assert set(os.listdir(home / "open")) == before
++
++
++async def test_TC_2409_the_lifecycle(home, monkeypatch):
++    """TC-2409 (app): a failed switch keeps the old marker; 30 ticks after the marker
++    is removed by hand a new one exists; the notice is a warning titled `Boards · open
++    twice`; a registry name `[/b]` shows as typed; two others are counted; a second
++    window by `--open` warns too."""
++    fx.build(home, last="client-a")
++    reg = json.loads((home / "boards.json").read_text(encoding="utf-8"))
++    reg["boards"][1]["name"] = "[/b]"
++    (home / "boards.json").write_text(json.dumps(reg), encoding="utf-8")
++    path = fx.board_path(home, "client-a")
++    other1, other2 = boards.announce(path, NOW), boards.announce(path, NOW)
++    # a third marker with an offset `since` (planted): the start must survive it (S-13)
++    aware = other1.with_name(other1.name.split("-")[0] + "-" + "f" * 32 + ".json")
++    aware.write_text('{"since": "2026-10-20T09:00+05:00"}', encoding="utf-8")
++    app = _open()
++    async with app.run_test(size=(118, 30), notifications=True) as pilot:
++        await pilot.pause()
++        note = next(n for n in app._notifications if n.title == "Boards · open twice")
++        assert note.severity == "warning"
++        assert note.message == ("[/b] is already open in 3 other taskboard windows (the first "
++                                "since 09:30). Both save the same file: the last save wins. "
++                                "Close one of them.")
++        mine = app._presence
++        assert mine is not None and mine.exists()
++        monkeypatch.setattr(app, "_migrate_links", lambda at_switch=False: False)
++        app.switch_board("course")
++        assert app.board_id == "client-a" and mine.exists() and app._presence == mine
++        mine.unlink()
++        for _ in range(30):
++            app._tick()
++        assert app._presence is not None and app._presence.exists()
++    boards.withdraw(other1)
++    boards.withdraw(other2)
++    boards.withdraw(aware)
++    first = _open()
++    async with first.run_test(size=(118, 30)) as p1:
++        await p1.pause()
++        second = _open(unlisted=str(path))
++        async with second.run_test(size=(118, 30), notifications=True) as p2:
++            await p2.pause()
++            assert any("already open in another taskboard window" in n for n in _notes(second))
++
++
++async def test_AT_2409_a_second_window_is_told_once(home):
++    """AT-2409 (US-2406): a second app on Client A says so once, with the first's
++    time; the first says nothing; markers follow the windows: one each, gone when
++    the window leaves the board or exits; a third app after them is told nothing."""
++    fx.build(home, last="client-a")
++    one = _open()
++    async with one.run_test(size=(118, 30), notifications=True) as p1:
++        await p1.pause()
++        assert not any("open twice" in (n.title or "") for n in one._notifications)
++        assert len(_markers()) == 1
++        two = _open()
++        async with two.run_test(size=(118, 30), notifications=True) as p2:
++            await p2.pause()
++            twice = [n for n in two._notifications if n.title == "Boards · open twice"]
++            assert [n.message for n in twice] == [
++                "Client A is already open in another taskboard window (since 09:30). Both "
++                "save the same file: the last save wins. Close one of them."]
++            assert len(_markers()) == 2
++        assert len(_markers()) == 1
++        assert isinstance(one.screen, BoardsHome)
++        await _press(p1, "down", "enter")
++        assert one.board_id == "course"
++        assert not any("open twice" in (n.title or "") for n in one._notifications)
++        course = boards._presence_stem(fx.board_path(home, "course"))
++        assert [m.split("-")[0] for m in _markers()] == [course]
++    assert _markers() == []
++    three = _open()
++    async with three.run_test(size=(118, 30), notifications=True) as p3:
++        await p3.pause()
++        assert not any("open twice" in (n.title or "") for n in three._notifications)
++
++
++# --------------------------------------------------------------------------- #
++# HLR-2410 — --open
++# --------------------------------------------------------------------------- #
++def _main(monkeypatch, *argv):
++    from taskboard import __main__ as entry
++    built = []
++    monkeypatch.setattr(sys, "argv", ["taskboard", *argv])
++    monkeypatch.setattr(TaskboardApp, "run", lambda self, *a, **k: built.append(self))
++    entry.main()
++    return built
++
++
++def test_TC_2410_open_app_registers_nothing(home):
++    """TC-2410: `open_app(None, copy)` writes nothing to `boards.json`."""
++    fx.build(home)
++    before = (home / "boards.json").read_bytes()
++    app = _open(unlisted=str(fx.copy_path(home)))
++    assert app.board_id is None
++    assert (home / "boards.json").read_bytes() == before
++
++
++@pytest.mark.parametrize("make, report", [("missing", False), ("missing", True),
++                                          ("folder", False), ("text", False),
++                                          ("escape", False)])
++def test_TC_2410_a_path_that_is_no_board_is_refused(home, monkeypatch, capsys, make, report):
++    """TC-2410: `--open` of a missing path (with `--report` too), a folder, a text file
++    or a path holding an ESC byte → exit 2, the message without control characters,
++    nothing written at the path."""
++    fx.build(home)
++    target = {"missing": home / "nope" / "b.json", "folder": home / "boards",
++              "text": home / "notes.txt", "escape": home / "a\x1b[2Jb.json"}[make]
++    if make == "text":
++        target.write_text("not a board", encoding="utf-8")
++    before = sorted(str(p) for p in home.rglob("*"))
++    argv = ["--open", str(target)] + (["--report"] if report else [])
++    with pytest.raises(SystemExit) as err:
++        _main(monkeypatch, *argv)
++    assert err.value.code == 2
++    out = capsys.readouterr().err
++    assert out.startswith("taskboard: no board file at ") and "(--open opens an existing one)" in out
++    assert "\x1b" not in out
++    assert sorted(str(p) for p in home.rglob("*")) == before
++
++
++async def test_TC_2410_open_of_a_registered_path_is_that_board(home):
++    """TC-2410 (code review CR-3): `--open` of a registered board's own file opens that
++    board as listed — its chip, no `not listed` — and records nothing (`last` kept)."""
++    fx.build(home, last="course")
++    before = (home / "boards.json").read_bytes()
++    app = _open(unlisted=str(fx.board_path(home, "client-a")))
++    assert app.board_id == "client-a"
++    async with app.run_test(size=(118, 30), notifications=True) as pilot:
++        await pilot.pause()
++        assert app.board.label == ("Client A", "sky")
++        assert not any("not one of them" in n for n in _notes(app))
++    assert (home / "boards.json").read_bytes() == before
++
++
++def test_TC_2410_open_and_board_together_are_refused(home, monkeypatch, capsys):
++    """TC-2410: `--open X --board Y` → argparse's own refusal."""
++    fx.build(home)
++    with pytest.raises(SystemExit) as err:
++        _main(monkeypatch, "--open", str(fx.copy_path(home)), "--board", str(fx.copy_path(home)))
++    assert err.value.code == 2 and "not allowed with argument" in capsys.readouterr().err
++
++
++async def test_TC_2410_the_unlisted_board_in_the_app(home):
++    """TC-2410 (app): an unlisted file's label is `<name> · not listed` on pink with one
++    or three boards; a switch to Personal relabels; a bracketed file name is printed
++    as typed (S-1)."""
++    fx.build(home)
++    copy = fx.copy_path(home)
++    one = TaskboardApp(board_path=copy, registry=Registry.single(home / "board.json"))
++    assert one.board_id is None
++    one._label_board()
++    assert one.board.label == ("board-copy · not listed", "pink")
++    app = _open(unlisted=str(copy))
++    async with app.run_test(size=(118, 30)) as pilot:
++        await pilot.pause()
++        assert app.board.label == ("board-copy · not listed", "pink")
++        app.switch_board("main")
++        assert app.board.label == ("Personal", "green")
++    odd = home / "[x]copy.json"     # a bracketed name: a markup tag if parsed
++    odd.write_bytes(copy.read_bytes())
++    app = _open(unlisted=str(odd))
++    async with app.run_test(size=(118, 30), notifications=True) as pilot:
++        await pilot.pause()
++        assert app.board.label == ("[x]copy · not listed", "pink")
++        # the notice is never parsed as markup (S-1; a parsed `\[` loses its backslash, S-14)
++        opened = [n for n in app._notifications if "without adding it" in str(n.message)]
++        assert opened and all(n.markup is False for n in opened)
++        assert any(f"Opened {odd} without adding it" in str(n.message) for n in opened)
++
++
++async def test_AT_2410_open_without_registering(home, monkeypatch):
++    """AT-2410 (US-2407): `taskboard --open elsewhere/board-copy.json` leaves
++    `boards.json` as it was, opens on the main screen with the chip ` board-copy · not
++    listed ` and says why; `B` lists the three boards; a move out of it is refused."""
++    fx.build(home, last="client-a")
++    before = (home / "boards.json").read_bytes()
++    built = _main(monkeypatch, "--open", str(fx.copy_path(home)))
++    assert len(built) == 1
++    app = built[0]
++    async with app.run_test(size=(118, 30), notifications=True) as pilot:
++        await pilot.pause()
++        assert not isinstance(app.screen, BoardsHome)
++        await pilot.pause(0.5)
++        head = _svg_rows(app.export_screenshot(), 118, 30)[0]
++        assert head.startswith(" board-copy · not listed "), head
++        assert app.board.label == ("board-copy · not listed", "pink")
++        assert any(n == (f"Opened {fx.copy_path(home)} without adding it to your boards "
++                         "(--open). B lists your 3 boards; this file is not one of them.")
++                   for n in _notes(app)), _notes(app)
++        await _press(pilot, "B")
++        assert isinstance(app.screen, BoardsHome)
++        assert [e.name for e in app.screen.entries] == ["Personal", "Client A", "Course"]
++        await _press(pilot, "escape", "P", "down", "m")
++        assert any(n.startswith("This board is not listed (--open)") for n in _notes(app))
++    assert (home / "boards.json").read_bytes() == before

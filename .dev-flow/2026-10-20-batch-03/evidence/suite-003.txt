@@ -1,0 +1,18 @@
+# Increment 003, targeted: the new tests, every suite B1 names for the touched symbols (Registry/open_app, MilestoneOffer, TeamIdentityPicker, ProjectPicker's move, the markup census) and the census of architect A-12 (every suite that reads notices and builds an app: grep -ln '_notifications\|notify' tests/*.py | xargs grep -ln 'open_app\|TaskboardApp('), after the reviews' fixes (code review CR-1..CR-4, security S-13, S-14), NO_COLOR unset, on the working tree
+# python -m pytest -q -p no:cacheprovider --color=no tests/test_app.py tests/test_archive.py tests/test_boards.py tests/test_boards_backlog_round.py tests/test_boards_concurrency.py tests/test_boards_forms.py tests/test_boards_home.py tests/test_boards_move.py tests/test_cascade_app.py tests/test_chainmap_app.py tests/test_details_links.py tests/test_focus.py tests/test_gantt_link.py tests/test_gantt_milestones.py tests/test_gantt_polish.py tests/test_history.py tests/test_kanban_readable.py tests/test_links.py tests/test_markup_census.py tests/test_markup_sites.py tests/test_milestone_offer.py tests/test_milestone_offer_seam.py tests/test_milestones.py tests/test_modal_keys.py tests/test_present_all.py tests/test_report.py tests/test_rescue.py tests/test_team_sync.py tests/test_undo_toast.py 
+The event loop scope for asynchronous fixtures will default to the fixture caching scope. Future versions of pytest-asyncio will default the loop scope for asynchronous fixtures to function scope. Set the default fixture loop scope explicitly in order to avoid unexpected behavior in the future. Valid fixture loop scopes are: "function", "class", "module", "package", "session"
+
+........................................................................ [  7%]
+........................................................................ [ 15%]
+........................................................................ [ 23%]
+........................................................................ [ 31%]
+........................................................................ [ 39%]
+........................................................................ [ 47%]
+........................................................................ [ 55%]
+........................................................................ [ 62%]
+........................................................................ [ 70%]
+........................................................................ [ 78%]
+........................................................................ [ 86%]
+........................................................................ [ 94%]
+....................................................                     [100%]
+916 passed in 537.42s (0:08:57)

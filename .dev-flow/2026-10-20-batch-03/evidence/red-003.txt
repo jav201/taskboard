@@ -1,0 +1,17 @@
+# Increment 003's RED on increment 002's commit 5d50baa (a clean detached worktree; the new test file copied in), NO_COLOR unset
+# python -m pytest -q -p no:cacheprovider --color=no -rf tests/test_boards_backlog_round.py
+FAILED tests/test_boards_backlog_round.py::test_TC_2408_the_titles_open_with_the_chip
+FAILED tests/test_boards_backlog_round.py::test_AT_2408_the_start_up_modals_say_their_board
+FAILED tests/test_boards_backlog_round.py::test_TC_2409_the_markers - Attribu...
+FAILED tests/test_boards_backlog_round.py::test_TC_2409_the_lifecycle - Attri...
+FAILED tests/test_boards_backlog_round.py::test_AT_2409_a_second_window_is_told_once
+FAILED tests/test_boards_backlog_round.py::test_TC_2410_open_app_registers_nothing
+FAILED tests/test_boards_backlog_round.py::test_TC_2410_a_path_that_is_no_board_is_refused[missing-False]
+FAILED tests/test_boards_backlog_round.py::test_TC_2410_a_path_that_is_no_board_is_refused[missing-True]
+FAILED tests/test_boards_backlog_round.py::test_TC_2410_a_path_that_is_no_board_is_refused[folder-False]
+FAILED tests/test_boards_backlog_round.py::test_TC_2410_a_path_that_is_no_board_is_refused[text-False]
+FAILED tests/test_boards_backlog_round.py::test_TC_2410_a_path_that_is_no_board_is_refused[escape-False]
+FAILED tests/test_boards_backlog_round.py::test_TC_2410_open_and_board_together_are_refused
+FAILED tests/test_boards_backlog_round.py::test_TC_2410_the_unlisted_board_in_the_app
+FAILED tests/test_boards_backlog_round.py::test_AT_2410_open_without_registering
+14 failed in 1.07s

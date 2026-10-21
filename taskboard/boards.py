@@ -16,6 +16,7 @@ taskboard's change to the registry is never written over.
 from __future__ import annotations
 
 import copy
+import hashlib
 import json
 import os
 import re
@@ -37,6 +38,8 @@ MAIN_NAME = "Main"
 NAME_MAX = 60
 LOCK_WAIT = 2.0      # seconds a writer waits for another taskboard's lock
 LOCK_STALE = 10.0    # a lock file older than this was left by an instance that died
+PRESENCE_STALE = 120.0   # a presence marker not renewed for this long is a dead window's
+_PRESENCE_READ = 4096    # a marker's JSON is read from at most this many bytes
 _ID = re.compile(r"[A-Za-z0-9_-]+")
 # names Windows will not give a folder (`con` spelled in two pieces: the English law
 # of tests/test_english.py reads a bare "con" as a Spanish word)
@@ -153,6 +156,11 @@ def file_lock(path, label: str | None = None):
                 pass    # a stale copy is taken over by the next writer
 
 
+def expand_home(p) -> Path:
+    """`~` read as `Path.home()` (the public name, for `__main__` — architect A-19)."""
+    return _expand_home(p)
+
+
 def _expand_home(p) -> Path:
     """`~` read as `Path.home()` — the home the suite's seam names — never the
     environment `expanduser` reads (G-9); `~user` stays as written."""
@@ -170,6 +178,12 @@ def _key(path) -> str:
 def _name_for(path) -> str:
     p = Path(path)
     return (p.parent.name if p.stem == "board" else p.stem) or MAIN_NAME
+
+
+def name_for(path) -> str:
+    """The name a registered board of this file gets (batch 2026-10-20-batch-03: an
+    unlisted board's chip and notices), its control characters stripped."""
+    return strip_controls(_name_for(path))
 
 
 def _iso_or_none(value) -> str | None:
@@ -486,6 +500,114 @@ class Registry:
         self.path.parent.mkdir(parents=True, exist_ok=True)
         data = {"version": 1, "last": self.last, "boards": [asdict(e) for e in self.entries]}
         write_atomic(self.path, json.dumps(data, indent=2, ensure_ascii=False))
+
+
+# ---- presence: a board open in another window (batch 2026-10-20-batch-03) --------
+def presence_dir() -> Path:
+    """`~/.taskboard/open/`: the home's (Main's folder), never another board's."""
+    return default_board_path().parent / "open"
+
+
+def _presence_stem(path) -> str:
+    return hashlib.sha256(_key(path).encode("utf-8")).hexdigest()[:16]
+
+
+def announce(path, now: datetime) -> Path | None:
+    """This window's marker for the board at `path`: `<file hash>-<token>.json`,
+    created exclusively, holding `{"since", "pid"}`; a failed write removes it. None
+    when it cannot be made — presence never stops a start."""
+    try:
+        folder = presence_dir()
+        folder.mkdir(parents=True, exist_ok=True)
+        marker = folder / f"{_presence_stem(path)}-{os.urandom(16).hex()}.json"
+        fd = os.open(marker, os.O_CREAT | os.O_EXCL | os.O_WRONLY)
+    except OSError:
+        return None
+    try:
+        os.write(fd, json.dumps({"since": now.isoformat(timespec="minutes"),
+                                 "pid": os.getpid()}).encode("utf-8"))
+    except OSError:
+        os.close(fd)
+        try:
+            os.unlink(marker)       # never an empty marker that reads as a window (S-7)
+        except OSError:
+            pass
+        return None
+    os.close(fd)
+    return marker
+
+
+def renew(marker: Path | None) -> bool:
+    """Renew the marker's time; False when it is gone."""
+    if marker is None:
+        return False
+    try:
+        os.utime(marker)
+        return True
+    except OSError:
+        return False
+
+
+def withdraw(marker: Path | None) -> None:
+    """Remove this window's own marker; errors ignored."""
+    if marker is None:
+        return
+    try:
+        os.unlink(marker)
+    except OSError:
+        pass
+
+
+def _since(marker: Path) -> datetime | None:
+    """A marker's `since`, read from at most its first 4096 bytes; anything but a JSON
+    object holding a parseable string `since` is None (S-2)."""
+    try:
+        with open(marker, "rb") as fh:
+            data = json.loads(fh.read(_PRESENCE_READ).decode("utf-8"))
+        since = datetime.fromisoformat(data["since"]) if isinstance(data.get("since"), str) \
+            else None
+        # a local time only, as taskboard writes it: an offset could not be ordered
+        # beside the others (security S-13)
+        return since if since is None or since.tzinfo is None else None
+    except (OSError, ValueError, TypeError, AttributeError, KeyError, RecursionError):
+        return None
+
+
+def open_elsewhere(path, mine: Path | None = None) -> list[datetime | None]:
+    """The `since` (or None) of every fresh marker of the board at `path` but `mine`. A
+    marker is read only as a regular file (`lstat`) whose whole name is this board's
+    pattern; one more than `PRESENCE_STALE` seconds from now (its mtime, never its
+    `since`) is a dead window's and is removed once a second `lstat` shows it
+    unchanged. Nothing raises."""
+    stem = _presence_stem(path)
+    pattern = re.compile(re.escape(stem) + r"-[0-9a-f]{32}\.json")
+    try:
+        names = os.listdir(presence_dir())
+    except OSError:
+        return []
+    out = []
+    for name in sorted(names):
+        if not pattern.fullmatch(name):
+            continue
+        marker = presence_dir() / name
+        if mine is not None and marker == mine:
+            continue
+        try:
+            st = os.lstat(marker)
+        except OSError:
+            continue
+        if not stat.S_ISREG(st.st_mode):
+            continue
+        if abs(time.time() - st.st_mtime) > PRESENCE_STALE:
+            try:
+                again = os.lstat(marker)
+                if (again.st_mtime_ns, again.st_ino) == (st.st_mtime_ns, st.st_ino):
+                    os.unlink(marker)       # a dead window's (S-5: unchanged meanwhile)
+            except OSError:
+                pass
+            continue
+        out.append(_since(marker))
+    return out
 
 
 def peek_board(path) -> Board:

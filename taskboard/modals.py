@@ -41,8 +41,8 @@ from .models import (IMAGE_EXTS, PROJECT_COLORS, PROJECT_STATUSES, TASK_PRIORITI
                      resolve_city, save_pil_image, templates)
 from .boards import clean_name, move_plan, move_project, peek_board, slug
 from .keymap import KEY_STYLE, PRESENT_KEYS, key_line, palette_commands
-from .views import (HEX, clip, fit, gantt_group_key, gantt_link_frame, gantt_link_order,
-                    highlight_segments, valid_url)
+from .views import (HEX, board_chip_text, clip, fit, gantt_group_key, gantt_link_frame,
+                    gantt_link_order, highlight_segments, valid_url)
 
 # Imported at MODULE load (before the app starts) on purpose: textual-image
 # detects the terminal's graphics support by QUERYING the terminal, which only
@@ -804,6 +804,12 @@ class ProjectPicker(ModalScreen[None]):
         if proj is None:
             return
         app = self.app
+        if app.board_id is None:
+            # an unlisted board (`--open`, batch 2026-10-20-batch-03): no registry entry
+            # to record the move from
+            app.notify("This board is not listed (--open): open it with --board to move "
+                       "its projects.", title="Boards", severity="warning", markup=False)
+            return
         others = [e for e in app.registry.active() if e.id != app.board_id]
         if not others:
             app.notify("There is no other board to move it to — B, then n, creates one.",
@@ -1157,6 +1163,7 @@ class MilestoneOffer(ModalScreen[list | None]):
     #offer-box { width: 96; max-width: 100%; height: auto; max-height: 100%;
                  padding: 0 1; background: #0d1219; border: round #334154; }
     #offer-box Label { margin: 0; }
+    #offer-box .modal-title { width: 100%; }
     #offer-list { height: auto; border: none; padding: 0; }
     """
 
@@ -1202,7 +1209,9 @@ class MilestoneOffer(ModalScreen[list | None]):
     def compose(self) -> ComposeResult:
         n = len(self._rows)
         with Vertical(id="offer-box"):
-            yield Label(Text.assemble(("◆ Milestones", "bold"), " · convert one-day tasks?",
+            # the board's chip first (batch 2026-10-20-batch-03, the round's item 7 A)
+            yield Label(Text.assemble(board_chip_text(self.board.label),
+                                      ("◆ Milestones", "bold"), " · convert one-day tasks?",
                                       (f"   {n} candidate{'s' if n != 1 else ''} · shown once",
                                        HEX["mut"])), classes="modal-title")
             yield Label(Text("Converting keeps the task, its links and its history; "
@@ -1541,16 +1550,23 @@ class TeamIdentityPicker(ModalScreen[str | None]):
     """
 
     BINDINGS = [("escape", "cancel", "Cancel")]
+    DEFAULT_CSS = """
+    #identity-box .modal-title { width: 100%; }
+    """
 
-    def __init__(self, roster: list[dict]):
+    def __init__(self, roster: list[dict], label: tuple[str, str] | None = None):
         super().__init__()
         self._roster = roster
+        self._label = label
 
     def compose(self) -> ComposeResult:
         with VerticalScroll(id="identity-box", classes="modal"):
-            yield Label("[b]Operator identity[/b]  —  pick from the team roster",
-                        classes="modal-title")
+            # the board's chip first (batch 2026-10-20-batch-03, the round's item 7 A)
+            yield Label(Text.assemble(board_chip_text(self._label),
+                                      ("Operator identity", "bold"),
+                                      "  —  pick from the team roster"), classes="modal-title")
             yield OptionList(id="identity-list")
+            yield Label(key_line([("↵", "pick"), ("esc", "cancel")]), id="identity-keys")
 
     def on_mount(self) -> None:
         ol = self.query_one("#identity-list", OptionList)

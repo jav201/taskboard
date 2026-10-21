@@ -43,3 +43,10 @@ above this line is ever edited._
 - **What changed:** Before → After. HLR-2403: "the hint row shall end with `? keys` at every width from `PRESENT_MIN_WIDTH`" → the same, the rest of the hint chosen and cut as before in the room `? keys` leaves, so each wording's first width moves 8 columns up; at 80 columns the gantt view takes the short wording — this supersedes, in the canon, HLR-2002's (batch 2026-10-18-batch-03) "80 columns take the middle wording naming `next` and `show all`" for the gantt view, as LED-2026-10-19-batch-01.2 did for the split view (D-14). The law-driven pins of `tests/test_present_narrow.py`, `test_present_polish.py`, `test_present_views_app.py`, `test_present_hide.py` and `test_present_all.py` move with it (increment 002's packet). HLR-2405's wordings unchanged in text; their first widths move with the same 8 cells (and `/K J` adds 4 to the long one).
 - **Why:** the two requirements cannot both hold at 80 columns; the newer operator verdict (the round's item 3 A, whose prototype fitted the hint to `w - 8`) is kept, and `?` now lists `next` and `show all` in words (engineering rule 7: the conflict surfaced, one picked, the other flagged — an OPERATOR item in `BACKLOG.md`).
 - **Evidence:** `evidence/suite-002.txt`; `03-increments/increment-002.md`.
+
+### LED-2026-10-20-batch-03.6 — increment 003's review amendments (P3, increment 003)
+- **Requirement:** HLR-2409, HLR-2410, LLR-2409.1, LLR-2410.2
+- **Date:** 2026-10-20
+- **What changed:** Before → After. LLR-2409.1: "None for anything but a JSON object holding a parseable string `since`" → "… a parseable string `since` without an offset" (an offset-aware time crashed the sort of the start's notice: security S-13, code review CR-1). LLR-2410.2's bracketed name `[b]x[/b].json` → `[x]copy.json` (a `/` cannot name a Windows file; code review CR-5), the notice's `markup=False` asserted by its flag (security S-14); the registered-path boundary of HLR-2410 gains its node (code review CR-3).
+- **Why:** increment 003's code review and security re-read.
+- **Evidence:** `03-increments/increment-003.md`; `evidence/mutation-003.txt` (M11b–M11d).
