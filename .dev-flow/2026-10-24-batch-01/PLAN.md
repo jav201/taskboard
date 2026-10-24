@@ -52,10 +52,10 @@ Port the round's chosen variants into the app — the store and the field (MM-D2
 |---|---|---|
 | increment 001 | done | the store and the field (MM-D2, D3, D4): `taskboard/marks.py` (new), `taskboard/models.py`, `taskboard/app.py` |
 | increment 002 | done | 6fc2637, code-reviewer OK (F1-F4 folded, re-read verified) the encoding through one seat (MM-D1, section 3): `taskboard/views.py`, `taskboard/app.py` |
-| increment 003 | done (gate pending the suite transcript) | the editor Select and the `#` manager (MM-D5, D6 storage, D8): `taskboard/modals.py`, `taskboard/keymap.py`, `taskboard/app.py`, `taskboard/tcss` |
-| increment 004 | planned | the legend, hide, search, help, README (MM-D6, D7): `taskboard/views.py`, `taskboard/app.py`, `README.md` |
+| increment 003 | done | 12b7a11, code-reviewer approved (F1 folded as LED .46, discharged); a mishap reverted modals.py and the implementer regenerated it byte-equivalent | the editor Select and the `#` manager (MM-D5, D6 storage, D8): `taskboard/modals.py`, `taskboard/keymap.py`, `taskboard/app.py`, `taskboard/tcss` |
+| increment 004 | done (gate pending the suite transcript + review) | the legend, hide, search, help, README (MM-D6, D7): `taskboard/views.py`, `taskboard/app.py`, `README.md` |
 | P0 | done | triggers evaluated; refinement done |
-| P3 | in progress | increment 001 committed (f363a75, both reviewers PASS); increment 002 implemented, battery 14/14 KILLED |
+| P3 | in progress | increments 001 (f363a75) 002 (6fc2637) 003 (12b7a11) committed, each code-review PASS; 004 implemented, battery 18/18 KILLED, all seven ATs minted |
 | ARQ | approved with conditions | A-1 folded as D-4 (`render_marks` in 002; the map amended) |
 | P1 | approved | 8 HLRs, 17 LLRs, 7 ATs, 8 premises TRUE, the IFC, scan answered (LED .1-.25 + .26-.45 at P2) |
 | P2 | approved | three iterations; 5 majors + 22 minors folded (LED .26-.45); the last pass clean (`02-review.md`) |

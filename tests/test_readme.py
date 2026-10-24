@@ -182,3 +182,45 @@ def test_TC_120_the_facts_the_readme_states_match_the_code():
     assert f"default {models.DEFAULT_CLOCK1} and" in text and models.DEFAULT_CLOCK2 in text
     assert "`" + "`, `".join(models.DEFAULT_PHASES) + "`" in text
     assert "(" + ", ".join(models.PROJECT_COLORS) + ")" in text
+
+
+# --------------------------------------------------------------------------- #
+# batch 2026-10-24-batch-01, increment 004 — the README names the classes
+# (HLR-2607/LLR-2607.2; TC-2607's readme arms)
+# --------------------------------------------------------------------------- #
+def test_TC_2607_readme_documents_the_classes_end_to_end():
+    """The README prose covers the directory, the encoding, the manager and
+    its keys, the strip, the `/#cls` filter and the accepted costs — the
+    words the operator reads after `?` names the same things. RED on the
+    base README: no class prose at all."""
+    text = _read("README.md")
+    assert "`~/.taskboard/marks.json`" in text
+    assert "one directory for every board" in text
+    assert "it starts empty" in text
+    assert "hollow twin" in text                     # the encoding, state in text
+    assert "plain `◆`" in text                       # the unclassified mark
+    assert "`alt+m`" in text                         # the editor's class Select
+    assert "`#` opens the class manager" in text
+    for keys in ("`n`/`e`", "`space`"):
+        assert keys in text, keys
+    assert "leave the gantt and the presentation" in text
+    assert "all three\npresentation views and their SVG/PNG exports" in text
+    assert "`/#cls`" in text and "`/#pay`" in text and "`/#zzz`" in text
+    assert "`?` names the classes too" in text
+    for cost in ("month ruler shows no lateness", "no red mark",
+                 "resemble a project colour"):
+        assert cost in text, cost
+
+
+def test_TC_2607_readme_data_files_table_lists_the_directory():
+    """The data-files table names `marks.json` (and its corrupt copy) beside
+    `people.json`, with the written-only-when-changed contract. RED: the
+    directory missing from the file map."""
+    text = _read("README.md")
+    data = text.split("## Data files", 1)[1]
+    for row in ("| `marks.json` |", "| `marks.json.corrupt` |"):
+        assert row in data, row
+    assert "for every board" in data.split("| `marks.json` |")[1].splitlines()[0]
+    assert "written only when you add, edit or hide a class" in data
+    assert data.index("| `people.json` |") < data.index("| `marks.json` |")
+    assert "never sent to a team folder" in data.split("| `marks.json` |")[1].splitlines()[0]

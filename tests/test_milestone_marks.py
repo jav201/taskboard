@@ -217,6 +217,10 @@ ALLOWED_LINES = [
     '"the project\'s committed due date"',
     '"a milestone reached"',
     '"a milestone on its project\'s band rule"',
+    # increment 004 (LLR-2607.2): the `?` help NAMES the classes and the plain
+    # mark — drawn in help seats, never as a live mark (the strips and the
+    # details line carry the class entries dynamically, with no literal ◆)
+    '◆ = no class · # manage the classes,',
 ] + COUNT_TAILS
 
 
@@ -614,3 +618,140 @@ def test_TC_2602_a_mark_set_on_a_non_milestone_is_kept_and_drawn_nowhere(home):
                           TODAY + timedelta(days=30), TODAY)
     cells = views._gantt_bar(t, b, ax, set(), 0)
     assert all(g not in views.MARK_GLYPHS for g, _ in cells)
+
+
+# --------------------------------------------------------------------------- #
+# AT-2606 — /#pay filters to that class (HLR-2608, through the app's surface)
+# --------------------------------------------------------------------------- #
+async def test_AT_2606_hash_pay_filters_to_that_class(home):
+    """`/` `#pay` `enter` in the kanban and the gantt keeps exactly the Payment
+    milestones, the bar reading `/ <shape> <Name>  milestones of this class
+    only` with the tally; `/#zzz` keeps nothing and names nothing; `/pay`
+    (no `#`) filters as text, unchanged. RED: the class rule falling through
+    to the text rules, or the bar omitting the class."""
+    app = _open(home)
+    async with app.run_test(size=(118, 30)) as pilot:
+        await pilot.pause()
+        await pilot.press("escape")                  # the home
+        await pilot.press("4")                       # the kanban
+        await pilot.pause()
+        await pilot.press("slash")
+        for ch in "#pay":
+            await pilot.press(ch)
+        await pilot.press("enter")
+        await pilot.pause()
+        rows = _painted(app)
+        text = _text(rows)
+        bar = "".join(ch for ch, _ in _prow(rows, "milestones of this class only"))
+        assert "/ ⬢ Payment  milestones of this class only" in bar, bar
+        assert "tasks" in bar and "esc clears" in bar
+        assert set(_hexes(_prow(rows, "milestones of this class only"),
+                          "⬢ Payment")) == {HEX["amber"]}
+        for title in ("Kickoff invoice pa", "Milestone 2 invoice", "Final payment"):
+            assert any(title in ln for ln in text), title
+        for other in ("Rubric sign-off", "Index v1 delivered", "Pilot launch",
+                      "Steering go/no-go", "Catalog parsed"):
+            assert not any(other in ln for ln in text), other
+        # the gantt under the same query
+        await pilot.press("3")
+        await pilot.pause()
+        rows = _painted(app)
+        text = _text(rows)
+        assert any("Milestone 2 invoice" in ln for ln in text)
+        for other in ("Rubric sign-off", "Index v1 delivered", "Pilot launch"):
+            assert not any(other in ln for ln in text), other
+        bar = "".join(ch for ch, _ in _prow(rows, "milestones of this class only"))
+        assert "⬢ Payment" in bar and "milestones of this class only" in bar
+        # esc clears; a query naming no class keeps nothing, names nothing
+        await pilot.press("escape")
+        await pilot.pause()
+        await pilot.press("slash")
+        for ch in "#zzz":
+            await pilot.press(ch)
+        await pilot.press("enter")
+        await pilot.pause()
+        rows = _painted(app)
+        text = _text(rows)
+        bar = "".join(ch for ch, _ in _prow(rows, "#zzz"))
+        assert "milestones of this class only" not in bar, bar
+        assert "/ #zzz" in bar and "0/" in bar
+        for title in ("Rubric sign-off", "Milestone 2 invoice", "Kickoff invoice paid"):
+            assert not any(title in ln for ln in text), title
+        # no `#`: plain text, exactly as before
+        await pilot.press("escape")
+        await pilot.pause()
+        await pilot.press("slash")
+        for ch in "pay":
+            await pilot.press(ch)
+        await pilot.press("enter")
+        await pilot.pause()
+        rows = _painted(app)
+        text = _text(rows)
+        bar = "".join(ch for ch, _ in _prow(rows, "pay▌"))
+        assert "/ pay" in bar and "milestones of this class only" not in bar, bar
+        assert any("Final payment" in ln for ln in text)
+        assert not any("Milestone 2 invoice" in ln for ln in text)
+
+
+# --------------------------------------------------------------------------- #
+# TC-2608 — the class query's mechanism (LLR-2608.2, layer 0)
+# --------------------------------------------------------------------------- #
+def test_TC_2608_the_class_query_keeps_exactly_that_class_milestones():
+    """`matches` wired: `#pay` (prefix, any case) keeps exactly the milestones
+    bearing the resolved class — open or done, never a non-milestone; a name
+    no class holds keeps nothing; a lone `#` resolves like the round's
+    `find_class("")`: the first class in the sorted directory. RED: the class
+    rule falling through to the text rules."""
+    b = _seat_board()
+    pay = b.marks["payment"]
+    matches = views.matches
+    assert matches(_task("x", "Pay day", "Next", 3, "payment"), b, "#pay") == "class"
+    assert matches(_task("x", "Pay day", "Done", -2, "payment"), b, "#pay") == "class"
+    assert matches(b.task_by_id("open"), b, "#pay") is None          # delivery
+    plain = _task("x", "payment-ish", "Next", 3)                     # no mark
+    assert matches(plain, b, "#pay") is None
+    plain.milestone = False                                          # a mark, not a milestone
+    assert matches(plain, b, "#pay") is None
+    assert matches(_task("x", "x", "Next", 3, "payment"), b, "#pa") == "class"
+    assert matches(_task("x", "x", "Next", 3, "payment"), b, "#PaY") == "class"
+    assert matches(_task("x", "x", "Next", 3, "payment"), b, "#zzz") is None
+    assert pay.name == "Payment" and matches(b.task_by_id("open"), b, "#") == "class"
+    assert matches(b.task_by_id("late"), b, "#") is None             # "" -> delivery
+
+
+def test_TC_2608_the_bar_names_the_class_and_nothing_when_no_class_holds():
+    """`filter_bar` wired: the resolved class named in its colour, bold; an
+    unresolved `#cls` — or no directory at all — keeps the plain bar. RED:
+    the bar omitting the class, or inventing one for `#zzz`."""
+    b = _seat_board()
+    bar = views.filter_bar("#pay", 2, 9, 80, marks=b.marks)
+    row = views._strip(bar[0])
+    assert row.startswith("/ ⬢ Payment  milestones of this class only")
+    assert "2/9 tasks" in row and "esc clears" in row
+    assert views.HEX["amber"] in bar[0] and f"b {views.HEX['amber']}" in bar[0]
+    for q in ("#zzz", "#"):
+        plain = views._strip(views.filter_bar(q, 0, 9, 80, marks=b.marks)[0])
+        assert "Payment" not in plain
+    assert views._strip(views.filter_bar("#zzz", 0, 9, 80, marks=b.marks)[0]) \
+        .startswith("/ #zzz")
+    # a lone `#` resolves like the round's find_class(""): the first class
+    # of the sorted directory is named (the round's rule, proto.py:500-503)
+    lone = views._strip(views.filter_bar("#", 0, 9, 80, marks=b.marks)[0])
+    assert lone.startswith("/ ▲ Delivery  milestones of this class only")
+    bare = views._strip(views.filter_bar("#pay", 0, 9, 80)[0])       # no directory
+    assert bare.startswith("/ #pay") and "milestones" not in bare
+
+
+def test_TC_2608_the_class_query_lights_no_text_in_the_overlay():
+    """The overlay reverse-lits a text query's hits only: a `#cls` query has
+    none (the bar names the class instead). RED: the overlay lighting the
+    class name, or lighting nothing for a text query."""
+    b = _seat_board()
+    from taskboard.views import _apply_search_overlay
+    from rich.text import Text as _Text
+    text = _Text("Payment milestone here · another task")
+    lit = _apply_search_overlay(text, "pay", 1, 2, 80, marks=b.marks)
+    assert any("reverse" in str(sp.style) for sp in lit.spans)
+    dark = _apply_search_overlay(text, "#pay", 1, 2, 80, marks=b.marks)
+    assert not any("reverse" in str(sp.style) for sp in dark.spans)
+    assert "milestones of this class only" in dark.plain

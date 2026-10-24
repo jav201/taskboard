@@ -174,6 +174,24 @@ project's rows while the project has open work. The ruler marks the selected pro
 In the **kanban** a milestone is never a card and never counted: it rides its project's band rule
 (`◆ Oct 10 Launch · in 10d`), late ones first, then the upcoming ones, then the last one reached.
 
+**Milestone classes.** A milestone may carry a class — a name, a shape and a colour from the
+directory in `~/.taskboard/marks.json`, one directory for every board (it starts empty; an
+unreadable file is kept as `marks.json.corrupt` and the directory starts empty, like the other
+data files). The shape and colour say the class in every view: a late classed milestone shows its
+date in red with an `▲Nd` chip, a reached one draws its shape's hollow twin with `✓`. A milestone
+with no class keeps the plain `◆`. The editor's `alt+m` beside `milestone` picks the class.
+
+`#` opens the class manager: `n`/`e` add and edit a class (name, shape, colour), `space` hides or
+shows it. A hidden class's milestones leave the gantt and the presentation — all three
+presentation views and their SVG/PNG exports — and the strip under the gantt's ruler (and in the
+presentation) names the classes drawn in the frame plus how many are hidden. In the filter,
+`/#cls` keeps exactly that class's milestones — `/#pay` shows the Payment ones, `/#zzz` shows
+none — and the bar names the class. `?` names the classes too.
+
+Accepted costs, by design: the gantt's month ruler shows no lateness; an unclassified milestone
+has no red mark of its own; a class colour can resemble a project colour; a class shaped `▲` sits
+beside the late chip.
+
 **The one-time milestone offer.** The first time this version opens a board that holds one-day
 tasks (start = due) or dated tasks with no start, it offers — once — to make milestones of them:
 one-day tasks come pre-checked, the others unchecked; `space` toggles, `↵` converts exactly the
@@ -371,6 +389,8 @@ Everything lives under `~/.taskboard/` (or beside the file you pass with `--boar
 | `reports/` | HTML reports and the presentation's SVG + PNG exports |
 | `people.json` | The people you mention, for every board: handle, name, role, a note; written only when you add or edit a person (never sent to a team folder) |
 | `people.json.corrupt` | A copy of an unreadable `people.json`, kept before the app starts with no people |
+| `marks.json` | The milestone classes, for every board: id, name, shape, colour, hidden; written only when you add, edit or hide a class (never sent to a team folder) |
+| `marks.json.corrupt` | A copy of an unreadable `marks.json`, kept before the app starts with no classes |
 | `open/` | One small file per window per open board (when it opened, its process id), removed when the window leaves the board; another window opening the same board says so once |
 
 Never commit a real board: the repo's pre-commit hook (`tools/precommit_privacy.py`) refuses

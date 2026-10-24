@@ -3096,9 +3096,93 @@ def _gantt_group_label(g: GanttGroup, label_w: int, paged: bool = False) -> str:
     return _pad(head + body + tail, label_w)
 
 
-def _gantt_legend(width: int, drawn: set[str]) -> str:
+def _hidden_class_ids(board) -> set[str]:
+    """The ids of the directory's hidden classes (LLR-2608.1) — empty when the
+    board carries no directory, so the wrappers below stay the identity."""
+    return {cid for cid, m in (getattr(board, "marks", None) or {}).items()
+            if m.hidden}
+
+
+def _hide(board: Board) -> Board:
+    """The shallow board proxy that drops the milestones of hidden classes
+    (LLR-2608.1, the round's `_hide`, proto.py:294): applied at the gantt
+    frame's entry, so a hidden class leaves the cells, the title markers and
+    the fold counts alike. The board object itself is never touched — the
+    proxy never reaches `Board.save`."""
+    hidden = _hidden_class_ids(board)
+    proxy = copy.copy(board)
+    proxy.tasks = [t for t in board.tasks
+                   if not (t.milestone and t.mark and t.mark in hidden)]
+    return proxy
+
+
+def _find_class(marks, q: str):
+    """The class whose name starts with `q`, lower case — the directory's
+    prefix `find` (LLR-2608.2, ARCH-2) over a live dict: sorted by (name, id),
+    the first match, never a match inside the name."""
+    q = q.strip().lower()
+    return next((m for m in sorted((marks or {}).values(),
+                                   key=lambda m: (m.name.lower(), m.id))
+                 if m.name.lower().startswith(q)), None)
+
+
+def _drawn_class_marks(board) -> list:
+    """The classes that have a milestone on this board (the round's
+    `classes_on`, proto.py:241): non-archived milestones only, hidden classes
+    never — the gantt fits the whole board, so this IS the drawn set."""
+    used = {t.mark for t in board.tasks if t.milestone and not t.archived and t.mark}
+    return [m for cid, m in (getattr(board, "marks", None) or {}).items()
+            if not m.hidden and cid in used]
+
+
+def _legend_row(marks, hidden_n: int, w: int, lead: str = " ") -> str:
+    """The strips' one row, always exactly `w` cells: each class its shape in
+    its colour and its name, joined dim, then `N hidden`. Whole classes give
+    way from the right; a lone over-long name is cut from its right (TC-2607's
+    80-cell arm)."""
+    parts = [(f"{m.shape} {m.name}", m.colour) for m in marks]
+    tail = f"{hidden_n} hidden"
+
+    def width(ps) -> int:
+        return sum(vis(p) for p, _ in ps) + 3 * max(0, len(ps) - 1)
+
+    room = max(1, w - vis(lead) - 3 - len(tail))
+    while len(parts) > 1 and width(parts) > room:
+        parts.pop()
+    if width(parts) > room:
+        text, colour = parts[0]
+        shape, _, name = text.partition(" ")
+        parts[0] = (f"{shape} {fit(name, max(1, room - 2))}", colour)
+    cells: list[tuple[str, str]] = [(lead, "dim")]
+    for i, (text, colour) in enumerate(parts):
+        if i:
+            cells.append((" · ", "dim"))
+        cells.append((text[0] + " ", colour))
+        cells.append((escape(text[2:]), "mut"))
+    cells.append(("   ", "dim"))
+    cells.append((tail, "dim"))
+    return _pad("".join(c(t, k) for t, k in cells), w)
+
+
+def legend_strip(board, w: int, lead: str = " ") -> str:
+    """The legend strip under the gantt's ruler (LLR-2607.1, the round's
+    `legend_strip`, proto.py:246): only the classes drawn in the frame — each
+    its shape in its colour and its name — then how many classes are hidden.
+    Nothing when no classed milestone is in view. The round's `◆ unclassed`
+    part does NOT port: the `◆ milestone` entry of `_gantt_legend` (the spare
+    row's details line) is that part's one home (delta A8 — no double ◆)."""
+    drawn = _drawn_class_marks(board)
+    if not drawn:
+        return ""
+    return _legend_row(drawn, len(_hidden_class_ids(board)), w, lead)
+
+
+def _gantt_legend(width: int, drawn: set[str], classes: tuple = ()) -> str:
     """One row naming the marks this frame draws — only those — when the
-    height has a row to spare."""
+    height has a row to spare. The class entries ride between the selection
+    and the stock entries (LLR-2607.2): the shape in the class colour beside
+    the name; `◆ milestone` among the stock entries is the unclassified
+    mark's one mention (delta A8)."""
     wide = width >= 100
     items = [("⟦━⟧", "bright", "selected, exact dates", "selected"),
              # right after the selection, as the M-1 frames place them (D-624)
@@ -3112,6 +3196,10 @@ def _gantt_legend(width: int, drawn: set[str]) -> str:
              ("◆", "mut", "committed due" if wide else "due", "due"),
              ("◂▸", "mut", "beyond window", "beyond")]
     items = [it for it in items if it[3] in drawn]
+    if classes:
+        sel = [it for it in items if it[3] == "selected"]
+        items = sel + [(m.shape, m.colour, escape(m.name), None) for m in classes] + \
+            [it for it in items if it[3] != "selected"]
     while items:
         out = " " + c(" · ", "dim").join(
             (c(g, "bright", bold=True) if k == "crit" else c(g, k)) + " " + c(t, "dim")
@@ -3133,7 +3221,7 @@ def render_gantt(board, show_archived, selected_id, today=None,
     w = _clamp_width(width)
     pinned = 0
     if len(lines) < (height or 24):
-        legend = _gantt_legend(w, drawn)
+        legend = _gantt_legend(w, drawn, tuple(_drawn_class_marks(board)))
         if legend:
             lines.append(legend)
             pinned = 1
@@ -3158,10 +3246,13 @@ def _gantt_frame(board, show_archived, selected_id, today=None, width=68, height
     the marks they draw, the plan and the axis — the legend asks THIS frame
     what it shows (LLR-102.5)."""
     today = today or date.today()
+    if _hidden_class_ids(board):
+        board = _hide(board)          # hidden classes leave the frame (LLR-2608.1)
     w = _clamp_width(width)
     h = height or 24
     label_w, chip_w, field_w = gantt_columns(w)
-    body_rows = max(0, h - 1 - GANTT_RULER_ROWS) if height else 10 ** 6
+    strip = legend_strip(board, w)    # the classes this frame draws (LLR-2607.1)
+    body_rows = max(0, h - 1 - GANTT_RULER_ROWS - (1 if strip else 0)) if height else 10 ** 6
     pinned_t = board.task_by_id(pinned_id) if pinned_id else None
     groups = gantt_plan(board, show_archived, selected_id, today, body_rows, focus,
                         previous, gantt_group_key(board, pinned_t) if pinned_t else None)
@@ -3338,6 +3429,12 @@ def _gantt_frame(board, show_archived, selected_id, today=None, width=68, height
         lines.append(markup)
         if tid is not None and line_map is not None:
             line_map[tid] = len(lines) - 1
+    if strip:
+        lines.insert(1 + GANTT_RULER_ROWS, strip)   # under the ruler, over the body
+        if line_map is not None:
+            for tid in list(line_map):
+                if line_map[tid] >= 1 + GANTT_RULER_ROWS:
+                    line_map[tid] += 1
     return lines, drawn, groups, ax
 
 
@@ -3897,12 +3994,26 @@ _SEARCH_CONSOLE = Console(force_terminal=True, color_system="truecolor",
 _SEARCH_CONT = Style(dim=True)
 
 
+def matches_m(task: Task, board: Board, q: str) -> str | None:
+    """A `#cls` query keeps exactly the milestones of the class the directory's
+    prefix rule resolves (LLR-2608.2, the round's `matches_m`, proto.py:505) —
+    open or done, the `"class"` kind, nothing else. A name that resolves to no
+    class keeps no task: nothing invented."""
+    cls = _find_class(getattr(board, "marks", None), q[1:])
+    if cls is None or not task.milestone or task.mark != cls.id:
+        return None
+    return "class"
+
+
 def matches(task: Task, board: Board, q: str) -> str | None:
     """Why a task matches, strongest first: title > project > notes. A query
     `@handle` is a person (batch 2026-10-21-batch-01, the round's item 3 A): the
-    tasks whose notes mention exactly that handle, `person`, and nothing else."""
+    tasks whose notes mention exactly that handle, `person`, and nothing else;
+    a `#cls` query is a milestone class (batch 2026-10-24-batch-01)."""
     if q.startswith("@"):
         return "person" if q[1:] in mention_ids(task.notes) else None
+    if q.startswith("#"):
+        return matches_m(task, board, q)
     p = board.project_by_id(task.project_id)
     if q in task.title.lower():
         return "title"
@@ -3928,16 +4039,38 @@ def filtered_board(board: Board, query: str, show_archived: bool) -> Board:
     return proxy
 
 
+def filter_bar_m(query: str, hits: int, total: int, w: int,
+                 marks: dict | None = None) -> list[str]:
+    """The `#cls` bar (LLR-2608.2, the round's `filter_bar_m`, proto.py:512):
+    `/ <shape> <Name>  milestones of this class only` — the class in its
+    colour, bold. A query that resolves to no class keeps the plain bar (it
+    names nothing). `marks` is the board's live directory: the seat has no
+    board argument (the round read a module global; the PDR's §6 ruling puts
+    the directory on `Board.marks` instead, so the seat takes the dict)."""
+    right = c(f"{hits}/{total} tasks", "mut") + c(" · esc clears", "dim")
+    cls = _find_class(marks, query[1:])
+    if cls is None:
+        left = c("/", "accent", bold=True) + " " + escape(query) + c("▌", "accent")
+        return [header(left, right, w), head_rule(w)]
+    left = (c("/", "accent", bold=True) + " "
+            + c(escape(f"{cls.shape} {cls.name}"), cls.colour, bold=True)
+            + c("  milestones of this class only", "mut"))
+    return [header(left, right, w), head_rule(w)]
+
+
 def filter_bar(query: str, hits: int, total: int, w: int,
-               people: dict | None = None) -> list[str]:
+               people: dict | None = None, marks: dict | None = None) -> list[str]:
     """The `/` bar: query + cursor left, tally right; a person's query (`@handle` of
-    someone in `people`) says who: `/ @Name  role · tasks that mention them`."""
+    someone in `people`) says who: `/ @Name  role · tasks that mention them`; a
+    `#cls` query names the class (batch 2026-10-24-batch-01)."""
     # handles are lowercase, and the filter lowercases the query (code review CR-3)
     person = (people or {}).get(query[1:].lower()) if query.startswith("@") else None
     if person is not None:
         left = (c("/", "accent", bold=True) + " " + c(escape("@" + person.name), "pink", bold=True)
                 + c(escape(f"  {person.role + ' · ' if person.role else ''}"
                            "tasks that mention them"), "mut"))
+    elif query.startswith("#"):
+        return filter_bar_m(query, hits, total, w, marks)
     else:
         left = c("/", "accent", bold=True) + " " + escape(query) + c("▌", "accent")
     right = c(f"{hits}/{total} tasks", "mut") + c(" · esc clears", "dim")
@@ -4002,15 +4135,17 @@ def _highlight_grid(grid: list[list[list]], query: str) -> None:
 
 
 def _apply_search_overlay(text: Text, query: str, hits: int, total: int,
-                          w: int, people: dict | None = None) -> Text:
+                          w: int, people: dict | None = None,
+                          marks: dict | None = None) -> Text:
     """Insert the `/` bar under the view header and reverse-lit matches (a
-    person's query lights nothing: the cards draw names, not the handle)."""
+    person's query lights nothing: the cards draw names, not the handle; a
+    class query neither — the bar names the class instead)."""
     lines = text.split("\n")
     h = len(lines)
     grid = _search_to_grid(text, w, h)
-    if not query.startswith("@"):
+    if not query.startswith(("@", "#")):
         _highlight_grid(grid, query)
-    bar_text = Text.from_markup("\n".join(filter_bar(query, hits, total, w, people)),
+    bar_text = Text.from_markup("\n".join(filter_bar(query, hits, total, w, people, marks)),
                                 emoji=False)
     bar_grid = _search_to_grid(bar_text, w, 2)
     grid = [grid[0]] + bar_grid + grid[1:]
@@ -6370,6 +6505,35 @@ def present_tasks(board: Board, project_id: str | None) -> tuple[list[Task], lis
     return [t for t in tasks if not board.is_done(t)], tasks
 
 
+def present_tasks_m(board: Board, project_id: str | None) -> tuple[list[Task], list[Task]]:
+    """`present_tasks` with the hidden classes left out (LLR-2608.1, the round's
+    `present_tasks_m`, proto.py:367): a hidden class's milestones leave the
+    presentation's three views and their exports — the field, the briefs, the
+    counts and the axis alike. With no hidden class this is the identity."""
+    open_t, tasks = present_tasks(board, project_id)
+    hidden = _hidden_class_ids(board)
+    if not hidden:
+        return open_t, tasks
+    keep = [t for t in tasks if not (t.milestone and t.mark and t.mark in hidden)]
+    return [t for t in open_t if t in keep], keep
+
+
+def legend_strip_project(board, proj, w: int) -> str:
+    """The presentation's strip (LLR-2607.1, the round's
+    `legend_strip_project`, proto.py:353): the classes of the milestones this
+    project shows, then how many classes are hidden — drawn under the ruler of
+    the gantt and split views alike and carried by their exports. Nothing when
+    the project shows no classed milestone. The round's `◆ milestone` part
+    stays the `_gantt_legend` entry's one home (delta A8 — no double ◆)."""
+    used = {t.mark for t in board.tasks
+            if t.milestone and t.project_id == proj.id and t.show_in_present and t.mark}
+    drawn = [m for cid, m in (getattr(board, "marks", None) or {}).items()
+             if not m.hidden and cid in used]
+    if not drawn:
+        return ""
+    return _legend_row(drawn, len(_hidden_class_ids(board)), w, "  ")
+
+
 def present_hidden(board: Board, project_id: str | None) -> list[Task]:
     """The project's tasks left out of the presentation — the ones
     `present_tasks` would otherwise return (visible, open or done)."""
@@ -6770,8 +6934,12 @@ def _present_ruler(proj: Project, board: Board, p: _PresentGeo,
     mlabel = c(fit(f"today {today:%a} {_md(today)}", p.label_w - 1, "right") + " ", "accent")
     dlabel = _gantt_tick_label(cursor, echo, meta, p.label_w)
     tail = " " * (p.chip_w + 1)
-    return [_pad(_pad(mlabel, p.label_w) + " " + "".join(mcells) + tail, p.width),
+    rows = [_pad(_pad(mlabel, p.label_w) + " " + "".join(mcells) + tail, p.width),
             _pad(_pad(dlabel, p.label_w) + " " + "".join(dcells) + tail, p.width)]
+    strip = legend_strip_project(board, proj, p.width)
+    if strip:
+        rows.append(strip)          # under the ruler, with the frame's export
+    return rows
 
 
 def _present_brief(task: Task, p: _PresentGeo, cursor: bool, width: int) -> str:
@@ -6834,7 +7002,7 @@ def render_present(board: Board, project_id: str | None, cursor_id: str | None,
         if not projects:
             return to_text([_pad(c(escape("no project to present"), "dim"), width)], height, width)
         proj = projects[0]
-    open_t, tasks = present_tasks(board, project_id)
+    open_t, tasks = present_tasks_m(board, project_id)
     late, open_n, done = _present_counts(open_t, tasks, today)
     wide = width >= 100
     label_w, chip_w, field_w = _present_cols(width, wide)
@@ -6972,7 +7140,7 @@ class PresentAll(NamedTuple):
 
 def _all_plan(board: Board) -> list[tuple[Project, list[Task]]]:
     """(project, its shown open tasks) for every shown project, in presentation order."""
-    return [(p, present_tasks(board, p.id)[0]) for p in present_order(board) if p.show_in_present]
+    return [(p, present_tasks_m(board, p.id)[0]) for p in present_order(board) if p.show_in_present]
 
 
 def _all_late(tasks: list[Task], today: date) -> int:
@@ -7605,7 +7773,8 @@ def render_view(mode, board, show_archived, selected_id, today=None,
             if line_map is not None:
                 for tid in list(line_map.keys()):
                     line_map[tid] += 2
-            return _apply_search_overlay(text, query, hits, total, w, board.people)
+            return _apply_search_overlay(text, query, hits, total, w, board.people,
+                                         board.marks)
         return render_kanban(board, show_archived, selected_id, today, width, height,
                              line_map, presentation, sort=kanban_sort,
                              group=kanban_group, collapsed=kanban_collapsed,
@@ -7621,7 +7790,8 @@ def render_view(mode, board, show_archived, selected_id, today=None,
             if line_map is not None:
                 for tid in list(line_map.keys()):
                     line_map[tid] += 2
-            return _apply_search_overlay(text, query, hits, total, w, board.people)
+            return _apply_search_overlay(text, query, hits, total, w, board.people,
+                                         board.marks)
         return render_gantt(board, show_archived, selected_id, today, width, height,
                             line_map, tick=tick, focus=gantt_focus,
                             previous=gantt_previous)
@@ -8082,7 +8252,10 @@ def help_usage(mode: str) -> list[tuple[str, list[str]]]:
                            "┈ splits cards · ✓ the done rail (✓N narrow)",
                             "▲ above · ▼ below: bands folded off screen",
                             "I inserts · New template... authors",
-                            "notes stay JSON-only at this version"]),
+                            "notes stay JSON-only at this version",
+                            "a class's shape + colour names it —",
+                            "◆ = no class · # manage the classes,",
+                            "/#cls filters to one class"]),
         ]
     if mode == "swimlanes":
         return [
@@ -8113,7 +8286,10 @@ def help_usage(mode: str) -> list[tuple[str, list[str]]]:
             ("the marks", ["─ span · ● progress · ◆ due",
                            "╌ task, tip ○◔◑◕ = phase · ━ critical chain",
                            "↳ waits on another · ✓n done · ▲n late",
-                           "◆ title = a milestone · ◆✓ reached · M"]),
+                           "◆ title = a milestone · ◆✓ reached · M",
+                           "a class's shape + colour names it —",
+                           "◆ = no class · # manage the classes,",
+                           "/#cls filters to one class"]),
         ]
     if mode == "focus":
         return [
@@ -8309,6 +8485,10 @@ def legend_entries(mode: str, board: Board, today: date | None = None,
             out.append((c("◆", hue), "a milestone: one date, no bar"))
         if "reached" in drawn:
             out.append((c("◆", "reached") + c("✓", "reached"), "a milestone reached"))
+        # the classes the frame draws, beside the ◆ entry for the plain one
+        # (LLR-2607.2): the swatch is the class shape in its class colour.
+        for m in _drawn_class_marks(board):
+            out.append((c(m.shape, m.colour), f"{m.name} · a milestone class"))
         if FIELD_TASK in body:
             out.append((c(FIELD_TASK * 2, hue) + c(FIELD_PHASE_TIP[1], hue),
                         "a task's reach, tipped by its phase"))

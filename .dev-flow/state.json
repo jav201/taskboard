@@ -314,6 +314,11 @@
       "station": "P3",
       "date": "2026-10-24",
       "decision": "standing authorization - the orchestrator's commission of 2026-10-24 (PLAN.md header). P3 increment 003 approved: the editor's variant-A Select (alt+m, TASK_KEYS, conditional compose, value-change-only save), MarkForm, app.MarksManager wired to views.render_marks, the # keymap seat (HLR-2605, HLR-2606; AT-2601 and AT-2604 minted); 89 + 374 passed targeted, 17/17 mutants KILLED, code-reviewer approved (F1 folded as LED .46, discharged). 4 source files at the cap, the reason declared. P3 continues."
+    },
+    {
+      "station": "P3",
+      "date": "2026-10-24",
+      "decision": "standing authorization - the orchestrator's commission of 2026-10-24 (PLAN.md header). P3 increment 004 approved: the legend strip (gantt + presentation + exports), _hide/present_tasks_m, the /#cls search, the details line, the ? help and the README (HLR-2607, HLR-2608; AT-2605 and AT-2606 minted - all seven ATs realise exactly one node); 61 + 988 passed targeted, 19/19 mutants KILLED, code-reviewer OK to advance on the re-read after FIX FIRST (F1 HIGH - _legend_row's lone-name IndexError - fixed, tested, discharged); the 003-owned markup-census RED folded (two EXEMPT rows). P3 is complete - the DDR is next."
     }
   ],
   "obsidian_synced": false,

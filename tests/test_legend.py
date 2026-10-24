@@ -14,12 +14,23 @@ Register: the legend DESCRIBES MARKS. It never addresses the reader and never
 judges the work — "overdue" is a fact about a date.
 """
 
+import json
 import re
 from datetime import date, timedelta
+from pathlib import Path
 
+import pytest
+from rich.text import Text
+
+import milestone_marks_fixture as fx
+from taskboard import app as app_module
+from taskboard import models, views
 from taskboard.keymap import KEYMAP, VIEWS
+from taskboard.marks import Mark
 from taskboard.models import Board, Project, Task
-from taskboard.views import _strip, legend_entries, render_view
+from taskboard.views import (_strip, legend_entries, legend_strip,
+                             legend_strip_project, render_present,
+                             render_present_all, render_view)
 
 TODAY = date(2026, 7, 30)
 
@@ -393,3 +404,444 @@ async def test_the_palette_closes_without_running(tmp_path):
         await pilot.pause()
         assert not isinstance(app.screen, CommandPalette)
         assert app.view_mode == original_mode
+
+
+# --------------------------------------------------------------------------- #
+# batch 2026-10-24-batch-01, increment 004 — the classes' strip, hide and help
+# (HLR-2607/HLR-2608; AT-2605 minted here; TC-2607, TC-2608)
+# --------------------------------------------------------------------------- #
+FX_TODAY = fx.TODAY
+FX_HEX = {k: v.lower() for k, v in views.HEX.items()}
+
+
+class _FxToday(date):
+    @classmethod
+    def today(cls):
+        return fx.TODAY
+
+
+@pytest.fixture
+def fx_home(tmp_path, monkeypatch):
+    monkeypatch.setattr(Path, "home", classmethod(lambda cls: tmp_path))
+    for mod in (app_module, models, views):
+        monkeypatch.setattr(mod, "date", _FxToday)
+    return tmp_path / ".taskboard"
+
+
+def _fx_open(home):
+    from taskboard.__main__ import open_app
+    fx.build(home, last="client-a")
+    return open_app(None)
+
+
+def _fx_board(tmp_path, bid="client-a", hidden=(), extra=()):
+    """The fixture's board with its directory live: `hidden` class ids toggled,
+    `extra` (id, name, shape, colour) classes with no milestones appended."""
+    b = fx.build_board(tmp_path, bid)
+    marks = {cid: Mark(cid, n, s, k) for cid, n, s, _h, k in fx.CLASSES}
+    marks.update({cid: Mark(cid, n, s, k) for cid, n, s, k in extra})
+    for cid in hidden:
+        marks[cid].hidden = True
+    b.marks = marks
+    return b
+
+
+def _painted2(app) -> list[list[tuple[str, str | None]]]:
+    strips = app.screen._compositor.render_strips(app.screen.size)
+    rows = []
+    for s in strips:
+        cells = []
+        for seg in s:
+            hx = (seg.style.color.triplet.hex.lower()
+                  if seg.style and seg.style.color and seg.style.color.triplet else None)
+            cells += [(ch, hx) for ch in seg.text]
+        rows.append(cells)
+    return rows
+
+
+def _ptext(rows) -> list[str]:
+    return ["".join(ch for ch, _ in r) for r in rows]
+
+
+def _prow2(rows, needle):
+    for r in rows:
+        if needle in "".join(ch for ch, _ in r):
+            return r
+    raise AssertionError(f"{needle!r} not painted")
+
+
+def _hexes2(row, needle) -> list[str | None]:
+    text = "".join(ch for ch, _ in row)
+    i = text.index(needle)
+    return [row[i + k][1] for k in range(len(needle))]
+
+
+def _span_styles(markup: str) -> list[tuple[str, str]]:
+    t = Text.from_markup(markup, emoji=False)
+    return [(t.plain[sp.start:sp.end], str(sp.style)) for sp in t.spans]
+
+
+def _strip_row(painted: list[str]) -> str:
+    """The gantt's strip row: the one naming a class and the hidden count."""
+    return next(ln for ln in painted
+                if "hidden" in ln and any(n in ln for n in ("Delivery", "Review")))
+
+
+# --------------------------------------------------------------------------- #
+# TC-2607 — the gantt's strip (LLR-2607.1)
+# --------------------------------------------------------------------------- #
+def test_TC_2607_the_strip_lists_exactly_the_drawn_classes_then_the_hidden_count(tmp_path):
+    """Only the classes of the board's milestones, in directory order — a class
+    with no milestone is not drawn and not named; a hidden class is gone from
+    the names and counted instead. RED: the legend counting all classes."""
+    b = _fx_board(tmp_path, extra=[("zzz", "Zephyr", "▼", "green")])
+    strip = legend_strip(b, 118)
+    plain = _strip(strip)
+    assert views.vis(plain) == 118
+    for name, shape, colour in (("Delivery", "▲", "cyan"), ("Payment", "⬢", "amber"),
+                                ("Review", "■", "violet"), ("Launch", "★", "pink")):
+        i = plain.index(name)
+        assert plain[i - 2] == shape
+        styles = _span_styles(strip)
+        assert (shape + " ", views.HEX[colour]) in styles, (shape, styles)
+        assert (name, views.HEX["mut"]) in styles, (name, styles)
+    assert "Zephyr" not in plain and "0 hidden" in plain
+    assert plain.index("Delivery") < plain.index("Payment") < plain.index("Review")
+    # hide one: its milestones are not drawn, so it is not named — it is counted
+    b.marks["payment"].hidden = True
+    plain = _strip(legend_strip(b, 118))
+    assert "Payment" not in plain and "⬢" not in plain
+    assert all(n in plain for n in ("Delivery", "Review", "Launch"))
+    assert "1 hidden" in plain
+
+
+def test_TC_2607_no_classed_milestone_in_view_draws_no_strip(tmp_path):
+    """The empty arm: only unclassified milestones (or no directory at all) →
+    no strip row. RED: the strip drawn with no classed milestone in view."""
+    b = _fx_board(tmp_path)
+    for t in b.tasks:
+        t.mark = None
+    assert legend_strip(b, 118) == ""
+    b.marks = {}
+    assert legend_strip(b, 118) == ""
+
+
+def test_TC_2607_every_class_hidden_draws_no_strip(tmp_path):
+    """With every class hidden every classed milestone left the frame with
+    them: no class is drawn, so no strip names one."""
+    b = _fx_board(tmp_path, hidden=("delivery", "payment", "review", "launch"))
+    assert legend_strip(b, 118) == ""
+
+
+def test_TC_2607_at_80_cells_the_strip_cuts_names_from_the_right(tmp_path):
+    """The 80-cell arm: the row stays exactly `w` cells; whole classes give way
+    from the right. RED: the row left wider than `w`, or the cut from the left."""
+    marks = [(f"c{i}", f"Classified number {i}", "■", "violet") for i in range(6)]
+    b = Board([], [Task(f"t{i}", None, "Next", "normal", due_date=fx._d(i + 1),
+                        milestone=True, mark=f"c{i}", id=f"t{i}") for i in range(6)],
+              fx.Path("x.json"), phases=["Next", "Done"])
+    b.marks = {cid: Mark(cid, n, s, k) for cid, n, s, k in marks}
+    strip = legend_strip(b, 80)
+    plain = _strip(strip)
+    assert views.vis(plain) == 80
+    assert "Classified number 5" not in plain      # the rightmost names went first
+    assert "Classified number 0" in plain
+
+
+def test_TC_2607_a_markup_looking_name_prints_as_typed(tmp_path):
+    """C-17 in the strip: a class named like markup is printed literally, never
+    parsed. RED: the strip built as markup with the raw name."""
+    b = _fx_board(tmp_path)
+    b.marks["review"].name = "[b]x[/b]"
+    strip = legend_strip(b, 118)
+    t = Text.from_markup(strip, emoji=False)
+    assert "[b]x[/b]" in t.plain
+    name_span = next(sp for sp in t.spans if "[b]x[/b]" in t.plain[sp.start:sp.end])
+    assert str(name_span.style) == views.HEX["mut"] and "bold" not in str(name_span.style)
+
+
+# --------------------------------------------------------------------------- #
+# TC-2607 — the presentation's strip (LLR-2607.1)
+# --------------------------------------------------------------------------- #
+def test_TC_2607_the_presentation_strip_names_only_the_projects_shown_classes(tmp_path):
+    """`legend_strip_project`: the classes of the milestones THIS project shows
+    (open or done), not the board's — and `N hidden` keeps the toggle honest."""
+    b = _fx_board(tmp_path)
+    pilot = b.project_by_id("pcr")             # Pilot rollout: payment, review, launch
+    plain = _strip(legend_strip_project(b, pilot, 118))
+    assert views.vis(plain) == 118
+    for n in ("Payment", "Review", "Launch"):
+        assert n in plain
+    assert "Delivery" not in plain and "0 hidden" in plain
+    b.marks["payment"].hidden = True
+    plain = _strip(legend_strip_project(b, pilot, 118))
+    assert "Payment" not in plain and "1 hidden" in plain
+    quiet = _fx_board(tmp_path, bid="main").project_by_id("ppf")   # Fitness: no classed ms
+    assert legend_strip_project(_fx_board(tmp_path, bid="main"), quiet, 118) == ""
+
+
+def test_TC_2607_the_presentation_views_and_export_carry_the_strip(tmp_path):
+    """`render_present`'s gantt and split views draw the strip under the ruler
+    and the SVG export carries it — at 118x30 and 80x24. RED: the strip row
+    computed but never painted into the frame (the PDR's reddener)."""
+    from taskboard.views import present_all_export, save_present_svg
+    b = _fx_board(tmp_path)
+    for w, h in ((118, 30), (80, 24)):
+        for view in ("gantt", "split"):
+            text = render_present(b, "pcr", None, FX_TODAY, w, h, view)
+            row = next(ln for ln in text.plain.split("\n")
+                       if "hidden" in ln and "Review" in ln)
+            for n in ("Payment", "Review", "Launch"):
+                assert n in row, (w, view, row)
+    text = render_present(b, "pcr", None, FX_TODAY, 118, 30, "gantt")
+    out = save_present_svg(text, tmp_path / "reports" / "present.svg", 118, 30)
+    svg = out.read_text(encoding="utf-8")
+    assert "Payment" in svg and "Launch" in svg
+    exp_text, exp_w, exp_h = present_all_export(b, FX_TODAY, 118, 30)
+    assert "Final payment" in exp_text.plain     # view 3's export path is exercised
+
+
+# --------------------------------------------------------------------------- #
+# TC-2607 — the `?` help names the classes and the filter (LLR-2607.2)
+# --------------------------------------------------------------------------- #
+def test_TC_2607_help_names_the_classes_the_manager_and_the_class_filter():
+    """`help_usage` names the `/#cls` filter and the `#` manager on the gantt
+    and the kanban; `legend_entries("gantt")` gains one entry per drawn class
+    beside the `◆ milestone` entry. RED: `?` omits the filter."""
+    from taskboard.views import help_usage
+    for mode in ("gantt", "kanban"):
+        text = "\n".join(ln for _h, lines in help_usage(mode) for ln in lines)
+        assert "/#cls" in text, mode
+        assert "# manage the classes" in text, mode
+    entry = next(k for k in KEYMAP if k.action == "marks_manager")
+    assert entry.show == "#"                       # `?` lists the manager
+    import tempfile
+    with tempfile.TemporaryDirectory() as d:
+        b = _fx_board(Path(d))
+        meanings = [m for _s, m in legend_entries("gantt", b, FX_TODAY, 118, 30)]
+        for _cid, n, _s, _h, _k in fx.CLASSES:
+            assert f"{n} · a milestone class" in meanings
+        assert "a milestone: one date, no bar" in meanings
+
+
+# --------------------------------------------------------------------------- #
+# TC-2608 — hide leaves the gantt and the presentation (LLR-2608.1)
+# --------------------------------------------------------------------------- #
+PAYMENT_TITLES = ("Kickoff invoice paid", "Milestone 2 invoice", "Final payment")
+
+
+def test_TC_2608_hide_drops_the_class_from_the_gantt_and_the_board_is_untouched(tmp_path):
+    """`_hide` at the gantt frame's entry: the payment milestones leave the
+    cells, the title markers and the label column; the board object stays
+    whole — a save writes every task it held. RED: the proxy leaking into a
+    save, or a hidden class still drawn."""
+    b = _fx_board(tmp_path, hidden=("payment",))
+    painted = render_view("gantt", b, False, None, FX_TODAY, 118, 30).plain
+    for title in PAYMENT_TITLES:
+        assert title not in painted, title
+    b2 = _fx_board(tmp_path)                       # no hidden class: the identity
+    assert PAYMENT_TITLES[1] in render_view("gantt", b2, False, None, FX_TODAY,
+                                            118, 30).plain
+    assert {t.id for t in b.tasks} == \
+        {t.id for t in _fx_board(tmp_path, hidden=("payment",)).tasks}
+    marked = [t for t in b.tasks if t.mark == "payment"]
+    assert {t.id for t in marked} == {"tc8", "tcc", "tce"}
+    b.save()
+    data = json.loads(b.path.read_text(encoding="utf-8"))
+    saved = {t["id"]: t for t in data["tasks"]}
+    assert all(saved[t.id].get("mark") == "payment" for t in marked)   # kept on disk
+
+
+def test_TC_2608_present_tasks_m_drops_hidden_classes_and_none_hidden_is_identity(tmp_path):
+    """The wrapper over `present_tasks`: hidden-classed milestones leave both
+    the open list and the all list (done ones included); with nothing hidden
+    the wrapper is the identity. RED: `present_tasks_m` not filtering."""
+    b = _fx_board(tmp_path, hidden=("payment",))
+    open_t, tasks = views.present_tasks_m(b, "pcr")
+    ids = {t.id for t in tasks}
+    assert "tcc" not in ids and "tc8" not in ids          # the payment milestones
+    assert {"tc9", "tca", "tcb"} <= ids
+    assert all(t.id in ids for t in open_t)
+    b2 = _fx_board(tmp_path)
+    o2, t2 = views.present_tasks_m(b2, "pcr")
+    assert [t.id for t in o2] == [t.id for t in views.present_tasks(b2, "pcr")[0]]
+    assert [t.id for t in t2] == [t.id for t in views.present_tasks(b2, "pcr")[1]]
+
+
+def test_TC_2608_hidden_classes_leave_the_presentations_three_views_and_exports(tmp_path):
+    """At 118x30 and 80x24: the payment milestones are gone from the gantt and
+    split views, view 3's timeline, and the exported bytes — and the strips
+    keep the hidden count instead of the names. RED: one export still drawing
+    a hidden class."""
+    from taskboard.views import present_all_export, save_present_svg
+    b = _fx_board(tmp_path, hidden=("payment",))
+    for w, h in ((118, 30), (80, 24)):
+        for view in ("gantt", "split"):
+            plain = render_present(b, "pcr", None, FX_TODAY, w, h, view).plain
+            for title in PAYMENT_TITLES:
+                assert title not in plain, (w, view, title)
+            row = next(ln for ln in plain.split("\n")
+                       if "hidden" in ln and "Review" in ln)
+            assert "Payment" not in row and "1 hidden" in row, (w, view, row)
+        all_frame = render_present_all(b, None, FX_TODAY, w, h)
+        for title in PAYMENT_TITLES:
+            assert title not in all_frame.timeline.plain, (w, title)
+    text = render_present(b, "pcr", None, FX_TODAY, 118, 30, "gantt")
+    out = save_present_svg(text, tmp_path / "reports" / "hidden.svg", 118, 30)
+    svg = out.read_text(encoding="utf-8")
+    for title in PAYMENT_TITLES:
+        assert title not in svg, title
+    exp_text, _w, _h = present_all_export(b, FX_TODAY, 118, 30)
+    for title in PAYMENT_TITLES:
+        assert title not in exp_text.plain, title
+
+
+# --------------------------------------------------------------------------- #
+# AT-2605 — hide and the legend, through the app's own keys (HLR-2607/2608)
+# --------------------------------------------------------------------------- #
+async def test_AT_2605_hide_and_the_legend(fx_home):
+    """`#`, `down`, `space` on Payment: its milestones leave the gantt (cells,
+    title markers) and the presentation's three views and their exports, at
+    118x30 and 80x24; the strip under the ruler names the drawn classes and
+    `1 hidden`; the gantt's details line names the classes beside `◆
+    milestone` (painted at both sizes); `space` again brings the class back.
+    Tone claims ride the styled-segment export. RED: the strip naming a class
+    not drawn, or a hidden class still drawn in one export."""
+    app = _fx_open(fx_home)
+    async with app.run_test(size=(118, 30)) as pilot:
+        await pilot.pause()
+        await pilot.press("escape")                  # the home
+        await pilot.press("3")                       # the gantt
+        await pilot.pause()
+        rows = _painted2(app)
+        strip = _strip_row(_ptext(rows))
+        for name in ("Delivery", "Payment", "Review", "Launch"):
+            assert name in strip
+        assert "0 hidden" in strip
+        srow = _prow2(rows, "Delivery")
+        assert _hexes2(srow, "▲")[0] == FX_HEX["cyan"]      # the shapes in their colours
+        assert _hexes2(srow, "⬢")[0] == FX_HEX["amber"]
+        # ---- hide Payment through the manager ----
+        await pilot.press("number_sign")
+        await pilot.pause()
+        await pilot.press("down")                    # delivery -> payment
+        await pilot.press("space")
+        await pilot.press("escape")
+        await pilot.pause()
+        rows = _painted2(app)
+        text = _ptext(rows)
+        for title in PAYMENT_TITLES:
+            assert not any(title in ln for ln in text), title
+        strip = _strip_row(text)
+        assert "Payment" not in strip and "1 hidden" in strip
+        for name in ("Delivery", "Review", "Launch"):
+            assert name in strip
+        assert {t.id for t in app.board.tasks if t.mark == "payment"} == \
+            {"tc8", "tcc", "tce"}                    # the board itself untouched
+        # the details line (the spare row) names the classes beside ◆ milestone
+        details = _prow2(rows, "◆ milestone")
+        dtext = "".join(ch for ch, _ in details)
+        for name in ("Delivery", "Review", "Launch"):
+            assert name in dtext, dtext
+        assert "Payment" not in dtext
+        # ---- the presentation: views 1/2/3 and their exports ----
+        app.selected_task_id = "tc9"                 # Pilot rollout: payment ms inside
+        await pilot.press("R")
+        await pilot.pause()
+        rows = _painted2(app)
+        assert not any(PAYMENT_TITLES[1] in ln for ln in _ptext(rows))
+        pstrip = "".join(ch for ch, _ in _prow2(rows, "■ Review"))
+        assert "Payment" not in pstrip and "1 hidden" in pstrip
+        for view_key in ("2", "3", "1"):             # split, all, gantt
+            await pilot.press(view_key)
+            await pilot.pause()
+            rows = _painted2(app)
+            assert not any(PAYMENT_TITLES[1] in ln for ln in _ptext(rows)), view_key
+        await pilot.press("x")                       # export view 1's frame
+        await pilot.press("3")                       # view 3: its timeline exports
+        await pilot.press("x")
+        await pilot.pause()
+        reports = fx_home / "boards" / "client-a" / "reports"
+        svgs = sorted(reports.glob("*.svg"))
+        assert len(svgs) >= 2, svgs
+        for svg in svgs:
+            body = svg.read_text(encoding="utf-8")
+            for title in PAYMENT_TITLES:
+                assert title not in body, (svg.name, title)
+        await pilot.press("escape")                  # leave the presentation
+        await pilot.pause()
+        # ---- unhide: the class is back ----
+        await pilot.press("number_sign")
+        await pilot.pause()
+        await pilot.press("down")
+        await pilot.press("space")
+        await pilot.press("escape")
+        await pilot.pause()
+        rows = _painted2(app)
+        text = _ptext(rows)
+        assert any(PAYMENT_TITLES[1] in ln for ln in text)
+        strip = _strip_row(text)
+        assert "Payment" in strip and "0 hidden" in strip
+    # ---- the same at 80x24: a second window on the same home ----
+    app2 = _fx_open(fx_home)
+    async with app2.run_test(size=(80, 24)) as pilot:
+        await pilot.pause()
+        await pilot.press("escape")
+        await pilot.press("3")
+        await pilot.pause()
+        await pilot.press("number_sign")
+        await pilot.pause()
+        await pilot.press("down")
+        await pilot.press("space")
+        await pilot.press("escape")
+        await pilot.pause()
+        rows = _painted2(app2)
+        text = _ptext(rows)
+        for title in PAYMENT_TITLES:
+            assert not any(title in ln for ln in text), title
+        strip = next(ln for ln in text if "1 hidden" in ln)
+        assert views.vis(strip) == 80
+        assert "Payment" not in strip
+        for name in ("Delivery", "Review", "Launch"):
+            assert name in strip
+        srow = _prow2(rows, "Delivery")
+        assert _hexes2(srow, "■")[0] == FX_HEX["violet"]
+        details = _prow2(rows, "◆ milestone")        # the details line paints here too
+        dtext = "".join(ch for ch, _ in details)
+        for name in ("Delivery", "Review", "Launch"):
+            assert name in dtext, dtext
+        app2.selected_task_id = "tc9"
+        await pilot.press("R")
+        await pilot.pause()
+        rows = _painted2(app2)
+        assert not any(PAYMENT_TITLES[1] in ln for ln in _ptext(rows))
+        pstrip = "".join(ch for ch, _ in _prow2(rows, "■ Review"))
+        assert "Payment" not in pstrip and "1 hidden" in pstrip
+        await pilot.press("2")                       # the split view, narrow
+        await pilot.pause()
+        rows = _painted2(app2)
+        assert not any(PAYMENT_TITLES[1] in ln for ln in _ptext(rows))
+
+
+def test_TC_2607_a_lone_over_long_name_is_cut_not_crashed(tmp_path):
+    """The lone-class arm of the width law: one drawn class whose name exceeds
+    the room at a narrow `w` (below the gantt's MIN_WIDTH, where `room` leaves
+    the name ~10 cells) is CUT from its right — never a crash, the row still
+    exactly `w` cells with the shape leading. RED on the F1 code: the
+    `(text, colour)` tuple unpacked as `(shape, name)` and `parts[1]` on a
+    1-element list — an IndexError inside the frame."""
+    long_name = "Quarterly review checkpoint"                   # 27 cells
+    b = _fx_board(tmp_path)
+    b.marks = {"solo": Mark("solo", long_name, "■", "violet")}
+    for t in b.tasks:
+        t.mark = "solo" if t.milestone else None
+    for w in (30, 20):                                      # 20 < the gantt's MIN_WIDTH
+        plain = _strip(legend_strip(b, w))
+        assert views.vis(plain) == w, (w, plain)
+        assert plain.lstrip().startswith("■"), plain        # the shape still leads
+        assert long_name not in plain and plain.rstrip().endswith("hidden"), plain
+        assert long_name[:5] in plain                         # the cut is from the right
+    pilot = b.project_by_id("pcr")
+    plain = _strip(legend_strip_project(b, pilot, 30))      # the 2-cell lead too
+    assert views.vis(plain) == 30 and plain.lstrip().startswith("■"), plain
+    assert long_name not in plain and "hidden" in plain.rstrip(), plain

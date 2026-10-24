@@ -57,6 +57,12 @@ PARSERS = {"_rich", "from_markup", "from_ansi"}
 # reach them — and the two board repaints, whose seat is views.py's own (D-405). Keyed by (module, enclosing function, sink, the value's source text):
 # a new value fed into one of these functions is a new key, and RED (S-7, Q-8).
 EXEMPT = {
+    ("app.py", "MarksManager._paint", "update",
+     "render_marks(self.app.marks, self.sel, w - 2, h, self.counts)"):
+        "the marks manager's frame: views.render_marks builds explicit-style Text pieces (batch 2026-10-24-batch-01, LLR-2606.3)",
+    ("modals.py", "TaskModal.compose", "Select", "opts"):
+        "the class Select's options: (Text, id) pairs, the Text built by mark_option_text with Text.assemble — never markup (batch 2026-10-24-batch-01, LLR-2605.1, C-17)",
+
     ("keymap.py", "KeyBar.refresh_bar", "update",
      "markup <- render_key_bar(max(0, width), self.view_mode, self.bar_layer)"):
         "the key bar: render_key_bar over the keymap contract (app constants)",
