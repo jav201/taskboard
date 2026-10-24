@@ -1,0 +1,58 @@
+C:\Users\jjgh8\anaconda3\Lib\site-packages\pytest_asyncio\plugin.py:207: PytestDeprecationWarning: The configuration option "asyncio_default_fixture_loop_scope" is unset.
+The event loop scope for asynchronous fixtures will default to the fixture caching scope. Future versions of pytest-asyncio will default the loop scope for asynchronous fixtures to function scope. Set the default fixture loop scope explicitly in order to avoid unexpected behavior in the future. Valid fixture loop scopes are: "function", "class", "module", "package", "session"
+
+  warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCOPE_UNSET))
+============================= test session starts =============================
+platform win32 -- Python 3.12.7, pytest-8.3.4, pluggy-1.6.0
+rootdir: C:\Users\jjgh8\Github\taskboard-wt\ms-impl
+configfile: pyproject.toml
+plugins: anyio-4.2.0, asyncio-0.25.0, cov-7.1.0, textual-snapshot-1.1.0, timeout-2.3.1, syrupy-4.8.0
+asyncio: mode=Mode.AUTO, asyncio_default_fixture_loop_scope=None
+collected 1259 items
+
+tests\test_agenda.py .........                                           [  0%]
+tests\test_all_agenda.py ......                                          [  1%]
+tests\test_app.py ...................................................... [  5%]
+.........s.............................................................. [ 11%]
+............................................                             [ 14%]
+tests\test_archive.py .......................................            [ 17%]
+tests\test_backup_write.py ..                                            [ 17%]
+tests\test_boards.py ....................................                [ 20%]
+tests\test_boards_backlog_round.py ...............                       [ 22%]
+tests\test_boards_concurrency.py ......................                  [ 23%]
+tests\test_boards_forms.py ................                              [ 25%]
+tests\test_boards_home.py ...................................            [ 27%]
+tests\test_boards_move.py ..............................                 [ 30%]
+tests\test_cascade.py .............                                      [ 31%]
+tests\test_cascade_app.py ...............                                [ 32%]
+tests\test_cells.py .................................................... [ 36%]
+........................................................................ [ 42%]
+........................................................................ [ 47%]
+.....................                                                    [ 49%]
+tests\test_chainmap.py ...........                                       [ 50%]
+tests\test_chainmap_app.py ........                                      [ 51%]
+tests\test_cities.py ..............                                      [ 52%]
+tests\test_cleanup.py ............                                       [ 53%]
+tests\test_colour_budget.py ..............                               [ 54%]
+tests\test_colour_budget_app.py ........................                 [ 56%]
+tests\test_control_bytes.py ............................................ [ 59%]
+........................................................................ [ 65%]
+........................................................................ [ 71%]
+........................................................................ [ 76%]
+.......                                                                  [ 77%]
+tests\test_dependencies.py ...........                                   [ 78%]
+tests\test_details_grid.py ...........                                   [ 79%]
+tests\test_details_links.py .....                                        [ 79%]
+tests\test_details_markup.py ........................................... [ 83%]
+                                                                         [ 83%]
+tests\test_edit_window.py .....................................          [ 85%]
+tests\test_emoji_picker.py .......................                       [ 87%]
+tests\test_english.py .........                                          [ 88%]
+tests\test_field.py ..............                                       [ 89%]
+tests\test_flow.py ......                                                [ 90%]
+tests\test_flow_view.py ................................................ [ 93%]
+........................................................................ [ 99%]
+.....                                                                    [100%]
+
+================= 1258 passed, 1 skipped in 186.30s (0:03:06) =================
+chunk00 exit 0

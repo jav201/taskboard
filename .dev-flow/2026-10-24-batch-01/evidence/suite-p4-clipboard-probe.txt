@@ -1,0 +1,15 @@
+clipboard probe at the P4 gate, 2026-10-24 (evidence for 04-validation.md G-001)
+context 1: the orchestrator's shell
+Set-Clipboard FAILED: Requested Clipboard operation did not succeed.
+
+context 2: the interactive console session (scheduled task as the logged-on user, /it)
+  -> Set-Clipboard FAILED: Requested Clipboard operation did not succeed. (probe run at gate time; task tb-p4-clip-probe, since deleted)
+
+supporting facts:
+  Get-Clipboard: ExternalException; WinForms Clipboard.SetText: failed; clip.exe: Access is denied
+  cbdhsvc (Clipboard User Service): Stopped, cannot be opened for start without elevation
+  cbdhsvc_1d3b90 (the console session's instance): Running, OpenClipboard still refuses
+  query session: console session 1 (jjgh8) Active
+
+conclusion: the machine's clipboard is broken OS-wide at gate time; test_app.py:1270 is
+chunk00's only clipboard test and its skip is the designed machine-refusal arm

@@ -1,0 +1,61 @@
+C:\Users\jjgh8\anaconda3\Lib\site-packages\pytest_asyncio\plugin.py:207: PytestDeprecationWarning: The configuration option "asyncio_default_fixture_loop_scope" is unset.
+The event loop scope for asynchronous fixtures will default to the fixture caching scope. Future versions of pytest-asyncio will default the loop scope for asynchronous fixtures to function scope. Set the default fixture loop scope explicitly in order to avoid unexpected behavior in the future. Valid fixture loop scopes are: "function", "class", "module", "package", "session"
+
+  warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCOPE_UNSET))
+============================= test session starts =============================
+platform win32 -- Python 3.12.7, pytest-8.3.4, pluggy-1.6.0
+rootdir: C:\Users\jjgh8\Github\taskboard-wt\ms-impl
+configfile: pyproject.toml
+plugins: anyio-4.2.0, asyncio-0.25.0, cov-7.1.0, textual-snapshot-1.1.0, timeout-2.3.1, syrupy-4.8.0
+asyncio: mode=Mode.AUTO, asyncio_default_fixture_loop_scope=None
+collected 906 items
+
+tests\test_people_search.py ........                                     [  0%]
+tests\test_people_view.py ................................               [  4%]
+tests\test_precommit_gate.py ...........                                 [  5%]
+tests\test_present.py .....                                              [  6%]
+tests\test_present_all.py .............................................. [ 11%]
+.....                                                                    [ 11%]
+tests\test_present_backlog_round.py ..............                       [ 13%]
+tests\test_present_hide.py .............                                 [ 14%]
+tests\test_present_milestone.py ............                             [ 16%]
+tests\test_present_narrow.py ......                                      [ 16%]
+tests\test_present_polish.py ...................                         [ 18%]
+tests\test_present_room.py .......                                       [ 19%]
+tests\test_present_rulers.py .............                               [ 21%]
+tests\test_present_views.py ............................................ [ 25%]
+....                                                                     [ 26%]
+tests\test_present_views_app.py ............                             [ 27%]
+tests\test_prism_laws.py ...........                                     [ 28%]
+tests\test_privacy_sweep.py ........                                     [ 29%]
+tests\test_readme.py ...........                                         [ 31%]
+tests\test_report.py ..................                                  [ 33%]
+tests\test_requirements.py ....                                          [ 33%]
+tests\test_rescue.py ...........                                         [ 34%]
+tests\test_row_cost.py ..................                                [ 36%]
+tests\test_scratch_cannot_be_committed.py ..........                     [ 37%]
+tests\test_setup_help.py .................                               [ 39%]
+tests\test_span_economy.py ..........                                    [ 40%]
+tests\test_spend.py .................                                    [ 42%]
+tests\test_swimlanes.py ..................................               [ 46%]
+tests\test_sync_fields.py .............................................. [ 51%]
+....                                                                     [ 51%]
+tests\test_team_sync.py ................                                 [ 53%]
+tests\test_team_views.py ............................................... [ 58%]
+........................................................................ [ 66%]
+........................................................................ [ 74%]
+................................................................         [ 81%]
+tests\test_template_new.py ......                                        [ 82%]
+tests\test_template_save.py .......                                      [ 83%]
+tests\test_template_save_app.py ....                                     [ 83%]
+tests\test_templates.py ....                                             [ 84%]
+tests\test_templates_app.py .....                                        [ 84%]
+tests\test_tick_label.py ..............................                  [ 87%]
+tests\test_undo_toast.py ..                                              [ 88%]
+tests\test_vertical_fill.py ............................................ [ 93%]
+.................                                                        [ 94%]
+tests\test_view_survival.py ..............................               [ 98%]
+tests\test_wave.py ................                                      [100%]
+
+======================= 906 passed in 264.00s (0:04:23) =======================
+chunk02 exit 0
