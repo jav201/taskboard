@@ -227,6 +227,10 @@ KeyBar {
 #task-box #f-project { width: 20; }
 #task-box #f-phase { width: 12; }
 #task-box #f-priority { width: 10; }
+/* the class Select (batch 2026-10-24-batch-01): beside `milestone`, the same
+   one-row look; its dropdown is a fixed 24 so the overlay stays put at 80x24 */
+#task-box #f-mark { width: 16; }
+#task-box #f-mark SelectOverlay { width: 24; }
 #task-box .date-input {
     width: 13;
     padding: 0 0 0 1;

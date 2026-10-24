@@ -144,6 +144,9 @@ KEYMAP: tuple[Key, ...] = (
     # `@` — the people directory's view (batch 2026-10-21-batch-01, the round's item 1):
     # global, off the bar, like `A`; named apart from view 9's team `People` (D4)
     Key("at", "@", "people_directory", "People directory", group="misc", bar=False),
+    # `#` — the milestone classes (batch 2026-10-24-batch-01, HLR-2606): global,
+    # off the bar, like `@`; the manager's own key line names its keys
+    Key("number_sign", "#", "marks_manager", "Milestone classes", group="misc", bar=False),
     # `I` — insert a process template (batch 2026-10-07-batch-07, HLR-1301):
     # global, palette-only, like `R` (shifted, not scoped to a view).
     Key("I", "I", "templates", "Templates", group="misc", bar=False),

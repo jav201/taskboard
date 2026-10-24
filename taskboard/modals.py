@@ -42,8 +42,9 @@ from .models import (IMAGE_EXTS, PROJECT_COLORS, PROJECT_STATUSES, TASK_PRIORITI
                      resolve_city, save_pil_image, templates)
 from .boards import clean_name, move_plan, move_project, peek_board, slug
 from .people import Directory, mention_ids
+from .marks import COLOURS, SHAPES
 from .keymap import KEY_STYLE, PRESENT_KEYS, key_line, palette_commands
-from .views import (HEX, board_chip_text, clip, fit, gantt_group_key, gantt_link_frame,
+from .views import (HEX, HOLLOW, board_chip_text, clip, fit, gantt_group_key, gantt_link_frame,
                     gantt_link_order, notes_text, valid_url)
 
 # Imported at MODULE load (before the app starts) on purpose: textual-image
@@ -375,8 +376,20 @@ DATE_KEYS = [Binding("alt+t", "press_button('cal-f-start')", "Start date", prior
 # padding take 6, a scrollbar up to 2
 MODAL_KEYS_W = 54
 # short words, so `esc cancel` stays whole at 80 columns (DDR ux UX-DDR-2)
-TASK_KEYS = [("alt+s", "save"), ("alt+i", "image"), ("alt+t", "start"), ("alt+d", "due"),
-             ("esc", "cancel")]
+TASK_KEYS = [("alt+s", "save"), ("alt+m", "mark"), ("alt+i", "image"), ("alt+t", "start"),
+             ("alt+d", "due"), ("esc", "cancel")]
+# the class Select's cell cost on the chip row (its width 16 + one of gap):
+# the one-row threshold rises by this when the directory holds classes
+MARK_SELECT_W = 17
+
+
+def mark_option_text(mark) -> Text:
+    """A class as the Select's option: its shape in its colour and its name in
+    the ink tone — Text pieces, never markup (C-17); `none` is the plain `◆`
+    in `mut` (batch 2026-10-24-batch-01, HLR-2605)."""
+    if mark is None:
+        return Text.assemble(("◆ ", HEX["mut"]), ("none", HEX["mut"]))
+    return Text.assemble((mark.shape + " ", HEX[mark.colour]), (mark.name, HEX["ink"]))
 
 
 # the `@` picker in the notes (batch 2026-10-21-batch-01, the round's item 2, variant A):
@@ -444,12 +457,15 @@ class MentionDrop(Vertical):
 class TaskModal(ClipboardPasteMixin, EmojiPickerMixin, DatePickerMixin, ButtonKeysMixin,
                 ModalScreen[dict | None]):
     """Returns a dict of task fields on save, or None on cancel. With the people
-    directory, an `@` at a word start in the notes opens the mention picker."""
+    directory, an `@` at a word start in the notes opens the mention picker.
+    With a marks directory that holds classes, the chip row gains the class
+    Select after `milestone` (`alt+m`); an empty directory composes none."""
 
     BINDINGS = [("escape", "cancel", "Cancel"),
                 Binding("ctrl+v", "paste_text", "Paste", priority=True),
                 Binding("ctrl+e", "pick_emoji", "Emoji", priority=True),
                 *FORM_KEYS, *DATE_KEYS,
+                Binding("alt+m", "mark", "Class", priority=True),
                 Binding("alt+i", "press_button('paste-img')", "Paste image", priority=True),
                 # the picker's own keys: they act only while it is open (check_action)
                 Binding("up", "drop_move(-1)", "", priority=True, show=False),
@@ -458,11 +474,19 @@ class TaskModal(ClipboardPasteMixin, EmojiPickerMixin, DatePickerMixin, ButtonKe
                 Binding("tab", "drop_field", "", priority=True, show=False)]
 
     def __init__(self, board: Board, task: Task | None = None,
-                 people: Directory | None = None):
+                 people: Directory | None = None, marks=None):
         super().__init__()
         self.board = board
         self._edit_task = task
         self._people = people
+        # the class directory (batch 2026-10-24-batch-01): None or an empty one
+        # composes NO class Select — the editor draws as before (HLR-2605)
+        self._marks = marks
+        # the Select's value as composed: the saved task is written only when
+        # the operator CHANGED it — an untouched edit keeps the task's mark,
+        # an id the directory lost included (the Changed message is no oracle:
+        # Textual posts it on mount)
+        self._mark_orig = ""
         # the picker: None (closed), "list" or "add"; the query after `@`, its column,
         # the highlighted row and the rows' choices
         self._mention: str | None = None
@@ -511,6 +535,18 @@ class TaskModal(ClipboardPasteMixin, EmojiPickerMixin, DatePickerMixin, ButtonKe
                     # dates-and-flags half has no room left at 80 columns
                     yield Checkbox("milestone", value=bool(t.milestone) if t else False,
                                    id="f-milestone")
+                    # the milestone's class (batch 2026-10-24-batch-01, variant A):
+                    # beside `milestone`, like project/phase/priority; composed
+                    # ONLY when the directory holds classes — an empty one draws
+                    # no Select, and `+ new class…` is the manager's job, never
+                    # an option here (the Select only picks)
+                    if self._marks is not None and self._marks.marks:
+                        cur = (t.mark if (t and t.mark in self._marks.marks) else "")
+                        self._mark_orig = cur
+                        opts = [(mark_option_text(None), "")]
+                        opts += [(mark_option_text(m), cid)
+                                 for cid, m in self._marks.marks.items()]
+                        yield Select(opts, value=cur, allow_blank=False, id="f-mark")
                 with Horizontal(id="task-chips-when"):
                     yield Input(value=(t.start_date or "" if t else ""),
                                 placeholder="start", id="f-start", classes="date-input")
@@ -561,10 +597,20 @@ class TaskModal(ClipboardPasteMixin, EmojiPickerMixin, DatePickerMixin, ButtonKe
         self._fit_width(event.size.width)
 
     def _fit_width(self, width: int) -> None:
-        """The chip row folds below `TASK_CHIPS_ONE_ROW`; the key line drops words to
-        fit (`#task-box` pads one cell each side)."""
-        self.query_one("#task-chips").set_class(width < TASK_CHIPS_ONE_ROW, "-folded")
-        self.query_one("#task-keys", Static).update(key_line(TASK_KEYS, width - 2))
+        """The chip row folds below `TASK_CHIPS_ONE_ROW` (plus the class Select's
+        cost when the directory composes one); the key line drops words to fit
+        (`#task-box` pads one cell each side)."""
+        one_row = TASK_CHIPS_ONE_ROW + (MARK_SELECT_W if self.query("#f-mark") else 0)
+        self.query_one("#task-chips").set_class(width < one_row, "-folded")
+        keys = TASK_KEYS if self.query("#f-mark") else \
+            [k for k in TASK_KEYS if k[0] != "alt+m"]
+        self.query_one("#task-keys", Static).update(key_line(keys, width - 2))
+
+    def action_mark(self) -> None:
+        """`alt+m`: focus the class Select and open it (the round's variant A)."""
+        sel = self.query_one("#f-mark", Select)
+        sel.focus()
+        sel.action_show_overlay()
 
     def on_text_area_changed(self, event: TextArea.Changed) -> None:
         if event.text_area.id == "f-notes":
@@ -585,6 +631,10 @@ class TaskModal(ClipboardPasteMixin, EmojiPickerMixin, DatePickerMixin, ButtonKe
 
     # ---- the `@` picker (batch 2026-10-21-batch-01) ---------------------------
     def check_action(self, action: str, parameters: tuple[object, ...]) -> bool | None:
+        if action == "mark":
+            # `alt+m` acts only where the class Select was composed (HLR-2605:
+            # an empty directory draws none)
+            return bool(self.query("#f-mark"))
         if action in ("drop_move", "drop_pick"):
             # the form acts only while it holds the focus, the list only while the notes
             # do and it lists something — otherwise the key is the field's (architect
@@ -795,6 +845,12 @@ class TaskModal(ClipboardPasteMixin, EmojiPickerMixin, DatePickerMixin, ButtonKe
             "urls": urls,
             "images": self._lines("f-images"),   # local paths valid at entry (no filter)
         }
+        # the class (batch 2026-10-24-batch-01): written only when the operator
+        # CHANGED the Select — an untouched edit keeps the task's mark (an id
+        # the directory lost included), `none` saves with no `mark` (LLR-2602.1)
+        mark_sel = next(iter(self.query("#f-mark")), None)
+        if mark_sel is not None and str(mark_sel.value) != self._mark_orig:
+            data["mark"] = str(mark_sel.value) or None
         self.dismiss(data)
 
 
@@ -1976,6 +2032,171 @@ class PersonForm(ButtonKeysMixin, ModalScreen[tuple[str, str, str] | None]):
             self.query_one("#f-name", Input).focus()
             return
         self.dismiss((name, role, note))
+
+    def action_cancel(self) -> None:
+        self.dismiss(None)
+
+
+class _ChoiceRow(Static, can_focus=True):
+    """A form row of choices, ←→ moves: MarkForm's shape row and colour row
+    (the round's ShapeRow, proto.py:731). The chosen cell is bracketed — the
+    accent edge while the row holds the focus; the shape row wears the chosen
+    colour, the colour row prints a block in each."""
+
+    BINDINGS = [Binding("left", "step(-1)", "", show=False),
+                Binding("right", "step(1)", "", show=False)]
+
+    def __init__(self, label: str, items: list[str], index: int, form, **kw):
+        super().__init__(**kw)
+        self.label, self.items, self.i, self.form = label, items, index, form
+
+    def on_mount(self) -> None:
+        self._draw()
+
+    def on_focus(self) -> None:
+        self._draw()
+
+    def on_blur(self) -> None:
+        self._draw()
+
+    def _draw(self) -> None:
+        t = Text(no_wrap=True)
+        t.append(f"{self.label:<7}", style=f"b {HEX['hd']}")
+        hue = HEX[COLOURS[self.form.ci]]
+        for j, it in enumerate(self.items):
+            glyph, style = (it, hue) if self.label == "shape" else ("█", HEX[it])
+            on = j == self.i
+            edge = HEX["accent"] if (on and self.has_focus) else HEX["dim"]
+            t.append("[" if on else " ", style=edge)
+            t.append(glyph, style=style)
+            t.append("]" if on else " ", style=edge)
+        if self.label == "colour":
+            t.append(f"  {COLOURS[self.i]}", style=HEX["dim"])
+        if self.has_focus:
+            t.append("   ←→", style=HEX["dim"])
+        self.update(t)
+
+    def action_step(self, delta: int) -> None:
+        self.i = (self.i + delta) % len(self.items)
+        if self.label == "colour":
+            self.form.ci = self.i
+        else:
+            self.form.si = self.i
+        self._draw()
+        self.form._preview()
+
+
+class MarkForm(ButtonKeysMixin, ModalScreen[str | None]):
+    """The class form (the manager's `n` and `e`, batch 2026-10-24-batch-01,
+    LLR-2606.2): the name, the shape row over `SHAPES`, the colour row over
+    `COLOURS`, and a live preview of how the gantt draws the class open, late
+    and reached. `alt+s` writes the DIRECTORY itself — a refused write says
+    `The marks directory was not saved: <reason>` and KEEPS the form; a saved
+    one dismisses with the class's id (kept on edit). `esc` cancels; `alt+n`/
+    `alt+c`/`alt+h` focus their rows."""
+
+    BINDINGS = [("escape", "cancel", "Cancel"),
+                Binding("alt+n", "focus_row('mf-name')", "Name", priority=True),
+                Binding("alt+h", "focus_row('mf-shape')", "Shape", priority=True),
+                Binding("alt+c", "focus_row('mf-colour')", "Colour", priority=True),
+                *FORM_KEYS]
+
+    DEFAULT_CSS = f"""
+    MarkForm {{ align: center middle; }}
+    #mf-box {{ width: 70; height: auto; background: #111827;
+               border: round {HEX['accent']}; padding: 0 1; }}
+    #mf-name {{ border: tall #334154; height: 3; }}
+    #mf-shape, #mf-colour {{ height: 1; margin-top: 1; }}
+    #mf-prev {{ margin-top: 1; height: auto; }}
+    #mf-buttons {{ height: 3; margin-top: 1; }}
+    #mf-buttons Button {{ width: auto; min-width: 8; margin-right: 1; }}
+    """
+
+    def __init__(self, cls_id: str | None = None):
+        super().__init__()
+        self.cls_id = cls_id
+
+    def compose(self) -> ComposeResult:
+        m = self.app.marks.marks.get(self.cls_id or "")
+        title = Text("New class" if m is None else "Edit class", style="bold")
+        title.append("  · every board", style=HEX["dim"])
+        self.si = SHAPES.index(m.shape) if m else 4
+        self.ci = COLOURS.index(m.colour) if m else 5
+        with Vertical(id="mf-box"):
+            yield Label(title, classes="modal-title")
+            yield Input(value=m.name if m else "", placeholder="class name, e.g. Legal",
+                        id="mf-name")
+            yield _ChoiceRow("shape", SHAPES, self.si, self, id="mf-shape")
+            yield _ChoiceRow("colour", COLOURS, self.ci, self, id="mf-colour")
+            yield Static(id="mf-prev")
+            with Horizontal(id="mf-buttons"):
+                yield Button("Save", variant="success", id="save")
+                yield Button("Cancel", variant="default", id="cancel")
+            # the whole line is 65 cells: it fits this box whole, `esc cancel`
+            # and every field key named (the modal-keys law, AT-2604)
+            yield Label(key_line([("alt+n", "name"), ("alt+c", "colour"), ("alt+h", "shape"),
+                                  ("alt+s", "save"), ("esc", "cancel")], 66),
+                        classes="modal-keys")
+
+    def on_mount(self) -> None:
+        self.query_one("#mf-name", Input).focus()
+        self._preview()
+
+    def on_input_changed(self, _event: Input.Changed) -> None:
+        self._preview()
+
+    def _preview(self) -> None:
+        """The mark as every frame draws it (D1 B): shape + colour say the class,
+        state moves to text — open, late (the date `over`), reached (hollow + ✓)."""
+        if not self.query("#mf-prev"):
+            return
+        for rid in ("mf-shape", "mf-colour"):
+            row = next(iter(self.query(f"#{rid}")), None)
+            if row is not None:
+                row._draw()
+        shape, hue = SHAPES[self.si], HEX[COLOURS[self.ci]]
+        name = self.query_one("#mf-name", Input).value.strip() or "…"
+        t = Text(no_wrap=True)
+        t.append("preview  ", style=HEX["dim"])
+        t.append(shape, style=hue)
+        t.append(f" {name}\n", style=HEX["ink"])
+        for lab, glyph, date_s, dk, tail in (
+                ("open", shape, "Nov 7", "mut", ""),
+                ("late", shape, "Oct 18", "over", ""),
+                ("reached", HOLLOW.get(shape, shape), "Oct 5", "reached", "✓")):
+            t.append(f"  {lab:<9}", style=HEX["dim"])
+            t.append("··┆····", style=HEX["dim"])
+            t.append(glyph, style=hue)
+            t.append(tail, style=HEX["reached"])
+            t.append(f" {date_s}", style=HEX[dk])
+            t.append(" ···┆··\n", style=HEX["dim"])
+        self.query_one("#mf-prev", Static).update(t)
+
+    def action_focus_row(self, wid: str) -> None:
+        self.query_one(f"#{wid}").focus()
+
+    def on_button_pressed(self, event: Button.Pressed) -> None:
+        if event.button.id == "save":
+            self._save()
+        else:
+            self.dismiss(None)
+
+    def _save(self) -> None:
+        name = str(self.query_one("#mf-name", Input).value).strip()
+        if not name:
+            self.notify("A class needs a name.", severity="warning")
+            self.query_one("#mf-name", Input).focus()
+            return
+        shape, colour = SHAPES[self.si], COLOURS[self.ci]
+        try:
+            m = (self.app.marks.add(name, shape, colour) if self.cls_id is None
+                 else self.app.marks.edit(self.cls_id, name, shape, colour))
+        except (OSError, ValueError) as err:
+            # the form stays: the operator fixes the name or cancels (LLR-2606.2)
+            self.notify(f"The marks directory was not saved: {err}",
+                        title="Milestone classes", severity="error", markup=False)
+            return
+        self.dismiss(m.id)
 
     def action_cancel(self) -> None:
         self.dismiss(None)

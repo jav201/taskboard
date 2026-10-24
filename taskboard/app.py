@@ -31,7 +31,7 @@ from .models import (AUTO_ARCHIVE_DAYS, IMAGE_EXTS, LINKS_MIGRATION, MILESTONES_
                      CASCADE_MODES, apply_plan, plan_move, resolve_mode, restore,
                      snapshot)
 from .modals import (BoardForm, PersonForm, SearchPrompt, ClockModal, GanttLinkMode, LinkPicker, CommandPalette, ConfirmModal,
-                     HelpModal, ImageViewer, MilestoneOffer, PhaseEditor, ProjectModal,
+                     HelpModal, ImageViewer, MarkForm, MilestoneOffer, PhaseEditor, ProjectModal,
                      PresentHiddenPicker, PresentKeys, ProjectPicker, StandupModal, TaskDetails, TaskModal,
                      TeamIdentityPicker,
                      TemplateEditor, TemplatePicker, TextPrompt)
@@ -49,7 +49,7 @@ from .views import (HEX, ago, agenda_buckets, all_agenda, board_chip_text, board
                     render_present_all, render_view, save_present_png, PresentAll,
                     PRESENT_MIN_WIDTH, PRESENT_RAIL_MIN, PRESENT_SCREEN_VIEWS,
                      save_present_svg, sort_by_due, fit, vis, valid_url, _md,
-                    milestone_mark)
+                    milestone_mark, render_marks)
 
 
 # The app's ONE shared clock. Every animated surface counts in these ticks, so
@@ -1080,6 +1080,111 @@ class PeopleDirectory(Screen[None]):
         self.app.pop_screen()
 
 
+def mark_counts(app) -> dict[str, tuple[int, int]]:
+    """Per class, the (open, all) milestones over every ACTIVE board of the
+    registry — read once, when the manager opens (the people view's
+    `board_lanes` precedent; no latency criterion)."""
+    out: dict[str, list[int]] = {cid: [0, 0] for cid in app.marks.marks}
+    for e in app.registry.active():
+        try:
+            b = Board.load(e.path)
+        except Exception:
+            continue
+        for t in b.tasks:
+            if t.milestone and t.mark in out:
+                out[t.mark][1] += 1
+                out[t.mark][0] += 0 if b.is_done(t) else 1
+    return {cid: (v[0], v[1]) for cid, v in out.items()}
+
+
+class MarksManager(Screen[None]):
+    """`#` — the milestone classes (batch 2026-10-24-batch-01, HLR-2606): one
+    window listing every class of the directory, the frame the pure
+    `views.render_marks` with the live open/all counts of every board. `n` adds
+    a class, `e` edits the chosen one (its id kept), `space` hides or shows it
+    — persisted in `marks.json` like any other write, the board beneath
+    refreshed (it reads `board.marks` live). `esc` and `#` close; `d` and `↵`
+    are inert, and deletion is not offered. The frame's last row names the keys.
+    It edits no task: no seat action but `quit` acts while it holds the keys."""
+
+    BINDINGS = [Binding("escape,number_sign", "back", "", priority=True),
+                Binding("up,k", "move(-1)", "", priority=True),
+                Binding("down,j", "move(1)", "", priority=True),
+                Binding("space", "toggle", "", priority=True),
+                Binding("n", "new", "", priority=True),
+                Binding("e", "edit", "", priority=True)]
+    DEFAULT_CSS = """
+    MarksManager { background: #0d1117; overflow-y: hidden; }
+    #mm-body { padding: 0 1; height: 1fr; }
+    """
+
+    def __init__(self) -> None:
+        super().__init__()
+        self.sel = 0
+
+    def compose(self) -> ComposeResult:
+        self.counts = mark_counts(self.app)
+        yield Static(id="mm-body")
+
+    def on_mount(self) -> None:
+        self._paint()
+
+    def on_resize(self, _event) -> None:
+        self._paint()
+
+    def _ids(self) -> list[str]:
+        return list(self.app.marks.marks)
+
+    def _cur(self) -> str | None:
+        ids = self._ids()
+        return ids[min(self.sel, len(ids) - 1)] if ids else None
+
+    def _paint(self) -> None:
+        w, h = self.app.size
+        self.query_one("#mm-body", Static).update(
+            render_marks(self.app.marks, self.sel, w - 2, h, self.counts))
+
+    def action_move(self, delta: int) -> None:
+        ids = self._ids()
+        if ids:
+            self.sel = max(0, min(len(ids) - 1, self.sel + delta))
+        self._paint()
+
+    def action_toggle(self) -> None:
+        cid = self._cur()
+        if cid is None:
+            return
+        try:
+            self.app.marks.set_hidden(cid, not self.app.marks.marks[cid].hidden)
+        except (OSError, ValueError) as err:
+            self.notify(f"The marks directory was not saved: {err}", title="Milestone classes",
+                        severity="error", markup=False)
+            return
+        self.app.refresh_view()         # the board beneath reads board.marks live
+        self._paint()
+
+    def action_new(self) -> None:
+        self.app.push_screen(MarkForm(), self._saved)
+
+    def action_edit(self) -> None:
+        cid = self._cur()
+        if cid is not None:
+            self.app.push_screen(MarkForm(cid), self._saved)
+
+    def _saved(self, saved_id: str | None) -> None:
+        """The form wrote the directory (on a refused write it stays open and
+        says so — nothing to do here); follow the saved class and refresh."""
+        if saved_id is None:
+            return
+        self.sel = self._ids().index(saved_id)
+        self.counts = mark_counts(self.app)
+        self.app.refresh_view()
+        self._paint()
+
+    def action_back(self) -> None:
+        self.app.pop_screen()
+
+
 class TaskboardApp(App):
     """Frameless kanban desktop widget."""
 
@@ -1162,17 +1267,18 @@ class TaskboardApp(App):
         so the modal's own widgets (e.g. the ProjectPicker list, Select dropdowns)
         receive them instead of moving the hidden board selection; `B` (`boards`)
         too, so the home never opens over another screen. While the home or the
-        agenda of every board or the people directory is on the stack, it holds the
-        keys: no action of the key seat but `quit` acts. `agenda_all` and
-        `people_directory` are always allowed here: a pushed modal holds its own keys,
-        so `A` and `@` act only on a non-modal screen."""
-        if action in ("agenda_all", "people_directory"):
-            # the main screen and the home (batch 2026-10-20-batch-03, 2026-10-21-batch-01):
-            # a pushed modal (the presentation among them) holds its own keys, so `A` and
-            # `@` never reach past one
-            return True
+        agenda of every board or the people directory or the marks manager is on
+        the stack, it holds the keys: no action of the key seat but `quit` acts.
+        `agenda_all`, `people_directory` and `marks_manager` are always allowed
+        here: a pushed modal holds its own keys, so `A`, `@` and `#` act only on
+        a non-modal screen."""
+        if action in ("agenda_all", "people_directory", "marks_manager"):
+            # the main screen and the home (batch 2026-10-20-batch-03, 2026-10-21-batch-01,
+            # 2026-10-24-batch-01): a pushed modal (the presentation among them) holds
+            # its own keys, so `A`, `@` and `#` never reach past one
+            return not any(isinstance(sc, ModalScreen) for sc in self.screen_stack)
         if action in SEAT_ACTIONS and any(isinstance(sc, (BoardsHome, AllBoardsAgenda,
-                                                          PeopleDirectory))
+                                                          PeopleDirectory, MarksManager))
                                           for sc in self.screen_stack):
             # the home holds the keys — and the modals over it (its form, its
             # confirmation, a board's start-up modal) keep their own: no key of
@@ -1287,6 +1393,10 @@ class TaskboardApp(App):
     def action_people_directory(self) -> None:
         """`@`: the people directory's view (batch 2026-10-21-batch-01)."""
         self._bring(PeopleDirectory, PeopleDirectory)
+
+    def action_marks_manager(self) -> None:
+        """`#`: the milestone classes (batch 2026-10-24-batch-01, HLR-2606)."""
+        self._bring(MarksManager, MarksManager)
 
     def action_agenda_all(self) -> None:
         """`A`: the agenda of every board (batch 2026-10-20-batch-03)."""
@@ -3164,7 +3274,8 @@ class TaskboardApp(App):
         if self.view_mode == "setup":
             self.action_setup_add()
             return
-        self.push_screen(TaskModal(self.board, people=self.people), self._on_task_added)
+        self.push_screen(TaskModal(self.board, people=self.people, marks=self.marks),
+                         self._on_task_added)
 
     def _on_task_added(self, data: dict | None) -> None:
         if not data:
@@ -3191,7 +3302,7 @@ class TaskboardApp(App):
         task = self.selected_task
         if task is None:
             return
-        self.push_screen(TaskModal(self.board, task, people=self.people),
+        self.push_screen(TaskModal(self.board, task, people=self.people, marks=self.marks),
                         lambda data, t=task: self._on_task_edited(t, data))
 
     def _on_task_edited(self, task: Task, data: dict | None) -> None:

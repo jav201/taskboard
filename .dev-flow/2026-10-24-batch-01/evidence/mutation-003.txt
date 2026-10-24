@@ -1,0 +1,889 @@
+arms: 17
+before taskboard/app.py: bc5e2e2681f1a36c76e154cd3ca20735ac843173a8e3026f55ffe3ce49af2250
+before taskboard/keymap.py: e29d1dd2f8f3a2ca4667a01b1286e04ff896a664aa359064aa20ce028f6396c5
+before taskboard/modals.py: 947d90f5ca73a088b55d8d8ce0de7f9ef2b8f251fe3d973667372d480040d7bb
+before taskboard/views.py: 4ecdf088f30674176bf8734eaee4eca3e91b16a053dd22df2bce3cf0a0eee56f
+before tests/test_modal_keys.py: 17f9d12222338f075957639e0e95c02563a9526d83787a61faca546378bc7ca5
+C:\Users\jjgh8\anaconda3\Lib\site-packages\pytest_asyncio\plugin.py:207: PytestDeprecationWarning: The configuration option "asyncio_default_fixture_loop_scope" is unset.
+The event loop scope for asynchronous fixtures will default to the fixture caching scope. Future versions of pytest-asyncio will default the loop scope for asynchronous fixtures to function scope. Set the default fixture loop scope explicitly in order to avoid unexpected behavior in the future. Valid fixture loop scopes are: "function", "class", "module", "package", "session"
+
+  warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCOPE_UNSET))
+F                                                                        [100%]
+================================== FAILURES ===================================
+_______ test_TC_2605_the_editor_mounts_the_class_select_after_milestone _______
+
+home = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-24842/test_TC_2605_the_editor_mounts0/.taskboard')
+
+    async def test_TC_2605_the_editor_mounts_the_class_select_after_milestone(home):
+        """`e` on a classed milestone \u2192 the Select in `#task-chips-what` directly
+        after `f-milestone`, `none` first then the directory's classes, each option
+        a Text piece, the task's class selected; `alt+m` focuses it and opens the
+        overlay; the key line names `alt+m mark`; `TASK_KEYS` carries it. RED: the
+        Select mounted elsewhere, or `alt+m` unbound."""
+        app = _open(home)
+        async with app.run_test(size=(118, 30)) as pilot:
+            await pilot.pause()
+            await pilot.press("escape")                  # the home \u2192 the main screen
+            app.selected_task_id = "tc4"                 # Index v1 delivered · delivery
+            app.refresh_view()
+            await pilot.pause()
+            await _press(pilot, "e")
+            scr = app.screen
+            assert isinstance(scr, modals.TaskModal)
+            chips = [w.id for w in scr.query_one("#task-chips-what").query("*") if w.id]
+            assert chips.index("f-mark") == chips.index("f-milestone") + 1
+            sel = scr.query_one("#f-mark", Select)
+            assert sel.value == "delivery"
+            opts = sel._options                       # (prompt, value) pairs, as composed
+            assert [v for _p, v in opts] == ["", "delivery", "payment", "review", "launch"]
+            # every option its shape in its colour and its name in the ink tone —
+            # Text pieces, never markup (C-17)
+            assert all(isinstance(p, Text) for p, _v in opts)
+            pay = next(p for p, v in opts if v == "payment")
+            assert pay.plain == "\u2b22 Payment"
+            assert str(pay.spans[0].style) == views.HEX["amber"]
+            assert str(pay.spans[1].style) == views.HEX["ink"]
+            none = opts[0][0]
+            assert none.plain == "\u25c6 none"
+            # no `+ new class…` option: the manager adds, the Select only picks
+            assert all("new class" not in p.plain for p, _v in opts)
+            # the key is SAID: on the key line, and in TASK_KEYS after the save key
+            assert ("alt+m", "mark") in modals.TASK_KEYS
+            painted = "\n".join(_text(_painted(app)))
+            assert "alt+m mark" in painted
+            # `alt+m` \u2192 the Select takes the focus and its overlay opens
+            await _press(pilot, "alt+m")
+>           assert sel.expanded and sel.has_focus_within
+E           AssertionError: assert (False)
+E            +  where False = Select(id='f-mark').expanded
+
+tests\test_marks_manager.py:151: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_marks_manager.py::test_TC_2605_the_editor_mounts_the_class_select_after_milestone
+1 failed in 0.93s
+after:  947d90f5ca73a088b55d8d8ce0de7f9ef2b8f251fe3d973667372d480040d7bb
+tests/test_marks_manager.py::test_TC_2605_the_editor_mounts_the_class_select_after_milestone: RED (KILLED)
+C:\Users\jjgh8\anaconda3\Lib\site-packages\pytest_asyncio\plugin.py:207: PytestDeprecationWarning: The configuration option "asyncio_default_fixture_loop_scope" is unset.
+The event loop scope for asynchronous fixtures will default to the fixture caching scope. Future versions of pytest-asyncio will default the loop scope for asynchronous fixtures to function scope. Set the default fixture loop scope explicitly in order to avoid unexpected behavior in the future. Valid fixture loop scopes are: "function", "class", "module", "package", "session"
+
+  warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCOPE_UNSET))
+F                                                                        [100%]
+================================== FAILURES ===================================
+_______________ test_TC_2605_down_enter_carries_the_next_class ________________
+
+home = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-24843/test_TC_2605_down_enter_carrie0/.taskboard')
+
+    async def test_TC_2605_down_enter_carries_the_next_class(home):
+        """`alt+m`, `down`, `enter` \u2192 the next class saved on the task; the file
+        holds the id. RED: the Select writes markup, or nothing is saved."""
+        app = _open(home)
+        async with app.run_test(size=(118, 30)) as pilot:
+            await pilot.pause()
+            await pilot.press("escape")
+            app.selected_task_id = "tc4"                 # delivery (index 1)
+            app.refresh_view()
+            await pilot.pause()
+            await _press(pilot, "e", "alt+m", "down", "enter", "alt+s")
+            assert not isinstance(app.screen, modals.TaskModal)
+>           assert app.board.task_by_id("tc4").mark == "payment"
+E           AssertionError: assert 'delivery' == 'payment'
+E             
+E             - payment
+E             + delivery
+
+tests\test_marks_manager.py:171: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_marks_manager.py::test_TC_2605_down_enter_carries_the_next_class
+1 failed in 1.22s
+after:  947d90f5ca73a088b55d8d8ce0de7f9ef2b8f251fe3d973667372d480040d7bb
+tests/test_marks_manager.py::test_TC_2605_down_enter_carries_the_next_class: RED (KILLED)
+C:\Users\jjgh8\anaconda3\Lib\site-packages\pytest_asyncio\plugin.py:207: PytestDeprecationWarning: The configuration option "asyncio_default_fixture_loop_scope" is unset.
+The event loop scope for asynchronous fixtures will default to the fixture caching scope. Future versions of pytest-asyncio will default the loop scope for asynchronous fixtures to function scope. Set the default fixture loop scope explicitly in order to avoid unexpected behavior in the future. Valid fixture loop scopes are: "function", "class", "module", "package", "session"
+
+  warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCOPE_UNSET))
+F                                                                        [100%]
+================================== FAILURES ===================================
+__________________ test_TC_2605_none_saves_with_no_mark_key ___________________
+
+home = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-24844/test_TC_2605_none_saves_with_n0/.taskboard')
+
+    async def test_TC_2605_none_saves_with_no_mark_key(home):
+        """`alt+m`, `up` to `none`, `enter`, `alt+s` \u2192 the saved task carries no
+        `mark` key (the board file's other marks untouched). RED: `mark: null`
+        written, or the field kept."""
+        app = _open(home)
+        async with app.run_test(size=(118, 30)) as pilot:
+            await pilot.pause()
+            await pilot.press("escape")
+            app.selected_task_id = "tc4"                 # delivery
+            app.refresh_view()
+            await pilot.pause()
+            await _press(pilot, "e", "alt+m", "up", "enter", "alt+s")
+>           assert app.board.task_by_id("tc4").mark is None
+E           AssertionError: assert 'none' is None
+E            +  where 'none' = Task(title='Index v1 delivered', project_id='pci', phase='Next', priority='high', start_date='2026-10-26', due_date='2... depends_on=['tc3'], phase_changed='2026-10-18', milestone=True, mark='none', show_in_present=True, extra={}, id='tc4').mark
+E            +    where Task(title='Index v1 delivered', project_id='pci', phase='Next', priority='high', start_date='2026-10-26', due_date='2... depends_on=['tc3'], phase_changed='2026-10-18', milestone=True, mark='none', show_in_present=True, extra={}, id='tc4') = task_by_id('tc4')
+E            +      where task_by_id = <taskboard.models.Board object at 0x000002DEDD1CBFE0>.task_by_id
+E            +        where <taskboard.models.Board object at 0x000002DEDD1CBFE0> = TaskboardApp(title='taskboard', classes={'-dark-mode'}, pseudo_classes={'nocolor', 'focus', 'dark'}).board
+
+tests\test_marks_manager.py:189: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_marks_manager.py::test_TC_2605_none_saves_with_no_mark_key
+1 failed in 1.24s
+after:  947d90f5ca73a088b55d8d8ce0de7f9ef2b8f251fe3d973667372d480040d7bb
+tests/test_marks_manager.py::test_TC_2605_none_saves_with_no_mark_key: RED (KILLED)
+C:\Users\jjgh8\anaconda3\Lib\site-packages\pytest_asyncio\plugin.py:207: PytestDeprecationWarning: The configuration option "asyncio_default_fixture_loop_scope" is unset.
+The event loop scope for asynchronous fixtures will default to the fixture caching scope. Future versions of pytest-asyncio will default the loop scope for asynchronous fixtures to function scope. Set the default fixture loop scope explicitly in order to avoid unexpected behavior in the future. Valid fixture loop scopes are: "function", "class", "module", "package", "session"
+
+  warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCOPE_UNSET))
+F                                                                        [100%]
+================================== FAILURES ===================================
+___________ test_TC_2605_a_markup_looking_class_name_shows_as_typed ___________
+
+home = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-24845/test_TC_2605_a_markup_looking_0/.taskboard')
+
+    async def test_TC_2605_a_markup_looking_class_name_shows_as_typed(home):
+        """A class named `[b]x[/b]`: its option and its overlay row print as typed
+        — a Text piece, never parsed (C-17). RED: the option built as a markup
+        string (the name renders bold or vanishes)."""
+        fx.build(home, last="client-a")
+        path = home / MARKS_NAME
+        data = json.loads(path.read_text(encoding="utf-8"))
+        data["marks"].append({"id": "hostile", "name": "[b]x[/b]", "shape": "\u2605",
+                              "colour": "pink"})
+        path.write_text(json.dumps(data, indent=2, ensure_ascii=False), encoding="utf-8")
+        from taskboard.__main__ import open_app
+        app = open_app(None)
+        async with app.run_test(size=(118, 30)) as pilot:
+            await pilot.pause()
+            await pilot.press("escape")
+            app.selected_task_id = "tc4"
+            app.refresh_view()
+            await pilot.pause()
+            await _press(pilot, "e")
+            sel = app.screen.query_one("#f-mark", Select)
+            hostile = next(p for p, v in sel._options if v == "hostile")
+>           assert hostile.plain == "\u2605 [b]x[/b]"
+E           AttributeError: 'str' object has no attribute 'plain'
+
+tests\test_marks_manager.py:217: AttributeError
+=========================== short test summary info ===========================
+FAILED tests/test_marks_manager.py::test_TC_2605_a_markup_looking_class_name_shows_as_typed
+1 failed in 0.82s
+after:  947d90f5ca73a088b55d8d8ce0de7f9ef2b8f251fe3d973667372d480040d7bb
+tests/test_marks_manager.py::test_TC_2605_a_markup_looking_class_name_shows_as_typed: RED (KILLED)
+C:\Users\jjgh8\anaconda3\Lib\site-packages\pytest_asyncio\plugin.py:207: PytestDeprecationWarning: The configuration option "asyncio_default_fixture_loop_scope" is unset.
+The event loop scope for asynchronous fixtures will default to the fixture caching scope. Future versions of pytest-asyncio will default the loop scope for asynchronous fixtures to function scope. Set the default fixture loop scope explicitly in order to avoid unexpected behavior in the future. Valid fixture loop scopes are: "function", "class", "module", "package", "session"
+
+  warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCOPE_UNSET))
+F                                                                        [100%]
+================================== FAILURES ===================================
+_____________ test_TC_2605_an_empty_directory_composes_no_select ______________
+
+home = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-24846/test_TC_2605_an_empty_director0/.taskboard')
+
+    async def test_TC_2605_an_empty_directory_composes_no_select(home):
+        """The app always loads a directory, possibly empty: with none, the editor
+        draws NO Select — no `#f-mark`, no `alt+m` on the key line, and the tab
+        walk has no stop between `milestone` and `start` (the walk of
+        tests/test_edit_window.py stays green). RED: the Select composed for an
+        empty directory."""
+        app = _open_empty(home)
+        async with app.run_test(size=(80, 24)) as pilot:
+            await pilot.pause()
+            await pilot.press("escape")
+            app.selected_task_id = "tc4"
+            app.refresh_view()
+            await pilot.pause()
+            await _press(pilot, "e")
+            scr = app.screen
+            assert isinstance(scr, modals.TaskModal)
+>           assert not scr.query("#f-mark")
+E           AssertionError: assert not <DOMQuery query='#f-mark'>
+E            +  where <DOMQuery query='#f-mark'> = query('#f-mark')
+E            +    where query = TaskModal().query
+
+tests\test_marks_manager.py:239: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_marks_manager.py::test_TC_2605_an_empty_directory_composes_no_select
+1 failed in 0.87s
+after:  947d90f5ca73a088b55d8d8ce0de7f9ef2b8f251fe3d973667372d480040d7bb
+tests/test_marks_manager.py::test_TC_2605_an_empty_directory_composes_no_select: RED (KILLED)
+C:\Users\jjgh8\anaconda3\Lib\site-packages\pytest_asyncio\plugin.py:207: PytestDeprecationWarning: The configuration option "asyncio_default_fixture_loop_scope" is unset.
+The event loop scope for asynchronous fixtures will default to the fixture caching scope. Future versions of pytest-asyncio will default the loop scope for asynchronous fixtures to function scope. Set the default fixture loop scope explicitly in order to avoid unexpected behavior in the future. Valid fixture loop scopes are: "function", "class", "module", "package", "session"
+
+  warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCOPE_UNSET))
+F                                                                        [100%]
+================================== FAILURES ===================================
+__________ test_TC_2606_keymap_hash_is_global_off_the_bar_and_listed __________
+
+    def test_TC_2606_keymap_hash_is_global_off_the_bar_and_listed():
+        """The seat: `#` is `number_sign` \u2192 `marks_manager`, `Milestone classes`,
+        global and off the bar like `@`; `?`'s global line and the palette list it;
+        the action exists on the app."""
+        seat = {k.action: k for k in keymap.KEYMAP}
+>       k = seat["marks_manager"]
+E       KeyError: 'marks_manager'
+
+tests\test_marks_manager.py:256: KeyError
+=========================== short test summary info ===========================
+FAILED tests/test_marks_manager.py::test_TC_2606_keymap_hash_is_global_off_the_bar_and_listed
+1 failed in 0.35s
+after:  e29d1dd2f8f3a2ca4667a01b1286e04ff896a664aa359064aa20ce028f6396c5
+tests/test_marks_manager.py::test_TC_2606_keymap_hash_is_global_off_the_bar_and_listed: RED (KILLED)
+C:\Users\jjgh8\anaconda3\Lib\site-packages\pytest_asyncio\plugin.py:207: PytestDeprecationWarning: The configuration option "asyncio_default_fixture_loop_scope" is unset.
+The event loop scope for asynchronous fixtures will default to the fixture caching scope. Future versions of pytest-asyncio will default the loop scope for asynchronous fixtures to function scope. Set the default fixture loop scope explicitly in order to avoid unexpected behavior in the future. Valid fixture loop scopes are: "function", "class", "module", "package", "session"
+
+  warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCOPE_UNSET))
+FF                                                                       [100%]
+================================== FAILURES ===================================
+_ test_TC_2606_the_manager_lists_every_class_with_counts_and_the_key_row[size0] _
+
+home = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-24848/test_TC_2606_the_manager_lists0/.taskboard')
+size = (118, 30)
+
+    @pytest.mark.parametrize("size", [(118, 30), (80, 24)])
+    async def test_TC_2606_the_manager_lists_every_class_with_counts_and_the_key_row(home, size):
+        """`#` \u2192 the manager over the main screen: every class with its shape in
+        its colour, its name, the open/all counts read from every board, the
+        chosen row `\u25b6`; the key row names `\u2191\u2193 move \u2423 hide/show n new e edit esc
+        close`; `d` and `\u21b5` change nothing (inert, like `@`'s seat behind its
+        screen). RED: a count missing, or `d` bound."""
+        app = _open(home)
+        async with app.run_test(size=size) as pilot:
+            await pilot.pause()
+            await pilot.press("escape")
+            await _press(pilot, "number_sign")
+            assert isinstance(app.screen, MarksManager)
+            rows = _painted(app)
+            painted = "\n".join(_text(rows))
+            for _cid, n, s, _h, _k in fx.CLASSES:
+                assert n in painted and s in painted, (n, painted)
+            assert "\u2191\u2193 move   \u2423 hide/show   n new   e edit   esc close" in painted
+            assert "only this" not in painted and "delete" not in painted
+            assert "# Milestone classes" in painted and "marks.json" in painted
+            # the chosen row is the first, marked \u25b6
+            row = _prow(rows, "Delivery")
+            assert "\u25b6" in "".join(ch for ch, _ in row)
+            # the shape wears the class colour (the styled-segment export)
+            dtext = "".join(ch for ch, _ in row)
+>           assert row[dtext.index("\u25b2")][1] == HEX["cyan"]
+E           AssertionError: assert '#afafaf' == '#22d3ee'
+E             
+E             - #22d3ee
+E             + #afafaf
+
+tests\test_marks_manager.py:290: AssertionError
+_ test_TC_2606_the_manager_lists_every_class_with_counts_and_the_key_row[size1] _
+
+home = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-24848/test_TC_2606_the_manager_lists1/.taskboard')
+size = (80, 24)
+
+    @pytest.mark.parametrize("size", [(118, 30), (80, 24)])
+    async def test_TC_2606_the_manager_lists_every_class_with_counts_and_the_key_row(home, size):
+        """`#` \u2192 the manager over the main screen: every class with its shape in
+        its colour, its name, the open/all counts read from every board, the
+        chosen row `\u25b6`; the key row names `\u2191\u2193 move \u2423 hide/show n new e edit esc
+        close`; `d` and `\u21b5` change nothing (inert, like `@`'s seat behind its
+        screen). RED: a count missing, or `d` bound."""
+        app = _open(home)
+        async with app.run_test(size=size) as pilot:
+            await pilot.pause()
+            await pilot.press("escape")
+            await _press(pilot, "number_sign")
+            assert isinstance(app.screen, MarksManager)
+            rows = _painted(app)
+            painted = "\n".join(_text(rows))
+            for _cid, n, s, _h, _k in fx.CLASSES:
+                assert n in painted and s in painted, (n, painted)
+            assert "\u2191\u2193 move   \u2423 hide/show   n new   e edit   esc close" in painted
+            assert "only this" not in painted and "delete" not in painted
+            assert "# Milestone classes" in painted and "marks.json" in painted
+            # the chosen row is the first, marked \u25b6
+            row = _prow(rows, "Delivery")
+            assert "\u25b6" in "".join(ch for ch, _ in row)
+            # the shape wears the class colour (the styled-segment export)
+            dtext = "".join(ch for ch, _ in row)
+>           assert row[dtext.index("\u25b2")][1] == HEX["cyan"]
+E           AssertionError: assert '#afafaf' == '#22d3ee'
+E             
+E             - #22d3ee
+E             + #afafaf
+
+tests\test_marks_manager.py:290: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_marks_manager.py::test_TC_2606_the_manager_lists_every_class_with_counts_and_the_key_row[size0]
+FAILED tests/test_marks_manager.py::test_TC_2606_the_manager_lists_every_class_with_counts_and_the_key_row[size1]
+2 failed in 0.89s
+after:  bc5e2e2681f1a36c76e154cd3ca20735ac843173a8e3026f55ffe3ce49af2250
+tests/test_marks_manager.py::test_TC_2606_the_manager_lists_every_class_with_counts_and_the_key_row: RED (KILLED)
+C:\Users\jjgh8\anaconda3\Lib\site-packages\pytest_asyncio\plugin.py:207: PytestDeprecationWarning: The configuration option "asyncio_default_fixture_loop_scope" is unset.
+The event loop scope for asynchronous fixtures will default to the fixture caching scope. Future versions of pytest-asyncio will default the loop scope for asynchronous fixtures to function scope. Set the default fixture loop scope explicitly in order to avoid unexpected behavior in the future. Valid fixture loop scopes are: "function", "class", "module", "package", "session"
+
+  warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCOPE_UNSET))
+F                                                                        [100%]
+================================== FAILURES ===================================
+______ test_TC_2606_space_hides_a_class_persisted_and_the_frame_redraws _______
+
+home = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-24849/test_TC_2606_space_hides_a_cla0/.taskboard')
+
+    async def test_TC_2606_space_hides_a_class_persisted_and_the_frame_redraws(home):
+        """`space` on a class \u2192 `marks.json` holds `hidden: true`, the frame
+        redraws it dimmed with `hidden: gantt + present`, and the board beneath is
+        refreshed (its live `marks` dict already holds the flag). RED: the toggle
+        not persisted, or the frame unchanged."""
+        app = _open(home)
+        async with app.run_test(size=(118, 30)) as pilot:
+            await pilot.pause()
+            await pilot.press("escape")
+            await _press(pilot, "number_sign", "down")    # on Payment
+            await _press(pilot, "space")
+            data = json.loads((home / MARKS_NAME).read_text(encoding="utf-8"))
+>           assert next(m for m in data["marks"] if m["id"] == "payment")["hidden"] is True
+E           KeyError: 'hidden'
+
+tests\test_marks_manager.py:315: KeyError
+=========================== short test summary info ===========================
+FAILED tests/test_marks_manager.py::test_TC_2606_space_hides_a_class_persisted_and_the_frame_redraws
+1 failed in 0.88s
+after:  bc5e2e2681f1a36c76e154cd3ca20735ac843173a8e3026f55ffe3ce49af2250
+tests/test_marks_manager.py::test_TC_2606_space_hides_a_class_persisted_and_the_frame_redraws: RED (KILLED)
+C:\Users\jjgh8\anaconda3\Lib\site-packages\pytest_asyncio\plugin.py:207: PytestDeprecationWarning: The configuration option "asyncio_default_fixture_loop_scope" is unset.
+The event loop scope for asynchronous fixtures will default to the fixture caching scope. Future versions of pytest-asyncio will default the loop scope for asynchronous fixtures to function scope. Set the default fixture loop scope explicitly in order to avoid unexpected behavior in the future. Valid fixture loop scopes are: "function", "class", "module", "package", "session"
+
+  warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCOPE_UNSET))
+F                                                                        [100%]
+================================== FAILURES ===================================
+_______________ test_TC_2606_e_edits_the_class_and_keeps_its_id _______________
+
+home = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-24850/test_TC_2606_e_edits_the_class0/.taskboard')
+
+    async def test_TC_2606_e_edits_the_class_and_keeps_its_id(home):
+        """`e` on a class \u2192 the form on it (its name shown); a new name, `alt+s` \u2192
+        the same id in `marks.json`, the name changed, the frame redrawn. RED: the
+        id lost on rename (the tasks' marks would dangle)."""
+        app = _open(home)
+        async with app.run_test(size=(118, 30)) as pilot:
+            await pilot.pause()
+            await pilot.press("escape")
+            await _press(pilot, "number_sign", "down")    # on Payment
+            await _press(pilot, "e")
+            assert isinstance(app.screen, modals.MarkForm)
+>           assert app.screen.query_one("#mf-name", Input).value == "Payment"
+E           AssertionError: assert '' == 'Payment'
+E             
+E             - Payment
+
+tests\test_marks_manager.py:336: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_marks_manager.py::test_TC_2606_e_edits_the_class_and_keeps_its_id
+1 failed in 0.83s
+after:  bc5e2e2681f1a36c76e154cd3ca20735ac843173a8e3026f55ffe3ce49af2250
+tests/test_marks_manager.py::test_TC_2606_e_edits_the_class_and_keeps_its_id: RED (KILLED)
+C:\Users\jjgh8\anaconda3\Lib\site-packages\pytest_asyncio\plugin.py:207: PytestDeprecationWarning: The configuration option "asyncio_default_fixture_loop_scope" is unset.
+The event loop scope for asynchronous fixtures will default to the fixture caching scope. Future versions of pytest-asyncio will default the loop scope for asynchronous fixtures to function scope. Set the default fixture loop scope explicitly in order to avoid unexpected behavior in the future. Valid fixture loop scopes are: "function", "class", "module", "package", "session"
+
+  warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCOPE_UNSET))
+F                                                                        [100%]
+================================== FAILURES ===================================
+___________ test_TC_2606_a_refused_write_says_so_and_keeps_the_form ___________
+
+home = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-24852/test_TC_2606_a_refused_write_s0/.taskboard')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x0000027A6858C860>
+
+    async def test_TC_2606_a_refused_write_says_so_and_keeps_the_form(home, monkeypatch):
+        """A failed `Directory.add` \u2192 `The marks directory was not saved: <reason>`
+        and the FORM STAYS OPEN (the operator fixes the name or cancels). RED: the
+        form dismissed, or nothing said."""
+        app = _open(home)
+        monkeypatch.setattr(app.marks, "add",
+                            lambda *a: (_ for _ in ()).throw(OSError("disk full")))
+        async with app.run_test(size=(118, 30), notifications=True) as pilot:
+            await pilot.pause()
+            await pilot.press("escape")
+            await _press(pilot, "number_sign", "n")
+            assert isinstance(app.screen, modals.MarkForm)
+            await _press(pilot, *"Legal", "alt+s")
+>           assert isinstance(app.screen, modals.MarkForm)    # the form is kept
+E           AssertionError: assert False
+E            +  where False = isinstance(MarksManager(), <class 'taskboard.modals.MarkForm'>)
+E            +    where MarksManager() = TaskboardApp(title='taskboard', classes={'-dark-mode'}, pseudo_classes={'focus', 'dark', 'nocolor'}).screen
+E            +    and   <class 'taskboard.modals.MarkForm'> = modals.MarkForm
+
+tests\test_marks_manager.py:358: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_marks_manager.py::test_TC_2606_a_refused_write_says_so_and_keeps_the_form
+1 failed in 1.18s
+after:  947d90f5ca73a088b55d8d8ce0de7f9ef2b8f251fe3d973667372d480040d7bb
+tests/test_marks_manager.py::test_TC_2606_a_refused_write_says_so_and_keeps_the_form: RED (KILLED)
+C:\Users\jjgh8\anaconda3\Lib\site-packages\pytest_asyncio\plugin.py:207: PytestDeprecationWarning: The configuration option "asyncio_default_fixture_loop_scope" is unset.
+The event loop scope for asynchronous fixtures will default to the fixture caching scope. Future versions of pytest-asyncio will default the loop scope for asynchronous fixtures to function scope. Set the default fixture loop scope explicitly in order to avoid unexpected behavior in the future. Valid fixture loop scopes are: "function", "class", "module", "package", "session"
+
+  warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCOPE_UNSET))
+F                                                                        [100%]
+================================== FAILURES ===================================
+__________ test_TC_2606_a_blank_name_is_refused_and_the_form_is_kept __________
+
+home = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-24853/test_TC_2606_a_blank_name_is_r0/.taskboard')
+
+    async def test_TC_2606_a_blank_name_is_refused_and_the_form_is_kept(home):
+        """`alt+s` with no name \u2192 `A class needs a name.`, the form kept. RED: an
+        unnamed class saved, or the form dropped."""
+        app = _open(home)
+        async with app.run_test(size=(118, 30), notifications=True) as pilot:
+            await pilot.pause()
+            await pilot.press("escape")
+            await _press(pilot, "number_sign", "n")
+            assert isinstance(app.screen, modals.MarkForm)
+            await _press(pilot, "alt+s")
+            assert isinstance(app.screen, modals.MarkForm)
+>           assert any("A class needs a name." in n for n in _notes(app)), _notes(app)
+E           AssertionError: ['The marks directory was not saved: a class needs a name']
+E           assert False
+E            +  where False = any(<generator object test_TC_2606_a_blank_name_is_refused_and_the_form_is_kept.<locals>.<genexpr> at 0x0000018FF5381FF0>)
+
+tests\test_marks_manager.py:377: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_marks_manager.py::test_TC_2606_a_blank_name_is_refused_and_the_form_is_kept
+1 failed in 0.83s
+after:  947d90f5ca73a088b55d8d8ce0de7f9ef2b8f251fe3d973667372d480040d7bb
+tests/test_marks_manager.py::test_TC_2606_a_blank_name_is_refused_and_the_form_is_kept: RED (KILLED)
+C:\Users\jjgh8\anaconda3\Lib\site-packages\pytest_asyncio\plugin.py:207: PytestDeprecationWarning: The configuration option "asyncio_default_fixture_loop_scope" is unset.
+The event loop scope for asynchronous fixtures will default to the fixture caching scope. Future versions of pytest-asyncio will default the loop scope for asynchronous fixtures to function scope. Set the default fixture loop scope explicitly in order to avoid unexpected behavior in the future. Valid fixture loop scopes are: "function", "class", "module", "package", "session"
+
+  warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCOPE_UNSET))
+F                                                                        [100%]
+================================== FAILURES ===================================
+_ test_TC_2606_hash_opens_from_the_main_screen_and_the_home_and_hash_esc_close _
+
+home = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-24854/test_TC_2606_hash_opens_from_t0/.taskboard')
+
+    async def test_TC_2606_hash_opens_from_the_main_screen_and_the_home_and_hash_esc_close(home):
+        """`#` on the main screen and on the home opens the manager; `#` closes it
+        too, and `esc`; `?` lists it. RED: `#` bound on a screen only, or it does
+        not close."""
+        app = _open(home)
+        async with app.run_test(size=(118, 30)) as pilot:
+            await pilot.pause()
+            await pilot.press("escape")                   # the main screen
+            await _press(pilot, "number_sign")
+            assert isinstance(app.screen, MarksManager)
+            await _press(pilot, "number_sign")            # `#` closes it too
+>           assert not isinstance(app.screen, MarksManager)
+E           AssertionError: assert not True
+E            +  where True = isinstance(MarksManager(), MarksManager)
+E            +    where MarksManager() = TaskboardApp(title='taskboard', classes={'-dark-mode'}, pseudo_classes={'nocolor', 'focus', 'dark'}).screen
+
+tests\test_marks_manager.py:392: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_marks_manager.py::test_TC_2606_hash_opens_from_the_main_screen_and_the_home_and_hash_esc_close
+1 failed in 0.97s
+after:  bc5e2e2681f1a36c76e154cd3ca20735ac843173a8e3026f55ffe3ce49af2250
+tests/test_marks_manager.py::test_TC_2606_hash_opens_from_the_main_screen_and_the_home_and_hash_esc_close: RED (KILLED)
+C:\Users\jjgh8\anaconda3\Lib\site-packages\pytest_asyncio\plugin.py:207: PytestDeprecationWarning: The configuration option "asyncio_default_fixture_loop_scope" is unset.
+The event loop scope for asynchronous fixtures will default to the fixture caching scope. Future versions of pytest-asyncio will default the loop scope for asynchronous fixtures to function scope. Set the default fixture loop scope explicitly in order to avoid unexpected behavior in the future. Valid fixture loop scopes are: "function", "class", "module", "package", "session"
+
+  warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCOPE_UNSET))
+F                                                                        [100%]
+================================== FAILURES ===================================
+_________________ test_TC_2606_hash_over_a_modal_does_nothing _________________
+
+home = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-24855/test_TC_2606_hash_over_a_modal0/.taskboard')
+
+    async def test_TC_2606_hash_over_a_modal_does_nothing(home):
+        """`#` pressed while the task editor is open opens nothing: a pushed modal
+        holds its own keys (architect A-9). RED: the manager piles over the
+        editor."""
+        app = _open(home)
+>       async with app.run_test(size=(118, 30)) as pilot:
+
+tests\test_marks_manager.py:412: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+..\..\..\anaconda3\Lib\contextlib.py:217: in __aexit__
+    await anext(self.gen)
+..\..\..\anaconda3\Lib\site-packages\textual\app.py:2218: in run_test
+    raise self._exception
+..\..\..\anaconda3\Lib\site-packages\textual\message_pump.py:604: in _pre_process
+    await self._dispatch_message(events.Mount())
+..\..\..\anaconda3\Lib\site-packages\textual\message_pump.py:727: in _dispatch_message
+    await self.on_event(message)
+..\..\..\anaconda3\Lib\site-packages\textual\message_pump.py:808: in on_event
+    await self._on_message(event)
+..\..\..\anaconda3\Lib\site-packages\textual\message_pump.py:829: in _on_message
+    await invoke(method, message)
+..\..\..\anaconda3\Lib\site-packages\textual\_callback.py:96: in invoke
+    return await _invoke(callback, *params)
+..\..\..\anaconda3\Lib\site-packages\textual\_callback.py:56: in _invoke
+    result = callback(*params[:parameter_count])
+taskboard\modals.py:595: in on_mount
+    self.query_one("#f-save", Button).focus()
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = TaskModal(), selector = '#f-save'
+expect_type = <class 'textual.widgets._button.Button'>
+
+    def query_one(
+        self,
+        selector: str | type[QueryType],
+        expect_type: type[QueryType] | None = None,
+    ) -> QueryType | Widget:
+        """Get a widget from this widget's children that matches a selector or widget type.
+    
+        Args:
+            selector: A selector or widget type.
+            expect_type: Require the object be of the supplied type, or None for any type.
+    
+        Raises:
+            WrongType: If the wrong type was found.
+            NoMatches: If no node matches the query.
+    
+        Returns:
+            A widget matching the selector.
+        """
+        _rich_traceback_omit = True
+    
+        base_node = self._get_dom_base()
+    
+        if isinstance(selector, str):
+            query_selector = selector
+        else:
+            query_selector = selector.__name__
+    
+        if is_id_selector(query_selector):
+            cache_key = (base_node._nodes._updates, query_selector, expect_type)
+            cached_result = base_node._query_one_cache.get(cache_key)
+            if cached_result is not None:
+                return cached_result
+            if (
+                node := walk_breadth_search_id(
+                    base_node, query_selector[1:], with_root=False
+                )
+            ) is not None:
+                if expect_type is not None and not isinstance(node, expect_type):
+                    raise WrongType(
+                        f"Node matching {query_selector!r} is the wrong type; expected type {expect_type.__name__!r}, found {node}"
+                    )
+                base_node._query_one_cache[cache_key] = node
+                return node
+>           raise NoMatches(f"No nodes match {query_selector!r} on {base_node!r}")
+E           textual.css.query.NoMatches: No nodes match '#f-save' on TaskModal()
+
+..\..\..\anaconda3\Lib\site-packages\textual\dom.py:1505: NoMatches
+---------------------------- Captured stderr call -----------------------------
+\u256d\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500 Traceback (most recent call last) \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\n\u2502 C:\\Users\\jjgh8\\Github\\taskboard-wt\\ms-impl\\taskboard\\modals.py:595 in        \n\u2502 on_mount                                                                     \n\u2502                                                                              \n\u2502    592 \u2502                                                                     \n\u2502    593 \u2502   def on_mount(self) -> None:                                       \n\u2502    594 \u2502   \u2502   self._fit_width(self.app.size.width)                          \n\u2502 \u2771  595 \u2502   \u2502   self.query_one("#f-save", Button).focus()                     \n\u2502    596 \u2502                                                                     \n\u2502    597 \u2502   def on_resize(self, event: events.Resize) -> None:                \n\u2502    598 \u2502   \u2502   self._fit_width(event.size.width)                             \n\u2502                                                                              \n\u2502 \u256d\u2500\u2500\u2500\u2500\u2500\u2500 locals \u2500\u2500\u2500\u2500\u2500\u2500\u256e                                                       \n\u2502 \u2502 self = TaskModal() \u2502                                                       \n\u2502 \u2570\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u256f                                                       \n\u2570\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\nNoMatches: No nodes match '#f-save' on TaskModal()
+=========================== short test summary info ===========================
+FAILED tests/test_marks_manager.py::test_TC_2606_hash_over_a_modal_does_nothing
+1 failed in 1.39s
+after:  947d90f5ca73a088b55d8d8ce0de7f9ef2b8f251fe3d973667372d480040d7bb
+tests/test_marks_manager.py::test_TC_2606_hash_over_a_modal_does_nothing: RED (KILLED)
+C:\Users\jjgh8\anaconda3\Lib\site-packages\pytest_asyncio\plugin.py:207: PytestDeprecationWarning: The configuration option "asyncio_default_fixture_loop_scope" is unset.
+The event loop scope for asynchronous fixtures will default to the fixture caching scope. Future versions of pytest-asyncio will default the loop scope for asynchronous fixtures to function scope. Set the default fixture loop scope explicitly in order to avoid unexpected behavior in the future. Valid fixture loop scopes are: "function", "class", "module", "package", "session"
+
+  warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCOPE_UNSET))
+F                                                                        [100%]
+================================== FAILURES ===================================
+__________ test_TC_2606_the_seat_keys_are_refused_behind_the_manager __________
+
+home = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-24856/test_TC_2606_the_seat_keys_are0/.taskboard')
+
+    async def test_TC_2606_the_seat_keys_are_refused_behind_the_manager(home):
+        """While the manager holds the keys, no seat action but `quit` acts: `a`,
+        `d`, `1`, `B`, `4` change nothing. RED: a seat key fires behind the
+        manager."""
+        app = _open(home)
+        async with app.run_test(size=(118, 30)) as pilot:
+            await pilot.pause()
+            await pilot.press("escape")
+            view_mode, n_tasks = app.view_mode, len(app.board.tasks)
+            await _press(pilot, "number_sign")
+            assert isinstance(app.screen, MarksManager)
+            await _press(pilot, "a", "d", "1", "B", "4")
+>           assert isinstance(app.screen, MarksManager)
+E           AssertionError: assert False
+E            +  where False = isinstance(TaskModal(), MarksManager)
+E            +    where TaskModal() = TaskboardApp(title='taskboard', classes={'-dark-mode'}, pseudo_classes={'nocolor', 'dark', 'focus'}).screen
+
+tests\test_marks_manager.py:434: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_marks_manager.py::test_TC_2606_the_seat_keys_are_refused_behind_the_manager
+1 failed in 1.18s
+after:  bc5e2e2681f1a36c76e154cd3ca20735ac843173a8e3026f55ffe3ce49af2250
+tests/test_marks_manager.py::test_TC_2606_the_seat_keys_are_refused_behind_the_manager: RED (KILLED)
+C:\Users\jjgh8\anaconda3\Lib\site-packages\pytest_asyncio\plugin.py:207: PytestDeprecationWarning: The configuration option "asyncio_default_fixture_loop_scope" is unset.
+The event loop scope for asynchronous fixtures will default to the fixture caching scope. Future versions of pytest-asyncio will default the loop scope for asynchronous fixtures to function scope. Set the default fixture loop scope explicitly in order to avoid unexpected behavior in the future. Valid fixture loop scopes are: "function", "class", "module", "package", "session"
+
+  warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCOPE_UNSET))
+F                                                                        [100%]
+================================== FAILURES ===================================
+__________ test_TC_2606_an_empty_directory_says_so_and_n_still_works __________
+
+home = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-24857/test_TC_2606_an_empty_director0/.taskboard')
+
+    async def test_TC_2606_an_empty_directory_says_so_and_n_still_works(home):
+        """An empty directory: the frame says `No classes yet.` and `n` still
+        opens the form (the boundary: adding the first class). RED: the empty
+        state drawn as a blank frame, or `n` dead."""
+        app = _open_empty(home)
+        async with app.run_test(size=(118, 30)) as pilot:
+            await pilot.pause()
+            await pilot.press("escape")
+            await _press(pilot, "number_sign")
+            assert isinstance(app.screen, MarksManager)
+            painted = "\n".join(_text(_painted(app)))
+            assert "No classes yet." in painted and "n adds the first class." in painted
+            await _press(pilot, "n")
+>           assert isinstance(app.screen, modals.MarkForm)
+E           AssertionError: assert False
+E            +  where False = isinstance(MarksManager(), <class 'taskboard.modals.MarkForm'>)
+E            +    where MarksManager() = TaskboardApp(title='taskboard', classes={'-dark-mode'}, pseudo_classes={'dark', 'nocolor', 'focus'}).screen
+E            +    and   <class 'taskboard.modals.MarkForm'> = modals.MarkForm
+
+tests\test_marks_manager.py:451: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_marks_manager.py::test_TC_2606_an_empty_directory_says_so_and_n_still_works
+1 failed in 0.81s
+after:  bc5e2e2681f1a36c76e154cd3ca20735ac843173a8e3026f55ffe3ce49af2250
+tests/test_marks_manager.py::test_TC_2606_an_empty_directory_says_so_and_n_still_works: RED (KILLED)
+C:\Users\jjgh8\anaconda3\Lib\site-packages\pytest_asyncio\plugin.py:207: PytestDeprecationWarning: The configuration option "asyncio_default_fixture_loop_scope" is unset.
+The event loop scope for asynchronous fixtures will default to the fixture caching scope. Future versions of pytest-asyncio will default the loop scope for asynchronous fixtures to function scope. Set the default fixture loop scope explicitly in order to avoid unexpected behavior in the future. Valid fixture loop scopes are: "function", "class", "module", "package", "session"
+
+  warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCOPE_UNSET))
+FF                                                                       [100%]
+================================== FAILURES ===================================
+_____________ test_AT_2601_a_class_is_created_and_survives[size0] _____________
+
+home = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-24858/test_AT_2601_a_class_is_create0/.taskboard')
+size = (118, 30)
+
+    @pytest.mark.parametrize("size", [(118, 30), (80, 24)])
+    async def test_AT_2601_a_class_is_created_and_survives(home, size):
+        """AT-2601 (HLR-2601/2605/2606): `#` \u2192 the manager lists every class with
+        its shape and colour; `n` \u2192 the form with the name focused, the shape row
+        and the colour row and a live preview; a name, `alt+h`, `right`, `alt+c`,
+        `left`, `alt+s` \u2192 the class in `marks.json` with the chosen shape and
+        colour; `alt+m` in the editor carries it to a milestone; a restart keeps
+        it and the gantt draws its glyph in its colour (the styled-segment export,
+        never plain text). RED: `_commit` updating memory only (restart loses the
+        class), or the seat returning `\u25c6` always."""
+        app = _open(home)
+        async with app.run_test(size=size, notifications=True) as pilot:
+            await pilot.pause()
+            await pilot.press("escape")
+            await _press(pilot, "number_sign")
+            assert isinstance(app.screen, MarksManager)
+            painted = "\n".join(_text(_painted(app)))
+            for _cid, n, s, _hh, _k in fx.CLASSES:
+                assert n in painted and s in painted
+            assert "\u2191\u2193 move   \u2423 hide/show   n new   e edit   esc close" in painted
+            # n \u2192 the form: the name focused, the rows, the preview, the key line
+            await _press(pilot, "n")
+            assert isinstance(app.screen, modals.MarkForm)
+            assert app.focused is not None and app.focused.id == "mf-name"
+            form = app.screen
+            assert form.query_one("#mf-shape") is not None
+            assert form.query_one("#mf-colour") is not None
+            painted = "\n".join(_text(_painted(app)))
+            assert "preview" in painted and "open" in painted
+            assert "late" in painted and "reached" in painted
+            assert ("alt+n name   alt+c colour   alt+h shape   alt+s save   esc cancel"
+                    in painted), painted
+            # a name, alt+h, right, alt+c, left, alt+s \u2192 the class saved
+            await _press(pilot, *"Legal", "alt+h", "right", "alt+c", "left", "alt+s")
+            assert isinstance(app.screen, MarksManager)
+            # the editor's `alt+m` carries the class to a milestone
+            await _press(pilot, "escape")                # back to the main screen
+            app.selected_task_id = "tcd"                 # Handover call · unclassified
+            app.refresh_view()
+            await pilot.pause()
+            await _press(pilot, "e", "alt+m")
+            sel = app.screen.query_one("#f-mark", Select)
+            assert sel.expanded
+            for _ in range(5):                           # none \u2192 \u2026 \u2192 Legal (last)
+                await _press(pilot, "down")
+            await _press(pilot, "enter", "alt+s")
+            assert app.board.task_by_id("tcd").mark == "legal"
+        data = json.loads((home / MARKS_NAME).read_text(encoding="utf-8"))
+        m = next(m for m in data["marks"] if m["name"] == "Legal")
+        assert m["id"] == "legal"
+        # the defaults stepped once each: shape \u2b1f\u2192\u25bc, colour orange\u2192green
+        assert m["shape"] == "\u25bc" and m["colour"] == "green"
+        # a restart: the class persists and the gantt draws it in its colour
+        from taskboard.__main__ import open_app
+        app2 = open_app(None)
+        async with app2.run_test(size=(118, 30)) as pilot:
+            await pilot.pause()
+            await pilot.press("escape")
+            assert "legal" in app2.marks.marks
+            app2.selected_task_id = "tcd"
+            await _press(pilot, "3")                     # the gantt
+            rows = _painted(app2)
+            row = _prow(rows, "Handover call")
+            text = "".join(ch for ch, _ in row)
+>           assert row[text.index("\u25bc")][1] == HEX["green"]
+E           ValueError: substring not found
+
+tests\test_marks_manager.py:525: ValueError
+_____________ test_AT_2601_a_class_is_created_and_survives[size1] _____________
+
+home = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-24858/test_AT_2601_a_class_is_create1/.taskboard')
+size = (80, 24)
+
+    @pytest.mark.parametrize("size", [(118, 30), (80, 24)])
+    async def test_AT_2601_a_class_is_created_and_survives(home, size):
+        """AT-2601 (HLR-2601/2605/2606): `#` \u2192 the manager lists every class with
+        its shape and colour; `n` \u2192 the form with the name focused, the shape row
+        and the colour row and a live preview; a name, `alt+h`, `right`, `alt+c`,
+        `left`, `alt+s` \u2192 the class in `marks.json` with the chosen shape and
+        colour; `alt+m` in the editor carries it to a milestone; a restart keeps
+        it and the gantt draws its glyph in its colour (the styled-segment export,
+        never plain text). RED: `_commit` updating memory only (restart loses the
+        class), or the seat returning `\u25c6` always."""
+        app = _open(home)
+        async with app.run_test(size=size, notifications=True) as pilot:
+            await pilot.pause()
+            await pilot.press("escape")
+            await _press(pilot, "number_sign")
+            assert isinstance(app.screen, MarksManager)
+            painted = "\n".join(_text(_painted(app)))
+            for _cid, n, s, _hh, _k in fx.CLASSES:
+                assert n in painted and s in painted
+            assert "\u2191\u2193 move   \u2423 hide/show   n new   e edit   esc close" in painted
+            # n \u2192 the form: the name focused, the rows, the preview, the key line
+            await _press(pilot, "n")
+            assert isinstance(app.screen, modals.MarkForm)
+            assert app.focused is not None and app.focused.id == "mf-name"
+            form = app.screen
+            assert form.query_one("#mf-shape") is not None
+            assert form.query_one("#mf-colour") is not None
+            painted = "\n".join(_text(_painted(app)))
+            assert "preview" in painted and "open" in painted
+            assert "late" in painted and "reached" in painted
+            assert ("alt+n name   alt+c colour   alt+h shape   alt+s save   esc cancel"
+                    in painted), painted
+            # a name, alt+h, right, alt+c, left, alt+s \u2192 the class saved
+            await _press(pilot, *"Legal", "alt+h", "right", "alt+c", "left", "alt+s")
+            assert isinstance(app.screen, MarksManager)
+            # the editor's `alt+m` carries the class to a milestone
+            await _press(pilot, "escape")                # back to the main screen
+            app.selected_task_id = "tcd"                 # Handover call · unclassified
+            app.refresh_view()
+            await pilot.pause()
+            await _press(pilot, "e", "alt+m")
+            sel = app.screen.query_one("#f-mark", Select)
+            assert sel.expanded
+            for _ in range(5):                           # none \u2192 \u2026 \u2192 Legal (last)
+                await _press(pilot, "down")
+            await _press(pilot, "enter", "alt+s")
+            assert app.board.task_by_id("tcd").mark == "legal"
+        data = json.loads((home / MARKS_NAME).read_text(encoding="utf-8"))
+        m = next(m for m in data["marks"] if m["name"] == "Legal")
+        assert m["id"] == "legal"
+        # the defaults stepped once each: shape \u2b1f\u2192\u25bc, colour orange\u2192green
+        assert m["shape"] == "\u25bc" and m["colour"] == "green"
+        # a restart: the class persists and the gantt draws it in its colour
+        from taskboard.__main__ import open_app
+        app2 = open_app(None)
+        async with app2.run_test(size=(118, 30)) as pilot:
+            await pilot.pause()
+            await pilot.press("escape")
+            assert "legal" in app2.marks.marks
+            app2.selected_task_id = "tcd"
+            await _press(pilot, "3")                     # the gantt
+            rows = _painted(app2)
+            row = _prow(rows, "Handover call")
+            text = "".join(ch for ch, _ in row)
+>           assert row[text.index("\u25bc")][1] == HEX["green"]
+E           ValueError: substring not found
+
+tests\test_marks_manager.py:525: ValueError
+=========================== short test summary info ===========================
+FAILED tests/test_marks_manager.py::test_AT_2601_a_class_is_created_and_survives[size0]
+FAILED tests/test_marks_manager.py::test_AT_2601_a_class_is_created_and_survives[size1]
+2 failed in 6.43s
+after:  4ecdf088f30674176bf8734eaee4eca3e91b16a053dd22df2bce3cf0a0eee56f
+tests/test_marks_manager.py::test_AT_2601_a_class_is_created_and_survives: RED (KILLED)
+C:\Users\jjgh8\anaconda3\Lib\site-packages\pytest_asyncio\plugin.py:207: PytestDeprecationWarning: The configuration option "asyncio_default_fixture_loop_scope" is unset.
+The event loop scope for asynchronous fixtures will default to the fixture caching scope. Future versions of pytest-asyncio will default the loop scope for asynchronous fixtures to function scope. Set the default fixture loop scope explicitly in order to avoid unexpected behavior in the future. Valid fixture loop scopes are: "function", "class", "module", "package", "session"
+
+  warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCOPE_UNSET))
+FF                                                                       [100%]
+================================== FAILURES ===================================
+__ test_AT_2604_the_marks_manager_and_its_form_obey_the_modal_key_law[size0] __
+
+home = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-24859/test_AT_2604_the_marks_manager0/.taskboard')
+size = (118, 30)
+
+    @pytest.mark.parametrize("size", [(118, 30), (80, 24)])
+    async def test_AT_2604_the_marks_manager_and_its_form_obey_the_modal_key_law(home, size):
+        """AT-2604 (HLR-2606, LLR-2606.2): `#` opens the manager — a Screen, like
+        `@`'s directory, whose frame's last row names every key it binds and no
+        other (`d`/`\u21b5` inert, never named); `n` opens the class form \u2014 every
+        button reached by its shown key (Save by `alt+s`, Cancel by `esc`), the
+        key line naming alt+n/alt+c/alt+h/alt+s/esc whole at both sizes, and the
+        rows answer their own keys. RED: a button without a direct key, or
+        `alt+s` unbound on the form."""
+        w, h = size
+        app = _round_app(home)
+        async with app.run_test(size=size) as pilot:
+            await pilot.pause()
+            await pilot.press("escape")
+            await _press(pilot, "number_sign")
+            assert type(app.screen).__name__ == "MarksManager"
+            painted = await _screen(pilot, w, h)
+            rows = painted.splitlines()
+            key_row = next(r for r in reversed(rows) if "\u2191\u2193" in r)
+            assert key_row.strip() == "\u2191\u2193 move   \u2423 hide/show   n new   e edit   esc close"
+            assert "\u21b5" not in key_row and "delete" not in key_row and "only" not in key_row
+            # n \u2192 the form: the key line names every button's key, whole
+            await _press(pilot, "n")
+            assert type(app.screen).__name__ == "MarkForm"
+            painted = await _screen(pilot, w, h)
+            assert ("alt+n name   alt+c colour   alt+h shape   alt+s save   esc cancel"
+                    in painted), painted
+>           assert {b.id for b in app.screen.query(Button)} == set(INVENTORY["MarkForm"])
+E           KeyError: 'MarkForm'
+
+tests\test_modal_keys.py:442: KeyError
+__ test_AT_2604_the_marks_manager_and_its_form_obey_the_modal_key_law[size1] __
+
+home = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-24859/test_AT_2604_the_marks_manager1/.taskboard')
+size = (80, 24)
+
+    @pytest.mark.parametrize("size", [(118, 30), (80, 24)])
+    async def test_AT_2604_the_marks_manager_and_its_form_obey_the_modal_key_law(home, size):
+        """AT-2604 (HLR-2606, LLR-2606.2): `#` opens the manager — a Screen, like
+        `@`'s directory, whose frame's last row names every key it binds and no
+        other (`d`/`\u21b5` inert, never named); `n` opens the class form \u2014 every
+        button reached by its shown key (Save by `alt+s`, Cancel by `esc`), the
+        key line naming alt+n/alt+c/alt+h/alt+s/esc whole at both sizes, and the
+        rows answer their own keys. RED: a button without a direct key, or
+        `alt+s` unbound on the form."""
+        w, h = size
+        app = _round_app(home)
+        async with app.run_test(size=size) as pilot:
+            await pilot.pause()
+            await pilot.press("escape")
+            await _press(pilot, "number_sign")
+            assert type(app.screen).__name__ == "MarksManager"
+            painted = await _screen(pilot, w, h)
+            rows = painted.splitlines()
+            key_row = next(r for r in reversed(rows) if "\u2191\u2193" in r)
+            assert key_row.strip() == "\u2191\u2193 move   \u2423 hide/show   n new   e edit   esc close"
+            assert "\u21b5" not in key_row and "delete" not in key_row and "only" not in key_row
+            # n \u2192 the form: the key line names every button's key, whole
+            await _press(pilot, "n")
+            assert type(app.screen).__name__ == "MarkForm"
+            painted = await _screen(pilot, w, h)
+            assert ("alt+n name   alt+c colour   alt+h shape   alt+s save   esc cancel"
+                    in painted), painted
+>           assert {b.id for b in app.screen.query(Button)} == set(INVENTORY["MarkForm"])
+E           KeyError: 'MarkForm'
+
+tests\test_modal_keys.py:442: KeyError
+=========================== short test summary info ===========================
+FAILED tests/test_modal_keys.py::test_AT_2604_the_marks_manager_and_its_form_obey_the_modal_key_law[size0]
+FAILED tests/test_modal_keys.py::test_AT_2604_the_marks_manager_and_its_form_obey_the_modal_key_law[size1]
+2 failed in 3.60s
+after:  17f9d12222338f075957639e0e95c02563a9526d83787a61faca546378bc7ca5
+tests/test_modal_keys.py::test_AT_2604_the_marks_manager_and_its_form_obey_the_modal_key_law: RED (KILLED)
+BAD arms: 0

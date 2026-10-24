@@ -134,6 +134,7 @@ between the short and the full layer. Every key below is also in the command pal
 | `Tab` | Layout | Cycle the layouts of kanban, focus and lanes |
 | `A` | All boards | The agenda of every board: a lane per board with a dot per due day, the chosen day's tasks below; `enter` opens a task on its board (also on the home) |
 | `@` | People directory | Who you owe what: the people of `~/.taskboard/people.json` (most late first) beside the chosen person's open tasks of every board, each with the note line that mentions them and a `late · today · open` box; `enter` opens a task on its board, `n`/`e` add and edit a person, `/` finds a name. Not view `9` (the team's `People`) |
+| `#` | Milestone classes | The classes of `~/.taskboard/marks.json`: `n`/`e` add and edit a class, `space` hides or shows it, `esc` closes |
 | `R` / `S` | Present / Standup | Present the selected task's project, or every project (`3`), with gantt + brief, export SVG+PNG / show the week's standup |
 | `I` | Templates | Insert a process template (a named chain of tasks) into the selected task's project |
 | `comma` | Save chain | Save the selected chain as a template (chain map) |

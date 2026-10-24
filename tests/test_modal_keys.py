@@ -273,6 +273,7 @@ INVENTORY: dict[str, dict[str, str]] = {
     "ClockModal": {"save": "alt+s", "cancel": "escape"},
     "TextPrompt": {"save": "alt+s", "cancel": "escape"},
     "PersonForm": {"save": "alt+s", "cancel": "escape"},
+    "MarkForm": {"save": "alt+s", "cancel": "escape"},    # the marks manager's form (batch 2026-10-24-batch-01)
     "SearchPrompt": {"save": "alt+s", "cancel": "escape"},    # TextPrompt's buttons, inherited
     "ConfirmModal": {"yes": "y", "no": "n"},
     # no buttons: keys only
@@ -407,3 +408,53 @@ async def test_AT_2407_alt_s_saves_and_letters_type(home, size):
         await _press(pilot, *"Weekly", "tab", *"Kickoff", "alt+s")
         assert not isinstance(app.screen, ModalScreen)
         assert any(t.get("name") == "Weekly" for t in app.board.settings.get("templates", []))
+
+
+# --------------------------------------------------------------------------- #
+# AT-2604 — the marks manager and its form obey the modal-key law (US-2603)
+# --------------------------------------------------------------------------- #
+@pytest.mark.parametrize("size", [(118, 30), (80, 24)])
+async def test_AT_2604_the_marks_manager_and_its_form_obey_the_modal_key_law(home, size):
+    """AT-2604 (HLR-2606, LLR-2606.2): `#` opens the manager — a Screen, like
+    `@`'s directory, whose frame's last row names every key it binds and no
+    other (`d`/`↵` inert, never named); `n` opens the class form — every
+    button reached by its shown key (Save by `alt+s`, Cancel by `esc`), the
+    key line naming alt+n/alt+c/alt+h/alt+s/esc whole at both sizes, and the
+    rows answer their own keys. RED: a button without a direct key, or
+    `alt+s` unbound on the form."""
+    w, h = size
+    app = _round_app(home)
+    async with app.run_test(size=size) as pilot:
+        await pilot.pause()
+        await pilot.press("escape")
+        await _press(pilot, "number_sign")
+        assert type(app.screen).__name__ == "MarksManager"
+        painted = await _screen(pilot, w, h)
+        rows = painted.splitlines()
+        key_row = next(r for r in reversed(rows) if "↑↓" in r)
+        assert key_row.strip() == "↑↓ move   ␣ hide/show   n new   e edit   esc close"
+        assert "↵" not in key_row and "delete" not in key_row and "only" not in key_row
+        # n → the form: the key line names every button's key, whole
+        await _press(pilot, "n")
+        assert type(app.screen).__name__ == "MarkForm"
+        painted = await _screen(pilot, w, h)
+        assert ("alt+n name   alt+c colour   alt+h shape   alt+s save   esc cancel"
+                in painted), painted
+        assert {b.id for b in app.screen.query(Button)} == set(INVENTORY["MarkForm"])
+        # the rows answer their keys: alt+h the shape row, ←→ steps it;
+        # alt+c the colour row
+        assert app.focused.id == "mf-name"
+        await _press(pilot, "alt+h", "right")
+        assert app.screen.si == 5            # ⬟(4) → ▼(5)
+        await _press(pilot, "alt+c", "left")
+        assert app.screen.ci == 4            # orange(5) → green(4)
+        # Save by `alt+s` (a name typed in the name field): the form answers,
+        # the manager repaints
+        await _press(pilot, "alt+n", *"Ops", "alt+s")
+        assert type(app.screen).__name__ == "MarksManager"
+        assert "ops" in app.marks.marks
+        # Cancel by `esc`: the form drops, no class added
+        n_marks = len(app.marks.marks)
+        await _press(pilot, "n", "escape")
+        assert type(app.screen).__name__ == "MarksManager"
+        assert len(app.marks.marks) == n_marks

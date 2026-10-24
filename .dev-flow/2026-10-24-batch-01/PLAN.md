@@ -51,8 +51,8 @@ Port the round's chosen variants into the app — the store and the field (MM-D2
 | Story / station | Status | Notes |
 |---|---|---|
 | increment 001 | done | the store and the field (MM-D2, D3, D4): `taskboard/marks.py` (new), `taskboard/models.py`, `taskboard/app.py` |
-| increment 002 | done (gate pending the suite transcript) | the encoding through one seat (MM-D1, section 3): `taskboard/views.py`, `taskboard/app.py` |
-| increment 003 | planned | the editor Select and the `#` manager (MM-D5, D6 storage, D8): `taskboard/modals.py`, `taskboard/keymap.py`, `taskboard/app.py`, `taskboard/tcss` |
+| increment 002 | done | 6fc2637, code-reviewer OK (F1-F4 folded, re-read verified) the encoding through one seat (MM-D1, section 3): `taskboard/views.py`, `taskboard/app.py` |
+| increment 003 | done (gate pending the suite transcript) | the editor Select and the `#` manager (MM-D5, D6 storage, D8): `taskboard/modals.py`, `taskboard/keymap.py`, `taskboard/app.py`, `taskboard/tcss` |
 | increment 004 | planned | the legend, hide, search, help, README (MM-D6, D7): `taskboard/views.py`, `taskboard/app.py`, `README.md` |
 | P0 | done | triggers evaluated; refinement done |
 | P3 | in progress | increment 001 committed (f363a75, both reviewers PASS); increment 002 implemented, battery 14/14 KILLED |
