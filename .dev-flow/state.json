@@ -1,9 +1,9 @@
 {
   "project": "taskboard",
   "language": "en",
-  "batch_id": "2026-10-21-batch-01",
-  "batch_objective": "The people round, as the operator's verdict on prototypes/people_round chose: one directory of people (name, role, note) for every board at `~/.taskboard/people.json`; `@` mentions in the notes stored as handles (`@ana.ruiz`), picked from a dropdown under the cursor (variant A); a people view on `@` with two panes (variant A) carrying each task's mentioning note line (from C) and the person's progress box (from B); `/` with `@` filters to a person's tasks (variant A); mentions drawn `@Name` in pink in the details, the kanban card and the presentation (variant A)",
-  "owner": "C:/Users/jjgh8/Github/taskboard-wt/people-impl",
+  "batch_id": "2026-10-24-batch-01",
+  "batch_objective": "Milestone marks per the operator's verdict on prototypes/milestone_marks: one class directory for all boards at ~/.taskboard/marks.json (a class is id, name, shape, colour, hidden; the id a slug of the name, stable on rename); Task.mark carrying the class id, written only when set, kept on untick, travelling unchanged on team sync, an unknown id rendering as unclassified; every milestone mark drawn through one seat (shape and colour say the class, state moves to text: a late date in over plus an ▲Nd chip, a reached mark hollow plus ✓, an unclassified mark ◆ in mut); the # class manager window with its form (n) and the hide toggle (space); alt+m focusing the class Select in the editor after #f-milestone; the legend strip under the gantt ruler and in the presentation with its exports, naming the drawn classes and the hidden count; hidden classes leaving the gantt and all three presentation views and their exports; /#cls search filtering by class; modal keys y/n and alt+<letter> on every modal button; SHAPES = ▲ ■ ⬢ ★ ⬟ ▼ ✦ ⚑ plus ◆, no seeded classes",
+  "owner": "C:/Users/jjgh8/Github/taskboard-wt/ms-impl",
   "mode": "core",
   "mode_history": [
     {
@@ -193,11 +193,17 @@
       "to": "core",
       "date": "2026-10-21",
       "reason": "batch 2026-10-21-batch-01 opened by rollover from 2026-10-20-batch-03; mode core declared by the commission"
+    },
+    {
+      "from": null,
+      "to": "core",
+      "date": "2026-10-24",
+      "reason": "batch 2026-10-24-batch-01 opened by rollover from 2026-10-21-batch-01; mode core declared by the commission"
     }
   ],
   "guided": false,
-  "current_station": "P5",
-  "phase_status": "closed",
+  "current_station": "P0",
+  "phase_status": "not-started",
   "stations_active": [
     "P0",
     "ARQ",
@@ -221,14 +227,13 @@
     "PDR": 0
   },
   "triggers": {
-    "evaluated_at": "2026-10-21T11:26:01",
+    "evaluated_at": "2026-10-24T11:37:44",
     "fired": [
       "A1",
       "A2",
       "A3",
       "B1",
       "B4",
-      "C3",
       "C6",
       "C8",
       "D1",
@@ -240,6 +245,7 @@
       "B3",
       "C1",
       "C2",
+      "C3",
       "C4",
       "C5",
       "C7",
@@ -249,92 +255,26 @@
       "F1",
       "F2"
     ],
-    "record": ".dev-flow/2026-10-21-batch-01/PLAN.md#triggers"
+    "record": ".dev-flow/2026-10-24-batch-01/PLAN.md#triggers"
   },
   "artifact_homes": {
-    "requirements": "repo:.dev-flow/2026-10-21-batch-01/01-requirements.md",
-    "requirements_ledger": "repo:.dev-flow/2026-10-21-batch-01/01-requirements-ledger.md",
-    "traceability": "repo:.dev-flow/2026-10-21-batch-01/06-docs/traceability-matrix.md",
+    "requirements": "repo:.dev-flow/2026-10-24-batch-01/01-requirements.md",
+    "requirements_ledger": "repo:.dev-flow/2026-10-24-batch-01/01-requirements-ledger.md",
+    "traceability": "repo:.dev-flow/2026-10-24-batch-01/06-docs/traceability-matrix.md",
     "tests": "repo:tests/",
     "module_map": "repo:docs/ARCHITECTURE.md",
-    "increments": "repo:.dev-flow/2026-10-21-batch-01/03-increments/",
-    "evidence": "repo:.dev-flow/2026-10-21-batch-01/evidence/",
+    "increments": "repo:.dev-flow/2026-10-24-batch-01/03-increments/",
+    "evidence": "repo:.dev-flow/2026-10-24-batch-01/evidence/",
     "backlog": "repo:.dev-flow/BACKLOG.md",
-    "design_pdr": "vault:taskboard/design/PDR-2026-10-21-batch-01.md",
-    "design_ddr": "vault:taskboard/design/DDR-2026-10-21-batch-01.md",
-    "postmortem": "vault:taskboard/dev-flow-batches/2026-10-21-batch-01/",
-    "metrics": "vault:taskboard/dev-flow-batches/2026-10-21-batch-01/README.md",
+    "design_pdr": "vault:taskboard/design/PDR-2026-10-24-batch-01.md",
+    "design_ddr": "vault:taskboard/design/DDR-2026-10-24-batch-01.md",
+    "postmortem": "vault:taskboard/dev-flow-batches/2026-10-24-batch-01/",
+    "metrics": "vault:taskboard/dev-flow-batches/2026-10-24-batch-01/README.md",
     "requirements_canon": "repo:REQUIREMENTS.md"
   },
-  "base_ref": "eac7d4227b919c995fec153f68aac6f0dfad3c96",
+  "base_ref": "7e66e0e5cab9a383ac10a37d31dc796984711a47",
   "artifacts": {},
-  "decisions_log": [
-    {
-      "station": "P0",
-      "date": "2026-10-21",
-      "decision": "standing authorization — the orchestrator's commission of 2026-10-21 (PLAN.md header). P0 closed: rollover to base_ref eac7d42, triggers A1 A2 A3 B1 B4 C3 C6 C8 D1 E1 fired (ARQ, PDR, DDR taken up), premises P-1..P-8 TRUE, five stories READY; ARQ is next."
-    },
-    {
-      "station": "ARQ",
-      "date": "2026-10-21",
-      "decision": "standing authorization — the orchestrator's commission of 2026-10-21 (PLAN.md header). ARQ approved with conditions by the spawned architect (A-1, A-2 folded into docs/ARCHITECTURE.md: people.py in models, people.json and its lock, Board.people, the people view, the changed signatures); P1 is next."
-    },
-    {
-      "station": "P1",
-      "date": "2026-10-21",
-      "decision": "standing authorization — the orchestrator's commission of 2026-10-21. P1 contract approved: HLR-2501..HLR-2507 with 14 LLRs and the IFC, premises P-1..P-8 TRUE, scan answered in §6.3 (LED .1); P2 is next."
-    },
-    {
-      "station": "P2",
-      "date": "2026-10-21",
-      "decision": "standing authorization — the orchestrator's commission of 2026-10-21. P2 approve: architect, qa-reviewer, ux-reviewer and security-reviewer each approve with conditions; the requirement-defect majors QA-1 and UX-1 and every minor folded the same day as LED .2 (02-review.md); PDR is next."
-    },
-    {
-      "station": "PDR",
-      "date": "2026-10-21",
-      "decision": "standing authorization — the orchestrator's commission of 2026-10-21. PDR approved with conditions PC-1..PC-4 (design/PDR-2026-10-21-batch-01.md): real captures incl. item 1's composed frame; S-1 re-check by security at increment 001; each split increment green on its own and touched suites; RED and mutation per increment. P3 is next."
-    },
-    {
-      "station": "P3",
-      "date": "2026-10-21",
-      "decision": "standing authorization — the orchestrator's commission of 2026-10-21. P3 increment 001 approved: the people directory people.json, the @handle tokeniser, Board.people, boards.keep_aside (HLR-2501, HLR-2502, HLR-2507); 391 passed targeted, 17/17 mutants KILLED, code-reviewer OK to advance (CR-1..CR-5, CR-7 fixed), security-reviewer APPROVE on S-1 (PC-2 discharged). P3 continues."
-    },
-    {
-      "station": "P3",
-      "date": "2026-10-21",
-      "decision": "standing authorization — the orchestrator's commission of 2026-10-21. P3 increment 002 approved: a mention drawn @Name in pink in the details, the card and the presentation (HLR-2506, AT-2502); 802 passed targeted, 14/14 mutants KILLED, code-reviewer OK to advance (CR-1..CR-4 fixed, CR-5 to the contract LED .3), security-reviewer APPROVE on the render side (N-2 fixed, N-1 logged). P3 continues."
-    },
-    {
-      "station": "P3",
-      "date": "2026-10-21",
-      "decision": "standing authorization — the orchestrator's commission of 2026-10-21. P3 increment 003 approved: the @ picker in the editor's notes (HLR-2503); 363 passed targeted, 13/13 mutants KILLED, code-reviewer OK to advance on the re-read after FIX FIRST (CR-1, CR-2 HIGH fixed and verified by the reviewer's probes; LED .4). P3 continues."
-    },
-    {
-      "station": "P3",
-      "date": "2026-10-21",
-      "decision": "standing authorization — the orchestrator's commission of 2026-10-21. P3 increment 004 approved: the people view on @ — A's panes with C's quote and B's box, PEOPLE · directory (D4), PersonForm (HLR-2504); 435 passed targeted, 19/19 mutants KILLED, code-reviewer OK to advance on the re-read after FIX FIRST (CR-1 HIGH scroll, CR-2 pile-up fixed and verified; LED .5). P3 continues."
-    },
-    {
-      "station": "P3",
-      "date": "2026-10-21",
-      "decision": "standing authorization — the orchestrator's commission of 2026-10-21. P3 increment 005 approved: search by person — @ inside /, a lone @ lists names only, alt+p opens the person's page, SearchPrompt under the modal law (HLR-2505, AT-2505); 641 passed targeted, 13/13 mutants KILLED, code-reviewer OK to advance (CR-1, CR-3 fixed; CR-2 to the contract LED .6). P4 is next, with the DDR."
-    },
-    {
-      "station": "DDR",
-      "date": "2026-10-21",
-      "decision": "standing authorization — the orchestrator's commission of 2026-10-21. DDR approved (design/DDR-2026-10-21-batch-01.md): qa-reviewer and ux-reviewer approved with conditions, folded — one test_AT node per AT-2501..AT-2507 (QA-DDR-1 HIGH, 22 arms renamed to TC), AT-2501's add and AT-2502's rename driven by keys (mutation-ddr D1, D2 KILLED), the flip-up capture mt-flip, UX-9 named on the capture page, the captures committed; UX-DDR-1 (PersonForm clipped at 80x24) logged; PC-1..PC-4 discharged. P4 is next."
-    },
-    {
-      "station": "P4",
-      "date": "2026-10-21",
-      "decision": "standing authorization — the orchestrator's commission of 2026-10-21. P4 PASS-WITH-NOTES (04-validation.md): the full suite in three sequential chunks at 27d155f, 1398 + 957 + 797 = 3152 passed, 0 failed, 0 skipped, equal to the 3152 collected; ledger 3025 − 0 + 127 = 3152; qa-reviewer evaluated the orchestrator's run, 9 of 11 checklist rows, gaps G-1..G-5 minor. P5 is next."
-    },
-    {
-      "station": "P5",
-      "date": "2026-10-21",
-      "decision": "standing authorization — the orchestrator's commission of 2026-10-21. P5 closed: the canon folded (21), the close record written (05-close.md), the backlog reconciled (13 open items in the new section); not pushed, not merged — the branch feat/people waits for the orchestrator."
-    }
-  ],
+  "decisions_log": [],
   "obsidian_synced": false,
-  "created_at": "2026-10-21T10:57:12.832223"
+  "created_at": "2026-10-24T11:36:40.958216"
 }
