@@ -1,0 +1,82 @@
+﻿ok   e-B-g 118x30 (1095 x 627, 32 colours sampled) via PrintWindow, try 1 - window closed
+ok   glyphs 118x30 (1095 x 627, 19 colours sampled) via PrintWindow, try 1 - window closed
+ok   e-now-g 118x30 (1095 x 627, 34 colours sampled) via PrintWindow, try 1 - window closed
+ok   e-now-g 80x24 (753 x 513, 14 colours sampled) via PrintWindow, try 1 - window closed
+ok   e-now-k 118x30 (1095 x 627, 18 colours sampled) via PrintWindow, try 1 - window closed
+ok   e-now-k 80x24 (753 x 513, 10 colours sampled) via PrintWindow, try 1 - window closed
+ok   e-A-g 118x30 (1095 x 627, 32 colours sampled) via PrintWindow, try 1 - window closed
+ok   e-A-g 80x24 (753 x 513, 14 colours sampled) via PrintWindow, try 1 - window closed
+ok   e-A-k 118x30 (1095 x 627, 18 colours sampled) via PrintWindow, try 1 - window closed
+ok   e-A-k 80x24 (753 x 513, 10 colours sampled) via PrintWindow, try 1 - window closed
+ok   e-B-g 118x30 (1095 x 627, 32 colours sampled) via PrintWindow, try 1 - window closed
+ok   e-B-g 80x24 (753 x 513, 14 colours sampled) via PrintWindow, try 1 - window closed
+ok   e-B-k 118x30 (1095 x 627, 18 colours sampled) via PrintWindow, try 1 - window closed
+ok   e-B-k 80x24 (753 x 513, 10 colours sampled) via PrintWindow, try 1 - window closed
+ok   e-C-g 118x30 (1095 x 627, 32 colours sampled) via PrintWindow, try 1 - window closed
+ok   e-C-g 80x24 (753 x 513, 14 colours sampled) via PrintWindow, try 1 - window closed
+ok   e-C-k 118x30 (1095 x 627, 18 colours sampled) via PrintWindow, try 1 - window closed
+ok   e-C-k 80x24 (753 x 513, 10 colours sampled) via PrintWindow, try 1 - window closed
+ok   glyphs 118x30 (1095 x 627, 21 colours sampled) via PrintWindow, try 1 - window closed
+ok   glyphs 80x24 (753 x 513, 20 colours sampled) via PrintWindow, try 1 - window closed
+ok   ed-now 118x30 (1095 x 627, 21 colours sampled) via PrintWindow, try 1 - window closed
+ok   ed-now 80x24 (753 x 513, 14 colours sampled) via PrintWindow, try 1 - window closed
+ok   ed-A 118x30 (1095 x 627, 23 colours sampled) via PrintWindow, try 1 - window closed
+ok   ed-A 80x24 (753 x 513, 18 colours sampled) via PrintWindow, try 1 - window closed
+ok   ed-B 118x30 (1095 x 627, 19 colours sampled) via PrintWindow, try 1 - window closed
+ok   ed-B 80x24 (753 x 513, 14 colours sampled) via PrintWindow, try 1 - window closed
+ok   ed-C 118x30 (1095 x 627, 13 colours sampled) via PrintWindow, try 1 - window closed
+ok   ed-C 80x24 (753 x 513, 12 colours sampled) via PrintWindow, try 1 - window closed
+ok   ed-C-new 118x30 (1095 x 627, 10 colours sampled) via PrintWindow, try 1 - window closed
+ok   ed-C-new 80x24 (753 x 513, 13 colours sampled) via PrintWindow, try 1 - window closed
+try  mg-list 118x30 : rejected: 5 colours sampled via CopyFromScreen (PrintWindow gave 5 colours) (black / colourless) - window closed
+try  mg-list 118x30 : rejected: 5 colours sampled via CopyFromScreen (PrintWindow gave 5 colours) (black / colourless) - window closed
+try  mg-list 118x30 : rejected: 5 colours sampled via CopyFromScreen (PrintWindow gave 5 colours) (black / colourless) - window closed
+FAIL mg-list 118x30 : 3 tries
+try  mg-list 80x24 : rejected: 5 colours sampled via CopyFromScreen (PrintWindow gave 5 colours) (black / colourless) - window closed
+try  mg-list 80x24 : rejected: 5 colours sampled via CopyFromScreen (PrintWindow gave 5 colours) (black / colourless) - window closed
+try  mg-list 80x24 : rejected: 5 colours sampled via CopyFromScreen (PrintWindow gave 5 colours) (black / colourless) - window closed
+FAIL mg-list 80x24 : 3 tries
+ok   mg-edit 118x30 (1095 x 627, 8 colours sampled) via PrintWindow, try 1 - window closed
+ok   mg-edit 80x24 (753 x 513, 12 colours sampled) via PrintWindow, try 1 - window closed
+ok   mg-list 118x30 (1095 x 627, 101 colours sampled) via PrintWindow, try 1 - window closed
+ok   mg-list 80x24 (753 x 513, 93 colours sampled) via PrintWindow, try 1 - window closed
+ok   rd-lanes 118x30 (1095 x 627, 214 colours sampled) via PrintWindow, try 1 - window closed
+ok   rd-lanes 80x24 (753 x 513, 197 colours sampled) via PrintWindow, try 1 - window closed
+ok   rd-focus 118x30 (1095 x 627, 97 colours sampled) via PrintWindow, try 1 - window closed
+ok   rd-focus 80x24 (753 x 513, 87 colours sampled) via PrintWindow, try 1 - window closed
+ok   rd-agenda 118x30 (1095 x 627, 157 colours sampled) via PrintWindow, try 1 - window closed
+ok   rd-agenda 80x24 (753 x 513, 145 colours sampled) via PrintWindow, try 1 - window closed
+ok   rd-now-agenda 118x30 (1095 x 627, 156 colours sampled) via PrintWindow, try 1 - window closed
+ok   rd-now-agenda 80x24 (753 x 513, 142 colours sampled) via PrintWindow, try 1 - window closed
+ok   rd-pr1 118x30 (1095 x 627, 120 colours sampled) via PrintWindow, try 1 - window closed
+ok   rd-pr1 80x24 (753 x 513, 123 colours sampled) via PrintWindow, try 1 - window closed
+ok   rd-pr2 118x30 (1095 x 627, 125 colours sampled) via PrintWindow, try 1 - window closed
+ok   rd-pr2 80x24 (753 x 513, 128 colours sampled) via PrintWindow, try 1 - window closed
+ok   rd-now-pr1 118x30 (1095 x 627, 117 colours sampled) via PrintWindow, try 1 - window closed
+ok   rd-now-pr1 80x24 (753 x 513, 119 colours sampled) via PrintWindow, try 1 - window closed
+ok   lg-A 118x30 (1095 x 627, 74 colours sampled) via PrintWindow, try 1 - window closed
+ok   lg-A 80x24 (753 x 513, 61 colours sampled) via PrintWindow, try 1 - window closed
+ok   lg-B 118x30 (1095 x 627, 248 colours sampled) via PrintWindow, try 1 - window closed
+ok   lg-B 80x24 (753 x 513, 232 colours sampled) via PrintWindow, try 1 - window closed
+ok   lg-B-pr 118x30 (1095 x 627, 126 colours sampled) via PrintWindow, try 1 - window closed
+ok   lg-B-pr 80x24 (753 x 513, 127 colours sampled) via PrintWindow, try 1 - window closed
+ok   lg-C 118x30 (1095 x 627, 272 colours sampled) via PrintWindow, try 1 - window closed
+ok   lg-C 80x24 (753 x 513, 255 colours sampled) via PrintWindow, try 1 - window closed
+ok   lg-C-pr 118x30 (1095 x 627, 126 colours sampled) via PrintWindow, try 1 - window closed
+ok   lg-C-pr 80x24 (753 x 513, 128 colours sampled) via PrintWindow, try 1 - window closed
+ok   f-A-res 118x30 (1095 x 627, 185 colours sampled) via PrintWindow, try 1 - window closed
+ok   f-A-res 80x24 (753 x 513, 170 colours sampled) via PrintWindow, try 1 - window closed
+ok   f-B-win 118x30 (1095 x 627, 115 colours sampled) via PrintWindow, try 1 - window closed
+ok   f-B-win 80x24 (753 x 513, 112 colours sampled) via PrintWindow, try 1 - window closed
+ok   f-B-res 118x30 (1095 x 627, 226 colours sampled) via PrintWindow, try 1 - window closed
+ok   f-B-res 80x24 (753 x 513, 221 colours sampled) via PrintWindow, try 1 - window closed
+ok   f-C 118x30 (1095 x 627, 261 colours sampled) via PrintWindow, try 1 - window closed
+ok   f-C 80x24 (753 x 513, 243 colours sampled) via PrintWindow, try 1 - window closed
+ok   mg-list 118x30 (1095 x 627, 106 colours sampled) via PrintWindow, try 1 - window closed
+ok   mg-list 80x24 (753 x 513, 89 colours sampled) via PrintWindow, try 1 - window closed
+ok   f-B-win 118x30 (1095 x 627, 112 colours sampled) via PrintWindow, try 1 - window closed
+ok   f-B-win 80x24 (753 x 513, 104 colours sampled) via PrintWindow, try 1 - window closed
+ok   f-B-pr 118x30 (1095 x 627, 112 colours sampled) via PrintWindow, try 1 - window closed
+ok   f-B-pr 80x24 (753 x 513, 112 colours sampled) via PrintWindow, try 1 - window closed
+ok   e-A-g 118x30 (1095 x 627, 254 colours sampled) via PrintWindow, try 1 - window closed
+ok   e-A-g 80x24 (753 x 513, 240 colours sampled) via PrintWindow, try 1 - window closed
