@@ -1,0 +1,16 @@
+# pre-state probes for the negative controls, 2026-10-24 — the features are absent at base_ref 7e66e0e
+$ python -c "import taskboard.marks"
+ModuleNotFoundError: No module named 'taskboard.marks'
+$ python -c "import taskboard.views as v; v.milestone_mark"
+AttributeError: module 'taskboard.views' has no attribute 'milestone_mark'. Did you mean: 'milestone_tone'?
+$ grep -c "def render_marks\|def legend_strip\|def matches_m\|def _hide" taskboard/views.py
+0
+0
+$ grep -c "number_sign" taskboard/keymap.py
+0
+0
+$ grep -c "class MarksManager\|class MarkForm" taskboard/modals.py
+0
+0
+$ grep -c "mark" taskboard/models.py   # Task.mark field (word count, context-free)
+43

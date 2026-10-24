@@ -7,7 +7,7 @@
 | Project | taskboard |
 | Batch | 2026-10-24-batch-01 |
 | Objective | Milestone marks per the operator's verdict on prototypes/milestone_marks: one class directory for all boards at ~/.taskboard/marks.json (a class is id, name, shape, colour, hidden; the id a slug of the name, stable on rename); Task.mark carrying the class id, written only when set, kept on untick, travelling unchanged on team sync, an unknown id rendering as unclassified; every milestone mark drawn through one seat (shape and colour say the class, state moves to text: a late date in over plus an ▲Nd chip, a reached mark hollow plus ✓, an unclassified mark ◆ in mut); the # class manager window with its form (n) and the hide toggle (space); alt+m focusing the class Select in the editor after #f-milestone; the legend strip under the gantt ruler and in the presentation with its exports, naming the drawn classes and the hidden count; hidden classes leaving the gantt and all three presentation views and their exports; /#cls search filtering by class; modal keys y/n and alt+<letter> on every modal button; SHAPES = ▲ ■ ⬢ ★ ⬟ ▼ ✦ ⚑ plus ◆, no seeded classes |
-| Last updated | P0 · 2026-10-24 |
+| Last updated | P3 · 2026-10-24 |
 | Standing authorization | standing authorization — the orchestrator's commission of 2026-10-24 (the runtime cannot prompt), relaying the operator's verdict on the milestone-marks round, verbatim: «D1: B · D2: global (recomendada, sin marcar) · 1 model: B · 2 editor: A (recomendada, sin marcar) · 3 legend: B · 4 filter: B · notes: (none)». Quoted from the commission (`prototypes/milestone_marks/IMPLEMENTATION.md` and the batch brief): «The plan header's Standing authorization cell quotes the commission's verdict. Gates close under that authorization. Do NOT push or merge.», «The design oracle is prototypes/milestone_marks/proto.py together with the captures in prototypes/milestone_marks/out/.», «Port these into the real app.», «Route them all through ONE seat, for example views.milestone_mark(task, board, today) -> (glyph, style, late_chip)», «At most 4 SOURCE files per increment. Tests are uncapped.», «Run env -u NO_COLOR for every pytest», «the full suite only at P4: 3 SEQUENTIAL chunks (baseline 3152 passed) … 0 failed and 0 skipped», «Mutation-check every new test.», «spawn independent agents … one reviewer agent per role at each gate: architect, code-reviewer, qa-reviewer, ux-reviewer, and security-reviewer for marks.py … An author never reviews their own work.», «one agent for the captures, after the code is final», «Every window you open has a unique m01- title and is closed by title right after its shot … Never close any other window … assert that no m01-* window remains.», «Never commit or print secrets. Never write the operator's real name; the placeholder is username_subject. Use synthetic data only.», «End every commit message with: Co-Authored-By: Kimi (kimi-for-coding) via Claude Opus 5.5 orchestration <noreply@anthropic.com>». Read as: every gate of this batch is autonomous (reviewer roles are spawned sub-agents carrying their `agents/<role>.md`); commits on the local branch `feat/milestone-marks` are authorized, each ending with the commission's co-author line; **push and merge are NOT authorized**; synthetic data only; the operator's name nowhere (`username_subject`); tests never touch the real home; scratch lives in `.scratch/` and is deleted at close. |
 | First gate | step 1, on `7e66e0e` (`feat/milestone-marks` = `proto/milestone-marks` `8c83395` + the commission `7e66e0e`, on `main` `ffb567d`), before the rollover: exit 1 — 73 block · 138 notice · 61 not applicable, every BLOCK `V59` naming a file of the two prototype commits after the closed batch's `base_ref` `eac7d422` (the round's `prototypes/milestone_marks/`), which no closed packet carries; `V7`: bundle identical to its manifest both directions, 57 declared files, `2026-10-12-rev102` (`evidence/gate-step1.txt`). The rollover re-stamps `base_ref` to `7e66e0e`; step 3 (after it): exit 0 — 0 block · 158 notice · 47 not applicable (`evidence/gate-step3.txt`). |
 | Premises / RC-1 | RC-1 (a): `git fetch origin` → `origin/main` = `ffb567d732d476a66018324fc0875541f75027d5`, the merge-base of `feat/milestone-marks` and `origin/main`; the branch is the round on top of that tip, so no rebase; `base_ref` stamped `7e66e0e5cab9a383ac10a37d31dc796984711a47`. RC-1 (b): not already shipped — on `origin/main` no `marks.json`, no `legend_strip`/`milestone_mark`, no `Task.mark` field (only incidental words). RC-2: `git ls-remote --exit-code --heads origin` → exit 0; newest commit on `origin/main` 2026-10-21 14:08 −0600. Premises: `01-requirements.md` §2.7 (P-1.., `evidence/premises.txt`). |
@@ -40,7 +40,7 @@ The trigger evaluation `state.json`'s `triggers.record` points at: one row per t
 
 ## Where we are
 
-P0 — the batch opened by rollover from 2026-10-21-batch-01 (`evidence/rollover.py`), triggers evaluated (A1 A2 A3 B1 B4 C6 C8 D1 E1 fired → ARQ, PDR, DDR taken up; seeded `.dev-flow/2026-10-24-batch-01/design/`). The standing authorization closes every gate. Next: the ARQ — the architect reviews the module map amendment (`docs/ARCHITECTURE.md`), then P1.
+PDR — P0, ARQ, P1 and P2 are closed; the PDR sealed (`design/PDR-2026-10-24-batch-01.md`): the spawned architect, qa-reviewer and ux-reviewer approved with conditions; PC-1..PC-5 folded at seal, none carried open; COLOURS = the round's SWATCH; the details-line seat is `_gantt_legend` (confirmed at 004's gate); `_hide` is the shallow `copy.copy` proxy. Next: P3 — increment 001 (the store and the field).
 
 ## Objective
 
@@ -55,11 +55,15 @@ Port the round's chosen variants into the app — the store and the field (MM-D2
 | increment 003 | planned | the editor Select and the `#` manager (MM-D5, D6 storage, D8): `taskboard/modals.py`, `taskboard/keymap.py`, `taskboard/app.py`, `taskboard/tcss` |
 | increment 004 | planned | the legend, hide, search, help, README (MM-D6, D7): `taskboard/views.py`, `taskboard/app.py`, `README.md` |
 | P0 | done | triggers evaluated; refinement done |
+| ARQ | approved with conditions | A-1 folded as D-4 (`render_marks` in 002; the map amended) |
+| P1 | approved | 8 HLRs, 17 LLRs, 7 ATs, 8 premises TRUE, the IFC, scan answered (LED .1-.25 + .26-.45 at P2) |
+| P2 | approved | three iterations; 5 majors + 22 minors folded (LED .26-.45); the last pass clean (`02-review.md`) |
+| PDR | approved with conditions | PC-1..PC-5 folded at seal, none open; COLOURS=SWATCH; `_gantt_legend` seat; `_hide` proxy (`design/PDR-2026-10-24-batch-01.md`) |
 
 ## Roadmap + increment plan
 
 - 001 — the store and the field (MM-D2, D3, D4): `taskboard/marks.py` (new), `taskboard/models.py`, `taskboard/app.py` (`__main__.py` only if needed). 3 source files.
-- 002 — the encoding through one seat (MM-D1, section 3), every view and `app.py`'s notices: `taskboard/views.py`, `taskboard/app.py`. 2 source files.
+- 002 — the encoding through one seat (MM-D1, section 3), every view and `app.py`'s notices, plus the `#` manager's pure render `views.render_marks` (the ARQ's A-1 fold): `taskboard/views.py`, `taskboard/app.py`. 2 source files.
 - 003 — the editor Select (verdict 2 A) and the `#` manager with its form and hide toggle (MM-D5, D6 storage, D8): `taskboard/modals.py`, `taskboard/keymap.py`, `taskboard/app.py`, `taskboard.tcss`. 4 source files.
 - 004 — the legend strip (MM-D7) in the gantt, presentation and exports; hidden classes leave the gantt and presentation (MM-D6); `/#…` search; the `?` help, details line and README: `taskboard/views.py`, `taskboard/app.py`, `README.md`. 3 source files.
 
@@ -70,6 +74,7 @@ Port the round's chosen variants into the app — the store and the field (MM-D2
 | 2026-10-24 | D-1 — the rollover by script with `devflow-init.py`'s own seed helpers (`evidence/rollover.py`, the 2026-10-21-batch-01 pattern), `ROOT` checked to be this worktree before it ran; `owner` this worktree | the commission's worktree; `V40` |
 | 2026-10-24 | D-2 — triggers A1 A2 A3 B1 B4 C6 C8 D1 E1 fire (ARQ, PDR, DDR up); C3 does not fire: `marks.json` holds only the user's own class labels, no third-party personal data | the trigger probes; unlike the people round there is no personal data |
 | 2026-10-24 | D-3 — four sequential increments exactly as the commission tables them (001→004), at most 4 source files each, tests uncapped | the commission |
+| 2026-10-24 | D-4 — the ARQ's A-1 fold: the `#` manager's frame is a pure render `views.render_marks(directory, sel, w, h)` shipped in increment 002 (a file it already owns, still 2 source files), so the manager in 003 keeps the people view's pattern without exceeding the cap; the commission's increment table is untouched — its source files are «expected», and the re-cut is recorded here and in the map | the spawned architect's A-1 (A-1a); `docs/ARCHITECTURE.md` |
 
 ## Risks / watch-items
 
@@ -104,3 +109,4 @@ Port the round's chosen variants into the app — the store and the field (MM-D2
 | Suite / command | Last run | Result |
 |---|---|---|
 | validator `--brief` (step 3) | 2026-10-24 | 0 block · 158 notice · 47 n/a (`evidence/gate-step3.txt`) |
+| validator `--brief` (P1) | 2026-10-24 | 0 block · 171 notice · 48 n/a |
