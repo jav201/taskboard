@@ -69,8 +69,7 @@ def test_TC_2101_a_milestone_row_is_its_date_not_a_bar(tmp_path, view, width):
         label_w, chip_w, field_w, ax, open_t = _geo(board, pid, width)
         other = next(t.id for t in open_t if t.id != tid)
         task = board.task_by_id(tid)
-        want = views.gantt_milestone_cells(task, board, ax, pf.TODAY,
-                                           views.milestone_tone(task, board, pf.TODAY))
+        want = views.gantt_milestone_cells(task, board, ax, pf.TODAY)
         for cursor in (tid, other):
             text = views.render_present(board, pid, cursor, pf.TODAY, width, 30, view)
             y, row = _row(text, title[:8])
@@ -117,20 +116,26 @@ def test_TC_2101_a_start_date_does_not_make_a_milestone_a_bar(tmp_path):
 
 
 def test_TC_2101_a_late_milestone_is_painted_over(tmp_path):
-    """TC-2101 (LLR-2101.1; code review F2): a milestone past its due is painted in
-    `over` — the one tone the branch takes that is not the project's hue — on its
-    `◆` in the field and in the label; under the cursor the field's `◆` is the
-    bright echo instead."""
+    """TC-2101 (LLR-2101.1; code review F2) — as amended by batch 2026-10-24-batch-01
+    (MM-D1, one seat): a late milestone's mark itself stays `◆` in `mut` (this
+    board has no classes); the lateness rides the DATE beside it in `over` — the
+    one channel, a non-empty late_chip implies `over` everywhere. Under the
+    cursor the field's `◆` is the bright echo instead."""
     board = _board(tmp_path)
     board.task_by_id("tb5").due_date = "2026-10-16"
     label_w, _, field_w, _, _ = _geo(board, "pbm", 118)
-    over = views.HEX["over"]
-    for cursor, field_over in (("tb3", True), ("tb5", False)):
+    over, mut = views.HEX["over"], views.HEX["mut"]
+    for cursor, dia_hex in (("tb3", mut), ("tb5", views.HEX["bright"])):
         text = views.render_present(board, "pbm", cursor, pf.TODAY, 118, 30)
         y, row = _row(text, "Cut-over weekend")
-        assert over in _style_at(text, y, row.index("◆")), row
-        x = label_w + 1 + row[label_w + 1:label_w + 1 + field_w].index("◆")
-        assert (over in _style_at(text, y, x)) == field_over, (cursor, row)
+        field = row[label_w + 1:label_w + 1 + field_w]
+        x = label_w + 1 + field.index("◆")
+        style = _style_at(text, y, x)
+        assert dia_hex in style, (cursor, style)
+        if cursor == "tb5":               # the cursor echo: bold bright
+            assert "bold" in style, (cursor, style)
+        date_x = label_w + 1 + field.index("Oct 16")
+        assert over in _style_at(text, y, date_x)     # the DATE says late
         assert row.rstrip().endswith("due Oct 16"), row
 
 

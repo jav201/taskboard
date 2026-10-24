@@ -24,15 +24,16 @@ from rich.text import Text
 import kg_board
 from taskboard.app import TaskboardApp
 from taskboard.models import Board, Project, Task
-from taskboard.views import (GANTT_RULER_ROWS, HEX, _md, gantt_axis, gantt_columns,
-                             gantt_milestone_cells, gantt_milestone_chip, gantt_plan,
-                             gantt_window, help_usage, legend_entries, milestone_tone,
-                             nav_model, render_gantt)
+from taskboard.views import (GANTT_RULER_ROWS, HEX, MARK_GLYPHS, _md, gantt_axis,
+                             gantt_columns, gantt_milestone_cells, gantt_milestone_chip,
+                             gantt_plan, gantt_window, help_usage, legend_entries,
+                             milestone_tone, nav_model, render_gantt)
 
 RENUMBER = "seen_view_renumber_2026_07"
 KT = kg_board.TODAY
 ASH, OVER = HEX["ash"].lower(), HEX["over"].lower()
 REACHED = HEX["reached"].lower()   # UXV-5 verdict: reached milestones wear a legible grey
+MUT = HEX["mut"].lower()           # 2026-10-24-batch-01: an unclassified mark is ◆ in mut
 
 
 def _ms_board():
@@ -149,7 +150,7 @@ def test_TC_610_today_no_due_and_the_inbox():
     assert Text.from_markup(gantt_milestone_chip(n, b, KT, 8)).plain.strip() == "no due"
     assert milestone_tone(a, b, KT) == "dim"
     ax = gantt_axis(60, KT, KT - timedelta(days=5), KT + timedelta(days=20), KT)
-    assert all(g == " " for g, _ in gantt_milestone_cells(n, b, ax, KT, "dim"))
+    assert all(g == " " for g, _ in gantt_milestone_cells(n, b, ax, KT))
 
 
 @pytest.mark.parametrize("off", [-40, 0, 6, 25, 400])
@@ -161,7 +162,7 @@ def test_TC_610_cells_hold_one_diamond_and_its_date_and_never_a_bar(off):
     b = Board([], [Task("m", start_date=d.isoformat(), due_date=d.isoformat(),
                         milestone=True, id="m")], kg_board.Path("x.json"))
     ax = gantt_axis(60, KT, KT - timedelta(days=5), KT + timedelta(days=30), KT)
-    glyphs = "".join(g for g, _ in gantt_milestone_cells(b.tasks[0], b, ax, KT, "sky"))
+    glyphs = "".join(g for g, _ in gantt_milestone_cells(b.tasks[0], b, ax, KT))
     assert glyphs.count("◆") == 1
     assert not set(glyphs) & set("╌━○◔◑◕▬─")
     if 0 <= ax.cell(d) < ax.w:
@@ -178,8 +179,8 @@ def test_TC_610_a_reached_milestone_on_the_last_column_keeps_its_day():
     d = next(KT + timedelta(days=n) for n in range(400) if ax.cell(KT + timedelta(days=n)) == ax.w - 1)
     b = Board([], [Task("m", "", "Done", start_date=d.isoformat(), due_date=d.isoformat(),
                         milestone=True, id="m")], kg_board.Path("x.json"), phases=["Doing", "Done"])
-    cells = gantt_milestone_cells(b.tasks[0], b, ax, KT, "ash")
-    assert cells[ax.w - 1][0] == "◆"
+    cells = gantt_milestone_cells(b.tasks[0], b, ax, KT)
+    assert cells[ax.w - 1][0] == "◇"   # reached: the hollow twin keeps its day
 
 
 @pytest.mark.parametrize("title", ["[b]x[/b]", "[/]", "ends in \\"])
@@ -199,8 +200,8 @@ def _month_marks(b, sel, w=118, h=30):
     txt = render_gantt(b, False, sel, KT, w, h)
     month = txt.split("\n")[1]
     label_w = gantt_columns(w)[0]
-    return {i - label_w - 1: _hex_at(month, i) for i, ch in enumerate(month.plain)
-            if ch == "◆" and i > label_w}
+    return {i - label_w - 1: (ch, _hex_at(month, i)) for i, ch in enumerate(month.plain)
+            if ch in MARK_GLYPHS and i > label_w}
 
 
 def _cell(b, sel, d, w=118, h=30):
@@ -211,19 +212,27 @@ def _cell(b, sel, d, w=118, h=30):
 
 
 def test_TC_611_the_month_row_marks_the_selected_projects_milestones():
-    """TC-611: with `Launch new homepage` selected the month row's `◆` cells are
-    the project due's, Launch's and Mockups' (ash); with `Revenue model signed off`
-    selected its own cell carries a `◆` in Data Warehouse's hue. RED: only the
-    project due (base), or every project's milestones."""
+    """TC-611: with `Launch new homepage` selected the month row's mark cells are
+    the project due's, Launch's and Mockups' — every milestone mark through the
+    seat (batch 2026-10-24-batch-01): unclassified draws `◆` in `mut`, reached
+    the hollow `◇` in `mut`; the project due keeps its project hue. RED: only
+    the project due (base), or every project's milestones."""
     b = _ms_board()
     marks = _month_marks(b, "tw5")
     want = {_cell(b, "tw5", date.fromisoformat(b.task_by_id(t).due_date)) for t in ("tw5", "tw0")}
     want.add(_cell(b, "tw5", date.fromisoformat(b.project_by_id("pweb").due_date)))
     assert set(marks) == want
-    assert marks[_cell(b, "tw5", date.fromisoformat(b.task_by_id("tw0").due_date))] == REACHED
+    glyph, hx = marks[_cell(b, "tw5", date.fromisoformat(b.task_by_id("tw0").due_date))]
+    assert (glyph, hx) == ("◇", MUT)        # reached, unclassified: hollow in mut
+    # Launch's due IS the project's due: one cell, and the project due's mark
+    # is never covered (gantt_month_row) — the hue stays the project's
+    due = _cell(b, "tw5", date.fromisoformat(b.project_by_id("pweb").due_date))
+    assert _cell(b, "tw5", date.fromisoformat(b.task_by_id("tw5").due_date)) == due
+    glyph, hx = marks[due]
+    assert (glyph, hx) == ("◆", HEX[b.project_by_id("pweb").color].lower())
     marks = _month_marks(b, "td0")
     x = _cell(b, "td0", date.fromisoformat(b.task_by_id("td0").due_date))
-    assert marks.get(x) == HEX[b.project_by_id("pdwh").color].lower()
+    assert marks.get(x) == ("◆", MUT)       # the milestone's own mark, no longer the hue
 
 
 def test_TC_611_a_project_without_milestones_marks_only_its_due():
@@ -327,32 +336,35 @@ async def test_AT_602_milestones_read_as_dates_reached_ones_quiet_the_ruler_mark
         field = text[label_w + 1:label_w + 1 + field_w]
         assert f"◆ {_md(today + timedelta(days=10))}" in field and "╌" not in field
         assert text.rstrip().endswith("in 10d")
-        mock = _row(rows, " ◆ Mockups approved")
+        mock = _row(rows, " ◇ Mockups approved")
         mtext = "".join(ch for ch, _ in mock)
-        assert "◆✓" in mtext and mtext.rstrip().endswith("✓ done")
-        i = mtext.index("◆✓", label_w)
-        assert mock[i][1] == REACHED and mock[i + 1][1] == REACHED
+        assert "◇✓" in mtext and mtext.rstrip().endswith("✓ done")
+        i = mtext.index("◇✓", label_w)
+        assert mock[i][1] == MUT and mock[i + 1][1] == REACHED
         assert mock[mtext.index("Mockups")][1] == REACHED
         assert mock[mtext.index(_md(today - timedelta(days=12)), label_w)][1] == REACHED
         sec = _row(rows, " ◆ Security review sign-off")
         stext = "".join(ch for ch, _ in sec)
         assert stext.rstrip().endswith("▲2d") and sec[stext.rindex("▲2d")][1] == OVER
         month = rows[1]
-        # the ash `◆` sits at Mockups' exact column, not merely "any": its due
-        # through the shipped axis math, at the reached grey.
+        # the hollow `◇` sits at Mockups' exact column, not merely "any": its due
+        # through the shipped axis math, in mut — the seat's reached unclassified.
         ax = gantt_axis(gantt_columns(118)[2], today, *gantt_window(
                 gantt_plan(app.board, False, "tw5", today, 30 - 1 - GANTT_RULER_ROWS),
                 today))
         ash = ax.cell(date.fromisoformat(app.board.task_by_id("tw0").due_date))
-        assert month[gantt_columns(118)[0] + 1 + ash] == ("◆", REACHED)
+        assert month[gantt_columns(118)[0] + 1 + ash] == ("◇", MUT)
         assert "◆ milestone · ◆✓ reached" in "".join("".join(c for c, _ in r) for r in rows)
         # the ruler on another project's milestone
         await _select(app, pilot, "td0")
         await pilot.pause()
         rows = _painted(app)
         dwh = HEX[app.board.project_by_id("pdwh").color].lower()   # as loaded
-        # two marks in its hue: the project due AND the milestone (qa F-2; one = only the due)
-        assert sum(ch == "◆" and hx == dwh for ch, hx in rows[1][gantt_columns(118)[0]:]) == 2
+        # one mark in the project hue (the due); the milestone itself is ◆ in mut
+        # through the seat — the hue belongs to the project, not the mark (MM-D1)
+        tail = rows[1][gantt_columns(118)[0]:]
+        assert sum(ch == "◆" and hx == dwh for ch, hx in tail) == 1
+        assert sum(ch == "◆" and hx == MUT for ch, hx in tail) == 1
         # ↑ / ↓ over the reached row
         await _select(app, pilot, "tw2")
         await pilot.pause()
@@ -370,9 +382,9 @@ async def test_AT_602_milestones_read_as_dates_reached_ones_quiet_the_ruler_mark
             await pilot.press("right_square_bracket")
             await pilot.pause()
         said = _toasts(app)
-        assert sum("Launch new homepage reached · ◆✓" in x for x in said) == 1, said
+        assert sum("Launch new homepage reached · ◇✓" in x for x in said) == 1, said
         assert not any("folded" in x for x in said)
-        assert "◆✓" in "".join(ch for ch, _ in _row(_painted(app), " ◆ Launch new homepage"))
+        assert "◇✓" in "".join(ch for ch, _ in _row(_painted(app), " ◇ Launch new homepage"))
     app = TaskboardApp(board_path=str(path), team_sync_interval=1e9)
     async with app.run_test(size=(80, 24)) as pilot:
         await pilot.press("3")

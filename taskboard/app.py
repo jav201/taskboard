@@ -48,7 +48,8 @@ from .views import (HEX, ago, agenda_buckets, all_agenda, board_chip_text, board
                     present_hidden, present_hidden_rows, present_tasks, render_present,
                     render_present_all, render_view, save_present_png, PresentAll,
                     PRESENT_MIN_WIDTH, PRESENT_RAIL_MIN, PRESENT_SCREEN_VIEWS,
-                     save_present_svg, sort_by_due, fit, vis, valid_url, _md)
+                     save_present_svg, sort_by_due, fit, vis, valid_url, _md,
+                    milestone_mark)
 
 
 # The app's ONE shared clock. Every animated surface counts in these ticks, so
@@ -846,6 +847,11 @@ def board_lanes(app) -> tuple[list, list]:
             board = peek_board(e.path)
             state = "file unreadable" if board.load_report.get("file_unreadable") else ""
             board = None if state else board
+            if board is not None:
+                # a peeked board renders milestone marks too: the one live dict,
+                # as the open board holds it (LLR-2601.3; never written — the
+                # peeked board is never saved here)
+                board.marks = app.marks.marks
         else:
             board, state = None, "file missing"
         lanes.append((e.name, e.color, board, state))
@@ -2142,7 +2148,9 @@ class TaskboardApp(App):
                   if group_key(g.project) == group), None)
         if task.milestone and g is not None and any(t is task for t in g.rows):
             # a reached milestone stays drawn among its group's rows (D-606, D-614)
-            self.notify(f"{clip(task.title, 40)} reached · ◆✓ · u undo", markup=False)
+            glyph, _style, chip = milestone_mark(task, board, date.today())
+            self.notify(f"{clip(task.title, 40)} reached · {glyph}{chip} · u undo",
+                        markup=False)
             return
         rest = len(g.rest) if g is not None else 0
         self.notify(f"{task.title} done · folded into ✓{rest} · u undo", markup=False)
@@ -2181,7 +2189,9 @@ class TaskboardApp(App):
         day = parse_iso(task.due_date)
         moved = (f" · start was {_md(old_start)}"
                  if old_start is not None and old_start != day else "")
-        self.notify(f"{name} is a milestone · ◆ {_md(day)}{moved} · "
+        glyph, _style, chip = milestone_mark(task, self.board, date.today())
+        late = f" · {chip}" if chip.startswith("▲") else ""
+        self.notify(f"{name} is a milestone · {glyph} {_md(day)}{moved}{late} · "
                     f"{self._milestone_where(task)} · u undo",
                     title="Milestone", markup=False)
 

@@ -152,10 +152,10 @@ ORDER = {"pweb": [("ahead", "Launch new homepage"), ("reached", "Mockups approve
 # shipped rooms at 118 and 80), the prototype's `_ms_segment` executed; API at 12 is
 # D-619's `+N ◆` fallback (the prototype draws nothing there).
 SEGMENTS = {
-    ("pweb", 70): "◆ Oct 10 Launch new homepage · in 10d ── ◆ Sep 18 Mockups approved ✓",
+    ("pweb", 70): "◆ Oct 10 Launch new homepage · in 10d ── ◇ Sep 18 Mockups approved ✓",
     ("pweb", 40): "◆ Oct 10 Launch new homepage · in 10d",
     ("pweb", 20): "◆ Oct 10 · in 10d",
-    ("pweb", 56): "◆ Oct 10 Launch new hom… · in 10d ── ◆ Sep 18 Mockups… ✓",
+    ("pweb", 56): "◆ Oct 10 Launch new hom… · in 10d ── ◇ Sep 18 Mockups… ✓",
     ("pweb", 18): "◆ Oct 10 · in 10d",
     ("pmob", 70): "◆ Nov 4 Beta release to testers · in 35d",
     ("pmob", 62): "◆ Nov 4 Beta release to testers · in 35d",
@@ -209,21 +209,27 @@ def test_TC_613_the_layout_equals_the_executed_rule(pid, room):
     RED: reached counted in `+N`, titles dropped before cut, no fallback."""
     b = _ms_board()
     p = b.project_by_id(pid)
-    facts = band_milestone_facts(band_milestones(b, p, KT), room, p.color, KT)
+    facts = band_milestone_facts(band_milestones(b, p, KT), room, p.color, KT, b)
     assert "".join(f[0] for f in facts) == SEGMENTS[(pid, room)]
 
 
 def test_TC_613_tones_follow_the_kind():
-    """TC-613: late in over (◆, date, relative), upcoming `◆` in the project hue
-    and `today` in soon, reached all in the reached grey (UXV-5). RED: an upcoming `◆` in over."""
+    """TC-613: late's date and relative in over, upcoming's date in the project hue
+    and `today` in soon, reached all in the reached grey (UXV-5) — as amended by
+    batch 2026-10-24-batch-01 (MM-D1, one seat): the glyph piece itself wears the
+    seat's style, `◆` in `mut` on a board with no classes, in every kind. RED: an
+    upcoming `◆` in over."""
     b = _ms_board()
-    late = band_milestone_facts(band_milestones(b, b.project_by_id("pops"), KT), 70, "rose", KT)
-    assert [f[1] for f in late] == ["over", "over", "hd", "over"]
-    web = band_milestone_facts(band_milestones(b, b.project_by_id("pweb"), KT), 70, "violet", KT)
-    assert web[0] == ("◆ ", "violet") and web[-1] == (" ✓", "reached")
-    assert [f[1] for f in web[5:]] == ["reached", "reached", "reached", "reached"]
+    late = band_milestone_facts(band_milestones(b, b.project_by_id("pops"), KT), 70,
+                                "rose", KT, b)
+    assert [f[1] for f in late] == ["mut", "over", "hd", "over"]
+    web = band_milestone_facts(band_milestones(b, b.project_by_id("pweb"), KT), 70,
+                               "violet", KT, b)
+    assert web[0] == ("◆ ", "mut") and web[-1] == (" ✓", "reached")
+    assert [f[1] for f in web[5:]] == ["mut", "reached", "reached", "reached"]
     b.task_by_id("tw5").start_date = b.task_by_id("tw5").due_date = KT.isoformat()
-    today = band_milestone_facts(band_milestones(b, b.project_by_id("pweb"), KT), 70, "violet", KT)
+    today = band_milestone_facts(band_milestones(b, b.project_by_id("pweb"), KT), 70,
+                                 "violet", KT, b)
     assert (" · today", "soon") in today
 
 
@@ -338,7 +344,7 @@ async def test_AT_603_the_columns_hold_only_work_and_the_band_says_what_is_comin
         assert not any(t in "".join(_cards(rows)) for t in MS_TITLES)
         web = next(r for r in text if r.startswith("▐ Website Redesign"))
         want = [f"◆ {_md(today + timedelta(days=10))}", "Launch", "· in 10d", "──",
-                f"◆ {_md(today - timedelta(days=12))}", "Mockups", "✓"]
+                f"◇ {_md(today - timedelta(days=12))}", "Mockups", "✓"]
         at = web.index("project due")
         for token in want:
             at = web.index(token, at)
@@ -386,7 +392,12 @@ async def test_AT_603_the_columns_hold_only_work_and_the_band_says_what_is_comin
         line = "".join(c for c, _ in ops)
         i = line.index("Security review sign-off · 2d late")
         assert ops[line.index("2d late", i)][1] == HEX["over"].lower()
-        assert ops[line.index("◆", i - 12)][1] == HEX["over"].lower()
+        # batch 2026-10-24-batch-01 (MM-D1): the late mark's glyph is unclassified
+        # `◆` in `mut` — the state rides the date and the `2d late` text, `over`
+        assert ops[line.index("◆", i - 12)][1] == HEX["mut"].lower()
+        d_i = line.index("Sep 28") if "Sep 28" in line else None
+        if d_i is not None:
+            assert ops[d_i][1] == HEX["over"].lower()   # the date says late
     app = TaskboardApp(board_path=str(path), team_sync_interval=1e9)
     async with app.run_test(size=(80, 24)) as pilot:
         await pilot.press("4")

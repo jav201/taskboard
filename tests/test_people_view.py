@@ -142,7 +142,7 @@ def test_TC_2504_the_tasks_pane_scrolls_to_keep_the_cursor(world):
     d, _l, items = world
     people = views.people_by_urgency(list(d.people.values()), items)
     t = views.render_people_directory(people, items, 0, "tasks", 4, TODAY, 78, 22, d.people).plain
-    assert "▶  Client A Eval report v1" in t and "“Draft with @Ana Ruiz; sign-off by the…" in t
+    assert "▶  Client A ◆ Eval report v1" in t and "“Draft with @Ana Ruiz; sign-off by the…" in t
     rows = t.split("\n")
     first = next(r.split("│", 1)[1] for r in rows[8:] if r.split("│", 1)[1].strip())
     assert not first.lstrip().startswith("“")                 # ux UX-5: no orphan quote

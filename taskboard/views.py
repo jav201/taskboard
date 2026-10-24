@@ -1092,7 +1092,7 @@ def _grid_sediment_rows(lane: LaneFacts, today: date, col_w: int,
 def _grid_task_row(t: Task, board: Board, lane: LaneFacts, wc: int,
                    selected: bool, today: date) -> str:
     """The roomier row: prefix, title, then indicators AND the absolute date. A
-    milestone wears its `◆` beside the title (CL-9, marker only)."""
+    milestone wears its mark beside the title (CL-9, marker only)."""
     prefix = "▲ " if t.blocked else "▊ "
     pcol = "over" if t.blocked else lane.hue
     right: list[tuple[str, str]] = []
@@ -1110,7 +1110,10 @@ def _grid_task_row(t: Task, board: Board, lane: LaneFacts, wc: int,
     body = escape(shown)
     if selected:
         body = f"[reverse]{body}[/reverse]"
-    marker = c("◆", milestone_tone(t, board, today)) + " " if ms else ""
+    marker = ""
+    if ms:
+        glyph, mstyle, _chip = milestone_mark(t, board, today)
+        marker = c(glyph, mstyle) + " "
     pad = " " * max(0, wc - len(prefix) - (2 if ms else 0) - vis(shown) - rw - 1)
     return (c(prefix, pcol) + marker + c(body, "mut") + pad + " "
             + " ".join(c(x, k) for x, k in right))
@@ -1667,7 +1670,7 @@ def _title_row(task: Task, board: Board, lane: LaneFacts, today: date,
                inner: int, selected: bool, geo: FieldGeo) -> Row:
     """A named task: spine, its phase glyph, its title — and the FIELD behind
     the tail, which is what keeps naming from costing emptiness. A milestone
-    wears its `◆` beside the title (CL-9, marker only)."""
+    wears its mark beside the title (CL-9, marker only)."""
     due = parse_iso(task.due_date)
     days = (due - today).days if due else None
     # archived work is SPENT: its meter is the spent form and its title drops to
@@ -1686,7 +1689,10 @@ def _title_row(task: Task, board: Board, lane: LaneFacts, today: date,
     gap = " " * max(0, min(geo.label_w, tail_to) - tail_from)
     glyph, gcol = ((ARCHIVED_MARK, "ash") if task.archived
                    else (phase_glyph({min(3, board.phase_index(task))}), lane.hue))
-    marker = c("◆", milestone_tone(task, board, today)) + " " if ms else ""
+    marker = ""
+    if ms:
+        mglyph, mstyle, _chip = milestone_mark(task, board, today)
+        marker = c(mglyph, mstyle) + " "
     return ((c("▎", "ash" if task.archived else lane.hue) + "  "
              + c(glyph, gcol) + " "
              + marker + c(body, "ash" if task.archived else "mut") + gap
@@ -1760,10 +1766,32 @@ def _rights_w(rights: list[tuple[str, str]]) -> int:
     return sum(len(t) for t, _ in rights) + 2 * max(0, len(rights) - 1)
 
 
+def _bank_edge_task(lane: LaneFacts, today: date):
+    """The open task whose due date ENDS the bank (the wave edge names it):
+    a task due on the project's own due when the project is dated, else the
+    latest-due open one. None when nothing open is dated."""
+    if lane.due_in is not None:
+        edge = today + timedelta(days=lane.due_in)
+        return next((t for t in lane.open if parse_iso(t.due_date) == edge), None)
+    dated = [t for t in lane.open if parse_iso(t.due_date)]
+    return max(dated, key=lambda t: parse_iso(t.due_date), default=None)
+
+
+def _bank_edge_mark(task, board: Board | None, today: date, hue: str) -> str:
+    """The bank's end diamond — the bank edge of LLR-2604.2: a MILESTONE there
+    wears its class through the seat; otherwise the project's hue, as today —
+    the edge then names the project, not a task."""
+    if board is not None and task is not None and task.milestone:
+        glyph, style, _chip = milestone_mark(task, board, today)
+        return c(glyph, style)
+    return c("◆", hue)
+
+
 def lead_band(lane: LaneFacts, geo: FieldGeo, today: date, inner: int,
-              prof: int, phase: int = 0) -> list[Row]:
+              prof: int, phase: int = 0, board: Board | None = None) -> list[Row]:
     """The one project that needs you now, given a DRAWN, CARVED field: its own
-    bank several rows tall, ending in `◆` — its own due date — so the air left
+    bank several rows tall, ending in `◆` — its own due date (a class mark when
+    a milestone ends the bank, batch 2026-10-24-batch-01) — so the air left
     ABOVE the curve before that diamond is the work that cannot land in time."""
     chip, chip_key = pressure_chip(lane)
     # The head is width-exact by construction, and it sheds from the LEFT of the
@@ -1794,10 +1822,11 @@ def lead_band(lane: LaneFacts, geo: FieldGeo, today: date, inner: int,
     field = field_rows(bm, geo, lane.hue, off_left=offl, off_right=offr,
                        phase=phase)
     edge_cell = min(geo.field_w - 1, wave_edge(lane, geo, today) // 2 + 1)
+    edge_t = _bank_edge_task(lane, today)
     for i, row in enumerate(field):
         body = row
         if i == 0 and 0 <= edge_cell < geo.field_w:
-            body = _put_cell(row, edge_cell, c("◆", lane.hue))
+            body = _put_cell(row, edge_cell, _bank_edge_mark(edge_t, board, today, lane.hue))
         rows.append((" " * geo.label_w + body, None))
 
     # the lead's tail NAMES a task, so it carries the field behind it too —
@@ -1895,7 +1924,7 @@ def render_swimlanes(board, show_archived, selected_id, today=None,
 
     blocks: list[list[Row]] = []
     if active:
-        blocks.append(lead_band(active[0], geo, today, inner, prof, tick))
+        blocks.append(lead_band(active[0], geo, today, inner, prof, tick, board))
     blocks += [stack_block(ln, geo, board, today, inner, titles, wrows,
                            selected_id, tick)
                for ln in stack]
@@ -2034,9 +2063,11 @@ def render_agenda(board, show_archived, selected_id, today=None,
             for i in range(lo + 1, hi):               # thin tail rule->dot (not the rule)
                 if cells[i][0] == " ":
                     cells[i] = ("─", "dim")
-            glyph = "◆" if t.milestone else ("◂" if clamp_l else "▸" if clamp_r else "●")
-            key = (milestone_tone(t, board, today) if t.milestone
-                   else _DOT_KEY[urgency(t, today, board)])
+            if t.milestone:
+                glyph, key, _chip = milestone_mark(t, board, today)
+            else:
+                glyph = "◂" if clamp_l else "▸" if clamp_r else "●"
+                key = _DOT_KEY[urgency(t, today, board)]
             cells[col] = (glyph, key)
         return cells_markup(cells)
 
@@ -2532,26 +2563,154 @@ def milestone_tone(task: Task, board: Board, today: date) -> str:
     return project_color(board, task)
 
 
+#: the reached-state map shape → hollow glyph (the round's, proto.py:83).
+HOLLOW = {"◆": "◇", "▲": "△", "●": "○", "■": "□", "★": "☆", "▼": "▽",
+          "⬟": "⬠", "⬢": "⬡", "✦": "✧", "⚑": "⚐"}
+#: every glyph a milestone mark can wear: the unclassified diamond and its
+#: hollow twin, the manager's shapes and theirs (`●` is excluded — MM-D5 — so
+#: its hollow twin `○`, a bar's phase tip, is no mark: the cursor recolor in
+#: the presentation matches a mark by these, never by colour).
+MARK_GLYPHS = frozenset(["◆", "◇", "▲", "△", "■", "□", "⬢", "⬡", "★", "☆",
+                         "⬟", "⬠", "▼", "▽", "✦", "✧", "⚑", "⚐"])
+
+
+def milestone_mark(task: Task, board: Board, today: date) -> tuple[str, str, str]:
+    """THE seat every milestone mark renders through (LLR-2604.1, MM-D1,
+    variant B): the class's shape and colour say the class — an unset or
+    unknown id keeps `◆` in the neutral `mut`; when late, the caller's date
+    renders `over` and `late_chip` is `▲Nd`; when reached, the glyph is hollow
+    (`HOLLOW`) and the chip carries `✓` in `reached`. A non-empty chip implies
+    the date is `over` — one channel out of the seat, no site re-deriving
+    lateness."""
+    cls = (getattr(board, "marks", None) or {}).get(task.mark or "")
+    glyph = cls.shape if cls is not None else "◆"
+    style = cls.colour if cls is not None else "mut"
+    if board.is_done(task):
+        return HOLLOW.get(glyph, glyph), style, "✓"
+    d = parse_iso(task.due_date)
+    if d is not None and d < today:
+        return glyph, style, f"▲{(today - d).days}d"
+    return glyph, style, ""
+
+
+def render_marks(directory, sel: int, w: int, h: int,
+                 counts: dict | None = None) -> Text:
+    """The `#` manager's frame (LLR-2606.3, the ARQ's A-1 fold): one row per
+    class — its shape in its colour, its name, the open/all milestone counts
+    (`counts`, id → (open, all), every board of the registry read at open —
+    the manager passes them; without them the row names the class alone), its
+    hidden state dimmed with what hiding means — the chosen row marked `▶` and
+    shaded, then the `◆ (no class)` row for the plain milestone and the key
+    line. Every row exactly `w` cells of explicit-style `Text` pieces, the
+    people view's pattern (`render_people_directory`). Pure: unwired until the
+    manager ships (D-4's accepted cost)."""
+    w = max(1, w)
+    rows: list[Text] = []
+
+    def row(cells: list[tuple[str, str]], on: bool = False) -> Text:
+        r = Text(no_wrap=True)
+        for text, style in cells:
+            r.append(text, style=style)
+        r.truncate(w, overflow="ellipsis", pad=True)
+        if on:
+            r.stylize("on #1d2a3a")
+        return r
+
+    def cells_len(cells: list[tuple[str, str]]) -> int:
+        return sum(cell_len(t) for t, _ in cells)
+
+    head = Text(no_wrap=True)
+    head.append("# Milestone classes", style=f"b {HEX['accent']}")
+    head.append("  · every board · marks.json", style=HEX["dim"])
+    head.truncate(w, overflow="ellipsis", pad=True)
+    rows.append(head)
+    rows.append(Text(" " * w))
+
+    ids = list(directory.marks)
+    sel = max(0, min(sel, len(ids) - 1)) if ids else 0
+    for j, cid in enumerate(ids):
+        m = directory.marks[cid]
+        on, off = j == sel, m.hidden
+        dim = HEX["dim"]
+        cells: list[tuple[str, str]] = [
+            ("▶ " if on else "  ", HEX["accent"]),
+            ("[ ] " if off else "[x] ", dim if off else HEX["green"]),
+            (m.shape, dim if off else HEX[m.colour]),
+            (f" {m.name}", dim if off else HEX["ink"]),
+        ]
+        tail: list[tuple[str, str]] = []
+        if counts is not None:
+            o, a = counts.get(cid, (0, 0))
+            tail.append((f"  {o} open {a} in all", HEX["mut"]))
+        if off:
+            tail.append(("   hidden: gantt + present", HEX["amber"]))
+        if counts is not None and cells_len(cells + tail) > w:
+            # narrow: the counts give way first, then the name clips (TC-2606)
+            tail = [c for c in tail if "open" not in c[0]]
+        rows.append(row(cells + tail, on))
+
+    if not ids:
+        rows.append(row([("  No classes yet.", HEX["mut"])]))
+        rows.append(row([("  n adds the first class.", HEX["dim"])]))
+    plain = Text(no_wrap=True)
+    plain.append("        ◆", style=HEX["mut"])
+    plain.append(" (no class)   the plain milestone", style=HEX["dim"])
+    plain.truncate(w, overflow="ellipsis", pad=True)
+    rows.append(plain)
+
+    pairs = [("↑↓", "move"), ("␣", "hide/show"), ("n", "new"), ("e", "edit"),
+             ("esc", "close")]               # the keymap's key_line shape and
+    words = len(pairs)                        # degradation (views cannot import
+    while True:                               # keymap — keymap imports views)
+        keys = Text(no_wrap=True)
+        for i, (key, word) in enumerate(pairs):
+            if i:
+                keys.append("   ")
+            keys.append(key, style=f"b {HEX['bright']}")
+            if i < words:
+                keys.append(f" {word}", style=HEX["mut"])
+        if keys.cell_len <= w or not words:
+            break
+        words -= 1                            # narrow: the words go first, from the right
+    key_row = Text(no_wrap=True)
+    key_row.append_text(keys)
+    key_row.truncate(w, overflow="ellipsis", pad=True)
+    rows.append(Text(" " * w))
+    rows.append(key_row)
+
+    out = Text()
+    for i, r in enumerate(rows[:max(1, h)]):
+        if i:
+            out.append("\n")
+        out.append_text(r)
+    return out
+
+
 def _milestone_title(task: Task, board: Board, today: date, width: int,
                      selected: bool, arrow: bool = True) -> str:
-    """`title_markup`, prefixed with a milestone's `◆` — the marker beside the
-    title in lanes/focus (CL-9), marker only; the text keeps `width - 2` cells."""
+    """`title_markup`, prefixed with a milestone's mark from the seat (LLR-2604.1)
+    — marker only; the text keeps `width - 2` cells."""
     if not task.milestone:
         return title_markup(task, width, selected, arrow=arrow)
-    return (c("◆", milestone_tone(task, board, today)) + " "
+    glyph, style, _chip = milestone_mark(task, board, today)
+    return (c(glyph, style) + " "
             + title_markup(task, max(0, width - 2), selected, arrow=arrow))
 
 
-def gantt_milestone_cells(task: Task, board: Board, ax: GanttAxis, today: date,
-                          tone: str) -> list[tuple[str, str]]:
-    """A milestone's field (M-1): `◆` on its date (`◆✓` reached) and the date
-    beside it — after it, or before it when it does not fit — never a bar. Off the
-    window: the edge glyph and the `◆` beside it. No due: nothing."""
+def gantt_milestone_cells(task: Task, board: Board, ax: GanttAxis, today: date
+                          ) -> list[tuple[str, str]]:
+    """A milestone's field (M-1): its mark on its date (`✓` reached after it)
+    and the date beside it — after it, or before it when it does not fit —
+    never a bar. Off the window: the edge glyph and the mark beside it. No
+    due: nothing. The mark and the lateness channel come from the seat
+    (`milestone_mark`): the glyph in its class colour, the date `over` when
+    the seat's chip is `▲Nd` (one channel), `soon` on the due day."""
     cells = [(" ", "dim")] * ax.w
     d = parse_iso(task.due_date)
     if d is None or ax.w < 3:
         return cells
-    marks = [("◆", tone)] + ([("✓", "reached")] if board.is_done(task) else [])
+    glyph, style, chip = milestone_mark(task, board, today)
+    marks = [(glyph, style)] + ([("✓", "reached")] if chip == "✓" else [])
     x = ax.cell(d)
     if x < 0:
         cells[0] = (OFF_LEFT, "mut")
@@ -2564,7 +2723,8 @@ def gantt_milestone_cells(task: Task, board: Board, ax: GanttAxis, today: date,
     x = max(0, min(x, ax.w - len(marks)))
     for i, m in enumerate(marks):
         cells[x + i] = m
-    key = "reached" if board.is_done(task) else ("over" if tone == "over" else "mut")
+    key = ("reached" if chip == "✓" else
+           "over" if chip else "soon" if d == today else "mut")
     lab = _md(d)
     after, before = x + len(marks) + 1, x - 1 - len(lab)
     at = after if after + len(lab) <= ax.w else (before if before >= 0 else None)
@@ -2640,7 +2800,11 @@ def _gantt_bar(task: Task, board: Board, ax: GanttAxis, chain: set[str],
     if s is not None and e is not None and s == e:
         x = ax.cell(e)
         if 0 <= x < ax.w:
-            cells[x] = ("◆", tone)
+            if task.milestone:             # the seat is keyed by milestone
+                glyph, style, _chip = milestone_mark(task, board, ax.today)
+                cells[x] = (glyph, style)
+            else:                          # a one-date TASK: its priority hue,
+                cells[x] = ("◆", tone)     # not a milestone mark
         return cells
     a, b = ax.cell(s or ax.today), ax.end_cell(e or ax.today)
     if b < a:
@@ -2720,7 +2884,10 @@ def gantt_cadence(ax: GanttAxis) -> tuple[str, list[tuple[date, int]]]:
 def gantt_echo(task: Task, board: Board, ax: GanttAxis, today: date):
     """The selection on the ruler, EXACT dates only (never a cell's rounded
     date): (cells {x: glyph}, tone, label options in preference order, the
-    full text for the label column). None when the task has no date."""
+    full text for the label column). None when the task has no date. A
+    milestone's glyph comes from the seat (its class shape; the echo keeps its
+    own tone law — the `over` selection cue predates marks, so the class colour
+    is NOT adopted here, declared in increment 002's packet §6, finding F1)."""
     s, e = parse_iso(task.start_date), parse_iso(task.due_date)
     if s is None and e is None:
         return None
@@ -2729,8 +2896,11 @@ def gantt_echo(task: Task, board: Board, ax: GanttAxis, today: date):
     if s is not None and e is not None and s == e:
         x = min(max(ax.cell(e), 0), w - 1)
         lab = _md(e)
-        return ({x: "◆"}, tone, [[(x + 2, lab)], [(x - 1 - len(lab), lab)]],
-                f"◆ {lab}")
+        glyph = "◆"
+        if task.milestone:
+            glyph, _style, _chip = milestone_mark(task, board, today)
+        return ({x: glyph}, tone, [[(x + 2, lab)], [(x - 1 - len(lab), lab)]],
+                f"{glyph} {lab}")
     if s is not None and e is not None:
         a = min(max(ax.cell(s), 0), w - 1)
         b = min(max(ax.end_cell(e), 0), w - 1)
@@ -3031,8 +3201,15 @@ def _gantt_frame(board, show_archived, selected_id, today=None, width=68, height
     if sel_p is not None:          # the project's milestones on the ruler (AX-2, M-1)
         for t in board.visible_tasks(show_archived):
             if (t.project_id == sel_p.id and t.milestone and not t.archived
-                    and (md_ := parse_iso(t.due_date)) and 0 <= ax.cell(md_) < ax.w):
-                marks[ax.cell(md_)] = ("◆", milestone_tone(t, board, today))
+                    and (md_ := parse_iso(t.due_date))
+                    and 0 <= (mc := ax.cell(md_)) < ax.w and mc not in marks):
+                # `mc not in marks`: the project due's mark is never covered
+                # (gantt_month_row) — once classed, a milestone no longer hides
+                # it by matching its hue; a side effect: same-day
+                # milestone-vs-milestone keeps the first drawn, not the last
+                # (batch 2026-10-24-batch-01)
+                glyph, style, _chip = milestone_mark(t, board, today)
+                marks[mc] = (glyph, style)
     echo = gantt_echo(sel, board, ax, today) if sel is not None else None
     if echo is not None:
         drawn.add("selected")
@@ -3070,13 +3247,13 @@ def _gantt_frame(board, show_archived, selected_id, today=None, width=68, height
         if "↳" in mark:
             drawn.add("early" if HEX["over"] in mark else "waits")
         if t.milestone:            # one date, no bar (M-1, LLR-602.2)
-            tone = milestone_tone(t, board, today)
+            glyph, style, _chip = milestone_mark(t, board, today)
             drawn.add("reached" if board.is_done(t) else "milestone")
             title = title_markup(t, label_w - 4, t.id == selected_id)
             if board.is_done(t):           # reached: the label goes quiet too (M-1)
                 title = c(title, "reached")
-            label = " " + c("◆", tone) + " " + title + " "
-            return row(label, mark, gantt_milestone_cells(t, board, ax, today, tone),
+            label = " " + c(glyph, style) + " " + title + " "
+            return row(label, mark, gantt_milestone_cells(t, board, ax, today),
                        gantt_milestone_chip(t, board, today, chip_w))
         cells = _gantt_bar(t, board, ax, chain, tick)
         if any(tone == "crit" for _, tone in cells):
@@ -3611,8 +3788,11 @@ def _focus_review(board: Board, tasks: list[Task], selected_id: str | None,
         return markup + " " * max(0, pad)
 
     left_rows: list[str] = [c("█" * w_l, pcol)]
-    left_rows.append(spine + " "
-                     + (c("◆", milestone_tone(t, board, today)) + " " if t.milestone else "")
+    cmark = ""
+    if t.milestone:
+        cglyph, cstyle, _chip = milestone_mark(t, board, today)
+        cmark = c(cglyph, cstyle) + " "
+    left_rows.append(spine + " " + cmark
                      + c(escape(fit(t.title, w_l - 3 - (2 if t.milestone else 0))),
                          "ink", bold=True))
     left_rows.append(spine)
@@ -5051,11 +5231,15 @@ def band_milestones(board: Board, project, today: date,
 
 
 def band_milestone_facts(items: list[tuple[str, Task]], room: int, color: str,
-                         today: date) -> list[tuple]:
+                         today: date, board: Board) -> list[tuple]:
     """Lay the band's milestones into `room` cells (LLR-603.2): as many as can keep
     a title of at least 8 cells, the first ones whole first; then dates only; then
     `── +N ◆` for the open ones left out (reached never counted); and when not
-    one date fits, `+N ◆` alone if it fits (D-619). Facts for `_band_rule`."""
+    one date fits, `+N ◆` alone if it fits (D-619). Facts for `_band_rule`.
+    Each milestone's glyph piece is its mark from the seat — the class shape in
+    the class colour, `◆` in `mut` unclassified — while the date and the state
+    text keep their per-kind tones (LLR-2604.2); the `+N ◆` tails count open
+    milestones of every class, so they keep the plain diamond."""
     def piece(kind, t, tw):
         d = parse_iso(t.due_date)
         n = (d - today).days
@@ -5066,7 +5250,8 @@ def band_milestone_facts(items: list[tuple[str, Task]], room: int, color: str,
             rel = " · today" if n == 0 else f" · in {n}d"
         else:
             tone, dk, tk, rel, rk = "reached", "reached", "reached", " ✓", "reached"
-        out = [("◆ ", tone), (_md(d), dk)]
+        glyph, style, _chip = milestone_mark(t, board, today)
+        out = [(glyph + " ", style), (_md(d), dk)]
         if tw:
             out.append((" " + fit(t.title, tw), tk))
         return out + [(rel, rk)]
@@ -5110,7 +5295,7 @@ def band_rule_facts(board: Board, band: KanbanBand, today: date, show_archived: 
         return facts, False
     items = band_milestones(board, band.project, today, show_archived)
     room = w - sum(vis(f[0]) for f in facts) - 4 - 2
-    more = band_milestone_facts(items, room, band.color, today) if items else []
+    more = band_milestone_facts(items, room, band.color, today, board) if items else []
     if not more:
         return facts, False
     return facts + [(" ── ", "frame")] + more, True
@@ -6535,16 +6720,18 @@ def _present_span_row(proj: Project, board: Board, p: _PresentGeo) -> str:
 
 
 def _present_task_row(task: Task, board: Board, p: _PresentGeo, cursor: bool = False) -> str:
-    """One field row. A milestone is drawn as the gantt view draws it — `◆` on
-    its due and the date beside it, never a bar — with `◆` before the title and
-    its due alone in the chip (batch 2026-10-19-batch-01, HLR-2101)."""
+    """One field row. A milestone is drawn as the gantt view draws it — its mark
+    on its due and the date beside it, never a bar — with the mark before the
+    title and its due alone in the chip (batch 2026-10-19-batch-01, HLR-2101;
+    the mark is the seat's, batch 2026-10-24-batch-01, LLR-2604.1)."""
     if task.milestone:
-        tone = milestone_tone(task, board, p.today)
-        cells = gantt_milestone_cells(task, board, p.ax, p.today, tone)
+        glyph, style, _chip = milestone_mark(task, board, p.today)
+        cells = gantt_milestone_cells(task, board, p.ax, p.today)
         if cursor:
-            cells = [("◆", "accent") if g == "◆" else (g, k) for g, k in cells]
+            cells = [(g, "accent") if g in MARK_GLYPHS else (g, k)
+                     for g, k in cells]
         lead = c("⟦", "accent", bold=True) if cursor else " "
-        label = (" " + lead + c("▎", p.hue) + " " + c("◆", tone) + " "
+        label = (" " + lead + c("▎", p.hue) + " " + c(glyph, style) + " "
                  + _present_title(task, p.label_w - 6))
         chip = " " + _present_chip(None, task.due_date, p.today, p.chip_w)
         return _pad(_pad(label, p.label_w) + gantt_dep_mark(task, board, p.chain)
@@ -7085,6 +7272,7 @@ class AgendaItem(NamedTuple):
     task: Task
     project: str
     due: date
+    board: object = None    # the lane's board: a milestone's mark reads it
 
 
 def _week_end(today: date) -> date:
@@ -7113,7 +7301,7 @@ def all_agenda(lanes, today: date) -> list[AgendaItem]:
             if d is None or d > end or not is_open(board, t):
                 continue
             out.append(AgendaItem("late" if d < today else d, li, name, colour, t,
-                                  names.get(t.project_id, ""), d))
+                                  names.get(t.project_id, ""), d, board))
     return sorted(out, key=lambda x: (x.due, x.lane))     # stable: board order kept
 
 
@@ -7157,6 +7345,10 @@ def _agenda_row(it: AgendaItem, on: bool, inner: int, today: date) -> Text:
         r.append(" ")
     wl, wc = _agenda_when(it.due, today)
     tw = max(1, inner - 3 - bw - 1 - (pw + 1 if pw else 0) - 8)
+    if it.task.milestone:
+        glyph, style, _chip = milestone_mark(it.task, it.board, today)
+        r.append(f"{glyph} ", style=HEX[style])   # the mark before the title; the
+        tw = max(1, tw - 2)                       # title gives up its two cells
     r.append(fit(it.task.title, tw), style=f"bold {HEX['bright']}" if on else HEX["ink"])
     r.append(f"{wl:>8}", style=wc)
     r.truncate(inner)
@@ -8343,6 +8535,7 @@ class PersonItem(NamedTuple):
     task: Task
     project: str
     due: date | None
+    board: object = None    # the lane's board: a milestone's mark reads it
 
 
 PERSON_BANDS = ("late", "today", "week", "later", "nodate")
@@ -8364,7 +8557,8 @@ def person_items(lanes, handle: str, today: date) -> list[PersonItem]:
             d = parse_iso(t.due_date)
             band = ("nodate" if d is None else "late" if d < today else "today" if d == today
                     else "week" if d <= end else "later")
-            out.append(PersonItem(band, li, name, colour, t, names.get(t.project_id, ""), d))
+            out.append(PersonItem(band, li, name, colour, t, names.get(t.project_id, ""), d,
+                                  board))
     return sorted(out, key=lambda x: (PERSON_BANDS.index(x.band), x.due or date.max, x.lane))
 
 
@@ -8455,11 +8649,17 @@ def _task_rows(items: list[PersonItem], sel: int | None, w: int, handle: str, pe
             cur_row = len(rows)
         when, wcol = _person_when(it.due, today)
         tw = max(1, w - 2 - chip_w - 1 - (pw + 1 if pw else 0) - 8)
-        r = _line(("▶ " if on else "  ", HEX["accent"]),
-                  (fit(f" {it.board_name}", chip_w), f"b #0d1117 on {board_hex(it.colour)}"),
-                  (" " + fit(it.task.title, tw), f"b {HEX['bright']}" if on else HEX["ink"]),
-                  *([(" " + fit(it.project, pw), HEX["dim"])] if pw else []),
-                  (f"{when:>8}", wcol), w=w)
+        pieces: list = [("▶ " if on else "  ", HEX["accent"]),
+                        (fit(f" {it.board_name}", chip_w),
+                         f"b #0d1117 on {board_hex(it.colour)}")]
+        if it.task.milestone:            # the mark before the title, in its class
+            glyph, style, _chip = milestone_mark(it.task, it.board, today)  # colour
+            pieces.append((" " + glyph + " ", HEX[style]))
+            tw = max(1, tw - 2)          # the title gives up two cells
+        pieces.append((fit(it.task.title, tw), f"b {HEX['bright']}" if on else HEX["ink"]))
+        pieces += [(" " + fit(it.project, pw), HEX["dim"])] if pw else []
+        pieces.append((f"{when:>8}", wcol))
+        r = _line(*pieces, w=w)
         if on:                              # the cursor's band, around the chip (it keeps its hue)
             r.stylize("on #16202c", 0, 2)
             r.stylize("on #16202c", 2 + chip_w)

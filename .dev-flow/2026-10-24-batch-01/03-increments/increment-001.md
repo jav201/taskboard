@@ -22,7 +22,7 @@ Increment 001 ships the milestone-class store and the task field. `taskboard/mar
 | `taskboard/models.py` | source | LLR-2602.1, LLR-2602.2 | `Task.mark`, `Board.marks` |
 | `taskboard/app.py` | source | LLR-2601.3, LLR-2603.2 | the load, the hand-off, the notice |
 | `tests/milestone_marks_fixture.py` | fixture | HLR-2601…2603 | the fixture |
-| `tests/test_marks_directory.py` | test | TC-2601, TC-2602, TC-2603, AT-2602, AT-2607 (TC arms), TC-2601-handoff | 31 nodes |
+| `tests/test_marks_directory.py` | test | HLR-2601, HLR-2602, HLR-2603 (TC-2601, TC-2602, TC-2603, AT-2602, AT-2607 TC arms, TC-2601-handoff) | 31 nodes |
 
 | Count | Value |
 |---|---|

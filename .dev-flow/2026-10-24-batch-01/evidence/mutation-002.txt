@@ -1,0 +1,488 @@
+arms: 14
+before taskboard/models.py: c2c1b714539ed7017280fe6debee9e1b8ee31678332b836cbda3451565650e33
+before taskboard/views.py: 4ecdf088f30674176bf8734eaee4eca3e91b16a053dd22df2bce3cf0a0eee56f
+C:\Users\jjgh8\anaconda3\Lib\site-packages\pytest_asyncio\plugin.py:207: PytestDeprecationWarning: The configuration option "asyncio_default_fixture_loop_scope" is unset.
+The event loop scope for asynchronous fixtures will default to the fixture caching scope. Future versions of pytest-asyncio will default the loop scope for asynchronous fixtures to function scope. Set the default fixture loop scope explicitly in order to avoid unexpected behavior in the future. Valid fixture loop scopes are: "function", "class", "module", "package", "session"
+
+  warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCOPE_UNSET))
+F                                                                        [100%]
+================================== FAILURES ===================================
+_____________________ test_TC_2604_the_seats_truth_table ______________________
+
+    def test_TC_2604_the_seats_truth_table():
+        """classed+late \u2192 (shape, colour, `\u25b23d`); classed+reached \u2192 (hollow, colour,
+        `\u2713`); classed+open \u2192 (shape, colour, ``); unclassified (no mark / unknown id)
+        \u2192 (`\u25c6`, `mut`, ``); unclassified+late \u2192 (`\u25c6`, `mut`, `\u25b23d`); no directory \u2192
+        (`\u25c6`, `mut`, ``); due today is not late; N = 1 \u2192 `\u25b21d`. Every cell of
+        HLR-2604's boundary catalog. RED: the seat returns `\u25c6` always."""
+        b = _seat_board()
+        seat = views.milestone_mark
+>       assert seat(b.task_by_id("late"), b, TODAY) == ("\u25a0", "violet", "\u25b23d")
+E       AssertionError: assert ('\u25c6', 'mut', '\u25b23d') == ('\u25a0', 'violet', '\u25b23d')
+E         
+E         At index 0 diff: '\u25c6' != '\u25a0'
+E         Use -v to get more diff
+
+tests\test_milestone_marks.py:97: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_milestone_marks.py::test_TC_2604_the_seats_truth_table - As...
+1 failed in 0.48s
+after:  4ecdf088f30674176bf8734eaee4eca3e91b16a053dd22df2bce3cf0a0eee56f
+tests/test_milestone_marks.py::test_TC_2604_the_seats_truth_table: RED (KILLED)
+C:\Users\jjgh8\anaconda3\Lib\site-packages\pytest_asyncio\plugin.py:207: PytestDeprecationWarning: The configuration option "asyncio_default_fixture_loop_scope" is unset.
+The event loop scope for asynchronous fixtures will default to the fixture caching scope. Future versions of pytest-asyncio will default the loop scope for asynchronous fixtures to function scope. Set the default fixture loop scope explicitly in order to avoid unexpected behavior in the future. Valid fixture loop scopes are: "function", "class", "module", "package", "session"
+
+  warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCOPE_UNSET))
+F                                                                        [100%]
+================================== FAILURES ===================================
+_____________________ test_TC_2604_the_seats_truth_table ______________________
+
+    def test_TC_2604_the_seats_truth_table():
+        """classed+late \u2192 (shape, colour, `\u25b23d`); classed+reached \u2192 (hollow, colour,
+        `\u2713`); classed+open \u2192 (shape, colour, ``); unclassified (no mark / unknown id)
+        \u2192 (`\u25c6`, `mut`, ``); unclassified+late \u2192 (`\u25c6`, `mut`, `\u25b23d`); no directory \u2192
+        (`\u25c6`, `mut`, ``); due today is not late; N = 1 \u2192 `\u25b21d`. Every cell of
+        HLR-2604's boundary catalog. RED: the seat returns `\u25c6` always."""
+        b = _seat_board()
+        seat = views.milestone_mark
+        assert seat(b.task_by_id("late"), b, TODAY) == ("\u25a0", "violet", "\u25b23d")
+        assert seat(b.task_by_id("one"), b, TODAY) == ("\u25a0", "violet", "\u25b21d")
+>       assert seat(b.task_by_id("done"), b, TODAY) == ("\u25a1", "violet", "\u2713")
+E       AssertionError: assert ('\u25a0', 'violet', '\u2713') == ('\u25a1', 'violet', '\u2713')
+E         
+E         At index 0 diff: '\u25a0' != '\u25a1'
+E         Use -v to get more diff
+
+tests\test_milestone_marks.py:99: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_milestone_marks.py::test_TC_2604_the_seats_truth_table - As...
+1 failed in 0.48s
+after:  4ecdf088f30674176bf8734eaee4eca3e91b16a053dd22df2bce3cf0a0eee56f
+tests/test_milestone_marks.py::test_TC_2604_the_seats_truth_table: RED (KILLED)
+C:\Users\jjgh8\anaconda3\Lib\site-packages\pytest_asyncio\plugin.py:207: PytestDeprecationWarning: The configuration option "asyncio_default_fixture_loop_scope" is unset.
+The event loop scope for asynchronous fixtures will default to the fixture caching scope. Future versions of pytest-asyncio will default the loop scope for asynchronous fixtures to function scope. Set the default fixture loop scope explicitly in order to avoid unexpected behavior in the future. Valid fixture loop scopes are: "function", "class", "module", "package", "session"
+
+  warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCOPE_UNSET))
+F                                                                        [100%]
+================================== FAILURES ===================================
+________ test_TC_2604_a_nonempty_chip_implies_over_at_the_gantt_cells _________
+
+    def test_TC_2604_a_nonempty_chip_implies_over_at_the_gantt_cells():
+        """The one channel (LLR-2604.1): a non-empty late_chip implies the milestone's
+        date renders `over` — the gantt cells derive the date label's tone from the
+        seat, never from their own lateness math. RED: the label re-derives."""
+        b = _seat_board()
+        ax = views.gantt_axis(60, TODAY, TODAY - timedelta(days=5),
+                              TODAY + timedelta(days=30), TODAY)
+        late = views.gantt_milestone_cells(b.task_by_id("late"), b, ax, TODAY)
+        row = "".join(g for g, _ in late)
+        x = row.index("\u25a0")
+        assert "Oct" in row[x + 1:x + 8]
+        tones = {k for g, k in late if g != " "}
+>       assert "over" in tones and "violet" in tones
+E       AssertionError: assert ('over' in {'mut', 'violet'})
+
+tests\test_milestone_marks.py:123: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_milestone_marks.py::test_TC_2604_a_nonempty_chip_implies_over_at_the_gantt_cells
+1 failed in 0.46s
+after:  4ecdf088f30674176bf8734eaee4eca3e91b16a053dd22df2bce3cf0a0eee56f
+tests/test_milestone_marks.py::test_TC_2604_a_nonempty_chip_implies_over_at_the_gantt_cells: RED (KILLED)
+C:\Users\jjgh8\anaconda3\Lib\site-packages\pytest_asyncio\plugin.py:207: PytestDeprecationWarning: The configuration option "asyncio_default_fixture_loop_scope" is unset.
+The event loop scope for asynchronous fixtures will default to the fixture caching scope. Future versions of pytest-asyncio will default the loop scope for asynchronous fixtures to function scope. Set the default fixture loop scope explicitly in order to avoid unexpected behavior in the future. Valid fixture loop scopes are: "function", "class", "module", "package", "session"
+
+  warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCOPE_UNSET))
+F                                                                        [100%]
+================================== FAILURES ===================================
+________ test_TC_2604_a_nonempty_chip_implies_over_at_the_gantt_cells _________
+
+    def test_TC_2604_a_nonempty_chip_implies_over_at_the_gantt_cells():
+        """The one channel (LLR-2604.1): a non-empty late_chip implies the milestone's
+        date renders `over` — the gantt cells derive the date label's tone from the
+        seat, never from their own lateness math. RED: the label re-derives."""
+        b = _seat_board()
+        ax = views.gantt_axis(60, TODAY, TODAY - timedelta(days=5),
+                              TODAY + timedelta(days=30), TODAY)
+        late = views.gantt_milestone_cells(b.task_by_id("late"), b, ax, TODAY)
+        row = "".join(g for g, _ in late)
+        x = row.index("\u25a0")
+        assert "Oct" in row[x + 1:x + 8]
+        tones = {k for g, k in late if g != " "}
+        assert "over" in tones and "violet" in tones
+        done = views.gantt_milestone_cells(b.task_by_id("done"), b, ax, TODAY)
+        drow, dtones = "".join(g for g, _ in done), {k for _, k in done}
+        assert "\u25a1\u2713" in drow and "reached" in dtones
+        open_ = views.gantt_milestone_cells(b.task_by_id("open"), b, ax, TODAY)
+        orow, otones = "".join(g for g, _ in open_), {k for _, k in open_}
+>       assert "\u25b2" in orow and "over" not in otones and "cyan" in otones
+E       AssertionError: assert ('\u25b2' in '          \u25b2 Oct 25                                          ' and 'over' not in {'cyan', 'dim', 'gap', 'over'})
+
+tests\test_milestone_marks.py:129: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_milestone_marks.py::test_TC_2604_a_nonempty_chip_implies_over_at_the_gantt_cells
+1 failed in 0.48s
+after:  4ecdf088f30674176bf8734eaee4eca3e91b16a053dd22df2bce3cf0a0eee56f
+tests/test_milestone_marks.py::test_TC_2604_a_nonempty_chip_implies_over_at_the_gantt_cells: RED (KILLED)
+C:\Users\jjgh8\anaconda3\Lib\site-packages\pytest_asyncio\plugin.py:207: PytestDeprecationWarning: The configuration option "asyncio_default_fixture_loop_scope" is unset.
+The event loop scope for asynchronous fixtures will default to the fixture caching scope. Future versions of pytest-asyncio will default the loop scope for asynchronous fixtures to function scope. Set the default fixture loop scope explicitly in order to avoid unexpected behavior in the future. Valid fixture loop scopes are: "function", "class", "module", "package", "session"
+
+  warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCOPE_UNSET))
+F                                                                        [100%]
+================================== FAILURES ===================================
+_ test_TC_2604_the_sites_enumeration_every_milestone_mark_routes_through_the_seat _
+
+    def test_TC_2604_the_sites_enumeration_every_milestone_mark_routes_through_the_seat():
+        """The enumeration guard (LLR-2604.2): the 20 sites take their (glyph, style,
+        chip) from `milestone_mark` — the seat's call sits in each site's function —
+        and every literal `\u25c6` left in views.py/app.py is one of the declared
+        exclusions, count tails, seat internals or `?`/legend help text. A NEW
+        milestone site that draws outside the seat, or an exclusion edited to call
+        the seat, fails this census. RED: a site edited back to `c("\u25c6", \u2026)`."""
+        src = VIEWS_SRC.read_text(encoding="utf-8")
+        app_src = APP_SRC.read_text(encoding="utf-8")
+        for refs, fn in SEAT_SITES:
+            body = _function_body(src, fn) or _function_body(app_src, fn)
+            assert body is not None and "milestone_mark(" in body, \
+                f"{refs}: {fn} does not route through the seat"
+        # the fold row counts late milestones of every class: the plain diamond stays,
+        # and it never calls the seat
+        fold = _function_body(src, "_fold_row")
+        assert "milestone_mark(" not in fold and COUNT_TAILS[0] in fold
+        # the month ruler shows no lateness (the accepted cost): no seat at all
+        month = _function_body(src, "gantt_month_row")
+        assert "milestone_mark(" not in month
+        # exclusions keep their exact line counts and never mention the seat
+        for anchor, n in EXCLUSION_LINES.items():
+            assert src.count(anchor) + app_src.count(anchor) == n, \
+                f"exclusion moved or multiplied: {anchor!r}"
+            assert "milestone_mark" not in anchor
+        for anchor in ("milestone_tone(",):
+            body = _function_body(app_src, "_cascade_toast")
+            assert anchor not in body
+        # the sweep: every literal-diamond code line is a declared one
+        declared = list(EXCLUSION_LINES) + ALLOWED_LINES
+        for path in (VIEWS_SRC, APP_SRC):
+            for n, line in _diamond_code_lines(path):
+>               assert any(a in line for a in declared), \
+                    f"{path.name}:{n} draws \u25c6 outside the census: {line!r} \u2014 " \\
+                    "route it through views.milestone_mark or declare it here"
+E               AssertionError: views.py:2724 draws \u25c6 outside the census: 'cells[0] = Text("\u25c6", style="mut")  # a raw draw outside the seat' \u2014 route it through views.milestone_mark or declare it here
+E               assert False
+E                +  where False = any(<generator object test_TC_2604_the_sites_enumeration_every_milestone_mark_routes_through_the_seat.<locals>.<genexpr> at 0x0000025A5A2DBED0>)
+
+tests\test_milestone_marks.py:291: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_milestone_marks.py::test_TC_2604_the_sites_enumeration_every_milestone_mark_routes_through_the_seat
+1 failed in 0.57s
+after:  4ecdf088f30674176bf8734eaee4eca3e91b16a053dd22df2bce3cf0a0eee56f
+tests/test_milestone_marks.py::test_TC_2604_the_sites_enumeration_every_milestone_mark_routes_through_the_seat: RED (KILLED)
+C:\Users\jjgh8\anaconda3\Lib\site-packages\pytest_asyncio\plugin.py:207: PytestDeprecationWarning: The configuration option "asyncio_default_fixture_loop_scope" is unset.
+The event loop scope for asynchronous fixtures will default to the fixture caching scope. Future versions of pytest-asyncio will default the loop scope for asynchronous fixtures to function scope. Set the default fixture loop scope explicitly in order to avoid unexpected behavior in the future. Valid fixture loop scopes are: "function", "class", "module", "package", "session"
+
+  warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCOPE_UNSET))
+F                                                                        [100%]
+================================== FAILURES ===================================
+_ test_TC_2604_the_sites_enumeration_every_milestone_mark_routes_through_the_seat _
+
+    def test_TC_2604_the_sites_enumeration_every_milestone_mark_routes_through_the_seat():
+        """The enumeration guard (LLR-2604.2): the 20 sites take their (glyph, style,
+        chip) from `milestone_mark` — the seat's call sits in each site's function —
+        and every literal `\u25c6` left in views.py/app.py is one of the declared
+        exclusions, count tails, seat internals or `?`/legend help text. A NEW
+        milestone site that draws outside the seat, or an exclusion edited to call
+        the seat, fails this census. RED: a site edited back to `c("\u25c6", \u2026)`."""
+        src = VIEWS_SRC.read_text(encoding="utf-8")
+        app_src = APP_SRC.read_text(encoding="utf-8")
+        for refs, fn in SEAT_SITES:
+            body = _function_body(src, fn) or _function_body(app_src, fn)
+            assert body is not None and "milestone_mark(" in body, \
+                f"{refs}: {fn} does not route through the seat"
+        # the fold row counts late milestones of every class: the plain diamond stays,
+        # and it never calls the seat
+        fold = _function_body(src, "_fold_row")
+        assert "milestone_mark(" not in fold and COUNT_TAILS[0] in fold
+        # the month ruler shows no lateness (the accepted cost): no seat at all
+        month = _function_body(src, "gantt_month_row")
+        assert "milestone_mark(" not in month
+        # exclusions keep their exact line counts and never mention the seat
+        for anchor, n in EXCLUSION_LINES.items():
+            assert src.count(anchor) + app_src.count(anchor) == n, \
+                f"exclusion moved or multiplied: {anchor!r}"
+            assert "milestone_mark" not in anchor
+        for anchor in ("milestone_tone(",):
+            body = _function_body(app_src, "_cascade_toast")
+            assert anchor not in body
+        # the sweep: every literal-diamond code line is a declared one
+        declared = list(EXCLUSION_LINES) + ALLOWED_LINES
+        for path in (VIEWS_SRC, APP_SRC):
+            for n, line in _diamond_code_lines(path):
+>               assert any(a in line for a in declared), \
+                    f"{path.name}:{n} draws \u25c6 outside the census: {line!r} \u2014 " \\
+                    "route it through views.milestone_mark or declare it here"
+E               AssertionError: views.py:2695 draws \u25c6 outside the census: '_raw = Text("\u25c6", style="mut")  # a raw draw outside the seat' \u2014 route it through views.milestone_mark or declare it here
+E               assert False
+E                +  where False = any(<generator object test_TC_2604_the_sites_enumeration_every_milestone_mark_routes_through_the_seat.<locals>.<genexpr> at 0x0000027985F1BE00>)
+
+tests\test_milestone_marks.py:291: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_milestone_marks.py::test_TC_2604_the_sites_enumeration_every_milestone_mark_routes_through_the_seat
+1 failed in 0.56s
+after:  4ecdf088f30674176bf8734eaee4eca3e91b16a053dd22df2bce3cf0a0eee56f
+tests/test_milestone_marks.py::test_TC_2604_the_sites_enumeration_every_milestone_mark_routes_through_the_seat: RED (KILLED)
+C:\Users\jjgh8\anaconda3\Lib\site-packages\pytest_asyncio\plugin.py:207: PytestDeprecationWarning: The configuration option "asyncio_default_fixture_loop_scope" is unset.
+The event loop scope for asynchronous fixtures will default to the fixture caching scope. Future versions of pytest-asyncio will default the loop scope for asynchronous fixtures to function scope. Set the default fixture loop scope explicitly in order to avoid unexpected behavior in the future. Valid fixture loop scopes are: "function", "class", "module", "package", "session"
+
+  warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCOPE_UNSET))
+F                                                                        [100%]
+================================== FAILURES ===================================
+____________________ test_AT_2603_the_state_shows_in_text _____________________
+
+home = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-24711/test_AT_2603_the_state_shows_i0/.taskboard')
+
+    async def test_AT_2603_the_state_shows_in_text(home):
+        """On the round's boards at 118×30 (and the gantt at 80×24): a late classed
+        milestone shows its class glyph in the class colour with its date in `over`
+        and `\u25b22d` beside it; a reached one the hollow glyph with `\u2713` in `reached`;
+        an unclassified one `\u25c6` in `mut` \u2014 the same three in the kanban band rule,
+        the gantt cells and label, the presentation field row, the agenda row, the
+        people view's rows and the two notices. Tone claims are asserted on the
+        styled-segment export, never on plain text."""
+        fx.build(home, last="client-a")
+        # a person who is mentioned by a classed milestone, for the people view —
+        # written before the app loads its directories
+        b = Board.load(fx.board_path(home, "client-a"))
+        b.task_by_id("tc6").notes = "sign-off with @ana.ruiz"
+        b.save()
+        (home / "people.json").write_text(json.dumps({"version": 1, "people": [
+            {"id": "ana.ruiz", "name": "Ana Ruiz", "role": "PM", "note": ""}]}),
+            encoding="utf-8")
+        from taskboard.__main__ import open_app
+        app = open_app(None)
+        async with app.run_test(size=(118, 30)) as pilot:
+            await pilot.pause()
+            await pilot.press("escape")                  # the home
+            # ---- the kanban band rule (4) ----
+            app.selected_task_id = "tc5"                 # an Eval harness card
+            await pilot.press("4")
+            await pilot.pause()
+            rows = _painted(app)
+            rule = _prow(rows, "\u2590 Eval harness")
+            text = "".join(ch for ch, _ in rule)
+            i = text.rindex("\u25a0", 0, text.index("Rubric sign"))   # late, classed review \u25a0
+>           assert rule[i] == ("\u25a0", HEX["violet"])               # the class glyph in its colour
+E           AssertionError: assert ('\u25a0', '#686868') == ('\u25a0', '#a78bfa')
+E             
+E             At index 1 diff: '#686868' != '#a78bfa'
+E             Use -v to get more diff
+
+tests\test_milestone_marks.py:447: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_milestone_marks.py::test_AT_2603_the_state_shows_in_text - ...
+1 failed in 0.90s
+after:  4ecdf088f30674176bf8734eaee4eca3e91b16a053dd22df2bce3cf0a0eee56f
+tests/test_milestone_marks.py::test_AT_2603_the_state_shows_in_text: RED (KILLED)
+C:\Users\jjgh8\anaconda3\Lib\site-packages\pytest_asyncio\plugin.py:207: PytestDeprecationWarning: The configuration option "asyncio_default_fixture_loop_scope" is unset.
+The event loop scope for asynchronous fixtures will default to the fixture caching scope. Future versions of pytest-asyncio will default the loop scope for asynchronous fixtures to function scope. Set the default fixture loop scope explicitly in order to avoid unexpected behavior in the future. Valid fixture loop scopes are: "function", "class", "module", "package", "session"
+
+  warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCOPE_UNSET))
+F                                                                        [100%]
+================================== FAILURES ===================================
+_____________________ test_AT_2607_an_unknown_id_is_safe ______________________
+
+home = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-24712/test_AT_2607_an_unknown_id_is_0/.taskboard')
+
+    async def test_AT_2607_an_unknown_id_is_safe(home):
+        """A board file with a task whose `mark` names a class no directory holds \u2192
+        opened, drawn unclassified (`\u25c7` in `mut` \u2014 reached, so the hollow twin),
+        edited and saved \u2192 the file still holds the id. RED: a save drops the id."""
+        from taskboard.__main__ import open_app
+        fx.build(home, last="client-a")
+        path = fx.board_path(home, "client-a")
+        data = json.loads(path.read_text(encoding="utf-8"))
+        data["tasks"][0]["mark"] = "zzz-unknown"
+        path.write_text(json.dumps(data, indent=2, ensure_ascii=False), encoding="utf-8")
+        app = open_app(None)
+        async with app.run_test(size=(118, 30)) as pilot:
+            await pilot.pause()
+            await pilot.press("escape", "3")
+            await pilot.pause()
+            rows = _painted(app)
+            row = _prow(rows, "Catalog parsed")
+            text = "".join(ch for ch, _ in row)
+            i = text.index("\u25c7")                          # reached + unknown id: unclassified
+>           assert row[i][1] == MUT
+E           AssertionError: assert '#969696' == '#8b98a5'
+E             
+E             - #8b98a5
+E             + #969696
+
+tests\test_milestone_marks.py:583: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_milestone_marks.py::test_AT_2607_an_unknown_id_is_safe - As...
+1 failed in 0.85s
+after:  c2c1b714539ed7017280fe6debee9e1b8ee31678332b836cbda3451565650e33
+tests/test_milestone_marks.py::test_AT_2607_an_unknown_id_is_safe: RED (KILLED)
+C:\Users\jjgh8\anaconda3\Lib\site-packages\pytest_asyncio\plugin.py:207: PytestDeprecationWarning: The configuration option "asyncio_default_fixture_loop_scope" is unset.
+The event loop scope for asynchronous fixtures will default to the fixture caching scope. Future versions of pytest-asyncio will default the loop scope for asynchronous fixtures to function scope. Set the default fixture loop scope explicitly in order to avoid unexpected behavior in the future. Valid fixture loop scopes are: "function", "class", "module", "package", "session"
+
+  warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCOPE_UNSET))
+F                                                                        [100%]
+================================== FAILURES ===================================
+___________ test_TC_2606_render_marks_every_row_is_exactly_w_cells ____________
+
+    def test_TC_2606_render_marks_every_row_is_exactly_w_cells():
+        """LLR-2606.3: at 76/60/40 every row is exactly `w` cells of Text pieces.
+        RED: the pad/cut to `w` dropped."""
+        for w in (76, 60, 40):
+            for line in _rows(_frame(w=w)):
+>               assert line.cell_len == w, (w, line.cell_len, line.plain)
+E               AssertionError: (76, 33, '  [x] \u25b2 Delivery  1 open 3 in all')
+E               assert 33 == 76
+E                +  where 33 = <text '  [x] \u25b2 Delivery  1 open 3 in all' [Span(0, 2, '#2dd4bf'), Span(2, 6, '#4ade80'), Span(6, 7, '#22d3ee'), Span(7, 16, '#e6edf3'), Span(16, 33, '#8b98a5')] ''>.cell_len
+
+tests\test_milestone_marks.py:318: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_milestone_marks.py::test_TC_2606_render_marks_every_row_is_exactly_w_cells
+1 failed in 0.49s
+after:  4ecdf088f30674176bf8734eaee4eca3e91b16a053dd22df2bce3cf0a0eee56f
+tests/test_milestone_marks.py::test_TC_2606_render_marks_every_row_is_exactly_w_cells: RED (KILLED)
+C:\Users\jjgh8\anaconda3\Lib\site-packages\pytest_asyncio\plugin.py:207: PytestDeprecationWarning: The configuration option "asyncio_default_fixture_loop_scope" is unset.
+The event loop scope for asynchronous fixtures will default to the fixture caching scope. Future versions of pytest-asyncio will default the loop scope for asynchronous fixtures to function scope. Set the default fixture loop scope explicitly in order to avoid unexpected behavior in the future. Valid fixture loop scopes are: "function", "class", "module", "package", "session"
+
+  warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCOPE_UNSET))
+F                                                                        [100%]
+================================== FAILURES ===================================
+___ test_TC_2606_render_marks_the_frame_names_every_class_and_the_plain_row ___
+
+    def test_TC_2606_render_marks_the_frame_names_every_class_and_the_plain_row():
+        """One row per class: shape, name, counts; the chosen row `\u25b6` shaded; the
+        `\u25c6 (no class)` row for the plain milestone; the key line naming the five
+        keys (no `\u21b5 only this`, no `d` \u2014 out of scope). RED: a row's pieces dropped."""
+        t = _frame()
+        plain = t.plain
+        for cid, n, s, _h, k in fx.CLASSES:
+>           assert n in plain and s in plain
+E           AssertionError: assert ('Delivery' in '# Milestone classes  \xb7 every board \xb7 marks.json                             \\n                                       ...                                        \\n\u2191\u2193 move   \u2423 hide/show   n new   e edit   esc close                          ')
+
+tests\test_milestone_marks.py:328: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_milestone_marks.py::test_TC_2606_render_marks_the_frame_names_every_class_and_the_plain_row
+1 failed in 0.48s
+after:  4ecdf088f30674176bf8734eaee4eca3e91b16a053dd22df2bce3cf0a0eee56f
+tests/test_milestone_marks.py::test_TC_2606_render_marks_the_frame_names_every_class_and_the_plain_row: RED (KILLED)
+C:\Users\jjgh8\anaconda3\Lib\site-packages\pytest_asyncio\plugin.py:207: PytestDeprecationWarning: The configuration option "asyncio_default_fixture_loop_scope" is unset.
+The event loop scope for asynchronous fixtures will default to the fixture caching scope. Future versions of pytest-asyncio will default the loop scope for asynchronous fixtures to function scope. Set the default fixture loop scope explicitly in order to avoid unexpected behavior in the future. Valid fixture loop scopes are: "function", "class", "module", "package", "session"
+
+  warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCOPE_UNSET))
+F                                                                        [100%]
+================================== FAILURES ===================================
+__ test_TC_2606_render_marks_a_hidden_class_is_dimmed_with_what_hiding_means __
+
+    def test_TC_2606_render_marks_a_hidden_class_is_dimmed_with_what_hiding_means():
+        """A hidden class: dimmed shape/name, `[ ]`, and `hidden: gantt + present` in
+        amber beside it. RED: the dim or the note dropped."""
+        d = Directory(fx.Path("marks.json"),
+                      [Mark("review", "Review", "\u25a0", "violet", hidden=True),
+                       Mark("payment", "Payment", "\u2b22", "amber")])
+        t = views.render_marks(d, 0, 76, 8, {"review": (2, 5), "payment": (1, 2)})
+        line = next(r for r in _rows(t) if "Review" in r.plain)
+        assert "[ ]" in line.plain and "hidden: gantt + present" in line.plain
+        shape = next(sp for sp in line.spans if _span_text(line, sp) == "\u25a0")
+>       assert str(shape.style) == views.HEX["dim"]
+E       AssertionError: assert '#a78bfa' == '#5b6675'
+E         
+E         - #5b6675
+E         + #a78bfa
+
+tests\test_milestone_marks.py:351: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_milestone_marks.py::test_TC_2606_render_marks_a_hidden_class_is_dimmed_with_what_hiding_means
+1 failed in 0.48s
+after:  4ecdf088f30674176bf8734eaee4eca3e91b16a053dd22df2bce3cf0a0eee56f
+tests/test_milestone_marks.py::test_TC_2606_render_marks_a_hidden_class_is_dimmed_with_what_hiding_means: RED (KILLED)
+C:\Users\jjgh8\anaconda3\Lib\site-packages\pytest_asyncio\plugin.py:207: PytestDeprecationWarning: The configuration option "asyncio_default_fixture_loop_scope" is unset.
+The event loop scope for asynchronous fixtures will default to the fixture caching scope. Future versions of pytest-asyncio will default the loop scope for asynchronous fixtures to function scope. Set the default fixture loop scope explicitly in order to avoid unexpected behavior in the future. Valid fixture loop scopes are: "function", "class", "module", "package", "session"
+
+  warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCOPE_UNSET))
+F                                                                        [100%]
+================================== FAILURES ===================================
+________ test_TC_2606_render_marks_narrow_counts_drop_before_the_names ________
+
+    def test_TC_2606_render_marks_narrow_counts_drop_before_the_names():
+        """Under width pressure the counts give way first; the names stay whole.
+        (At 40 cells the round's short rows still keep both — the 40-cell width law
+        is the exact-rows test above.)"""
+        t = _frame(w=28)
+        review = next(r for r in _rows(t) if "Review" in r.plain)
+>       assert "open" not in review.plain and "Review" in review.plain
+E       AssertionError: assert ('open' not in '\u25b6 [x] \u25a0 Rev...3 open 5 in\u2026'
+E         
+E         'open' is contained here:
+E           \u25b6 [x] \u25a0 Review  3 open 5 in\u2026
+E         ?                   ++++)
+
+tests\test_milestone_marks.py:360: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_milestone_marks.py::test_TC_2606_render_marks_narrow_counts_drop_before_the_names
+1 failed in 0.47s
+after:  4ecdf088f30674176bf8734eaee4eca3e91b16a053dd22df2bce3cf0a0eee56f
+tests/test_milestone_marks.py::test_TC_2606_render_marks_narrow_counts_drop_before_the_names: RED (KILLED)
+C:\Users\jjgh8\anaconda3\Lib\site-packages\pytest_asyncio\plugin.py:207: PytestDeprecationWarning: The configuration option "asyncio_default_fixture_loop_scope" is unset.
+The event loop scope for asynchronous fixtures will default to the fixture caching scope. Future versions of pytest-asyncio will default the loop scope for asynchronous fixtures to function scope. Set the default fixture loop scope explicitly in order to avoid unexpected behavior in the future. Valid fixture loop scopes are: "function", "class", "module", "package", "session"
+
+  warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCOPE_UNSET))
+F                                                                        [100%]
+================================== FAILURES ===================================
+_ test_TC_2606_render_marks_an_empty_directory_says_so_and_a_markup_name_is_literal _
+
+    def test_TC_2606_render_marks_an_empty_directory_says_so_and_a_markup_name_is_literal():
+        """The empty directory: one `No classes yet.` line and the hint; a
+        markup-looking class name prints as typed, never parsed (C-17)."""
+        t = _frame(marks=False)
+        assert "No classes yet." in t.plain and "n adds the first class." in t.plain
+        d = Directory(fx.Path("marks.json"), [Mark("x", "[b]x[/b]", "\u2605", "pink")])
+        t = views.render_marks(d, 0, 60, 8, {})
+>       line = next(r for r in _rows(t) if "[b]x[/b]" in r.plain)
+E       StopIteration
+
+tests\test_milestone_marks.py:370: StopIteration
+=========================== short test summary info ===========================
+FAILED tests/test_milestone_marks.py::test_TC_2606_render_marks_an_empty_directory_says_so_and_a_markup_name_is_literal
+1 failed in 0.49s
+after:  4ecdf088f30674176bf8734eaee4eca3e91b16a053dd22df2bce3cf0a0eee56f
+tests/test_milestone_marks.py::test_TC_2606_render_marks_an_empty_directory_says_so_and_a_markup_name_is_literal: RED (KILLED)
+C:\Users\jjgh8\anaconda3\Lib\site-packages\pytest_asyncio\plugin.py:207: PytestDeprecationWarning: The configuration option "asyncio_default_fixture_loop_scope" is unset.
+The event loop scope for asynchronous fixtures will default to the fixture caching scope. Future versions of pytest-asyncio will default the loop scope for asynchronous fixtures to function scope. Set the default fixture loop scope explicitly in order to avoid unexpected behavior in the future. Valid fixture loop scopes are: "function", "class", "module", "package", "session"
+
+  warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCOPE_UNSET))
+F                                                                        [100%]
+================================== FAILURES ===================================
+____ test_TC_2602_a_mark_set_on_a_non_milestone_is_kept_and_drawn_nowhere _____
+
+home = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-24718/test_TC_2602_a_mark_set_on_a_n0/.taskboard')
+
+    def test_TC_2602_a_mark_set_on_a_non_milestone_is_kept_and_drawn_nowhere(home):
+        """The boundary the contract names: the field is meaningful only on a
+        milestone — a task carrying a mark draws no mark anywhere (its bar knows
+        nothing of the class); the field round trip itself is TC-2602 in
+        tests/test_marks_directory.py (increment 001)."""
+        b = _seat_board()
+        t = b.task_by_id("plain")
+        t.milestone = False
+        t.mark = "review"
+        t.start_date = fx._d(0)                  # a ranged task: a bar, one date = \u25c6
+        t.due_date = fx._d(6)                    # would draw the diamond (not a mark)
+        glyph, style, chip = views.milestone_mark(t, b, TODAY)
+>       assert (glyph, style, chip) == ("\u25a0", "violet", "")   # the seat is pure: it reads it
+E       AssertionError: assert ('\u25c6', 'mut', '') == ('\u25a0', 'violet', '')
+E         
+E         At index 0 diff: '\u25c6' != '\u25a0'
+E         Use -v to get more diff
+
+tests\test_milestone_marks.py:612: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_milestone_marks.py::test_TC_2602_a_mark_set_on_a_non_milestone_is_kept_and_drawn_nowhere
+1 failed in 0.50s
+after:  4ecdf088f30674176bf8734eaee4eca3e91b16a053dd22df2bce3cf0a0eee56f
+tests/test_milestone_marks.py::test_TC_2602_a_mark_set_on_a_non_milestone_is_kept_and_drawn_nowhere: RED (KILLED)
+BAD arms: 0
