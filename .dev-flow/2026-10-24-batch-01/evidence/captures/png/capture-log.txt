@@ -1,0 +1,15 @@
+﻿ok   manager 80x24 (1176 x 760, 17 colours sampled) via PrintWindow, try 1; PNG 9 colours, 30617 bytes - window closed
+ok   gantt 118x30 (1708 x 928, 39 colours sampled) via PrintWindow, try 1; PNG 52 colours, 148527 bytes - window closed
+ok   gantt 80x24 (1176 x 760, 25 colours sampled) via PrintWindow, try 1; PNG 50 colours, 114413 bytes - window closed
+ok   manager 118x30 (1708 x 928, 17 colours sampled) via PrintWindow, try 1; PNG 8 colours, 34790 bytes - window closed
+ok   manager 80x24 (1176 x 760, 17 colours sampled) via PrintWindow, try 1; PNG 9 colours, 30589 bytes - window closed
+ok   form 118x30 (1708 x 928, 29 colours sampled) via PrintWindow, try 1; PNG 32 colours, 44545 bytes - window closed
+ok   form 80x24 (1176 x 760, 10 colours sampled) via PrintWindow, try 1; PNG 30 colours, 39821 bytes - window closed
+ok   editor 118x30 (1708 x 928, 22 colours sampled) via PrintWindow, try 1; PNG 27 colours, 52368 bytes - window closed
+ok   editor 80x24 (1176 x 760, 22 colours sampled) via PrintWindow, try 1; PNG 32 colours, 47696 bytes - window closed
+ok   hidden 118x30 (1708 x 928, 35 colours sampled) via PrintWindow, try 1; PNG 36 colours, 130260 bytes - window closed
+ok   hidden 80x24 (1176 x 760, 25 colours sampled) via PrintWindow, try 1; PNG 49 colours, 105200 bytes - window closed
+ok   search 118x30 (1708 x 928, 18 colours sampled) via PrintWindow, try 1; PNG 14 colours, 56126 bytes - window closed
+ok   search 80x24 (1176 x 760, 13 colours sampled) via PrintWindow, try 1; PNG 22 colours, 45598 bytes - window closed
+ok   present 118x30 (1708 x 928, 22 colours sampled) via PrintWindow, try 1; PNG 14 colours, 63586 bytes - window closed
+ok   present 80x24 (1176 x 760, 25 colours sampled) via PrintWindow, try 1; PNG 16 colours, 53507 bytes - window closed
