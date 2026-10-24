@@ -19,6 +19,7 @@ from textual.widgets import Static
 from . import history
 from .boards import Registry, announce, name_for, open_elsewhere, peek_board, renew, withdraw
 from .people import PEOPLE_NAME, Directory
+from .marks import MARKS_NAME, Directory as MarksDirectory
 from .models import (AUTO_ARCHIVE_DAYS, IMAGE_EXTS, LINKS_MIGRATION, MILESTONES_MIGRATION,
                      Board, Project, Task,
                      archive_refusal, chain_template, default_board_path, is_open,
@@ -1100,6 +1101,9 @@ class TaskboardApp(App):
         # one people directory for every board, beside the registry: the home's
         # `~/.taskboard/people.json` (batch 2026-10-21-batch-01)
         self.people = Directory.load(self.registry.path.parent / PEOPLE_NAME)
+        # one milestone-class directory for every board, beside the registry:
+        # the home's `~/.taskboard/marks.json` (batch 2026-10-24-batch-01)
+        self.marks = MarksDirectory.load(self.registry.path.parent / MARKS_NAME)
         self._team_timer = None
         self.view_mode = "swimlanes"
         self.kanban_presentation = "grouped"
@@ -1206,6 +1210,7 @@ class TaskboardApp(App):
         than one board is active; an unlisted board (`--open`, batch
         2026-10-20-batch-03) always, as `<name> · not listed`."""
         self.board.people = self.people.people
+        self.board.marks = self.marks.marks
         entry = self.registry.get(self.board_id) if self.board_id else None
         if self.board_id is None:
             self.board.label = (f"{name_for(self.board.path)} · not listed", "pink")
@@ -1254,6 +1259,7 @@ class TaskboardApp(App):
         moved tasks, is cleared."""
         new_src.label = self.board.label
         new_src.people = self.board.people
+        new_src.marks = self.board.marks
         self.board = new_src
         self._undo_stack = []
         self.refresh_view()
@@ -1314,6 +1320,12 @@ class TaskboardApp(App):
             kept = f"a copy was kept at {where}" if where else "no copy could be kept"
             self.notify(f"{PEOPLE_NAME} could not be read; {kept}. "
                         "The people directory starts empty.", title="People",
+                        severity="warning", timeout=15, markup=False)
+        if self.marks.load_report.get("unreadable"):
+            where = self.marks.load_report.get("backup")
+            kept = f"a copy was kept at {where}" if where else "no copy could be kept"
+            self.notify(f"{MARKS_NAME} could not be read; {kept}. "
+                        "The marks directory starts empty.", title="Marks",
                         severity="warning", timeout=15, markup=False)
         backup = self.registry.load_report.get("backup")
         if self.registry.load_report.get("unreadable"):

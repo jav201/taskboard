@@ -705,7 +705,7 @@ _PROJECT_KEYS = {"id", "name", "color", "status", "archived", "pinned", "start_d
                  "due_date", "extra", "show_in_present", "present_rank"}
 _TASK_KEYS = {"id", "title", "project_id", "phase", "blocked", "priority", "start_date",
               "due_date", "notes", "urls", "images", "archived", "pinned", "extra",
-              "phase_changed", "depends_on", "milestone", "show_in_present",
+              "phase_changed", "depends_on", "milestone", "mark", "show_in_present",
               "status", "url"}          # last two: legacy, consumed by the migration
 
 
@@ -888,6 +888,12 @@ class Task:
     # one date, its due, no duration (batch 2026-10-04-batch-02, D-603). Only the
     # boolean true counts: a hand-edited or synced "yes" is not a milestone.
     milestone: bool = False
+    # the milestone's class: the id of a class in the marks directory
+    # (`payment`), meaningful only on a milestone; written only when set
+    # (`Board._to_dict`), so a board with no marks keeps its bytes; an id the
+    # directory does not hold renders unclassified and is never dropped
+    # (batch 2026-10-24-batch-01, MM-D3)
+    mark: str | None = None
     # shown in the presentation (`R`); only the JSON `false` hides, and the key
     # is written only then (`Board._to_dict`), so a board with nothing hidden
     # keeps its bytes (batch 2026-10-16-batch-01, LLR-1602.1)
@@ -940,6 +946,7 @@ class Task:
                 phase_changed=(d.get("phase_changed")
                                if isinstance(d.get("phase_changed"), str) else None),
                 milestone=d.get("milestone") is True,
+                mark=d.get("mark") if isinstance(d.get("mark"), str) else None,
                 show_in_present=d.get("show_in_present") is not False,
             )
         except Exception as exc:                    # never let one bad task raise
@@ -966,6 +973,10 @@ class Board:
         # mention is drawn as. Set by the app, shared by every board it opens, never
         # written to the file (batch 2026-10-21-batch-01).
         self.people: dict = {}
+        # the marks directory by id (`payment` → its `marks.Mark`), what a
+        # milestone's class is drawn as. Set by the app, shared by every board it
+        # opens, never written to the file (batch 2026-10-24-batch-01).
+        self.marks: dict = {}
 
     @property
     def load_report(self) -> dict:
@@ -1048,6 +1059,8 @@ class Board:
         d = asdict(item)
         if d.get("show_in_present") is True:
             del d["show_in_present"]
+        if "mark" in d and d["mark"] is None:
+            del d["mark"]       # written only when set, like show_in_present
         if "present_rank" in d and d["present_rank"] is None:
             del d["present_rank"]
         return {**d.pop("extra", {}), **d}

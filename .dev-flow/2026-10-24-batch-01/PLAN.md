@@ -110,3 +110,5 @@ Port the round's chosen variants into the app — the store and the field (MM-D2
 |---|---|---|
 | validator `--brief` (step 3) | 2026-10-24 | 0 block · 158 notice · 47 n/a (`evidence/gate-step3.txt`) |
 | validator `--brief` (P1) | 2026-10-24 | 0 block · 171 notice · 48 n/a |
+
+**P3 (increment gates):** `V2` BLOCKs for `AT-2603`/`AT-2604`/`AT-2605`/`AT-2606` stand from increment 001's gate until their increments land their nodes — the station-expected red of `commands/dev-flow.md` §Two-layer validation model read through the PDR's AT-realisation map (AT-2603 → 002, AT-2604 → 003, AT-2605/AT-2606 → 004); walked past at 001's gate, expected green from increment 004's gate onward and at every gate after.

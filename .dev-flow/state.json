@@ -299,6 +299,11 @@
       "station": "PDR",
       "date": "2026-10-24",
       "decision": "standing authorization - the orchestrator's commission of 2026-10-24 (PLAN.md header). PDR approved with conditions by the spawned architect, qa-reviewer and ux-reviewer (design/PDR-2026-10-24-batch-01.md): the three PDR questions answered (COLOURS = the round's SWATCH, the details-line seat is _gantt_legend confirmed at 004's gate, _hide as the shallow copy proxy), PC-1..PC-5 and every finding folded at seal, none carried open; the map's Directory exposure amended (edit, COLOURS, MARKS_NAME); frozen interfaces gain the code-reviewer diff instrument. P3 is next - increment 001."
+    },
+    {
+      "station": "P3",
+      "date": "2026-10-24",
+      "decision": "standing authorization - the orchestrator's commission of 2026-10-24 (PLAN.md header). P3 increment 001 approved: the marks directory marks.json, Task.mark, Board.marks, the app load (HLR-2601, HLR-2602, HLR-2603); 145 + 235 passed targeted, 31/31 mutants KILLED, code-reviewer OK to advance (0 HIGH, frozen set named untouched), security-reviewer PASS on marks.py (0 HIGH). P3 continues."
     }
   ],
   "obsidian_synced": false,

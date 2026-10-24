@@ -1,0 +1,1137 @@
+arms: 31
+before taskboard/app.py: bec939eed42136fa734545e5a9934419c5469f4a3554799060b91a7bbfd2341c
+before taskboard/marks.py: 56c8145e0e8ca2c8647d0810ee7b78dea951570e00335124f81413b2ef954b8b
+before taskboard/models.py: c2c1b714539ed7017280fe6debee9e1b8ee31678332b836cbda3451565650e33
+C:\Users\jjgh8\anaconda3\Lib\site-packages\pytest_asyncio\plugin.py:207: PytestDeprecationWarning: The configuration option "asyncio_default_fixture_loop_scope" is unset.
+The event loop scope for asynchronous fixtures will default to the fixture caching scope. Future versions of pytest-asyncio will default the loop scope for asynchronous fixtures to function scope. Set the default fixture loop scope explicitly in order to avoid unexpected behavior in the future. Valid fixture loop scopes are: "function", "class", "module", "package", "session"
+
+  warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCOPE_UNSET))
+F                                                                        [100%]
+================================== FAILURES ===================================
+__ test_TC_2601_a_missing_file_is_an_empty_directory_and_nothing_is_written ___
+
+tmp_path = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-24547/test_TC_2601_a_missing_file_is0')
+
+    def test_TC_2601_a_missing_file_is_an_empty_directory_and_nothing_is_written(tmp_path):
+        d = Directory.load(tmp_path / MARKS_NAME)
+>       assert d.marks == {} and d.load_report == {}
+E       AssertionError: assert ({} == {}
+E         
+E         Use -v to get more diff and {'backup': No...adable': True} == {}
+E         
+E         Left contains 2 more items:
+E         {'backup': None, 'unreadable': True}
+E         Use -v to get more diff)
+
+tests\test_marks_directory.py:57: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_marks_directory.py::test_TC_2601_a_missing_file_is_an_empty_directory_and_nothing_is_written
+1 failed in 0.45s
+after:  56c8145e0e8ca2c8647d0810ee7b78dea951570e00335124f81413b2ef954b8b
+tests/test_marks_directory.py::test_TC_2601_a_missing_file_is_an_empty_directory_and_nothing_is_written: RED (KILLED)
+C:\Users\jjgh8\anaconda3\Lib\site-packages\pytest_asyncio\plugin.py:207: PytestDeprecationWarning: The configuration option "asyncio_default_fixture_loop_scope" is unset.
+The event loop scope for asynchronous fixtures will default to the fixture caching scope. Future versions of pytest-asyncio will default the loop scope for asynchronous fixtures to function scope. Set the default fixture loop scope explicitly in order to avoid unexpected behavior in the future. Valid fixture loop scopes are: "function", "class", "module", "package", "session"
+
+  warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCOPE_UNSET))
+F                                                                        [100%]
+================================== FAILURES ===================================
+_ test_TC_2601_an_empty_or_blank_file_is_an_empty_directory_and_nothing_is_said _
+
+tmp_path = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-24548/test_TC_2601_an_empty_or_blank0')
+
+    def test_TC_2601_an_empty_or_blank_file_is_an_empty_directory_and_nothing_is_said(tmp_path):
+        """A 0-byte (or blank) file holds nothing to keep — no notice, no copy."""
+        for raw in ("", "  \n"):
+            p = _write(tmp_path / MARKS_NAME, raw)
+            d = Directory.load(p)
+>           assert d.marks == {} and d.load_report == {}
+E           AssertionError: assert ({} == {}
+E             
+E             Use -v to get more diff and {'backup': No...adable': True} == {}
+E             
+E             Left contains 2 more items:
+E             {'backup': None, 'unreadable': True}
+E             Use -v to get more diff)
+
+tests\test_marks_directory.py:66: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_marks_directory.py::test_TC_2601_an_empty_or_blank_file_is_an_empty_directory_and_nothing_is_said
+1 failed in 0.43s
+after:  56c8145e0e8ca2c8647d0810ee7b78dea951570e00335124f81413b2ef954b8b
+tests/test_marks_directory.py::test_TC_2601_an_empty_or_blank_file_is_an_empty_directory_and_nothing_is_said: RED (KILLED)
+C:\Users\jjgh8\anaconda3\Lib\site-packages\pytest_asyncio\plugin.py:207: PytestDeprecationWarning: The configuration option "asyncio_default_fixture_loop_scope" is unset.
+The event loop scope for asynchronous fixtures will default to the fixture caching scope. Future versions of pytest-asyncio will default the loop scope for asynchronous fixtures to function scope. Set the default fixture loop scope explicitly in order to avoid unexpected behavior in the future. Valid fixture loop scopes are: "function", "class", "module", "package", "session"
+
+  warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCOPE_UNSET))
+F                                                                        [100%]
+================================== FAILURES ===================================
+__________ test_TC_2601_the_file_is_read_and_bad_entries_are_skipped __________
+
+tmp_path = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-24549/test_TC_2601_the_file_is_read_0')
+
+    def test_TC_2601_the_file_is_read_and_bad_entries_are_skipped(tmp_path):
+        """The load/skip validation, unit-tested directly (cyclomatic >= 3: the id,
+        the name, the shape, the colour, the types, the cap, the one-line flatten):
+        a repeated id, a malformed id, no name, an unknown shape or colour, a
+        field of the wrong type is skipped; the name caps at 60 (61 cut, 60 whole)
+        and flattens to one line; control bytes go, a markup-looking name stays as
+        typed; `hidden` coerces to bool."""
+        p = _write(tmp_path / MARKS_NAME, {"version": 1, "marks": [
+            {"id": "payment", "name": "Payment", "shape": "\u2b22", "colour": "amber"},
+            {"id": "payment", "name": "Second Payment", "shape": "\u25a0", "colour": "pink"},
+            {"id": "Bad Id", "name": "Bad", "shape": "\u25a0", "colour": "pink"},
+            {"id": "noname", "name": "  ", "shape": "\u25a0", "colour": "pink"},
+            {"id": "badshape", "name": "X", "shape": "\u25c6", "colour": "pink"},   # \u25c6 is not in SHAPES
+            {"id": "badcolour", "name": "Y", "shape": "\u25a0", "colour": "maroon"},
+            {"id": "typed1", "name": 7, "shape": "\u25a0", "colour": "pink"},
+            {"id": "typed2", "name": "Z", "shape": 5, "colour": "pink"},
+            {"id": "typed3", "name": "W", "shape": "\u25a0", "colour": True},
+            {"id": "long", "name": "n" * 61, "shape": "\u2605", "colour": "lime"},
+            {"id": "exact", "name": "m" * 60, "shape": "\u2b1f", "colour": "orange"},
+            {"id": "multiline", "name": "Two\\nlines\\tname", "shape": "\u25bc", "colour": "sky"},
+            {"id": "esc", "name": "Esc\\x1b[31mape", "shape": "\u2726", "colour": "green"},
+            {"id": "markup", "name": "[b]x[/b]", "shape": "\u2691", "colour": "cyan"},
+            {"id": "hidden1", "name": "H", "shape": "\u25b2", "colour": "cyan", "hidden": "yes"},
+            "not an object",
+        ]})
+        d = Directory.load(p)
+>       assert list(d.marks) == ["payment", "long", "exact", "multiline", "esc", "markup", "hidden1"]
+E       AssertionError: assert ['payment', '...', 'esc', ...] == ['payment', '...'markup', ...]
+E         
+E         At index 1 diff: 'badcolour' != 'long'
+E         Left contains one more item: 'hidden1'
+E         Use -v to get more diff
+
+tests\test_marks_directory.py:96: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_marks_directory.py::test_TC_2601_the_file_is_read_and_bad_entries_are_skipped
+1 failed in 0.44s
+after:  56c8145e0e8ca2c8647d0810ee7b78dea951570e00335124f81413b2ef954b8b
+tests/test_marks_directory.py::test_TC_2601_the_file_is_read_and_bad_entries_are_skipped: RED (KILLED)
+C:\Users\jjgh8\anaconda3\Lib\site-packages\pytest_asyncio\plugin.py:207: PytestDeprecationWarning: The configuration option "asyncio_default_fixture_loop_scope" is unset.
+The event loop scope for asynchronous fixtures will default to the fixture caching scope. Future versions of pytest-asyncio will default the loop scope for asynchronous fixtures to function scope. Set the default fixture loop scope explicitly in order to avoid unexpected behavior in the future. Valid fixture loop scopes are: "function", "class", "module", "package", "session"
+
+  warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCOPE_UNSET))
+FFFF                                                                     [100%]
+================================== FAILURES ===================================
+_ test_TC_2601_an_unreadable_file_is_kept_aside_and_the_directory_starts_empty[{not json] _
+
+tmp_path = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-24550/test_TC_2601_an_unreadable_fil0')
+raw = b'{not json'
+
+    @pytest.mark.parametrize("raw", [b"{not json", b"[]", b'{"marks": {}}', b"\xff\xfe"])
+    def test_TC_2601_an_unreadable_file_is_kept_aside_and_the_directory_starts_empty(tmp_path, raw):
+        p = tmp_path / MARKS_NAME
+        p.write_bytes(raw)                              # bytes: `\xff\xfe` is no UTF-8
+        before = p.read_bytes()
+        d = Directory.load(p)
+        assert d.marks == {} and d.load_report["unreadable"] is True
+>       assert Path(d.load_report["backup"]).read_bytes() == before
+
+tests\test_marks_directory.py:114: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+..\..\..\anaconda3\Lib\pathlib.py:1162: in __init__
+    super().__init__(*args)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <[AttributeError("'WindowsPath' object has no attribute '_raw_paths'") raised in repr()] WindowsPath object at 0x21d49b0af80>
+args = (None,), paths = [], arg = None, path = None
+
+    def __init__(self, *args):
+        paths = []
+        for arg in args:
+            if isinstance(arg, PurePath):
+                if arg._flavour is ntpath and self._flavour is posixpath:
+                    # GH-103631: Convert separators for backwards compatibility.
+                    paths.extend(path.replace('\\', '/') for path in arg._raw_paths)
+                else:
+                    paths.extend(arg._raw_paths)
+            else:
+                try:
+                    path = os.fspath(arg)
+                except TypeError:
+                    path = arg
+                if not isinstance(path, str):
+>                   raise TypeError(
+                        "argument should be a str or an os.PathLike "
+                        "object where __fspath__ returns a str, "
+                        f"not {type(path).__name__!r}")
+E                   TypeError: argument should be a str or an os.PathLike object where __fspath__ returns a str, not 'NoneType'
+
+..\..\..\anaconda3\Lib\pathlib.py:373: TypeError
+_ test_TC_2601_an_unreadable_file_is_kept_aside_and_the_directory_starts_empty[[]] _
+
+tmp_path = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-24550/test_TC_2601_an_unreadable_fil1')
+raw = b'[]'
+
+    @pytest.mark.parametrize("raw", [b"{not json", b"[]", b'{"marks": {}}', b"\xff\xfe"])
+    def test_TC_2601_an_unreadable_file_is_kept_aside_and_the_directory_starts_empty(tmp_path, raw):
+        p = tmp_path / MARKS_NAME
+        p.write_bytes(raw)                              # bytes: `\xff\xfe` is no UTF-8
+        before = p.read_bytes()
+        d = Directory.load(p)
+        assert d.marks == {} and d.load_report["unreadable"] is True
+>       assert Path(d.load_report["backup"]).read_bytes() == before
+
+tests\test_marks_directory.py:114: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+..\..\..\anaconda3\Lib\pathlib.py:1162: in __init__
+    super().__init__(*args)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <[AttributeError("'WindowsPath' object has no attribute '_raw_paths'") raised in repr()] WindowsPath object at 0x21d49b8adc0>
+args = (None,), paths = [], arg = None, path = None
+
+    def __init__(self, *args):
+        paths = []
+        for arg in args:
+            if isinstance(arg, PurePath):
+                if arg._flavour is ntpath and self._flavour is posixpath:
+                    # GH-103631: Convert separators for backwards compatibility.
+                    paths.extend(path.replace('\\', '/') for path in arg._raw_paths)
+                else:
+                    paths.extend(arg._raw_paths)
+            else:
+                try:
+                    path = os.fspath(arg)
+                except TypeError:
+                    path = arg
+                if not isinstance(path, str):
+>                   raise TypeError(
+                        "argument should be a str or an os.PathLike "
+                        "object where __fspath__ returns a str, "
+                        f"not {type(path).__name__!r}")
+E                   TypeError: argument should be a str or an os.PathLike object where __fspath__ returns a str, not 'NoneType'
+
+..\..\..\anaconda3\Lib\pathlib.py:373: TypeError
+_ test_TC_2601_an_unreadable_file_is_kept_aside_and_the_directory_starts_empty[{"marks": {}}] _
+
+tmp_path = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-24550/test_TC_2601_an_unreadable_fil2')
+raw = b'{"marks": {}}'
+
+    @pytest.mark.parametrize("raw", [b"{not json", b"[]", b'{"marks": {}}', b"\xff\xfe"])
+    def test_TC_2601_an_unreadable_file_is_kept_aside_and_the_directory_starts_empty(tmp_path, raw):
+        p = tmp_path / MARKS_NAME
+        p.write_bytes(raw)                              # bytes: `\xff\xfe` is no UTF-8
+        before = p.read_bytes()
+        d = Directory.load(p)
+        assert d.marks == {} and d.load_report["unreadable"] is True
+>       assert Path(d.load_report["backup"]).read_bytes() == before
+
+tests\test_marks_directory.py:114: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+..\..\..\anaconda3\Lib\pathlib.py:1162: in __init__
+    super().__init__(*args)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <[AttributeError("'WindowsPath' object has no attribute '_raw_paths'") raised in repr()] WindowsPath object at 0x21d49b8b140>
+args = (None,), paths = [], arg = None, path = None
+
+    def __init__(self, *args):
+        paths = []
+        for arg in args:
+            if isinstance(arg, PurePath):
+                if arg._flavour is ntpath and self._flavour is posixpath:
+                    # GH-103631: Convert separators for backwards compatibility.
+                    paths.extend(path.replace('\\', '/') for path in arg._raw_paths)
+                else:
+                    paths.extend(arg._raw_paths)
+            else:
+                try:
+                    path = os.fspath(arg)
+                except TypeError:
+                    path = arg
+                if not isinstance(path, str):
+>                   raise TypeError(
+                        "argument should be a str or an os.PathLike "
+                        "object where __fspath__ returns a str, "
+                        f"not {type(path).__name__!r}")
+E                   TypeError: argument should be a str or an os.PathLike object where __fspath__ returns a str, not 'NoneType'
+
+..\..\..\anaconda3\Lib\pathlib.py:373: TypeError
+_ test_TC_2601_an_unreadable_file_is_kept_aside_and_the_directory_starts_empty[\xff\xfe] _
+
+tmp_path = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-24550/test_TC_2601_an_unreadable_fil3')
+raw = b'\xff\xfe'
+
+    @pytest.mark.parametrize("raw", [b"{not json", b"[]", b'{"marks": {}}', b"\xff\xfe"])
+    def test_TC_2601_an_unreadable_file_is_kept_aside_and_the_directory_starts_empty(tmp_path, raw):
+        p = tmp_path / MARKS_NAME
+        p.write_bytes(raw)                              # bytes: `\xff\xfe` is no UTF-8
+        before = p.read_bytes()
+        d = Directory.load(p)
+        assert d.marks == {} and d.load_report["unreadable"] is True
+>       assert Path(d.load_report["backup"]).read_bytes() == before
+
+tests\test_marks_directory.py:114: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+..\..\..\anaconda3\Lib\pathlib.py:1162: in __init__
+    super().__init__(*args)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <[AttributeError("'WindowsPath' object has no attribute '_raw_paths'") raised in repr()] WindowsPath object at 0x21d49b8b530>
+args = (None,), paths = [], arg = None, path = None
+
+    def __init__(self, *args):
+        paths = []
+        for arg in args:
+            if isinstance(arg, PurePath):
+                if arg._flavour is ntpath and self._flavour is posixpath:
+                    # GH-103631: Convert separators for backwards compatibility.
+                    paths.extend(path.replace('\\', '/') for path in arg._raw_paths)
+                else:
+                    paths.extend(arg._raw_paths)
+            else:
+                try:
+                    path = os.fspath(arg)
+                except TypeError:
+                    path = arg
+                if not isinstance(path, str):
+>                   raise TypeError(
+                        "argument should be a str or an os.PathLike "
+                        "object where __fspath__ returns a str, "
+                        f"not {type(path).__name__!r}")
+E                   TypeError: argument should be a str or an os.PathLike object where __fspath__ returns a str, not 'NoneType'
+
+..\..\..\anaconda3\Lib\pathlib.py:373: TypeError
+=========================== short test summary info ===========================
+FAILED tests/test_marks_directory.py::test_TC_2601_an_unreadable_file_is_kept_aside_and_the_directory_starts_empty[{not json]
+FAILED tests/test_marks_directory.py::test_TC_2601_an_unreadable_file_is_kept_aside_and_the_directory_starts_empty[[]]
+FAILED tests/test_marks_directory.py::test_TC_2601_an_unreadable_file_is_kept_aside_and_the_directory_starts_empty[{"marks": {}}]
+FAILED tests/test_marks_directory.py::test_TC_2601_an_unreadable_file_is_kept_aside_and_the_directory_starts_empty[\xff\xfe]
+4 failed in 0.55s
+after:  56c8145e0e8ca2c8647d0810ee7b78dea951570e00335124f81413b2ef954b8b
+tests/test_marks_directory.py::test_TC_2601_an_unreadable_file_is_kept_aside_and_the_directory_starts_empty: RED (KILLED)
+C:\Users\jjgh8\anaconda3\Lib\site-packages\pytest_asyncio\plugin.py:207: PytestDeprecationWarning: The configuration option "asyncio_default_fixture_loop_scope" is unset.
+The event loop scope for asynchronous fixtures will default to the fixture caching scope. Future versions of pytest-asyncio will default the loop scope for asynchronous fixtures to function scope. Set the default fixture loop scope explicitly in order to avoid unexpected behavior in the future. Valid fixture loop scopes are: "function", "class", "module", "package", "session"
+
+  warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCOPE_UNSET))
+F                                                                        [100%]
+================================== FAILURES ===================================
+___________ test_TC_2601_find_resolves_a_prefix_only_and_lower_case ___________
+
+tmp_path = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-24551/test_TC_2601_find_resolves_a_p0')
+
+    def test_TC_2601_find_resolves_a_prefix_only_and_lower_case(tmp_path):
+        fx.build(tmp_path)
+        d = Directory.load(tmp_path / MARKS_NAME)
+        assert d.find("pay").id == "payment"
+        assert d.find("PAY").id == "payment"            # the round's lower-case match
+>       assert d.find("ment") is None                   # never inside the name
+E       AssertionError: assert Mark(id='payment', name='Payment', shape='\u2b22', colour='amber', hidden=False) is None
+E        +  where Mark(id='payment', name='Payment', shape='\u2b22', colour='amber', hidden=False) = find('ment')
+E        +    where find = <taskboard.marks.Directory object at 0x000001DD49490B00>.find
+
+tests\test_marks_directory.py:123: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_marks_directory.py::test_TC_2601_find_resolves_a_prefix_only_and_lower_case
+1 failed in 0.45s
+after:  56c8145e0e8ca2c8647d0810ee7b78dea951570e00335124f81413b2ef954b8b
+tests/test_marks_directory.py::test_TC_2601_find_resolves_a_prefix_only_and_lower_case: RED (KILLED)
+C:\Users\jjgh8\anaconda3\Lib\site-packages\pytest_asyncio\plugin.py:207: PytestDeprecationWarning: The configuration option "asyncio_default_fixture_loop_scope" is unset.
+The event loop scope for asynchronous fixtures will default to the fixture caching scope. Future versions of pytest-asyncio will default the loop scope for asynchronous fixtures to function scope. Set the default fixture loop scope explicitly in order to avoid unexpected behavior in the future. Valid fixture loop scopes are: "function", "class", "module", "package", "session"
+
+  warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCOPE_UNSET))
+F                                                                        [100%]
+================================== FAILURES ===================================
+_____________ test_TC_2601_add_derives_the_id_and_writes_the_file _____________
+
+tmp_path = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-24552/test_TC_2601_add_derives_the_i0')
+
+    def test_TC_2601_add_derives_the_id_and_writes_the_file(tmp_path):
+        d = Directory.load(tmp_path / MARKS_NAME)
+        live = d.marks                                  # the live dict boards hold
+        pay = d.add("  Payment ", "\u2b22", "amber")
+        assert (pay.id, pay.name, pay.shape, pay.colour, pay.hidden) == \
+            ("payment", "Payment", "\u2b22", "amber", False)
+        assert d.add("Payment", "\u2605", "pink").id == "payment2"
+        assert live is d.marks and live["payment"].name == "Payment"
+>       raw = json.loads((tmp_path / MARKS_NAME).read_text(encoding="utf-8"))
+
+tests\test_marks_directory.py:140: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+..\..\..\anaconda3\Lib\pathlib.py:1027: in read_text
+    with self.open(mode='r', encoding=encoding, errors=errors) as f:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-24552/test_TC_2601_add_derives_the_i0/marks.json')
+mode = 'r', buffering = -1, encoding = 'utf-8', errors = None, newline = None
+
+    def open(self, mode='r', buffering=-1, encoding=None,
+             errors=None, newline=None):
+        """
+        Open the file pointed to by this path and return a file object, as
+        the built-in open() function does.
+        """
+        if "b" not in mode:
+            encoding = io.text_encoding(encoding)
+>       return io.open(self, mode, buffering, encoding, errors, newline)
+E       FileNotFoundError: [Errno 2] No such file or directory: 'C:\\Users\\jjgh8\\AppData\\Local\\Temp\\pytest-of-jjgh8\\pytest-24552\\test_TC_2601_add_derives_the_i0\\marks.json'
+
+..\..\..\anaconda3\Lib\pathlib.py:1013: FileNotFoundError
+=========================== short test summary info ===========================
+FAILED tests/test_marks_directory.py::test_TC_2601_add_derives_the_id_and_writes_the_file
+1 failed in 0.47s
+after:  56c8145e0e8ca2c8647d0810ee7b78dea951570e00335124f81413b2ef954b8b
+tests/test_marks_directory.py::test_TC_2601_add_derives_the_id_and_writes_the_file: RED (KILLED)
+C:\Users\jjgh8\anaconda3\Lib\site-packages\pytest_asyncio\plugin.py:207: PytestDeprecationWarning: The configuration option "asyncio_default_fixture_loop_scope" is unset.
+The event loop scope for asynchronous fixtures will default to the fixture caching scope. Future versions of pytest-asyncio will default the loop scope for asynchronous fixtures to function scope. Set the default fixture loop scope explicitly in order to avoid unexpected behavior in the future. Valid fixture loop scopes are: "function", "class", "module", "package", "session"
+
+  warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCOPE_UNSET))
+F                                                                        [100%]
+================================== FAILURES ===================================
+______________ test_TC_2601_a_name_with_nothing_left_is_refused _______________
+
+tmp_path = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-24553/test_TC_2601_a_name_with_nothi0')
+
+    def test_TC_2601_a_name_with_nothing_left_is_refused(tmp_path):
+        d = Directory.load(tmp_path / MARKS_NAME)
+>       with pytest.raises(ValueError):
+E       Failed: DID NOT RAISE <class 'ValueError'>
+
+tests\test_marks_directory.py:149: Failed
+=========================== short test summary info ===========================
+FAILED tests/test_marks_directory.py::test_TC_2601_a_name_with_nothing_left_is_refused
+1 failed in 0.46s
+after:  56c8145e0e8ca2c8647d0810ee7b78dea951570e00335124f81413b2ef954b8b
+tests/test_marks_directory.py::test_TC_2601_a_name_with_nothing_left_is_refused: RED (KILLED)
+C:\Users\jjgh8\anaconda3\Lib\site-packages\pytest_asyncio\plugin.py:207: PytestDeprecationWarning: The configuration option "asyncio_default_fixture_loop_scope" is unset.
+The event loop scope for asynchronous fixtures will default to the fixture caching scope. Future versions of pytest-asyncio will default the loop scope for asynchronous fixtures to function scope. Set the default fixture loop scope explicitly in order to avoid unexpected behavior in the future. Valid fixture loop scopes are: "function", "class", "module", "package", "session"
+
+  warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCOPE_UNSET))
+F                                                                        [100%]
+================================== FAILURES ===================================
+_________ test_TC_2601_a_shape_or_colour_outside_the_sets_is_refused __________
+
+tmp_path = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-24554/test_TC_2601_a_shape_or_colour0')
+
+    def test_TC_2601_a_shape_or_colour_outside_the_sets_is_refused(tmp_path):
+        """The write boundary mirrors the load validation: `\u25c6` is the unclassified
+        glyph, never a storable shape, and an unknown tone is not storable."""
+        d = Directory.load(tmp_path / MARKS_NAME)
+        with pytest.raises(ValueError):
+            d.add("X", "\u25c6", "pink")
+>       with pytest.raises(ValueError):
+E       Failed: DID NOT RAISE <class 'ValueError'>
+
+tests\test_marks_directory.py:160: Failed
+=========================== short test summary info ===========================
+FAILED tests/test_marks_directory.py::test_TC_2601_a_shape_or_colour_outside_the_sets_is_refused
+1 failed in 0.41s
+after:  56c8145e0e8ca2c8647d0810ee7b78dea951570e00335124f81413b2ef954b8b
+tests/test_marks_directory.py::test_TC_2601_a_shape_or_colour_outside_the_sets_is_refused: RED (KILLED)
+C:\Users\jjgh8\anaconda3\Lib\site-packages\pytest_asyncio\plugin.py:207: PytestDeprecationWarning: The configuration option "asyncio_default_fixture_loop_scope" is unset.
+The event loop scope for asynchronous fixtures will default to the fixture caching scope. Future versions of pytest-asyncio will default the loop scope for asynchronous fixtures to function scope. Set the default fixture loop scope explicitly in order to avoid unexpected behavior in the future. Valid fixture loop scopes are: "function", "class", "module", "package", "session"
+
+  warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCOPE_UNSET))
+F                                                                        [100%]
+================================== FAILURES ===================================
+________ test_TC_2601_two_directories_on_one_file_both_survive_an_add _________
+
+tmp_path = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-24555/test_TC_2601_two_directories_o0')
+
+    def test_TC_2601_two_directories_on_one_file_both_survive_an_add(tmp_path):
+        """The read-modify-write under the lock: a second directory that read the
+        file before the first one's add keeps that add when it writes its own."""
+        p = tmp_path / MARKS_NAME
+        one, two = Directory.load(p), Directory.load(p)
+        one.add("Payment", "\u2b22", "amber")
+        two.add("Review", "\u25a0", "violet")
+>       assert sorted(Directory.load(p).marks) == ["payment", "review"]
+E       AssertionError: assert ['review'] == ['payment', 'review']
+E         
+E         At index 0 diff: 'review' != 'payment'
+E         Right contains one more item: 'review'
+E         Use -v to get more diff
+
+tests\test_marks_directory.py:174: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_marks_directory.py::test_TC_2601_two_directories_on_one_file_both_survive_an_add
+1 failed in 0.43s
+after:  56c8145e0e8ca2c8647d0810ee7b78dea951570e00335124f81413b2ef954b8b
+tests/test_marks_directory.py::test_TC_2601_two_directories_on_one_file_both_survive_an_add: RED (KILLED)
+C:\Users\jjgh8\anaconda3\Lib\site-packages\pytest_asyncio\plugin.py:207: PytestDeprecationWarning: The configuration option "asyncio_default_fixture_loop_scope" is unset.
+The event loop scope for asynchronous fixtures will default to the fixture caching scope. Future versions of pytest-asyncio will default the loop scope for asynchronous fixtures to function scope. Set the default fixture loop scope explicitly in order to avoid unexpected behavior in the future. Valid fixture loop scopes are: "function", "class", "module", "package", "session"
+
+  warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCOPE_UNSET))
+F                                                                        [100%]
+================================== FAILURES ===================================
+____ test_TC_2601_edit_keeps_the_id_and_writes_back_a_class_the_file_lost _____
+
+tmp_path = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-24556/test_TC_2601_edit_keeps_the_id0')
+
+    def test_TC_2601_edit_keeps_the_id_and_writes_back_a_class_the_file_lost(tmp_path):
+        p = tmp_path / MARKS_NAME
+        d = Directory.load(p)
+        d.add("Payment", "\u2b22", "amber")
+        p.write_text('{"version": 1, "marks": []}', encoding="utf-8")
+        m = d.edit("payment", "Billing", "\u2605", "pink")
+        assert (m.id, m.name, m.shape, m.colour) == ("payment", "Billing", "\u2605", "pink")
+>       assert [x.id for x in Directory.load(p).marks.values()] == ["payment"]
+E       AssertionError: assert [] == ['payment']
+E         
+E         Right contains one more item: 'payment'
+E         Use -v to get more diff
+
+tests\test_marks_directory.py:187: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_marks_directory.py::test_TC_2601_edit_keeps_the_id_and_writes_back_a_class_the_file_lost
+1 failed in 0.41s
+after:  56c8145e0e8ca2c8647d0810ee7b78dea951570e00335124f81413b2ef954b8b
+tests/test_marks_directory.py::test_TC_2601_edit_keeps_the_id_and_writes_back_a_class_the_file_lost: RED (KILLED)
+C:\Users\jjgh8\anaconda3\Lib\site-packages\pytest_asyncio\plugin.py:207: PytestDeprecationWarning: The configuration option "asyncio_default_fixture_loop_scope" is unset.
+The event loop scope for asynchronous fixtures will default to the fixture caching scope. Future versions of pytest-asyncio will default the loop scope for asynchronous fixtures to function scope. Set the default fixture loop scope explicitly in order to avoid unexpected behavior in the future. Valid fixture loop scopes are: "function", "class", "module", "package", "session"
+
+  warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCOPE_UNSET))
+F                                                                        [100%]
+================================== FAILURES ===================================
+_________ test_TC_2601_edit_and_set_hidden_keep_the_rest_of_the_class _________
+
+tmp_path = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-24557/test_TC_2601_edit_and_set_hidd0')
+
+    def test_TC_2601_edit_and_set_hidden_keep_the_rest_of_the_class(tmp_path):
+        d = Directory.load(tmp_path / MARKS_NAME)
+        d.add("Payment", "\u2b22", "amber")
+>       assert d.set_hidden("payment", True).hidden is True
+E       AssertionError: assert False is True
+E        +  where False = Mark(id='payment', name='Payment', shape='\u2b22', colour='amber', hidden=False).hidden
+E        +    where Mark(id='payment', name='Payment', shape='\u2b22', colour='amber', hidden=False) = set_hidden('payment', True)
+E        +      where set_hidden = <taskboard.marks.Directory object at 0x00000148526D1DF0>.set_hidden
+
+tests\test_marks_directory.py:196: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_marks_directory.py::test_TC_2601_edit_and_set_hidden_keep_the_rest_of_the_class
+1 failed in 0.44s
+after:  56c8145e0e8ca2c8647d0810ee7b78dea951570e00335124f81413b2ef954b8b
+tests/test_marks_directory.py::test_TC_2601_edit_and_set_hidden_keep_the_rest_of_the_class: RED (KILLED)
+C:\Users\jjgh8\anaconda3\Lib\site-packages\pytest_asyncio\plugin.py:207: PytestDeprecationWarning: The configuration option "asyncio_default_fixture_loop_scope" is unset.
+The event loop scope for asynchronous fixtures will default to the fixture caching scope. Future versions of pytest-asyncio will default the loop scope for asynchronous fixtures to function scope. Set the default fixture loop scope explicitly in order to avoid unexpected behavior in the future. Valid fixture loop scopes are: "function", "class", "module", "package", "session"
+
+  warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCOPE_UNSET))
+F                                                                        [100%]
+================================== FAILURES ===================================
+____ test_TC_2601_an_unparseable_file_is_kept_aside_before_it_is_replaced _____
+
+tmp_path = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-24558/test_TC_2601_an_unparseable_fi0')
+
+    def test_TC_2601_an_unparseable_file_is_kept_aside_before_it_is_replaced(tmp_path):
+        p = _write(tmp_path / MARKS_NAME, "{broken")
+        d = Directory(p)
+>       d.add("Payment", "\u2b22", "amber")
+
+tests\test_marks_directory.py:211: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+taskboard\marks.py:178: in add
+    return self._commit(change)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <taskboard.marks.Directory object at 0x0000020C3F795A30>
+change = <function Directory.add.<locals>.change at 0x0000020C411C40E0>
+
+    def _commit(self, change) -> object:
+        """Apply `change` to the classes as the file holds them NOW and write
+        the result, under the file's lock; then hold that result here. A file
+        that cannot be parsed and cannot be copied aside is never written over;
+        a failed write raises `OSError` and changes nothing here."""
+        self.path.parent.mkdir(parents=True, exist_ok=True)
+        with file_lock(self.path):
+            marks = None
+            if self.path.exists():
+                marks = self._read(self.path)           # a failed read raises
+                if marks is None and self._set_aside():
+>                   raise OSError(f"{self.path.name} cannot be read and could not be "
+                                  "copied aside, so it was not written")
+E                   OSError: marks.json cannot be read and could not be copied aside, so it was not written
+
+taskboard\marks.py:136: OSError
+=========================== short test summary info ===========================
+FAILED tests/test_marks_directory.py::test_TC_2601_an_unparseable_file_is_kept_aside_before_it_is_replaced
+1 failed in 0.45s
+after:  56c8145e0e8ca2c8647d0810ee7b78dea951570e00335124f81413b2ef954b8b
+tests/test_marks_directory.py::test_TC_2601_an_unparseable_file_is_kept_aside_before_it_is_replaced: RED (KILLED)
+C:\Users\jjgh8\anaconda3\Lib\site-packages\pytest_asyncio\plugin.py:207: PytestDeprecationWarning: The configuration option "asyncio_default_fixture_loop_scope" is unset.
+The event loop scope for asynchronous fixtures will default to the fixture caching scope. Future versions of pytest-asyncio will default the loop scope for asynchronous fixtures to function scope. Set the default fixture loop scope explicitly in order to avoid unexpected behavior in the future. Valid fixture loop scopes are: "function", "class", "module", "package", "session"
+
+  warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCOPE_UNSET))
+F                                                                        [100%]
+================================== FAILURES ===================================
+_ test_TC_2601_an_unparseable_file_that_cannot_be_kept_is_never_written_over __
+
+tmp_path = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-24559/test_TC_2601_an_unparseable_fi0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x000001D99CBE4920>
+
+    def test_TC_2601_an_unparseable_file_that_cannot_be_kept_is_never_written_over(tmp_path, monkeypatch):
+        p = _write(tmp_path / MARKS_NAME, "{broken")
+        d = Directory(p)
+        monkeypatch.setattr(marks, "keep_aside", lambda path: None)
+>       with pytest.raises(OSError):
+E       Failed: DID NOT RAISE <class 'OSError'>
+
+tests\test_marks_directory.py:220: Failed
+=========================== short test summary info ===========================
+FAILED tests/test_marks_directory.py::test_TC_2601_an_unparseable_file_that_cannot_be_kept_is_never_written_over
+1 failed in 0.47s
+after:  56c8145e0e8ca2c8647d0810ee7b78dea951570e00335124f81413b2ef954b8b
+tests/test_marks_directory.py::test_TC_2601_an_unparseable_file_that_cannot_be_kept_is_never_written_over: RED (KILLED)
+C:\Users\jjgh8\anaconda3\Lib\site-packages\pytest_asyncio\plugin.py:207: PytestDeprecationWarning: The configuration option "asyncio_default_fixture_loop_scope" is unset.
+The event loop scope for asynchronous fixtures will default to the fixture caching scope. Future versions of pytest-asyncio will default the loop scope for asynchronous fixtures to function scope. Set the default fixture loop scope explicitly in order to avoid unexpected behavior in the future. Valid fixture loop scopes are: "function", "class", "module", "package", "session"
+
+  warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCOPE_UNSET))
+F                                                                        [100%]
+================================== FAILURES ===================================
+_ test_TC_2601_a_held_lock_makes_the_write_wait_then_fail_and_change_nothing __
+
+tmp_path = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-24560/test_TC_2601_a_held_lock_makes0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x0000016638611B50>
+
+    def test_TC_2601_a_held_lock_makes_the_write_wait_then_fail_and_change_nothing(tmp_path, monkeypatch):
+        monkeypatch.setattr(boards, "LOCK_WAIT", 0.2)
+        p = tmp_path / MARKS_NAME
+        d = Directory.load(p)
+        with boards.file_lock(p):
+>           with pytest.raises(OSError, match="busy"):
+E           Failed: DID NOT RAISE <class 'OSError'>
+
+tests\test_marks_directory.py:230: Failed
+=========================== short test summary info ===========================
+FAILED tests/test_marks_directory.py::test_TC_2601_a_held_lock_makes_the_write_wait_then_fail_and_change_nothing
+1 failed in 0.45s
+after:  56c8145e0e8ca2c8647d0810ee7b78dea951570e00335124f81413b2ef954b8b
+tests/test_marks_directory.py::test_TC_2601_a_held_lock_makes_the_write_wait_then_fail_and_change_nothing: RED (KILLED)
+C:\Users\jjgh8\anaconda3\Lib\site-packages\pytest_asyncio\plugin.py:207: PytestDeprecationWarning: The configuration option "asyncio_default_fixture_loop_scope" is unset.
+The event loop scope for asynchronous fixtures will default to the fixture caching scope. Future versions of pytest-asyncio will default the loop scope for asynchronous fixtures to function scope. Set the default fixture loop scope explicitly in order to avoid unexpected behavior in the future. Valid fixture loop scopes are: "function", "class", "module", "package", "session"
+
+  warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCOPE_UNSET))
+F                                                                        [100%]
+================================== FAILURES ===================================
+____________ test_TC_2601_a_failed_write_changes_nothing_in_memory ____________
+
+tmp_path = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-24561/test_TC_2601_a_failed_write_ch0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x000001D08FB8DB80>
+
+    def test_TC_2601_a_failed_write_changes_nothing_in_memory(tmp_path, monkeypatch):
+        d = Directory.load(tmp_path / MARKS_NAME)
+        d.add("Payment", "\u2b22", "amber")
+    
+        def boom(path, text):
+            raise OSError("disk full")
+        monkeypatch.setattr(marks, "write_atomic", boom)
+        with pytest.raises(OSError):
+            d.add("Review", "\u25a0", "violet")
+>       assert list(d.marks) == ["payment"] and d.marks["payment"].name == "Payment"
+E       AssertionError: assert (['payment', 'review'] == ['payment']
+E         
+E         Left contains one more item: 'review'
+E         Use -v to get more diff)
+
+tests\test_marks_directory.py:244: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_marks_directory.py::test_TC_2601_a_failed_write_changes_nothing_in_memory
+1 failed in 0.46s
+after:  56c8145e0e8ca2c8647d0810ee7b78dea951570e00335124f81413b2ef954b8b
+tests/test_marks_directory.py::test_TC_2601_a_failed_write_changes_nothing_in_memory: RED (KILLED)
+C:\Users\jjgh8\anaconda3\Lib\site-packages\pytest_asyncio\plugin.py:207: PytestDeprecationWarning: The configuration option "asyncio_default_fixture_loop_scope" is unset.
+The event loop scope for asynchronous fixtures will default to the fixture caching scope. Future versions of pytest-asyncio will default the loop scope for asynchronous fixtures to function scope. Set the default fixture loop scope explicitly in order to avoid unexpected behavior in the future. Valid fixture loop scopes are: "function", "class", "module", "package", "session"
+
+  warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCOPE_UNSET))
+F                                                                        [100%]
+================================== FAILURES ===================================
+______________ test_TC_2602_a_mark_round_trips_through_the_model ______________
+
+    def test_TC_2602_a_mark_round_trips_through_the_model():
+        t = Task.from_dict({"id": "t1", "title": "Pilot launch", "milestone": True,
+                            "mark": "payment"})
+>       assert t.mark == "payment"
+E       AssertionError: assert None == 'payment'
+E        +  where None = Task(title='Pilot launch', project_id=None, phase='Backlog', priority='normal', start_date=None, due_date=None, notes=..., blocked=False, depends_on=[], phase_changed=None, milestone=True, mark=None, show_in_present=True, extra={}, id='t1').mark
+
+tests\test_marks_directory.py:253: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_marks_directory.py::test_TC_2602_a_mark_round_trips_through_the_model
+1 failed in 0.47s
+after:  c2c1b714539ed7017280fe6debee9e1b8ee31678332b836cbda3451565650e33
+tests/test_marks_directory.py::test_TC_2602_a_mark_round_trips_through_the_model: RED (KILLED)
+C:\Users\jjgh8\anaconda3\Lib\site-packages\pytest_asyncio\plugin.py:207: PytestDeprecationWarning: The configuration option "asyncio_default_fixture_loop_scope" is unset.
+The event loop scope for asynchronous fixtures will default to the fixture caching scope. Future versions of pytest-asyncio will default the loop scope for asynchronous fixtures to function scope. Set the default fixture loop scope explicitly in order to avoid unexpected behavior in the future. Valid fixture loop scopes are: "function", "class", "module", "package", "session"
+
+  warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCOPE_UNSET))
+F                                                                        [100%]
+================================== FAILURES ===================================
+__________ test_TC_2602_a_task_without_a_mark_saves_with_no_mark_key __________
+
+    def test_TC_2602_a_task_without_a_mark_saves_with_no_mark_key():
+        t = Task.from_dict({"id": "t1", "title": "Plain", "milestone": True})
+        assert t.mark is None
+>       assert "mark" not in Board._to_dict(t)
+E       AssertionError: assert 'mark' not in {'archived': False, 'blocked': False, 'depends_on': [], 'due_date': None, ...}
+E        +  where {'archived': False, 'blocked': False, 'depends_on': [], 'due_date': None, ...} = <function Board._to_dict at 0x000001A1DB1F3420>(Task(title='Plain', project_id=None, phase='Backlog', priority='normal', start_date=None, due_date=None, notes='', url..., blocked=False, depends_on=[], phase_changed=None, milestone=True, mark=None, show_in_present=True, extra={}, id='t1'))
+E        +    where <function Board._to_dict at 0x000001A1DB1F3420> = Board._to_dict
+
+tests\test_marks_directory.py:263: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_marks_directory.py::test_TC_2602_a_task_without_a_mark_saves_with_no_mark_key
+1 failed in 0.48s
+after:  c2c1b714539ed7017280fe6debee9e1b8ee31678332b836cbda3451565650e33
+tests/test_marks_directory.py::test_TC_2602_a_task_without_a_mark_saves_with_no_mark_key: RED (KILLED)
+C:\Users\jjgh8\anaconda3\Lib\site-packages\pytest_asyncio\plugin.py:207: PytestDeprecationWarning: The configuration option "asyncio_default_fixture_loop_scope" is unset.
+The event loop scope for asynchronous fixtures will default to the fixture caching scope. Future versions of pytest-asyncio will default the loop scope for asynchronous fixtures to function scope. Set the default fixture loop scope explicitly in order to avoid unexpected behavior in the future. Valid fixture loop scopes are: "function", "class", "module", "package", "session"
+
+  warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCOPE_UNSET))
+F                                                                        [100%]
+================================== FAILURES ===================================
+_ test_TC_2602_a_board_without_marks_keeps_its_bytes_through_a_load_and_a_save _
+
+tmp_path = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-24564/test_TC_2602_a_board_without_m0')
+
+    def test_TC_2602_a_board_without_marks_keeps_its_bytes_through_a_load_and_a_save(tmp_path):
+        root = tmp_path / "home"
+        fx.build(root, marks=False)
+        for bid in ("main", "client-a", "course"):
+            p = fx.board_path(root, bid)
+            before = p.read_bytes()
+            board = Board.load(p)
+            board.save_atomic()
+            assert p.read_bytes() == before
+>           assert '"mark"' not in p.read_text(encoding="utf-8")
+E           assert '"mark"' not in '{\n  "phase...true\n  }\n}'
+E             
+E             '"mark"' is contained here:
+E               se,
+E                     "mark": null,
+E             ?       ++++++
+E                     "id": "tp1"
+E                   },...
+E             
+E             ...Full output truncated (87 lines hidden), use '-vv' to show
+
+tests\test_marks_directory.py:275: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_marks_directory.py::test_TC_2602_a_board_without_marks_keeps_its_bytes_through_a_load_and_a_save
+1 failed in 0.48s
+after:  c2c1b714539ed7017280fe6debee9e1b8ee31678332b836cbda3451565650e33
+tests/test_marks_directory.py::test_TC_2602_a_board_without_marks_keeps_its_bytes_through_a_load_and_a_save: RED (KILLED)
+C:\Users\jjgh8\anaconda3\Lib\site-packages\pytest_asyncio\plugin.py:207: PytestDeprecationWarning: The configuration option "asyncio_default_fixture_loop_scope" is unset.
+The event loop scope for asynchronous fixtures will default to the fixture caching scope. Future versions of pytest-asyncio will default the loop scope for asynchronous fixtures to function scope. Set the default fixture loop scope explicitly in order to avoid unexpected behavior in the future. Valid fixture loop scopes are: "function", "class", "module", "package", "session"
+
+  warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCOPE_UNSET))
+F                                                                        [100%]
+================================== FAILURES ===================================
+_______ test_TC_2602_an_unknown_id_is_kept_byte_for_byte_through_a_save _______
+
+tmp_path = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-24565/test_TC_2602_an_unknown_id_is_0')
+
+    def test_TC_2602_an_unknown_id_is_kept_byte_for_byte_through_a_save(tmp_path):
+        """An id no directory holds (a deleted class, a teammate's class) passes
+        every load and save untouched — the field never degrades (AT-2607's store
+        arms; the drawn-and-edited arms land with the seat, increment 002)."""
+        root = tmp_path / "home"
+        fx.build(root)
+        p = fx.board_path(root, "client-a")
+        board = Board.load(p)
+        ghost = next(t for t in board.tasks if t.id == "tce")
+        ghost.mark = "teammates-class"
+        board.save_atomic()
+        assert '"mark": "teammates-class"' in p.read_text(encoding="utf-8")
+        board2 = Board.load(p)
+>       assert next(t for t in board2.tasks if t.id == "tce").mark == "teammates-class"
+E       AssertionError: assert None == 'teammates-class'
+E        +  where None = Task(title='Final payment', project_id='pcd', phase='Backlog', priority='normal', start_date=None, due_date='2026-11-2...=False, depends_on=[], phase_changed='2026-10-18', milestone=True, mark=None, show_in_present=True, extra={}, id='tce').mark
+E        +    where Task(title='Final payment', project_id='pcd', phase='Backlog', priority='normal', start_date=None, due_date='2026-11-2...=False, depends_on=[], phase_changed='2026-10-18', milestone=True, mark=None, show_in_present=True, extra={}, id='tce') = next(<generator object test_TC_2602_an_unknown_id_is_kept_byte_for_byte_through_a_save.<locals>.<genexpr> at 0x0000013488AC71D0>)
+
+tests\test_marks_directory.py:291: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_marks_directory.py::test_TC_2602_an_unknown_id_is_kept_byte_for_byte_through_a_save
+1 failed in 0.47s
+after:  c2c1b714539ed7017280fe6debee9e1b8ee31678332b836cbda3451565650e33
+tests/test_marks_directory.py::test_TC_2602_an_unknown_id_is_kept_byte_for_byte_through_a_save: RED (KILLED)
+C:\Users\jjgh8\anaconda3\Lib\site-packages\pytest_asyncio\plugin.py:207: PytestDeprecationWarning: The configuration option "asyncio_default_fixture_loop_scope" is unset.
+The event loop scope for asynchronous fixtures will default to the fixture caching scope. Future versions of pytest-asyncio will default the loop scope for asynchronous fixtures to function scope. Set the default fixture loop scope explicitly in order to avoid unexpected behavior in the future. Valid fixture loop scopes are: "function", "class", "module", "package", "session"
+
+  warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCOPE_UNSET))
+F                                                                        [100%]
+================================== FAILURES ===================================
+_______________ test_TC_2602_unticking_milestone_keeps_the_mark _______________
+
+tmp_path = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-24566/test_TC_2602_unticking_milesto0')
+
+    def test_TC_2602_unticking_milestone_keeps_the_mark(tmp_path):
+        """MM-D3: unticking `milestone` keeps the field, so the class returns when
+        the box is ticked again."""
+        root = tmp_path / "home"
+        fx.build(root)
+        p = fx.board_path(root, "client-a")
+        board = Board.load(p)
+        t = next(t for t in board.tasks if t.id == "tcb")
+        t.milestone = False                             # the editor's untick, at the model
+        board.save_atomic()
+        entry = next(x for x in json.loads(p.read_text(encoding="utf-8"))["tasks"]
+                     if x["id"] == "tcb")
+>       assert entry["mark"] == "launch"
+E       KeyError: 'mark'
+
+tests\test_marks_directory.py:306: KeyError
+=========================== short test summary info ===========================
+FAILED tests/test_marks_directory.py::test_TC_2602_unticking_milestone_keeps_the_mark
+1 failed in 0.51s
+after:  c2c1b714539ed7017280fe6debee9e1b8ee31678332b836cbda3451565650e33
+tests/test_marks_directory.py::test_TC_2602_unticking_milestone_keeps_the_mark: RED (KILLED)
+C:\Users\jjgh8\anaconda3\Lib\site-packages\pytest_asyncio\plugin.py:207: PytestDeprecationWarning: The configuration option "asyncio_default_fixture_loop_scope" is unset.
+The event loop scope for asynchronous fixtures will default to the fixture caching scope. Future versions of pytest-asyncio will default the loop scope for asynchronous fixtures to function scope. Set the default fixture loop scope explicitly in order to avoid unexpected behavior in the future. Valid fixture loop scopes are: "function", "class", "module", "package", "session"
+
+  warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCOPE_UNSET))
+F                                                                        [100%]
+================================== FAILURES ===================================
+_________________ test_TC_2602_only_marked_tasks_gain_the_key _________________
+
+tmp_path = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-24567/test_TC_2602_only_marked_tasks0')
+
+    def test_TC_2602_only_marked_tasks_gain_the_key(tmp_path):
+        root = tmp_path / "home"
+        fx.build(root)
+        p = fx.board_path(root, "client-a")
+        Board.load(p).save_atomic()
+        raw = json.loads(p.read_text(encoding="utf-8"))
+        marked = {x["id"] for x in raw["tasks"] if "mark" in x}
+>       assert marked == {"tc1", "tc4", "tc6", "tc7", "tc8", "tc9", "tcb", "tcc", "tce"}
+E       AssertionError: assert {'tc1', 'tc2'...', 'tc6', ...} == {'tc1', 'tc4'...', 'tc9', ...}
+E         
+E         Extra items in the left set:
+E         'tc2'
+E         'tcd'
+E         'tca'
+E         'tc3'
+E         'tc5'
+E         Use -v to get more diff
+
+tests\test_marks_directory.py:316: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_marks_directory.py::test_TC_2602_only_marked_tasks_gain_the_key
+1 failed in 0.50s
+after:  c2c1b714539ed7017280fe6debee9e1b8ee31678332b836cbda3451565650e33
+tests/test_marks_directory.py::test_TC_2602_only_marked_tasks_gain_the_key: RED (KILLED)
+C:\Users\jjgh8\anaconda3\Lib\site-packages\pytest_asyncio\plugin.py:207: PytestDeprecationWarning: The configuration option "asyncio_default_fixture_loop_scope" is unset.
+The event loop scope for asynchronous fixtures will default to the fixture caching scope. Future versions of pytest-asyncio will default the loop scope for asynchronous fixtures to function scope. Set the default fixture loop scope explicitly in order to avoid unexpected behavior in the future. Valid fixture loop scopes are: "function", "class", "module", "package", "session"
+
+  warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCOPE_UNSET))
+F                                                                        [100%]
+================================== FAILURES ===================================
+_______________ test_TC_2603_ten_interleaved_adds_lose_nothing ________________
+
+tmp_path = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-24568/test_TC_2603_ten_interleaved_a0')
+
+    def test_TC_2603_ten_interleaved_adds_lose_nothing(tmp_path):
+        p = tmp_path / MARKS_NAME
+        dirs = [Directory.load(p) for _ in range(10)]
+        names = [f"Class {i}" for i in range(10)]
+        for i, d in enumerate(dirs):
+            d.add(names[i], SHAPES[i % len(SHAPES)], COLOURS[i % len(COLOURS)])
+        final = Directory.load(p)
+>       assert len(final.marks) == 10
+E       AssertionError: assert 1 == 10
+E        +  where 1 = len({'class.9': Mark(id='class.9', name='Class 9', shape='\u25a0', colour='amber', hidden=False)})
+E        +    where {'class.9': Mark(id='class.9', name='Class 9', shape='\u25a0', colour='amber', hidden=False)} = <taskboard.marks.Directory object at 0x000001B1F29E0B30>.marks
+
+tests\test_marks_directory.py:329: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_marks_directory.py::test_TC_2603_ten_interleaved_adds_lose_nothing
+1 failed in 0.54s
+after:  56c8145e0e8ca2c8647d0810ee7b78dea951570e00335124f81413b2ef954b8b
+tests/test_marks_directory.py::test_TC_2603_ten_interleaved_adds_lose_nothing: RED (KILLED)
+C:\Users\jjgh8\anaconda3\Lib\site-packages\pytest_asyncio\plugin.py:207: PytestDeprecationWarning: The configuration option "asyncio_default_fixture_loop_scope" is unset.
+The event loop scope for asynchronous fixtures will default to the fixture caching scope. Future versions of pytest-asyncio will default the loop scope for asynchronous fixtures to function scope. Set the default fixture loop scope explicitly in order to avoid unexpected behavior in the future. Valid fixture loop scopes are: "function", "class", "module", "package", "session"
+
+  warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCOPE_UNSET))
+F                                                                        [100%]
+================================== FAILURES ===================================
+_______________ test_TC_2603_the_corrupt_copy_is_never_replaced _______________
+
+tmp_path = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-24569/test_TC_2603_the_corrupt_copy_0')
+
+    def test_TC_2603_the_corrupt_copy_is_never_replaced(tmp_path):
+        p = tmp_path / MARKS_NAME
+        p.write_text("{oops", encoding="utf-8")
+        d = Directory.load(p)
+        assert d.load_report["unreadable"] is True
+        assert (tmp_path / "marks.json.corrupt").read_text(encoding="utf-8") == "{oops"
+        p.write_text("[bad", encoding="utf-8")           # a SECOND unreadable file
+        d2 = Directory.load(p)
+        assert d2.load_report["unreadable"] is True
+        copies = {x.name: x.read_text(encoding="utf-8")
+                  for x in tmp_path.glob("marks.json.corrupt*")}
+>       assert copies == {"marks.json.corrupt": "{oops", "marks.json.corrupt-2": "[bad"}
+E       AssertionError: assert {'marks.json.corrupt': '[bad'} == {'marks.json....pt-2': '[bad'}
+E         
+E         Differing items:
+E         {'marks.json.corrupt': '[bad'} != {'marks.json.corrupt': '{oops'}
+E         Right contains 1 more item:
+E         {'marks.json.corrupt-2': '[bad'}
+E         Use -v to get more diff
+
+tests\test_marks_directory.py:346: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_marks_directory.py::test_TC_2603_the_corrupt_copy_is_never_replaced
+1 failed in 0.59s
+after:  56c8145e0e8ca2c8647d0810ee7b78dea951570e00335124f81413b2ef954b8b
+tests/test_marks_directory.py::test_TC_2603_the_corrupt_copy_is_never_replaced: RED (KILLED)
+C:\Users\jjgh8\anaconda3\Lib\site-packages\pytest_asyncio\plugin.py:207: PytestDeprecationWarning: The configuration option "asyncio_default_fixture_loop_scope" is unset.
+The event loop scope for asynchronous fixtures will default to the fixture caching scope. Future versions of pytest-asyncio will default the loop scope for asynchronous fixtures to function scope. Set the default fixture loop scope explicitly in order to avoid unexpected behavior in the future. Valid fixture loop scopes are: "function", "class", "module", "package", "session"
+
+  warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCOPE_UNSET))
+F                                                                        [100%]
+================================== FAILURES ===================================
+_______________________ test_AT_2602_the_store_is_safe ________________________
+
+tmp_path = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-24570/test_AT_2602_the_store_is_safe0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x000001B9FFE21910>
+
+    def test_AT_2602_the_store_is_safe(tmp_path, monkeypatch):
+        """AT-2602 (HLR-2603): two `Directory` objects on one `marks.json` — the code
+        a second process runs — each keeps the other's classes; an unreadable file
+        is kept aside, never overwritten; a no-mark board keeps its bytes; the held
+        lock refuses the write, named `busy`, nothing changed."""
+        p = tmp_path / MARKS_NAME
+        one, two = Directory.load(p), Directory.load(p)
+        one.add("Payment", "\u2b22", "amber")
+        two.add("Review", "\u25a0", "violet")
+>       assert sorted(Directory.load(p).marks) == ["payment", "review"]
+E       AssertionError: assert ['review'] == ['payment', 'review']
+E         
+E         At index 0 diff: 'review' != 'payment'
+E         Right contains one more item: 'review'
+E         Use -v to get more diff
+
+tests\test_marks_directory.py:359: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_marks_directory.py::test_AT_2602_the_store_is_safe - Assert...
+1 failed in 0.43s
+after:  56c8145e0e8ca2c8647d0810ee7b78dea951570e00335124f81413b2ef954b8b
+tests/test_marks_directory.py::test_AT_2602_the_store_is_safe: RED (KILLED)
+C:\Users\jjgh8\anaconda3\Lib\site-packages\pytest_asyncio\plugin.py:207: PytestDeprecationWarning: The configuration option "asyncio_default_fixture_loop_scope" is unset.
+The event loop scope for asynchronous fixtures will default to the fixture caching scope. Future versions of pytest-asyncio will default the loop scope for asynchronous fixtures to function scope. Set the default fixture loop scope explicitly in order to avoid unexpected behavior in the future. Valid fixture loop scopes are: "function", "class", "module", "package", "session"
+
+  warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCOPE_UNSET))
+F                                                                        [100%]
+================================== FAILURES ===================================
+_______ test_TC_2607_a_push_carries_the_id_and_nothing_of_the_directory _______
+
+tmp_path = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-24571/test_TC_2607_a_push_carries_th0')
+
+    def test_TC_2607_a_push_carries_the_id_and_nothing_of_the_directory(tmp_path):
+        root = tmp_path / "home"
+        fx.build(root)
+        board = Board.load(fx.board_path(root, "client-a"))
+        board.marks = Directory.load(root / MARKS_NAME).marks
+        team = tmp_path / "team"
+        team.mkdir()
+        state = TeamState(team, user_id="u1",
+                          config={"projects": [{"id": p.id} for p in board.projects]})
+        assert state.push(board)
+        files = sorted(x.name for x in team.iterdir())
+        assert files == ["board.u1.json"]
+        text = (team / "board.u1.json").read_text(encoding="utf-8")
+>       assert '"mark": "payment"' in text and '"mark": "review"' in text
+E       assert ('"mark": "payment"' in '{\n  "user": "u1",\n  "pushed_at": "2026-10-24T18:38:07Z",\n  "tasks": [\n    {\n      "title": "Catalog parsed",\n  ...      "phase_changed": "2026-10-18",\n      "milestone": true,\n      "id": "tce",\n      "owner": "u1"\n    }\n  ]\n}')
+
+tests\test_marks_directory.py:408: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_marks_directory.py::test_TC_2607_a_push_carries_the_id_and_nothing_of_the_directory
+1 failed in 0.43s
+after:  c2c1b714539ed7017280fe6debee9e1b8ee31678332b836cbda3451565650e33
+tests/test_marks_directory.py::test_TC_2607_a_push_carries_the_id_and_nothing_of_the_directory: RED (KILLED)
+C:\Users\jjgh8\anaconda3\Lib\site-packages\pytest_asyncio\plugin.py:207: PytestDeprecationWarning: The configuration option "asyncio_default_fixture_loop_scope" is unset.
+The event loop scope for asynchronous fixtures will default to the fixture caching scope. Future versions of pytest-asyncio will default the loop scope for asynchronous fixtures to function scope. Set the default fixture loop scope explicitly in order to avoid unexpected behavior in the future. Valid fixture loop scopes are: "function", "class", "module", "package", "session"
+
+  warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCOPE_UNSET))
+F                                                                        [100%]
+================================== FAILURES ===================================
+____ test_TC_2601_the_app_holds_the_directory_and_hands_it_to_every_board _____
+
+home = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-24572/test_TC_2601_the_app_holds_the0/.taskboard')
+
+    async def test_TC_2601_the_app_holds_the_directory_and_hands_it_to_every_board(home):
+        """`open_app` on the round's boards: the directory is
+        `<home>/.taskboard/marks.json`, every board the app opens shares the one
+        live dict, and no board file holds the directory. AT-2601's store arms
+        (the restart clause included); its `#`-driven arms land with the manager
+        (increment 003)."""
+        from taskboard.__main__ import open_app
+        fx.build(home, last="client-a")
+        app = open_app(None)
+        async with app.run_test(size=(118, 30)) as pilot:
+            await pilot.pause()
+            assert app.marks.path == home / MARKS_NAME
+            assert sorted(app.marks.marks) == ["delivery", "launch", "payment", "review"]
+>           assert app.board.marks is app.marks.marks
+E           AssertionError: assert {} is {'delivery': Mark(id='delivery', name='Delivery', shape='\u25b2', colour='cyan', hidden=False), 'launch': Mark(id='launch',...', colour='amber', hidden=False), 'review': Mark(id='review', name='Review', shape='\u25a0', colour='violet', hidden=False)}
+E            +  where {} = <taskboard.models.Board object at 0x000002B828687410>.marks
+E            +    where <taskboard.models.Board object at 0x000002B828687410> = TaskboardApp(title='taskboard', classes={'-dark-mode'}, pseudo_classes={'focus', 'nocolor', 'dark'}).board
+E            +  and   {'delivery': Mark(id='delivery', name='Delivery', shape='\u25b2', colour='cyan', hidden=False), 'launch': Mark(id='launch',...', colour='amber', hidden=False), 'review': Mark(id='review', name='Review', shape='\u25a0', colour='violet', hidden=False)} = <taskboard.marks.Directory object at 0x000002B828441520>.marks
+E            +    where <taskboard.marks.Directory object at 0x000002B828441520> = TaskboardApp(title='taskboard', classes={'-dark-mode'}, pseudo_classes={'focus', 'nocolor', 'dark'}).marks
+
+tests\test_marks_directory.py:432: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_marks_directory.py::test_TC_2601_the_app_holds_the_directory_and_hands_it_to_every_board
+1 failed in 0.57s
+after:  bec939eed42136fa734545e5a9934419c5469f4a3554799060b91a7bbfd2341c
+tests/test_marks_directory.py::test_TC_2601_the_app_holds_the_directory_and_hands_it_to_every_board: RED (KILLED)
+C:\Users\jjgh8\anaconda3\Lib\site-packages\pytest_asyncio\plugin.py:207: PytestDeprecationWarning: The configuration option "asyncio_default_fixture_loop_scope" is unset.
+The event loop scope for asynchronous fixtures will default to the fixture caching scope. Future versions of pytest-asyncio will default the loop scope for asynchronous fixtures to function scope. Set the default fixture loop scope explicitly in order to avoid unexpected behavior in the future. Valid fixture loop scopes are: "function", "class", "module", "package", "session"
+
+  warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCOPE_UNSET))
+F                                                                        [100%]
+================================== FAILURES ===================================
+________________ test_TC_2601_after_move_carries_the_directory ________________
+
+home = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-24573/test_TC_2601_after_move_carrie0/.taskboard')
+
+    async def test_TC_2601_after_move_carries_the_directory(home):
+        from taskboard.__main__ import open_app
+        fx.build(home, last="client-a")
+        app = open_app(None)
+        async with app.run_test(size=(118, 30)) as pilot:
+            await pilot.pause()
+            app.pop_screen()                              # the home
+            await pilot.pause()
+            new_src = Board.load(fx.board_path(home, "course"))
+            app.after_move(new_src)
+            await pilot.pause()
+            assert app.board is new_src
+>           assert app.board.marks is app.marks.marks
+E           AssertionError: assert {} is {'delivery': Mark(id='delivery', name='Delivery', shape='\u25b2', colour='cyan', hidden=False), 'launch': Mark(id='launch',...', colour='amber', hidden=False), 'review': Mark(id='review', name='Review', shape='\u25a0', colour='violet', hidden=False)}
+E            +  where {} = <taskboard.models.Board object at 0x000001F30542CFE0>.marks
+E            +    where <taskboard.models.Board object at 0x000001F30542CFE0> = TaskboardApp(title='taskboard', classes={'-dark-mode'}, pseudo_classes={'nocolor', 'dark', 'focus'}).board
+E            +  and   {'delivery': Mark(id='delivery', name='Delivery', shape='\u25b2', colour='cyan', hidden=False), 'launch': Mark(id='launch',...', colour='amber', hidden=False), 'review': Mark(id='review', name='Review', shape='\u25a0', colour='violet', hidden=False)} = <taskboard.marks.Directory object at 0x000001F3081BB260>.marks
+E            +    where <taskboard.marks.Directory object at 0x000001F3081BB260> = TaskboardApp(title='taskboard', classes={'-dark-mode'}, pseudo_classes={'nocolor', 'dark', 'focus'}).marks
+
+tests\test_marks_directory.py:461: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_marks_directory.py::test_TC_2601_after_move_carries_the_directory
+1 failed in 0.57s
+after:  bec939eed42136fa734545e5a9934419c5469f4a3554799060b91a7bbfd2341c
+tests/test_marks_directory.py::test_TC_2601_after_move_carries_the_directory: RED (KILLED)
+C:\Users\jjgh8\anaconda3\Lib\site-packages\pytest_asyncio\plugin.py:207: PytestDeprecationWarning: The configuration option "asyncio_default_fixture_loop_scope" is unset.
+The event loop scope for asynchronous fixtures will default to the fixture caching scope. Future versions of pytest-asyncio will default the loop scope for asynchronous fixtures to function scope. Set the default fixture loop scope explicitly in order to avoid unexpected behavior in the future. Valid fixture loop scopes are: "function", "class", "module", "package", "session"
+
+  warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCOPE_UNSET))
+F                                                                        [100%]
+================================== FAILURES ===================================
+____________ test_TC_2601_an_unreadable_directory_is_said_and_kept ____________
+
+home = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-24574/test_TC_2601_an_unreadable_dir0/.taskboard')
+
+    async def test_TC_2601_an_unreadable_directory_is_said_and_kept(home):
+        """HLR-2601's notice, once, at mount (the `people.json` pattern)."""
+        from taskboard.__main__ import open_app
+        fx.build(home, last="client-a")
+        (home / MARKS_NAME).write_text("{oops", encoding="utf-8")
+        app = open_app(None)
+        async with app.run_test(size=(118, 30), notifications=True) as pilot:
+            await pilot.pause()
+            notes = [str(n.message) for n in app._notifications]
+>           assert any(n.startswith("marks.json could not be read; a copy was kept at ")
+                       and n.endswith("The marks directory starts empty.") for n in notes)
+E           assert False
+E            +  where False = any(<generator object test_TC_2601_an_unreadable_directory_is_said_and_kept.<locals>.<genexpr> at 0x000001F5814E5F20>)
+
+tests\test_marks_directory.py:473: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_marks_directory.py::test_TC_2601_an_unreadable_directory_is_said_and_kept
+1 failed in 0.57s
+after:  bec939eed42136fa734545e5a9934419c5469f4a3554799060b91a7bbfd2341c
+tests/test_marks_directory.py::test_TC_2601_an_unreadable_directory_is_said_and_kept: RED (KILLED)
+C:\Users\jjgh8\anaconda3\Lib\site-packages\pytest_asyncio\plugin.py:207: PytestDeprecationWarning: The configuration option "asyncio_default_fixture_loop_scope" is unset.
+The event loop scope for asynchronous fixtures will default to the fixture caching scope. Future versions of pytest-asyncio will default the loop scope for asynchronous fixtures to function scope. Set the default fixture loop scope explicitly in order to avoid unexpected behavior in the future. Valid fixture loop scopes are: "function", "class", "module", "package", "session"
+
+  warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCOPE_UNSET))
+F                                                                        [100%]
+================================== FAILURES ===================================
+_______ test_TC_2601_an_app_without_a_registry_never_writes_a_directory _______
+
+tmp_path = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-24575/test_TC_2601_an_app_without_a_0')
+
+    async def test_TC_2601_an_app_without_a_registry_never_writes_a_directory(tmp_path):
+        from taskboard.app import TaskboardApp
+        app = TaskboardApp(board_path=tmp_path / "b" / "board.json")
+        async with app.run_test(size=(80, 24)) as pilot:
+            await pilot.pause()
+            assert app.marks.path == tmp_path / "b" / MARKS_NAME
+>       assert not (tmp_path / "b" / MARKS_NAME).exists()
+E       AssertionError: assert not True
+E        +  where True = exists()
+E        +    where exists = ((WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-24575/test_TC_2601_an_app_without_a_0') / 'b') / 'marks.json').exists
+
+tests\test_marks_directory.py:485: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_marks_directory.py::test_TC_2601_an_app_without_a_registry_never_writes_a_directory
+1 failed in 0.52s
+after:  56c8145e0e8ca2c8647d0810ee7b78dea951570e00335124f81413b2ef954b8b
+tests/test_marks_directory.py::test_TC_2601_an_app_without_a_registry_never_writes_a_directory: RED (KILLED)
+C:\Users\jjgh8\anaconda3\Lib\site-packages\pytest_asyncio\plugin.py:207: PytestDeprecationWarning: The configuration option "asyncio_default_fixture_loop_scope" is unset.
+The event loop scope for asynchronous fixtures will default to the fixture caching scope. Future versions of pytest-asyncio will default the loop scope for asynchronous fixtures to function scope. Set the default fixture loop scope explicitly in order to avoid unexpected behavior in the future. Valid fixture loop scopes are: "function", "class", "module", "package", "session"
+
+  warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCOPE_UNSET))
+F                                                                        [100%]
+================================== FAILURES ===================================
+______ test_TC_2601_a_class_written_through_the_store_survives_a_restart ______
+
+home = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-24576/test_TC_2601_a_class_written_t0/.taskboard')
+
+    async def test_TC_2601_a_class_written_through_the_store_survives_a_restart(home):
+        """AT-2601's restart clause, store side: what the manager's `n` + save will
+        write lands in `marks.json` and is still there when the app opens again."""
+        from taskboard.__main__ import open_app
+        fx.build(home, last="client-a")
+        app = open_app(None)
+        async with app.run_test(size=(118, 30)) as pilot:
+            await pilot.pause()
+            app.marks.add("Billing", "\u2605", "pink")
+        raw = json.loads((home / MARKS_NAME).read_text(encoding="utf-8"))
+>       assert raw["marks"][-1] == {"id": "billing", "name": "Billing", "shape": "\u2605",
+                                    "colour": "pink", "hidden": False}
+E       AssertionError: assert {'colour': 'p... 'shape': '\u2605'} == {'colour': 'p...Billing', ...}
+E         
+E         Omitting 2 identical items, use -vv to show
+E         Differing items:
+E         {'id': 'launch'} != {'id': 'billing'}
+E         {'name': 'Launch'} != {'name': 'Billing'}
+E         Right contains 1 more item:
+E         {'hidden': False}
+E         Use -v to get more diff
+
+tests\test_marks_directory.py:498: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_marks_directory.py::test_TC_2601_a_class_written_through_the_store_survives_a_restart
+1 failed in 0.51s
+after:  56c8145e0e8ca2c8647d0810ee7b78dea951570e00335124f81413b2ef954b8b
+tests/test_marks_directory.py::test_TC_2601_a_class_written_through_the_store_survives_a_restart: RED (KILLED)
+C:\Users\jjgh8\anaconda3\Lib\site-packages\pytest_asyncio\plugin.py:207: PytestDeprecationWarning: The configuration option "asyncio_default_fixture_loop_scope" is unset.
+The event loop scope for asynchronous fixtures will default to the fixture caching scope. Future versions of pytest-asyncio will default the loop scope for asynchronous fixtures to function scope. Set the default fixture loop scope explicitly in order to avoid unexpected behavior in the future. Valid fixture loop scopes are: "function", "class", "module", "package", "session"
+
+  warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCOPE_UNSET))
+F                                                                        [100%]
+================================== FAILURES ===================================
+______ test_TC_2603_a_fresh_home_has_no_marks_json_after_open_app_alone _______
+
+home = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-24577/test_TC_2603_a_fresh_home_has_0/.taskboard')
+
+    async def test_TC_2603_a_fresh_home_has_no_marks_json_after_open_app_alone(home):
+        """MM-D4: no seeded classes — nothing is written until a class is added."""
+        from taskboard.__main__ import open_app
+        fx.build(home, last="client-a")
+        (home / MARKS_NAME).unlink()
+        app = open_app(None)
+        async with app.run_test(size=(118, 30)) as pilot:
+            await pilot.pause()
+            assert app.marks.marks == {}
+>       assert not (home / MARKS_NAME).exists()
+E       AssertionError: assert not True
+E        +  where True = exists()
+E        +    where exists = (WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-24577/test_TC_2603_a_fresh_home_has_0/.taskboard') / 'marks.json').exists
+
+tests\test_marks_directory.py:516: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_marks_directory.py::test_TC_2603_a_fresh_home_has_no_marks_json_after_open_app_alone
+1 failed in 0.59s
+after:  56c8145e0e8ca2c8647d0810ee7b78dea951570e00335124f81413b2ef954b8b
+tests/test_marks_directory.py::test_TC_2603_a_fresh_home_has_no_marks_json_after_open_app_alone: RED (KILLED)
+BAD arms: 0
