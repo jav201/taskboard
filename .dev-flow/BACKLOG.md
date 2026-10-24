@@ -4,7 +4,7 @@ Shared by `/dev-flow` and `/fast-dev-flow`. Every open item lives here exactly o
 No `docs/engineering-rules.md` exists in this repo, so this is the default location.
 
 **Base ref:** `620f58c` (`main` = `origin/main` at batch 2026-10-18-batch-03's open; the batch's commits sit on the local branch `present-polish`, not pushed — the commission forbids a push)
-· **Last refresh:** 2026-10-18 (2026-10-18-batch-03 close)
+· **Last refresh:** 2026-10-24 (2026-10-24-batch-01 close)
 **Status (2026-10-16-batch-01 close):** 2634 tests collected on `present-v2` (2632 passed in `suite-004.txt`; the P4 gate run: 2631 passed + the 2 pre-existing standup failures + 1 clipboard environment failure)
 **Status:** **2592 tests** (batch `2026-10-07-batch-09`, templates v3: scratch authoring — the `I`
 picker gains a leading `New template...` row (reserved id `__new__`, the house `L`-picker create-row
@@ -134,6 +134,18 @@ recorded full-suite run).
   layout-driven pinned-test updates (TC-810 · AT-802 · AT-801c) are law-driven, named in
   increment-002's packet; the operator's visual re-verdict on the amended frames + the new chrome
   is PENDING in the Open section above.
+
+## Open — after `2026-10-24-batch-01` (the milestone-marks round: the operator's verdict on `prototypes/milestone_marks/`)
+
+- ✓ done in `2026-10-24-batch-01` (on the local branch `feat/milestone-marks`, not pushed) — **the milestone-marks round** (the operator's verdict: «D1: B · D2: global (recomendada, sin marcar) · 1 model: B · 2 editor: A (recomendada, sin marcar) · 3 legend: B · 4 filter: B · notes: (none)»): one directory of milestone classes (`id`, `name`, `shape`, `colour`, `hidden`) at `~/.taskboard/marks.json` for every board; the editor's class Select after `#f-milestone` (`alt+m`, variant A); `#` the MarksManager with `n` MarkForm and `␣` hide/show; every milestone mark through the one seat `views.milestone_mark(task, board, today)`; the legend strip under the gantt/present ruler naming the drawn classes + `N hidden`; hidden classes leave the gantt and the presentation; `/#cls` filters by the directory's prefix find; `?`, the details line and the README name the classes. Increments 001–004; the DDR approved (one condition discharged in the artifact, re-read by the same role); P4: 3235 passed + 1 environmental skip = 3236 collected, in three sequential chunks; closed 2026-10-24 (`05-close.md`).
+- **MM-D5's ▲ ambiguity** (logged per the commission, NOT fixed): where a late class's glyph is `▲` (Delivery's shape), the class mark sits beside the `▲Nd` late chip and the fold row's `▲N ◆` — shape says the class, the chip says late, but one glyph carries three meanings in one frame. Restated in the shipped `README.md:191-193`; no capture paints the echo (the round's only Delivery milestone is not late). The operator decides: keep (documented), or swap Delivery's shape.
+- **MM-D1's accepted costs** (recorded, NOT fixed): an unclassified milestone loses its red mark (renders `◆` in `mut`); the gantt month ruler shows no lateness; a class colour can resemble a project colour. Restated in the shipped README; the operator's eye at the next visual verdict.
+- the prefix-`find` rule lives in two homes that can fork: `marks.Directory.find` (marks.py:115, prefix-only) and `views._find_class` (views.py:3117, over the live dict) (DDR architect notice 3). One shared helper when either is next touched.
+- fold F4 (`AgendaItem.board` / `PersonItem.board` typed `object`) was deferred 002, re-named for 004, and silently dropped — the annotations are still `object` (DDR architect notice 4).
+- `milestone_tone` is dead in production (zero view callers; only its law tests) — retire it or re-law it (DDR architect notice 6).
+- `check_action` now refuses `#`/`@`/`A` over modals (app.py:1275; was: only the new gate — the others previously fired). A latent-bug fix in spirit, disclosed and asserted (DDR architect notice 2); the operator confirms the behaviour change.
+- the search shot's `0/4 tasks` tally under a `/#cls` filter is the kanban's own counter (band rows are not column tasks) — pre-existing semantics, may puzzle (DDR ux notice); the class census appears twice in one frame at 118×30 (the strip + the details line, per PC-2's split) — harmless redundancy, the operator's call.
+- **the clipboard environmental skip fired at P4** (G-001 of 2026-10-24-batch-01; the TC-1902 / G-011 flake's standing entry below): the machine's clipboard was broken OS-wide at gate time (verified from two contexts, `evidence/suite-p4-clipboard-probe.txt`). 3235/3236 passed; every batch test passed. Operator: accept as environmental, or re-run chunk 00 (`suite-p4-chunk00-files.txt`) once the clipboard recovers.
 
 ## Open — after `2026-10-21-batch-01` (the people round: the operator's verdict on `prototypes/people_round/`)
 

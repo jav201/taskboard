@@ -40,7 +40,7 @@ The trigger evaluation `state.json`'s `triggers.record` points at: one row per t
 
 ## Where we are
 
-PDR — P0, ARQ, P1 and P2 are closed; the PDR sealed (`design/PDR-2026-10-24-batch-01.md`): the spawned architect, qa-reviewer and ux-reviewer approved with conditions; PC-1..PC-5 folded at seal, none carried open; COLOURS = the round's SWATCH; the details-line seat is `_gantt_legend` (confirmed at 004's gate); `_hide` is the shallow `copy.copy` proxy. Next: P3 — increment 001 (the store and the field).
+The batch is CLOSED (2026-10-24). All stations green: P0, ARQ, P1, P2, PDR, the four increments (001 `f363a75`, 002 `6fc2637`, 003 `12b7a11`, 004 `1cae9c6`), the captures (`d3516d4`), the DDR (`512813d` — one condition discharged in the artifact, re-read by the same role), Phase 4 (`4a12f07` — the full suite in three sequential chunks, qa-reviewer PASS-WITH-NOTES) and the close (this PLAN's fold, `05-close.md`, the BACKLOG section, the final validator). The commission's "0 failed and 0 skipped" holds except one environmental skip (TC-1902's designed machine-refusal arm — the machine's clipboard broken OS-wide at gate time, G-001 in `04-validation.md`, probe persisted; the operator decides). No push, no merge.
 
 ## Objective
 
@@ -53,13 +53,15 @@ Port the round's chosen variants into the app — the store and the field (MM-D2
 | increment 001 | done | the store and the field (MM-D2, D3, D4): `taskboard/marks.py` (new), `taskboard/models.py`, `taskboard/app.py` |
 | increment 002 | done | 6fc2637, code-reviewer OK (F1-F4 folded, re-read verified) the encoding through one seat (MM-D1, section 3): `taskboard/views.py`, `taskboard/app.py` |
 | increment 003 | done | 12b7a11, code-reviewer approved (F1 folded as LED .46, discharged); a mishap reverted modals.py and the implementer regenerated it byte-equivalent | the editor Select and the `#` manager (MM-D5, D6 storage, D8): `taskboard/modals.py`, `taskboard/keymap.py`, `taskboard/app.py`, `taskboard/tcss` |
-| increment 004 | done (gate pending the suite transcript + review) | the legend, hide, search, help, README (MM-D6, D7): `taskboard/views.py`, `taskboard/app.py`, `README.md` |
+| increment 004 | done | 1cae9c6, code-reviewer PASS; all seven ATs minted; the 14 captures `d3516d4` | the legend, hide, search, help, README (MM-D6, D7): `taskboard/views.py`, `taskboard/app.py`, `README.md` |
 | P0 | done | triggers evaluated; refinement done |
-| P3 | in progress | increments 001 (f363a75) 002 (6fc2637) 003 (12b7a11) committed, each code-review PASS; 004 implemented, battery 18/18 KILLED, all seven ATs minted |
+| P3 | done | increments 001 (f363a75) 002 (6fc2637) 003 (12b7a11) 004 (1cae9c6) committed, each code-review PASS; the 14 captures committed (d3516d4) |
 | ARQ | approved with conditions | A-1 folded as D-4 (`render_marks` in 002; the map amended) |
 | P1 | approved | 8 HLRs, 17 LLRs, 7 ATs, 8 premises TRUE, the IFC, scan answered (LED .1-.25 + .26-.45 at P2) |
 | P2 | approved | three iterations; 5 majors + 22 minors folded (LED .26-.45); the last pass clean (`02-review.md`) |
 | PDR | approved with conditions | PC-1..PC-5 folded at seal, none open; COLOURS=SWATCH; `_gantt_legend` seat; `_hide` proxy (`design/PDR-2026-10-24-batch-01.md`) |
+| DDR | approved with conditions → all discharged | three independent roles (architect, qa-reviewer, ux-reviewer); no HIGH; C-1 discharged by amendment D-5 and re-read by the same role (final APPROVE); the +84 ledger reconciles exactly; the modals.py regeneration verified (`design/DDR-2026-10-24-batch-01.md`, `512813d`) |
+| P4 | PASS-WITH-NOTES | the full suite in three sequential chunks on 512813d: 3235 passed + 1 environmental skip (TC-1902, G-001) = 3236; qa-reviewer evaluated, its three corrections folded (`04-validation.md`, `4a12f07`) |
 
 ## Roadmap + increment plan
 
@@ -111,5 +113,9 @@ Port the round's chosen variants into the app — the store and the field (MM-D2
 |---|---|---|
 | validator `--brief` (step 3) | 2026-10-24 | 0 block · 158 notice · 47 n/a (`evidence/gate-step3.txt`) |
 | validator `--brief` (P1) | 2026-10-24 | 0 block · 171 notice · 48 n/a |
+| P4 chunk 00 (40 files, `suite-p4-chunk00.txt`) | 2026-10-24 | 1258 passed · 1 skipped (TC-1902 environmental, G-001) · exit 0 |
+| P4 chunk 01 (39 files, `suite-p4-chunk01.txt`) | 2026-10-24 | 1071 passed · 0 failed · 0 skipped · exit 0 |
+| P4 chunk 02 (39 files, `suite-p4-chunk02.txt`) | 2026-10-24 | 906 passed · 0 failed · 0 skipped · exit 0 |
+| P4 total | 2026-10-24 | 3235 passed + 1 environmental skip = 3236 collected = 3152 + 84 · qa-reviewer PASS-WITH-NOTES |
 
 **P3 (increment gates):** `V2` BLOCKs for `AT-2603`/`AT-2604`/`AT-2605`/`AT-2606` stand from increment 001's gate until their increments land their nodes — the station-expected red of `commands/dev-flow.md` §Two-layer validation model read through the PDR's AT-realisation map (AT-2603 → 002, AT-2604 → 003, AT-2605/AT-2606 → 004); walked past at 001's gate, expected green from increment 004's gate onward and at every gate after.

@@ -26,7 +26,8 @@ The editor gained the milestone-class Select of variant A and `#` gained its man
 | `taskboard/taskboard.tcss` | source | LLR-2605.1 | `#f-mark` width + `SelectOverlay` width |
 | `tests/test_marks_manager.py` | test | HLR-2605, HLR-2606 (TC-2605, TC-2606, AT-2601) | 18 nodes (new file) |
 | `tests/test_modal_keys.py` | test | HLR-2606, AT-2604 (D8) | the INVENTORY `MarkForm` row + `test_AT_2604_...` (2 params) |
-| `tests/test_keymap.py`, `tests/test_readme.py` | test | HLR-2606 (the README↔seat law) | `#`↔`number_sign` spelling maps |
+| `tests/test_keymap.py` | test | HLR-2606 (the README↔seat law) | `#`↔`number_sign` spelling map |
+| `tests/test_readme.py` | test | HLR-2606 (the README↔seat law) | `#`↔`number_sign` spelling map |
 | `README.md` | doc | the README↔seat law | one `#` key-table row (004 owns further prose) |
 
 | Count | Value |
