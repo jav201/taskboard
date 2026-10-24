@@ -44,7 +44,7 @@ The milestone-marks round's chosen variants, ported from `prototypes/milestone_m
 
 Out: class deletion; the `+ new class…` editor option; the `↵ only this` solo mode; `d` and `↵` inert in the shipped manager (bound in the round's `MarksWindow`, proto.py:859-862 — out of scope; the modal-keys law asserts their absence); variant A/C encodings and the class band; the legend in the agenda/people views. Carried costs, stated for the increment author: MM-D1's accepted costs — the unclassified milestone loses its red mark, the gantt month ruler shows no lateness, a class colour can resemble a project colour — and the `▲`-glyph ambiguity beside the `▲Nd` chip and the fold row (→ `BACKLOG.md` at the close, not fixed).
 
-AT realisation per increment: AT-2602, AT-2607 → 001; AT-2603 → 002; AT-2604 → 003; AT-2601 → realised across 001 (store) + 002 (seat) + 003 (manager/editor), its node in `tests/test_marks_manager.py` — 001/002's gates treat AT-2601 as provisional (V53) without ambiguity; AT-2605, AT-2606 → 004.
+AT realisation per increment: AT-2602 → 001; AT-2607 → 002 (node `test_milestone_marks.py:568` minted in 002, not 001 as first mapped — the deviation is declared at `03-increments/increment-001.md:9`); AT-2603 → 002; AT-2604 → 003; AT-2601 → realised across 001 (store) + 002 (seat) + 003 (manager/editor), its node in `tests/test_marks_manager.py` — 001/002's gates treat AT-2601 as provisional (V53) without ambiguity; AT-2605, AT-2606 → 004.
 
 ## 2 · Modules and boundaries
 
@@ -60,6 +60,7 @@ AT realisation per increment: AT-2602, AT-2607 → 001; AT-2603 → 002; AT-2604
 New import edges inside the layering: `views` → `models` (`marks.py`), `modals` → `models` (`marks.py`), `app` → `models` (`marks.py`) — all allowed by the map's §3; `marks.py` → `boards.py`, `models.py`, `people.py` (inside the layer, the `people.py` pattern reused not changed). `modals` never imports `app`.
 
 - Boundaries respected as declared in `docs/ARCHITECTURE.md`: ✓ (the ARQ already amended the map — marks rows at docs/ARCHITECTURE.md:41,66-70,128-134,175; A-1 folded as D-4, `render_marks` in 002).
+- **Amendment D-5 (DDR, 2026-10-24):** the `modals` row's frozen cell above ("must NOT reach into: `app`") is amended to allow exactly one runtime reach — `MarkForm._save` calls `self.app.marks.add/edit` (modals.py:2189-2196) so the refused-write notice lands on the form that stays open (LLR-2606.2; PC-2's reddener). It is a screen-attribute reach, not an import edge (`modals` still never imports `app`; the increment-003 packet disclosed it as risk (3)). The rejected alternative — the `PersonForm` pattern, dismissing with data and letting `MarksManager` perform the write — splits the form's save/cancel contract across two screens and moves the validation-error surface off the form; recorded here as a real decision, not drift (trigger A3 read through the DDR per its station file).
 
 ## 3 · Diagrams
 
