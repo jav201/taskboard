@@ -46,7 +46,7 @@ commission).
 | Term | Definition |
 |------|------------|
 | highlight / marker | the notes' inline syntax `==text==`, `!!text!!`, `++text++`; the marker characters themselves are never shown |
-| tone | one of `soon` (yellow `#fbbf24`), `over` (rose `#f43f5e`), `green` (`#4ade80`) — the HEX table, `taskboard/views.py:45-75` |
+| tone | one of `soon` (yellow `#fbbf24`), `over` (`#f43f5e`), `green` (`#4ade80`) — the HEX table, `taskboard/views.py:45-75` |
 | `ink` / `mut` | the presentation's base text tone (`#e6edf3`) / the board's base text tone (`#8b98a5`) — PH-1 keeps `ink` on the presentation |
 | tokeniser | `views.highlight_segments` (`taskboard/views.py:3450`): notes text → `(segment, tone)` pairs, markers dropped; the ONE parser (D-411) |
 | mention | `@Name` of a person the directory holds, drawn bold pink on the presentation (`mention_marks`, `taskboard/views.py:3496`) |
@@ -160,12 +160,12 @@ regression pin HLR-2905 (AT-e).
 
 ### HLR-2901 — the gantt view's cursor note colours the highlights
 - **Traceability:** US-2901
-- **Ledger:** none
+- **Ledger:** LED-2901.3
 - **Statement:** When the presentation's gantt view (view 1) shows the cursor task's note and the note holds `==a==`, `!!b!!` and `++c++`, the system shall paint each of `a`, `b` and `c` in its tone (`soon`, `over`, `green`) and shall show no marker character in the note's rows; text outside the markers keeps the presentation's base tone `ink`.
 - **Rationale (informative):** the people-round finding (BACKLOG item 4): the presentation is the one seat left drawing the markers raw. The board and the details/editor preview already colour them through the same tokeniser (D-411); this HLR closes the gap on the gantt cursor note (`taskboard/views.py:7052-7054`).
 - **Validation:** `test`
 - **Executed verification:** `env -u NO_COLOR python -m pytest -q tests/test_present_note_highlights.py -k AT_2901` (node minted at P3; P1 RED probe executed at `base_ref`, `evidence/red-p1.txt` probe 3)
-- **Numeric pass threshold:** over the painted cursor-note rows, marker characters (`=`, `!`, `+` in marker positions) == 0 AND each tone colour `#fbbf24`, `#f43f5e`, `#4ade80` appears at least once AND the unmarked words appear in `#e6edf3` (the probe at `base_ref` measured 12 marker chars and zero tone colours).
+- **Numeric pass threshold:** over the painted cursor-note rows, no run of `==`, `!!` or `++` appears in the painted rows (the fixtures are authored free of literal `=`, `!`, `+` so the scan is mechanical) AND each tone colour `#fbbf24`, `#f43f5e`, `#4ade80` appears at least once AND the unmarked words appear in `#e6edf3` (the probe at `base_ref` measured 12 marker chars and zero tone colours).
 - **Priority:** high
 - **Acceptance (black-box) — the user-verified outcome (the WHAT):**
   - **Observable outcome:** the cursor task's note on the projected gantt reads `a b c` in yellow, rose and green — no `==`, `!!`, `++` anywhere in it.
@@ -176,7 +176,7 @@ regression pin HLR-2905 (AT-e).
 
 ### HLR-2902 — the split view colours the highlights, at 118x30 and at 80x24, across wraps
 - **Traceability:** US-2901
-- **Ledger:** none
+- **Ledger:** LED-2901.3
 - **Statement:** When the presentation's split view (view 2) shows a task's note holding `==a==`, `!!b!!` and `++c++`, at 118x30 and at 80x24, the system shall paint each highlighted word in its tone with no marker character in any note row; a highlighted span that wraps across two rows shall keep its tone on both rows; the wrapping shall count the visible text only, never the markers, so a highlighted row is not cut early; the cut rows (`… +N lines`) and edge marks keep their current wording.
 - **Rationale (informative):** PH-2's width rule. Today `present_note_lines` wraps the marker-raw text (`taskboard/views.py:6659`), so a highlighted note wraps as if the markers were visible and a span loses its tone wherever a row boundary splits it. The 118x30 and 80x24 sizes are the commission's two room regimes.
 - **Validation:** `test`
@@ -188,48 +188,48 @@ regression pin HLR-2905 (AT-e).
   - **Shipped surface:** the `R` screen's split view (view 2), one column per half, the note blocks under each task heading.
   - **Acceptance test(s):** AT-2902
   - **Boundary catalog (QC-3):** ☐ empty (a task with no notes says `no notes` in the heading — existing, pinned) ☐ boundary (a span cut by the row edge keeps its tone on both rows; a note of exactly the row width is not cut early) ☐ invalid (unclosed marker — AT-2904) ☐ error (none new)
-  - **Negative control:** executed at P1 against `base_ref` — the wrap counts the markers: `present_note_lines("word " * 8 + "==tail==", 30)` puts `word ==tail==` on the second row, i.e. the markers consume width (`evidence/red-p1.txt`, probe 4).
+  - **Negative control:** executed at P1 against `base_ref` — the wrap counts the markers: `present_note_lines("word " * 8 + "==tail==", 30)` puts `word word ==tail==` on the second row, i.e. the markers consume width (`evidence/red-p1.txt`, probe 4).
 
 ### HLR-2903 — the `x` exports carry the same colours, no markers
 - **Traceability:** US-2901
-- **Ledger:** none
-- **Statement:** When the user presses `x` in the presentation's split view (view 2), the exported SVG shall carry the same highlight tones as the screen for the same note and no marker character; the PNG, rendered from the same SVG pipeline, shall match.
+- **Ledger:** LED-2903
+- **Statement:** When the user presses `x` in the presentation's split view (view 2), the exported SVG shall carry the same highlight tones as the screen for the same note and no marker character; the PNG, rendered from the same SVG pipeline (and only where the headless Edge renderer is installed — where it is not, the PNG limb is `n/a — no Edge`, the app's existing toast behaviour), shall match.
 - **Rationale (informative):** PH-4. The export prints the screen's composed `Text` (`save_present_svg`, `taskboard/views.py:7072-7082`), so once the screen carries the tones the export does too — this HLR pins the claim with an assertion on the exported SVG bytes (C-42's emitted form: the predicate reads the SVG file, not the screen's memory).
 - **Validation:** `test`
 - **Executed verification:** `env -u NO_COLOR python -m pytest -q tests/test_present_note_highlights.py -k AT_2903` (node minted at P3)
-- **Numeric pass threshold:** the exported SVG's bytes contain each of `#fbbf24`, `#f43f5e`, `#4ade80` at least once AND contain no marker run (`==`, `!!`, `++`) from the note AND the SVG's visible text carries `a`, `b`, `c` in those spans.
+- **Numeric pass threshold:** the exported SVG's bytes contain each of `#fbbf24`, `#f43f5e`, `#4ade80` at least once AND contain no marker run (`==`, `!!`, `++`) from the note AND the SVG's visible text carries `a`, `b`, `c` in those spans; the exported SVG escapes hostile note text — a note holding `<`, `&` and `<script>` reaches the SVG only as `&lt;`/`&amp;` (Rich's `save_svg` escapes text content; `title=` is a constant) — 0 raw `<script` bytes in the file.
 - **Priority:** high
 - **Acceptance (black-box) — the user-verified outcome (the WHAT):**
   - **Observable outcome:** the file the room is handed (`reports/present-*-split-*.svg`) shows the highlighted note in colour, identical to the screen.
   - **Shipped surface:** the `x` export in view 2 (`present_paths` + `save_present_svg`).
   - **Acceptance test(s):** AT-2903
-  - **Boundary catalog (QC-3):** ☐ empty (exporting with no cursor note — the existing export suite covers it) ☐ boundary ☐ invalid ☐ error (an unwritable reports path is the existing export suite's arm, unchanged)
+  - **Boundary catalog (QC-3):** ☐ empty (exporting with no cursor note — the existing export suite covers it) ☑ boundary (a cursor-less export — covered by the existing export suite's arms, unchanged) ☐ invalid (an unclosed-marker note in the export — pinned by screen parity and AT-2904, the export renders the screen's frame) ☐ error (an unwritable reports path is the existing export suite's arm, unchanged)
   - **Negative control:** executed at P1 against `base_ref` — the SVG path holds no tone painter: today's export of a highlighted note carries the markers in plain text and none of the tone colours (same probe 3 pipeline; the export renders the identical markup string).
 
 ### HLR-2904 — mentions, bullets and unpaired markers keep their rules inside highlights
 - **Traceability:** US-2901
-- **Ledger:** none
+- **Ledger:** LED-2901.3
 - **Statement:** When a note holds a mention of a person the directory holds inside a highlighted span, the mention shall stay bold pink (the highlight does not recolour it); the bullet and number leads (`• `, `1. `) shall be unchanged; an unclosed marker shall stay literal text, exactly as `highlight_segments` treats it.
 - **Rationale (informative):** PH-3. The board's seat already defines the coexistence — `notes_text` paints a mention inside a highlight bold pink (`taskboard/views.py:3518-3523`); the presentation shall not diverge. The unpaired-marker rule is the tokeniser's, inherited verbatim (§2.7 row 2).
 - **Validation:** `test`
 - **Executed verification:** `env -u NO_COLOR python -m pytest -q tests/test_present_note_highlights.py -k AT_2904` (node minted at P3; premise 2's probe is this arm's literal side)
-- **Numeric pass threshold:** over the painted rows: the mention's text appears in `bold #f472b6` exactly once; the unclosed `!!attention` appears verbatim in `#e6edf3` with the `!!` intact; a `• `-led highlighted item keeps the lead in `mut` and the span in its tone.
+- **Numeric pass threshold:** over the painted rows: the mention's text appears in `bold #f472b6` exactly once; the unclosed `!!attention` appears verbatim in `#e6edf3` with the `!!` intact; a `• `-led highlighted item keeps the lead in `mut` and the span in its tone; the span surrounding the mention keeps its tone colour on the same row.
 - **Priority:** high
 - **Acceptance (black-box) — the user-verified outcome (the WHAT):**
   - **Observable outcome:** `@Name` glows pink inside a coloured span; a stray `!!` nobody closed reads as typed; bullets look exactly as before.
   - **Shipped surface:** both presentation views' note rows (the mention arm is driven through view 2, the literal arm through view 1, by keys where a user would).
   - **Acceptance test(s):** AT-2904
   - **Boundary catalog (QC-3):** ☐ empty (a mention of a handle the directory does not hold stays as typed and uncoloured — the tokeniser-independent path) ☐ boundary (a mention spanning a wrap keeps bold pink on both rows) ☐ invalid (the unclosed marker) ☐ error (none new)
-  - **Negative control:** executed at P1 against `base_ref` — today the whole row is `ink`, so the mention's bold pink is the only colour and the unclosed `!!` still prints raw; the mutation arm that drops the mention pass inside the tone painter turns AT-2904 red.
+  - **Negative control:** executed at P1 against `base_ref` — today the whole row is `ink`, so the mention's bold pink is the only colour and the unclosed `!!` still prints raw; the mutation arm that drops the mention pass inside the tone painter turns AT-2904 red. Per arm: the mention-pink arm and the unclosed-marker-literal arm hold at `base_ref` by design (mentions already paint pink; raw text is already ink) — their RED sides are the increment's named mutations (mention pass dropped; escape removed); the bullet/span-tone arm is the one with an executed P1 red (the whole row is `ink` today, so the span has no tone — probe 3).
 
 ### HLR-2905 — nothing else changes (the regression pin)
 - **Traceability:** US-2901
-- **Ledger:** none
-- **Statement:** When any surface not named in HLR-2901..HLR-2904 runs — the board's markup, the details/editor preview, view 3 (`all`), the presentation's headings, layout, keys, hints, cuts' wording, every other view of the app — the system shall behave exactly as before this batch; every existing presentation byte-oracle and capture-based test stays green, and where an oracle fixture legitimately holds the markers the update is named and justified in the increment packet (AT-e).
+- **Ledger:** LED-2905
+- **Statement:** When any surface not named in HLR-2901..HLR-2904 runs — the board's markup, the details/editor preview, view 3 (`all`), the presentation's headings, layout, keys, hints, cuts' wording, every other view of the app — the system shall behave exactly as before this batch; every existing presentation byte-oracle and capture-based test stays green, and where an oracle fixture legitimately holds the markers the update is named and justified in the increment packet (AT-e) — the split-frame byte oracle `tests/test_people_look.py` (its fixture `tests/people_round_fixture.py` holds `++sign-off by the sponsor++` in task c5's notes) is a named, expected update, re-scanned for further casualties at P3.
 - **Rationale (informative):** the commission's AT-e. The change is confined to the note pipeline's paint step; everything else is pinned by the existing suite, whose baseline at P4 is 3258 passed (commission §Evidence).
 - **Validation:** `test`
 - **Executed verification:** the P4 full suite in 3 sequential chunks (the commission's §Evidence); the present suites (`tests/test_present*.py`) and the markup suites (`tests/test_markup_census.py`, `tests/test_markup_sites.py`, `tests/test_highlight_segments.py`, `tests/test_edit_window.py`) re-run.
-- **Numeric pass threshold:** the P4 chunks hold 3258 + this batch's new-node count passed, with no skip other than the clipboard arm TC-1902 and no fail; the suites above green, with only justified oracle updates.
+- **Numeric pass threshold:** the P4 chunks hold 3258 + this batch's new-node count passed, with no skip other than the clipboard arm TC-1902 and no fail; the suites above green, with only justified oracle updates; a pre-increment baseline run of the full suite in 3 chunks is executed at P3 and its exact per-chunk counts are pinned in `04-validation.md` (the 3258 figure is the commission's; the P4 gate compares against the executed baseline); one new node asserts a pre-existing MARKER-FREE cursor-note row still paints `#e6edf3` (the existing byte oracles compare `text.plain` only and cannot see a style-only regression such as `ink`→`mut`).
 - **Priority:** high
 - **Acceptance (black-box) — the user-verified outcome (the WHAT):**
   - **Observable outcome:** no difference anywhere except coloured highlights in the presentation's note rows and their exports.
@@ -246,8 +246,8 @@ regression pin HLR-2905 (AT-e).
 
 ### LLR-2901.1 — one tokeniser: the note rows are coloured only through `highlight_segments`
 - **Traceability:** HLR-2901, HLR-2902
-- **Ledger:** none
-- **Statement:** The presentation's note pipeline shall tokenise each note paragraph's text with `views.highlight_segments` before any wrapping or painting; the markers shall be dropped on every path (whole rows, cut rows, scrolled/paged rows); each span shall be painted in its tone via the existing markup painter (`c(escape(segment), tone)`); text outside the spans shall keep the presentation's base tone `ink` — never the board's `mut`. No second parser of the marker syntax shall be introduced anywhere in the presentation.
+- **Ledger:** LED-2901
+- **Statement:** The presentation's note pipeline shall tokenise each note paragraph's text with `views.highlight_segments` before any wrapping or painting; the markers shall be dropped on every path (whole rows, cut rows, scrolled/paged rows); each span shall be painted in its tone via the existing markup painter (`c(escape(segment), tone)`); text outside the spans shall keep the presentation's base tone `ink` — never the board's `mut`. No second parser of the marker syntax shall be introduced anywhere in the presentation. The changed symbols this LLR owns for the reverse census (C-26): `present_note_lines` (its row type becomes `(lead, [(segment, tone)])`), `_present_note_markup` and `_paint_marks` (the tone-aware paint); `_present_cut` is re-shaped by LLR-2902.1.
 - **Rationale (informative):** PH-1, D-411. One tokeniser is what guarantees the presentation cannot disagree with the board on what a note highlights. The tokenise-before-wrap order is also PH-2's precondition: the wrap must see marker-free text.
 - **Validation:** `test (unit)`
 - **Executed verification:** AT-2901/AT-2902's nodes (P3) plus the reverse census probe: `grep -rn "_HIGHLIGHT_RE\|==" taskboard/views.py` at P3 lists the tokeniser as the only marker syntax reader in the presentation's note path (the regex itself stays untouched).
@@ -257,19 +257,19 @@ regression pin HLR-2905 (AT-e).
 
 ### LLR-2901.2 — markup safety: every segment is escaped before it enters markup (C-17)
 - **Traceability:** HLR-2901, HLR-2902, HLR-2904
-- **Ledger:** none
-- **Statement:** Every piece of note text — span or plain, mention or not — shall pass through `escape` before it is composed into a markup string, exactly as `_paint_marks` does today (`taskboard/views.py:6697-6704`); note text shall never be interpolated raw into a markup-parsed string. A hostile note (Rich brackets, ANSI control bytes, a link tag) shall render literally, with no parse error, no style leak and no crash.
+- **Ledger:** LED-2901.2, LED-2901.3
+- **Statement:** Every piece of note text — span or plain, mention or not — shall pass through `escape` before it is composed into a markup string, exactly as `_paint_marks` does today (`taskboard/views.py:6697-6704`); note text shall never be interpolated raw into a markup-parsed string. A hostile note (Rich brackets, ANSI control bytes, a link tag) shall render literally, with no parse error, no style leak and no crash. The `k == 1` cut path of `_present_cut` (`taskboard/views.py:6722-6727`) is an escape seat: its composed first row is painted piece by piece, never as one interpolated string.
 - **Rationale (informative):** trigger C8 fired — this increment widens what is parsed into markup over file-derived note text. The presentation already escaped; the fix preserves that invariant span by span rather than row by row.
 - **Validation:** `test (unit)`
-- **Executed verification:** a hostile-input arm inside AT-2904's node (P3): a note holding `[bold red]`, `\x1b[31m` and a `https://` tag renders verbatim in `ink`.
-- **Numeric pass threshold:** 0 styles other than `ink`'s appear in the hostile row; 0 raised exceptions; the hostile note's printable bytes all appear (escaped or verbatim) in the painted row.
+- **Executed verification:** a hostile-input arm inside AT-2904's node (P3): a note holding `[bold red]`, `\x1b[31m` and a `https://` tag renders verbatim in `ink`; a note holding `a [/] b` must render literally with no exception (`MarkupError` is the failure).
+- **Numeric pass threshold:** 0 styles other than `ink`'s appear in the hostile row; 0 raised exceptions; the hostile note's printable bytes all appear (escaped or verbatim) in the painted row; the painted row contains 0 `\x1b` bytes (Textual strips the control byte before render — verified by the P3 executed probe; if the probe shows a replacement glyph instead, the threshold is restated to that observed form in the increment packet, and either way the red style must never apply).
 - **Negative control:** removing the escape on any segment turns the hostile-input arm red (style leak or `MissingStyle` error) — executed in the mutation battery.
 - **Boundary catalog:** ☐ invalid (the hostile payload is the invalid class, covered above)
 
 ### LLR-2902.1 — the width counts visible text only; a wrapped span keeps its tone
 - **Traceability:** HLR-2902
-- **Ledger:** none
-- **Statement:** The wrap shall measure the marker-free text in cells (the existing `_wrap_cells` semantics for wide and zero-width glyphs are unchanged, as is the `textwrap` fast path's regime); each output row shall carry its spans' tones, so a span split by a row boundary keeps its tone on every row it touches; the bullet and number leads and their hanging indent are unchanged; the cut rows (`… +N lines`) and edge marks keep their current wording and their `reached` tone.
+- **Ledger:** LED-2901
+- **Statement:** The wrap shall measure the marker-free text in cells (the existing `_wrap_cells` semantics for wide and zero-width glyphs are unchanged, as is the `textwrap` fast path's regime); each output row shall carry its spans' tones, so a span split by a row boundary keeps its tone on every row it touches; the bullet and number leads and their hanging indent are unchanged; the cut rows (`… +N lines`) and edge marks keep their current wording and their `reached` tone. The changed symbol this LLR owns for the reverse census (C-26): `_present_cut` (its `rows` parameter carries the toned row shape, including the `k == 1` cut path).
 - **Rationale (informative):** PH-2. The row representation must therefore carry tones, not a single tone per row — the PDR proposes the segment-list row form; this LLR binds the behaviour, not the type.
 - **Validation:** `test (unit)`
 - **Executed verification:** AT-2902's wrap fixture (P3) at 118x30 and 80x24; the width-equivalence arm: a note and its marker-free twin wrap to identical row counts and cell fills at the same width.
@@ -279,7 +279,7 @@ regression pin HLR-2905 (AT-e).
 
 ### LLR-2903.1 — the exports render the composed frame; no export-side painter
 - **Traceability:** HLR-2903
-- **Ledger:** none
+- **Ledger:** LED-2903
 - **Statement:** `save_present_svg`, `present_paths` and `present_all_export` shall stay byte-unchanged; the `x` exports shall show whatever tones the composed frame carries. No SVG-specific colouring code shall be added.
 - **Rationale (informative):** PH-4 with the least surface. The export is a renderer of the screen's `Text`; colouring it twice would be a second painter D-411 forbids in spirit.
 - **Validation:** `inspection` + `test`
@@ -320,6 +320,8 @@ NODES:
     owner: LLR-2901.1, LLR-2902.1
   - _present_note_markup / _present_cut (taskboard/views.py:6707, :6713): paint each row — lead mut, spans in tone, mentions bold pink, escape every segment
     owner: LLR-2901.1, LLR-2901.2, LLR-2904.1
+  - _paint_marks (taskboard/views.py:6697): the tone-aware paint — each segment escaped and coloured, mentions bold pink
+    owner: LLR-2901.1, LLR-2901.2
   - render_present / render_present_all (taskboard/views.py:6977, :7349): compose the frame for views 1/2/3
     owner: LLR-2903.1
   - save_present_svg / present_all_export (taskboard/views.py:7072, :7374): emit the frame to the x SVG/PNG
@@ -363,7 +365,7 @@ Layer A: unit arms over the pipeline functions (row shape, width equivalence, es
   - `role` → §2.3 «No other role is affected» (user-characteristics prose; no auth surface exists or changes).
   - `form` → §1.5 «the Information Flow Contract» and §2.7 (the word "information" is not flagged; the matches are "formed"/"Information Flow Contract" — prose, no HTML form is involved; the presentation is a Textual screen, not a web form).
   - `escape` → LLR-2901.2's own subject: the fix must keep escaping note text before markup composition. This is the batch's one genuine security-adjacent control (trigger C8 → C-17), and it is answered BY a requirement, not an open risk: LLR-2901.2's hostile-input arm (Rich brackets, ANSI bytes, a link tag render literally, no parse error, no style leak) is minted at P3 inside AT-2904's node.
-- No auth, secrets, external integration, sensitive data, destructive-DB, input-surface or network family (C1–C7) has a subject in this change; the scan's flags are the C6-adjacent vocabulary of the escaping control itself. Residual risk: none open — the C-17 control is contractual.
+- No auth, secrets, external integration, sensitive data, destructive-DB, input-surface or network family (C1–C7) has a subject in this change; the scan's flags are the C6-adjacent vocabulary of the escaping control itself. Residual risk: the C-17 control is contractual but its hostile arms are P3-minted, not yet executed — the increment gate owes their execution and their mutation-battery kills before any ship verdict.
 
 ### 6.4 Phase-1 reconciliation log — moved to the ledger (§7)
 

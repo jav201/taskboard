@@ -6,7 +6,7 @@ HEX tones: {'soon': '#fbbf24', 'over': '#f43f5e', 'green': '#4ade80', 'mut': '#8
 == probe 2: unpaired markers stay literal ==
 [('pay !!attention now', 'mut')]
 
-== probe 3: the defect — the presentation paints markers raw, all ink ==
+== probe 3: the defect - the presentation paints markers raw, all ink ==
 rows: [('', '==a== !!b!! ++c++')]
 markup: ['[#8b98a5][/][#e6edf3]==a== !!b!! ++c++[/]             ']
 marker chars in markup: 12
@@ -14,3 +14,9 @@ any tone colour present: False
 
 == probe 4: wrapping counts the markers today (PH-2 defect) ==
 rows: [('', 'word word word word word word'), ('', 'word word ==tail==')]
+
+== probe 5: hostile payloads against the markup layer (C-17 pin) ==
+'a \x1b[31m red' -> 'a \x1b[31m red'
+'a [/] b' -> RAISES MarkupError closing tag '[/]' at position 2 has nothing to close
+'x [bold red] y' -> 'x  y'
+'l < & > " \'' -> 'l < & > " \''
