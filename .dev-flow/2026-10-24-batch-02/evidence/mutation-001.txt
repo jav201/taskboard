@@ -1,0 +1,586 @@
+arms: 24
+before: 89ff66cf3c6425160dfe83b3d30d478246b4a9fbdd1eb0b5ef248c629d8af89b
+C:\Users\jjgh8\anaconda3\Lib\site-packages\pytest_asyncio\plugin.py:207: PytestDeprecationWarning: The configuration option "asyncio_default_fixture_loop_scope" is unset.
+The event loop scope for asynchronous fixtures will default to the fixture caching scope. Future versions of pytest-asyncio will default the loop scope for asynchronous fixtures to function scope. Set the default fixture loop scope explicitly in order to avoid unexpected behavior in the future. Valid fixture loop scopes are: "function", "class", "module", "package", "session"
+
+  warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCOPE_UNSET))
+F                                                                        [100%]
+================================== FAILURES ===================================
+____________________ test_AT_2701_the_home_touches_nothing ____________________
+
+home = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-25061/test_AT_2701_the_home_touches_0/.taskboard')
+
+    async def test_AT_2701_the_home_touches_nothing(home):
+        """AT-2701 (US-2701): with a foreign marker planted and a sweepable done task
+        on the default board, the start home shows — no open-twice notice, no marker of
+        this window, the default board's bytes untouched; and `q` from the home quits
+        with nothing written (LLR-2701.2)."""
+        _two_boards(home)
+        default = mb.board_path(home, "personal")
+        _plant_sweepable(default)
+        foreign = boards.announce(default, NOW)
+        before = default.read_bytes()
+        app = _open(None)
+        try:
+            async with app.run_test(size=(118, 30), notifications=True) as pilot:
+                await pilot.pause()
+                assert type(app.screen).__name__ == "BoardsHome"
+>               assert not [n for n in app._notifications if n.title == OPEN_TWICE]
+E               AssertionError: assert not [Notification(message='Personal is already open in another taskboard window (since 09:30). Both save the same file: th...ty='warning', timeout=30, markup=False, raised_at=1792907983.7401834, identity='2367fc66-a416-4017-bc98-b57743d3c136')]
+
+tests\test_home_deferred_start.py:111: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_home_deferred_start.py::test_AT_2701_the_home_touches_nothing
+1 failed in 0.68s
+after:  89ff66cf3c6425160dfe83b3d30d478246b4a9fbdd1eb0b5ef248c629d8af89b
+tests/test_home_deferred_start.py::test_AT_2701_the_home_touches_nothing [            self._mount_board(at_mount=True)\n    ->             self._open_board(at_mount=True)\n    ]: RED (KILLED)
+C:\Users\jjgh8\anaconda3\Lib\site-packages\pytest_asyncio\plugin.py:207: PytestDeprecationWarning: The configuration option "asyncio_default_fixture_loop_scope" is unset.
+The event loop scope for asynchronous fixtures will default to the fixture caching scope. Future versions of pytest-asyncio will default the loop scope for asynchronous fixtures to function scope. Set the default fixture loop scope explicitly in order to avoid unexpected behavior in the future. Valid fixture loop scopes are: "function", "class", "module", "package", "session"
+
+  warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCOPE_UNSET))
+.                                                                        [100%]
+1 passed in 0.67s
+after:  89ff66cf3c6425160dfe83b3d30d478246b4a9fbdd1eb0b5ef248c629d8af89b
+tests/test_home_deferred_start.py::test_AT_2702_enter_runs_the_deferred_start [            self._mount_board(at_mount=True)\n    ->             self._open_board(at_mount=True)\n    ]: GREEN (SURVIVED)
+C:\Users\jjgh8\anaconda3\Lib\site-packages\pytest_asyncio\plugin.py:207: PytestDeprecationWarning: The configuration option "asyncio_default_fixture_loop_scope" is unset.
+The event loop scope for asynchronous fixtures will default to the fixture caching scope. Future versions of pytest-asyncio will default the loop scope for asynchronous fixtures to function scope. Set the default fixture loop scope explicitly in order to avoid unexpected behavior in the future. Valid fixture loop scopes are: "function", "class", "module", "package", "session"
+
+  warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCOPE_UNSET))
+.                                                                        [100%]
+1 passed in 0.95s
+after:  89ff66cf3c6425160dfe83b3d30d478246b4a9fbdd1eb0b5ef248c629d8af89b
+tests/test_home_deferred_start.py::test_AT_2703_escape_runs_the_start_once [            self._mount_board(at_mount=True)\n    ->             self._open_board(at_mount=True)\n    ]: GREEN (SURVIVED)
+C:\Users\jjgh8\anaconda3\Lib\site-packages\pytest_asyncio\plugin.py:207: PytestDeprecationWarning: The configuration option "asyncio_default_fixture_loop_scope" is unset.
+The event loop scope for asynchronous fixtures will default to the fixture caching scope. Future versions of pytest-asyncio will default the loop scope for asynchronous fixtures to function scope. Set the default fixture loop scope explicitly in order to avoid unexpected behavior in the future. Valid fixture loop scopes are: "function", "class", "module", "package", "session"
+
+  warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCOPE_UNSET))
+F                                                                        [100%]
+================================== FAILURES ===================================
+_____________ test_AT_2704_another_board_never_writes_the_default _____________
+
+home = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-25064/test_AT_2704_another_board_nev0/.taskboard')
+
+    async def test_AT_2704_another_board_never_writes_the_default(home):
+        """AT-2704 (US-2701): `enter` on the second board's card starts that board — its
+        marker appears — while the default board, sweepable and foreign-marked but never
+        started, is left byte-identical with its old done task un-archived."""
+        _two_boards(home)
+        default = mb.board_path(home, "personal")
+        _plant_sweepable(default)
+        foreign = boards.announce(default, NOW)
+        before = default.read_bytes()
+        app = _open(None)
+        try:
+            async with app.run_test(size=(118, 30), notifications=True) as pilot:
+                await pilot.pause()
+                await _press(pilot, "right", "enter")     # the Client · Retail RAG card
+                assert app.board_id == "client-retail-rag"
+                assert len(_markers_for(mb.board_path(home, "client-retail-rag"))) == 1
+>               assert default.read_bytes() == before
+E               assert b'{\r\n  "pha...e\r\n  }\r\n}' == b'{\r\n  "pha...e\r\n  }\r\n}'
+E                 
+E                 At index 3477 diff: b't' != b'f'
+E                 Use -v to get more diff
+
+tests\test_home_deferred_start.py:220: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_home_deferred_start.py::test_AT_2704_another_board_never_writes_the_default
+1 failed in 0.70s
+after:  89ff66cf3c6425160dfe83b3d30d478246b4a9fbdd1eb0b5ef248c629d8af89b
+tests/test_home_deferred_start.py::test_AT_2704_another_board_never_writes_the_default [            self._mount_board(at_mount=True)\n    ->             self._open_board(at_mount=True)\n    ]: RED (KILLED)
+C:\Users\jjgh8\anaconda3\Lib\site-packages\pytest_asyncio\plugin.py:207: PytestDeprecationWarning: The configuration option "asyncio_default_fixture_loop_scope" is unset.
+The event loop scope for asynchronous fixtures will default to the fixture caching scope. Future versions of pytest-asyncio will default the loop scope for asynchronous fixtures to function scope. Set the default fixture loop scope explicitly in order to avoid unexpected behavior in the future. Valid fixture loop scopes are: "function", "class", "module", "package", "session"
+
+  warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCOPE_UNSET))
+F                                                                        [100%]
+================================== FAILURES ===================================
+_________________ test_AT_2705_the_offer_opens_over_the_board _________________
+
+home = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-25065/test_AT_2705_the_offer_opens_o0/.taskboard')
+
+    @pytest.mark.milestone_offer
+    async def test_AT_2705_the_offer_opens_over_the_board(home):
+        """AT-2705 (US-2701): with the home up, a default board holding an unmarked
+        milestone candidate opens no offer; leaving the home pushes the offer over the
+        board — the home is not on the stack beneath it."""
+        _two_boards(home)
+        default = mb.board_path(home, "personal")
+        data = json.loads(default.read_text(encoding="utf-8"))
+        del data["settings"]["migrations"]["milestones"]
+        default.write_text(json.dumps(data), encoding="utf-8")
+        app = _open(None)
+        async with app.run_test(size=(118, 30)) as pilot:
+            await pilot.pause()
+>           assert type(app.screen).__name__ == "BoardsHome"
+E           AssertionError: assert 'MilestoneOffer' == 'BoardsHome'
+E             
+E             - BoardsHome
+E             + MilestoneOffer
+
+tests\test_home_deferred_start.py:242: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_home_deferred_start.py::test_AT_2705_the_offer_opens_over_the_board
+1 failed in 0.68s
+after:  89ff66cf3c6425160dfe83b3d30d478246b4a9fbdd1eb0b5ef248c629d8af89b
+tests/test_home_deferred_start.py::test_AT_2705_the_offer_opens_over_the_board [            self._mount_board(at_mount=True)\n    ->             self._open_board(at_mount=True)\n    ]: RED (KILLED)
+C:\Users\jjgh8\anaconda3\Lib\site-packages\pytest_asyncio\plugin.py:207: PytestDeprecationWarning: The configuration option "asyncio_default_fixture_loop_scope" is unset.
+The event loop scope for asynchronous fixtures will default to the fixture caching scope. Future versions of pytest-asyncio will default the loop scope for asynchronous fixtures to function scope. Set the default fixture loop scope explicitly in order to avoid unexpected behavior in the future. Valid fixture loop scopes are: "function", "class", "module", "package", "session"
+
+  warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCOPE_UNSET))
+F                                                                        [100%]
+================================== FAILURES ===================================
+________ test_TC_2703_a_failed_deferred_start_keeps_the_board_pending _________
+
+home = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-25066/test_TC_2703_a_failed_deferred0/.taskboard')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x000002778DAEB620>
+
+    async def test_TC_2703_a_failed_deferred_start_keeps_the_board_pending(home,
+                                                                           monkeypatch):
+        """TC-2703: a migration failure on the deferred start leaves the record
+        unwritten, pops the home onto the board view and lets the migration's own
+        notice explain; `B`, `esc` then retries the start from the migration — exactly
+        once (the record names the board only on a completed start)."""
+        _two_boards(home)
+        default = mb.board_path(home, "personal")
+        real = app_module.run_link_migration
+        state = {"failed": False}
+    
+        def flaky(board):
+            if not state["failed"]:
+                state["failed"] = True
+                return SimpleNamespace(error="disk full")
+            return real(board)
+    
+        monkeypatch.setattr(app_module, "run_link_migration", flaky)
+        app = _open(None)
+        async with app.run_test(size=(118, 30), notifications=True) as pilot:
+            await pilot.pause()
+            calls = []
+            real_open = app._open_board
+    
+            def spy(at_mount=False):
+                calls.append(at_mount)
+                return real_open(at_mount=at_mount)
+    
+            app._open_board = spy
+            await _press(pilot, "escape")
+            fails = [n for n in app._notifications
+                     if n.title == "Boards" and "link migration stopped" in str(n.message)]
+>           assert len(fails) == 1 and fails[0].severity == "error"
+E           assert (0 == 1)
+E            +  where 0 = len([])
+
+tests\test_home_deferred_start.py:285: AssertionError
+---------------------------- Captured stderr call -----------------------------
+Link migration stopped: disk full. The board file was not changed. Free space 
+or write access in the board's folder, or run taskboard --board on a copy.
+=========================== short test summary info ===========================
+FAILED tests/test_home_deferred_start.py::test_TC_2703_a_failed_deferred_start_keeps_the_board_pending
+1 failed in 0.57s
+after:  89ff66cf3c6425160dfe83b3d30d478246b4a9fbdd1eb0b5ef248c629d8af89b
+tests/test_home_deferred_start.py::test_TC_2703_a_failed_deferred_start_keeps_the_board_pending [            self._mount_board(at_mount=True)\n    ->             self._open_board(at_mount=True)\n    ]: RED (KILLED)
+C:\Users\jjgh8\anaconda3\Lib\site-packages\pytest_asyncio\plugin.py:207: PytestDeprecationWarning: The configuration option "asyncio_default_fixture_loop_scope" is unset.
+The event loop scope for asynchronous fixtures will default to the fixture caching scope. Future versions of pytest-asyncio will default the loop scope for asynchronous fixtures to function scope. Set the default fixture loop scope explicitly in order to avoid unexpected behavior in the future. Valid fixture loop scopes are: "function", "class", "module", "package", "session"
+
+  warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCOPE_UNSET))
+.                                                                        [100%]
+1 passed in 0.49s
+after:  89ff66cf3c6425160dfe83b3d30d478246b4a9fbdd1eb0b5ef248c629d8af89b
+tests/test_home_deferred_start.py::test_AT_2701_the_home_touches_nothing [self._offer_milestones()\n        self._started_b -> self._offer_milestones()]: GREEN (SURVIVED)
+C:\Users\jjgh8\anaconda3\Lib\site-packages\pytest_asyncio\plugin.py:207: PytestDeprecationWarning: The configuration option "asyncio_default_fixture_loop_scope" is unset.
+The event loop scope for asynchronous fixtures will default to the fixture caching scope. Future versions of pytest-asyncio will default the loop scope for asynchronous fixtures to function scope. Set the default fixture loop scope explicitly in order to avoid unexpected behavior in the future. Valid fixture loop scopes are: "function", "class", "module", "package", "session"
+
+  warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCOPE_UNSET))
+F                                                                        [100%]
+================================== FAILURES ===================================
+_________________ test_AT_2702_enter_runs_the_deferred_start __________________
+
+home = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-25068/test_AT_2702_enter_runs_the_de0/.taskboard')
+
+    async def test_AT_2702_enter_runs_the_deferred_start(home):
+        """AT-2702 (US-2701): `enter` on the default card — the cursor starts on it —
+        runs the deferred start exactly once: the pinned open-twice notice, this
+        window's marker, the sweepable task archived; a later `B`, `esc` round trip
+        adds no second notice, no second marker and no second write (LLR-2702.1/2702.3)."""
+        _two_boards(home)
+        default = mb.board_path(home, "personal")
+        _plant_sweepable(default)
+        foreign = boards.announce(default, NOW)
+        before = default.read_bytes()
+        app = _open(None)
+        try:
+            async with app.run_test(size=(118, 30), notifications=True) as pilot:
+                await pilot.pause()
+                assert type(app.screen).__name__ == "BoardsHome"
+                await _press(pilot, "enter")
+                twice = [n for n in app._notifications if n.title == OPEN_TWICE]
+                assert len(twice) == 1
+                assert twice[0].message == (
+                    "Personal is already open in another taskboard window (since 09:30). "
+                    "Both save the same file: the last save wins. Close one of them.")
+                assert len(_markers_for(default)) == 2     # the foreign marker and this window's
+                assert Board.load(default).task_by_id("t-old").archived
+                after = default.read_bytes()
+                assert after != before                    # the sweep saved the archive
+>               assert app._started_board == "personal"
+E               AssertionError: assert None == 'personal'
+E                +  where None = TaskboardApp(title='taskboard', classes={'-dark-mode'}, pseudo_classes={'focus', 'dark'})._started_board
+
+tests\test_home_deferred_start.py:149: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_home_deferred_start.py::test_AT_2702_enter_runs_the_deferred_start
+1 failed in 0.65s
+after:  89ff66cf3c6425160dfe83b3d30d478246b4a9fbdd1eb0b5ef248c629d8af89b
+tests/test_home_deferred_start.py::test_AT_2702_enter_runs_the_deferred_start [self._offer_milestones()\n        self._started_b -> self._offer_milestones()]: RED (KILLED)
+C:\Users\jjgh8\anaconda3\Lib\site-packages\pytest_asyncio\plugin.py:207: PytestDeprecationWarning: The configuration option "asyncio_default_fixture_loop_scope" is unset.
+The event loop scope for asynchronous fixtures will default to the fixture caching scope. Future versions of pytest-asyncio will default the loop scope for asynchronous fixtures to function scope. Set the default fixture loop scope explicitly in order to avoid unexpected behavior in the future. Valid fixture loop scopes are: "function", "class", "module", "package", "session"
+
+  warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCOPE_UNSET))
+F                                                                        [100%]
+================================== FAILURES ===================================
+___________________ test_AT_2703_escape_runs_the_start_once ___________________
+
+home = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-25069/test_AT_2703_escape_runs_the_s0/.taskboard')
+
+    async def test_AT_2703_escape_runs_the_start_once(home):
+        """AT-2703 (US-2701): `esc` from the home runs the deferred start exactly once;
+        `B` then `esc` later re-runs nothing. The unlisted arm (PDR C2): an `--open`
+        board's record is its own `unlisted:` sentinel — the mount start ran with no
+        home (HD-4), and `B`'s home pops back over it without re-running anything."""
+        _two_boards(home)
+        default = mb.board_path(home, "personal")
+        foreign = boards.announce(default, NOW)
+        app = _open(None)
+        try:
+            async with app.run_test(size=(118, 30), notifications=True) as pilot:
+                await pilot.pause()
+                await _press(pilot, "escape")
+                assert len([n for n in app._notifications if n.title == OPEN_TWICE]) == 1
+                assert len(_markers_for(default)) == 2
+>               assert app._started_board == "personal"
+E               AssertionError: assert None == 'personal'
+E                +  where None = TaskboardApp(title='taskboard', classes={'-dark-mode'}, pseudo_classes={'dark', 'focus'})._started_board
+
+tests\test_home_deferred_start.py:176: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_home_deferred_start.py::test_AT_2703_escape_runs_the_start_once
+1 failed in 0.64s
+after:  89ff66cf3c6425160dfe83b3d30d478246b4a9fbdd1eb0b5ef248c629d8af89b
+tests/test_home_deferred_start.py::test_AT_2703_escape_runs_the_start_once [self._offer_milestones()\n        self._started_b -> self._offer_milestones()]: RED (KILLED)
+C:\Users\jjgh8\anaconda3\Lib\site-packages\pytest_asyncio\plugin.py:207: PytestDeprecationWarning: The configuration option "asyncio_default_fixture_loop_scope" is unset.
+The event loop scope for asynchronous fixtures will default to the fixture caching scope. Future versions of pytest-asyncio will default the loop scope for asynchronous fixtures to function scope. Set the default fixture loop scope explicitly in order to avoid unexpected behavior in the future. Valid fixture loop scopes are: "function", "class", "module", "package", "session"
+
+  warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCOPE_UNSET))
+.                                                                        [100%]
+1 passed in 0.66s
+after:  89ff66cf3c6425160dfe83b3d30d478246b4a9fbdd1eb0b5ef248c629d8af89b
+tests/test_home_deferred_start.py::test_AT_2704_another_board_never_writes_the_default [self._offer_milestones()\n        self._started_b -> self._offer_milestones()]: GREEN (SURVIVED)
+C:\Users\jjgh8\anaconda3\Lib\site-packages\pytest_asyncio\plugin.py:207: PytestDeprecationWarning: The configuration option "asyncio_default_fixture_loop_scope" is unset.
+The event loop scope for asynchronous fixtures will default to the fixture caching scope. Future versions of pytest-asyncio will default the loop scope for asynchronous fixtures to function scope. Set the default fixture loop scope explicitly in order to avoid unexpected behavior in the future. Valid fixture loop scopes are: "function", "class", "module", "package", "session"
+
+  warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCOPE_UNSET))
+.                                                                        [100%]
+1 passed in 0.53s
+after:  89ff66cf3c6425160dfe83b3d30d478246b4a9fbdd1eb0b5ef248c629d8af89b
+tests/test_home_deferred_start.py::test_AT_2705_the_offer_opens_over_the_board [self._offer_milestones()\n        self._started_b -> self._offer_milestones()]: GREEN (SURVIVED)
+C:\Users\jjgh8\anaconda3\Lib\site-packages\pytest_asyncio\plugin.py:207: PytestDeprecationWarning: The configuration option "asyncio_default_fixture_loop_scope" is unset.
+The event loop scope for asynchronous fixtures will default to the fixture caching scope. Future versions of pytest-asyncio will default the loop scope for asynchronous fixtures to function scope. Set the default fixture loop scope explicitly in order to avoid unexpected behavior in the future. Valid fixture loop scopes are: "function", "class", "module", "package", "session"
+
+  warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCOPE_UNSET))
+F                                                                        [100%]
+================================== FAILURES ===================================
+________ test_TC_2703_a_failed_deferred_start_keeps_the_board_pending _________
+
+home = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-25072/test_TC_2703_a_failed_deferred0/.taskboard')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x000001B2B9D5B980>
+
+    async def test_TC_2703_a_failed_deferred_start_keeps_the_board_pending(home,
+                                                                           monkeypatch):
+        """TC-2703: a migration failure on the deferred start leaves the record
+        unwritten, pops the home onto the board view and lets the migration's own
+        notice explain; `B`, `esc` then retries the start from the migration — exactly
+        once (the record names the board only on a completed start)."""
+        _two_boards(home)
+        default = mb.board_path(home, "personal")
+        real = app_module.run_link_migration
+        state = {"failed": False}
+    
+        def flaky(board):
+            if not state["failed"]:
+                state["failed"] = True
+                return SimpleNamespace(error="disk full")
+            return real(board)
+    
+        monkeypatch.setattr(app_module, "run_link_migration", flaky)
+        app = _open(None)
+        async with app.run_test(size=(118, 30), notifications=True) as pilot:
+            await pilot.pause()
+            calls = []
+            real_open = app._open_board
+    
+            def spy(at_mount=False):
+                calls.append(at_mount)
+                return real_open(at_mount=at_mount)
+    
+            app._open_board = spy
+            await _press(pilot, "escape")
+            fails = [n for n in app._notifications
+                     if n.title == "Boards" and "link migration stopped" in str(n.message)]
+            assert len(fails) == 1 and fails[0].severity == "error"
+            assert app._started_board is None                  # the record stays pending
+            assert type(app.screen).__name__ == "Screen"       # the home popped; the board beneath
+            assert calls == [False]
+            await _press(pilot, "B", "escape")                 # the retry
+            assert calls == [False, False]
+>           assert app._started_board == "personal"
+E           AssertionError: assert None == 'personal'
+E            +  where None = TaskboardApp(title='taskboard', classes={'-dark-mode'}, pseudo_classes={'dark', 'focus'})._started_board
+
+tests\test_home_deferred_start.py:291: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_home_deferred_start.py::test_TC_2703_a_failed_deferred_start_keeps_the_board_pending
+1 failed in 0.79s
+after:  89ff66cf3c6425160dfe83b3d30d478246b4a9fbdd1eb0b5ef248c629d8af89b
+tests/test_home_deferred_start.py::test_TC_2703_a_failed_deferred_start_keeps_the_board_pending [self._offer_milestones()\n        self._started_b -> self._offer_milestones()]: RED (KILLED)
+C:\Users\jjgh8\anaconda3\Lib\site-packages\pytest_asyncio\plugin.py:207: PytestDeprecationWarning: The configuration option "asyncio_default_fixture_loop_scope" is unset.
+The event loop scope for asynchronous fixtures will default to the fixture caching scope. Future versions of pytest-asyncio will default the loop scope for asynchronous fixtures to function scope. Set the default fixture loop scope explicitly in order to avoid unexpected behavior in the future. Valid fixture loop scopes are: "function", "class", "module", "package", "session"
+
+  warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCOPE_UNSET))
+.                                                                        [100%]
+1 passed in 0.51s
+after:  89ff66cf3c6425160dfe83b3d30d478246b4a9fbdd1eb0b5ef248c629d8af89b
+tests/test_home_deferred_start.py::test_AT_2701_the_home_touches_nothing [        self.app._open_board()\n\n    # ---- the b -> \n    # ---- the boards themselves (HLR-2205)]: GREEN (SURVIVED)
+C:\Users\jjgh8\anaconda3\Lib\site-packages\pytest_asyncio\plugin.py:207: PytestDeprecationWarning: The configuration option "asyncio_default_fixture_loop_scope" is unset.
+The event loop scope for asynchronous fixtures will default to the fixture caching scope. Future versions of pytest-asyncio will default the loop scope for asynchronous fixtures to function scope. Set the default fixture loop scope explicitly in order to avoid unexpected behavior in the future. Valid fixture loop scopes are: "function", "class", "module", "package", "session"
+
+  warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCOPE_UNSET))
+.                                                                        [100%]
+1 passed in 0.64s
+after:  89ff66cf3c6425160dfe83b3d30d478246b4a9fbdd1eb0b5ef248c629d8af89b
+tests/test_home_deferred_start.py::test_AT_2702_enter_runs_the_deferred_start [        self.app._open_board()\n\n    # ---- the b -> \n    # ---- the boards themselves (HLR-2205)]: GREEN (SURVIVED)
+C:\Users\jjgh8\anaconda3\Lib\site-packages\pytest_asyncio\plugin.py:207: PytestDeprecationWarning: The configuration option "asyncio_default_fixture_loop_scope" is unset.
+The event loop scope for asynchronous fixtures will default to the fixture caching scope. Future versions of pytest-asyncio will default the loop scope for asynchronous fixtures to function scope. Set the default fixture loop scope explicitly in order to avoid unexpected behavior in the future. Valid fixture loop scopes are: "function", "class", "module", "package", "session"
+
+  warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCOPE_UNSET))
+F                                                                        [100%]
+================================== FAILURES ===================================
+___________________ test_AT_2703_escape_runs_the_start_once ___________________
+
+home = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-25075/test_AT_2703_escape_runs_the_s0/.taskboard')
+
+    async def test_AT_2703_escape_runs_the_start_once(home):
+        """AT-2703 (US-2701): `esc` from the home runs the deferred start exactly once;
+        `B` then `esc` later re-runs nothing. The unlisted arm (PDR C2): an `--open`
+        board's record is its own `unlisted:` sentinel — the mount start ran with no
+        home (HD-4), and `B`'s home pops back over it without re-running anything."""
+        _two_boards(home)
+        default = mb.board_path(home, "personal")
+        foreign = boards.announce(default, NOW)
+        app = _open(None)
+        try:
+            async with app.run_test(size=(118, 30), notifications=True) as pilot:
+                await pilot.pause()
+                await _press(pilot, "escape")
+>               assert len([n for n in app._notifications if n.title == OPEN_TWICE]) == 1
+E               assert 0 == 1
+E                +  where 0 = len([])
+
+tests\test_home_deferred_start.py:174: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_home_deferred_start.py::test_AT_2703_escape_runs_the_start_once
+1 failed in 0.59s
+after:  89ff66cf3c6425160dfe83b3d30d478246b4a9fbdd1eb0b5ef248c629d8af89b
+tests/test_home_deferred_start.py::test_AT_2703_escape_runs_the_start_once [        self.app._open_board()\n\n    # ---- the b -> \n    # ---- the boards themselves (HLR-2205)]: RED (KILLED)
+C:\Users\jjgh8\anaconda3\Lib\site-packages\pytest_asyncio\plugin.py:207: PytestDeprecationWarning: The configuration option "asyncio_default_fixture_loop_scope" is unset.
+The event loop scope for asynchronous fixtures will default to the fixture caching scope. Future versions of pytest-asyncio will default the loop scope for asynchronous fixtures to function scope. Set the default fixture loop scope explicitly in order to avoid unexpected behavior in the future. Valid fixture loop scopes are: "function", "class", "module", "package", "session"
+
+  warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCOPE_UNSET))
+.                                                                        [100%]
+1 passed in 0.57s
+after:  89ff66cf3c6425160dfe83b3d30d478246b4a9fbdd1eb0b5ef248c629d8af89b
+tests/test_home_deferred_start.py::test_AT_2704_another_board_never_writes_the_default [        self.app._open_board()\n\n    # ---- the b -> \n    # ---- the boards themselves (HLR-2205)]: GREEN (SURVIVED)
+C:\Users\jjgh8\anaconda3\Lib\site-packages\pytest_asyncio\plugin.py:207: PytestDeprecationWarning: The configuration option "asyncio_default_fixture_loop_scope" is unset.
+The event loop scope for asynchronous fixtures will default to the fixture caching scope. Future versions of pytest-asyncio will default the loop scope for asynchronous fixtures to function scope. Set the default fixture loop scope explicitly in order to avoid unexpected behavior in the future. Valid fixture loop scopes are: "function", "class", "module", "package", "session"
+
+  warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCOPE_UNSET))
+F                                                                        [100%]
+================================== FAILURES ===================================
+_________________ test_AT_2705_the_offer_opens_over_the_board _________________
+
+home = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-25077/test_AT_2705_the_offer_opens_o0/.taskboard')
+
+    @pytest.mark.milestone_offer
+    async def test_AT_2705_the_offer_opens_over_the_board(home):
+        """AT-2705 (US-2701): with the home up, a default board holding an unmarked
+        milestone candidate opens no offer; leaving the home pushes the offer over the
+        board — the home is not on the stack beneath it."""
+        _two_boards(home)
+        default = mb.board_path(home, "personal")
+        data = json.loads(default.read_text(encoding="utf-8"))
+        del data["settings"]["migrations"]["milestones"]
+        default.write_text(json.dumps(data), encoding="utf-8")
+        app = _open(None)
+        async with app.run_test(size=(118, 30)) as pilot:
+            await pilot.pause()
+            assert type(app.screen).__name__ == "BoardsHome"
+            assert not any(isinstance(sc, MilestoneOffer) for sc in app.screen_stack)
+            await _press(pilot, "escape")
+>           assert type(app.screen).__name__ == "MilestoneOffer"
+E           AssertionError: assert 'Screen' == 'MilestoneOffer'
+E             
+E             - MilestoneOffer
+E             + Screen
+
+tests\test_home_deferred_start.py:245: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_home_deferred_start.py::test_AT_2705_the_offer_opens_over_the_board
+1 failed in 0.59s
+after:  89ff66cf3c6425160dfe83b3d30d478246b4a9fbdd1eb0b5ef248c629d8af89b
+tests/test_home_deferred_start.py::test_AT_2705_the_offer_opens_over_the_board [        self.app._open_board()\n\n    # ---- the b -> \n    # ---- the boards themselves (HLR-2205)]: RED (KILLED)
+C:\Users\jjgh8\anaconda3\Lib\site-packages\pytest_asyncio\plugin.py:207: PytestDeprecationWarning: The configuration option "asyncio_default_fixture_loop_scope" is unset.
+The event loop scope for asynchronous fixtures will default to the fixture caching scope. Future versions of pytest-asyncio will default the loop scope for asynchronous fixtures to function scope. Set the default fixture loop scope explicitly in order to avoid unexpected behavior in the future. Valid fixture loop scopes are: "function", "class", "module", "package", "session"
+
+  warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCOPE_UNSET))
+F                                                                        [100%]
+================================== FAILURES ===================================
+________ test_TC_2703_a_failed_deferred_start_keeps_the_board_pending _________
+
+home = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-25078/test_TC_2703_a_failed_deferred0/.taskboard')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x000001F277C7B8F0>
+
+    async def test_TC_2703_a_failed_deferred_start_keeps_the_board_pending(home,
+                                                                           monkeypatch):
+        """TC-2703: a migration failure on the deferred start leaves the record
+        unwritten, pops the home onto the board view and lets the migration's own
+        notice explain; `B`, `esc` then retries the start from the migration — exactly
+        once (the record names the board only on a completed start)."""
+        _two_boards(home)
+        default = mb.board_path(home, "personal")
+        real = app_module.run_link_migration
+        state = {"failed": False}
+    
+        def flaky(board):
+            if not state["failed"]:
+                state["failed"] = True
+                return SimpleNamespace(error="disk full")
+            return real(board)
+    
+        monkeypatch.setattr(app_module, "run_link_migration", flaky)
+        app = _open(None)
+        async with app.run_test(size=(118, 30), notifications=True) as pilot:
+            await pilot.pause()
+            calls = []
+            real_open = app._open_board
+    
+            def spy(at_mount=False):
+                calls.append(at_mount)
+                return real_open(at_mount=at_mount)
+    
+            app._open_board = spy
+            await _press(pilot, "escape")
+            fails = [n for n in app._notifications
+                     if n.title == "Boards" and "link migration stopped" in str(n.message)]
+>           assert len(fails) == 1 and fails[0].severity == "error"
+E           assert (0 == 1)
+E            +  where 0 = len([])
+
+tests\test_home_deferred_start.py:285: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_home_deferred_start.py::test_TC_2703_a_failed_deferred_start_keeps_the_board_pending
+1 failed in 0.65s
+after:  89ff66cf3c6425160dfe83b3d30d478246b4a9fbdd1eb0b5ef248c629d8af89b
+tests/test_home_deferred_start.py::test_TC_2703_a_failed_deferred_start_keeps_the_board_pending [        self.app._open_board()\n\n    # ---- the b -> \n    # ---- the boards themselves (HLR-2205)]: RED (KILLED)
+C:\Users\jjgh8\anaconda3\Lib\site-packages\pytest_asyncio\plugin.py:207: PytestDeprecationWarning: The configuration option "asyncio_default_fixture_loop_scope" is unset.
+The event loop scope for asynchronous fixtures will default to the fixture caching scope. Future versions of pytest-asyncio will default the loop scope for asynchronous fixtures to function scope. Set the default fixture loop scope explicitly in order to avoid unexpected behavior in the future. Valid fixture loop scopes are: "function", "class", "module", "package", "session"
+
+  warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCOPE_UNSET))
+.                                                                        [100%]
+1 passed in 0.63s
+after:  89ff66cf3c6425160dfe83b3d30d478246b4a9fbdd1eb0b5ef248c629d8af89b
+tests/test_home_deferred_start.py::test_AT_2701_the_home_touches_nothing [if not self._migrate_links(at_switch=not at_moun -> self._started_board = self._started_key()\n      ]: GREEN (SURVIVED)
+C:\Users\jjgh8\anaconda3\Lib\site-packages\pytest_asyncio\plugin.py:207: PytestDeprecationWarning: The configuration option "asyncio_default_fixture_loop_scope" is unset.
+The event loop scope for asynchronous fixtures will default to the fixture caching scope. Future versions of pytest-asyncio will default the loop scope for asynchronous fixtures to function scope. Set the default fixture loop scope explicitly in order to avoid unexpected behavior in the future. Valid fixture loop scopes are: "function", "class", "module", "package", "session"
+
+  warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCOPE_UNSET))
+.                                                                        [100%]
+1 passed in 0.79s
+after:  89ff66cf3c6425160dfe83b3d30d478246b4a9fbdd1eb0b5ef248c629d8af89b
+tests/test_home_deferred_start.py::test_AT_2702_enter_runs_the_deferred_start [if not self._migrate_links(at_switch=not at_moun -> self._started_board = self._started_key()\n      ]: GREEN (SURVIVED)
+C:\Users\jjgh8\anaconda3\Lib\site-packages\pytest_asyncio\plugin.py:207: PytestDeprecationWarning: The configuration option "asyncio_default_fixture_loop_scope" is unset.
+The event loop scope for asynchronous fixtures will default to the fixture caching scope. Future versions of pytest-asyncio will default the loop scope for asynchronous fixtures to function scope. Set the default fixture loop scope explicitly in order to avoid unexpected behavior in the future. Valid fixture loop scopes are: "function", "class", "module", "package", "session"
+
+  warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCOPE_UNSET))
+.                                                                        [100%]
+1 passed in 0.95s
+after:  89ff66cf3c6425160dfe83b3d30d478246b4a9fbdd1eb0b5ef248c629d8af89b
+tests/test_home_deferred_start.py::test_AT_2703_escape_runs_the_start_once [if not self._migrate_links(at_switch=not at_moun -> self._started_board = self._started_key()\n      ]: GREEN (SURVIVED)
+C:\Users\jjgh8\anaconda3\Lib\site-packages\pytest_asyncio\plugin.py:207: PytestDeprecationWarning: The configuration option "asyncio_default_fixture_loop_scope" is unset.
+The event loop scope for asynchronous fixtures will default to the fixture caching scope. Future versions of pytest-asyncio will default the loop scope for asynchronous fixtures to function scope. Set the default fixture loop scope explicitly in order to avoid unexpected behavior in the future. Valid fixture loop scopes are: "function", "class", "module", "package", "session"
+
+  warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCOPE_UNSET))
+.                                                                        [100%]
+1 passed in 0.62s
+after:  89ff66cf3c6425160dfe83b3d30d478246b4a9fbdd1eb0b5ef248c629d8af89b
+tests/test_home_deferred_start.py::test_AT_2704_another_board_never_writes_the_default [if not self._migrate_links(at_switch=not at_moun -> self._started_board = self._started_key()\n      ]: GREEN (SURVIVED)
+C:\Users\jjgh8\anaconda3\Lib\site-packages\pytest_asyncio\plugin.py:207: PytestDeprecationWarning: The configuration option "asyncio_default_fixture_loop_scope" is unset.
+The event loop scope for asynchronous fixtures will default to the fixture caching scope. Future versions of pytest-asyncio will default the loop scope for asynchronous fixtures to function scope. Set the default fixture loop scope explicitly in order to avoid unexpected behavior in the future. Valid fixture loop scopes are: "function", "class", "module", "package", "session"
+
+  warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCOPE_UNSET))
+.                                                                        [100%]
+1 passed in 0.54s
+after:  89ff66cf3c6425160dfe83b3d30d478246b4a9fbdd1eb0b5ef248c629d8af89b
+tests/test_home_deferred_start.py::test_AT_2705_the_offer_opens_over_the_board [if not self._migrate_links(at_switch=not at_moun -> self._started_board = self._started_key()\n      ]: GREEN (SURVIVED)
+C:\Users\jjgh8\anaconda3\Lib\site-packages\pytest_asyncio\plugin.py:207: PytestDeprecationWarning: The configuration option "asyncio_default_fixture_loop_scope" is unset.
+The event loop scope for asynchronous fixtures will default to the fixture caching scope. Future versions of pytest-asyncio will default the loop scope for asynchronous fixtures to function scope. Set the default fixture loop scope explicitly in order to avoid unexpected behavior in the future. Valid fixture loop scopes are: "function", "class", "module", "package", "session"
+
+  warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCOPE_UNSET))
+F                                                                        [100%]
+================================== FAILURES ===================================
+________ test_TC_2703_a_failed_deferred_start_keeps_the_board_pending _________
+
+home = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-25084/test_TC_2703_a_failed_deferred0/.taskboard')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x000001E054025A90>
+
+    async def test_TC_2703_a_failed_deferred_start_keeps_the_board_pending(home,
+                                                                           monkeypatch):
+        """TC-2703: a migration failure on the deferred start leaves the record
+        unwritten, pops the home onto the board view and lets the migration's own
+        notice explain; `B`, `esc` then retries the start from the migration — exactly
+        once (the record names the board only on a completed start)."""
+        _two_boards(home)
+        default = mb.board_path(home, "personal")
+        real = app_module.run_link_migration
+        state = {"failed": False}
+    
+        def flaky(board):
+            if not state["failed"]:
+                state["failed"] = True
+                return SimpleNamespace(error="disk full")
+            return real(board)
+    
+        monkeypatch.setattr(app_module, "run_link_migration", flaky)
+        app = _open(None)
+        async with app.run_test(size=(118, 30), notifications=True) as pilot:
+            await pilot.pause()
+            calls = []
+            real_open = app._open_board
+    
+            def spy(at_mount=False):
+                calls.append(at_mount)
+                return real_open(at_mount=at_mount)
+    
+            app._open_board = spy
+            await _press(pilot, "escape")
+            fails = [n for n in app._notifications
+                     if n.title == "Boards" and "link migration stopped" in str(n.message)]
+            assert len(fails) == 1 and fails[0].severity == "error"
+>           assert app._started_board is None                  # the record stays pending
+E           AssertionError: assert 'personal' is None
+E            +  where 'personal' = TaskboardApp(title='taskboard', classes={'-dark-mode'}, pseudo_classes={'dark', 'focus'})._started_board
+
+tests\test_home_deferred_start.py:286: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_home_deferred_start.py::test_TC_2703_a_failed_deferred_start_keeps_the_board_pending
+1 failed in 0.67s
+after:  89ff66cf3c6425160dfe83b3d30d478246b4a9fbdd1eb0b5ef248c629d8af89b
+tests/test_home_deferred_start.py::test_TC_2703_a_failed_deferred_start_keeps_the_board_pending [if not self._migrate_links(at_switch=not at_moun -> self._started_board = self._started_key()\n      ]: RED (KILLED)

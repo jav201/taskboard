@@ -154,3 +154,13 @@
 - **Requirement:** HLR-2702
 - **Date:** 2026-10-24
 - **Entry:** architect round-3 minor n4: the fixture clause also pins the milestones mark — `run_milestone_offer(board, [])` writes the board when the mark is absent (`models.py:1792-1795`), so «the other writers are no-ops» needs all three pins.
+
+## LED-2702.1r4 — LLR-2702.1 (increment 001 code review, finding F1)
+- **Requirement:** LLR-2702.1
+- **Date:** 2026-10-24
+- **Entry:** the code review found a fifth path the parenthetical list did not foresee: `open_on_board` (the `A` agenda and `@` people-view jump onto a task's board) pops the home and, when the task is on the current board, never ran the pending start — this window would never announce itself (HLR-2705's silent collision). The path list now names the jump; the fix reuses LLR-2702.3's seam, and the reddening arm lives in AT-2702's node.
+
+## LED-2702.1r5 — the IFC's deferred-start SOURCE (increment 001 code review round 2, N1)
+- **Requirement:** LLR-2702.1
+- **Date:** 2026-10-24
+- **Entry:** the flow's SOURCE line now names the agenda/people jump beside the home's two paths, tracing the fifth path LED-2702.1r4 added (LOW, folded at the increment-002 pass).

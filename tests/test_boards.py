@@ -292,6 +292,9 @@ async def test_TC_2202_switch_board_starts_the_other_board_over(home):
     async with app.run_test(size=(120, 40)) as pilot:
         await pilot.pause()
         assert app.board_id == "main" and app.board.path == home / "board.json"
+        await pilot.press("escape")          # leave the home: the deferred start runs (HD-1)
+        await pilot.pause()
+        assert app._started_board == "main"
         app.view_mode = "gantt"
         app.kanban_presentation = "matrix"
         app.selected_task_id = "tr3"
@@ -401,7 +404,9 @@ async def test_TC_2202_an_app_without_a_registry_keeps_it_beside_its_board(tmp_p
 
 async def test_TC_2202_the_mount_order_is_the_shipped_one(home, monkeypatch):
     """TC-2202 (LLR-2202.1): the per-board start keeps the shipped order, the clock
-    interval set once, between the clocks and the recovery notices."""
+    interval set once, between the clocks and the recovery notices. With the home
+    at start only the read-only half mounts (HD-1, LLR-2701.1); leaving the home
+    runs the deferred start in the shipped order."""
     from taskboard.app import TaskboardApp
     mb.build(home, "main")
     order = []
@@ -423,8 +428,15 @@ async def test_TC_2202_the_mount_order_is_the_shipped_one(home, monkeypatch):
         monkeypatch.setattr(TaskboardApp, n, spy)
     app = _open()
     async with app.run_test(size=(100, 30)) as pilot:
-        assert order[:10] == names, order
+        # the home shows at start: only the read-only half mounts (HD-1, LLR-2701.1);
+        # BoardView's resize re-render may append refresh_view after it
+        assert order[:5] == ["_select_first", "refresh_view", "_apply_clock_settings",
+                             "set_interval", "_warn_if_rescued"], order
         await pilot.pause()
+        order.clear()
+        await pilot.press("escape")               # the deferred start runs here (HD-1)
+        await pilot.pause()
+        assert order[:9] == [n for n in names if n != "set_interval"], order
         order.clear()
         app.switch_board("personal")
         app.switch_board("course-docker")

@@ -115,9 +115,9 @@ async def test_TC_2408_the_titles_open_with_the_chip(home):
 @pytest.mark.milestone_offer
 async def test_AT_2408_the_start_up_modals_say_their_board(home, tmp_path):
     """AT-2408 (US-2405): a start with Client A's offer pending shows the offer titled
-    with ` Client A `; Course in team mode with no identity, opened from the home,
-    shows the picker titled ` Course ` with its keys; a one-board start's offer has
-    no chip."""
+    with ` Client A ` — over the board, once the home is left (HD-1, HD-2); Course in
+    team mode with no identity, opened from the home, shows the picker titled
+    ` Course ` with its keys; a one-board start's offer has no chip."""
     fx.build(home, last="client-a", offer=True)
     team = tmp_path / "team"
     team.mkdir()
@@ -131,9 +131,13 @@ async def test_AT_2408_the_start_up_modals_say_their_board(home, tmp_path):
     app = _open()
     async with app.run_test(size=(118, 30)) as pilot:
         await pilot.pause()
+        assert isinstance(app.screen, BoardsHome)   # the home defers the offer (HD-1)
+        await _press(pilot, "escape")
         assert type(app.screen).__name__ == "MilestoneOffer"
         assert _title(app.screen).startswith(" Client A  ◆ Milestones · convert one-day tasks?")
         await _press(pilot, "escape")
+        assert type(app.screen).__name__ == "Screen"   # the offer answered over the board (HD-2)
+        await _press(pilot, "B")
         assert isinstance(app.screen, BoardsHome)
         await _press(pilot, "left", "down", "enter")
         assert type(app.screen).__name__ == "TeamIdentityPicker", app.screen_stack
@@ -220,7 +224,7 @@ async def test_TC_2409_the_lifecycle(home, monkeypatch):
     """TC-2409 (app): a failed switch keeps the old marker; 30 ticks after the marker
     is removed by hand a new one exists; the notice is a warning titled `Boards · open
     twice`; a registry name `[/b]` shows as typed; two others are counted; a second
-    window by `--open` warns too."""
+    window by `--open` warns too — once both windows left their homes (HD-1)."""
     fx.build(home, last="client-a")
     reg = json.loads((home / "boards.json").read_text(encoding="utf-8"))
     reg["boards"][1]["name"] = "[/b]"
@@ -233,6 +237,7 @@ async def test_TC_2409_the_lifecycle(home, monkeypatch):
     app = _open()
     async with app.run_test(size=(118, 30), notifications=True) as pilot:
         await pilot.pause()
+        await _press(pilot, "escape")        # the home deferred the start (HD-1)
         note = next(n for n in app._notifications if n.title == "Boards · open twice")
         assert note.severity == "warning"
         assert note.message == ("[/b] is already open in 3 other taskboard windows (the first "
@@ -253,31 +258,41 @@ async def test_TC_2409_the_lifecycle(home, monkeypatch):
     first = _open()
     async with first.run_test(size=(118, 30)) as p1:
         await p1.pause()
+        await _press(p1, "escape")           # the first window's marker lands off its home
         second = _open(unlisted=str(path))
         async with second.run_test(size=(118, 30), notifications=True) as p2:
             await p2.pause()
+            assert not any("already open" in n for n in _notes(second))
+            await _press(p2, "escape")       # its deferred start sees the first window
             assert any("already open in another taskboard window" in n for n in _notes(second))
 
 
 async def test_AT_2409_a_second_window_is_told_once(home):
     """AT-2409 (US-2406): a second app on Client A says so once, with the first's
     time; the first says nothing; markers follow the windows: one each, gone when
-    the window leaves the board or exits; a third app after them is told nothing."""
+    the window leaves the board or exits; a third app after them is told nothing.
+    The home defers each window's start (HD-1): a window announces its marker only
+    once it leaves the home."""
     fx.build(home, last="client-a")
     one = _open()
     async with one.run_test(size=(118, 30), notifications=True) as p1:
         await p1.pause()
         assert not any("open twice" in (n.title or "") for n in one._notifications)
+        assert _markers() == []                 # the home writes no marker (HD-1)
+        await _press(p1, "escape")              # leaving the home starts Client A
         assert len(_markers()) == 1
         two = _open()
         async with two.run_test(size=(118, 30), notifications=True) as p2:
             await p2.pause()
+            assert len(_markers()) == 1         # the second window's home wrote nothing (HD-1)
+            await _press(p2, "escape")
             twice = [n for n in two._notifications if n.title == "Boards · open twice"]
             assert [n.message for n in twice] == [
                 "Client A is already open in another taskboard window (since 09:30). Both "
                 "save the same file: the last save wins. Close one of them."]
             assert len(_markers()) == 2
         assert len(_markers()) == 1
+        await _press(p1, "B")                   # the home again, then on to Course
         assert isinstance(one.screen, BoardsHome)
         await _press(p1, "down", "enter")
         assert one.board_id == "course"

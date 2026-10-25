@@ -266,8 +266,8 @@
 
 ### LLR-2702.1 — one started-board record, written by the start itself
 - **Traceability:** HLR-2702
-- **Ledger:** LED-2702.1, LED-2702.1r1, LED-2702.1r2
-- **Statement:** `TaskboardApp` shall record which board id the start has run for, the start shall run only when the record does not name the current board, and completing the start shall write the record — so every path onto a board (the home's `enter` and `esc`, `switch_board`, the mount without a home) runs the start exactly once per board. The record is written ONLY on a completed start (the migration gates the rest, so a failed start has no partial writers to double-run); `switch_board`'s restore path writes the record back to the previously started board's id when a switch fails after the record moved.
+- **Ledger:** LED-2702.1, LED-2702.1r1, LED-2702.1r2, LED-2702.1r4, LED-2702.1r5
+- **Statement:** `TaskboardApp` shall record which board id the start has run for, the start shall run only when the record does not name the current board, and completing the start shall write the record — so every path onto a board (the home's `enter` and `esc`, `switch_board`, the agenda-of-every-board and people-view jump onto it, the mount without a home) runs the start exactly once per board. The record is written ONLY on a completed start (the migration gates the rest, so a failed start has no partial writers to double-run); `switch_board`'s restore path writes the record back to the previously started board's id when a switch fails after the record moved.
 - **Validation:** `test (unit)` + `test (integration)`
 - **Executed verification:** `env -u NO_COLOR python -m pytest -q tests/test_home_deferred_start.py -k "AT_2702 or AT_2703 or TC_2703"` (P3; TC-2703 carries the record's unit-level arms)
 - **Numeric pass threshold:** AT-2702/AT-2703's once-numbers hold across all three paths.
@@ -402,7 +402,8 @@
 
 ```
 FLOW: the deferred board start, from leaving the home to the started board
-  SOURCE : BoardsHome — enter on a card, or esc/back
+  SOURCE : BoardsHome — enter on a card, or esc/back; the agenda/people
+           jump onto a task's board (open_on_board)
   NODES  :
     - fn    : app.TaskboardApp deferred-start runner (the started-board record)
       owner : LLR-2702.1

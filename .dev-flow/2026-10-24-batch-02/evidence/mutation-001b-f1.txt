@@ -1,0 +1,5 @@
+focused mutation (code review F1 discharge): open_on_board's pending-start elif removed
+before: dd40a190b840ecdfb93a14fb08861cf4af9225ea7ae07d1827e5490b00d95945
+node: tests/test_home_deferred_start.py::test_AT_2702_enter_runs_the_deferred_start
+verdict: RED (KILLED)
+after:  dd40a190b840ecdfb93a14fb08861cf4af9225ea7ae07d1827e5490b00d95945

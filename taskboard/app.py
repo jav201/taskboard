@@ -758,6 +758,10 @@ class BoardsHome(Screen[None]):
 
     def action_back(self) -> None:
         self.app.pop_screen()
+        # esc/back off the home is a path onto the board beneath (HD-1): the
+        # deferred start runs here, exactly once; a later `B` home re-runs nothing
+        # (LLR-2702.2)
+        self.app._open_board()
 
     # ---- the boards themselves (HLR-2205) ---------------------------------
     def action_new(self) -> None:
@@ -865,11 +869,15 @@ def board_lanes(app) -> tuple[list, list]:
 
 def open_on_board(app, bid, task_id: str) -> None:
     """Leave every pushed screen, open board `bid` in place when it is another (a
-    switch, with a switch's own writes), then select the task there."""
+    switch, with a switch's own writes), then select the task there. A jump onto
+    the board the home deferred starts it first (LLR-2702.3's pending start —
+    code review F1 of increment 001)."""
     while len(app.screen_stack) > 1:
         app.pop_screen()
     if bid is not None and bid != app.board_id:
         app.switch_board(bid)
+    elif bid is not None and app._started_board != app._started_key():
+        app._open_board()
     if app.board_id == bid or bid is None:
         app.jump_to(task_id)
 
@@ -1247,6 +1255,12 @@ class TaskboardApp(App):
         self._setup_state: dict | None = None   # staged team config while in setup view
         self._pre_setup_view: str = "swimlanes"
         self._presence = None              # this window's marker of the open board
+        self._started_board: str | None = None   # the board key the start has run
+                                           # for (batch 2026-10-24-batch-02, LLR-2702.1)
+
+    def _started_key(self) -> str:
+        """The board the start record names: the registry id, or a stable key for an --open board."""
+        return self.board_id if self.board_id is not None else f"unlisted:{self.board.path}"
 
     # keys that act on the BOARD. They stay live on pushed screens (e.g. a
     # modal) and were indicated by nothing. FALSE, not None: Textual drops a
@@ -1301,10 +1315,13 @@ class TaskboardApp(App):
     def on_mount(self) -> None:
         self._label_board()
         if len(self.registry.active()) > 1 and self.board_id is not None:
-            # FIRST: the opened board's own modals (team identity, the milestone
-            # offer) then sit above the home and answer for that board (D11); an
-            # unlisted board (`--open`) opens without the home
+            # FIRST: the home (batch 2026-10-20-batch-01); the board beneath it is
+            # rendered but NOT started — no migration, sweep, presence, team start
+            # or milestone offer runs until the user leaves the home (HD-1).
             self.push_screen(BoardsHome())
+            self._mount_board(at_mount=True)
+            self._warn_registry()
+            return
         if self._open_board(at_mount=True):
             self._warn_registry()
             if self.board_id is None:
@@ -1402,15 +1419,9 @@ class TaskboardApp(App):
         """`A`: the agenda of every board (batch 2026-10-20-batch-03)."""
         self._bring(AllBoardsAgenda, AllBoardsAgenda)
 
-    def _open_board(self, at_mount: bool = False) -> bool:
-        """The start a board gets — at mount, and again at every switch to
-        another board (batch 2026-10-20-batch-01, LLR-2202.1)."""
-        # FIRST, before any other write: the backup must hold the file as the
-        # user left it (LLR-505.3) — the renumber notice and the sweep both save.
-        if not self._migrate_links(at_switch=not at_mount):
-            return False
-        self._announce_renumbering()
-        self._sweep_old_done()
+    def _mount_board(self, at_mount: bool = False) -> None:
+        """The read-only half of a board's start: first selection, the view, the clock.
+        Runs at mount under the home too (HD-1: the home shows the board without starting it)."""
         self._select_first()
         self.refresh_view()
         self._apply_clock_settings()
@@ -1418,11 +1429,27 @@ class TaskboardApp(App):
             # ONE shared clock interval for the whole app (never per-widget).
             self.set_interval(TICK_SECONDS, self._tick)
         self._warn_if_rescued()
+
+    def _open_board(self, at_mount: bool = False) -> bool:
+        """The start a board gets — at mount, and again at every switch to
+        another board (batch 2026-10-20-batch-01, LLR-2202.1). With the home shown
+        at start the write half is deferred until the user leaves the home (HD-1,
+        LLR-2702.1): the record below runs the start exactly once per board."""
+        if self._started_board == self._started_key():
+            return True            # this board's start already ran (LLR-2702.1)
+        # FIRST, before any other write: the backup must hold the file as the
+        # user left it (LLR-505.3) — the renumber notice and the sweep both save.
+        if not self._migrate_links(at_switch=not at_mount):
+            return False           # LLR-2702.4: the record stays pending; a later path retries
+        self._announce_renumbering()
+        self._sweep_old_done()
+        self._mount_board(at_mount)
         self._enter_presence()
         self._init_team_mode()
         # LAST: the one-time milestone offer covers whatever start opened (the
         # identity picker included) until it is answered (D-615)
         self._offer_milestones()
+        self._started_board = self._started_key()
         return True
 
     def _warn_registry(self) -> None:
@@ -1455,15 +1482,22 @@ class TaskboardApp(App):
         history, images and reports; the per-board session state starts over, the
         view and its layouts stay."""
         entry = self.registry.get(bid)
-        if entry is None or bid == self.board_id:
+        if entry is None:
+            return
+        if bid == self.board_id:
+            # the home's enter lands here; a start the home deferred still owes the
+            # board its start (LLR-2702.3), an already-started board re-runs nothing
+            if self._started_board != self._started_key():
+                self._open_board()
             return
         if not Path(entry.path).exists():
             self.notify(f"{entry.name}: its file is missing ({entry.path}). Nothing was "
                         "opened.", title="Boards", severity="warning", markup=False)
             return
-        keep = ("board", "board_id", "selected_task_id", "focused_project_id",
-                "search_query", "_undo_stack", "_gantt_group", "_gantt_previous",
-                "team_state", "view_mode", "_setup_state", "_last_history_error")
+        keep = ("board", "board_id", "_started_board", "selected_task_id",
+                "focused_project_id", "search_query", "_undo_stack", "_gantt_group",
+                "_gantt_previous", "team_state", "view_mode", "_setup_state",
+                "_last_history_error")
         before = {k: getattr(self, k) for k in keep}
         board = Board.load(entry.path)
         if self._team_timer is not None:
