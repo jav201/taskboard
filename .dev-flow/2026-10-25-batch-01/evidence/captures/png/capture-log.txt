@@ -1,0 +1,14 @@
+﻿ok   single 118x30 (1095 x 627, 31 colours sampled) via PrintWindow, try 1; PNG 37 colours, 55103 bytes - window closed
+ok   single 80x24 (753 x 513, 20 colours sampled) via PrintWindow, try 1; PNG 33 colours, 39929 bytes - window closed
+ok   offer 118x30 (1095 x 627, 31 colours sampled) via PrintWindow, try 1; PNG 37 colours, 56196 bytes - window closed
+ok   offer 80x24 (753 x 513, 20 colours sampled) via PrintWindow, try 1; PNG 33 colours, 40891 bytes - window closed
+try  picker 118x30 : never ready
+try  picker 118x30 : never ready
+try  picker 118x30 : never ready
+FAIL picker 118x30 : 3 tries
+try  picker 80x24 : never ready
+try  picker 80x24 : never ready
+try  picker 80x24 : never ready
+FAIL picker 80x24 : 3 tries
+ok   picker 118x30 (1095 x 627, 23 colours sampled) via PrintWindow, try 1; PNG 22 colours, 30950 bytes - window closed
+ok   picker 80x24 (753 x 513, 9 colours sampled) via PrintWindow, try 1; PNG 19 colours, 22036 bytes - window closed

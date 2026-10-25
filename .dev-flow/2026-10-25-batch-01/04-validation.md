@@ -1,38 +1,57 @@
 # Validation — taskboard — Batch 2026-10-25-batch-01
 
-> **Artifact language:** canonical English scaffold. Generate in the batch's development language (`state.json` `language`); for Spanish batches **translate the prose, never a label** — the reserved field names are declared in §✅ Verdict and are read literally.
-> Phase 4 artifact. Content owner: `qa-reviewer`, who **EVALUATES** the results of the validation strategy fixed in Phase 1, **names who executed each one** and returns the rows; the orchestrator writes `04-validation.md` (`stations/shared-homes-roles.md` §Delegation). The ONE complete gate-suite run is the orchestrator's (`C-25`); a sub-agent consumes the result and never owns the run.
-
-> **Owed in.** `core` ✓ · `full` ✓
-
-> **Field guide:** `templates/guides/validation-template.md` explains each field below and the rules that read it. It ships with the flow and is not copied into this batch.
+> **Artifact language:** canonical English scaffold; the batch's language is
+> `en` (`state.json`). Phase 4 artifact; content owner `qa-reviewer`, who
+> evaluates the Phase-1 validation strategy, names who executed each row, and
+> returns the rows; the orchestrator writes this file. The ONE complete
+> gate-suite run is the orchestrator's (`C-25`).
 
 **`Mode`:** `validation`
 
 ## ✅ Verdict (read first)
 
-> **Reserved field names.** The **field names and block keywords below are language-independent** — the
-> validator parses them literally and they are never translated:
-> `Result` · `Gate run` · `Layer 0` · `Evidence checklist` · `⏸ DEFER`
-> Everything else on this page — headings, guidance, the prose in every cell — is translated with the batch.
-> **One strategy, not two:** the flow ships no alias table, so a translated label is read as an ABSENT one and the rule keyed on it reports a true-sounding silence.
-> **And one FLOW-WIDE reserved token, read out of this artifact by `V42` no matter which template minted it:** `⏸ DEFER`. It is a MARKER rather than a field name, which is why it is stated here *and* in `/dev-flow` §Language of artifacts rather than in a per-template list — a deferral can be written in any batch artifact, including the ones that carry no block at all.
->
-> **And so are the three verdict tokens** `PASS` · `PASS-WITH-NOTES` · `FAIL`, which are VALUES and not prose.
-> A Spanish batch writes `- **Result:** PASS`, not `- **Resultado:** aprobado`: the label, the tokens and the
-> reviewer-identity tokens below are the machine's vocabulary.
+- **Result:** `<PASS / PASS-WITH-NOTES / FAIL>` — returned by `qa-reviewer`
+  (independent, P4), §qa-reviewer findings below.
+- **Gate run:** `env -u NO_COLOR python -m pytest -q -rs -p no:cacheprovider
+  <the files of evidence/suite-p4-files.txt, 112 files in 3 disjoint chunks>`
+  — `evidence/suite-p4-chunk00-run.txt` **1440 passed** ·
+  `chunk01-run.txt` **959 passed** · `chunk02-run.txt` **859 passed** — total
+  **3258 passed, 0 skipped, 0 failed**, each transcript headed by its exact
+  command and `git rev-parse HEAD` (`9aaada7` + this record's commit; no
+  source changed after the increment), each ending on its `N passed` summary
+  line with no failure line · run by the orchestrating chain in three
+  SEQUENTIAL chunks, nothing in parallel with any of them.
+- **Baseline reconciliation:** the commission's baseline is 3248 passed + 1
+  environmental skip (TC-1902, the clipboard arm) · this batch adds 9 nodes →
+  3257 expected · the gate run collected **3258 passed + 0 skipped**: the
+  clipboard arm (tests/test_app.py:1312, chunk00) RAN and PASSED — the machine
+  allowed `Set-Clipboard` today — so the environmental skip became a pass
+  (+1). No other skip, no fail: the commission's «any other skip or fail
+  blocks the close» clause is not triggered; the delta is named, not smoothed.
+- **Layer 0:** none due — the increment's change is one CSS declaration
+  (cyclomatic 1, no module boundary crossed); the unit criterion's evidence
+  is the mutation battery (below).
+- **Requirements:** 10/10 pass · 0 blocker fails — 4 HLR + 5 LLR + the HLR-2804
+  regression pin, each row's nodes inside the green gate run (the 9 new nodes
+  are in chunk01/02's files) and the requirement→node map in the matrix below.
+- **Black-box acceptance (Layer B):** ✓ AT-2801 (single-board, both sizes),
+  AT-2802 (home `enter`, both sizes), AT-2803 (team mode, both sizes + the
+  picker-geometry arm), AT-2804 (the unchanged-paths pin) — each observes its
+  outcome through the shipped surface (keys → the composited terminal frame),
+  with the vacuity guard (modal-on-top + box located before counting) in every
+  node; the mutation battery killed all six parametrized AT arms.
+- **Surface-reachability (bidirectional):** ✓ every named input reaches the
+  surface at the gate (the full suite's own arms) plus the real-terminal
+  captures below; the picker and the offer are each captured in a real window.
+- **Supersession inspection:** ✓ the packet's reverse census: 5 probes, B1's 21
+  hits all re-validated (suites 001/002 + one scoped edit, justified in the
+  packet §6), 0 foreign hits.
+- **Test ledger:** ✓ reconciles: 3248 − 0 + 9 = 3257 new-node expectation; the
+  gate collected 3258 = 3257 + the skip-turned-pass, named above.
+- **Evidence checklist (qa-reviewer):** `<filled after the P4 pass>`
 
-- **Result:** `<PASS | PASS-WITH-NOTES | FAIL>`
-- **Gate run:** `<the command as typed · its exit code · the commit it ran on · who ran it>`
-- **Layer 0:** `<N unit(s) met the criterion · N carry a named reddening mutation>`
-- **Requirements:** `<P>`/`<T>` pass · `<N>` blocker fails
-- **Black-box acceptance (Layer B):** ✓ every story's `AT` observes its outcome through the shipped surface (boundary + negative)  /  ⚠ `<N>` stories with no deliverable observation
-- **Surface-reachability (bidirectional):** ✓ all named inputs AND outputs/deliverables reached/observed at the surface  /  ⚠ `<N>` gaps
-- **Supersession inspection (read off the P3 packets):** ✓ all surviving refs negative  /  ⚠ live dependency found  /  ⚠ no packet ran it
-- **Test ledger:** ✓ reconciles (`base − D + A = post`)  /  ✗ mismatch
-- **Evidence checklist (qa-reviewer):** `<reviewer · N of M rows ✓ with evidence>`
-
-> If every line is ✓, the Detail below is reference only. Any ⚠/✗ → read the matching part.
+> The `qa-reviewer` rows were returned on 2026-10-25 (independent reviewer,
+> P4); no row is left pending.
 
 ---
 
@@ -40,77 +59,93 @@
 
 ### Layer 0 — unit
 
-| Unit | Which criterion | Node id | Result |
-|---|---|---|---|
-
-**Measured by mutation, never by line coverage.** For each unit, name the mutation and paste the RED:
+None due (the change is one stylesheet declaration). The mechanism evidence is
+the P3 mutation battery, read off the packet, not re-run at P4:
 
 | Unit | Mutation applied | RED observed? | Transcript |
 |---|---|---|---|
+| the backdrop declaration (LLR-2801.1) | the declaration deleted | yes — KILLED by all six AT arms (AT-2801/2802/2803 × 118x30/80x24); SURVIVED by the geometry arm (inert for this mutant, named) and TC-2801 (pin by design) | `evidence/mutation-001.txt`, restore digest `4ed77a16…` |
 
-### UX walkthrough — only if trigger family D fired
+### Layer A — white-box
 
-| Criterion (when the user does X, they observe Y) | Driven with the REAL mechanism | Painted result asserted | Verdict |
-|---|---|---|---|
-
-**Mechanism used:** `<a UI test driver | a headless-browser driver | CLI subprocess | artifact on disk | none — inspected only>`
-
-| Act | What it is | Performed? |
+| LLR | Node | Result |
 |---|---|---|
-| Automated walkthrough | the criteria above, driven through the REAL mechanism | `<performed · not performed — <reason> · not applicable — no trigger-D surface>` |
-| Expert inspection | a cognitive walkthrough against declared criteria, by a reviewer and not a user | `<same three states>` |
-| Evaluation with users | real users of the system, doing the tasks named in the context of use | `<same three states>` |
+| LLR-2801.3 (the picker half of the quit-while-open pin) | `tests/test_startup_backdrop.py::test_TC_2801_quitting_with_the_picker_open_writes_nothing` | passed (chunk01; a pin, not a gate — a stylesheet cannot change writes) |
+| LLR-2801.1's resolved-style probe | superseded by the emitted-form render assertion + the mutation battery (code review F1) — declared in the packet §4 | n/a |
 
-- **Method:** `<how it was run — tasks, setting, whether the operator sat with the participant>`
-- **Participants or population:** `<how many, and what makes them users of THIS system — no PII: no names, no contact details, no employer, no anything that identifies a person>`
-- **Evidence of the evaluation:** `<where the record is — a path under the batch's declared `evidence` home, a transcript, an artifact on disk>`
-- **Limits:** `<what this does NOT establish — sample size, self-selection, the operator watching, tasks chosen by the author>`
+### Layer B — black-box
 
-### Layer A — functional (white-box): per-requirement results
-> `TC-NNN` ↔ LLR/HLR. `Result` = pass / fail. `Evidence` = command output, observed behavior, inspection note, or analysis result.
+| AT | Story | Node | Result |
+|---|---|---|---|
+| AT-2801 | US-001 | `test_AT_2801_the_offer_opens_over_the_painted_board[size0|size1]` | passed (chunk01) |
+| AT-2802 | US-001 | `test_AT_2802_enter_on_the_home_opens_the_offer_over_the_chosen_board[size0|size1]` | passed (chunk01) |
+| AT-2803 | US-001 | `test_AT_2803_team_mode_shows_the_board_behind_both_modals_in_todays_order[size0|size1]` · `test_AT_2803_the_picker_keeps_its_pre_batch_geometry` | passed (chunk01) |
+| AT-2804 | US-001 (pin) | `test_AT_2804_the_unchanged_start_paths_stay_unchanged` + the whole gate suite | passed (chunk01) |
 
-| Req | Method | Executed verification | Numeric threshold | Result | Evidence |
-|-----|--------|-----------------------|-------------------|--------|----------|
-| `<one row per requirement verified>` | | | | | |
+### The mutation battery (C-40), read off the P3 transcripts
 
-**A worked example — text to read, never rows of your record.** It sits in a fence so that nothing has to be deleted: a row copied out of it would claim a verification nobody ran. Write your own rows in the table above.
+8 arms, one pytest invocation each, per-arm exit-code verdicts; the RED
+counterfactual is AT-2801's declaration-delete (both sizes RED); restore
+proven by hash. See the packet §4 and `evidence/mutation-001.txt`.
 
-```text
-| *(example)* HLR-001 | test | `pytest … -k TC-001` | exit 0 | | |
-| *(example)* LLR-001.1 | test (unit) | `…` | `…` | | |
-```
+### The flake arm (PDR condition 3), read off its transcript
 
-### Layer B — behavioral (black-box) acceptance
+`evidence/flake-2801.txt`: 50 sequential runs of AT-2801 at 80x24, 0 failures;
+50 in-process renders, minimum outside-box rows 4 above / 3 below (threshold
+≥ 3). PASS.
 
-| US | Acceptance test (`AT-NNN`) | Surface driven | Deliverable observed (path / element) | repr · boundary · negative | Result |
-|----|----------------------------|----------------|---------------------------------------|----------------------------|--------|
-| `<one row per user story>` | | | | | |
+### The real-terminal captures (the commission's Evidence clause)
 
-### Bidirectional surface-reachability matrix (extends A-5)
-> Every named INPUT dimension AND every named OUTPUT/deliverable is exercised/observed through the handler — not only the service API.
+Six shots, all accepted (`evidence/captures/README.md` is the page; `png/capture-log.txt`
+the machine log): the single-board start's offer and the home path's offer at 118x30 and
+80x24 (the commission's two scenes), plus the picker alone over the dimmed board at both
+sizes (ux C3). Every window carried a unique `b01-<scene>-<size>-<n>` title, was closed by
+that title right after its shot and verified gone; the final `assert-no-b01.ps1`
+(its own command) printed `no b01-* window left open`; no `b01-cap-*` temp home remains.
+The content-check mechanism (ux C2) is scripted: the READY check computes the live app's
+composited full-stack render at capture time and requires > 0 board rows outside the modal's
+box — a merely non-black shot cannot pass; a human read of all six PNGs agrees. Colour/byte
+floors held (grab ≥ 9 colours, PNG ≥ 19 colours, ≥ 22 KB each); every READY end state `OK`.
 
-| Direction | US dimension / deliverable | Service param / producer | Reached/observed at surface? | TC / AT | Status |
-|-----------|---------------------------|--------------------------|------------------------------|---------|--------|
-| input | `<dimension>` | `<param>` | yes/no | `TC-NNN` | ✓ / gap |
-| output | `<deliverable>` | `<producer>` | yes/no | `AT-NNN` | ✓ / gap |
+### Requirements × validation matrix
 
-### Signed-balance test ledger
-> `post = base − D + A`. State counts in collected / passed-lean / passed-full form.
+| Requirement | Method | Executed verification (who ran it) | Result |
+|---|---|---|---|
+| HLR-2801 | test | AT-2801 both sizes (orchestrator's gate run) | pass |
+| HLR-2802 | test | AT-2802 both sizes (gate run) | pass |
+| HLR-2803 | test | AT-2803 both sizes + geometry arm (gate run) | pass |
+| HLR-2804 (pin) | test | AT-2804 + the full suite (gate run) | pass |
+| LLR-2801.1 | test | the six killed AT arms + the emitted-form probe (P3 battery; gate run) | pass |
+| LLR-2801.2 | inspection | the increment's diff is the declaration + tests, nothing else (packet §2; `git show ce89030 --stat`) | pass |
+| LLR-2801.3 | test | TC-2801 + the re-run offer suite (gate run) | pass |
+| LLR-2802.1 | test | AT-2802 + the home suites (gate run) | pass |
+| LLR-2803.1 | test | AT-2803 + the D-615 stack assertion (gate run) | pass |
 
-| base | − D | + A | = post | actual collected | passed-lean / full | reconciles? |
-|------|-----|-----|--------|------------------|--------------------|-------------|
-| `<N>` | `<N>` | `<N>` | `<N>` | `<N>` | `<N>` / `<N>` | yes/no |
+### DDR conditions at P4
 
-### Gaps detected
-| ID | Requirement | Gap | Severity | Proposed action |
-|----|-------------|-----|----------|-----------------|
-| G-001 | | | blocker / major / minor | |
+| # | Condition | Discharged? |
+|---|---|---|
+| C-2 (ux) | the captures name their content-check mechanism per shot | ✓ — scripted: the live app's composited render must show > 0 board rows outside the box at capture time (README's «The content check, named»); a human read of all six PNGs agrees |
+| C-1/C-3 | carry to P5 (BACKLOG: the picker-placement item; the dimness hardening note) | pending — owned by the close gate |
 
-### Escaped-bug regression (if a defect escaped the suite)
+### qa-reviewer findings (P4)
 
-| Regression id (`AT-NNN` / `TC-NNN`) | Pre-fix run (evidence it FAILED) | Pre-fix RED kind (value / shape) | Post-fix value-discriminating? (QC-2) | Post-fix result | Reconciled node |
-|-------------------------------------|----------------------------------|----------------------------------|----------------------------------------|-----------------|-----------------|
-| | | | | | |
+`<filled after the P4 qa pass>`
 
-### Evidence checklist — qa-reviewer (full)
-> Attach `qa-reviewer`'s completed evidence checklist (items in `agents/qa-reviewer.md`), each marked ✓/✗ with one-line evidence. An unchecked or evidence-less item blocks the gate.
+### Evidence checklist
+
+| Row | Evidence | ✓/⚠ |
+|---|---|---|
+| gate chunk 00 | `evidence/suite-p4-chunk00-run.txt` (1440 passed, headed by command + HEAD) | ✓ |
+| gate chunk 01 | `evidence/suite-p4-chunk01-run.txt` (959 passed) | ✓ |
+| gate chunk 02 | `evidence/suite-p4-chunk02-run.txt` (859 passed) | ✓ |
+| chunk file lists | `evidence/suite-p4-files.txt` + `chunk00/01/02.txt` (112 files, disjoint — `sort | uniq -d` = 0) | ✓ |
+| mutation battery | `evidence/mutation-001.txt` (+ runner) | ✓ |
+| flake arm | `evidence/flake-2801.txt` (+ runner) | ✓ |
+| P1 RED probe | `evidence/red-p1.txt` | ✓ |
+| captures | `evidence/captures/png/` + `capture-log.txt` + `assert-no-b01.ps1` output | `<✓>` |
+
+### Gate run
+
+`<the command as typed, its exit code, the commit it ran on, who ran it —
+per the template's V47 field>`
