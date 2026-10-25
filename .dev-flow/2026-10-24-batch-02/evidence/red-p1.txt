@@ -1,0 +1,16 @@
+== P1 RED probes at base_ref e7cf037 — the future behaviour, RED today ==
+        async with app.run_test(size=(118, 30), notifications=True) as pilot:
+            await pilot.pause()
+            await _press(pilot, "escape", "at")
+            notes = [n for n in app._notifications if n.title == "People"]
+>           assert len(notes) == 1, app._notifications
+E           AssertionError: <textual.notifications.Notifications object at 0x00000289D964A0C0>
+E           assert 0 == 1
+E            +  where 0 = len([])
+
+tests\test_p1_red_probes.py:127: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_p1_red_probes.py::test_probe_AT_2701_the_home_touches_nothing
+FAILED tests/test_p1_red_probes.py::test_probe_AT_2706_the_people_directory_stays_fresh
+FAILED tests/test_p1_red_probes.py::test_probe_AT_2707_a_failed_re_read_keeps_the_directory
+============================== 3 failed in 1.10s ==============================
