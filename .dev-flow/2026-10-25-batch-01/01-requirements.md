@@ -11,7 +11,7 @@
 
 Specify the D-12 fix: the start-up modals (the one-time milestone offer and the
 team identity picker) open with the board visible behind them, dimmed by the same
-translucent backdrop every other modal uses.
+translucent backdrop the working modals use.
 
 ### 1.2 Scope
 
@@ -65,8 +65,9 @@ file or interface changes.
 
 At start, a board's start may open up to two modals: the team identity picker
 (when the board is team-shared and the user has no identity yet) and the one-time
-milestone offer. Every other modal in the app opens over the visible board, dimmed
-by the shared `#0007` backdrop; the start-up modals are the exception (D-12).
+milestone offer. Every modal the shared backdrop rule names — the task editor
+among them — opens over the visible board; the start-up modals are the exception
+(D-12).
 
 ### 2.3 User characteristics
 
@@ -90,14 +91,14 @@ the same source `App.export_screenshot` uses.
 
 | ID | User Story | Source | DoR status |
 |----|------------|--------|------------|
-| US-001 | As a user starting the app, I want the milestone offer and the team identity picker to open over the visible board — dimmed by the same backdrop every other modal uses — so that I keep my context while I answer them. | D-12 in `.dev-flow/BACKLOG.md` (2026-10-20 backlog round); commissioned by `.dev-flow/COMMISSION-startup-backdrop.md` | READY |
+| US-001 | As a user starting the app, I want the milestone offer and the team identity picker to open over the visible board — dimmed by the same translucent backdrop the working modals use, such as the task editor's — so that I keep my context while I answer them. | D-12 in `.dev-flow/BACKLOG.md` (2026-10-20 backlog round); commissioned by `.dev-flow/COMMISSION-startup-backdrop.md` | READY |
 
 #### Refinement log (one block per story)
 
 **US-001 — the board shows behind the start-up modals**
 - **INVEST:** I ✓ · N ✓ · V ✓ · E ✓ · S ✓ · T ✓
-- **Functionality (V, N):** user = the taskboard user at start-up · outcome = the MilestoneOffer and TeamIdentityPicker open over the painted board, dimmed by the shared `#0007` backdrop, exactly like every other modal · why = the blank screen behind the start-up modals loses the user's context (the defect as measured by QA-P4-04 in 2026-10-24-batch-02: 0 text rows above the offer box) · out of scope = no modal's content, keys or answers; the deferred start from the home (HD-1..HD-4); quitting-while-open write behaviour; any other modal's timing.
-- **Feasibility (E, S):** implementation path = diagnosed at P1: the two start-up modal classes join the shared `#0007` backdrop rule in `taskboard/taskboard.tcss`; the board beneath already paints in the same first composite as the modal, so no deferral mechanism is needed · dependencies/unknowns = none open — the cause is measured, not hypothesised (§2.7 rows 2 and 5) · fits one batch? = yes — one increment, one source file (`taskboard/taskboard.tcss`, owned by the `app` layer).
+- **Functionality (V, N):** user = the taskboard user at start-up · outcome = the MilestoneOffer and TeamIdentityPicker open over the painted board, dimmed by the shared `#0007` translucent backdrop the working modals use, such as the task editor's · why = the blank screen behind the start-up modals loses the user's context (the defect as measured by QA-P4-04 in 2026-10-24-batch-02: 0 text rows above the offer box) · out of scope = no modal's content, keys or answers; the deferred start from the home (HD-1..HD-4); quitting-while-open write behaviour; any other modal's timing.
+- **Feasibility (E, S):** implementation path = diagnosed at P1 and confirmed at P2: the two start-up modal classes get a **background-only** `#0007` declaration of their own in `taskboard/taskboard.tcss` — joining the existing shared rule was rejected because that rule also carries `align: center middle`, which would move the picker off its top-left placement (review finding A1); the board beneath already paints in the same first composite as the modal, so no deferral mechanism is needed · dependencies/unknowns = none open — the cause is measured, not hypothesised (§2.7 rows 2 and 5) · fits one batch? = yes — one increment, one source file (`taskboard/taskboard.tcss`, owned by the `app` layer).
 - **Evaluability (T) — behavioral, black-box:** "When the app starts (single-board, or `enter` on the home's default card, or in team mode) and a start-up modal opens, the user observes the board's text rows behind the modal's dimmed backdrop." → AT-2801..AT-2803.
 - **Open questions:** none — the mechanism was settled by the P1 measurement, not deferred to the PDR.
 - **Classification:** `READY` — observable through the shipped surface at two terminal sizes; INVEST closed on all six axes.
@@ -108,8 +109,8 @@ the same source `App.export_screenshot` uses.
 |---|---|---|---|---|---|
 | 1 | A board's start pushes the start-up modals synchronously inside the mount/switch tick: `_open_board` calls `_init_team_mode()` at `taskboard/app.py:1459` and `_offer_milestones()` at `taskboard/app.py:1462`, both of which `push_screen`. | premise | ✅ TRUE | `grep -n "_init_team_mode()\|_offer_milestones()" taskboard/app.py` → `1459` · `1462` (read at P1) | the defect's pre-image; the commission's SB-2 deferral hypothesis targets this tick |
 | 2 | The commission's hypothesis — «the board view has not been laid out or painted at its real size when the modal goes up» — is FALSE: with the offer on screen, the board screen beneath holds 23-29 painted non-blank rows at 118x30 and 80x24, on the single-board, home and team paths alike. | hypothesis | ❌ FALSE (refuted) | P1 probe `.scratch/probe_red.py` → `evidence/red-p1.txt`: `board_paint.nonblank_rows` = 29 / 23 / 29 / 26 with `MilestoneOffer` (or the picker+offer stack) on top | SB-1 honoured: the fix follows the cause, not the hypothesis; no `call_after_refresh` deferral is added |
-| 3 | The emptiness is the modal screens' own opaque background: the app-level rule `Screen { background: #0d1117; }` (`taskboard/taskboard.tcss:3`) matches the start-up modal screens (Textual type selectors match subclasses; `ModalScreen` in their `_css_type_names`, probed live), and the shared `#0007` backdrop rule (`taskboard/taskboard.tcss:309-312`) does not name `MilestoneOffer` or `TeamIdentityPicker`. | premise | ✅ TRUE | `MilestoneOffer.styles.background` resolves to `Color(13, 17, 23)` = `#0d1117` (probe, `evidence/red-p1.txt` `modal_background`); the selector list at `taskboard.tcss:309` read at P1 names every other modal and not these two | the fix site: adding the two classes to that rule makes the resolved background `Color(0, 0, 0, a=0.467)` and the outside-box rows > 0 (scratch positive check at P1: 8/20 rows at 118x30, 4/3 at 80x24) |
-| 4 | The board beneath the start-up modals is composited dimmed, not hidden, once the screen background carries alpha: Textual's `ModalScreen` default is `$background 60%` and the shipped rule uses `#0007` for the other modals over the same compositor path. | hypothesis | ✅ TRUE | probed at P1: with the two classes added (scratch copy), the full-stack render shows the board's rows around the offer box — 8 above / 20 below at 118x30, 4 above / 3 below at 80x24 (probe output, P1 scratch run) | the AT thresholds derive from this measured regime |
+| 3 | The emptiness is the modal screens' own opaque background: the app-level rule `Screen { background: #0d1117; }` (`taskboard/taskboard.tcss:3`) matches the start-up modal screens (Textual type selectors match subclasses; `ModalScreen` in their `_css_type_names`, probed live), and the shared `#0007` backdrop rule (`taskboard/taskboard.tcss:309-312`) names the working modals (the task editor among them) — `MilestoneOffer` and `TeamIdentityPicker` are absent from it. (P2 round 1 corrected this row's earlier overclaim «names every other modal»: ~16 other `ModalScreen` subclasses are unlisted too — see §6.3.) | premise | ✅ TRUE | `MilestoneOffer.styles.background` resolves to `Color(13, 17, 23)` = `#0d1117` (probe, `evidence/red-p1.txt` `modal_background`); the selector list at `taskboard.tcss:309` read at P1 | the fix site: a background-only `#0007` declaration for the two classes makes the resolved background `Color(0, 0, 0, a=0.467)` and the outside-box rows > 0 (P2 round-2 probe: offer 7 above / 6 below at 118x30, 4 above / 3 below at 80x24; picker 0 above / 17 below at 118x30) |
+| 4 | The board beneath the start-up modals is composited dimmed, not hidden, once the screen background carries alpha, and a **background-only** declaration moves nothing else: the offer box keeps its corner (row 7, col 11 at 118x30; row 4 at 80x24) and the picker keeps its top-left geometry (box region row 0, columns 0-61 — width 62 — at 118x30, resolved `align: (left, top)`) — measured before and after the declaration in the same probe. | hypothesis | ✅ TRUE | P2 round-2 probe (`.scratch/probe_round2.py`, both states run back-to-back): base → fixed outside-box rows offer `[0,0]→[7,6]` (118x30) and `[0,0]→[4,3]` (80x24), picker `[0,0]→[0,17]`, with the box corners and the picker align identical in both states; the picker's measured region `Region(x=0, y=0, width=62, height=11)` both states | the AT thresholds and the A1 position pin derive from this measured regime |
 | 5 | The suite's baseline at this batch's base is 3248 passed + 1 environmental skip (TC-1902, the clipboard arm), so P4 expects the same plus this batch's new nodes, in 3 sequential chunks. | premise | ✅ TRUE (pending P4) | asserted by the commission (§Evidence, the batch-02 close numbers); re-verified by the P4 chunks themselves | P4's expected totals derive from it |
 | 6 | Tests run from the worktree import the worktree's `taskboard/`: `python -m pytest` from the worktree root puts the root on `sys.path` ahead of the editable finder, which still maps `taskboard` to the main checkout — standalone `python .scratch/x.py` probes therefore need `PYTHONPATH=<worktree>` to measure this tree. | premise | ✅ TRUE | import probe `env -u NO_COLOR python -m pytest .scratch/probe_import_test.py -q -s` → `taskboard.__file__ = C:\Users\jjgh8\Github\taskboard-wt\backdrop\taskboard\__init__.py`; `app.css_path` under a bare-script probe resolves to the main checkout's tcss (measured at P1) | every probe and test run in this batch names its interpreter invocation accordingly |
 
@@ -135,11 +136,11 @@ the same source `App.export_screenshot` uses.
 ### HLR-2801 — the single-board start's offer shows the board behind it
 - **Traceability:** US-001
 - **Ledger:** none
-- **Statement:** When the app starts with a single active board whose board has milestone candidates, the system shall open the milestone offer with the board's painted rows visible outside the offer box — dimmed by the same translucent backdrop the other modals use — at 118x30 and at 80x24.
+- **Statement:** When the app starts with a single active board whose board has milestone candidates, the system shall open the milestone offer with the board's painted rows visible outside the offer box — dimmed by the shared `#0007` translucent backdrop the working modals use — at 118x30 and at 80x24.
 - **Rationale (informative):** D-12 as measured by QA-P4-04: «0 text rows above the offer box … on a plain single-board start». The P1 probe reproduces it (`evidence/red-p1.txt`: 0 rows above and 0 below the box at both sizes, board painted beneath, modal background opaque `#0d1117`).
 - **Validation:** `test`
 - **Executed verification:** `env -u NO_COLOR python -m pytest -q tests/test_startup_backdrop.py -k AT_2801` (node minted at P3; P1 RED probe executed at `base_ref`, `evidence/red-p1.txt`)
-- **Numeric pass threshold:** with `MilestoneOffer` the top screen, text rows outside the offer box's border > 0 at 118x30 AND at 80x24 (the P1 probe measured 0 and 0; the scratch positive check with the fix applied measured 8 above / 20 below at 118x30 and 4 above / 3 below at 80x24).
+- **Numeric pass threshold:** with `MilestoneOffer` the top screen, text rows outside the offer box's border > 0 at 118x30 AND at 80x24 (the P1 probe measured 0 and 0; the P2 round-2 positive check with the background-only fix measured 7 above / 6 below at 118x30 and 4 above / 3 below at 80x24, box corner unchanged at row 7, col 11).
 - **Priority:** high
 - **Acceptance (black-box) — the user-verified outcome (the WHAT):**
   - **Observable outcome:** the offer opens over the dimmed board — the board's rows are readable around the offer box, exactly like the task editor's backdrop.
@@ -150,12 +151,12 @@ the same source `App.export_screenshot` uses.
 
 ### HLR-2802 — the home path's offer shows the chosen board behind it
 - **Traceability:** US-001
-- **Ledger:** none
-- **Statement:** When the app starts with two boards and the user presses `enter` on the home's default card, the system shall open the milestone offer over the chosen board with that board's painted rows visible outside the offer box, dimmed by the shared backdrop.
+- **Ledger:** LED-2801.1
+- **Statement:** When the app starts with two boards and the user presses `enter` on the home's default card, the system shall open the milestone offer over the chosen board with that board's painted rows visible outside the offer box, dimmed by the shared backdrop, at 118x30 and at 80x24.
 - **Rationale (informative):** the deferred `enter` path is where QA-P4-04 measured the empty backdrop first; batch 2026-10-24-batch-02 fixed the stack (the board beneath, the home gone) but not what the user sees — this HLR completes D-12 on that path.
 - **Validation:** `test`
 - **Executed verification:** `env -u NO_COLOR python -m pytest -q tests/test_startup_backdrop.py -k AT_2802` (node minted at P3; P1 RED probe executed at `base_ref`, `evidence/red-p1.txt`)
-- **Numeric pass threshold:** same oracle as AT-2801: text rows outside the offer box > 0 (P1 probe: 0; positive check with the fix: 8 above / 20 below at 118x30).
+- **Numeric pass threshold:** same oracle as AT-2801 at both sizes: text rows outside the offer box > 0 at 118x30 AND at 80x24 (P1 probe: 0; P2 round-2 positive check, single-board form of the same declaration: 7 above / 6 below at 118x30, 4 above / 3 below at 80x24 — the home path reuses the identical rule and oracle).
 - **Priority:** high
 - **Acceptance (black-box) — the user-verified outcome (the WHAT):**
   - **Observable outcome:** after `enter` on the default card, the offer opens over the chosen board, dimmed — the board's rows are readable around the box.
@@ -166,19 +167,19 @@ the same source `App.export_screenshot` uses.
 
 ### HLR-2803 — team mode shows the board behind both start-up modals, in today's order
 - **Traceability:** US-001
-- **Ledger:** none
-- **Statement:** When the board is team-shared and the user has no identity yet, the system shall open the team identity picker over the visible board; when the start also owes the milestone offer, the system shall open the offer over the picker, with the board's painted rows visible outside the picker box and the offer box; the order shall be the identity picker first and the offer last.
-- **Rationale (informative):** D-615's cover rule («the offer covers whatever the start opened») and the picker's own backdrop share the same defect; the order is contractual and unchanged (SB-2).
+- **Ledger:** LED-2801
+- **Statement:** When the board is team-shared and the user has no identity yet, the system shall open the team identity picker over the visible board, with the picker box keeping its pre-batch placement exactly (box region row 0, columns 0-61 — width 62 — at 118x30 — pinned, not merely incidental) and only its screen background translucent; when the start also owes the milestone offer, the system shall open the offer over the picker, with the board's painted rows visible outside the picker box and the offer box; the order shall be the identity picker first and the offer last.
+- **Rationale (informative):** D-615's cover rule («the offer covers whatever the start opened») and the picker's own backdrop share the same defect; the order is contractual and unchanged (SB-2). The position pin exists because the natural-looking fix — joining the shared rule — would have dragged that rule's `align: center middle` onto the picker and moved it (review finding A1, folded by giving the two classes a background-only declaration).
 - **Validation:** `test`
 - **Executed verification:** `env -u NO_COLOR python -m pytest -q tests/test_startup_backdrop.py -k AT_2803` (node minted at P3; P1 probe executed at `base_ref`, `evidence/red-p1.txt`)
-- **Numeric pass threshold:** with the offer on top, the screen stack's tail is `TeamIdentityPicker` then `MilestoneOffer` (unchanged from `test_TC_616_the_offer_covers_the_identity_picker_until_answered`), and text rows outside the offer box > 0 (P1 probe: 0; positive check with the fix: 8 above / 20 below at 118x30). The picker's own box takes the same backdrop (same rule, one declaration).
+- **Numeric pass threshold:** with the offer on top, the screen stack's tail is `TeamIdentityPicker` then `MilestoneOffer` (unchanged from `test_TC_616_the_offer_covers_the_identity_picker_until_answered`), text rows outside the offer box > 0 at 118x30 and at 80x24, and — with the picker alone on screen (a board whose offer is already marked) — the picker box's geometry is exactly its pre-batch geometry (box region row 0, columns 0-61, width 62, at 118x30; P2 round-2 probe, both states — the round-1 wording «left column 61» was the box's rightmost column and is corrected here and in LED-2801.1). The picker's own box takes the same backdrop (same declaration).
 - **Priority:** high
 - **Acceptance (black-box) — the user-verified outcome (the WHAT):**
-  - **Observable outcome:** the picker opens over the dimmed board; the offer opens over the dimmed picker; both boxes keep the board readable around them.
+  - **Observable outcome:** the picker opens over the dimmed board at exactly its old place; the offer opens over the dimmed picker; both boxes keep the board readable around them.
   - **Shipped surface:** `TeamIdentityPicker` and `MilestoneOffer` pushed by `_init_team_mode` / `_offer_milestones` in team mode.
   - **Acceptance test(s):** AT-2803
   - **Boundary catalog (QC-3):** ☐ empty (a roster-less shared dir identifies no one — no picker, unchanged) ☐ boundary ☐ invalid ☐ error (none new)
-  - **Negative control:** executed at P1 against `base_ref` — 0 rows outside the box with the stack tail already `TeamIdentityPicker`, `MilestoneOffer` (`evidence/red-p1.txt`, probe AT-2803: the order is right today, the backdrop is the defect).
+  - **Negative control:** executed at P1 against `base_ref` — 0 rows outside the box with the stack tail already `TeamIdentityPicker`, `MilestoneOffer` (`evidence/red-p1.txt`, probe AT-2803: the order is right today, the backdrop is the defect). The position pin's RED side is A1's counterfactual: had the fix joined the shared rule, the picker would sit centred — the P2 round-2 probe measured that risk and the contract rejected that form.
 
 ### HLR-2804 — nothing else changes (the regression pin)
 - **Traceability:** US-001
@@ -202,14 +203,15 @@ the same source `App.export_screenshot` uses.
 
 > Each LLR decomposes an HLR into a verifiable property at the implementation level.
 
-### LLR-2801.1 — the start-up modals join the shared backdrop rule
+### LLR-2801.1 — the start-up modals get a background-only backdrop declaration
 - **Traceability:** HLR-2801, HLR-2802, HLR-2803
-- **Ledger:** none
-- **Statement:** The shared translucent backdrop rule at `taskboard/taskboard.tcss:309-312` shall name `MilestoneOffer` and `TeamIdentityPicker` alongside the other modals, so both start-up modal screens render `background: #0007` and the board screen beneath shows through dimmed; no other rule, screen or declaration in the stylesheet shall change.
+- **Ledger:** LED-2801
+- **Statement:** The stylesheet shall declare, beside the existing shared rule, one rule naming `MilestoneOffer` and `TeamIdentityPicker` with `background: #0007` and **no other declaration** — no `align`, no other property — so both start-up modal screens render the translucent backdrop and the board beneath shows through dimmed; the existing shared rule at `taskboard/taskboard.tcss:309-312` and every other rule, screen and declaration in the stylesheet shall stay byte-identical.
+- **Rationale (informative):** the rejected alternative — appending the two classes to the shared rule — would also apply that rule's `align: center middle` to the picker, which today renders top-left (review finding A1, blocker, round 1); recentering the picker was recorded as a design alternative and rejected to keep SB-3's «nothing else changes» literal, with the PDR carrying the decision.
 - **Validation:** `test`
-- **Executed verification:** AT-2801..AT-2803's nodes (P3) and the resolved-style probe: `MilestoneOffer(...).styles.background` → a colour with alpha < 1 after the change (P1 scratch check: `Color(0, 0, 0, a=0.467)`).
-- **Numeric pass threshold:** the full-stack render shows > 0 text rows outside the offer box at 118x30 and 80x24 (AT-2801's numbers).
-- **Negative control:** removing the two names from the selector list returns the resolved background to `Color(13, 17, 23)` and the outside-box rows to 0 — the increment's RED counterfactual (C-40), executed in the mutation battery.
+- **Executed verification:** AT-2801..AT-2803's nodes (P3) and the resolved-style probe: `MilestoneOffer(...).styles.background` → a colour with alpha < 1 after the change (P2 round-2 probe: `Color(0, 0, 0, a=0.467)`), with the picker resolved `align` still `(left, top)`.
+- **Numeric pass threshold:** the full-stack render shows > 0 text rows outside the offer box at 118x30 and 80x24 (AT-2801's numbers), and the picker box geometry is byte-identical to its pre-batch geometry (AT-2803's pin).
+- **Negative control:** removing the declaration returns the resolved background to `Color(13, 17, 23)` and the outside-box rows to 0 — the increment's RED counterfactual (C-40), executed in the mutation battery.
 
 ### LLR-2801.2 — no timing change: the pushes stay in the mount tick, in today's order
 - **Traceability:** HLR-2801, HLR-2802, HLR-2803, HLR-2804
@@ -222,10 +224,10 @@ the same source `App.export_screenshot` uses.
 
 ### LLR-2801.3 — modal contents, keys and answers are byte-unchanged
 - **Traceability:** HLR-2804
-- **Ledger:** none
-- **Statement:** Neither `MilestoneOffer` nor `TeamIdentityPicker` shall change in `taskboard/modals.py`: their compose trees, bindings, answer handling, candidate rows and wording stay exactly as shipped; quitting while either is open writes the same files as today.
+- **Ledger:** LED-2801.1
+- **Statement:** Neither `MilestoneOffer` nor `TeamIdentityPicker` shall change in `taskboard/modals.py`: their compose trees, bindings, answer handling, candidate rows and wording stay exactly as shipped. Quitting while the offer is open writes the same files as today (`test_TC_616_quitting_unanswered_leaves_the_board_unmarked`, re-run). Quitting while the picker is open is pinned by a new node, `test_TC_2801_quitting_with_the_picker_open_writes_nothing` (P3): with the picker up, leaving without answering writes no board file and no team-file change — the picker's callback answers `None` and every write it could have made is unchanged by a stylesheet declaration.
 - **Validation:** `test`
-- **Executed verification:** `tests/test_milestone_offer.py` and the picker/team suites re-run green with no modification (AT-d); `test_TC_616_quitting_unanswered_leaves_the_board_unmarked` among them.
+- **Executed verification:** `tests/test_milestone_offer.py` and the picker/team suites re-run green with no modification (AT-d); `test_TC_616_quitting_unanswered_leaves_the_board_unmarked` among them; `test_TC_2801_quitting_with_the_picker_open_writes_nothing` minted at P3.
 - **Numeric pass threshold:** 0 test files outside `tests/test_startup_backdrop.py` (new) are modified by the increment.
 
 ### LLR-2802.1 — the home path opens the offer over the chosen board with the same backdrop
@@ -256,9 +258,10 @@ FLOW: the board's painted frame beneath the start-up modals
            views.render_view) laid out and painted at the terminal's real size in
            the same composite that raises the modal
   NODES  :
-    - fn    : the shared #0007 backdrop rule (taskboard.tcss:309-312) naming
-              MilestoneOffer and TeamIdentityPicker — the translucent screen
-              background both start-up modals render with
+    - fn    : the new background-only declaration naming MilestoneOffer and
+              TeamIdentityPicker with background: #0007 (taskboard.tcss, beside
+              the shared rule, which stays byte-identical) — the translucent
+              screen background both start-up modals render with
       owner : LLR-2801.1
     - fn    : the unchanged mount-tick push order (_init_team_mode then
               _offer_milestones, _open_board taskboard/app.py:1459,1462) — no
@@ -280,21 +283,32 @@ FLOW: the board's painted frame beneath the start-up modals
 > - **Layer A — white-box / functional (`TC-NNN`):** validates the HLR/LLR mechanism (the HOW). Methods: `test`, `inspection`, `analysis`.
 > - **Layer B — black-box / behavioral acceptance (`AT-NNN`):** validates the user story's outcome through the shipped surface (the WHAT). Method: `acceptance`.
 
-Layer A: `inspection` — the increment's diff touches one selector list in
+Layer A: `inspection` — the increment's diff adds one three-line declaration to
 `taskboard/taskboard.tcss` and nothing else (LLR-2801.2's `git diff` check is the
-mechanism's proof); `test` — the resolved-style probe
+mechanism's proof; the check compares content and ignores line-ending
+normalization noise); `test` — the resolved-style probe
 (`MilestoneOffer.styles.background` carries alpha after the change) plus every
-re-run arm of the offer, home, team and presence suites (the pins, AT-d/HLR-2804).
-Layer B (all NEW, minted at P3): `tests/test_startup_backdrop.py::test_AT_2801_the_offer_opens_over_the_painted_board`
-(parametrized 118x30 and 80x24), `::test_AT_2802_enter_on_the_home_opens_the_offer_over_the_chosen_board`,
-`::test_AT_2803_team_mode_shows_the_board_behind_both_modals_in_todays_order`. The
-P1 RED probe of the same oracle was executed at `base_ref` and lives at
-`evidence/red-p1.txt` (its scratch script stays in `.scratch/`, git-excluded, per
-the batch rules).
+re-run arm of the offer, home, team and presence suites (the pins, AT-d/HLR-2804),
+and the new node
+`tests/test_startup_backdrop.py::test_TC_2801_quitting_with_the_picker_open_writes_nothing`
+(LLR-2801.3's picker half). Layer B (all NEW, minted at P3):
+`tests/test_startup_backdrop.py::test_AT_2801_the_offer_opens_over_the_painted_board`
+(parametrized 118x30 and 80x24),
+`::test_AT_2802_enter_on_the_home_opens_the_offer_over_the_chosen_board`
+(parametrized 118x30 and 80x24),
+`::test_AT_2803_team_mode_shows_the_board_behind_both_modals_in_todays_order`
+(118x30 and 80x24, plus the picker-geometry pin at 118x30). Every AT node
+asserts its modal is the top screen and locates the box's title row in the render
+**before** counting rows outside the box — a missing modal or an unlocated box
+fails the node; it never yields a vacuous 0-count pass (review finding Q2,
+folded). The P1 RED probe of the same oracle was executed at `base_ref` and lives
+at `evidence/red-p1.txt` (its scratch script stays in `.scratch/`, git-excluded,
+per the batch rules).
 
 ### 5.2 Batch acceptance criteria
 - 100% of HLRs/LLRs covered by at least one Layer B node with pass result (AT-2801..AT-2803), the Layer A checks green, and the regression pin HLR-2804 held by the P4 suite.
-- Every new test mutation-checked (C-40): reverting LLR-2801.1 (the two names out of the `#0007` selector list) turns AT-2801 red; the RED counterfactual, per-node verdicts and restore digest are recorded in increment 001's packet.
+- Every new test mutation-checked (C-40): reverting LLR-2801.1 (deleting the background-only declaration) turns AT-2801 red — the single kill node, with per-node verdicts for AT-2802 and AT-2803 recorded under the same one-declaration revert (justified: one rule, three oracle reuses — the identical selector list cannot break one path and hold another). The RED counterfactual, per-node verdicts and restore digest are recorded in increment 001's packet.
+- The validator: `python C:/Users/jjgh8/.claude/skills/dev-flow/scripts/devflow-validate.py --brief <worktree>` answers 0 BLOCK at batch start and at close (the commission's §Evidence).
 - The P4 full suite: the baseline 3248 passed + 1 environmental skip (TC-1902, the clipboard arm) plus this batch's new nodes, in 3 SEQUENTIAL chunks, never in parallel with anything; any other skip or fail blocks the close.
 - The real Windows Terminal capture pair (118x30 and 80x24) of the offer over the visible board — the single-board start and the home path — `b01-` window titles, each window closed by title right after its shot and verified gone, never another window (`JJ_WORKPC: dev-flow` among them), black shots and shots with fewer than 8 colours rejected, and a final assertion that no `b01-` window is left.
 
@@ -306,13 +320,14 @@ the batch rules).
 ### 6.2 Relevant design decisions
 
 - **SB-1 (diagnose first):** executed at P1 — the reproduction is `evidence/red-p1.txt` (0 text rows outside the offer box at 118x30 and 80x24, single-board, home and team paths). The cause with file:line: `taskboard/taskboard.tcss:309-312` — the shared `#0007` backdrop rule does not name `MilestoneOffer`/`TeamIdentityPicker`, so the app-level `Screen { background: #0d1117 }` (`taskboard.tcss:3`, matching the modal screens as a superclass) paints them opaque and hides the board beneath. The commission's hypothesis (unpainted board at push time) is refuted by measurement (§2.7 row 2) and is recorded as FALSE, per SB-1's «if the hypothesis is wrong, say so».
-- **SB-2 (the fix):** the two classes join the shared backdrop rule; the board beneath already paints at its real size, so the user sees it dimmed behind the modals. No deferral is added — the mechanism the commission anticipated is unnecessary because the cause is elsewhere; the order (picker first, offer last, D-615) is untouched.
+- **SB-2 (the fix):** the two classes get a background-only `#0007` declaration of their own in `taskboard/taskboard.tcss` (joining the shared rule was rejected at P2 round 1 — its `align: center middle` would move the picker; finding A1); the board beneath already paints at its real size, so the user sees it dimmed behind the modals. No deferral is added — the mechanism the commission anticipated is unnecessary because the cause is elsewhere; the order (picker first, offer last, D-615) is untouched.
 - **SB-3 (nothing else changes):** one selector list, one file (`taskboard/taskboard.tcss`); no modal content, keys or answers; the deferred start behaves exactly as batch 2026-10-24-batch-02 shipped; quitting while a start-up modal is open writes the same things.
 
 ### 6.3 Open risks
 
-- **The 60%-vs-47% blend.** Textual's `ModalScreen` default is `$background 60%`; the shipped rule uses `#0007` (47% alpha) for every other modal. The fix puts the start-up modals on the app's existing convention (`#0007`), not the framework default — a deliberate consistency choice, flagged for the ux lens at the DDR (a different dim level on these two modals would itself be an inconsistency).
-- **Screens without the backdrop.** Other `ModalScreen` subclasses not in the `#0007` list (e.g. the help and palette screens, if any) share the opaque-background trait by the same `Screen` rule. They are out of scope (SB-3) and are NOT changed; if the operator wants them dimmed too, that is a new backlog item.
+- **The 60%-vs-47% blend.** Textual's `ModalScreen` default is `$background 60%`; the shipped rule uses `#0007` (47% alpha) for the modals it names. The fix puts the start-up modals on the app's existing convention (`#0007`), not the framework default — a deliberate consistency choice, flagged for the ux lens at the DDR (a different dim level on these two modals would itself be an inconsistency).
+- **The unlisted modals (the A2 census, confirmed at P2 round 1).** The shared `#0007` rule names eleven modal classes; the census found ~16 other `ModalScreen` subclasses unlisted: `HelpModal`, `CommandPalette`, `StandupModal`, `PhaseEditor`, `MarkForm`, `PersonForm`, `TextPrompt`, `ClockModal`, `PresentKeys`, `GanttLinkMode`, `EmojiPicker`, `LinkPicker`, `TemplatePicker`, `TemplateEditor` (`taskboard/modals.py`) and `HelpScreen`, `PresentScreen` (`taskboard/app.py`). `GanttLinkMode` sets its own opaque `#0b0f17` by design (a full-screen mode, `modals.py:1679`). They are out of scope (SB-3) and are NOT changed; if the operator wants them dimmed too, that is a new backlog item, carried at the close.
+- **ANSI colour mode.** Textual's `ModalScreen` ships an `&:ansi { background: transparent }` variant (verified on 8.2.8): under `TEXTUAL_ANSI` the backdrop question is moot framework-side and the fix is a no-op either way. The defect regime and the captures assume truecolor (`COLORTERM=truecolor`); no test action is owed for the ANSI variant.
 - **Security scan (family C) — the verdict recorded:** `python C:/Users/jjgh8/.claude/skills/dev-flow/scripts/devflow-scan-spec.py C:/Users/jjgh8/Github/taskboard-wt/backdrop/.dev-flow/2026-10-25-batch-01/01-requirements.md` → exit 0, `flags: none`, `security_required: false`, all 5 control rows ok (run at the P1 gate, 2026-10-25). No auth, secrets, external integration, sensitive data, destructive-DB, input-surface, network or markup-rendering pattern fires — the change is a CSS selector list.
 
 ### 6.4 Phase-1 reconciliation log — moved to the ledger (§7)

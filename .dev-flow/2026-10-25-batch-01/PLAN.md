@@ -21,7 +21,7 @@ orchestrator presents the full plan in-conversation at each phase gate.
 | Project | taskboard |
 | Batch | 2026-10-25-batch-01 |
 | Objective | D-12: the start-up modals (MilestoneOffer, TeamIdentityPicker) open only after the board has painted at its real size, so the user sees the board dimmed by the shared #0007 backdrop behind them; the order is unchanged (identity picker first, offer last) and nothing else changes (SB-1..SB-3) |
-| Last updated | P1 · 2026-10-25 |
+| Last updated | P2 · 2026-10-25 |
 | Standing authorization | «Sigue, tú planeas, la implementación dásela a kimi 2.8» — the operator's commission for this batch (.dev-flow/COMMISSION-startup-backdrop.md, the operator's words recorded there). This runtime cannot prompt; the commission is the answer: autonomy over the gates it commissions, recorded per-gate in `state.json.decisions_log`; merge NOT granted (do not push or merge); a HIGH finding blocks regardless. |
 | First gate | exit 0 — `0 block · 153 notice · 63 not applicable` over the closed 2026-10-24-batch-02 record; `V7` reported no bundle-hash disagreement (the run proves the tool and bundle, not the batch). |
 | Premises / RC-1 | `origin/main` tip verified at intake: `3053c1e` (2026-10-25); merge-base of `fix/startup-backdrop` == tip, no rebase needed. RC-1 (b): `git grep D-12 origin/main -- REQUIREMENTS.md` → no hit, D-12 not shipped externally. RC-2: `git ls-remote --exit-code --heads origin` exit 0, remote answered. Flow revision: bundle mirror at `C:/Users/jjgh8/.claude/skills/dev-flow` (F1 not-run from a bundle — `V7`'s bundle-identity line is its probe). |
