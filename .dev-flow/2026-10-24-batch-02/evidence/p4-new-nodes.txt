@@ -1,0 +1,25 @@
+The event loop scope for asynchronous fixtures will default to the fixture caching scope. Future versions of pytest-asyncio will default the loop scope for asynchronous fixtures to function scope. Set the default fixture loop scope explicitly in order to avoid unexpected behavior in the future. Valid fixture loop scopes are: "function", "class", "module", "package", "session"
+
+============================= test session starts =============================
+platform win32 -- Python 3.12.7, pytest-8.3.4, pluggy-1.6.0 -- C:\Users\jjgh8\anaconda3\python.exe
+rootdir: C:\Users\jjgh8\Github\taskboard-wt\home-fix
+configfile: pyproject.toml
+plugins: anyio-4.2.0, asyncio-0.25.0, cov-7.1.0, textual-snapshot-1.1.0, timeout-2.3.1, syrupy-4.8.0
+asyncio: mode=Mode.AUTO, asyncio_default_fixture_loop_scope=None
+collecting ... collected 13 items
+
+tests/test_home_deferred_start.py::test_AT_2701_the_home_touches_nothing PASSED [  7%]
+tests/test_home_deferred_start.py::test_AT_2702_enter_runs_the_deferred_start PASSED [ 15%]
+tests/test_home_deferred_start.py::test_AT_2703_escape_runs_the_start_once PASSED [ 23%]
+tests/test_home_deferred_start.py::test_AT_2704_another_board_never_writes_the_default PASSED [ 30%]
+tests/test_home_deferred_start.py::test_AT_2705_the_offer_opens_over_the_board PASSED [ 38%]
+tests/test_home_deferred_start.py::test_TC_2703_a_failed_deferred_start_keeps_the_board_pending PASSED [ 46%]
+tests/test_directory_refresh.py::test_TC_2701_refresh_gates_on_mtime_or_size[people] PASSED [ 53%]
+tests/test_directory_refresh.py::test_TC_2701_refresh_gates_on_mtime_or_size[marks] PASSED [ 61%]
+tests/test_directory_refresh.py::test_TC_2702_a_failed_refresh_keeps_and_flags_once[people] PASSED [ 69%]
+tests/test_directory_refresh.py::test_TC_2702_a_failed_refresh_keeps_and_flags_once[marks] PASSED [ 76%]
+tests/test_directory_refresh.py::test_AT_2706_the_directories_stay_fresh PASSED [ 84%]
+tests/test_directory_refresh.py::test_AT_2707_a_failed_re_read_keeps_the_directory PASSED [ 92%]
+tests/test_directory_refresh.py::test_D3_the_search_query_refreshes_the_directories_once PASSED [100%]
+
+============================= 13 passed in 6.78s ==============================
