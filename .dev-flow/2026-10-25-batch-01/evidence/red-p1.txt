@@ -1,0 +1,93 @@
+=== P1 RED probe — D-12, batch 2026-10-25-batch-01, base_ref 96684bd (96684bd20ec1602bed97b04137f36ee0e817acac) ===
+=== probe: .scratch/probe_red.py — headless run_test, full screen-stack render, worktree package on PYTHONPATH ===
+=== import probe (python -m pytest from the worktree root) ===
+taskboard.__file__ = C:\Users\jjgh8\Github\taskboard-wt\backdrop\taskboard\__init__.py
+1 passed in 0.02s
+=== RED reproduction + diagnosis (text_rows_outside_offer_box = [above, below] the box border) ===
+NOTE: the hypothesis 'board not yet painted' is REFUTED by board_paint.nonblank_rows (23-29 painted rows with the modal up);
+      the modal screens' resolved background is opaque Color(13,17,23) = #0d1117 (taskboard.tcss:3 Screen rule),
+      because taskboard.tcss:310-312's shared #0007 backdrop rule does not name MilestoneOffer/TeamIdentityPicker.
+[
+ {
+  "path": "single->offer",
+  "size": "118x30",
+  "text_rows_outside_offer_box": [
+   0,
+   0
+  ],
+  "first_text_rows": [
+   "\u256d\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500",
+   "\u2502 \u25c6 Milestones \u00b7 convert one-day tasks?   8 candidates \u00b7 sho",
+   "\u2502                                                           "
+  ],
+  "modal_background": {
+   "screen_type": "MilestoneOffer",
+   "styles_background": "Color(13, 17, 23)"
+  },
+  "board_paint": {
+   "base_screen": "Screen",
+   "nonblank_rows": 29,
+   "board_size": "118x28",
+   "board_region": "118x28"
+  }
+ },
+ {
+  "path": "single->offer",
+  "size": "80x24",
+  "text_rows_outside_offer_box": [
+   0,
+   0
+  ],
+  "first_text_rows": [
+   "\u256d\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500",
+   "\u2502 \u25c6 Milestones \u00b7 convert one-day tasks?   8 candidates \u00b7 sho",
+   "\u2502                                                           "
+  ],
+  "modal_background": {
+   "screen_type": "MilestoneOffer",
+   "styles_background": "Color(13, 17, 23)"
+  },
+  "board_paint": {
+   "base_screen": "Screen",
+   "nonblank_rows": 23,
+   "board_size": "80x22",
+   "board_region": "80x22"
+  }
+ },
+ {
+  "path": "home->offer",
+  "size": "118x30",
+  "text_rows_outside_offer_box": [
+   0,
+   0
+  ],
+  "modal_background": {
+   "screen_type": "MilestoneOffer",
+   "styles_background": "Color(13, 17, 23)"
+  },
+  "board_paint": {
+   "base_screen": "Screen",
+   "nonblank_rows": 29,
+   "board_size": "118x28",
+   "board_region": "118x28"
+  }
+ },
+ {
+  "path": "team->picker->offer",
+  "size": "118x30",
+  "stack_tail": [
+   "TeamIdentityPicker",
+   "MilestoneOffer"
+  ],
+  "text_rows_outside_offer_box": [
+   0,
+   0
+  ],
+  "board_paint_at_offer": {
+   "base_screen": "Screen",
+   "nonblank_rows": 26,
+   "board_size": "118x24",
+   "board_region": "118x24"
+  }
+ }
+]

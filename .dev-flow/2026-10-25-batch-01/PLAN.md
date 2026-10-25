@@ -21,7 +21,7 @@ orchestrator presents the full plan in-conversation at each phase gate.
 | Project | taskboard |
 | Batch | 2026-10-25-batch-01 |
 | Objective | D-12: the start-up modals (MilestoneOffer, TeamIdentityPicker) open only after the board has painted at its real size, so the user sees the board dimmed by the shared #0007 backdrop behind them; the order is unchanged (identity picker first, offer last) and nothing else changes (SB-1..SB-3) |
-| Last updated | P0 · 2026-10-25 |
+| Last updated | P1 · 2026-10-25 |
 | Standing authorization | «Sigue, tú planeas, la implementación dásela a kimi 2.8» — the operator's commission for this batch (.dev-flow/COMMISSION-startup-backdrop.md, the operator's words recorded there). This runtime cannot prompt; the commission is the answer: autonomy over the gates it commissions, recorded per-gate in `state.json.decisions_log`; merge NOT granted (do not push or merge); a HIGH finding blocks regardless. |
 | First gate | exit 0 — `0 block · 153 notice · 63 not applicable` over the closed 2026-10-24-batch-02 record; `V7` reported no bundle-hash disagreement (the run proves the tool and bundle, not the batch). |
 | Premises / RC-1 | `origin/main` tip verified at intake: `3053c1e` (2026-10-25); merge-base of `fix/startup-backdrop` == tip, no rebase needed. RC-1 (b): `git grep D-12 origin/main -- REQUIREMENTS.md` → no hit, D-12 not shipped externally. RC-2: `git ls-remote --exit-code --heads origin` exit 0, remote answered. Flow revision: bundle mirror at `C:/Users/jjgh8/.claude/skills/dev-flow` (F1 not-run from a bundle — `V7`'s bundle-identity line is its probe). |
@@ -51,7 +51,14 @@ The trigger evaluation `state.json`'s `triggers.record` points at: one row per t
 
 ## Where we are
 
-<one paragraph: station, what the last gate decided, what is owed next>
+P1 done, gate green (0 block). The requirements contract is written and the SB-1
+diagnosis is complete: the commission's unpainted-board hypothesis is REFUTED by
+measurement (`evidence/red-p1.txt` — the board beneath holds 23-29 painted rows
+with the modal up); the cause is `taskboard/taskboard.tcss:309-312` (the shared
+`#0007` backdrop rule does not name `MilestoneOffer`/`TeamIdentityPicker`, so the
+`Screen { background: #0d1117 }` rule paints them opaque). One US, 4 HLR, 6 LLR,
+AT-2801..AT-2804, IFC Part A; the family-C scan is clean (`flags: none`,
+`security_required: false`). P2 review is next.
 
 ## Objective
 
@@ -61,7 +68,9 @@ The trigger evaluation `state.json`'s `triggers.record` points at: one row per t
 
 | Story / station | Status | Notes |
 |---|---|---|
-| <US-NNN / station> | <status> | <notes> |
+| US-001 (D-12) | READY → derived | 4 HLR, 6 LLR, AT-2801..AT-2804; cause measured at P1, hypothesis refuted |
+| P0 / ARQ | closed | 96684bd; module map fresh, no amendment |
+| P1 | in review | contract + ledger seeded; scan clean; red-p1.txt at base_ref |
 
 ## Roadmap + increment plan
 
