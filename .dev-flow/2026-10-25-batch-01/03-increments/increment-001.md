@@ -47,7 +47,7 @@ backdrop rule would have dragged its `align: center middle` onto the picker
 - The commission's increment clause expected `taskboard/app.py` only; the
   diagnosis (SB-1) placed the cause in the stylesheet, and the PDR's condition 2
   has this statement supersede the expectation — the touch set is
-  `taskboard/taskboard.tcss` + one new test file, nothing else (`git diff` below).
+  `taskboard/taskboard.tcss` + one new and one edited test file, nothing else (`git diff` below).
 
 ## 3 · How to test
 
@@ -125,10 +125,11 @@ observer suites: see the **Reverse census** field (`evidence/suite-002.txt`).
 | flake-2801.txt | .dev-flow/2026-10-25-batch-01/evidence/flake-2801.txt | 7422d475be549241a1241b023e13de6ad78550e4a60355fc315bf30ce8d79548 |
 | flake-2801.py | .dev-flow/2026-10-25-batch-01/evidence/flake-2801.py | 7af7a764197f37aa39927c492cf548cd6fdd3b12407a200b9f4590da43bf292a |
 | reverse-census-001.txt | .dev-flow/2026-10-25-batch-01/evidence/reverse-census-001.txt | d6644efdd5a29c4942628a7fdfd2a775a91df48015aecf472525ae13c6d2b19d |
+| red-p1.txt | .dev-flow/2026-10-25-batch-01/evidence/red-p1.txt | e4f012a10be8e4d092f19a5d9abf3bb4ba88406273ca2fb2d69da928435dc340 |
 
 | Field | Value |
 |---|---|
-| **Evidence files** | `8 artifact(s), each at the declared home, with the digest of its bytes on disk` |
+| **Evidence files** | `9 artifact(s), each at the declared home, with the digest of its bytes on disk` |
 
 ### Load-bearing emptiness — what is this resting on that is only true today? (C-55)
 
@@ -210,6 +211,8 @@ commission's batch-02 close figure — re-counted exactly at P4's chunks.)
   justification for the single existing-test edit (commission AT-d allows a
   change where an assumption must move; here a rendering-scope assumption,
   documented in the node's comment).
+- sequencing (qa D6): `test_AT_2804_the_unchanged_start_paths_stay_unchanged` was added in the gate fold that answered the V2 BLOCK (AT-2804 had no on-disk node), after the mutation battery ran; it is a pin and claims no mutation verdict — the battery's eight arms are unchanged and honest for the six AT arms.
+- qa DDR notes folded here: D1 (the AT oracle asserts visibility, not dimness — a `#0000` regression would pass; the resolved-alpha probe was superseded per F1; a dimmed-pixel assertion is named as a backlog hardening item at close) · D2 (the flake arm's below-margin is exactly its 3-row threshold; the fixture is deterministic and the margin is declared, not hidden) · D3 (the mutation transcript records per-arm verdicts by the runner's exit-code read; the AssertionError text is not captured — declared).
 - PDR condition 2 (this touch-set statement) is discharged by §2 above;
   conditions 1 and 3 discharge at P5/P3 — the flake arm already ran (see
   below), the backlog item files at close.
