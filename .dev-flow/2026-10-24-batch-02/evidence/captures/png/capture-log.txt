@@ -1,0 +1,6 @@
+﻿ok   home 118x30 (1708 x 928, 27 colours sampled) via PrintWindow, try 1; PNG 9 colours, 49047 bytes - window closed
+ok   home 80x24 (1176 x 760, 18 colours sampled) via PrintWindow, try 1; PNG 14 colours, 36070 bytes - window closed
+ok   offer 118x30 (1708 x 928, 14 colours sampled) via PrintWindow, try 1; PNG 34 colours, 56580 bytes - window closed
+ok   offer 80x24 (1176 x 760, 25 colours sampled) via PrintWindow, try 1; PNG 24 colours, 47461 bytes - window closed
+ok   start 118x30 (1708 x 928, 40 colours sampled) via PrintWindow, try 1; PNG 44 colours, 77967 bytes - window closed
+ok   start 80x24 (1176 x 760, 34 colours sampled) via PrintWindow, try 1; PNG 42 colours, 67363 bytes - window closed
