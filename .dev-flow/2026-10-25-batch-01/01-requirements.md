@@ -137,8 +137,9 @@ the same source `App.export_screenshot` uses.
 - **Traceability:** US-001
 - **Ledger:** none
 - **Statement:** When the app starts with a single active board whose board has milestone candidates, the system shall open the milestone offer with the board's painted rows visible outside the offer box — dimmed by the shared `#0007` translucent backdrop the working modals use — at 118x30 and at 80x24.
-- **Rationale (informative):** D-12 as measured by QA-P4-04: «0 text rows above the offer box … on a plain single-board start». The P1 probe reproduces it (`evidence/red-p1.txt`: 0 rows above and 0 below the box at both sizes, board painted beneath, modal background opaque `#0d1117`).
+- **Rationale (informative):** D-12 as measured by QA-P4-04: «0 text rows above the offer box … on a plain single-board start». The P1 probe reproduces it (`evidence/red-p1.txt`: 0 rows above and 0 below the box at both sizes, board painted beneath, modal background opaque `#0d1117`). The >0-rows threshold holds when the offer box does not fill the terminal — fixture-pinned in AT-2801 at both sizes (7 above / 6 below at 118x30, 4 above / 3 below at 80x24); in production it is content-dependent, since at 80x24 a very large candidate list can grow the box to the full screen height — the fix's target (opaque → dimmed, board visible around the box) is achieved regardless, and a full box has no rows to show (ux condition C2 of `PDR-2026-10-25-batch-01`, folded here).
 - **Validation:** `test`
+- **Ledger:** LED-2801.2
 - **Executed verification:** `env -u NO_COLOR python -m pytest -q tests/test_startup_backdrop.py -k AT_2801` (node minted at P3; P1 RED probe executed at `base_ref`, `evidence/red-p1.txt`)
 - **Numeric pass threshold:** with `MilestoneOffer` the top screen, text rows outside the offer box's border > 0 at 118x30 AND at 80x24 (the P1 probe measured 0 and 0; the P2 round-2 positive check with the background-only fix measured 7 above / 6 below at 118x30 and 4 above / 3 below at 80x24, box corner unchanged at row 7, col 11).
 - **Priority:** high
@@ -151,9 +152,9 @@ the same source `App.export_screenshot` uses.
 
 ### HLR-2802 — the home path's offer shows the chosen board behind it
 - **Traceability:** US-001
-- **Ledger:** LED-2801.1
+- **Ledger:** LED-2801.1, LED-2801.2
 - **Statement:** When the app starts with two boards and the user presses `enter` on the home's default card, the system shall open the milestone offer over the chosen board with that board's painted rows visible outside the offer box, dimmed by the shared backdrop, at 118x30 and at 80x24.
-- **Rationale (informative):** the deferred `enter` path is where QA-P4-04 measured the empty backdrop first; batch 2026-10-24-batch-02 fixed the stack (the board beneath, the home gone) but not what the user sees — this HLR completes D-12 on that path.
+- **Rationale (informative):** the deferred `enter` path is where QA-P4-04 measured the empty backdrop first; batch 2026-10-24-batch-02 fixed the stack (the board beneath, the home gone) but not what the user sees — this HLR completes D-12 on that path. The >0-rows threshold is fixture-pinned at both sizes and content-dependent in production exactly as HLR-2801's rationale scopes it.
 - **Validation:** `test`
 - **Executed verification:** `env -u NO_COLOR python -m pytest -q tests/test_startup_backdrop.py -k AT_2802` (node minted at P3; P1 RED probe executed at `base_ref`, `evidence/red-p1.txt`)
 - **Numeric pass threshold:** same oracle as AT-2801 at both sizes: text rows outside the offer box > 0 at 118x30 AND at 80x24 (P1 probe: 0; P2 round-2 positive check, single-board form of the same declaration: 7 above / 6 below at 118x30, 4 above / 3 below at 80x24 — the home path reuses the identical rule and oracle).
@@ -310,7 +311,7 @@ per the batch rules).
 - Every new test mutation-checked (C-40): reverting LLR-2801.1 (deleting the background-only declaration) turns AT-2801 red — the single kill node, with per-node verdicts for AT-2802 and AT-2803 recorded under the same one-declaration revert (justified: one rule, three oracle reuses — the identical selector list cannot break one path and hold another). The RED counterfactual, per-node verdicts and restore digest are recorded in increment 001's packet.
 - The validator: `python C:/Users/jjgh8/.claude/skills/dev-flow/scripts/devflow-validate.py --brief <worktree>` answers 0 BLOCK at batch start and at close (the commission's §Evidence).
 - The P4 full suite: the baseline 3248 passed + 1 environmental skip (TC-1902, the clipboard arm) plus this batch's new nodes, in 3 SEQUENTIAL chunks, never in parallel with anything; any other skip or fail blocks the close.
-- The real Windows Terminal capture pair (118x30 and 80x24) of the offer over the visible board — the single-board start and the home path — `b01-` window titles, each window closed by title right after its shot and verified gone, never another window (`JJ_WORKPC: dev-flow` among them), black shots and shots with fewer than 8 colours rejected, and a final assertion that no `b01-` window is left.
+- The real Windows Terminal capture pair (118x30 and 80x24) of the offer over the visible board — the single-board start and the home path — with a board of known candidates (the kg-equivalent fixture), each shot content-checked: the «◆ Milestones · convert one-day tasks?» box is present **with board rows visible around it** (a shot that is merely non-black and ≥ 8 colours but shows no board content is rejected — the floor alone cannot distinguish a dimmed board from a dimmed empty screen); plus one team-path capture of the identity picker alone over the dimmed board (the only start-up modal with no real-terminal evidence, verifying the placement the PDR blessed). `b01-` window titles, each window closed by title right after its shot and verified gone, never another window (`JJ_WORKPC: dev-flow` among them), and a final assertion that no `b01-` window is left.
 
 ---
 
