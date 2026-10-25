@@ -86,7 +86,7 @@
 | 1 | At start with more than one board, `TaskboardApp.on_mount` pushes `BoardsHome` and then calls `_open_board(at_mount=True)`, which migrates links, sweeps old done, enters presence and opens the start-up modals — before the user picks a board. | premise | ✅ TRUE | `grep -n "at_mount" taskboard/app.py` → `app.py:1307` `self.push_screen(BoardsHome())` · `app.py:1308` `if self._open_board(at_mount=True):` · `app.py:1410` `self._migrate_links(at_switch=not at_mount)` · `app.py:1417` `if at_mount:` | the defect's pre-image; HD-1 removes the write/announce/modal half of that start |
 | 2 | `switch_board` returns early when `bid == self.board_id`, so a deferred default board needs the early-return path to still run the start. | premise | ✅ TRUE | `grep -n "def switch_board" taskboard/app.py` → `app.py:1453` (the early return read at P1 increment 001) | HD-1's «esc / back runs the deferred start» leans on it |
 | 3 | `self.people` and `self.marks` are loaded once at mount; a file the other window changes is not re-read until restart. | premise | ✅ TRUE | `grep -n "def load" taskboard/people.py taskboard/marks.py` → `people.py:119` · `marks.py:67`; the only loads are the mount's (read at P1) | HD-5's pre-image |
-| 4 | The directories' cross-window writes are safe today (read-modify-write under a lock), so re-reading at open time inherits that safety. | premise | ✅ TRUE | asserted by the commission (§The defect, defect 2); the lock is read at P1 increment 002 | relied on, not re-proven |
+| 4 | The directories' cross-window writes are safe today (read-modify-write under a lock), so re-reading at open time inherits that safety. | hypothesis | ✅ TRUE (pending the lock read) | asserted by the commission (§The defect, defect 2); the lock is read at P1 increment 002 | relied on, not re-proven |
 | 5 | The suite's baseline at this batch's base is 3235 passed + 1 environmental skip (the clipboard arm TC-1902 / G-001, batch 2026-10-24-batch-01's P4), so P4 expects the same plus this batch's new nodes. | premise | ✅ TRUE | `.dev-flow/2026-10-24-batch-01/04-validation.md` (its P4 transcripts) · BACKLOG G-001 | P4's expected totals derive from it |
 
 - **Premise evaluation:** 5 premise(s) · ✅ TRUE ×5 — the batch's derivation stands on all five; 4 is the commission's assertion, re-read at the increment it binds.
@@ -126,18 +126,18 @@
 
 ### HLR-2702 — leaving the home runs the deferred start exactly once
 - **Traceability:** US-2701
-- **Ledger:** LED-2702
+- **Ledger:** LED-2702, LED-2702.1r2, LED-2702.1r3
 - **Statement:** When the user leaves the home onto the default board — `enter` on its card, or `esc`/`back` from the home — the system shall run that board's deferred start exactly once: the link migration, the sweep of old done work, the presence marker, the team-mode start and the milestone offer; pressing `B` and then `esc` later shall not run it again.
 - **Rationale (informative):** HD-1 names the two paths onto the default board and pins «exactly once»; the same-board early return of `switch_board` (`app.py:1458`) must not skip the pending start, and must not re-run it either.
 - **Validation:** `test`
 - **Executed verification:** `env -u NO_COLOR python -m pytest -q tests/test_home_deferred_start.py -k "AT_2702 or AT_2703"` (P3)
-- **Numeric pass threshold:** after `enter` on the default card (or `esc` at the home): the open-twice notice fired exactly once, this window's marker exists, the sweepable task was archived (the board file changed by the sweep exactly); a `B`-then-`esc` round trip later adds no second notice, no second marker, and no second sweep (the board file bytes stay put).
+- **Numeric pass threshold:** after `enter` on the default card (or `esc` at the home): the open-twice notice fired exactly once, this window's marker exists, and the board file's bytes changed iff the sweep ran (the sweepable task archived; the AT fixture's board carries `RENUMBER_NOTICE_KEY`, a completed link migration and the milestones mark, so the deferred start's other writers are no-ops there); a `B`-then-`esc` round trip later adds no second notice, no second marker, and no second sweep (the board file bytes stay put).
 - **Priority:** high
 - **Acceptance (black-box):**
   - **Observable outcome:** the chosen board comes up started — its real start notices appear once, over the board.
   - **Shipped surface:** `BoardsHome.action_open` / `BoardsHome.action_back` and the board beneath them.
   - **Acceptance test(s):** AT-2702, AT-2703
-  - **Boundary catalog (QC-3):** ☐ empty (no entries — `action_open` guards, unchanged) ☐ boundary (enter lands on the already-open default board — the early-return path that must still start) ☐ invalid ☐ error (a migration failure on the deferred start: the board stays as it was, as today — `switch_board`'s restore path, unchanged)
+  - **Boundary catalog (QC-3):** ☐ empty (no entries — `action_open` guards, unchanged) ☐ boundary (enter lands on the already-open default board — the early-return path that must still start) ☐ invalid ☐ error (a migration failure on the deferred start: LLR-2702.4's posture — the record stays pending, the user is on the board view, the migration's own notice explains)
   - **Negative control:** the P1 probe's inverse: at `base_ref` the start runs at mount, so a node asserting «no start before leaving the home» is RED at base by the same transcript (`evidence/red-p1.txt`); the executed mutation battery at P3 reddens each arm.
 
 ### HLR-2703 — another board from the home starts as today; the default is never written
@@ -195,7 +195,7 @@
 - **Rationale (informative):** the commission's second defect; closes the BACKLOG item (architect A-7, accepted) «a person another window adds shows here after a restart or this window's next write». The re-read is cheap (a stat; a parse only on change). The board's live dicts are the same objects the directory swaps in place, so every view sees the fresh directory at once.
 - **Validation:** `test`
 - **Executed verification:** `env -u NO_COLOR python -m pytest -q tests/test_directory_refresh.py -k AT_2706` (P3; P1 RED probe executed, `evidence/red-p1.txt` probe AT-2706)
-- **Numeric pass threshold:** a person appended to `people.json` by a second `Directory` instance appears in the people view the next time it opens (the frame names the person); the same holds for a class appended to `marks.json` in the `#` manager's frame and in the editor's `alt+m` Select options; a file whose mtime and size are unchanged is not re-parsed (a read spy sees zero re-reads).
+- **Numeric pass threshold:** a person appended to `people.json` by a second `Directory` instance appears in the people view the next time it opens (the frame names the person); the same holds for a class appended to `marks.json` in the `#` manager's frame and in the editor's `alt+m` Select options; the `/` search offers the fresh person for an `@` query (the completion names the person); a file whose mtime and size are unchanged is not re-parsed (a read spy sees zero re-reads).
 - **Priority:** high
 - **Acceptance (black-box):**
   - **Observable outcome:** the other window's person/class is there, no restart needed.
@@ -222,12 +222,12 @@
 
 ### HLR-2708 — the unchanged paths stay unchanged
 - **Traceability:** US-2701
-- **Ledger:** LED-2708
+- **Ledger:** LED-2708, LED-2708r1
 - **Statement:** When the app starts with a single active board, or with `--open PATH`, or when `B` is pressed after the start, the system shall behave exactly as before this batch: the start runs at mount (no home), the start-up modals open as they do today, and `B`'s home pops back to an already-started board without re-running anything.
 - **Rationale (informative):** HD-4; these paths are outside the defect and must not move — the regression pin for the whole batch.
 - **Validation:** `test`
-- **Executed verification:** the existing suites stay green: `tests/test_boards_home.py`, `tests/test_boards_backlog_round.py` (but see the two named timing updates), `tests/test_milestone_offer.py`, `tests/test_milestone_offer_seam.py`, `tests/test_team_*.py`, plus the P4 full suite.
-- **Numeric pass threshold:** 0 regressions in those suites at P3 and at P4 (the only permitted diffs are the AT-2408/AT-2409 timing arms the commission's regression clause names, and the HD-2-timed offer arms — each named in the increment packet).
+- **Executed verification:** the existing suites stay green: `tests/test_boards_home.py`, `tests/test_boards.py`, `tests/test_boards_backlog_round.py`, `tests/test_milestone_offer.py`, `tests/test_milestone_offer_seam.py`, `tests/test_team_*.py`, plus the P4 full suite.
+- **Numeric pass threshold:** 0 regressions in those suites at P3 and at P4. The permitted diffs — timing arms the change of timing makes unavoidable, each named in increment 001's packet: `tests/test_boards_backlog_round.py`'s AT-2408/AT-2409 presence arms (the marker and notice move off mount), its `test_TC_2409_the_lifecycle` arms (same reason), `tests/test_boards.py`'s `test_TC_2202_the_mount_order_is_the_shipped_one` (the with-home mount order loses its write half) and `test_TC_2202_switch_board_starts_the_other_board_over` (its same-board no-op assertion meets a pending start — the arm leaves the home first, as LLR-2702.3 requires), and the HD-2-timed offer arms.
 - **Priority:** high
 - **Acceptance (black-box):**
   - **Observable outcome:** nothing different on those paths.
@@ -245,8 +245,9 @@
 
 ### LLR-2701.1 — the mount with a home runs the read-only half only
 - **Traceability:** HLR-2701
-- **Ledger:** LED-2701.1
-- **Statement:** When `on_mount` shows the home, `TaskboardApp` shall run only the read-only start work — the board label, the first selection, the view refresh, the one shared clock interval, the registry/people/marks load notices — and shall not call the link migration, the old-done sweep, the presence announcement, the team-mode start or the milestone offer.
+- **Ledger:** LED-2701.1, LED-2701.1r1
+- **Statement:** When `on_mount` shows the home, `TaskboardApp` shall run only the read-only start work — the board label, the first selection, the view refresh, the one shared clock interval, the registry/people/marks load notices, the rescue-load notice (`_warn_if_rescued`, which only reads `load_report`) — and shall not call the link migration, the renumbering notice, the old-done sweep, the presence announcement, the team-mode start or the milestone offer.
+- **Note (verified at P2):** `_announce_renumbering` is a WRITER — it sets the settings flag and saves the board (`app.py:1583-1594`); it sits in the deferred set with the migration, and first runs with the deferred start.
 - **Validation:** `test (integration)`
 - **Executed verification:** `env -u NO_COLOR python -m pytest -q tests/test_home_deferred_start.py -k AT_2701` (P3)
 - **Numeric pass threshold:** the AT-2701 numbers hold (0 notices of that title, 0 own markers, byte-identical default board).
@@ -259,16 +260,16 @@
 - **Statement:** When the user quits from the home (`q`), the system shall exit without running any deferred start and without writing any board file, registry change or presence marker beyond what the home's own reads did.
 - **Validation:** `test (integration)`
 - **Executed verification:** the AT-2701 fixture variant that presses `q` instead of leaving the home (same node file, P3)
-- **Numeric pass threshold:** after `q`: default board bytes = 1 (byte-identical to pre-start), this window's markers = 0, exit code = 0.
+- **Numeric pass threshold:** after `q`: the default board file's byte-count delta vs pre-start = 0, this window's markers = 0, exit code = 0.
 - **Negative control:** same P1 transcript family (the start ran at base, so the future «nothing ran» assertion is RED at base).
 - **Boundary catalog:** none — the home's `q` binding already exists.
 
 ### LLR-2702.1 — one started-board record, written by the start itself
 - **Traceability:** HLR-2702
-- **Ledger:** LED-2702.1
-- **Statement:** `TaskboardApp` shall record which board id the start has run for, the start shall run only when the record does not name the current board, and completing the start shall write the record — so every path onto a board (the home's `enter` and `esc`, `switch_board`, the mount without a home) runs the start exactly once per board.
+- **Ledger:** LED-2702.1, LED-2702.1r1, LED-2702.1r2
+- **Statement:** `TaskboardApp` shall record which board id the start has run for, the start shall run only when the record does not name the current board, and completing the start shall write the record — so every path onto a board (the home's `enter` and `esc`, `switch_board`, the mount without a home) runs the start exactly once per board. The record is written ONLY on a completed start (the migration gates the rest, so a failed start has no partial writers to double-run); `switch_board`'s restore path writes the record back to the previously started board's id when a switch fails after the record moved.
 - **Validation:** `test (unit)` + `test (integration)`
-- **Executed verification:** `env -u NO_COLOR python -m pytest -q tests/test_home_deferred_start.py -k "AT_2702 or AT_2703"` (P3)
+- **Executed verification:** `env -u NO_COLOR python -m pytest -q tests/test_home_deferred_start.py -k "AT_2702 or AT_2703 or TC_2703"` (P3; TC-2703 carries the record's unit-level arms)
 - **Numeric pass threshold:** AT-2702/AT-2703's once-numbers hold across all three paths.
 - **Negative control:** a unit arm flips the record to the current board and asserts the start body does not re-run (its writers are the start itself and `switch_board`'s restore — the C-15.1 writer census is done at P3).
 - **Boundary catalog:** none new.
@@ -293,9 +294,19 @@
 - **Negative control:** at base the early return skips the start entirely (the P1 probe's mount already started it — the node asserts the pending case via a fresh app).
 - **Boundary catalog:** none new.
 
+### LLR-2702.4 — a failed deferred start keeps the board pending
+- **Traceability:** HLR-2702
+- **Ledger:** LED-2702.4
+- **Statement:** When the deferred start's migration fails, the system shall leave the started-record unwritten for that board, leave the user on the board view with the home popped, and let the migration's own notice explain; a later path onto the board shall retry the start from the migration.
+- **Validation:** `test (integration)`
+- **Executed verification:** `env -u NO_COLOR python -m pytest -q tests/test_home_deferred_start.py -k TC_2703` (P3)
+- **Numeric pass threshold:** after a forced migration failure on the deferred start: 1 failure notice, the started-record still names no board for it, the screen beneath is the board view, and pressing `B` then `esc` retries the start exactly once (the migration spy runs again).
+- **Negative control:** at base the same-board early return never starts, so the node is RED at base by inspection of `app.py:1458` (node-minted RED at P3).
+- **Boundary catalog:** ☐ error (the migration refusal) — the other classes are the migration suite's existing arms, unchanged.
+
 ### LLR-2703.1 — picking another board never writes the default
 - **Traceability:** HLR-2703
-- **Ledger:** LED-2703.1
+- **Ledger:** LED-2703.1, LED-2703.1r1
 - **Statement:** When the user picks another board from the home, `switch_board` shall run that board's start as today, and no path shall write the default board's file — the home's card reads (`peek_board`) never save, and the deferred default start never ran.
 - **Validation:** `test (integration)`
 - **Executed verification:** AT-2704 (P3)
@@ -345,10 +356,10 @@
 
 ### LLR-2706.3 — the four seats re-read before they show
 - **Traceability:** HLR-2706
-- **Ledger:** LED-2706.3
-- **Statement:** The task editor's open (add and edit), the people directory's open, the marks manager's open and the `/` search's open shall run the directories' re-reads before the surface builds, so the surface shows the file as it is now.
+- **Ledger:** LED-2706.3, LED-2706.3r1
+- **Statement:** The task editor's open (add and edit), the people directory's open and the marks manager's open shall run the directories' re-reads before the surface builds; the `/` search shall run them when its query names the directories (`@…`/`#…`) — so every surface shows the file as it is now.
 - **Validation:** `test (integration)`
-- **Executed verification:** AT-2706 (people view + manager + the editor's Select options) (P3)
+- **Executed verification:** AT-2706 (people view + manager + the editor's Select options + the `/` `@` completion) (P3)
 - **Numeric pass threshold:** AT-2706's frame assertions hold for each named surface.
 - **Negative control:** the P1 probe AT-2706 transcript (the person was invisible at base).
 - **Boundary catalog:** ☐ invalid (a malformed new entry is skipped — the `_read` leniency, unchanged).
@@ -447,7 +458,7 @@ FLOW: the marks directory, re-read at the same seats
 > - **Layer A — white-box / functional (`TC-NNN`):** validates the HLR/LLR mechanism (the HOW). Methods: `test`, `inspection`, `analysis`.
 > - **Layer B — black-box / behavioral acceptance (`AT-NNN`):** validates the user story's outcome through the shipped surface (the WHAT). Method: `acceptance`.
 
-Layer A nodes: `tests/test_directory_refresh.py::test_TC_2701_refresh_gates_on_mtime_or_size[people|marks]` (the gate's three arms per directory — unchanged / mtime / size) and `test_TC_2702_a_failed_refresh_keeps_and_flags_once` (the failure record, unit level). Layer B nodes (all NEW, minted at P3, provisional per V-5): `tests/test_home_deferred_start.py::test_AT_2701_the_home_touches_nothing`, `::test_AT_2702_enter_runs_the_deferred_start`, `::test_AT_2703_escape_runs_the_start_once`, `::test_AT_2704_another_board_never_writes_the_default`, `::test_AT_2705_the_offer_opens_over_the_board`; `tests/test_directory_refresh.py::test_AT_2706_the_directories_stay_fresh`, `::test_AT_2707_a_failed_re_read_keeps_the_directory`. The P1 RED probes of the same behaviours were executed at base_ref and live at `evidence/red-p1.txt` (their scratch file moved out of `tests/`).
+Layer A nodes: `tests/test_directory_refresh.py::test_TC_2701_refresh_gates_on_mtime_or_size[people|marks]` (the gate's three arms per directory — unchanged / mtime / size) and `test_TC_2702_a_failed_refresh_keeps_and_flags_once` (the failure record, unit level), plus `tests/test_home_deferred_start.py::test_TC_2703_a_failed_deferred_start_keeps_the_board_pending` (LLR-2702.1's record semantics and LLR-2702.4's retry posture). Layer B nodes (all NEW, minted at P3, provisional per V-5): `tests/test_home_deferred_start.py::test_AT_2701_the_home_touches_nothing`, `::test_AT_2702_enter_runs_the_deferred_start`, `::test_AT_2703_escape_runs_the_start_once`, `::test_AT_2704_another_board_never_writes_the_default`, `::test_AT_2705_the_offer_opens_over_the_board`; `tests/test_directory_refresh.py::test_AT_2706_the_directories_stay_fresh`, `::test_AT_2707_a_failed_re_read_keeps_the_directory`. The P1 RED probes of the same behaviours were executed at base_ref and live at `evidence/red-p1.txt` (their scratch file moved out of `tests/`).
 
 ### 5.2 Batch acceptance criteria
 - 100% of HLRs/LLRs covered by at least one Layer B node with pass result (AT-2701..AT-2707), and the Layer A TCs green.
