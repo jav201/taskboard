@@ -1,0 +1,16 @@
+HEX tones: {'soon': '#fbbf24', 'over': '#f43f5e', 'green': '#4ade80', 'mut': '#8b98a5', 'ink': '#e6edf3', 'pink': '#f472b6'}
+
+== probe 1: the tokeniser over the acceptance sample ==
+[('a', 'soon'), (' ', 'mut'), ('b', 'over'), (' ', 'mut'), ('c', 'green')]
+
+== probe 2: unpaired markers stay literal ==
+[('pay !!attention now', 'mut')]
+
+== probe 3: the defect — the presentation paints markers raw, all ink ==
+rows: [('', '==a== !!b!! ++c++')]
+markup: ['[#8b98a5][/][#e6edf3]==a== !!b!! ++c++[/]             ']
+marker chars in markup: 12
+any tone colour present: False
+
+== probe 4: wrapping counts the markers today (PH-2 defect) ==
+rows: [('', 'word word word word word word'), ('', 'word word ==tail==')]

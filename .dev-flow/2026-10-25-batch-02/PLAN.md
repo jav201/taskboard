@@ -21,7 +21,7 @@ orchestrator presents the full plan in-conversation at each phase gate.
 | Project | taskboard |
 | Batch | 2026-10-25-batch-02 |
 | Objective | the presentation's note rows (gantt cursor note view 1, split view 2 and their x exports; view 3 checked) colour the notes' ==..==, !!..!! and ++..++ highlights through views.highlight_segments, dropping the markers and keeping the presentation's own base tone, so the room never sees raw markers (PH-1..PH-4) |
-| Last updated | P0 · 2026-10-25 |
+| Last updated | P1 · 2026-10-25 |
 | Standing authorization | The operator, 2026-10-25, on the ordered backlog: «Sigue con 4 con Kimi.» — item 4 of `.dev-flow/BACKLOG.md` (the people-round finding), commissioned in `.dev-flow/COMMISSION-present-note-highlights.md`. Read from the commission and the task: autonomy over the gates the commission names (P0..P5 plus the commissioned PDR/DDR reviews); merge/push NOT granted («Do NOT push or merge»); a HIGH finding blocks regardless and returns to the operator. |
 | First gate | exit 0 · 0 block / 165 notice / 62 n/a · `V7`: bundle identical to the manifest it ships, both directions (57 declared files unmoved, 0 undeclared) at `2026-10-12-rev102` |
 | Premises / RC-1 | `origin/main` verified at `6e72e2a` (2026-10-25 15:53 -0600); RC-1(a): merge-base of HEAD equals the origin/main tip — HEAD is strictly ahead (rebase a no-op); RC-1(b): the story is NOT already shipped — `origin/main:taskboard/views.py` still draws the presentation note rows without `highlight_segments`; RC-2: `git ls-remote --exit-code --heads origin` answered (refs listed; newest `origin/main` commit dated today). Premises: `views.highlight_segments` is the one tokeniser; the presentation keeps its own base tone (`ink`); tests drive the app by keys. |
@@ -96,6 +96,8 @@ One increment, 001: `taskboard/views.py` only (at most 4 SOURCE files), tests un
 ## Gate notices and runtime absences
 
 - Start gate (run over the freshly opened batch): the step-3 expected NOTICEs (V9/V27/V31–V51/V54 family — seeded fields); V25/V30 at every gate from a bundle; V40 resolved by this worktree's rollover (owner re-stamped to `present-hl`).
+- P0 gate: step-3 NOTICEs on the fresh batch record only; 0 block.
+- P1 gate (evidence/gate-p1.txt): 0 block, 179 notice, 50 n/a. V53 notices are expected (the contract names AT-2901..AT-2905 test nodes minted at P3); V27 left with the first dated decision; the scan (evidence/scan-p1.txt) flags `role`/`form`/`escape`, answered in §6.3 — `escape` is the C-17 control itself (LLR-2901.2), the other two are prose matches.
 - Runtime absences (named once, per `SKILL.md` §*What refuses an invocation here* step 5): no named reviewer roles, no hooks, no prompt guard, no slash commands — reviewer roles run as spawned generic sub-agents carrying the bundle's `agents/<role>.md`; gates close under the standing authorization above. Rules `not-run` from a bundle: V15 (no canon tree), V16 (no checkout table), V17 (no settings.json hooks). V30 runs half (witnesses this interpreter; the three derived floors not derivable from a bundle). dev-flow-sync: `not-run` — no export destination declared, and push/merge not granted.
 
 ## Test ledger
