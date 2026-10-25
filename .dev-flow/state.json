@@ -208,7 +208,7 @@
     }
   ],
   "guided": false,
-  "current_station": "P1",
+  "current_station": "DDR",
   "phase_status": "in-progress",
   "stations_active": [
     "P0",
@@ -223,7 +223,7 @@
   ],
   "iterations_per_station": {
     "P0": 0,
-    "P1": 0,
+    "P1": 1,
     "P2": 0,
     "P3": 0,
     "P4": 0,
@@ -290,6 +290,41 @@
       "station": "ARQ",
       "date": "2026-10-24",
       "decision": "ARQ approved under the batch's standing authorization — module map amended (people/marks re-read exposed, app owns the deferred start and the four re-read seats); no boundary moved; P1 requirements is next."
+    },
+    {
+      "station": "P1",
+      "date": "2026-10-24",
+      "decision": "P1 requirements approved under the batch's standing authorization — 2 US, 8 HLR, 14 LLR, AT-2701..AT-2707, ledger and IFC complete, scan answered, 0 block; P2 review is next."
+    },
+    {
+      "station": "P2",
+      "date": "2026-10-24",
+      "decision": "P2 round 1 returned iterate-to-refine under the batch's standing authorization — requirement defects: B1 (_announce_renumbering mis-classified read-only, it saves), the /-search seat without a black-box check, HLR-2708's permitted-diffs list missing test_boards.py and the TC-2409 lifecycle arms, the unspecified failed-start posture, and minors m1-m5; all folded into the contract and ledger, 0 block."
+    },
+    {
+      "station": "P1",
+      "date": "2026-10-24",
+      "decision": "P2 approved under the batch's standing authorization after three rounds (1 iterate-to-refine, 2 full re-reviews) — both lenses PASS, 0 block; the PDR is next."
+    },
+    {
+      "station": "P2",
+      "date": "2026-10-24",
+      "decision": "P2 approved under the batch's standing authorization — 02-review.md records 18 findings all folded or named; the PDR is next."
+    },
+    {
+      "station": "PDR",
+      "date": "2026-10-24",
+      "decision": "PDR approved with conditions under the batch's standing authorization — architect's verdict, C2/C3/C5 folded pre-seal, C1 -> increment 001's packet, C4 -> increment 002's battery; increment 001 is next."
+    },
+    {
+      "station": "P3",
+      "date": "2026-10-25",
+      "decision": "P3 increment 001 approved under the batch's standing authorization — code-reviewer round 2 PASS, 0 HIGH (F1 folded + discharged); 440 passed in the affected suites; the 2 V2 BLOCKs are station-expected (AT-2706/2707 are increment 002's nodes, green before its gate); increment 002 is next."
+    },
+    {
+      "station": "P3",
+      "date": "2026-10-25",
+      "decision": "P3 increment 002 approved under the batch's standing authorization — code-reviewer PASS, 0 HIGH; 276 passed; the V2 reds are green (AT-2706/2707 on disk); the DDR is next."
     }
   ],
   "obsidian_synced": false,
