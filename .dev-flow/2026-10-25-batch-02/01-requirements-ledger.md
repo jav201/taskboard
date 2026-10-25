@@ -46,3 +46,10 @@
 - **Amends:** HLR-2905 statement
 - **Reason:** Phase-2 round-2 major R2-1 — LED-2905 named test_people_look.py as the expected oracle casualty on both a wrong task id (c5; the `++` note is task c7's N_EVAL, c5 holds N_GOLDEN's `!!…!!`) and a wrong oracle kind (the test asserts mention membership, not marker bytes — it stays green; no test asserts any marker string)
 - **Content:** the contract now states the grep-verified absence and owes the casualty list to the P3 census + suite run. Folded by iterate-to-refine, P1 iteration 2.
+
+### LED-2905.2 — the row-shape equality asserts are named, expected casualties of the contracted type change
+- **Date:** 2026-10-25
+- **Requirement:** HLR-2905, LLR-2905.1
+- **Amends:** HLR-2905 statement, LLR-2905.1 statement
+- **Reason:** PDR condition C1 (PDR-2026-10-25-batch-02) — the design realizes LLR-2901.1's declared row type, which makes LLR-2901.1 and LLR-2905.1 jointly unsatisfiable against tests/test_present_views.py:77-94 and tests/test_people_look.py:144-149, which assert the old shape by equality/string ops
+- **Content:** those files' ROW-SHAPE equality asserts are expected, justified updates (the type change is contracted by LLR-2901.1; the updates carry no marker-content change), confirmed by the P3 census; nothing else in those files may change.

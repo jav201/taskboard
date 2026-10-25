@@ -224,8 +224,8 @@ regression pin HLR-2905 (AT-e).
 
 ### HLR-2905 — nothing else changes (the regression pin)
 - **Traceability:** US-2901
-- **Ledger:** LED-2905, LED-2905.1
-- **Statement:** When any surface not named in HLR-2901..HLR-2904 runs — the board's markup, the details/editor preview, view 3 (`all`), the presentation's headings, layout, keys, hints, cuts' wording, every other view of the app — the system shall behave exactly as before this batch; every existing presentation byte-oracle and capture-based test stays green, and where an oracle fixture legitimately holds the markers the update is named and justified in the increment packet (AT-e) — no byte oracle keys on marker text today (a repo-wide grep confirms it: `tests/test_people_look.py:182-186` asserts mention membership, not marker bytes, and the marker strings appear only in the fixture); the P3 census re-scans `grep -rl "present_note_lines\|_present_cut\|_paint_marks\|_present_note_markup" tests/` and the suite run names any casualty the scan finds.
+- **Ledger:** LED-2905, LED-2905.1, LED-2905.2
+- **Statement:** When any surface not named in HLR-2901..HLR-2904 runs — the board's markup, the details/editor preview, view 3 (`all`), the presentation's headings, layout, keys, hints, cuts' wording, every other view of the app — the system shall behave exactly as before this batch; every existing presentation byte-oracle and capture-based test stays green, and where an oracle fixture legitimately holds the markers the update is named and justified in the increment packet (AT-e) — no byte oracle keys on marker text today (a repo-wide grep confirms it: `tests/test_people_look.py:182-186` asserts mention membership, not marker bytes, and the marker strings appear only in the fixture); the P3 census re-scans `grep -rl "present_note_lines\|_present_cut\|_paint_marks\|_present_note_markup" tests/` and the suite run names any casualty the scan finds. The row-shape equality asserts of `tests/test_present_views.py:77-94` and `tests/test_people_look.py:144-149` are the expected, justified updates of the contracted row-type change (LLR-2901.1's `(lead, [(segment, tone)])`) — the marker-byte census stands: no marker-keyed byte oracle exists.
 - **Rationale (informative):** the commission's AT-e. The change is confined to the note pipeline's paint step; everything else is pinned by the existing suite, whose baseline at P4 is 3258 passed (commission §Evidence).
 - **Validation:** `test`
 - **Executed verification:** the P4 full suite in 3 sequential chunks (the commission's §Evidence); the present suites (`tests/test_present*.py`) and the markup suites (`tests/test_markup_census.py`, `tests/test_markup_sites.py`, `tests/test_highlight_segments.py`, `tests/test_edit_window.py`) re-run.
@@ -301,8 +301,8 @@ regression pin HLR-2905 (AT-e).
 
 ### LLR-2905.1 — the rest of the app is byte-unchanged
 - **Traceability:** HLR-2905
-- **Ledger:** none
-- **Statement:** No file outside `taskboard/views.py` (and the new tests) shall change; inside `views.py`, the board's markup (`_highlight_markup`, `notes_text`, `_focus_note_snippet`), the details/editor preview callers, the gantt/kanban/swimlanes note snippets and every presentation surface other than the note rows' paint shall stay byte-identical.
+- **Ledger:** LED-2905.2
+- **Statement:** No file outside `taskboard/views.py` (and the new tests) shall change; inside `views.py`, the board's markup (`_highlight_markup`, `notes_text`, `_focus_note_snippet`), the details/editor preview callers, the gantt/kanban/swimlanes note snippets and every presentation surface other than the note rows' paint shall stay byte-identical. The exception, named by LED-2905.2: the row-shape equality asserts of `tests/test_present_views.py:77-94` and `tests/test_people_look.py:144-149` are updated to the contracted row type — nothing else in those files changes.
 - **Validation:** `inspection`
 - **Executed verification:** the packet's §2 diff census (P3) and the P4 full suite (AT-2905).
 - **Numeric pass threshold:** 0 modified files outside `taskboard/views.py` + tests; the diff hunks outside the note pipeline == 0.
@@ -313,20 +313,43 @@ regression pin HLR-2905 (AT-e).
 
 - **Part A — flows:**
 
-```flow
-SOURCE: task.notes — the task's notes, file-derived text (taskboard/views.py Task.notes)
-NODES:
-  - present_note_lines (taskboard/views.py:6640): tokenise via highlight_segments, wrap by visible cells
-    owner: LLR-2901.1, LLR-2902.1
-  - _present_note_markup / _present_cut (taskboard/views.py:6707, :6713): paint each row — lead mut, spans in tone, mentions bold pink, escape every segment
-    owner: LLR-2901.1, LLR-2901.2, LLR-2904.1
-  - _paint_marks (taskboard/views.py:6697): the tone-aware paint — each segment escaped and coloured, mentions bold pink
-    owner: LLR-2901.1, LLR-2901.2
-  - render_present / render_present_all (taskboard/views.py:6977, :7349): compose the frame for views 1/2/3
-    owner: LLR-2903.1
-  - save_present_svg / present_all_export (taskboard/views.py:7072, :7374): emit the frame to the x SVG/PNG
-    owner: LLR-2903.1
-SINK: the PresentScreen terminal surface (views 1 and 2), and the SVG file at reports/present-<slug>-<date>[-<view>].svg (the x export)
+```
+FLOW: the presentation's note rows and their export
+  SOURCE : task.notes — the task's notes, file-derived text (taskboard/views.py Task.notes)
+  NODES  :
+    - fn    : present_note_lines (taskboard/views.py:6640) — tokenise via highlight_segments
+      owner : LLR-2901.1
+      in    : raw notes text
+      out   : [(segment, tone)] pieces, markers dropped, base tone ink
+    - fn    : present_note_lines (taskboard/views.py:6640) — wrap the marker-free text by visible cells
+      owner : LLR-2902.1
+      in    : the tone pieces + the width
+      out   : rows of (lead, [(segment, tone)])
+    - fn    : _paint_marks (taskboard/views.py:6697) — the tone-aware paint: each segment escaped and coloured in its tone
+      owner : LLR-2901.1
+      in    : a row (lead, [(segment, tone)])
+      out   : a padded markup string, w cells
+    - fn    : _paint_marks (taskboard/views.py:6697) — escape every piece of note text before it enters markup
+      owner : LLR-2901.2
+      in    : row pieces (span, plain, mention alike)
+      out   : markup holding only escaped user bytes and constant colour tags
+    - fn    : _paint_marks (taskboard/views.py:6697) — mention marks painted bold pink inside any tone
+      owner : LLR-2904.1
+      in    : a row's plain text + the directory's marks
+      out   : the mention spans in bold pink, the span around them in its tone
+    - fn    : _present_note_markup / _present_cut (taskboard/views.py:6707, :6713) — clip and cut the rows, the cut marks kept
+      owner : LLR-2902.1
+      in    : rows + the row budget + width
+      out   : the note's markup rows
+    - fn    : render_present / render_present_all (taskboard/views.py:6977, :7349) — compose the frame for views 1/2/3
+      owner : LLR-2903.1
+      in    : the note markup rows among the frame's rows
+      out   : the composed frame
+    - fn    : save_present_svg / present_all_export (taskboard/views.py:7072, :7374) — emit the frame to the x SVG/PNG
+      owner : LLR-2903.1
+      in    : the composed frame
+      out   : the SVG file at reports/present-<slug>-<date>[-<view>].svg
+  SINK   : the PresentScreen terminal surface (views 1 and 2), and the SVG file at reports/present-<slug>-<date>[-<view>].svg (the x export)
 ```
 
 - **Part B — boundary decomposition:** no — the presentation boundary exposes one screen surface and one file per view; no component of it is addressable by a consumer independently of the frame that carries it (the SVG file is a whole-frame artifact, not a component API).

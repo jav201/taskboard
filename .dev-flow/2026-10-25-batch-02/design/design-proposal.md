@@ -78,16 +78,32 @@ markup strings (byte-shaped as today)  ──►  render_present / _present_stac
 ```
 
 State/algorithm viewpoint: the wrap stays greedy-per-word; the ONLY new state is the per-row tone
-attribution, computed by a two-pointer walk (row text × segment stream) that asserts the skipped
-stream chars are whitespace (a violated assertion is a bug alarm, not a silent recolour).
+attribution, computed by a two-pointer walk (row text × segment stream) — the `_tone_row` matcher
+compares each wrapped row to the segment stream up to TWO classes of stream divergence only:
+(a) ASCII-whitespace chars dropped at row breaks (`drop_whitespace`) and (b) the `replace_whitespace`
+substitution of `\t`, `\n`, `\r`, `\f` and `\v` with a space; the assertion fires only outside those
+two classes (a violated assertion is a bug alarm, never reachable by user text). `break_on_hyphens`
+and `break_long_words` keep every row a contiguous substring, so tone re-attribution stays correct
+across those splits.
+
+Cut-seat build (the `k == 1` cut path of `_present_cut`, the LLR-2901.2 escape seat): the cut row is
+built by cutting the composed plain — the lead plus the concatenated segment texts — to the cell
+budget `max(0, w - vis(tag))` on a GLYPH boundary FIRST (width math before colouring, the file's
+rule at `views.py:85`), preserving today's branches: no cut when the row fits
+(`vis(first) <= w - vis(tag)`); `rstrip` of trailing whitespace after the cut; the lead then paints
+`mut`; the body paints piece by piece (segments in tone, mention marks bold pink, every piece
+escaped); the ` … +N lines` tag keeps its `reached` tone and its wording.
 
 ## 4 · Interfaces that change — and which ones FREEZE
 
 | Interface | Current | After | Consumers | **Frozen for the fork?** |
 |---|---|---|---|---|
 | `present_note_lines(notes, w, people) -> list[tuple[str, str]]` (rows of `(lead, plain_text)`) | `(lead, str)` rows | `(lead, [(segment, tone)])` rows — tones carried | `_present_cut`, `_present_note_markup`, `_present_stack.blocks`, the gantt cursor note (`views.py:7052`), tests | n/a — one lane, no fork |
-| `_present_note_markup(row, w, marks)` / `_paint_marks(txt, marks)` | paints all `ink` | paints pieces by tone, mentions bold pink | `_present_cut`, `_present_stack`, the gantt cursor note | n/a |
+| `_present_note_markup(row, w, marks)` / `_paint_marks(pieces, marks)` | paints all `ink` | paints pieces by tone, mentions bold pink | `_present_cut`, `_present_stack`, the gantt cursor note | n/a |
 | `highlight_segments`, `_wrap_cells`, `mention_marks`, `_marks_re`, `save_present_svg`, `present_paths`, `present_all_export` | — | **byte-unchanged** | everyone | **frozen** — a lane needing to change one returns to the trunk (A3) |
+
+`_paint_marks` keeps its name with the new signature `(pieces, marks)` — it is the C-26-declared
+symbol, so the census stays aligned with no amended symbol.
 
 ## 5 · Proposed test cases
 
@@ -102,7 +118,7 @@ One node per AT, per the commission.
 | TC-2903 `test_AT_2903_split_export_svg_carries_tones` | B (AT-c) | the exported SVG bytes hold the three tone HEX values, no `==`/`!!`/`++` run, the words inside the toned spans | add an export-side painter (or strip tones at export) → SVG tones missing |
 | TC-2904 `test_AT_2904_mentions_bullets_unpaired_markers` | B (AT-d) | mention inside a span stays `bold #f472b6`; unclosed `!!attention` literal in `#e6edf3`; `• ` lead in `mut` with the span toned; hostile payloads (`[bold red]`, `\x1b[31m`, a link tag) render literal in `ink` with 0 other styles | drop the mention pass inside toned pieces → mention recoloured; remove `escape` on one segment → hostile arm fails (style leak / `MissingStyle`) |
 | TC-2905 (AT-e) | — | not a node: the P4 suite in 3 sequential chunks + the packet's oracle-update census | — |
-| layer-0 arms (unit) | 0 | `_tone_row` over fixtures: tones re-attributed per row; whitespace-drop and tab-replacement walks; 0 mis-attributed chars | permute a tone in `_tone_row` → unit arms fail |
+| layer-0 arms (unit) | 0 | `_tone_row` over fixtures: tones re-attributed per row; whitespace-drop and tab-replacement walks; 0 mis-attributed chars; the cut seat: the `k == 1` path cuts the composed plain to `max(0, w - vis(tag))` on a glyph boundary first, `rstrip`s, paints the lead `mut` and the body piece by piece, keeps the ` … +N lines` tag's `reached` tone | permute a tone in `_tone_row` → unit arms fail; drop one escape in the cut body → hostile arm fails |
 
 **Declared here, at authoring time, not at execution time.** Every AT names its reddening
 mutation; the battery runs them per arm at P3 with per-arm verdicts (C-40's rider), restore
@@ -124,7 +140,7 @@ digests recorded.
 
 | Output of this PDR | Named consumer downstream | Where the consumer will read it |
 |---|---|---|
-| design characteristics — tokenise-before-wrap; rows carry `[(segment, tone)]`; `mut`→`ink` base mapping; `_paint_pieces` with mention override and escape on every segment; `_tone_row` two-pointer attribution | the Phase-3 increments | increment 001's packet §1/§2 and the code diff of `taskboard/views.py` |
+| design characteristics — tokenise-before-wrap; rows carry `[(segment, tone)]`; `mut`→`ink` base mapping; `_paint_marks` (name kept; signature `(pieces, marks)`) with mention override and escape on every segment; `_tone_row` two-pointer attribution with the two divergence classes; the `k == 1` cut seat cut-first-then-colour build | the Phase-3 increments | increment 001's packet §1/§2 and the code diff of `taskboard/views.py` |
 | enablers — the notes fixture (`tests/present_notes_board.py`), a synthetic people directory, the 118x30 and 80x24 pilot sizes | Phase 3 and validation | the new test module's fixtures; the P4 captures |
 | proposed test cases — TC-2901..TC-2904 + layer-0 arms, each with its named reddening mutation | layers 0/A/B at P3, and the DDR | `tests/test_present_note_highlights.py`; the increment packet's mutation battery; the DDR's conformance read |
 | design → requirement traceability — the LLR ↔ design-element map (§2/§4 tables) | the matrix and the DDR | this proposal's tables, cited as `PDR-2026-10-25-batch-02#D<n>`; the DDR record |
