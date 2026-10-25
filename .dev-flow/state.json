@@ -1,9 +1,9 @@
 {
   "project": "taskboard",
   "language": "en",
-  "batch_id": "2026-10-24-batch-01",
-  "batch_objective": "Milestone marks per the operator's verdict on prototypes/milestone_marks: one class directory for all boards at ~/.taskboard/marks.json (a class is id, name, shape, colour, hidden; the id a slug of the name, stable on rename); Task.mark carrying the class id, written only when set, kept on untick, travelling unchanged on team sync, an unknown id rendering as unclassified; every milestone mark drawn through one seat (shape and colour say the class, state moves to text: a late date in over plus an ▲Nd chip, a reached mark hollow plus ✓, an unclassified mark ◆ in mut); the # class manager window with its form (n) and the hide toggle (space); alt+m focusing the class Select in the editor after #f-milestone; the legend strip under the gantt ruler and in the presentation with its exports, naming the drawn classes and the hidden count; hidden classes leaving the gantt and all three presentation views and their exports; /#cls search filtering by class; modal keys y/n and alt+<letter> on every modal button; SHAPES = ▲ ■ ⬢ ★ ⬟ ▼ ✦ ⚑ plus ◆, no seeded classes",
-  "owner": "C:/Users/jjgh8/Github/taskboard-wt/ms-impl",
+  "batch_id": "2026-10-24-batch-02",
+  "batch_objective": "The home defers the board's start; the directories stay fresh: with BoardsHome shown at start, the default board's start is deferred (no migration, sweep, presence marker, team start or milestone offer, and no write to the board file, until the user leaves the home onto a board); the start-up modals open over the chosen board; the open-twice notice fires only when a board is actually opened; single-board, --open and later-B paths unchanged; self.people and self.marks re-read their files cheaply on mtime/size change when the task editor, people directory, marks manager or /@#/ search open, and a failed re-read keeps the in-memory directory and notifies once (HD-1..HD-5)",
+  "owner": "C:/Users/jjgh8/Github/taskboard-wt/home-fix",
   "mode": "core",
   "mode_history": [
     {
@@ -199,11 +199,17 @@
       "to": "core",
       "date": "2026-10-24",
       "reason": "batch 2026-10-24-batch-01 opened by rollover from 2026-10-21-batch-01; mode core declared by the commission"
+    },
+    {
+      "from": null,
+      "to": "core",
+      "date": "2026-10-24",
+      "reason": "batch 2026-10-24-batch-02 opened by rollover from 2026-10-24-batch-01; mode core declared by the commission"
     }
   ],
   "guided": false,
-  "current_station": "P3",
-  "phase_status": "in-progress",
+  "current_station": "P0",
+  "phase_status": "not-started",
   "stations_active": [
     "P0",
     "ARQ",
@@ -227,100 +233,54 @@
     "PDR": 0
   },
   "triggers": {
-    "evaluated_at": "2026-10-24T11:37:44",
+    "evaluated_at": "2026-10-24T22:36:45",
     "fired": [
-      "A1",
       "A2",
-      "A3",
       "B1",
-      "B4",
-      "C6",
-      "C8",
-      "D1",
-      "E1"
+      "D1"
     ],
     "not_fired": [
+      "A1",
+      "A3",
       "A4",
       "B2",
       "B3",
+      "B4",
       "C1",
       "C2",
       "C3",
       "C4",
       "C5",
+      "C6",
       "C7",
+      "C8",
       "D2",
+      "E1",
       "E2",
       "E3",
       "F1",
       "F2"
     ],
-    "record": ".dev-flow/2026-10-24-batch-01/PLAN.md#triggers"
+    "record": ".dev-flow/2026-10-24-batch-02/PLAN.md#triggers"
   },
   "artifact_homes": {
-    "requirements": "repo:.dev-flow/2026-10-24-batch-01/01-requirements.md",
-    "requirements_ledger": "repo:.dev-flow/2026-10-24-batch-01/01-requirements-ledger.md",
-    "traceability": "repo:.dev-flow/2026-10-24-batch-01/06-docs/traceability-matrix.md",
+    "requirements": "repo:.dev-flow/2026-10-24-batch-02/01-requirements.md",
+    "requirements_ledger": "repo:.dev-flow/2026-10-24-batch-02/01-requirements-ledger.md",
+    "traceability": "repo:.dev-flow/2026-10-24-batch-02/06-docs/traceability-matrix.md",
     "tests": "repo:tests/",
     "module_map": "repo:docs/ARCHITECTURE.md",
-    "increments": "repo:.dev-flow/2026-10-24-batch-01/03-increments/",
-    "evidence": "repo:.dev-flow/2026-10-24-batch-01/evidence/",
+    "increments": "repo:.dev-flow/2026-10-24-batch-02/03-increments/",
+    "evidence": "repo:.dev-flow/2026-10-24-batch-02/evidence/",
     "backlog": "repo:.dev-flow/BACKLOG.md",
-    "design_pdr": "vault:taskboard/design/PDR-2026-10-24-batch-01.md",
-    "design_ddr": "vault:taskboard/design/DDR-2026-10-24-batch-01.md",
-    "postmortem": "vault:taskboard/dev-flow-batches/2026-10-24-batch-01/",
-    "metrics": "vault:taskboard/dev-flow-batches/2026-10-24-batch-01/README.md",
+    "design_pdr": "vault:taskboard/design/PDR-2026-10-24-batch-02.md",
+    "design_ddr": "vault:taskboard/design/DDR-2026-10-24-batch-02.md",
+    "postmortem": "vault:taskboard/dev-flow-batches/2026-10-24-batch-02/",
+    "metrics": "vault:taskboard/dev-flow-batches/2026-10-24-batch-02/README.md",
     "requirements_canon": "repo:REQUIREMENTS.md"
   },
-  "base_ref": "7e66e0e5cab9a383ac10a37d31dc796984711a47",
+  "base_ref": "4a647ab63bb234dc4db4e402ed41c6684f88e96a",
   "artifacts": {},
-  "decisions_log": [
-    {
-      "station": "P0",
-      "date": "2026-10-24",
-      "decision": "standing authorization - the orchestrator's commission of 2026-10-24 (PLAN.md header). P0 closed: rollover to base_ref 7e66e0e, triggers A1 A2 A3 B1 B4 C6 C8 D1 E1 fired (ARQ, PDR, DDR taken up), RC-1 origin/main ffb567d is the merge-base, RC-2 answered, four stories US-2601..US-2604 READY; ARQ is next."
-    },
-    {
-      "station": "ARQ",
-      "date": "2026-10-24",
-      "decision": "standing authorization - the orchestrator's commission of 2026-10-24 (PLAN.md header). ARQ approved with conditions by the spawned architect: A-1 (the # manager's render seat had no declared home and increment 003 could not hold one) folded as D-4 - views.render_marks ships in increment 002, the map amended (docs/ARCHITECTURE.md); every other check passed (paths, parallelisation, cap, seat placement, # and alt+m free). P1 is next."
-    },
-    {
-      "station": "P1",
-      "date": "2026-10-24",
-      "decision": "standing authorization - the orchestrator's commission of 2026-10-24 (PLAN.md header). P1 contract approved: HLR-2601..HLR-2608 with 17 LLRs and the IFC Part A (four FLOW blocks), premises P-1..P-8 all TRUE (evidence/premises.txt), scan security_required: true answered in section 6.3 (evidence/scan-p1.txt), ledger paired both ways, pre-state RED probes on record (evidence/red-p1.txt); P2 is next."
-    },
-    {
-      "station": "P2",
-      "date": "2026-10-24",
-      "decision": "standing authorization - the orchestrator's commission of 2026-10-24 (PLAN.md header). P2 approve: architect, qa-reviewer, ux-reviewer and security-reviewer each approve after three iterations; the requirement-defect majors ARCH-1, ARCH-2, SEC-1, UX-1, QA-4 and every minor folded the same day as LED .26-.45 (02-review.md); the half-landed-fold class caught twice by the change-first census; PDR is next."
-    },
-    {
-      "station": "PDR",
-      "date": "2026-10-24",
-      "decision": "standing authorization - the orchestrator's commission of 2026-10-24 (PLAN.md header). PDR approved with conditions by the spawned architect, qa-reviewer and ux-reviewer (design/PDR-2026-10-24-batch-01.md): the three PDR questions answered (COLOURS = the round's SWATCH, the details-line seat is _gantt_legend confirmed at 004's gate, _hide as the shallow copy proxy), PC-1..PC-5 and every finding folded at seal, none carried open; the map's Directory exposure amended (edit, COLOURS, MARKS_NAME); frozen interfaces gain the code-reviewer diff instrument. P3 is next - increment 001."
-    },
-    {
-      "station": "P3",
-      "date": "2026-10-24",
-      "decision": "standing authorization - the orchestrator's commission of 2026-10-24 (PLAN.md header). P3 increment 001 approved: the marks directory marks.json, Task.mark, Board.marks, the app load (HLR-2601, HLR-2602, HLR-2603); 145 + 235 passed targeted, 31/31 mutants KILLED, code-reviewer OK to advance (0 HIGH, frozen set named untouched), security-reviewer PASS on marks.py (0 HIGH). P3 continues."
-    },
-    {
-      "station": "P3",
-      "date": "2026-10-24",
-      "decision": "standing authorization - the orchestrator's commission of 2026-10-24 (PLAN.md header). P3 increment 002 approved: the encoding through one seat - views.milestone_mark, the 20-site routing with the census guard, render_marks, the two notices (HLR-2604, LLR-2604.1/.2, LLR-2606.3; AT-2603 and AT-2607 minted); 275 + 1576 passed targeted, 14/14 mutants KILLED, code-reviewer OK to advance on the re-read after FIX FIRST (F1-F4 folded and verified, LED via the packet). P3 continues."
-    },
-    {
-      "station": "P3",
-      "date": "2026-10-24",
-      "decision": "standing authorization - the orchestrator's commission of 2026-10-24 (PLAN.md header). P3 increment 003 approved: the editor's variant-A Select (alt+m, TASK_KEYS, conditional compose, value-change-only save), MarkForm, app.MarksManager wired to views.render_marks, the # keymap seat (HLR-2605, HLR-2606; AT-2601 and AT-2604 minted); 89 + 374 passed targeted, 17/17 mutants KILLED, code-reviewer approved (F1 folded as LED .46, discharged). 4 source files at the cap, the reason declared. P3 continues."
-    },
-    {
-      "station": "P3",
-      "date": "2026-10-24",
-      "decision": "standing authorization - the orchestrator's commission of 2026-10-24 (PLAN.md header). P3 increment 004 approved: the legend strip (gantt + presentation + exports), _hide/present_tasks_m, the /#cls search, the details line, the ? help and the README (HLR-2607, HLR-2608; AT-2605 and AT-2606 minted - all seven ATs realise exactly one node); 61 + 988 passed targeted, 19/19 mutants KILLED, code-reviewer OK to advance on the re-read after FIX FIRST (F1 HIGH - _legend_row's lone-name IndexError - fixed, tested, discharged); the 003-owned markup-census RED folded (two EXEMPT rows). P3 is complete - the DDR is next."
-    }
-  ],
+  "decisions_log": [],
   "obsidian_synced": false,
-  "created_at": "2026-10-24T11:36:40.958216"
+  "created_at": "2026-10-24T22:34:52.183847"
 }

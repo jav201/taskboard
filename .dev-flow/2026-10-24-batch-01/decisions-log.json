@@ -1,0 +1,47 @@
+[
+ {
+  "station": "P0",
+  "date": "2026-10-24",
+  "decision": "standing authorization - the orchestrator's commission of 2026-10-24 (PLAN.md header). P0 closed: rollover to base_ref 7e66e0e, triggers A1 A2 A3 B1 B4 C6 C8 D1 E1 fired (ARQ, PDR, DDR taken up), RC-1 origin/main ffb567d is the merge-base, RC-2 answered, four stories US-2601..US-2604 READY; ARQ is next."
+ },
+ {
+  "station": "ARQ",
+  "date": "2026-10-24",
+  "decision": "standing authorization - the orchestrator's commission of 2026-10-24 (PLAN.md header). ARQ approved with conditions by the spawned architect: A-1 (the # manager's render seat had no declared home and increment 003 could not hold one) folded as D-4 - views.render_marks ships in increment 002, the map amended (docs/ARCHITECTURE.md); every other check passed (paths, parallelisation, cap, seat placement, # and alt+m free). P1 is next."
+ },
+ {
+  "station": "P1",
+  "date": "2026-10-24",
+  "decision": "standing authorization - the orchestrator's commission of 2026-10-24 (PLAN.md header). P1 contract approved: HLR-2601..HLR-2608 with 17 LLRs and the IFC Part A (four FLOW blocks), premises P-1..P-8 all TRUE (evidence/premises.txt), scan security_required: true answered in section 6.3 (evidence/scan-p1.txt), ledger paired both ways, pre-state RED probes on record (evidence/red-p1.txt); P2 is next."
+ },
+ {
+  "station": "P2",
+  "date": "2026-10-24",
+  "decision": "standing authorization - the orchestrator's commission of 2026-10-24 (PLAN.md header). P2 approve: architect, qa-reviewer, ux-reviewer and security-reviewer each approve after three iterations; the requirement-defect majors ARCH-1, ARCH-2, SEC-1, UX-1, QA-4 and every minor folded the same day as LED .26-.45 (02-review.md); the half-landed-fold class caught twice by the change-first census; PDR is next."
+ },
+ {
+  "station": "PDR",
+  "date": "2026-10-24",
+  "decision": "standing authorization - the orchestrator's commission of 2026-10-24 (PLAN.md header). PDR approved with conditions by the spawned architect, qa-reviewer and ux-reviewer (design/PDR-2026-10-24-batch-01.md): the three PDR questions answered (COLOURS = the round's SWATCH, the details-line seat is _gantt_legend confirmed at 004's gate, _hide as the shallow copy proxy), PC-1..PC-5 and every finding folded at seal, none carried open; the map's Directory exposure amended (edit, COLOURS, MARKS_NAME); frozen interfaces gain the code-reviewer diff instrument. P3 is next - increment 001."
+ },
+ {
+  "station": "P3",
+  "date": "2026-10-24",
+  "decision": "standing authorization - the orchestrator's commission of 2026-10-24 (PLAN.md header). P3 increment 001 approved: the marks directory marks.json, Task.mark, Board.marks, the app load (HLR-2601, HLR-2602, HLR-2603); 145 + 235 passed targeted, 31/31 mutants KILLED, code-reviewer OK to advance (0 HIGH, frozen set named untouched), security-reviewer PASS on marks.py (0 HIGH). P3 continues."
+ },
+ {
+  "station": "P3",
+  "date": "2026-10-24",
+  "decision": "standing authorization - the orchestrator's commission of 2026-10-24 (PLAN.md header). P3 increment 002 approved: the encoding through one seat - views.milestone_mark, the 20-site routing with the census guard, render_marks, the two notices (HLR-2604, LLR-2604.1/.2, LLR-2606.3; AT-2603 and AT-2607 minted); 275 + 1576 passed targeted, 14/14 mutants KILLED, code-reviewer OK to advance on the re-read after FIX FIRST (F1-F4 folded and verified, LED via the packet). P3 continues."
+ },
+ {
+  "station": "P3",
+  "date": "2026-10-24",
+  "decision": "standing authorization - the orchestrator's commission of 2026-10-24 (PLAN.md header). P3 increment 003 approved: the editor's variant-A Select (alt+m, TASK_KEYS, conditional compose, value-change-only save), MarkForm, app.MarksManager wired to views.render_marks, the # keymap seat (HLR-2605, HLR-2606; AT-2601 and AT-2604 minted); 89 + 374 passed targeted, 17/17 mutants KILLED, code-reviewer approved (F1 folded as LED .46, discharged). 4 source files at the cap, the reason declared. P3 continues."
+ },
+ {
+  "station": "P3",
+  "date": "2026-10-24",
+  "decision": "standing authorization - the orchestrator's commission of 2026-10-24 (PLAN.md header). P3 increment 004 approved: the legend strip (gantt + presentation + exports), _hide/present_tasks_m, the /#cls search, the details line, the ? help and the README (HLR-2607, HLR-2608; AT-2605 and AT-2606 minted - all seven ATs realise exactly one node); 61 + 988 passed targeted, 19/19 mutants KILLED, code-reviewer OK to advance on the re-read after FIX FIRST (F1 HIGH - _legend_row's lone-name IndexError - fixed, tested, discharged); the 003-owned markup-census RED folded (two EXEMPT rows). P3 is complete - the DDR is next."
+ }
+]
