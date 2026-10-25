@@ -9,7 +9,7 @@
 
 ## ✅ Verdict (read first)
 
-- **Gate:** `iterate-to-refine` → Phase 1 (rounds 1 and 2 folded by amendment; round 3 — verification of the R2 folds — is owed next)
+- **Gate:** `iterate-to-refine` → Phase 1 (rounds 1 and 2 folded by amendment; round 3 verified the R2 folds (architect lens: LED-2905.1 reciprocal, contract folds landed, V26 pairs clean, no stale contradiction) — PASS, the gate approves)
 - **Out-of-scope findings:** `none` named and routed below
 
 - **Findings:** `0` blocker · `4` major · `15` minor (rounds 1+2 cumulative)
@@ -29,7 +29,7 @@
 
 - **Batch:** `2026-10-25-batch-02` · **Input:** `01-requirements.md` (P1, iteration 1 after amendment)
 - **Lenses:** `architect` + `qa-reviewer` + `security-reviewer` (trigger family C fired — C8), all spawned as independent generic sub-agents carrying the bundle's `agents/<role>.md`.
-- **Rounds:** round 1 on the original contract; round 2 on the amended contract (both recorded below); round 3 — verification of the R2 folds — is owed next.
+- **Rounds:** round 1 on the original contract; round 2 on the amended contract (both recorded below); round 3 verified the R2 folds (architect lens: LED-2905.1 reciprocal, contract folds landed, V26 pairs clean, no stale contradiction) — PASS, the gate approves.
 
 ### Findings (round 1)
 
@@ -105,4 +105,4 @@ Family C fired (C8 — the increment widens what is parsed into markup over file
 
 ### Verdict
 
-`iterate-to-refine` (rounds 1 and 2) — the gate tokens' home is `templates/review-template.md`. Both amendments are folded (ledger entries LED-2901, LED-2901.2, LED-2901.3, LED-2903, LED-2905, LED-2905.1); round 3 — verification of the R2 folds — is owed next.
+`iterate-to-refine` (rounds 1 and 2) — the gate tokens' home is `templates/review-template.md`. Both amendments are folded (ledger entries LED-2901, LED-2901.2, LED-2901.3, LED-2903, LED-2905, LED-2905.1); round 3 verified the R2 folds (architect lens: LED-2905.1 reciprocal, contract folds landed, V26 pairs clean, no stale contradiction) — PASS, the gate approves.
