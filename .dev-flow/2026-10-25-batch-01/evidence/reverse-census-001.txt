@@ -1,0 +1,59 @@
+=== reverse census, increment 001, batch 2026-10-25-batch-01 ===
+--- B1: touched symbols asserted by tests of OTHER requirements
+grep -rl MilestoneOffer tests/:
+tests/test_boards_backlog_round.py
+tests/test_help_keys.py
+tests/test_home_deferred_start.py
+tests/test_milestones.py
+tests/test_milestone_offer.py
+tests/test_milestone_offer_seam.py
+tests/test_modal_keys.py
+tests/test_present.py
+tests/test_present_hide.py
+tests/test_present_rulers.py
+tests/test_present_views_app.py
+tests/test_startup_backdrop.py
+tests/__pycache__/test_home_deferred_start.cpython-312-pytest-8.3.4.pyc
+tests/__pycache__/test_milestone_offer.cpython-312-pytest-8.3.4.pyc
+tests/__pycache__/test_milestone_offer.cpython-312.pyc
+tests/__pycache__/test_startup_backdrop.cpython-312-pytest-8.3.4.pyc
+tests/__pycache__/test_startup_backdrop.cpython-312.pyc
+grep -rl TeamIdentityPicker tests/:
+tests/test_boards_backlog_round.py
+tests/test_boards_home.py
+tests/test_markup_sites.py
+tests/test_milestone_offer.py
+tests/test_modal_keys.py
+tests/test_startup_backdrop.py
+tests/test_team_sync.py
+tests/__pycache__/test_boards_home.cpython-312-pytest-8.3.4.pyc
+tests/__pycache__/test_markup_sites.cpython-312-pytest-8.3.4.pyc
+tests/__pycache__/test_milestone_offer.cpython-312-pytest-8.3.4.pyc
+tests/__pycache__/test_milestone_offer.cpython-312.pyc
+tests/__pycache__/test_startup_backdrop.cpython-312-pytest-8.3.4.pyc
+tests/__pycache__/test_startup_backdrop.cpython-312.pyc
+tests/__pycache__/test_team_sync.cpython-312-pytest-8.3.4.pyc
+grep -rl 0007 tests/:
+tests/test_startup_backdrop.py
+tests/__pycache__/test_startup_backdrop.cpython-312-pytest-8.3.4.pyc
+tests/__pycache__/test_startup_backdrop.cpython-312.pyc
+--- every hit re-validated: the offer suite's single changed node (TC-617 row order) is justified in the packet §6; the other files only drive the modals, never the screen background
+--- B2: no file moved on disk:
+(no moves)
+--- B3: byte-identical goldens citing the touched source:
+(no tests/goldens directory)
+(no golden cites the tcss)
+--- B4: artifact another component consumes: none — the change emits no file
+--- A3: foreign module hits — the diff touches:
+warning: in the working copy of 'taskboard/taskboard.tcss', LF will be replaced by CRLF the next time Git touches it
+ taskboard/taskboard.tcss      |  7 +++++++
+ tests/test_milestone_offer.py | 11 ++++++++++-
+ 2 files changed, 17 insertions(+), 1 deletion(-)
+--- new untracked files:
+?? .dev-flow/2026-10-25-batch-01/evidence/flake-2801.py
+?? .dev-flow/2026-10-25-batch-01/evidence/flake-2801.txt
+?? .dev-flow/2026-10-25-batch-01/evidence/mutation-001.py
+?? .dev-flow/2026-10-25-batch-01/evidence/mutation-001.txt
+?? .dev-flow/2026-10-25-batch-01/evidence/reverse-census-001.txt
+?? .dev-flow/2026-10-25-batch-01/evidence/suite-001.txt
+?? tests/test_startup_backdrop.py

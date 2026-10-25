@@ -312,6 +312,13 @@ PresentHiddenPicker, BoardForm, MoveTarget, MoveConfirm {
     background: #0007;
 }
 
+/* the start-up modals dim the board like the working modals (D-12), but keep
+   their own placement — the shared rule's align: center middle is NOT wanted
+   here (the picker renders top-left; batch 2026-10-25-batch-01, LLR-2801.1) */
+MilestoneOffer, TeamIdentityPicker {
+    background: #0007;
+}
+
 /* project manager list */
 #proj-list {
     height: auto;

@@ -436,7 +436,16 @@ async def test_TC_617_rows_order_marks_and_keys(tmp_path):
         await pilot.pause()
         scr = app.screen
         assert isinstance(scr, MilestoneOffer)
-        painted = "\n".join(_painted(app))
+        rows = _painted(app)
+        # the oracle is scoped to the offer box: since the backdrop fix the
+        # composited render legitimately includes the board beneath the modal
+        # (the defect made this test's old oracle opaque-only), and the board's
+        # own rows carry the same task titles — order is asserted inside the
+        # box; the corners are located by glyph (the rows flanking the box now
+        # carry board text beside the border)
+        top = next(i for i, r in enumerate(rows) if "╭" in r)
+        bottom = next(i for i in range(top, len(rows)) if "╰" in rows[i])
+        painted = "\n".join(rows[top:bottom + 1])
         titles = [app.board.task_by_id(tid).title for tid, _ in ORDER]
         at = [painted.index(t) for t in titles]
         assert at == sorted(at)

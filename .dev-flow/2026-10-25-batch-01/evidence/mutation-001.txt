@@ -1,0 +1,13 @@
+arms: 8
+before: 4ed77a16c2dd067bcc8c6152e0f39e9708b3638274378940f8eb575717389fe4
+mutated: 0f9308b4ca92bd5a5b51f9ff3a3fa9b7258844bcda31c8c2ed4fec1c38f2d489
+AT-2801 118x30: KILLED ::   warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCOPE_UNSET))
+AT-2801 80x24: KILLED ::   warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCOPE_UNSET))
+AT-2802 118x30: KILLED ::   warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCOPE_UNSET))
+AT-2802 80x24: KILLED ::   warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCOPE_UNSET))
+AT-2803 118x30: KILLED ::   warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCOPE_UNSET))
+AT-2803 80x24: KILLED ::   warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCOPE_UNSET))
+AT-2803 geometry: SURVIVED ::   warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCOPE_UNSET))
+TC-2801 (pin): SURVIVED ::   warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCOPE_UNSET))
+restored: 4ed77a16c2dd067bcc8c6152e0f39e9708b3638274378940f8eb575717389fe4
+restore-ok: True

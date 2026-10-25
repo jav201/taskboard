@@ -1,182 +1,181 @@
-# Increment 001 — <REQ-ID> · `<Short title>`
-
-> **Artifact language**
-> This template is the canonical **English scaffold**. Generate the artifact in the batch's development
-> language — the **prose**, and never a label. **Where that language is declared:**
-> `state.json`'s `language` key in `core` and `full`. The normative RULES below are
-> language-independent.
-
-> **Owed in.** `core` ✓ · `full` ✓
-
-> **Field guide:** `templates/guides/increment-template.md` explains each field below and the rules that read it. It ships with the flow and is not copied into this batch.
-
-> **Reserved field names.** The **field names and block keywords below are language-independent** — the
-> validator parses them literally and they are never translated:
-> `SOURCE files` · `Instrument RED-proof` · `Correction population` · `Mutation verdicts` · `Emitted-form assertion` · `Reverse census` · `RED counterfactual` · `Independent review` · `Evidence files` · `Traces to` · `File` · `Kind` · `source` · `test` · `doc` · `config` · `generated` · `fixture` · `⏸ DEFER`
-> Everything else on this page — headings, guidance, the prose in every cell — is translated with the batch.
-> **One strategy, not two:** the flow ships no alias table, so a translated label is read as an ABSENT one and the rule keyed on it reports a true-sounding silence.
-> **And one FLOW-WIDE reserved token, read out of this artifact by `V42` no matter which template minted it:** `⏸ DEFER`. It is a MARKER rather than a field name, which is why it is stated here *and* in `/dev-flow` §Language of artifacts rather than in a per-template list — a deferral can be written in any batch artifact, including the ones that carry no block at all.
-
-> **Where this lives:** the **repo**, next to the diff it describes —
-> `.dev-flow/2026-10-25-batch-01/03-increments/increment-001.md`. It is not synced to the vault.
-
-> **Notice convention.** `⚠` yellow = notice: does not block, obliges you to DECLARE the reason here.
-> `✗` red = block. `✓` green = satisfied **with its evidence cited**. A notice repeated for three
-> consecutive batches becomes a rule or is retired.
-
-> **A table you may delete.** A table whose `| **Field** |` row reads `none — <reason>`, or whose question one line of the gate checklist answers, may be deleted, its field row kept: `stations/core-runbook.md` §*A minimal increment packet* is a one-function change written that way.
+# Increment 001 — HLR-2801..2804 · `the board shows behind the start-up modals`
 
 | Field | Value |
 |---|---|
 | Batch | `2026-10-25-batch-01` |
 | Increment | `001` |
-| Lane (if the batch forked) | `<lane name>` · `<modules owned by this lane>` |
-| Requirement(s) | `<R-NNN vN / LLR-NNN.n>` |
-| Acceptance | `<AT-NNN>` · white-box `<TC-NNN>` · unit `<layer-0 nodes>` |
-| Agent | `software-dev` |
+| Lane (if the batch forked) | none — one lane |
+| Requirement(s) | `HLR-2801 v2 · HLR-2802 v2 · HLR-2803 v2 · HLR-2804` / `LLR-2801.1 v2 · LLR-2801.2 · LLR-2801.3 v2 · LLR-2802.1 · LLR-2803.1` |
+| Acceptance | `AT-2801` · `AT-2802` · `AT-2803` (white-box `TC-2801`, a labelled pin) · regression pin `AT-2804` (the P4 suite) |
+| Agent | `software-dev` (the orchestrator, under this budget) |
 | Date | `2026-10-25` |
 
 ---
 
 ## 1 · What changed
 
-*(BLUF: state the outcome first, then the mechanism. Name the shipped surface the user reaches.)*
+The start-up modals — the one-time milestone offer and the team identity
+picker — now open over the visible board, dimmed by the same `#0007` translucent
+backdrop the working modals use, on the single-board start, the home's `enter`
+path and in team mode, at 118x30 and 80x24. The user reaches this surface at
+every app start that owes a start-up modal.
 
----
+Mechanism: one background-only declaration in `taskboard/taskboard.tcss`
+(`MilestoneOffer, TeamIdentityPicker { background: #0007; }`), per
+`PDR-2026-10-25-batch-01#D2`. No timing change (the commission's unpainted-board
+hypothesis was refuted by measurement at P1; the board beneath already paints in
+the same first composite as the modal), no `app.py`/`modals.py` change, push
+order untouched (picker first, offer last, D-615). The picker's top-left
+placement is preserved exactly — the PDR's D1 — because joining the shared
+backdrop rule would have dragged its `align: center middle` onto the picker
+(P2 blocker A1).
 
 ## 2 · Files modified
 
-**The budget counts SOURCE files only. Tests are not capped. Product docs and `.dev-flow/**` are outside the count.**
-
-One row per file. `Kind` is one of `source` · `test` · `doc` · `config` · `generated` · `fixture`; `Traces to` names the US/HLR/LLR (or `R-<AREA>-<NNN>`) ids the file serves, and `doc` rows leave it empty.
-
 | File | Kind | Traces to | Change |
 |---|---|---|---|
+| `taskboard/taskboard.tcss` | source | LLR-2801.1, LLR-2801.2, HLR-2801..2803 | adds the background-only declaration (7 lines with comment); no other rule touched |
+| `tests/test_startup_backdrop.py` | test | US-001, HLR-2801..2803, LLR-2801.1..2803.1 | new — the four nodes (AT-2801/2802/2803 + TC-2801) |
+| `tests/test_milestone_offer.py` | test | HLR-2804 (pin) | one node scoped to the offer box (see §6) |
 
 | Count | Value |
 |---|---|
-| **SOURCE files** | **`<N>` / 4** |
-| Test files | `<N>` (uncapped) |
-| Doc files | `<N>` (outside the count) |
+| **SOURCE files** | **1 / 4** |
+| Test files | 2 (uncapped) |
+| Doc files | 0 (outside the count) |
 
-- ⚠ **At exactly 4 source files:** state here why this increment could not be cut smaller.
-- ⚠ **Above 4:** this does not auto-block, but the reason goes here **and** the design/close review looks at it.
-- ✗ If a file belongs to another lane's file set, stop: lanes may not share a file.
-
----
+- The commission's increment clause expected `taskboard/app.py` only; the
+  diagnosis (SB-1) placed the cause in the stylesheet, and the PDR's condition 2
+  has this statement supersede the expectation — the touch set is
+  `taskboard/taskboard.tcss` + one new test file, nothing else (`git diff` below).
 
 ## 3 · How to test
 
 ```bash
-<the exact commands, copy-pasteable>
+# the increment's own nodes
+env -u NO_COLOR python -m pytest -q tests/test_startup_backdrop.py
+# the affected suites (offer, home, team, B1 observers)
+env -u NO_COLOR python -m pytest -q tests/test_startup_backdrop.py tests/test_milestone_offer.py tests/test_home_deferred_start.py tests/test_boards_home.py tests/test_boards.py tests/test_markup_sites.py tests/test_team_sync.py
 ```
-
----
 
 ## 4 · Test results
 
 | Layer | Owed in | Nodes | Result |
 |---|---|---|---|
-| **0 · unit** (cyclomatic ≥3, or crosses a declared module boundary) | `core` · `full` | `<nodes>` | <N passed> |
-| **A · white-box** `TC-NNN` ↔ LLR | `core` · `full` | `<nodes>` | <N passed> |
-| **B · black-box** `AT-NNN` ↔ story, through the shipped surface | `core` · `full` | `<nodes>` | <N passed> |
+| **0 · unit** | `core` | none due — the change is one CSS declaration; cyclomatic 1, no module boundary crossed | n/a |
+| **A · white-box** | `core` | `test_TC_2801_quitting_with_the_picker_open_writes_nothing` (pin) — the contract §5.1 resolved-style probe (`styles.background` carries alpha) is superseded by the emitted-form render assertion + the mutation battery (C-42), both strictly stronger; it is not run as a separate arm (code review F1) | 1 passed |
+| **B · black-box** | `core` | `test_AT_2801_the_offer_opens_over_the_painted_board[size0|size1]` · `test_AT_2802_enter_on_the_home_opens_the_offer_over_the_chosen_board[size0|size1]` · `test_AT_2803_team_mode_shows_the_board_behind_both_modals_in_todays_order[size0|size1]` · `test_AT_2803_the_picker_keeps_its_pre_batch_geometry` | 7 passed |
+
+Affected suites: 144 passed, 0 failed (`evidence/suite-001.txt`); the B1
+observer suites: see the **Reverse census** field (`evidence/suite-002.txt`).
 
 ### RED counterfactual — executed, not predicted
 
 | Field | Value |
 |---|---|
-| Mutation applied | `<what was changed to make the assertion fail>` |
-| Instrument | project code: your own hand or a script in the project's stack, the restore checked by hash · a batch whose subject is the flow: `python scripts/devflow-mutate.py --select ID,ID`, run from the bundle root — field guide §`Mutation verdicts` |
-| Where it ran | **the tree, and who ran it** — the orchestrator when a spawned sub-agent wrote the code (`stations/p3-implementation.md` §Phase 3); never a tree another lane or session is reading |
-| Transcript | `<paste: the RED output, plus confirmation the mutation actually applied>` |
-| Restore proven by | **file hash returned to its pre-mutation value** (`git status` alone is insufficient, and vacuous for an untracked file) |
-| Bytecode cache | cleared / run with `PYTHONDONTWRITEBYTECODE=1` (C-46) |
-| Arms resolved at baseline | `<N>` — **assert the expected count.** An arm the harness cannot see is an arm it cannot report inert; a whitespace-delimited node pattern silently drops every *parametrized* arm |
-| Verdict granularity | **per resolved node id**, never the process exit code — a runner exits non-zero if ANY arm fails, so an inert arm hides behind a sibling that failed |
-| Arms that stayed GREEN | `<name them, or 'none'>` — `3 passed` unread in a transcript is how four arms once survived a fully removed gate |
+| Mutation applied | the background-only declaration deleted from `taskboard/taskboard.tcss` (7 lines, anchor verified present before the run) |
+| Instrument | project code: `evidence/mutation-001.py` (a runner in the project's stack, kept beside its transcript) |
+| Where it ran | this worktree, `C:\Users\jjgh8\Github\taskboard-wt\backdrop`, run by the orchestrator; no other session reads this tree |
+| Transcript | `evidence/mutation-001.txt` — `mutated: 0f9308b4…` confirms the mutation applied; every AT arm then resolved |
+| Restore proven by | file hash returned to its pre-mutation value: `before: 4ed77a16c2dd067bcc8c6152e0f39e9708b3638274378940f8eb575717389fe4` == `restored: …`, `restore-ok: True` |
+| Bytecode cache | run with `PYTHONDONTWRITEBYTECODE=1` |
+| Arms resolved at baseline | **8** — six parametrized AT arms + the geometry arm + TC-2801, one pytest invocation each, exit code read per arm |
+| Verdict granularity | per resolved node id (each arm is its own pytest run) |
+| Arms that stayed GREEN | `AT-2803 geometry` (the mutation removes the backdrop, which never moves the box — that arm guards the A1 recentering shape, named inert for THIS mutant) · `TC-2801` (a labelled pin: a stylesheet cannot change writes) |
 
 | Field | Value |
 |---|---|
-| **RED counterfactual** | `<the mutation that made THIS increment's OWN new assertion fail, by position and operation · where its transcript is stored · the restore digest that returned the file to its pre-mutation bytes — or: none — no new assertion in this increment>` |
+| **RED counterfactual** | `taskboard/taskboard.tcss` — the `MilestoneOffer, TeamIdentityPicker { background: #0007; }` declaration deleted → `test_AT_2801_the_offer_opens_over_the_painted_board[size0|size1]` both RED (opaque screen returns, 0 rows outside the box) · `.dev-flow/2026-10-25-batch-01/evidence/mutation-001.txt` · restore digest `4ed77a16c2dd067bcc8c6152e0f39e9708b3638274378940f8eb575717389fe4` |
 
 | Field | Value |
 |---|---|
-| **Mutation verdicts** | `<per resolved node: the mutation by position and operation · KILLED / CRASH / SURVIVED / BAD (the mutation's anchor did not apply) · the arms that stayed GREEN, named · the transcript's path under artifact_homes.evidence and the restore digest — or: none — no mutation battery in this increment>` |
+| **Mutation verdicts** | AT-2801 118x30 · declaration delete · **KILLED** · `evidence/mutation-001.txt` · restore `4ed77a16…` · AT-2801 80x24 · **KILLED** · AT-2802 118x30 · **KILLED** · AT-2802 80x24 · **KILLED** · AT-2803 118x30 · **KILLED** · AT-2803 80x24 · **KILLED** · AT-2803 geometry · **SURVIVED** (inert for this mutant, named above) · TC-2801 · **SURVIVED** (pin by design) · arms that stayed GREEN: named per node above — none unexplained |
 
 ### Instrument RED-proof — every instrument shown able to report FAILURE first
 
 | Instrument | Known-bad input fed to it | The FAILURE it reported |
 |---|---|---|
-| `<test / counter / mutation harness / grep / parser>` | `<the corruption planted in its MECHANISM, not in its verdict>` | `<the failure it printed, verbatim — and where>` |
+| the mutation runner `evidence/mutation-001.py` | its own anchor check: the script asserts the mutation anchor is present before running (`assert ANCHOR in src`) | would end `BAD` — demonstrated live: the runner's KILLED verdicts under the applied mutation are the same instrument reporting failure per arm |
+| the AT oracle itself | the base regime (declaration absent, measured at P1 and again at base in `evidence/red-p1.txt`): 0 rows outside the box at both sizes | `assert above + below > 0` fails — the instrument's RED side is the P1 measurement itself |
+| the suite | `test_TC_617_rows_order_marks_and_keys` failed on the first fixed-tree run (its oracle encoded the opaque backdrop) | `AssertionError: at == sorted(at)` — later scoped (§6) |
 
 | Field | Value |
 |---|---|
-| **Instrument RED-proof** | `<N instruments, each shown RED before its first PASS was believed — or: none — no instrument beyond the suite>` |
+| **Instrument RED-proof** | 3 instruments, each shown RED before its PASS was believed (the mutation runner's per-arm KILLED verdicts, the oracle's P1-measured 0-count regime, the suite's own first-run failure) |
 
 ### Emitted-form assertion — assert the bytes the producer EMITS (C-42)
 
 | Artifact emitted | The assertion, run against the EMITTED form | What it returned |
 |---|---|---|
-| `<the file / report / screen / record>` | `<the command or predicate, pasted>` | `<its actual output, verbatim>` |
+| the terminal frame (the emitted surface) | the AT oracle reads the composited full-screen-stack render — the same source `App.export_screenshot` consumes — and counts non-blank rows outside the box's corner glyphs; the P2 round-2 probe ran both states back-to-back | base: `[0, 0]` outside rows · fixed: `[7, 6]` at 118x30, `[4, 3]` at 80x24 — measured against the render, not against a description of it (`evidence/red-p1.txt`, the round-2 probe) |
 
 | Field | Value |
 |---|---|
-| **Emitted-form assertion** | `<N artifacts, each asserted against the form its producer emitted — or: none — this increment emits no artifact>` |
+| **Emitted-form assertion** | 1 artifact (the terminal frame), asserted against the emitted composited render; what it returned is pasted above |
 
 ### Evidence files — bytes at a declared home, verbatim, hash-verified (C-59)
 
 | Evidence artifact | Path — under `artifact_homes.evidence` | SHA-256 |
 |---|---|---|
-| `<the transcript / capture / snapshot / .PRE copy>` | `<the path, as stored>` | `<the 64-hex digest of the bytes AT THAT PATH>` |
+| suite-000.txt | .dev-flow/2026-10-25-batch-01/evidence/suite-000.txt | dd0603729a7b6f064afd25b2015515bb57ab2683221d5b5f446be0b0348eea1e |
+| suite-001.txt | .dev-flow/2026-10-25-batch-01/evidence/suite-001.txt | 2583c02e4e309ba89aab09dd1cc241e4338c68d4e6e0ecfc281766fcd369e17e |
+| suite-002.txt | .dev-flow/2026-10-25-batch-01/evidence/suite-002.txt | e6d6f66f091836e872a30be2e87c494925d5688ad154d2be913a3ecd94aef400 |
+| mutation-001.txt | .dev-flow/2026-10-25-batch-01/evidence/mutation-001.txt | 4a4898ed240b9c13215a1c8134cff21d331d4742529de8f9340a65b2f62484f3 |
+| mutation-001.py | .dev-flow/2026-10-25-batch-01/evidence/mutation-001.py | c8b55cb067d672acb129234e0d36244fde2b022b3b1f598ef3253bca7a527e88 |
+| flake-2801.txt | .dev-flow/2026-10-25-batch-01/evidence/flake-2801.txt | 7422d475be549241a1241b023e13de6ad78550e4a60355fc315bf30ce8d79548 |
+| flake-2801.py | .dev-flow/2026-10-25-batch-01/evidence/flake-2801.py | 7af7a764197f37aa39927c492cf548cd6fdd3b12407a200b9f4590da43bf292a |
+| reverse-census-001.txt | .dev-flow/2026-10-25-batch-01/evidence/reverse-census-001.txt | d6644efdd5a29c4942628a7fdfd2a775a91df48015aecf472525ae13c6d2b19d |
 
 | Field | Value |
 |---|---|
-| **Evidence files** | `<N artifacts, each at the declared home and cited with the digest of its stored bytes — or: none — this increment cites no evidence file>` |
+| **Evidence files** | `8 artifact(s), each at the declared home, with the digest of its bytes on disk` |
 
 ### Load-bearing emptiness — what is this resting on that is only true today? (C-55)
 
 | Field | Value |
 |---|---|
-| Does any claim here rest on the tree holding NO instance of some case? | `<yes: name it / no>` |
-| If the result is an ABSENCE, what made the search wide enough | `<the over-broad property — and the guard that protects it>` |
-| Guard labelled as protecting a CONCLUSION, not a behaviour | `<node id — else the next reader "improves" it away>` |
-| Conjunctive criteria: one mutation per conjunct | `<per-conjunct verdicts, or 'no conjunctive criterion'>` |
-| Synthetic instance of the absent case | `<fixture / in-memory module that contains what the tree lacks>` |
-| **Positive control for every probe that returned an ABSENCE** | `<the known-present case, and the NON-absent output the same unmodified probe returned on it>` — uniformity over heterogeneous inputs (N-of-N) is one failure repeated, not a measurement |
+| Does any claim here rest on the tree holding NO instance of some case? | no — every claim is a presence claim (rows outside the box, the declaration's effect), measured, not absence-derived |
+| If the result is an ABSENCE, what made the search wide enough | the B3 probe (no `tests/goldens` at all) and the B2 probe (no file moves) are absences — each has its positive control below |
+| Guard labelled as protecting a CONCLUSION, not a behaviour | n/a |
+| Conjunctive criteria: one mutation per conjunct | no conjunctive criterion — one declaration, one mutant |
+| Synthetic instance of the absent case | the mutation battery IS the synthetic instance for the backdrop-absent case (it recreates the defect and the oracles go RED) |
+| **Positive control for every probe that returned an ABSENCE** | B3: `grep -rl MilestoneOffer tests/` returns 12 files (the probe is not blind) while the golden grep returns none, because the tree has no `tests/goldens/` — uniformity not claimed · B2: `git status` shows the two real edits while the move-probe returns nothing |
 
 ### Reverse census — trigger family B, and A3
 
 | Probe | Command | Result |
 |---|---|---|
-| B1 symbols asserted by **other** tests | `grep -rl <symbol> tests/` | `<files, and whose they are>` |
-| B2 file moved on disk | `<glob probe over the old path>` | `<readers found>` |
-| B3 byte-identical golden captures this source | `grep <source> tests/goldens/**` | `<hits>` |
-| B4 artifact produced here is consumed elsewhere | `<who reads the path/format written>` | `<consumers>` |
-| A3 interface consumed by another module changed | `grep <symbol>` outside its owning module | `<hits>` |
+| B1 symbols asserted by **other** tests | `grep -rl MilestoneOffer tests/` · `grep -rl TeamIdentityPicker tests/` · `grep -rl 0007 tests/` | 12 + 8 + 1 files (`evidence/reverse-census-001.txt`); only `tests/test_startup_backdrop.py` mentions `0007`; every other file drives the modals by keys/constructors and none asserts the screen background. The one changed existing node, `test_TC_617_rows_order_marks_and_keys`, re-validated and scoped (§6). The remaining observer files ran green in `evidence/suite-002.txt` (see the **Reverse census** field below) |
+| B2 file moved on disk | `git status` rename probe | no moves |
+| B3 byte-identical golden captures this source | `grep <source> tests/goldens/**` | no `tests/goldens/` directory exists; nothing to drift |
+| B4 artifact produced here is consumed elsewhere | who reads the path/format written | none — the change emits no file |
+| A3 interface consumed by another module changed | `git diff --stat` | the diff touches `taskboard.tcss` and two test files only; no interface another module consumes changed shape |
 
 | Field | Value |
 |---|---|
-| **Reverse census** | `<N probes run of B1 · B2 · B3 · B4 · A3, each with its command and its verdict — N hits, and where every hit was re-validated — or: none — this increment touches no code symbol or shared surface>` |
+| **Reverse census** | 5 probes of B1 · B2 · B3 · B4 · A3 run, each with its command and verdict in `evidence/reverse-census-001.txt` · B1: 21 file hits, 20 re-validated green by `evidence/suite-001.txt` (the offer/home/team/B1-adjacent suites) + `evidence/suite-002.txt` (the remaining observer files: test_boards_backlog_round, test_help_keys, test_milestones, test_milestone_offer_seam, test_modal_keys, test_present, test_present_hide, test_present_rulers, test_present_views_app), 1 re-validated by its scoped edit (§6) · B2/B4: no hits · B3: no goldens exist · A3: 0 foreign hits |
 
 ### Correction population — enumerated BEFORE the first site was edited
 
 | Correction | Population — the assertion category | Enumeration method (the command) | Count | Sites edited | Sites left, and why |
 |---|---|---|---|---|---|
-| `<the claim being corrected>` | `<what kind of thing must be true everywhere>` | `<the command, pasted>` | `<N>` | `<…>` | `<…>` |
+| the offer oracle of `test_TC_617_rows_order_marks_and_keys` asserted row order over a render that the defect made opaque-only | tests that paint the start-up modals and index into the composited render | `grep -rl MilestoneOffer tests/` then read each hit's assertions | 1 | 1 (the node scoped to the box) | 0 — no other test indexes the composited render around the offer box |
 
 | Field | Value |
 |---|---|
-| **Correction population** | `<N corrections, each enumerated with its method before its first site was edited — or: none — no correction>` |
+| **Correction population** | 1 correction, enumerated with its grep before the edit; the enumeration found exactly one site |
 
 #### Supersession-completeness inspection (V-3)
 
 | Superseded marker | grep result | All surviving refs negative? | Evidence (file:line) |
 |-------------------|-------------|------------------------------|----------------------|
-| `<marker>` | `<N hits>` | yes/no | `<…>` |
+| none — no marker superseded | n/a | n/a | n/a |
 
 ### Signed-balance test ledger
 
-`post = base − deleted + added` → `<post> = <base> − <D> + <A>`  ✓ reconciles
+`post = base − deleted + added` → `3256 = 3248 − 0 + 8` ✓ reconciles
+(8 new nodes: 7 Layer-B arms/nodes + 1 Layer-A pin; the base of 3248 is the
+commission's batch-02 close figure — re-counted exactly at P4's chunks.)
 
 ---
 
@@ -184,48 +183,66 @@ One row per file. `Kind` is one of `source` · `test` · `doc` · `config` · `g
 
 | Field | Value |
 |---|---|
-| **Independent review** | `<who reviewed · the verdict · how every HIGH was resolved — or: WAIVED-BY-OPERATOR — and the reason, in the operator's own words>` |
-
-*Example of a filled cell:* `` `code-reviewer` · PASS-WITH-NOTES, 0 HIGH / 5 MEDIUM · all five
-folded into this increment — F1 severity census, F2 block truncation, F3 blocklist, F4 scope
-state, F5 this table ``
+| **Independent review** | `code-reviewer` · PASS-WITH-NOTES, 0 HIGH / 2 LOW · both folded — F1: the §5.1 resolved-style probe's supersession is written into §4 (this table's Layer-A row) · F2: the geometry arm's docstring now says «bottom border row 11 (12 rendered rows)», matching the pinned tuple |
 
 ---
 
 ## 5 · Risks
 
-*(What could break that this increment does not cover. Be specific enough to act on.)*
-
----
+- The 80x24 offer box is full-width with zero horizontal margin (pre-existing
+  `#offer-box` layout, out of SB-3 scope); a very large candidate list can grow
+  it to the full screen height, in which case no rows show around it — the fix's
+  target (opaque → dimmed) holds regardless (contract LED-2801.2, ux C2).
+- Under `TEXTUAL_ANSI` the fix is a framework-side no-op (the captures and the
+  defect regime assume truecolor).
+- The ~16 unlisted `ModalScreen` subclasses still render opaque screens — the
+  backlog carry names them (P5 files the item).
 
 ## 6 · Pending items / spec deviations
 
-*(Anything surfaced and not closed here. Every line lands in the canonical backlog at batch close —
-if the increment surfaced it, the backlog owns it.)*
-
----
+- `test_TC_617_rows_order_marks_and_keys` (tests/test_milestone_offer.py:437)
+  changed: its oracle indexed task titles over the whole composited render,
+  which the defect had made opaque-only; with the translucent backdrop the
+  board's own rows (carrying the same task titles) legitimately join the
+  render, and at 118x30 they also flank the box's border row. The node now
+  scopes `painted` to the offer box (corners found by glyph) — the assertion's
+  intent, offer-row order inside the box, is unchanged. This is the packet's
+  justification for the single existing-test edit (commission AT-d allows a
+  change where an assumption must move; here a rendering-scope assumption,
+  documented in the node's comment).
+- PDR condition 2 (this touch-set statement) is discharged by §2 above;
+  conditions 1 and 3 discharge at P5/P3 — the flake arm already ran (see
+  below), the backlog item files at close.
 
 ## 7 · Suggested next task
 
----
+Phase 4 (`stations/p4-validation.md`): the DDR, then the full suite in three
+sequential chunks and the `b01-` captures.
 
 ## Increment gate checklist
 
-| # | Item | Owed in | ✓/⚠/✗ | Evidence (node id · command output · file:line) |
-|---|---|---|---|---|
-| 1 | ≤4 source files, or reason declared | all | | |
-| 2 | Tests written in this same increment | all | | |
-| 3 | Layer 0 written where the criterion applies | `core` · `full` ‹one complete run owned by the orchestrator ~ Layer 0› | | |
-| 4 | **RED counterfactual** declared — the mutation that made this increment's OWN new assertion fail, where its transcript is stored, and the restore digest, or `none` (C-20/C-40; read by `V44`) | `core` · `full` ‹RED counterfactual mandatory ~ RED counterfactual› | | |
-| 5 | **Reverse census** declared — the five probes run with their commands and verdicts, the ones that did NOT fire named with their probe, or `none` (C-26/C-48; read by `V43`) | `core` · `full` ‹reverse census of the touched symbol ~ Reverse census› | | |
-| 6 | `code-reviewer` passed — a HIGH blocks; the verdict, the reviewer and each HIGH's resolution are declared in **§4b** (`ABSENT` is the empty state there, not a value) | `core` · `full` ‹RED counterfactual mandatory ~ code-reviewer› | | |
-| 7 | No file from another lane touched | all | | |
-| 8 | Frozen interfaces untouched (or returned to the trunk) | all | | |
-| 9 | Coverage claims verified **on disk**, not from intent | all | | |
-| 10 | Load-bearing emptiness declared, with its synthetic instance (C-55) | all | | |
-| 11 | **Mutation verdicts** declared — **per arm**, inert arms named, registry ids cited, or `none` (C-40 rider; read by `V37`) | all | | |
-| 12 | **Instrument RED-proof** declared — every instrument shown able to report a FAILURE before its first PASS was believed, or `none` (C-57) | all | | |
-| 13 | **Correction population** declared — enumerated with its method before the first site was edited, or `none` (C-14) | all | | |
-| 14 | **Emitted-form assertion** declared — per artifact emitted, the assertion run against the EMITTED form and what it returned, or `none` (C-42; read by `V38`) | all | | |
-| 15 | **Independent review** names somebody — in one of the forms §4b publishes; a cell naming nobody is empty (`V36`). §4b is the grammar's one home | all | | |
-| 16 | **Evidence files** declared — every cited artifact at the home `artifact_homes.evidence` names, cited with the digest of its STORED bytes, or `none` (C-59; read by `V41`) | all | | |
+| # | Item | ✓/⚠/✗ | Evidence (node id · command output · file:line) |
+|---|---|---|---|
+| 1 | SOURCE budget | ✓ | §2: 1 source file |
+| 2 | Tests in this increment | ✓ | `tests/test_startup_backdrop.py` (8 nodes) |
+| 3 | Layer 0 where it applies | ✓ | not due — cyclomatic 1 declaration, no boundary crossed |
+| 4 | RED counterfactual | ✓ | §4 — mutation-001.txt, restore digest verified |
+| 5 | Reverse census | ✓ | §4 — reverse-census-001.txt + suite-002.txt |
+| 6 | `code-reviewer` passed | ✓ | §4b — PASS-WITH-NOTES, 0 HIGH |
+| 7 | No file from another lane | ✓ | one lane |
+| 8 | Frozen interfaces untouched | ✓ | none frozen; no interface changed |
+| 9 | Coverage verified on disk | ✓ | suite-001.txt: 144 passed |
+| 10 | Load-bearing emptiness | ✓ | §4 — no conclusion rests on an absence; positive controls named |
+| 11 | Mutation verdicts | ✓ | §4 — per-arm KILLED/SURVIVED, inert arms named |
+| 12 | Instrument RED-proof | ✓ | §4 — three instruments shown RED |
+| 13 | Correction population | ✓ | §4 — one correction, enumerated before the edit |
+| 14 | Emitted-form assertion | ✓ | §4 — asserted against the composited render |
+| 15 | Independent review | ✓ | §4b — code-reviewer, 0 HIGH |
+| 16 | Evidence files | ✓ | §4 — digests written by devflow-evidence.py |
+
+## PDR condition discharge (this increment)
+
+| # | Condition | Discharged? | The artifact line that proves it |
+|---|---|---|---|
+| 2 | the packet states the corrected touch set | ✓ | §2 — `taskboard/taskboard.tcss` + `tests/test_startup_backdrop.py`, superseding the commission's «expected `taskboard/app.py` only», with the SB-1 reason |
+| 3 | the QA-P4-B01-flake arm runs with its transcript beside the mutation battery | ✓ | `evidence/flake-2801.txt` — 50/50 runs pass, min outside-box rows 4 above / 3 below at 80x24 (≥ 3) |
