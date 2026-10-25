@@ -382,3 +382,59 @@ def test_AT_2905_the_regression_pin(tmp_path):
     assert HEX["soon"] in views._highlight_markup("==a==")
     t = views.notes_text("==a==", None)
     assert any(HEX["soon"] in str(s.style) for s in t.spans), t.spans
+
+
+# --------------------------------------------------------------------------- #
+# F1 (code review, HIGH) — Unicode whitespace at wrap boundaries
+# --------------------------------------------------------------------------- #
+def test_L0_unicode_whitespace_at_wrap_boundaries():
+    """F1: textwrap's drop test is `chunk.strip() == ''` with ASCII-only word
+    splitting, so Unicode whitespace (NBSP, em space) also lands on row breaks
+    — the matcher's test must be the general `str.isspace()`, not an ASCII
+    set (the reviewer's probes `bb  \\xa0 ba` / `aa \\u2003  a` at width 4
+    raised AssertionError before the fix). The rows drawn keep textwrap's
+    exact geometry, reassemble piece for piece, fit their cells, and keep
+    their tones."""
+    import textwrap
+    for note, w in (("bb  \xa0 ba", 4), ("aa \u2003  a", 4)):
+        rows = views.present_note_lines(note, w)
+        drawn = ["".join(seg for seg, _ in pieces) for _, pieces in rows]
+        assert drawn == textwrap.wrap(note, w), (note, drawn)
+        for lead, pieces in rows:
+            assert views.vis(lead + "".join(seg for seg, _ in pieces)) <= w
+    rows = views.present_note_lines("aa \u2003 ==z==", 4)
+    drawn = ["".join(seg for seg, _ in pieces) for _, pieces in rows]
+    assert drawn == textwrap.wrap("aa \u2003 z", 4), drawn     # the marker-free plain
+    assert rows[-1][1] == [("z", "soon")]
+
+
+def test_L0_unicode_whitespace_fuzz_pin():
+    """F1 fuzz pin: the reviewer's alphabet (['a','b',' ','\\xa0','\\t',
+    '\\u2003','\\x85']) over widths 4-23 never raises; every row fits its
+    cells, and the rows' non-whitespace chars reassemble the note's, in order
+    (whitespace is the only elastic domain — dropped, substituted, expanded)."""
+    import random
+    rng = random.Random(2905)
+    trials = [(["a", "b", " ", "\xa0", "\t", "\u2003", "\x85"], 40, 4, 23)] * 300
+    # a drop-prone phase: no zero-width char (every string takes the textwrap
+    # path), long strings at narrow widths so whitespace chunks overflow row
+    # breaks constantly — the pre-fix ASCII matcher raised on these
+    trials += [(["a", "b", " ", "\xa0", "\u2003"], 60, 4, 9)] * 300
+    for alphabet, max_len, lo, hi in trials:
+        s = "".join(rng.choice(alphabet) for _ in range(rng.randint(1, max_len)))
+        w = rng.randint(lo, hi)
+        rows = views.present_note_lines(s, w)        # must not raise
+        drawn = ""
+        for lead, pieces in rows:
+            txt = "".join(seg for seg, _ in pieces)
+            assert views.vis(lead + txt) <= w, (s, w, lead, txt)
+            drawn += "".join(ch for ch in txt if not ch.isspace())
+        assert drawn == "".join(ch for ch in s if not ch.isspace()), (s, w, rows)
+
+
+def test_L0_note_markup_clip_never_exceeds_its_width():
+    """F3: the clip's `…` can never push the painted row past its cells — the
+    cut is declared only when the ellipsis fits the remaining budget (latent:
+    no in-tree caller passes a row wider than the markup width)."""
+    mk = views._present_note_markup(("", [("aaaa", "ink"), ("b", "ink")]), 4, ())
+    assert views.vis(views._strip(mk)) <= 4, mk

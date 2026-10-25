@@ -21,3 +21,7 @@ tests\test_present_note_highlights.py ................                   [100%]
 # re-run with the AT-2905 regression-pin node (2026-10-25T23:49:39Z)
 .................                                                        [100%]
 17 passed in 3.05s
+
+# re-run after the F1-F4 code-review fixes (2026-10-25T23:55:30Z)
+....................                                                     [100%]
+20 passed in 3.80s

@@ -598,3 +598,7 @@ FAILED tests/test_people_look.py::test_TC_2506_a_present_row_paints_each_mention
 ........................................................................ [ 72%]
 ........................................................                 [100%]
 200 passed in 285.99s (0:04:45)
+
+# re-run of the census files + polish after the F1-F4 code-review fixes (2026-10-25T23:55:41Z)
+..............                                                           [100%]
+86 passed in 29.60s

@@ -3,8 +3,7 @@ devflow-validate · C:\Users\jjgh8\Github\taskboard-wt\present-hl
   stdout · encoding `utf-8`, errors `backslashreplace` -- every finding is emitted verbatim
   filesystem · FOLDS CASE -- probed at C:\Users\jjgh8\AppData\Local\Temp, on the same volume as the tree under check
 
-4 block · 169 notice · 54 not applicable
-  [x] V2   tests/: AT-2905 has no node on disk
+0 block · 169 notice · 57 not applicable
   [!] V9   increment-001.md: packet declares no SOURCE count
   [!] V9   increment-002.md: packet declares no SOURCE count
   [!] V9   increment-003.md: packet declares no SOURCE count
@@ -153,7 +152,6 @@ devflow-validate · C:\Users\jjgh8\Github\taskboard-wt\present-hl
   [!] V23  .dev-flow/2026-10-25-batch-02/design/DDR-2026-10-25-batch-02.md:77: design-review citation `PDR-…#D1` does not match the declared grammar (PDR|DDR)-<batch-dir>[-v<n>][#D<n>|.md] — an unresolvable id links traceability to nothing
   [!] V23  .dev-flow/2026-10-25-batch-02/design/design-proposal.md:17: design-review citation `PDR-<batch_id>#D<n` does not match the declared grammar (PDR|DDR)-<batch-dir>[-v<n>][#D<n>|.md] — an unresolvable id links traceability to nothing
   [!] V23  .dev-flow/2026-10-25-batch-02/design/design-proposal.md:146: design-review citation `PDR-2026-10-25-batch-02#D<n` does not match the declared grammar (PDR|DDR)-<batch-dir>[-v<n>][#D<n>|.md] — an unresolvable id links traceability to nothing
-  [x] V26  01-requirements-ledger.md: 1 pairing(s) exist only in the ledger — HLR-2905->LED-2905.3. The ledger amends a requirement that does not point back, and a requirement id living only in the ledger names nothing current
   [!] V30  FLOW-VERSION.md: the `python-api`, `git` and `third-party-imports` rows are DERIVED from the Python files the table declares and this bundle ships 5 of them, so those three were NOT derived here: a floor read off a subset can be lower than the whole file set's, and reporting that difference as drift would be a false alarm. This is not a pass
   [!] V42  .dev-flow/2026-10-02-batch-03/00-checklists.md:126: a deferral marker carrying 0 word(s) of subject -- |. Too short to key against the backlog, so it is reported rather than passed
   [!] V42  .dev-flow/2026-10-02-batch-03/04-validation.md:60: a deferral marker carrying 2 word(s) of subject -- or tests-only.. Too short to key against the backlog, so it is reported rather than passed
@@ -174,7 +172,5 @@ devflow-validate · C:\Users\jjgh8\Github\taskboard-wt\present-hl
   [!] V54  .dev-flow/<active batch>/05-close.md: `**Human review ledger**` is present and still holds the template's placeholder
   [!] V54  .dev-flow/<active batch>/05-close.md: `**Human perimeter**` is present and still holds the template's placeholder
   [!] V56  increment-001.md: the highest failure count this packet reports is `2 failed` and the transcript(s) it cites hold `16 failed`. THIS IS A NOTICE AND NOT A REFUSAL: the evidence home legitimately holds DELIBERATELY FAILING transcripts -- a `RED counterfactual` capture is a failure by construction and a mutation battery records one per KILLED mutant, both cited in this same table because the template says to cite them here -- so a failure count in the evidence is not by itself a contradiction of the packet. Say which transcript the failures came from
-  [x] V59  03-increments/increment-001.md: packet `increment-001.md': `tests/test_present_note_highlights.py` traces to `HLR-2901..2904`, which no 01-requirements.md under `.dev-flow/` declares -- a trace to a requirement that does not exist is a claim, not a trace; declare the id in the contract or fix the reference
-  [x] V59  03-increments/increment-001.md: packet `increment-001.md': `tests/test_present_note_highlights.py` traces to `LLR-2901.1..2904.1`, which no 01-requirements.md under `.dev-flow/` declares -- a trace to a requirement that does not exist is a claim, not a trace; declare the id in the contract or fix the reference
   [!] V62  .dev-flow/2026-10-25-batch-02/PLAN.md `Last updated`: `.dev-flow/2026-10-25-batch-02/PLAN.md`'s `Last updated` cell names `P2` and not `P3` at `current_station: P3` -- the plan was not brought up to date at the gate(s) behind the batch. Rewrite the plan and the cell (the station id, then the day) at every gate (`shared-batch.md` §Living plan rule 1)
-n/a: 54 rule(s) with no subject on this tree (mode core) — run without --brief to list them
+n/a: 57 rule(s) with no subject on this tree (mode core) — run without --brief to list them

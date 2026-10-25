@@ -6637,7 +6637,8 @@ PRESENT_NARROW = tuple(r.format(PRESENT_MIN_WIDTH) for r in (
 _PRESENT_ITEM = re.compile(r"\d{1,3}\. ")
 
 
-def present_note_lines(notes: str, w: int, people: dict | None = None) -> list:
+def present_note_lines(notes: str, w: int, people: dict | None = None
+                       ) -> list[tuple[str, list[tuple[str, str]]]]:
     """A task's notes as (lead, pieces) rows that fit `w` cells: every line
     break kept, a run of blank lines collapsed to one blank row, `- ` / `* ` /
     `• ` items drawn `• ` and `1. ` items keeping their number, each item's
@@ -6699,29 +6700,30 @@ def _wrap_cells(text: str, w: int) -> list[str]:
     return rows + ([line] if line else [])
 
 
-_WS = " \t\n\r\f\v"     # ASCII whitespace: the two divergence classes _tone_row allows
-
-
 def _tone_row(row: str, pieces: list[tuple[str, str]], start: int = 0
               ) -> tuple[list[tuple[str, str]], int]:
     """A wrapped row (plain, marker-free) re-attributed to its toned `pieces`:
     a two-pointer walk over the row's chars and the flattened (char, tone)
-    stream, grouping consecutive same-tone chars. The matcher allows exactly
-    two divergence classes: (a) ASCII whitespace the wrap dropped at a row
-    break, (b) the wrap's whitespace substitution (`\\t \\n \\r \\f \\v` drawn
-    as a space). Anything else is a wrap that mutated non-whitespace — an
-    AssertionError, a bug alarm, never reachable by user text.
+    stream, grouping consecutive same-tone chars.
+
+    The wrap's whitespace draws diverge THREE ways, all inside the whitespace
+    domain (code review F1: the test is the general `str.isspace()`, not an
+    ASCII set — textwrap's own drop test is `chunk.strip() == ''`):
+    1. the wrap DROPS whitespace at a row break (`drop_whitespace` — Unicode
+       whitespace too: NBSP, em space, NEL);
+    2. it SUBSTITUTES one whitespace char for another (`replace_whitespace`
+       draws `\\t \\n \\r \\f \\v`, NBSP, ... as a space);
+    3. `expand_tabs` draws one tab as SEVERAL spaces, the extra drawn spaces
+       having no stream char.
+    Three draws where PDR C3 specified two — a deliberate widening the
+    implementation generalized (same class: whitespace in, whitespace out);
+    without the third, legitimate tabbed notes raised.
 
     `start` is the stream index the row begins at (the caller wrapping a
     paragraph threads the returned index, so the whole note walks the stream
     once); the default 0 attributes a first row. Returns the row's pieces and
     the index just past its last consumed char; an empty row stays put.
-
-    The whitespace draws diverge three ways, all in the whitespace domain: the
-    wrap drops ASCII whitespace at a row break; it substitutes one whitespace
-    char for another (``replace_whitespace``); and `expand_tabs` draws one tab
-    as several spaces, the extra drawn spaces having no stream char. The walk
-    absorbs exactly those; a divergence outside it is a wrap that mutated
+    A divergence OUTSIDE the whitespace domain is a wrap that mutated
     non-whitespace — the AssertionError, a bug alarm."""
     return _tone_walk(row, [(ch, tone) for seg, tone in pieces for ch in seg], start)
 
@@ -6730,7 +6732,9 @@ def _tone_walk(row: str, flat: list[tuple[str, str]], start: int = 0
                ) -> tuple[list[tuple[str, str]], int]:
     """`_tone_row` over an already-flattened stream — `present_note_lines`
     flattens a paragraph's pieces once and walks every row against that one
-    list, so a long note is attributed in one linear pass."""
+    list, so a long note is attributed in one linear pass. The whitespace
+    draws are the three named in `_tone_row`'s docstring; both sides of the
+    matcher take the general `str.isspace()` test."""
     if not row:
         return [("", "ink")], start
     out: list[tuple[str, str]] = []
@@ -6741,12 +6745,12 @@ def _tone_walk(row: str, flat: list[tuple[str, str]], start: int = 0
             if i >= len(flat):
                 raise AssertionError(f"the wrap emitted {ch!r} past the segment stream")
             fch, tone = flat[i]
-            if fch == ch or (fch in _WS and ch in _WS):
+            if fch == ch or (fch.isspace() and ch.isspace()):
                 break                         # kept, or a whitespace drawn differently
-            if fch in _WS:
+            if fch.isspace():
                 i += 1                        # whitespace dropped at a row break
                 continue
-            if ch in _WS:
+            if ch.isspace():
                 skip = True                   # expand_tabs: a drawn space, no stream char
                 break
             raise AssertionError(f"the wrap turned {fch!r} into {ch!r}")
@@ -6822,7 +6826,7 @@ def _present_note_markup(row: tuple[str, list[tuple[str, str]]], w: int,
             kept.append((part, tone))
         if cut_tone is not None:
             break
-    if cut_tone is not None:
+    if cut_tone is not None and used + 1 < budget:   # the `…` must fit the remaining cells
         if kept and kept[-1][1] == cut_tone:
             kept[-1] = (kept[-1][0] + "…", cut_tone)
         else:
@@ -6852,7 +6856,7 @@ def _present_cut(rows: list[tuple[str, list[tuple[str, str]]]], k: int, w: int,
                     break
                 kept.append((ch, tone))
                 used += vis(ch)
-            while kept and kept[-1][0] in _WS:
+            while kept and kept[-1][0].isspace():
                 kept.pop()                       # the rstrip, on the flat char list
             flat = kept
         nlead = next((i for i, (_ch, tone) in enumerate(flat) if tone != "mut"), len(flat))

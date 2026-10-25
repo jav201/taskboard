@@ -56,3 +56,63 @@ run tail:
 restored: YES (md5 52bdb41e8c118709a8d6790ccd681580, pre-mutation 52bdb41e8c118709a8d6790ccd681580)
 
 # battery complete; views.py final md5 52bdb41e8c118709a8d6790ccd681580
+
+# POST-F1 battery re-run — against the shipped bytes after the F1-F4 code-review fixes (2026-10-25T23:55:05Z)
+# Mutation battery (C-40) — batch 2026-10-25-batch-02, increment 001
+# target: C:\Users\jjgh8\Github\taskboard-wt\present-hl\taskboard\views.py
+
+## arm a / AT-2901
+mutation: bypass highlight_segments in the note pipeline: paint the raw text (markers kept, no tones)
+applied: YES (md5 778eb68a9ca56f010df0406b8308ee8f -> 5a04ef610dcacf271a7b187edd0e7958)
+nodes: test_AT_2901_gantt_cursor_note_colours_highlights
+verdict: RED
+run tail:
+1 failed in 0.88s
+restored: YES (md5 778eb68a9ca56f010df0406b8308ee8f, pre-mutation 778eb68a9ca56f010df0406b8308ee8f)
+
+## arm b / AT-2902
+mutation: tokenise AFTER the wrap: the wrap measures the marker-counting width again (plain := body)
+applied: YES (md5 778eb68a9ca56f010df0406b8308ee8f -> a0c7f57d9a7ee34aa0afeb56fb0c56f4)
+nodes: test_AT_2902_split_view_colours_highlights_two_sizes
+verdict: RED
+run tail:
+2 failed in 6.49s
+restored: YES (md5 778eb68a9ca56f010df0406b8308ee8f, pre-mutation 778eb68a9ca56f010df0406b8308ee8f)
+
+## arm c / AT-2903
+mutation: strip the tones at the export boundary: save_present_svg re-paints the three tone hexes ink before writing
+applied: YES (md5 778eb68a9ca56f010df0406b8308ee8f -> e9b87ba38c43e7f64c340223d207bca2)
+nodes: test_AT_2903_split_export_svg_carries_tones
+verdict: RED
+run tail:
+1 failed in 2.22s
+restored: YES (md5 778eb68a9ca56f010df0406b8308ee8f, pre-mutation 778eb68a9ca56f010df0406b8308ee8f)
+
+## arm d1 / AT-2904 (mention arm)
+mutation: drop the mention pass inside the toned paint (_paint_marks: if marks -> if marks and False)
+applied: YES (md5 778eb68a9ca56f010df0406b8308ee8f -> 18413f31ebb3c2176cf1a7171d18c6d1)
+nodes: test_AT_2904_mentions_bullets_unpaired_markers
+verdict: RED
+run tail:
+1 failed in 0.97s
+restored: YES (md5 778eb68a9ca56f010df0406b8308ee8f, pre-mutation 778eb68a9ca56f010df0406b8308ee8f)
+
+## arm d2 / AT-2904 (hostile arm)
+mutation: remove escape on the toned segments (_paint_group: escape(text) -> text)
+applied: YES (md5 778eb68a9ca56f010df0406b8308ee8f -> 2a65e239a6def02841aaeb61209e19e8)
+nodes: test_AT_2904_mentions_bullets_unpaired_markers
+verdict: RED
+run tail:
+1 failed in 1.03s
+restored: YES (md5 778eb68a9ca56f010df0406b8308ee8f, pre-mutation 778eb68a9ca56f010df0406b8308ee8f)
+
+## arm e / layer-0 (unit arms)
+mutation: permute a tone in _tone_row: every 'soon' char attributed 'over'
+applied: YES (md5 778eb68a9ca56f010df0406b8308ee8f -> 4091c47eed1bdac238574560772eee28)
+nodes: test_L0_tone_row_whitespace_drops_at_row_breaks test_L0_tone_row_zero_misattributed_chars test_L0_cut_seat_k1_paints_lead_span_and_tag
+verdict: RED
+run tail:
+2 failed, 1 passed in 0.52s
+restored: YES (md5 778eb68a9ca56f010df0406b8308ee8f, pre-mutation 778eb68a9ca56f010df0406b8308ee8f)
+
+# battery complete; views.py final md5 778eb68a9ca56f010df0406b8308ee8f
