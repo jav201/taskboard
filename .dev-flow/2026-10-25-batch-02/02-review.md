@@ -9,10 +9,10 @@
 
 ## ✅ Verdict (read first)
 
-- **Gate:** `iterate-to-refine` → Phase 1 (round 1: majors folded by the P1 amendment; the round-2 review of the amended contract is owed next)
+- **Gate:** `iterate-to-refine` → Phase 1 (rounds 1 and 2 folded by amendment; round 3 — verification of the R2 folds — is owed next)
 - **Out-of-scope findings:** `none` named and routed below
 
-- **Findings:** `0` blocker · `3` major · `11` minor
+- **Findings:** `0` blocker · `4` major · `15` minor (rounds 1+2 cumulative)
 - **shall/should check:** ✓ clean  /  ✗ misuse (blocker)
 - **Two-layer (blockers):** ✓ every story has an `AT` · output reqs name deliverable+observation · both trace chains complete · ATs are genuinely black-box  /  ✗ `<none>`
 - **Census (change-first):** done — best-effort + gate-confirmed  /  ⚠ incomplete   (NEVER stamp "VERIFIED COMPLETE")
@@ -29,7 +29,7 @@
 
 - **Batch:** `2026-10-25-batch-02` · **Input:** `01-requirements.md` (P1, iteration 1 after amendment)
 - **Lenses:** `architect` + `qa-reviewer` + `security-reviewer` (trigger family C fired — C8), all spawned as independent generic sub-agents carrying the bundle's `agents/<role>.md`.
-- **Rounds:** round 1 on the original contract; round 2 on the amended contract (this record holds round 1; round 2 is appended after it runs).
+- **Rounds:** round 1 on the original contract; round 2 on the amended contract (both recorded below); round 3 — verification of the R2 folds — is owed next.
 
 ### Findings (round 1)
 
@@ -51,9 +51,22 @@
 | S4 | security-reviewer | minor | HLR-2903 / AT-2903 | 01-requirements.md:200 | The SVG sink's HTML-escaping is inherited analysis, not evidence — no assertion on the emitted bytes. | folded-in-LED-2903 |
 | S5 | security-reviewer | minor | §6.3 | 01-requirements.md:368 | §6.3 claims "Residual risk: none open" while the C-17 control's hostile arms are still P3-minted, not executed. | folded-in-LED-2901.2 |
 
-Round-1 dispositions summary: 0 blockers; majors A1, A2, Q1 folded by the P1 amendment (iterate-to-refine route, ledger entries LED-2901, LED-2901.2, LED-2901.3, LED-2903, LED-2905); all minors folded the same way. The `file:line` column cites the amended contract (post-fold) for traceability; each finding was raised against the round-1 original at the same location.
+Round-1 dispositions summary: 0 blockers; majors A1, A2, Q1 folded by the P1 amendment (iterate-to-refine route, ledger entries LED-2901, LED-2901.2, LED-2901.3, LED-2903, LED-2905); all minors folded the same way. The `file:line` column cites the amended contract (post-fold) for traceability; each finding was raised against the round-1 original at the same location. Route to date: two `iterate-to-refine` rounds so far; round 3 (verification of the R2 folds) is owed next.
 
-Round 2 — pending (rows appended after the round-2 review of the amended contract runs).
+Round 2 — see the Findings (round 2) subsection below.
+
+### Findings (round 2 — architect re-review of the amended contract)
+
+Round-2 verdict: `iterate-to-refine` — 1 major (R2-1) + 3 minors, all folded (R2-1 via the new ledger entry LED-2905.1; the minors in place).
+
+| ID | Lens | Severity | Requirement | file:line | Finding (one line) | Disposition |
+|----|----------|----------|------------|-----------|--------------------|-------------|
+| R2-1 | architect | major | HLR-2905 / LED-2905 | 01-requirements.md:228 | LED-2905's named oracle casualty is wrong twice: `++sign-off by the sponsor++` is task c7's note (`N_EVAL`), not c5's (`N_GOLDEN` holds `!!12 questions still have no answer key!!`), and `tests/test_people_look.py:182-186` asserts mention membership, not marker bytes — it stays green; no test asserts any marker string. | folded-in-LED-2905.1 |
+| R2-2 | architect | minor | HLR-2903 | 01-requirements.md:206 | Boundary catalog used `☑` and duplicated the empty entry — the convention is `☐` for every class with the checked content inside the text. | folded in place |
+| R2-3 | architect | minor | LLR-2903.1 | 01-requirements.md:287 | Numeric pass threshold paraphrases AT-2903 stale — it omits the amended numbers (0 raw `<script` bytes) and the inspection arm (empty export diff). | folded in place |
+| R2-4 | architect | minor | HLR-2901 | 01-requirements.md:171 | Observable outcome still keys on the word "rose" ("yellow, rose and green") — the HEX-key collision A3 removed from §1.3 survives in the acceptance prose. | folded in place |
+
+Round-1 fold status at round 2: A1/A2 verified in the amended contract (the IFC `_paint_marks` node is present with its owners; the C-26 symbol declarations sit on LLR-2901.1/LLR-2902.1); A3, Q2, Q4, Q6 folded; Q1's fold itself was corrected by R2-1 — the casualty it named exists on neither count, so LED-2905.1 replaces the claim with the grep-verified absence and owes the casualty list to the P3 census + suite run.
 
 ### shall / should check
 
@@ -92,4 +105,4 @@ Family C fired (C8 — the increment widens what is parsed into markup over file
 
 ### Verdict
 
-`iterate-to-refine` (round 1) — the gate tokens' home is `templates/review-template.md`. The amendment is folded (ledger entries LED-2901, LED-2901.2, LED-2901.3, LED-2903, LED-2905); round 2 on the amended contract is owed next.
+`iterate-to-refine` (rounds 1 and 2) — the gate tokens' home is `templates/review-template.md`. Both amendments are folded (ledger entries LED-2901, LED-2901.2, LED-2901.3, LED-2903, LED-2905, LED-2905.1); round 3 — verification of the R2 folds — is owed next.

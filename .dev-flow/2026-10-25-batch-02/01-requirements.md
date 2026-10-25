@@ -168,7 +168,7 @@ regression pin HLR-2905 (AT-e).
 - **Numeric pass threshold:** over the painted cursor-note rows, no run of `==`, `!!` or `++` appears in the painted rows (the fixtures are authored free of literal `=`, `!`, `+` so the scan is mechanical) AND each tone colour `#fbbf24`, `#f43f5e`, `#4ade80` appears at least once AND the unmarked words appear in `#e6edf3` (the probe at `base_ref` measured 12 marker chars and zero tone colours).
 - **Priority:** high
 - **Acceptance (black-box) — the user-verified outcome (the WHAT):**
-  - **Observable outcome:** the cursor task's note on the projected gantt reads `a b c` in yellow, rose and green — no `==`, `!!`, `++` anywhere in it.
+  - **Observable outcome:** the cursor task's note on the projected gantt reads `a`, `b` and `c` painted in the `soon` (#fbbf24), `over` (#f43f5e) and `green` (#4ade80) tones — no `==`, `!!`, `++` anywhere in it.
   - **Shipped surface:** the `R` screen's gantt view (view 1) with the cursor on a task whose notes hold the three highlights.
   - **Acceptance test(s):** AT-2901
   - **Boundary catalog (QC-3):** ☐ empty (a task with no notes shows no note rows — existing behaviour, pinned by the present suite) ☐ boundary (a note that is exactly one marker pair fills a row, markers dropped) ☐ invalid (an unclosed `!!` stays literal — asserted in AT-2904) ☐ error (none new — the paint cannot fail on note text)
@@ -203,7 +203,7 @@ regression pin HLR-2905 (AT-e).
   - **Observable outcome:** the file the room is handed (`reports/present-*-split-*.svg`) shows the highlighted note in colour, identical to the screen.
   - **Shipped surface:** the `x` export in view 2 (`present_paths` + `save_present_svg`).
   - **Acceptance test(s):** AT-2903
-  - **Boundary catalog (QC-3):** ☐ empty (exporting with no cursor note — the existing export suite covers it) ☑ boundary (a cursor-less export — covered by the existing export suite's arms, unchanged) ☐ invalid (an unclosed-marker note in the export — pinned by screen parity and AT-2904, the export renders the screen's frame) ☐ error (an unwritable reports path is the existing export suite's arm, unchanged)
+  - **Boundary catalog (QC-3):** ☐ empty (a cursor-less export — the existing export suite's arms, unchanged) ☐ boundary (none new — the export renders the screen's frame; cut/cursor geometry is AT-2902's seat) ☐ invalid (an unclosed-marker note in the export — pinned by screen parity and AT-2904) ☐ error (an unwritable reports path is the existing export suite's arm, unchanged)
   - **Negative control:** executed at P1 against `base_ref` — the SVG path holds no tone painter: today's export of a highlighted note carries the markers in plain text and none of the tone colours (same probe 3 pipeline; the export renders the identical markup string).
 
 ### HLR-2904 — mentions, bullets and unpaired markers keep their rules inside highlights
@@ -224,8 +224,8 @@ regression pin HLR-2905 (AT-e).
 
 ### HLR-2905 — nothing else changes (the regression pin)
 - **Traceability:** US-2901
-- **Ledger:** LED-2905
-- **Statement:** When any surface not named in HLR-2901..HLR-2904 runs — the board's markup, the details/editor preview, view 3 (`all`), the presentation's headings, layout, keys, hints, cuts' wording, every other view of the app — the system shall behave exactly as before this batch; every existing presentation byte-oracle and capture-based test stays green, and where an oracle fixture legitimately holds the markers the update is named and justified in the increment packet (AT-e) — the split-frame byte oracle `tests/test_people_look.py` (its fixture `tests/people_round_fixture.py` holds `++sign-off by the sponsor++` in task c5's notes) is a named, expected update, re-scanned for further casualties at P3.
+- **Ledger:** LED-2905, LED-2905.1
+- **Statement:** When any surface not named in HLR-2901..HLR-2904 runs — the board's markup, the details/editor preview, view 3 (`all`), the presentation's headings, layout, keys, hints, cuts' wording, every other view of the app — the system shall behave exactly as before this batch; every existing presentation byte-oracle and capture-based test stays green, and where an oracle fixture legitimately holds the markers the update is named and justified in the increment packet (AT-e) — no byte oracle keys on marker text today (a repo-wide grep confirms it: `tests/test_people_look.py:182-186` asserts mention membership, not marker bytes, and the marker strings appear only in the fixture); the P3 census re-scans `grep -rl "present_note_lines\|_present_cut\|_paint_marks\|_present_note_markup" tests/` and the suite run names any casualty the scan finds.
 - **Rationale (informative):** the commission's AT-e. The change is confined to the note pipeline's paint step; everything else is pinned by the existing suite, whose baseline at P4 is 3258 passed (commission §Evidence).
 - **Validation:** `test`
 - **Executed verification:** the P4 full suite in 3 sequential chunks (the commission's §Evidence); the present suites (`tests/test_present*.py`) and the markup suites (`tests/test_markup_census.py`, `tests/test_markup_sites.py`, `tests/test_highlight_segments.py`, `tests/test_edit_window.py`) re-run.
@@ -284,7 +284,7 @@ regression pin HLR-2905 (AT-e).
 - **Rationale (informative):** PH-4 with the least surface. The export is a renderer of the screen's `Text`; colouring it twice would be a second painter D-411 forbids in spirit.
 - **Validation:** `inspection` + `test`
 - **Executed verification:** `git diff` of the increment shows no change under the export functions (packet §2); AT-2903 asserts the emitted SVG's bytes.
-- **Numeric pass threshold:** AT-2903's numbers (three tone HEX values present, no marker run, the words in the spans).
+- **Numeric pass threshold:** AT-2903's numbers as amended (three tone HEX values present, no marker run, the words in the spans, 0 raw "<script" bytes in the file); the export functions' diff is empty (inspection).
 - **Negative control:** none beyond AT-2903 — an inspection-guarded LLR; the emitted-form assertion (C-42) is the gate.
 - **Boundary catalog:** none — no new input surface.
 

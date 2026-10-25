@@ -39,3 +39,10 @@
 - **Amends:** HLR-2905 statement and threshold
 - **Reason:** Phase-2 round-1 major Q1 (the known-in-advance oracle casualty was not named: `tests/people_round_fixture.py` holds `++sign-off by the sponsor++` in task c5's notes and `tests/test_people_look.py:182-186` asserts the split frame's `.plain` — after the fix that frame loses the `++`) and minor Q7 (the existing byte oracles compare `text.plain` only; a style-only regression on marker-free rows would stay green).
 - **Content:** `test_people_look.py` is the named, expected update with a P3 re-scan owed; a new arm pins a pre-existing marker-free cursor-note row at `#e6edf3`; the exact baseline integer is executed at P3 (3 chunks) and pinned in `04-validation.md` for the P4 comparison.
+
+### LED-2905.1 — the casualty claim corrected: c7, not c5, and no marker-keyed oracle exists
+- **Date:** 2026-10-25
+- **Requirement:** HLR-2905
+- **Amends:** HLR-2905 statement
+- **Reason:** Phase-2 round-2 major R2-1 — LED-2905 named test_people_look.py as the expected oracle casualty on both a wrong task id (c5; the `++` note is task c7's N_EVAL, c5 holds N_GOLDEN's `!!…!!`) and a wrong oracle kind (the test asserts mention membership, not marker bytes — it stays green; no test asserts any marker string)
+- **Content:** the contract now states the grep-verified absence and owes the casualty list to the P3 census + suite run. Folded by iterate-to-refine, P1 iteration 2.
