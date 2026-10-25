@@ -47,10 +47,13 @@ shutdown was removed by hand).
 - The clock in the board footer of `start_*` is the machine's real clock (the pin covers the
   calendar and `datetime.now()` in the app modules, not the footer clock widget); the toasts'
   `since 09:30` is the pinned time.
-- At 80x24 the offer's key line and the toast stack are the shipped layouts; only the 118x30 `start`
-  stack overlaps the lower-right of the grid, by design (toasts are overlays).
-- `start_*` shows the real stack of two toasts, not the up-to-five of ux-M1's worst case: the other
-  three notices (rescue, renumbering, team start) need their own preconditions; the offer follows
-  only after the toasts are dismissed. This is the DDR's named stack for this scene (marker + sweep).
-
-See `png/capture-log.txt` for the raw per-shot machine log.
+- At both sizes the `start` toasts are overlays on the lower right: at 80x24 they cover the
+  Fitness lane's third task and the footer clock/city segment (visible: `Me` clipped); at 118x30
+  they cover the lane's lower rows and the clock tail. Toasts overlay by design (seen in the shots).
+- `start_*` shows the real stack of two toasts (marker + sweep), not the up-to-five of ux-M1's worst
+  case: the rescue, renumbering and team-start notices need their own preconditions, and the
+  milestone offer is a separate scene (`offer_*`, a board with an unmarked candidate). This is the
+  stack the DDR condition ux-2 names for this scene.
+- The `offer_*` shots show the offer as a modal over a dimmed, empty-looking board: the board
+  beneath is not legible in the shot; the READY check, not the pixels, proves it is the board
+  screen under the offer and that `BoardsHome` is off the stack.
