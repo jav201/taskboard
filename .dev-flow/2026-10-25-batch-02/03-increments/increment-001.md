@@ -45,7 +45,7 @@ frame the screen shows (PH-4).
 | File | Kind | Traces to | Change |
 |---|---|---|---|
 | `taskboard/views.py` | source | LLR-2901.1, LLR-2901.2, LLR-2902.1, LLR-2904.1 | the note pipeline: tokenise-before-wrap, `_tone_row`, `_paint_marks(pieces, marks)`, the clip and the `k==1` cut seat |
-| `tests/test_present_note_highlights.py` | test | HLR-2901, HLR-2902, HLR-2903, HLR-2904 / LLR-2901.1, LLR-2901.2, LLR-2902.1, LLR-2903.1, LLR-2904.1 | new — 17 nodes (AT-2901..AT-2905 + 7 layer-0 arms) |
+| `tests/test_present_note_highlights.py` | test | HLR-2901, HLR-2902, HLR-2903, HLR-2904 / LLR-2901.1, LLR-2901.2, LLR-2902.1, LLR-2903.1, LLR-2904.1 | new — 20 nodes (AT-2901..AT-2905 + 10 layer-0 arms) |
 | `tests/test_present_views.py` | test | HLR-2905, LLR-2905.1 | the LED-2905.2/LED-2905.3 oracle updates: row-shape equality + 13 row-shape consumers |
 | `tests/test_people_look.py` | test | HLR-2905, LLR-2905.1 | the LED-2905.2/LED-2905.3 oracle updates: 3 row-shape consumers |
 
@@ -71,6 +71,7 @@ env -u NO_COLOR python -m pytest -q tests/test_present.py tests/test_present_pol
 | **0 · unit** | `core` | `test_L0_tone_row_*` (5), `test_L0_marker_free_twin_wraps_identically` (1), `test_L0_cut_seat_k1_paints_lead_span_and_tag` (1) | 7 passed (`suite-001.txt`) |
 | **A · white-box** | `core` | folded into the layer-0 arms (the LLR mechanisms are unit-pinned; the ATs observe through the shipped surface) | 7 passed |
 | **B · black-box** | `core` | `test_AT_2901_*`, `test_AT_2902_*[118x30, 80x24]`, `test_AT_2903_*`, `test_AT_2904_*`, `test_AT_2905_the_regression_pin` | 10 passed |
+| layer-0 (post code-review) | `core` | `test_L0_unicode_whitespace_at_wrap_boundaries`, `test_L0_unicode_whitespace_fuzz_pin`, `test_L0_note_markup_clip_never_exceeds_its_width` | 3 passed |
 | regression (affected suites) | `core` | the 9 presentation/markup suites | 200 passed (`suite-affected.txt`) = the base_ref baseline (`baseline-affected.txt`) |
 | AT-2905's full certification | P4 | the complete suite in 3 sequential chunks | owed at P4 (`04-validation.md`) — the pin node is the disk anchor |
 
@@ -90,7 +91,7 @@ env -u NO_COLOR python -m pytest -q tests/test_present.py tests/test_present_pol
 
 | Field | Value |
 |---|---|
-| **RED counterfactual** | `taskboard/views.py`, the tokenise step of `present_note_lines` bypassed (raw text painted) · `evidence/mutation-001.txt` · restore digest md5 `52bdb41e…` (pre-battery value, hash-returned per arm) |
+| **RED counterfactual** | `taskboard/views.py`, the tokenise step of `present_note_lines` bypassed (raw text painted) · `evidence/mutation-001.txt` (both the pre-F1 run and the POST-F1 re-run against the shipped bytes) · restore digests hash-returned per arm; the post-F1 final md5 `778eb68a…` equals the tree's value |
 
 | Field | Value |
 |---|---|
@@ -121,9 +122,9 @@ env -u NO_COLOR python -m pytest -q tests/test_present.py tests/test_present_pol
 
 | Evidence artifact | Path — under `artifact_homes.evidence` | SHA-256 |
 |---|---|---|
-| new-module suite | `.dev-flow/2026-10-25-batch-02/evidence/suite-001.txt` | `e11e07ac276b1660b3d4dbb4579b1097047498180831073046ab0c754c38fa18` |
-| affected-suites run | `.dev-flow/2026-10-25-batch-02/evidence/suite-affected.txt` | `a83662b635ac41863049e203710adf3e0135e9b662228caf8ddac26906385500` |
-| mutation battery | `.dev-flow/2026-10-25-batch-02/evidence/mutation-001.txt` | `600df5e9f7d945adf3924c9e34aa4566cdd210658cef2f2bda786be6bf15c037` |
+| new-module suite | `.dev-flow/2026-10-25-batch-02/evidence/suite-001.txt` | `b490c87fceaa76daa741ee27da5da3aa1579b82a79f56507bb77fe142609e6c1` |
+| affected-suites run | `.dev-flow/2026-10-25-batch-02/evidence/suite-affected.txt` | `7540251b890e58245f6299eef3b39c78132cf86390d92efa7ccd4384f3526ef0` |
+| mutation battery | `.dev-flow/2026-10-25-batch-02/evidence/mutation-001.txt` | `1fe7406e8fef3825a17f0980d7a980339f6bfee1563eb64a6c9b3c3b1eff61a2` |
 | base_ref baseline | `.dev-flow/2026-10-25-batch-02/evidence/baseline-affected.txt` | `55713568416391d983226288c43828fe7322bf84de37f442f308f5878703b9f0` |
 | P1 RED probes | `.dev-flow/2026-10-25-batch-02/evidence/red-p1.txt` | `bf626f784e5c7a77dbeef439bf53e6e95277a6465f5dcfa0a775fd0b296347e0` |
 
@@ -175,7 +176,7 @@ env -u NO_COLOR python -m pytest -q tests/test_present.py tests/test_present_pol
 
 ### Signed-balance test ledger
 
-`post = base − deleted + added` → `post = 200 − 0 + 16` → the affected suites hold 200 (baseline) and the new module adds 16: `200 + 17 = 217` total green across the census, `217 − 200(base, already counted) = 17` added · reconciles with the suite transcripts (200 in `suite-affected.txt`, 17 in `suite-001.txt`).
+`post = base − deleted + added` → `post = 200 − 0 + 16` → the affected suites hold 200 (baseline) and the new module adds 16: `200 + 20 = 220` green across the census — 200 in the affected suites (base line held) and 20 in the new module (`suite-001.txt`: 16, then 17, then 20 passed across the increment's three states; the final 20 is the figure of record).
 
 ---
 
@@ -183,7 +184,7 @@ env -u NO_COLOR python -m pytest -q tests/test_present.py tests/test_present_pol
 
 | Field | Value |
 |---|---|
-| **Independent review** | `code-reviewer` — spawned as a generic agent with agents/code-reviewer.md · verdict pending at packet writing; see below |
+| **Independent review** | `code-reviewer` — spawned as a generic agent with agents/code-reviewer.md · BLOCK on F1 (HIGH: the tone matcher's ASCII whitespace test let textwrap-dropped NBSP/em-space crash the render — reachable by legal note text), F2 docstring drift, F3 a latent one-cell ellipsis overflow, F4 the lost annotation · the fixes landed RED-first in commit abe324c (isspace() both sides, three-draw docstrings, the budget guard, the annotation; three new RED-discriminating arms) · the battery re-ran against the shipped bytes, 6/6 RED, final md5 `778eb68a…` · the reviewer's re-read of the fixed diff DISCHARGED F1-F4 (executed probes incl. 80k fresh fuzz trials, zero crashes; the alarm still fires on non-whitespace mutations) and returned OK-TO-ADVANCE with one LOW note (N1: the three new arms' pre-fix RED is asserted in the commit message, not transcribed — noted here so the DDR does not trip on it; the battery re-run and the boundary arm's replay-evidenced RED carry the weight) |
 
 ---
 
@@ -207,18 +208,18 @@ The DDR (design/DDR-2026-10-25-batch-02.md), then P4 validation.
 | # | Item | ✓/⚠/✗ | Evidence |
 |---|---|---|---|
 | 1 | ≤4 source files | ✓ | §2: 1 source file |
-| 2 | Tests written in this same increment | ✓ | `tests/test_present_note_highlights.py` (17 nodes) |
+| 2 | Tests written in this same increment | ✓ | `tests/test_present_note_highlights.py` (20 nodes) |
 | 3 | Layer 0 where it applies | ✓ | 7 layer-0 arms (`suite-001.txt`) — the units are cyclomatic ≥3 (matcher/cut/clip) and cross the declared pipeline boundary |
 | 4 | RED counterfactual | ✓ | §4: tokenise bypass · `mutation-001.txt` · restore md5 `52bdb41e…` |
 | 5 | Reverse census | ✓ | §4: 5 probes, B2 declared, hits re-validated |
-| 6 | `code-reviewer` passed | ⚠ | §4b — verdict lands before the P3 gate closes |
+| 6 | `code-reviewer` passed | ✓ | §4b: BLOCK → fixes → re-read OK-TO-ADVANCE, 0 HIGH open |
 | 7 | No file from another lane | ✓ | one lane |
 | 8 | Frozen interfaces untouched | ✓ | frozen set byte-identical (`git diff` verified) |
-| 9 | Coverage verified on disk | ✓ | transcripts hold 200 + 17 passed |
+| 9 | Coverage verified on disk | ✓ | transcripts hold 200 + 20 passed |
 | 10 | Load-bearing emptiness | ✓ | §4 table + positive controls |
 | 11 | Mutation verdicts | ✓ | §4: 6 arms, per-node verdicts, one designed survivor named |
 | 12 | Instrument RED-proof | ✓ | §4: 2 instruments |
 | 13 | Correction population | ✓ | §4: 1 correction, enumerated P2, completed P3 |
 | 14 | Emitted-form assertion | ✓ | §4: the SVG bytes |
-| 15 | Independent review | ⚠ | §4b — pending at writing |
+| 15 | Independent review | ✓ | §4b: `code-reviewer` · OK-TO-ADVANCE |
 | 16 | Evidence files | ✓ | §4: 5 digests |
