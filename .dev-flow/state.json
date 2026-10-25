@@ -208,8 +208,8 @@
     }
   ],
   "guided": false,
-  "current_station": "P0",
-  "phase_status": "not-started",
+  "current_station": "P1",
+  "phase_status": "in-progress",
   "stations_active": [
     "P0",
     "ARQ",
@@ -280,7 +280,18 @@
   },
   "base_ref": "4a647ab63bb234dc4db4e402ed41c6684f88e96a",
   "artifacts": {},
-  "decisions_log": [],
+  "decisions_log": [
+    {
+      "station": "P0",
+      "date": "2026-10-24",
+      "decision": "P0 intake approved under the batch's standing authorization — «Ok, arréglalo.» (.dev-flow/COMMISSION-home-deferred-start.md); ARQ is next."
+    },
+    {
+      "station": "ARQ",
+      "date": "2026-10-24",
+      "decision": "ARQ approved under the batch's standing authorization — module map amended (people/marks re-read exposed, app owns the deferred start and the four re-read seats); no boundary moved; P1 requirements is next."
+    }
+  ],
   "obsidian_synced": false,
   "created_at": "2026-10-24T22:34:52.183847"
 }
