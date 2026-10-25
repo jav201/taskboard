@@ -56,11 +56,20 @@ class Directory:
         self.path = Path(path)
         self.marks: dict[str, Mark] = {}
         self.load_report = load_report or {}
+        self._stamp: tuple[int, int] | None = None
         self._hold(marks or [])
 
     def _hold(self, marks: list[Mark]) -> None:
         self.marks.clear()
         self.marks.update((m.id, m) for m in marks)
+
+    def _stamped(self) -> None:
+        """Best-effort: the file's (mtime, size) as of the last read or write here."""
+        try:
+            stat = self.path.stat()
+            self._stamp = (stat.st_mtime_ns, stat.st_size)
+        except OSError:
+            pass
 
     # ---- reading -----------------------------------------------------------
     @classmethod
@@ -71,15 +80,41 @@ class Directory:
         path = Path(path)
         try:
             if not path.exists() or not path.read_bytes().strip():
-                return cls(path)            # nothing written yet, or nothing to keep
+                directory = cls(path)       # nothing written yet, or nothing to keep
+                directory._stamped()
+                return directory
             marks = cls._read(path)
         except OSError:
             marks = None
         if marks is None:
             backup = keep_aside(path)
-            return cls(path, [], {"unreadable": True,
-                                  "backup": str(backup) if backup else None})
-        return cls(path, marks)
+            directory = cls(path, [], {"unreadable": True,
+                                       "backup": str(backup) if backup else None})
+        else:
+            directory = cls(path, marks)
+        directory._stamped()
+        return directory
+
+    def refresh(self) -> bool | None:
+        """The file another window may have changed, re-read on change only:
+        None unchanged · True reloaded · False the file could not be parsed —
+        the in-memory directory is kept, the caller says so once (HD-5)."""
+        try:
+            stat = self.path.stat()
+            stamp = (stat.st_mtime_ns, stat.st_size)
+        except OSError:
+            return None                     # gone or unreadable metadata: keep what we hold
+        if stamp == self._stamp:
+            return None
+        try:
+            marks = self._read(self.path)   # None when unparseable; may raise OSError
+        except OSError:
+            marks = None
+        self._stamp = stamp                 # a bad file is not re-parsed and re-reported on every open
+        if marks is None:
+            return False
+        self._hold(marks)
+        return True
 
     @staticmethod
     def _read(path: Path) -> list[Mark] | None:
@@ -141,6 +176,7 @@ class Directory:
             data = {"version": 1, "marks": [asdict(m) for m in fresh.values()]}
             write_atomic(self.path, json.dumps(data, indent=2, ensure_ascii=False))
         self._hold(list(fresh.values()))
+        self._stamped()
         return result
 
     def _set_aside(self) -> bool:

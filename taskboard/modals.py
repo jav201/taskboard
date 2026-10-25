@@ -2221,22 +2221,39 @@ class SearchPrompt(TextPrompt):
     DEFAULT_CSS = "#sp-list { height: auto; margin: 0 0 1 0; }"
 
     def __init__(self, title: str, initial: str = "", placeholder: str = "", *,
-                 people: Directory, open_person) -> None:
+                 people: Directory, open_person, on_directory_query=None) -> None:
         super().__init__(title, initial, placeholder)
         self._people = people
         self._open_person = open_person
+        self._on_directory_query = on_directory_query
+        self._directory_queried = False
         self._sel, self._opts = 0, []
 
     def on_mount(self) -> None:
         super().on_mount()
         self.query_one("#modal-box").mount(Static(id="sp-list"), after="#f-text")
+        self._directories_named()
         self.call_after_refresh(self._draw)
+
+    def _directories_named(self) -> None:
+        """PDR #D3: fire the one-shot directory refresh the FIRST time the query
+        names the directories (`@`/`#`) — an initial query that already names one
+        too. The caller draws right after, so the naming keystroke's own frame
+        shows the fresh directory."""
+        if self._directory_queried:
+            return
+        if not str(self.query_one("#f-text", Input).value).startswith(("@", "#")):
+            return
+        self._directory_queried = True
+        if self._on_directory_query is not None:
+            self._on_directory_query()
 
     def _person_mode(self) -> bool:
         return str(self.query_one("#f-text", Input).value).startswith("@")
 
     def on_input_changed(self, event: Input.Changed) -> None:
         self._sel = 0
+        self._directories_named()
         self._draw()
 
     def _draw(self) -> None:

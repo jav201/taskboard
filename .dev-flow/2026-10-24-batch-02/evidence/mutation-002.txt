@@ -1,0 +1,582 @@
+arms: 30
+before: taskboard/people.py b502a5f1dea71992609e8f81223c0884c52deee28d77e6a6a6a04f405be05463
+C:\Users\jjgh8\anaconda3\Lib\site-packages\pytest_asyncio\plugin.py:207: PytestDeprecationWarning: The configuration option "asyncio_default_fixture_loop_scope" is unset.
+The event loop scope for asynchronous fixtures will default to the fixture caching scope. Future versions of pytest-asyncio will default the loop scope for asynchronous fixtures to function scope. Set the default fixture loop scope explicitly in order to avoid unexpected behavior in the future. Valid fixture loop scopes are: "function", "class", "module", "package", "session"
+
+  warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCOPE_UNSET))
+F.                                                                       [100%]
+================================== FAILURES ===================================
+_____________ test_TC_2701_refresh_gates_on_mtime_or_size[people] _____________
+
+tmp_path = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-25096/test_TC_2701_refresh_gates_on_0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x00000182F01CE750>
+kind = 'people'
+
+    @pytest.mark.parametrize("kind", ["people", "marks"])
+    def test_TC_2701_refresh_gates_on_mtime_or_size(tmp_path, monkeypatch, kind):
+        """LLR-2706.1/2706.2: an unchanged file is not re-parsed (the same live dict,
+        zero parses); an mtime move with the size kept re-parses exactly once and the
+        edit shows; a size move with the mtime frozen re-parses too (the gate's size
+        arm). RED: the size arm dropped \u2192 the third refresh stays None."""
+        path, directory, live = _loaded(tmp_path, kind)
+        real_read = type(directory)._read
+        calls = {"n": 0}
+    
+        def spy(p):
+            calls["n"] += 1
+            return real_read(p)
+    
+        monkeypatch.setattr(type(directory), "_read", staticmethod(spy))
+    
+>       assert directory.refresh() is None
+E       assert True is None
+E        +  where True = refresh()
+E        +    where refresh = <taskboard.people.Directory object at 0x00000182F01CF470>.refresh
+
+tests\test_directory_refresh.py:113: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_directory_refresh.py::test_TC_2701_refresh_gates_on_mtime_or_size[people]
+1 failed, 1 passed in 0.34s
+after:  b502a5f1dea71992609e8f81223c0884c52deee28d77e6a6a6a04f405be05463
+tests/test_directory_refresh.py::test_TC_2701_refresh_gates_on_mtime_or_size @ taskboard/people.py [if stamp == self._stamp:\n            retur]: RED (KILLED)
+before: taskboard/people.py b502a5f1dea71992609e8f81223c0884c52deee28d77e6a6a6a04f405be05463
+C:\Users\jjgh8\anaconda3\Lib\site-packages\pytest_asyncio\plugin.py:207: PytestDeprecationWarning: The configuration option "asyncio_default_fixture_loop_scope" is unset.
+The event loop scope for asynchronous fixtures will default to the fixture caching scope. Future versions of pytest-asyncio will default the loop scope for asynchronous fixtures to function scope. Set the default fixture loop scope explicitly in order to avoid unexpected behavior in the future. Valid fixture loop scopes are: "function", "class", "module", "package", "session"
+
+  warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCOPE_UNSET))
+F.                                                                       [100%]
+================================== FAILURES ===================================
+_________ test_TC_2702_a_failed_refresh_keeps_and_flags_once[people] __________
+
+tmp_path = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-25097/test_TC_2702_a_failed_refresh_0')
+kind = 'people'
+
+    @pytest.mark.parametrize("kind", ["people", "marks"])
+    def test_TC_2702_a_failed_refresh_keeps_and_flags_once(tmp_path, kind):
+        """LLR-2707.1: a re-read of an unparseable file returns False and keeps every
+        in-memory entry; the stamp advances, so the still-bad file is not re-parsed
+        on the next refresh; a fixed file reloads. RED: True on failure inverts the
+        flag arm; clearing the dict on failure inverts the keep arm."""
+        path, directory, live = _loaded(tmp_path, kind)
+        held = next(iter(live))
+        stat = path.stat()
+        path.write_bytes(b"\x00\x01 not json at all")
+        os.utime(path, ns=(stat.st_atime_ns, stat.st_mtime_ns + 10_000_000))
+        assert directory.refresh() is False
+        assert list(live) == [held]                    # the failure keeps the directory
+>       assert directory.refresh() is None             # the stamp advanced: no re-parse, no re-flag
+E       assert False is None
+E        +  where False = refresh()
+E        +    where refresh = <taskboard.people.Directory object at 0x000001D14D97F0B0>.refresh
+
+tests\test_directory_refresh.py:161: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_directory_refresh.py::test_TC_2702_a_failed_refresh_keeps_and_flags_once[people]
+1 failed, 1 passed in 0.34s
+after:  b502a5f1dea71992609e8f81223c0884c52deee28d77e6a6a6a04f405be05463
+tests/test_directory_refresh.py::test_TC_2702_a_failed_refresh_keeps_and_flags_once @ taskboard/people.py [if stamp == self._stamp:\n            retur]: RED (KILLED)
+before: taskboard/people.py b502a5f1dea71992609e8f81223c0884c52deee28d77e6a6a6a04f405be05463
+C:\Users\jjgh8\anaconda3\Lib\site-packages\pytest_asyncio\plugin.py:207: PytestDeprecationWarning: The configuration option "asyncio_default_fixture_loop_scope" is unset.
+The event loop scope for asynchronous fixtures will default to the fixture caching scope. Future versions of pytest-asyncio will default the loop scope for asynchronous fixtures to function scope. Set the default fixture loop scope explicitly in order to avoid unexpected behavior in the future. Valid fixture loop scopes are: "function", "class", "module", "package", "session"
+
+  warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCOPE_UNSET))
+.                                                                        [100%]
+1 passed in 2.59s
+after:  b502a5f1dea71992609e8f81223c0884c52deee28d77e6a6a6a04f405be05463
+tests/test_directory_refresh.py::test_AT_2706_the_directories_stay_fresh @ taskboard/people.py [if stamp == self._stamp:\n            retur]: GREEN (SURVIVED)
+before: taskboard/people.py b502a5f1dea71992609e8f81223c0884c52deee28d77e6a6a6a04f405be05463
+C:\Users\jjgh8\anaconda3\Lib\site-packages\pytest_asyncio\plugin.py:207: PytestDeprecationWarning: The configuration option "asyncio_default_fixture_loop_scope" is unset.
+The event loop scope for asynchronous fixtures will default to the fixture caching scope. Future versions of pytest-asyncio will default the loop scope for asynchronous fixtures to function scope. Set the default fixture loop scope explicitly in order to avoid unexpected behavior in the future. Valid fixture loop scopes are: "function", "class", "module", "package", "session"
+
+  warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCOPE_UNSET))
+F                                                                        [100%]
+================================== FAILURES ===================================
+______________ test_AT_2707_a_failed_re_read_keeps_the_directory ______________
+
+home = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-25099/test_AT_2707_a_failed_re_read_0/.taskboard')
+
+    async def test_AT_2707_a_failed_re_read_keeps_the_directory(home):
+        """AT-2707 (US-2702): after the mount loaded a person, the other window's bad
+        write replaces people.json; `@` keeps the directory and says so once — one
+        warning titled People, markup off — and reopening `@` on the still-bad file
+        adds no second notice."""
+        _two_boards(home)
+        _seed_people(home / PEOPLE_NAME)
+        app = _open(None)
+        async with app.run_test(size=(118, 30), notifications=True) as pilot:
+            await pilot.pause()
+            (home / PEOPLE_NAME).write_bytes(b"\x00\x01 not json at all")
+            await _press(pilot, "at")
+            notes = [n for n in app._notifications if n.title == "People"]
+            assert len(notes) == 1
+            assert notes[0].severity == "warning" and notes[0].markup is False
+            assert "could not be read" in str(notes[0].message)
+            assert "Ada One" in await screen_text(pilot, 118, 30)
+            await _press(pilot, "escape")
+            await _press(pilot, "at")                  # the file is still bad
+>           assert len([n for n in app._notifications if n.title == "People"]) == 1
+E           AssertionError: assert 2 == 1
+E            +  where 2 = len([Notification(message='people.json could not be read; the directory as loaded is kept.', title='People', severity='war...ty='warning', timeout=15, markup=False, raised_at=1792910219.5688758, identity='6f264a83-a40a-4484-8fbf-7f76fe9a6ea9')])
+
+tests\test_directory_refresh.py:232: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_directory_refresh.py::test_AT_2707_a_failed_re_read_keeps_the_directory
+1 failed in 1.06s
+after:  b502a5f1dea71992609e8f81223c0884c52deee28d77e6a6a6a04f405be05463
+tests/test_directory_refresh.py::test_AT_2707_a_failed_re_read_keeps_the_directory @ taskboard/people.py [if stamp == self._stamp:\n            retur]: RED (KILLED)
+before: taskboard/people.py b502a5f1dea71992609e8f81223c0884c52deee28d77e6a6a6a04f405be05463
+C:\Users\jjgh8\anaconda3\Lib\site-packages\pytest_asyncio\plugin.py:207: PytestDeprecationWarning: The configuration option "asyncio_default_fixture_loop_scope" is unset.
+The event loop scope for asynchronous fixtures will default to the fixture caching scope. Future versions of pytest-asyncio will default the loop scope for asynchronous fixtures to function scope. Set the default fixture loop scope explicitly in order to avoid unexpected behavior in the future. Valid fixture loop scopes are: "function", "class", "module", "package", "session"
+
+  warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCOPE_UNSET))
+.                                                                        [100%]
+1 passed in 0.62s
+after:  b502a5f1dea71992609e8f81223c0884c52deee28d77e6a6a6a04f405be05463
+tests/test_directory_refresh.py::test_D3_the_search_query_refreshes_the_directories_once @ taskboard/people.py [if stamp == self._stamp:\n            retur]: GREEN (SURVIVED)
+before: taskboard/people.py b502a5f1dea71992609e8f81223c0884c52deee28d77e6a6a6a04f405be05463
+C:\Users\jjgh8\anaconda3\Lib\site-packages\pytest_asyncio\plugin.py:207: PytestDeprecationWarning: The configuration option "asyncio_default_fixture_loop_scope" is unset.
+The event loop scope for asynchronous fixtures will default to the fixture caching scope. Future versions of pytest-asyncio will default the loop scope for asynchronous fixtures to function scope. Set the default fixture loop scope explicitly in order to avoid unexpected behavior in the future. Valid fixture loop scopes are: "function", "class", "module", "package", "session"
+
+  warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCOPE_UNSET))
+F.                                                                       [100%]
+================================== FAILURES ===================================
+_____________ test_TC_2701_refresh_gates_on_mtime_or_size[people] _____________
+
+tmp_path = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-25101/test_TC_2701_refresh_gates_on_0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x00000248E04E2810>
+kind = 'people'
+
+    @pytest.mark.parametrize("kind", ["people", "marks"])
+    def test_TC_2701_refresh_gates_on_mtime_or_size(tmp_path, monkeypatch, kind):
+        """LLR-2706.1/2706.2: an unchanged file is not re-parsed (the same live dict,
+        zero parses); an mtime move with the size kept re-parses exactly once and the
+        edit shows; a size move with the mtime frozen re-parses too (the gate's size
+        arm). RED: the size arm dropped \u2192 the third refresh stays None."""
+        path, directory, live = _loaded(tmp_path, kind)
+        real_read = type(directory)._read
+        calls = {"n": 0}
+    
+        def spy(p):
+            calls["n"] += 1
+            return real_read(p)
+    
+        monkeypatch.setattr(type(directory), "_read", staticmethod(spy))
+    
+>       assert directory.refresh() is None
+E       assert True is None
+E        +  where True = refresh()
+E        +    where refresh = <taskboard.people.Directory object at 0x00000248E04E3530>.refresh
+
+tests\test_directory_refresh.py:113: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_directory_refresh.py::test_TC_2701_refresh_gates_on_mtime_or_size[people]
+1 failed, 1 passed in 0.33s
+after:  b502a5f1dea71992609e8f81223c0884c52deee28d77e6a6a6a04f405be05463
+tests/test_directory_refresh.py::test_TC_2701_refresh_gates_on_mtime_or_size @ taskboard/people.py [stamp = (stat.st_mtime_ns, stat.st_size)]: RED (KILLED)
+before: taskboard/people.py b502a5f1dea71992609e8f81223c0884c52deee28d77e6a6a6a04f405be05463
+C:\Users\jjgh8\anaconda3\Lib\site-packages\pytest_asyncio\plugin.py:207: PytestDeprecationWarning: The configuration option "asyncio_default_fixture_loop_scope" is unset.
+The event loop scope for asynchronous fixtures will default to the fixture caching scope. Future versions of pytest-asyncio will default the loop scope for asynchronous fixtures to function scope. Set the default fixture loop scope explicitly in order to avoid unexpected behavior in the future. Valid fixture loop scopes are: "function", "class", "module", "package", "session"
+
+  warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCOPE_UNSET))
+..                                                                       [100%]
+2 passed in 0.28s
+after:  b502a5f1dea71992609e8f81223c0884c52deee28d77e6a6a6a04f405be05463
+tests/test_directory_refresh.py::test_TC_2702_a_failed_refresh_keeps_and_flags_once @ taskboard/people.py [stamp = (stat.st_mtime_ns, stat.st_size)]: GREEN (SURVIVED)
+before: taskboard/people.py b502a5f1dea71992609e8f81223c0884c52deee28d77e6a6a6a04f405be05463
+C:\Users\jjgh8\anaconda3\Lib\site-packages\pytest_asyncio\plugin.py:207: PytestDeprecationWarning: The configuration option "asyncio_default_fixture_loop_scope" is unset.
+The event loop scope for asynchronous fixtures will default to the fixture caching scope. Future versions of pytest-asyncio will default the loop scope for asynchronous fixtures to function scope. Set the default fixture loop scope explicitly in order to avoid unexpected behavior in the future. Valid fixture loop scopes are: "function", "class", "module", "package", "session"
+
+  warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCOPE_UNSET))
+.                                                                        [100%]
+1 passed in 2.58s
+after:  b502a5f1dea71992609e8f81223c0884c52deee28d77e6a6a6a04f405be05463
+tests/test_directory_refresh.py::test_AT_2706_the_directories_stay_fresh @ taskboard/people.py [stamp = (stat.st_mtime_ns, stat.st_size)]: GREEN (SURVIVED)
+before: taskboard/people.py b502a5f1dea71992609e8f81223c0884c52deee28d77e6a6a6a04f405be05463
+C:\Users\jjgh8\anaconda3\Lib\site-packages\pytest_asyncio\plugin.py:207: PytestDeprecationWarning: The configuration option "asyncio_default_fixture_loop_scope" is unset.
+The event loop scope for asynchronous fixtures will default to the fixture caching scope. Future versions of pytest-asyncio will default the loop scope for asynchronous fixtures to function scope. Set the default fixture loop scope explicitly in order to avoid unexpected behavior in the future. Valid fixture loop scopes are: "function", "class", "module", "package", "session"
+
+  warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCOPE_UNSET))
+.                                                                        [100%]
+1 passed in 1.51s
+after:  b502a5f1dea71992609e8f81223c0884c52deee28d77e6a6a6a04f405be05463
+tests/test_directory_refresh.py::test_AT_2707_a_failed_re_read_keeps_the_directory @ taskboard/people.py [stamp = (stat.st_mtime_ns, stat.st_size)]: GREEN (SURVIVED)
+before: taskboard/people.py b502a5f1dea71992609e8f81223c0884c52deee28d77e6a6a6a04f405be05463
+C:\Users\jjgh8\anaconda3\Lib\site-packages\pytest_asyncio\plugin.py:207: PytestDeprecationWarning: The configuration option "asyncio_default_fixture_loop_scope" is unset.
+The event loop scope for asynchronous fixtures will default to the fixture caching scope. Future versions of pytest-asyncio will default the loop scope for asynchronous fixtures to function scope. Set the default fixture loop scope explicitly in order to avoid unexpected behavior in the future. Valid fixture loop scopes are: "function", "class", "module", "package", "session"
+
+  warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCOPE_UNSET))
+.                                                                        [100%]
+1 passed in 0.65s
+after:  b502a5f1dea71992609e8f81223c0884c52deee28d77e6a6a6a04f405be05463
+tests/test_directory_refresh.py::test_D3_the_search_query_refreshes_the_directories_once @ taskboard/people.py [stamp = (stat.st_mtime_ns, stat.st_size)]: GREEN (SURVIVED)
+before: taskboard/people.py b502a5f1dea71992609e8f81223c0884c52deee28d77e6a6a6a04f405be05463
+C:\Users\jjgh8\anaconda3\Lib\site-packages\pytest_asyncio\plugin.py:207: PytestDeprecationWarning: The configuration option "asyncio_default_fixture_loop_scope" is unset.
+The event loop scope for asynchronous fixtures will default to the fixture caching scope. Future versions of pytest-asyncio will default the loop scope for asynchronous fixtures to function scope. Set the default fixture loop scope explicitly in order to avoid unexpected behavior in the future. Valid fixture loop scopes are: "function", "class", "module", "package", "session"
+
+  warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCOPE_UNSET))
+..                                                                       [100%]
+2 passed in 0.26s
+after:  b502a5f1dea71992609e8f81223c0884c52deee28d77e6a6a6a04f405be05463
+tests/test_directory_refresh.py::test_TC_2701_refresh_gates_on_mtime_or_size @ taskboard/people.py [if people is None:\n            return Fals]: GREEN (SURVIVED)
+before: taskboard/people.py b502a5f1dea71992609e8f81223c0884c52deee28d77e6a6a6a04f405be05463
+C:\Users\jjgh8\anaconda3\Lib\site-packages\pytest_asyncio\plugin.py:207: PytestDeprecationWarning: The configuration option "asyncio_default_fixture_loop_scope" is unset.
+The event loop scope for asynchronous fixtures will default to the fixture caching scope. Future versions of pytest-asyncio will default the loop scope for asynchronous fixtures to function scope. Set the default fixture loop scope explicitly in order to avoid unexpected behavior in the future. Valid fixture loop scopes are: "function", "class", "module", "package", "session"
+
+  warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCOPE_UNSET))
+F.                                                                       [100%]
+================================== FAILURES ===================================
+_________ test_TC_2702_a_failed_refresh_keeps_and_flags_once[people] __________
+
+tmp_path = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-25107/test_TC_2702_a_failed_refresh_0')
+kind = 'people'
+
+    @pytest.mark.parametrize("kind", ["people", "marks"])
+    def test_TC_2702_a_failed_refresh_keeps_and_flags_once(tmp_path, kind):
+        """LLR-2707.1: a re-read of an unparseable file returns False and keeps every
+        in-memory entry; the stamp advances, so the still-bad file is not re-parsed
+        on the next refresh; a fixed file reloads. RED: True on failure inverts the
+        flag arm; clearing the dict on failure inverts the keep arm."""
+        path, directory, live = _loaded(tmp_path, kind)
+        held = next(iter(live))
+        stat = path.stat()
+        path.write_bytes(b"\x00\x01 not json at all")
+        os.utime(path, ns=(stat.st_atime_ns, stat.st_mtime_ns + 10_000_000))
+        assert directory.refresh() is False
+>       assert list(live) == [held]                    # the failure keeps the directory
+E       AssertionError: assert [] == ['ada.one']
+E         
+E         Right contains one more item: 'ada.one'
+E         Use -v to get more diff
+
+tests\test_directory_refresh.py:160: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_directory_refresh.py::test_TC_2702_a_failed_refresh_keeps_and_flags_once[people]
+1 failed, 1 passed in 0.33s
+after:  b502a5f1dea71992609e8f81223c0884c52deee28d77e6a6a6a04f405be05463
+tests/test_directory_refresh.py::test_TC_2702_a_failed_refresh_keeps_and_flags_once @ taskboard/people.py [if people is None:\n            return Fals]: RED (KILLED)
+before: taskboard/people.py b502a5f1dea71992609e8f81223c0884c52deee28d77e6a6a6a04f405be05463
+C:\Users\jjgh8\anaconda3\Lib\site-packages\pytest_asyncio\plugin.py:207: PytestDeprecationWarning: The configuration option "asyncio_default_fixture_loop_scope" is unset.
+The event loop scope for asynchronous fixtures will default to the fixture caching scope. Future versions of pytest-asyncio will default the loop scope for asynchronous fixtures to function scope. Set the default fixture loop scope explicitly in order to avoid unexpected behavior in the future. Valid fixture loop scopes are: "function", "class", "module", "package", "session"
+
+  warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCOPE_UNSET))
+.                                                                        [100%]
+1 passed in 2.63s
+after:  b502a5f1dea71992609e8f81223c0884c52deee28d77e6a6a6a04f405be05463
+tests/test_directory_refresh.py::test_AT_2706_the_directories_stay_fresh @ taskboard/people.py [if people is None:\n            return Fals]: GREEN (SURVIVED)
+before: taskboard/people.py b502a5f1dea71992609e8f81223c0884c52deee28d77e6a6a6a04f405be05463
+C:\Users\jjgh8\anaconda3\Lib\site-packages\pytest_asyncio\plugin.py:207: PytestDeprecationWarning: The configuration option "asyncio_default_fixture_loop_scope" is unset.
+The event loop scope for asynchronous fixtures will default to the fixture caching scope. Future versions of pytest-asyncio will default the loop scope for asynchronous fixtures to function scope. Set the default fixture loop scope explicitly in order to avoid unexpected behavior in the future. Valid fixture loop scopes are: "function", "class", "module", "package", "session"
+
+  warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCOPE_UNSET))
+F                                                                        [100%]
+================================== FAILURES ===================================
+______________ test_AT_2707_a_failed_re_read_keeps_the_directory ______________
+
+home = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-25109/test_AT_2707_a_failed_re_read_0/.taskboard')
+
+    async def test_AT_2707_a_failed_re_read_keeps_the_directory(home):
+        """AT-2707 (US-2702): after the mount loaded a person, the other window's bad
+        write replaces people.json; `@` keeps the directory and says so once — one
+        warning titled People, markup off — and reopening `@` on the still-bad file
+        adds no second notice."""
+        _two_boards(home)
+        _seed_people(home / PEOPLE_NAME)
+        app = _open(None)
+        async with app.run_test(size=(118, 30), notifications=True) as pilot:
+            await pilot.pause()
+            (home / PEOPLE_NAME).write_bytes(b"\x00\x01 not json at all")
+            await _press(pilot, "at")
+            notes = [n for n in app._notifications if n.title == "People"]
+            assert len(notes) == 1
+            assert notes[0].severity == "warning" and notes[0].markup is False
+            assert "could not be read" in str(notes[0].message)
+>           assert "Ada One" in await screen_text(pilot, 118, 30)
+E           AssertionError: assert 'Ada One' in ' \u25c6 PEOPLE \xb7 directory  who do I owe what \xb7 every board                           0 in the directory \xb7 tasks read-only...                                     \u258c\\n \u2191\u2193 move   \u21e5 panes   \u21b5 their tasks   / find   n add   e edit person   esc back'
+
+tests\test_directory_refresh.py:229: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_directory_refresh.py::test_AT_2707_a_failed_re_read_keeps_the_directory
+1 failed in 0.94s
+after:  b502a5f1dea71992609e8f81223c0884c52deee28d77e6a6a6a04f405be05463
+tests/test_directory_refresh.py::test_AT_2707_a_failed_re_read_keeps_the_directory @ taskboard/people.py [if people is None:\n            return Fals]: RED (KILLED)
+before: taskboard/people.py b502a5f1dea71992609e8f81223c0884c52deee28d77e6a6a6a04f405be05463
+C:\Users\jjgh8\anaconda3\Lib\site-packages\pytest_asyncio\plugin.py:207: PytestDeprecationWarning: The configuration option "asyncio_default_fixture_loop_scope" is unset.
+The event loop scope for asynchronous fixtures will default to the fixture caching scope. Future versions of pytest-asyncio will default the loop scope for asynchronous fixtures to function scope. Set the default fixture loop scope explicitly in order to avoid unexpected behavior in the future. Valid fixture loop scopes are: "function", "class", "module", "package", "session"
+
+  warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCOPE_UNSET))
+.                                                                        [100%]
+1 passed in 0.62s
+after:  b502a5f1dea71992609e8f81223c0884c52deee28d77e6a6a6a04f405be05463
+tests/test_directory_refresh.py::test_D3_the_search_query_refreshes_the_directories_once @ taskboard/people.py [if people is None:\n            return Fals]: GREEN (SURVIVED)
+before: taskboard/people.py b502a5f1dea71992609e8f81223c0884c52deee28d77e6a6a6a04f405be05463
+C:\Users\jjgh8\anaconda3\Lib\site-packages\pytest_asyncio\plugin.py:207: PytestDeprecationWarning: The configuration option "asyncio_default_fixture_loop_scope" is unset.
+The event loop scope for asynchronous fixtures will default to the fixture caching scope. Future versions of pytest-asyncio will default the loop scope for asynchronous fixtures to function scope. Set the default fixture loop scope explicitly in order to avoid unexpected behavior in the future. Valid fixture loop scopes are: "function", "class", "module", "package", "session"
+
+  warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCOPE_UNSET))
+..                                                                       [100%]
+2 passed in 0.27s
+after:  b502a5f1dea71992609e8f81223c0884c52deee28d77e6a6a6a04f405be05463
+tests/test_directory_refresh.py::test_TC_2701_refresh_gates_on_mtime_or_size @ taskboard/people.py [self._stamp = stamp                 # a bad ]: GREEN (SURVIVED)
+before: taskboard/people.py b502a5f1dea71992609e8f81223c0884c52deee28d77e6a6a6a04f405be05463
+C:\Users\jjgh8\anaconda3\Lib\site-packages\pytest_asyncio\plugin.py:207: PytestDeprecationWarning: The configuration option "asyncio_default_fixture_loop_scope" is unset.
+The event loop scope for asynchronous fixtures will default to the fixture caching scope. Future versions of pytest-asyncio will default the loop scope for asynchronous fixtures to function scope. Set the default fixture loop scope explicitly in order to avoid unexpected behavior in the future. Valid fixture loop scopes are: "function", "class", "module", "package", "session"
+
+  warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCOPE_UNSET))
+F.                                                                       [100%]
+================================== FAILURES ===================================
+_________ test_TC_2702_a_failed_refresh_keeps_and_flags_once[people] __________
+
+tmp_path = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-25112/test_TC_2702_a_failed_refresh_0')
+kind = 'people'
+
+    @pytest.mark.parametrize("kind", ["people", "marks"])
+    def test_TC_2702_a_failed_refresh_keeps_and_flags_once(tmp_path, kind):
+        """LLR-2707.1: a re-read of an unparseable file returns False and keeps every
+        in-memory entry; the stamp advances, so the still-bad file is not re-parsed
+        on the next refresh; a fixed file reloads. RED: True on failure inverts the
+        flag arm; clearing the dict on failure inverts the keep arm."""
+        path, directory, live = _loaded(tmp_path, kind)
+        held = next(iter(live))
+        stat = path.stat()
+        path.write_bytes(b"\x00\x01 not json at all")
+        os.utime(path, ns=(stat.st_atime_ns, stat.st_mtime_ns + 10_000_000))
+        assert directory.refresh() is False
+        assert list(live) == [held]                    # the failure keeps the directory
+>       assert directory.refresh() is None             # the stamp advanced: no re-parse, no re-flag
+E       assert False is None
+E        +  where False = refresh()
+E        +    where refresh = <taskboard.people.Directory object at 0x000001AD8AFCF260>.refresh
+
+tests\test_directory_refresh.py:161: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_directory_refresh.py::test_TC_2702_a_failed_refresh_keeps_and_flags_once[people]
+1 failed, 1 passed in 0.33s
+after:  b502a5f1dea71992609e8f81223c0884c52deee28d77e6a6a6a04f405be05463
+tests/test_directory_refresh.py::test_TC_2702_a_failed_refresh_keeps_and_flags_once @ taskboard/people.py [self._stamp = stamp                 # a bad ]: RED (KILLED)
+before: taskboard/people.py b502a5f1dea71992609e8f81223c0884c52deee28d77e6a6a6a04f405be05463
+C:\Users\jjgh8\anaconda3\Lib\site-packages\pytest_asyncio\plugin.py:207: PytestDeprecationWarning: The configuration option "asyncio_default_fixture_loop_scope" is unset.
+The event loop scope for asynchronous fixtures will default to the fixture caching scope. Future versions of pytest-asyncio will default the loop scope for asynchronous fixtures to function scope. Set the default fixture loop scope explicitly in order to avoid unexpected behavior in the future. Valid fixture loop scopes are: "function", "class", "module", "package", "session"
+
+  warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCOPE_UNSET))
+.                                                                        [100%]
+1 passed in 2.71s
+after:  b502a5f1dea71992609e8f81223c0884c52deee28d77e6a6a6a04f405be05463
+tests/test_directory_refresh.py::test_AT_2706_the_directories_stay_fresh @ taskboard/people.py [self._stamp = stamp                 # a bad ]: GREEN (SURVIVED)
+before: taskboard/people.py b502a5f1dea71992609e8f81223c0884c52deee28d77e6a6a6a04f405be05463
+C:\Users\jjgh8\anaconda3\Lib\site-packages\pytest_asyncio\plugin.py:207: PytestDeprecationWarning: The configuration option "asyncio_default_fixture_loop_scope" is unset.
+The event loop scope for asynchronous fixtures will default to the fixture caching scope. Future versions of pytest-asyncio will default the loop scope for asynchronous fixtures to function scope. Set the default fixture loop scope explicitly in order to avoid unexpected behavior in the future. Valid fixture loop scopes are: "function", "class", "module", "package", "session"
+
+  warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCOPE_UNSET))
+F                                                                        [100%]
+================================== FAILURES ===================================
+______________ test_AT_2707_a_failed_re_read_keeps_the_directory ______________
+
+home = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-25114/test_AT_2707_a_failed_re_read_0/.taskboard')
+
+    async def test_AT_2707_a_failed_re_read_keeps_the_directory(home):
+        """AT-2707 (US-2702): after the mount loaded a person, the other window's bad
+        write replaces people.json; `@` keeps the directory and says so once — one
+        warning titled People, markup off — and reopening `@` on the still-bad file
+        adds no second notice."""
+        _two_boards(home)
+        _seed_people(home / PEOPLE_NAME)
+        app = _open(None)
+        async with app.run_test(size=(118, 30), notifications=True) as pilot:
+            await pilot.pause()
+            (home / PEOPLE_NAME).write_bytes(b"\x00\x01 not json at all")
+            await _press(pilot, "at")
+            notes = [n for n in app._notifications if n.title == "People"]
+            assert len(notes) == 1
+            assert notes[0].severity == "warning" and notes[0].markup is False
+            assert "could not be read" in str(notes[0].message)
+            assert "Ada One" in await screen_text(pilot, 118, 30)
+            await _press(pilot, "escape")
+            await _press(pilot, "at")                  # the file is still bad
+>           assert len([n for n in app._notifications if n.title == "People"]) == 1
+E           AssertionError: assert 2 == 1
+E            +  where 2 = len([Notification(message='people.json could not be read; the directory as loaded is kept.', title='People', severity='war...ty='warning', timeout=15, markup=False, raised_at=1792910247.0089679, identity='1abf37ec-c6c5-47d4-a011-efa9bf4a5e79')])
+
+tests\test_directory_refresh.py:232: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_directory_refresh.py::test_AT_2707_a_failed_re_read_keeps_the_directory
+1 failed in 1.07s
+after:  b502a5f1dea71992609e8f81223c0884c52deee28d77e6a6a6a04f405be05463
+tests/test_directory_refresh.py::test_AT_2707_a_failed_re_read_keeps_the_directory @ taskboard/people.py [self._stamp = stamp                 # a bad ]: RED (KILLED)
+before: taskboard/people.py b502a5f1dea71992609e8f81223c0884c52deee28d77e6a6a6a04f405be05463
+C:\Users\jjgh8\anaconda3\Lib\site-packages\pytest_asyncio\plugin.py:207: PytestDeprecationWarning: The configuration option "asyncio_default_fixture_loop_scope" is unset.
+The event loop scope for asynchronous fixtures will default to the fixture caching scope. Future versions of pytest-asyncio will default the loop scope for asynchronous fixtures to function scope. Set the default fixture loop scope explicitly in order to avoid unexpected behavior in the future. Valid fixture loop scopes are: "function", "class", "module", "package", "session"
+
+  warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCOPE_UNSET))
+.                                                                        [100%]
+1 passed in 0.63s
+after:  b502a5f1dea71992609e8f81223c0884c52deee28d77e6a6a6a04f405be05463
+tests/test_directory_refresh.py::test_D3_the_search_query_refreshes_the_directories_once @ taskboard/people.py [self._stamp = stamp                 # a bad ]: GREEN (SURVIVED)
+before: taskboard/app.py 8e6013e0ec80bdaab0f748961b974a7ebc50798be1371c2a0b67b46f4fd8cc3a
+C:\Users\jjgh8\anaconda3\Lib\site-packages\pytest_asyncio\plugin.py:207: PytestDeprecationWarning: The configuration option "asyncio_default_fixture_loop_scope" is unset.
+The event loop scope for asynchronous fixtures will default to the fixture caching scope. Future versions of pytest-asyncio will default the loop scope for asynchronous fixtures to function scope. Set the default fixture loop scope explicitly in order to avoid unexpected behavior in the future. Valid fixture loop scopes are: "function", "class", "module", "package", "session"
+
+  warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCOPE_UNSET))
+..                                                                       [100%]
+2 passed in 0.29s
+after:  8e6013e0ec80bdaab0f748961b974a7ebc50798be1371c2a0b67b46f4fd8cc3a
+tests/test_directory_refresh.py::test_TC_2701_refresh_gates_on_mtime_or_size @ taskboard/app.py [if directory.refresh() is False:]: GREEN (SURVIVED)
+before: taskboard/app.py 8e6013e0ec80bdaab0f748961b974a7ebc50798be1371c2a0b67b46f4fd8cc3a
+C:\Users\jjgh8\anaconda3\Lib\site-packages\pytest_asyncio\plugin.py:207: PytestDeprecationWarning: The configuration option "asyncio_default_fixture_loop_scope" is unset.
+The event loop scope for asynchronous fixtures will default to the fixture caching scope. Future versions of pytest-asyncio will default the loop scope for asynchronous fixtures to function scope. Set the default fixture loop scope explicitly in order to avoid unexpected behavior in the future. Valid fixture loop scopes are: "function", "class", "module", "package", "session"
+
+  warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCOPE_UNSET))
+..                                                                       [100%]
+2 passed in 0.28s
+after:  8e6013e0ec80bdaab0f748961b974a7ebc50798be1371c2a0b67b46f4fd8cc3a
+tests/test_directory_refresh.py::test_TC_2702_a_failed_refresh_keeps_and_flags_once @ taskboard/app.py [if directory.refresh() is False:]: GREEN (SURVIVED)
+before: taskboard/app.py 8e6013e0ec80bdaab0f748961b974a7ebc50798be1371c2a0b67b46f4fd8cc3a
+C:\Users\jjgh8\anaconda3\Lib\site-packages\pytest_asyncio\plugin.py:207: PytestDeprecationWarning: The configuration option "asyncio_default_fixture_loop_scope" is unset.
+The event loop scope for asynchronous fixtures will default to the fixture caching scope. Future versions of pytest-asyncio will default the loop scope for asynchronous fixtures to function scope. Set the default fixture loop scope explicitly in order to avoid unexpected behavior in the future. Valid fixture loop scopes are: "function", "class", "module", "package", "session"
+
+  warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCOPE_UNSET))
+F                                                                        [100%]
+================================== FAILURES ===================================
+___________________ test_AT_2706_the_directories_stay_fresh ___________________
+
+home = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-25118/test_AT_2706_the_directories_s0/.taskboard')
+
+    async def test_AT_2706_the_directories_stay_fresh(home):
+        """AT-2706 (US-2702): with the app open on the home, a second `Directory`
+        instance (the other window) appends a person and a class; `@` names the new
+        person, `#` names the new class, the editor's `alt+m` Select offers the new
+        class, and the `/` `@…` completion names the new person — no restart."""
+        _two_boards(home)
+        _seed_people(home / PEOPLE_NAME)
+        _seed_marks(home / MARKS_NAME)
+        app = _open(None)
+        async with app.run_test(size=(118, 30)) as pilot:
+            await pilot.pause()
+            assert type(app.screen).__name__ == "BoardsHome"
+            app_module.Directory.load(home / PEOPLE_NAME).add("Zoe Quill")
+            marks_module.Directory.load(home / MARKS_NAME).add("Launch", SHAPES[1], COLOURS[1])
+            await _press(pilot, "at")
+>           assert "Zoe Quill" in await screen_text(pilot, 118, 30)
+E           AssertionError: assert 'Zoe Quill' in ' \u25c6 PEOPLE \xb7 directory  who do I owe what \xb7 every board                           1 in the directory \xb7 tasks read-only...\u2502\\n                                  \u2502\\n \u2191\u2193 move   \u21e5 panes   \u21b5 their tasks   / find   n add   e edit person   esc back'
+
+tests\test_directory_refresh.py:190: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_directory_refresh.py::test_AT_2706_the_directories_stay_fresh
+1 failed in 0.99s
+after:  8e6013e0ec80bdaab0f748961b974a7ebc50798be1371c2a0b67b46f4fd8cc3a
+tests/test_directory_refresh.py::test_AT_2706_the_directories_stay_fresh @ taskboard/app.py [if directory.refresh() is False:]: RED (KILLED)
+before: taskboard/app.py 8e6013e0ec80bdaab0f748961b974a7ebc50798be1371c2a0b67b46f4fd8cc3a
+C:\Users\jjgh8\anaconda3\Lib\site-packages\pytest_asyncio\plugin.py:207: PytestDeprecationWarning: The configuration option "asyncio_default_fixture_loop_scope" is unset.
+The event loop scope for asynchronous fixtures will default to the fixture caching scope. Future versions of pytest-asyncio will default the loop scope for asynchronous fixtures to function scope. Set the default fixture loop scope explicitly in order to avoid unexpected behavior in the future. Valid fixture loop scopes are: "function", "class", "module", "package", "session"
+
+  warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCOPE_UNSET))
+F                                                                        [100%]
+================================== FAILURES ===================================
+______________ test_AT_2707_a_failed_re_read_keeps_the_directory ______________
+
+home = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-25119/test_AT_2707_a_failed_re_read_0/.taskboard')
+
+    async def test_AT_2707_a_failed_re_read_keeps_the_directory(home):
+        """AT-2707 (US-2702): after the mount loaded a person, the other window's bad
+        write replaces people.json; `@` keeps the directory and says so once — one
+        warning titled People, markup off — and reopening `@` on the still-bad file
+        adds no second notice."""
+        _two_boards(home)
+        _seed_people(home / PEOPLE_NAME)
+        app = _open(None)
+        async with app.run_test(size=(118, 30), notifications=True) as pilot:
+            await pilot.pause()
+            (home / PEOPLE_NAME).write_bytes(b"\x00\x01 not json at all")
+            await _press(pilot, "at")
+            notes = [n for n in app._notifications if n.title == "People"]
+>           assert len(notes) == 1
+E           assert 0 == 1
+E            +  where 0 = len([])
+
+tests\test_directory_refresh.py:226: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_directory_refresh.py::test_AT_2707_a_failed_re_read_keeps_the_directory
+1 failed in 0.54s
+after:  8e6013e0ec80bdaab0f748961b974a7ebc50798be1371c2a0b67b46f4fd8cc3a
+tests/test_directory_refresh.py::test_AT_2707_a_failed_re_read_keeps_the_directory @ taskboard/app.py [if directory.refresh() is False:]: RED (KILLED)
+before: taskboard/app.py 8e6013e0ec80bdaab0f748961b974a7ebc50798be1371c2a0b67b46f4fd8cc3a
+C:\Users\jjgh8\anaconda3\Lib\site-packages\pytest_asyncio\plugin.py:207: PytestDeprecationWarning: The configuration option "asyncio_default_fixture_loop_scope" is unset.
+The event loop scope for asynchronous fixtures will default to the fixture caching scope. Future versions of pytest-asyncio will default the loop scope for asynchronous fixtures to function scope. Set the default fixture loop scope explicitly in order to avoid unexpected behavior in the future. Valid fixture loop scopes are: "function", "class", "module", "package", "session"
+
+  warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCOPE_UNSET))
+.                                                                        [100%]
+1 passed in 0.71s
+after:  8e6013e0ec80bdaab0f748961b974a7ebc50798be1371c2a0b67b46f4fd8cc3a
+tests/test_directory_refresh.py::test_D3_the_search_query_refreshes_the_directories_once @ taskboard/app.py [if directory.refresh() is False:]: GREEN (SURVIVED)
+before: taskboard/modals.py d23d4ecfdafbd1db53f7544a10242872c65adae225453244e47ffd6f4f6ae840
+C:\Users\jjgh8\anaconda3\Lib\site-packages\pytest_asyncio\plugin.py:207: PytestDeprecationWarning: The configuration option "asyncio_default_fixture_loop_scope" is unset.
+The event loop scope for asynchronous fixtures will default to the fixture caching scope. Future versions of pytest-asyncio will default the loop scope for asynchronous fixtures to function scope. Set the default fixture loop scope explicitly in order to avoid unexpected behavior in the future. Valid fixture loop scopes are: "function", "class", "module", "package", "session"
+
+  warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCOPE_UNSET))
+..                                                                       [100%]
+2 passed in 0.34s
+after:  d23d4ecfdafbd1db53f7544a10242872c65adae225453244e47ffd6f4f6ae840
+tests/test_directory_refresh.py::test_TC_2701_refresh_gates_on_mtime_or_size @ taskboard/modals.py [self._directory_queried = True\n        if ]: GREEN (SURVIVED)
+before: taskboard/modals.py d23d4ecfdafbd1db53f7544a10242872c65adae225453244e47ffd6f4f6ae840
+C:\Users\jjgh8\anaconda3\Lib\site-packages\pytest_asyncio\plugin.py:207: PytestDeprecationWarning: The configuration option "asyncio_default_fixture_loop_scope" is unset.
+The event loop scope for asynchronous fixtures will default to the fixture caching scope. Future versions of pytest-asyncio will default the loop scope for asynchronous fixtures to function scope. Set the default fixture loop scope explicitly in order to avoid unexpected behavior in the future. Valid fixture loop scopes are: "function", "class", "module", "package", "session"
+
+  warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCOPE_UNSET))
+..                                                                       [100%]
+2 passed in 0.30s
+after:  d23d4ecfdafbd1db53f7544a10242872c65adae225453244e47ffd6f4f6ae840
+tests/test_directory_refresh.py::test_TC_2702_a_failed_refresh_keeps_and_flags_once @ taskboard/modals.py [self._directory_queried = True\n        if ]: GREEN (SURVIVED)
+before: taskboard/modals.py d23d4ecfdafbd1db53f7544a10242872c65adae225453244e47ffd6f4f6ae840
+C:\Users\jjgh8\anaconda3\Lib\site-packages\pytest_asyncio\plugin.py:207: PytestDeprecationWarning: The configuration option "asyncio_default_fixture_loop_scope" is unset.
+The event loop scope for asynchronous fixtures will default to the fixture caching scope. Future versions of pytest-asyncio will default the loop scope for asynchronous fixtures to function scope. Set the default fixture loop scope explicitly in order to avoid unexpected behavior in the future. Valid fixture loop scopes are: "function", "class", "module", "package", "session"
+
+  warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCOPE_UNSET))
+.                                                                        [100%]
+1 passed in 2.66s
+after:  d23d4ecfdafbd1db53f7544a10242872c65adae225453244e47ffd6f4f6ae840
+tests/test_directory_refresh.py::test_AT_2706_the_directories_stay_fresh @ taskboard/modals.py [self._directory_queried = True\n        if ]: GREEN (SURVIVED)
+before: taskboard/modals.py d23d4ecfdafbd1db53f7544a10242872c65adae225453244e47ffd6f4f6ae840
+C:\Users\jjgh8\anaconda3\Lib\site-packages\pytest_asyncio\plugin.py:207: PytestDeprecationWarning: The configuration option "asyncio_default_fixture_loop_scope" is unset.
+The event loop scope for asynchronous fixtures will default to the fixture caching scope. Future versions of pytest-asyncio will default the loop scope for asynchronous fixtures to function scope. Set the default fixture loop scope explicitly in order to avoid unexpected behavior in the future. Valid fixture loop scopes are: "function", "class", "module", "package", "session"
+
+  warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCOPE_UNSET))
+.                                                                        [100%]
+1 passed in 1.60s
+after:  d23d4ecfdafbd1db53f7544a10242872c65adae225453244e47ffd6f4f6ae840
+tests/test_directory_refresh.py::test_AT_2707_a_failed_re_read_keeps_the_directory @ taskboard/modals.py [self._directory_queried = True\n        if ]: GREEN (SURVIVED)
+before: taskboard/modals.py d23d4ecfdafbd1db53f7544a10242872c65adae225453244e47ffd6f4f6ae840
+C:\Users\jjgh8\anaconda3\Lib\site-packages\pytest_asyncio\plugin.py:207: PytestDeprecationWarning: The configuration option "asyncio_default_fixture_loop_scope" is unset.
+The event loop scope for asynchronous fixtures will default to the fixture caching scope. Future versions of pytest-asyncio will default the loop scope for asynchronous fixtures to function scope. Set the default fixture loop scope explicitly in order to avoid unexpected behavior in the future. Valid fixture loop scopes are: "function", "class", "module", "package", "session"
+
+  warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCOPE_UNSET))
+F                                                                        [100%]
+================================== FAILURES ===================================
+___________ test_D3_the_search_query_refreshes_the_directories_once ___________
+
+home = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-25125/test_D3_the_search_query_refre0/.taskboard')
+
+    async def test_D3_the_search_query_refreshes_the_directories_once(home):
+        """PDR #D3 / LLR-2706.3: an initial query that already names the directories
+        fires the callback before the first frame; however often the query later
+        names them, it fires once; a text query never fires. RED: the callback
+        dropped from `on_mount` \u2192 the initial arm inverts."""
+        _two_boards(home)
+        app = _open(None)
+        async with app.run_test(size=(118, 30)) as pilot:
+            await pilot.pause()
+            calls = []
+            app.push_screen(modals.SearchPrompt(
+                "Filter tasks", initial="@x", people=app.people,
+                open_person=lambda h: None, on_directory_query=lambda: calls.append(1)))
+            await pilot.pause()
+>           assert calls == [1]
+E           assert [1, 1] == [1]
+E             
+E             Left contains one more item: 1
+E             Use -v to get more diff
+
+tests\test_directory_refresh.py:255: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_directory_refresh.py::test_D3_the_search_query_refreshes_the_directories_once
+1 failed in 0.56s
+after:  d23d4ecfdafbd1db53f7544a10242872c65adae225453244e47ffd6f4f6ae840
+tests/test_directory_refresh.py::test_D3_the_search_query_refreshes_the_directories_once @ taskboard/modals.py [self._directory_queried = True\n        if ]: RED (KILLED)

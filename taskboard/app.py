@@ -1407,12 +1407,23 @@ class TaskboardApp(App):
             return
         self.push_screen(make())
 
+    def _refresh_directories(self) -> None:
+        """HD-5: the directories re-read their files before a surface that names
+        them opens; a failed re-read keeps the directory and is said once."""
+        for directory, title in ((self.people, "People"), (self.marks, "Marks")):
+            if directory.refresh() is False:
+                self.notify(f"{directory.path.name} could not be read; the directory "
+                            f"as loaded is kept.", title=title, severity="warning",
+                            timeout=15, markup=False)
+
     def action_people_directory(self) -> None:
         """`@`: the people directory's view (batch 2026-10-21-batch-01)."""
+        self._refresh_directories()
         self._bring(PeopleDirectory, PeopleDirectory)
 
     def action_marks_manager(self) -> None:
         """`#`: the milestone classes (batch 2026-10-24-batch-01, HLR-2606)."""
+        self._refresh_directories()
         self._bring(MarksManager, MarksManager)
 
     def action_agenda_all(self) -> None:
@@ -3293,7 +3304,8 @@ class TaskboardApp(App):
         self.push_screen(SearchPrompt("Filter tasks", initial=self.search_query or "",
                                       placeholder="type to filter…",
                                       people=self.people,
-                                      open_person=lambda h: self.push_screen(PeopleDirectory(h))),
+                                      open_person=lambda h: self.push_screen(PeopleDirectory(h)),
+                                      on_directory_query=self._refresh_directories),
                          self._on_search_set)
 
     def _on_search_set(self, query: str | None) -> None:
@@ -3308,6 +3320,7 @@ class TaskboardApp(App):
         if self.view_mode == "setup":
             self.action_setup_add()
             return
+        self._refresh_directories()
         self.push_screen(TaskModal(self.board, people=self.people, marks=self.marks),
                          self._on_task_added)
 
@@ -3336,6 +3349,7 @@ class TaskboardApp(App):
         task = self.selected_task
         if task is None:
             return
+        self._refresh_directories()
         self.push_screen(TaskModal(self.board, task, people=self.people, marks=self.marks),
                         lambda data, t=task: self._on_task_edited(t, data))
 
