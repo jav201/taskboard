@@ -1,337 +1,292 @@
 {
-  "project": "taskboard",
-  "language": "en",
-  "batch_id": "2026-10-24-batch-02",
-  "batch_objective": "The home defers the board's start; the directories stay fresh: with BoardsHome shown at start, the default board's start is deferred (no migration, sweep, presence marker, team start or milestone offer, and no write to the board file, until the user leaves the home onto a board); the start-up modals open over the chosen board; the open-twice notice fires only when a board is actually opened; single-board, --open and later-B paths unchanged; self.people and self.marks re-read their files cheaply on mtime/size change when the task editor, people directory, marks manager or /@#/ search open, and a failed re-read keeps the in-memory directory and notifies once (HD-1..HD-5)",
-  "owner": "C:/Users/jjgh8/Github/taskboard-wt/home-fix",
-  "mode": "core",
-  "mode_history": [
-    {
-      "batch_id": "2026-08-19-batch-09",
-      "mode": "core",
-      "closed_at": "2026-08-19"
-    },
-    {
-      "batch_id": "2026-08-24-batch-10",
-      "mode": "core",
-      "closed_at": "2026-08-29"
-    },
-    {
-      "batch_id": "2026-09-01-batch-11",
-      "mode": "core",
-      "closed_at": "2026-09-01"
-    },
-    {
-      "batch_id": "2026-09-01-cleanup-aperture",
-      "mode": "core",
-      "closed_at": "2026-09-01"
-    },
-    {
-      "from": null,
-      "to": "core",
-      "date": "2026-09-30",
-      "reason": "initial mode, declared at /dev-flow-init"
-    },
-    {
-      "from": null,
-      "to": "core",
-      "date": "2026-10-02",
-      "reason": "batch 2026-10-02-batch-01 opened by rollover from 2026-09-30-batch-01; mode core declared by the commission"
-    },
-    {
-      "from": null,
-      "to": "core",
-      "date": "2026-10-02",
-      "reason": "batch 2026-10-02-batch-02 opened by rollover from 2026-10-02-batch-01; mode core declared by the commission"
-    },
-    {
-      "from": null,
-      "to": "core",
-      "date": "2026-10-02",
-      "reason": "batch 2026-10-02-batch-03 opened by rollover from 2026-10-02-batch-02; mode core declared by the commission"
-    },
-    {
-      "from": null,
-      "to": "core",
-      "date": "2026-10-02",
-      "reason": "batch 2026-10-02-batch-04 opened by rollover from 2026-10-02-batch-03; mode core declared by the commission"
-    },
-    {
-      "from": null,
-      "to": "core",
-      "date": "2026-10-04",
-      "reason": "batch 2026-10-04-batch-01 opened by rollover from 2026-10-02-batch-04; mode core declared by the commission"
-    },
-    {
-      "from": null,
-      "to": "core",
-      "date": "2026-10-04",
-      "reason": "batch 2026-10-04-batch-02 opened by rollover from 2026-10-04-batch-01; mode core declared by the commission"
-    },
-    {
-      "from": null,
-      "to": "core",
-      "date": "2026-10-06",
-      "reason": "batch 2026-10-06-batch-01 opened by rollover from 2026-10-04-batch-02; mode core declared by the commission"
-    },
-    {
-      "from": null,
-      "to": "core",
-      "date": "2026-10-07",
-      "reason": "batch 2026-10-07-batch-01 opened by rollover from 2026-10-06-batch-01; mode core declared by the commission"
-    },
-    {
-      "from": null,
-      "to": "core",
-      "date": "2026-10-07",
-      "reason": "batch 2026-10-07-batch-02 opened by rollover from 2026-10-07-batch-01; mode core declared by the commission"
-    },
-    {
-      "from": null,
-      "to": "core",
-      "date": "2026-10-07",
-      "reason": "batch 2026-10-07-batch-03 opened by rollover from 2026-10-07-batch-02; mode core declared by the commission"
-    },
-    {
-      "from": null,
-      "to": "core",
-      "date": "2026-10-07",
-      "reason": "batch 2026-10-07-batch-04 opened by rollover from 2026-10-07-batch-02; mode core declared by the commission"
-    },
-    {
-      "from": null,
-      "to": "core",
-      "date": "2026-10-07",
-      "reason": "the parallel tracks reconciled: batch-03 committed on main (14eaada), batch-04 merged from proto/present-e (6ba798f); the trunk state points at the tip batch, base_ref = the commit batch-04 landed on"
-    },
-    {
-      "from": null,
-      "to": "core",
-      "date": "2026-10-07",
-      "reason": "batch 2026-10-07-batch-05 opened by rollover from 2026-10-07-batch-04; mode core declared by the commission"
-    },
-    {
-      "from": null,
-      "to": "core",
-      "date": "2026-10-07",
-      "reason": "batch 2026-10-07-batch-06 opened by rollover from 2026-10-07-batch-05; mode core declared by the commission"
-    },
-    {
-      "from": null,
-      "to": "core",
-      "date": "2026-10-07",
-      "reason": "batch 2026-10-07-batch-07 opened by rollover from 2026-10-07-batch-06; mode core declared by the commission"
-    },
-    {
-      "from": null,
-      "to": "core",
-      "date": "2026-10-07",
-      "reason": "batch 2026-10-07-batch-08 opened by rollover from 2026-10-07-batch-07; mode core declared by the commission"
-    },
-    {
-      "from": null,
-      "to": "core",
-      "date": "2026-10-07",
-      "reason": "batch 2026-10-07-batch-09 opened by rollover from 2026-10-07-batch-08; mode core declared by the commission"
-    },
-    {
-      "from": null,
-      "to": "core",
-      "date": "2026-10-16",
-      "reason": "batch 2026-10-16-batch-01 opened by rollover from 2026-10-07-batch-09; mode core declared by the commission"
-    },
-    {
-      "from": null,
-      "to": "core",
-      "date": "2026-10-17",
-      "reason": "batch 2026-10-17-batch-01 opened by rollover from 2026-10-16-batch-01; mode core declared by the commission"
-    },
-    {
-      "from": null,
-      "to": "core",
-      "date": "2026-10-18",
-      "reason": "batch 2026-10-18-batch-01 opened by rollover from 2026-10-17-batch-01; mode core declared by the commission"
-    },
-    {
-      "from": null,
-      "to": "core",
-      "date": "2026-10-18",
-      "reason": "batch 2026-10-18-batch-02 opened by rollover from 2026-10-18-batch-01; mode core declared by the commission"
-    },
-    {
-      "from": null,
-      "to": "core",
-      "date": "2026-10-18",
-      "reason": "batch 2026-10-18-batch-03 opened by rollover from 2026-10-18-batch-02; mode core declared by the commission"
-    },
-    {
-      "from": null,
-      "to": "core",
-      "date": "2026-10-19",
-      "reason": "batch 2026-10-19-batch-01 opened by rollover from 2026-10-18-batch-03; mode core declared by the commission"
-    },
-    {
-      "from": null,
-      "to": "core",
-      "date": "2026-10-20",
-      "reason": "batch 2026-10-20-batch-01 opened by rollover from 2026-10-19-batch-01; mode core declared by the commission"
-    },
-    {
-      "from": null,
-      "to": "core",
-      "date": "2026-10-20",
-      "reason": "batch 2026-10-20-batch-02 opened by rollover from 2026-10-20-batch-01; mode core declared by the commission"
-    },
-    {
-      "from": null,
-      "to": "core",
-      "date": "2026-10-20",
-      "reason": "batch 2026-10-20-batch-03 opened by rollover from 2026-10-20-batch-02; mode core declared by the commission"
-    },
-    {
-      "from": null,
-      "to": "core",
-      "date": "2026-10-21",
-      "reason": "batch 2026-10-21-batch-01 opened by rollover from 2026-10-20-batch-03; mode core declared by the commission"
-    },
-    {
-      "from": null,
-      "to": "core",
-      "date": "2026-10-24",
-      "reason": "batch 2026-10-24-batch-01 opened by rollover from 2026-10-21-batch-01; mode core declared by the commission"
-    },
-    {
-      "from": null,
-      "to": "core",
-      "date": "2026-10-24",
-      "reason": "batch 2026-10-24-batch-02 opened by rollover from 2026-10-24-batch-01; mode core declared by the commission"
-    }
-  ],
-  "guided": false,
-  "current_station": "P5",
-  "phase_status": "closed",
-  "stations_active": [
-    "P0",
-    "ARQ",
-    "P1",
-    "P2",
-    "PDR",
-    "P3",
-    "DDR",
-    "P4",
-    "P5"
-  ],
-  "iterations_per_station": {
-    "P0": 0,
-    "P1": 1,
-    "P2": 0,
-    "P3": 0,
-    "P4": 0,
-    "P5": 0,
-    "ARQ": 0,
-    "DDR": 0,
-    "PDR": 0
+ "project": "taskboard",
+ "language": "en",
+ "batch_id": "2026-10-25-batch-01",
+ "batch_objective": "D-12: the start-up modals (MilestoneOffer, TeamIdentityPicker) open only after the board has painted at its real size, so the user sees the board dimmed by the shared #0007 backdrop behind them; the order is unchanged (identity picker first, offer last) and nothing else changes (SB-1..SB-3)",
+ "owner": "C:/Users/jjgh8/Github/taskboard-wt/backdrop",
+ "mode": "core",
+ "mode_history": [
+  {
+   "batch_id": "2026-08-19-batch-09",
+   "mode": "core",
+   "closed_at": "2026-08-19"
   },
-  "triggers": {
-    "evaluated_at": "2026-10-24T22:36:45",
-    "fired": [
-      "A2",
-      "B1",
-      "D1"
-    ],
-    "not_fired": [
-      "A1",
-      "A3",
-      "A4",
-      "B2",
-      "B3",
-      "B4",
-      "C1",
-      "C2",
-      "C3",
-      "C4",
-      "C5",
-      "C6",
-      "C7",
-      "C8",
-      "D2",
-      "E1",
-      "E2",
-      "E3",
-      "F1",
-      "F2"
-    ],
-    "record": ".dev-flow/2026-10-24-batch-02/PLAN.md#triggers"
+  {
+   "batch_id": "2026-08-24-batch-10",
+   "mode": "core",
+   "closed_at": "2026-08-29"
   },
-  "artifact_homes": {
-    "requirements": "repo:.dev-flow/2026-10-24-batch-02/01-requirements.md",
-    "requirements_ledger": "repo:.dev-flow/2026-10-24-batch-02/01-requirements-ledger.md",
-    "traceability": "repo:.dev-flow/2026-10-24-batch-02/06-docs/traceability-matrix.md",
-    "tests": "repo:tests/",
-    "module_map": "repo:docs/ARCHITECTURE.md",
-    "increments": "repo:.dev-flow/2026-10-24-batch-02/03-increments/",
-    "evidence": "repo:.dev-flow/2026-10-24-batch-02/evidence/",
-    "backlog": "repo:.dev-flow/BACKLOG.md",
-    "design_pdr": "vault:taskboard/design/PDR-2026-10-24-batch-02.md",
-    "design_ddr": "vault:taskboard/design/DDR-2026-10-24-batch-02.md",
-    "postmortem": "vault:taskboard/dev-flow-batches/2026-10-24-batch-02/",
-    "metrics": "vault:taskboard/dev-flow-batches/2026-10-24-batch-02/README.md",
-    "requirements_canon": "repo:REQUIREMENTS.md"
+  {
+   "batch_id": "2026-09-01-batch-11",
+   "mode": "core",
+   "closed_at": "2026-09-01"
   },
-  "base_ref": "4a647ab63bb234dc4db4e402ed41c6684f88e96a",
-  "artifacts": {},
-  "decisions_log": [
-    {
-      "station": "P0",
-      "date": "2026-10-24",
-      "decision": "P0 intake approved under the batch's standing authorization — «Ok, arréglalo.» (.dev-flow/COMMISSION-home-deferred-start.md); ARQ is next."
-    },
-    {
-      "station": "ARQ",
-      "date": "2026-10-24",
-      "decision": "ARQ approved under the batch's standing authorization — module map amended (people/marks re-read exposed, app owns the deferred start and the four re-read seats); no boundary moved; P1 requirements is next."
-    },
-    {
-      "station": "P1",
-      "date": "2026-10-24",
-      "decision": "P1 requirements approved under the batch's standing authorization — 2 US, 8 HLR, 14 LLR, AT-2701..AT-2707, ledger and IFC complete, scan answered, 0 block; P2 review is next."
-    },
-    {
-      "station": "P2",
-      "date": "2026-10-24",
-      "decision": "P2 round 1 returned iterate-to-refine under the batch's standing authorization — requirement defects: B1 (_announce_renumbering mis-classified read-only, it saves), the /-search seat without a black-box check, HLR-2708's permitted-diffs list missing test_boards.py and the TC-2409 lifecycle arms, the unspecified failed-start posture, and minors m1-m5; all folded into the contract and ledger, 0 block."
-    },
-    {
-      "station": "P1",
-      "date": "2026-10-24",
-      "decision": "P2 approved under the batch's standing authorization after three rounds (1 iterate-to-refine, 2 full re-reviews) — both lenses PASS, 0 block; the PDR is next."
-    },
-    {
-      "station": "P2",
-      "date": "2026-10-24",
-      "decision": "P2 approved under the batch's standing authorization — 02-review.md records 18 findings all folded or named; the PDR is next."
-    },
-    {
-      "station": "PDR",
-      "date": "2026-10-24",
-      "decision": "PDR approved with conditions under the batch's standing authorization — architect's verdict, C2/C3/C5 folded pre-seal, C1 -> increment 001's packet, C4 -> increment 002's battery; increment 001 is next."
-    },
-    {
-      "station": "P3",
-      "date": "2026-10-25",
-      "decision": "P3 increment 001 approved under the batch's standing authorization — code-reviewer round 2 PASS, 0 HIGH (F1 folded + discharged); 440 passed in the affected suites; the 2 V2 BLOCKs are station-expected (AT-2706/2707 are increment 002's nodes, green before its gate); increment 002 is next."
-    },
-    {
-      "station": "P3",
-      "date": "2026-10-25",
-      "decision": "P3 increment 002 approved under the batch's standing authorization — code-reviewer PASS, 0 HIGH; 276 passed; the V2 reds are green (AT-2706/2707 on disk); the DDR is next."
-    },
-    {
-      "station": "DDR",
-      "date": "2026-10-25",
-      "decision": "DDR approved with conditions under the batch's standing authorization — qa + ux lenses PASS, conditions ux-1/ux-2/qa-m9 land at P4; P4 is next."
-    }
+  {
+   "batch_id": "2026-09-01-cleanup-aperture",
+   "mode": "core",
+   "closed_at": "2026-09-01"
+  },
+  {
+   "from": null,
+   "to": "core",
+   "date": "2026-09-30",
+   "reason": "initial mode, declared at /dev-flow-init"
+  },
+  {
+   "from": null,
+   "to": "core",
+   "date": "2026-10-02",
+   "reason": "batch 2026-10-02-batch-01 opened by rollover from 2026-09-30-batch-01; mode core declared by the commission"
+  },
+  {
+   "from": null,
+   "to": "core",
+   "date": "2026-10-02",
+   "reason": "batch 2026-10-02-batch-02 opened by rollover from 2026-10-02-batch-01; mode core declared by the commission"
+  },
+  {
+   "from": null,
+   "to": "core",
+   "date": "2026-10-02",
+   "reason": "batch 2026-10-02-batch-03 opened by rollover from 2026-10-02-batch-02; mode core declared by the commission"
+  },
+  {
+   "from": null,
+   "to": "core",
+   "date": "2026-10-02",
+   "reason": "batch 2026-10-02-batch-04 opened by rollover from 2026-10-02-batch-03; mode core declared by the commission"
+  },
+  {
+   "from": null,
+   "to": "core",
+   "date": "2026-10-04",
+   "reason": "batch 2026-10-04-batch-01 opened by rollover from 2026-10-02-batch-04; mode core declared by the commission"
+  },
+  {
+   "from": null,
+   "to": "core",
+   "date": "2026-10-04",
+   "reason": "batch 2026-10-04-batch-02 opened by rollover from 2026-10-04-batch-01; mode core declared by the commission"
+  },
+  {
+   "from": null,
+   "to": "core",
+   "date": "2026-10-06",
+   "reason": "batch 2026-10-06-batch-01 opened by rollover from 2026-10-04-batch-02; mode core declared by the commission"
+  },
+  {
+   "from": null,
+   "to": "core",
+   "date": "2026-10-07",
+   "reason": "batch 2026-10-07-batch-01 opened by rollover from 2026-10-06-batch-01; mode core declared by the commission"
+  },
+  {
+   "from": null,
+   "to": "core",
+   "date": "2026-10-07",
+   "reason": "batch 2026-10-07-batch-02 opened by rollover from 2026-10-07-batch-01; mode core declared by the commission"
+  },
+  {
+   "from": null,
+   "to": "core",
+   "date": "2026-10-07",
+   "reason": "batch 2026-10-07-batch-03 opened by rollover from 2026-10-07-batch-02; mode core declared by the commission"
+  },
+  {
+   "from": null,
+   "to": "core",
+   "date": "2026-10-07",
+   "reason": "batch 2026-10-07-batch-04 opened by rollover from 2026-10-07-batch-02; mode core declared by the commission"
+  },
+  {
+   "from": null,
+   "to": "core",
+   "date": "2026-10-07",
+   "reason": "the parallel tracks reconciled: batch-03 committed on main (14eaada), batch-04 merged from proto/present-e (6ba798f); the trunk state points at the tip batch, base_ref = the commit batch-04 landed on"
+  },
+  {
+   "from": null,
+   "to": "core",
+   "date": "2026-10-07",
+   "reason": "batch 2026-10-07-batch-05 opened by rollover from 2026-10-07-batch-04; mode core declared by the commission"
+  },
+  {
+   "from": null,
+   "to": "core",
+   "date": "2026-10-07",
+   "reason": "batch 2026-10-07-batch-06 opened by rollover from 2026-10-07-batch-05; mode core declared by the commission"
+  },
+  {
+   "from": null,
+   "to": "core",
+   "date": "2026-10-07",
+   "reason": "batch 2026-10-07-batch-07 opened by rollover from 2026-10-07-batch-06; mode core declared by the commission"
+  },
+  {
+   "from": null,
+   "to": "core",
+   "date": "2026-10-07",
+   "reason": "batch 2026-10-07-batch-08 opened by rollover from 2026-10-07-batch-07; mode core declared by the commission"
+  },
+  {
+   "from": null,
+   "to": "core",
+   "date": "2026-10-07",
+   "reason": "batch 2026-10-07-batch-09 opened by rollover from 2026-10-07-batch-08; mode core declared by the commission"
+  },
+  {
+   "from": null,
+   "to": "core",
+   "date": "2026-10-16",
+   "reason": "batch 2026-10-16-batch-01 opened by rollover from 2026-10-07-batch-09; mode core declared by the commission"
+  },
+  {
+   "from": null,
+   "to": "core",
+   "date": "2026-10-17",
+   "reason": "batch 2026-10-17-batch-01 opened by rollover from 2026-10-16-batch-01; mode core declared by the commission"
+  },
+  {
+   "from": null,
+   "to": "core",
+   "date": "2026-10-18",
+   "reason": "batch 2026-10-18-batch-01 opened by rollover from 2026-10-17-batch-01; mode core declared by the commission"
+  },
+  {
+   "from": null,
+   "to": "core",
+   "date": "2026-10-18",
+   "reason": "batch 2026-10-18-batch-02 opened by rollover from 2026-10-18-batch-01; mode core declared by the commission"
+  },
+  {
+   "from": null,
+   "to": "core",
+   "date": "2026-10-18",
+   "reason": "batch 2026-10-18-batch-03 opened by rollover from 2026-10-18-batch-02; mode core declared by the commission"
+  },
+  {
+   "from": null,
+   "to": "core",
+   "date": "2026-10-19",
+   "reason": "batch 2026-10-19-batch-01 opened by rollover from 2026-10-18-batch-03; mode core declared by the commission"
+  },
+  {
+   "from": null,
+   "to": "core",
+   "date": "2026-10-20",
+   "reason": "batch 2026-10-20-batch-01 opened by rollover from 2026-10-19-batch-01; mode core declared by the commission"
+  },
+  {
+   "from": null,
+   "to": "core",
+   "date": "2026-10-20",
+   "reason": "batch 2026-10-20-batch-02 opened by rollover from 2026-10-20-batch-01; mode core declared by the commission"
+  },
+  {
+   "from": null,
+   "to": "core",
+   "date": "2026-10-20",
+   "reason": "batch 2026-10-20-batch-03 opened by rollover from 2026-10-20-batch-02; mode core declared by the commission"
+  },
+  {
+   "from": null,
+   "to": "core",
+   "date": "2026-10-21",
+   "reason": "batch 2026-10-21-batch-01 opened by rollover from 2026-10-20-batch-03; mode core declared by the commission"
+  },
+  {
+   "from": null,
+   "to": "core",
+   "date": "2026-10-24",
+   "reason": "batch 2026-10-24-batch-01 opened by rollover from 2026-10-21-batch-01; mode core declared by the commission"
+  },
+  {
+   "from": null,
+   "to": "core",
+   "date": "2026-10-24",
+   "reason": "batch 2026-10-24-batch-02 opened by rollover from 2026-10-24-batch-01; mode core declared by the commission"
+  },
+  {
+   "from": null,
+   "to": "core",
+   "date": "2026-10-25",
+   "reason": "batch 2026-10-25-batch-01 opened by rollover from 2026-10-24-batch-02; mode core declared by the commission"
+  }
+ ],
+ "guided": false,
+ "current_station": "P0",
+ "phase_status": "not-started",
+ "stations_active": [
+  "P0",
+  "ARQ",
+  "P1",
+  "P2",
+  "PDR",
+  "P3",
+  "DDR",
+  "P4",
+  "P5"
+ ],
+ "iterations_per_station": {
+  "P0": 0,
+  "P1": 0,
+  "P2": 0,
+  "P3": 0,
+  "P4": 0,
+  "P5": 0,
+  "ARQ": 0,
+  "DDR": 0,
+  "PDR": 0
+ },
+ "triggers": {
+  "evaluated_at": "2026-10-25T13:53:55",
+  "fired": [
+   "A2",
+   "B1",
+   "D1"
   ],
-  "obsidian_synced": false,
-  "created_at": "2026-10-24T22:34:52.183847"
+  "not_fired": [
+   "A1",
+   "A3",
+   "A4",
+   "B2",
+   "B3",
+   "B4",
+   "C1",
+   "C2",
+   "C3",
+   "C4",
+   "C5",
+   "C6",
+   "C7",
+   "C8",
+   "D2",
+   "E1",
+   "E2",
+   "E3",
+   "F1",
+   "F2"
+  ],
+  "record": ".dev-flow/2026-10-25-batch-01/PLAN.md#triggers"
+ },
+ "artifact_homes": {
+  "requirements": "repo:.dev-flow/2026-10-25-batch-01/01-requirements.md",
+  "requirements_ledger": "repo:.dev-flow/2026-10-25-batch-01/01-requirements-ledger.md",
+  "traceability": "repo:.dev-flow/2026-10-25-batch-01/06-docs/traceability-matrix.md",
+  "tests": "repo:tests/",
+  "module_map": "repo:docs/ARCHITECTURE.md",
+  "increments": "repo:.dev-flow/2026-10-25-batch-01/03-increments/",
+  "evidence": "repo:.dev-flow/2026-10-25-batch-01/evidence/",
+  "backlog": "repo:.dev-flow/BACKLOG.md",
+  "design_pdr": "vault:taskboard/design/PDR-2026-10-25-batch-01.md",
+  "design_ddr": "vault:taskboard/design/DDR-2026-10-25-batch-01.md",
+  "postmortem": "vault:taskboard/dev-flow-batches/2026-10-25-batch-01/",
+  "metrics": "vault:taskboard/dev-flow-batches/2026-10-25-batch-01/README.md",
+  "requirements_canon": "repo:REQUIREMENTS.md"
+ },
+ "base_ref": "e67ff4ff8a34370669754157d9e8f3e984188414",
+ "artifacts": {},
+ "decisions_log": [],
+ "obsidian_synced": false,
+ "created_at": "2026-10-25T13:50:36.431719"
 }
