@@ -28,9 +28,13 @@ import pytest
 from rich.text import Text
 
 import people_round_fixture as fx
+import present_board as pb
 from taskboard import app as app_module
 from taskboard import models, views
 from taskboard.models import Board
+
+ROOT = Path(__file__).resolve().parents[1]
+FRAMES = ROOT / ".dev-flow" / "2026-10-18-batch-01" / "evidence" / "frames"
 
 NB = " "
 HEX = views.HEX
@@ -357,3 +361,24 @@ def test_L0_cut_seat_k1_paints_lead_span_and_tag():
     assert views._present_cut(rows, 99, 30, ()) == \
         [views._present_note_markup(r, 30, ()) for r in rows]
     assert views._present_cut(rows, 0, 30, ()) == []
+
+
+# --------------------------------------------------------------------------- #
+# AT-2905 — the regression pin (HLR-2905): nothing else changes
+# --------------------------------------------------------------------------- #
+def test_AT_2905_the_regression_pin(tmp_path):
+    """AT-2905 (HLR-2905, LLR-2905.1): the surfaces this batch froze still draw
+    exactly as before — the gantt frame on the PRES-C oracle board equals the
+    frozen golden `PRES-V3-gantt-118x30.txt` row for row (read and built the
+    way tests/test_present.py's TC-1001 does), and the two other seats the one
+    tokeniser serves still colour highlights: the board's markup seat
+    (`_highlight_markup`) and the details/editor preview's pieces seat
+    (`notes_text`). This node is the increment's disk anchor only — the full
+    HLR-2905 certification is the P4 suite in its 3 chunks (04-validation.md)."""
+    b = pb.build(tmp_path / "board.json")
+    rows = views.render_present(b, pb.PROJECT_ID, pb.CURSOR, pb.TODAY, 118, 30)
+    golden = (FRAMES / "PRES-V3-gantt-118x30.txt").read_text(encoding="utf-8").splitlines()
+    assert rows.plain.split("\n") == golden
+    assert HEX["soon"] in views._highlight_markup("==a==")
+    t = views.notes_text("==a==", None)
+    assert any(HEX["soon"] in str(s.style) for s in t.spans), t.spans

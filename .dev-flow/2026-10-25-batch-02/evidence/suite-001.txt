@@ -17,3 +17,7 @@ tests\test_present_note_highlights.py ................                   [100%]
 # re-run after the LED-2905.3 mechanical row-shape fixes (2026-10-25T23:41:14Z)
 ................                                                         [100%]
 16 passed in 3.53s
+
+# re-run with the AT-2905 regression-pin node (2026-10-25T23:49:39Z)
+.................                                                        [100%]
+17 passed in 3.05s

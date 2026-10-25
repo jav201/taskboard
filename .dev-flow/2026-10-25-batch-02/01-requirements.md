@@ -224,7 +224,7 @@ regression pin HLR-2905 (AT-e).
 
 ### HLR-2905 — nothing else changes (the regression pin)
 - **Traceability:** US-2901
-- **Ledger:** LED-2905, LED-2905.1, LED-2905.2
+- **Ledger:** LED-2905, LED-2905.1, LED-2905.2, LED-2905.3
 - **Statement:** When any surface not named in HLR-2901..HLR-2904 runs — the board's markup, the details/editor preview, view 3 (`all`), the presentation's headings, layout, keys, hints, cuts' wording, every other view of the app — the system shall behave exactly as before this batch; every existing presentation byte-oracle and capture-based test stays green, and where an oracle fixture legitimately holds the markers the update is named and justified in the increment packet (AT-e) — no byte oracle keys on marker text today (a repo-wide grep confirms it: `tests/test_people_look.py:182-186` asserts mention membership, not marker bytes, and the marker strings appear only in the fixture); the P3 census re-scans `grep -rl "present_note_lines\|_present_cut\|_paint_marks\|_present_note_markup" tests/` and the suite run names any casualty the scan finds. The row-shape equality asserts of `tests/test_present_views.py:77-94` and `tests/test_people_look.py:144-149` are the expected, justified updates of the contracted row-type change (LLR-2901.1's `(lead, [(segment, tone)])`) — the marker-byte census stands: no marker-keyed byte oracle exists.
 - **Rationale (informative):** the commission's AT-e. The change is confined to the note pipeline's paint step; everything else is pinned by the existing suite, whose baseline at P4 is 3258 passed (commission §Evidence).
 - **Validation:** `test`
