@@ -34,8 +34,8 @@ backdrop rule would have dragged its `align: center middle` onto the picker
 
 | File | Kind | Traces to | Change |
 |---|---|---|---|
-| `taskboard/taskboard.tcss` | source | LLR-2801.1, LLR-2801.2, HLR-2801..2803 | adds the background-only declaration (7 lines with comment); no other rule touched |
-| `tests/test_startup_backdrop.py` | test | US-001, HLR-2801..2803, LLR-2801.1..2803.1 | new — the four nodes (AT-2801/2802/2803 + TC-2801) |
+| `taskboard/taskboard.tcss` | source | HLR-2801 · HLR-2802 · HLR-2803 · LLR-2801.1 · LLR-2801.2 | adds the background-only declaration (7 lines with comment); no other rule touched |
+| `tests/test_startup_backdrop.py` | test | HLR-2801 · HLR-2802 · HLR-2803 · HLR-2804 · LLR-2801.1 · LLR-2801.2 · LLR-2801.3 · LLR-2802.1 · LLR-2803.1 | new — the AT-2801/2802/2803 nodes, the picker-geometry arm and the pins (TC-2801, AT-2804) |
 | `tests/test_milestone_offer.py` | test | HLR-2804 (pin) | one node scoped to the offer box (see §6) |
 
 | Count | Value |
@@ -63,8 +63,8 @@ env -u NO_COLOR python -m pytest -q tests/test_startup_backdrop.py tests/test_mi
 | Layer | Owed in | Nodes | Result |
 |---|---|---|---|
 | **0 · unit** | `core` | none due — the change is one CSS declaration; cyclomatic 1, no module boundary crossed | n/a |
-| **A · white-box** | `core` | `test_TC_2801_quitting_with_the_picker_open_writes_nothing` (pin) — the contract §5.1 resolved-style probe (`styles.background` carries alpha) is superseded by the emitted-form render assertion + the mutation battery (C-42), both strictly stronger; it is not run as a separate arm (code review F1) | 1 passed |
-| **B · black-box** | `core` | `test_AT_2801_the_offer_opens_over_the_painted_board[size0|size1]` · `test_AT_2802_enter_on_the_home_opens_the_offer_over_the_chosen_board[size0|size1]` · `test_AT_2803_team_mode_shows_the_board_behind_both_modals_in_todays_order[size0|size1]` · `test_AT_2803_the_picker_keeps_its_pre_batch_geometry` | 7 passed |
+| **A · white-box** | `core` | `test_TC_2801_quitting_with_the_picker_open_writes_nothing` (pin) · `test_AT_2804_the_unchanged_start_paths_stay_unchanged` (pin, Layer B) — the contract §5.1 resolved-style probe (`styles.background` carries alpha) is superseded by the emitted-form render assertion + the mutation battery (C-42), both strictly stronger; it is not run as a separate arm (code review F1) | 1 passed |
+| **B · black-box** | `core` | `test_AT_2801_the_offer_opens_over_the_painted_board[size0|size1]` · `test_AT_2802_enter_on_the_home_opens_the_offer_over_the_chosen_board[size0|size1]` · `test_AT_2803_team_mode_shows_the_board_behind_both_modals_in_todays_order[size0|size1]` · `test_AT_2803_the_picker_keeps_its_pre_batch_geometry` · `test_AT_2804_the_unchanged_start_paths_stay_unchanged` (pin) | 8 passed |
 
 Affected suites: 144 passed, 0 failed (`evidence/suite-001.txt`); the B1
 observer suites: see the **Reverse census** field (`evidence/suite-002.txt`).
@@ -173,8 +173,8 @@ observer suites: see the **Reverse census** field (`evidence/suite-002.txt`).
 
 ### Signed-balance test ledger
 
-`post = base − deleted + added` → `3256 = 3248 − 0 + 8` ✓ reconciles
-(8 new nodes: 7 Layer-B arms/nodes + 1 Layer-A pin; the base of 3248 is the
+`post = base − deleted + added` → `3257 = 3248 − 0 + 9` ✓ reconciles
+(9 new nodes: 8 Layer-B arms/nodes + 1 Layer-A pin; the base of 3248 is the
 commission's batch-02 close figure — re-counted exactly at P4's chunks.)
 
 ---
@@ -224,7 +224,7 @@ sequential chunks and the `b01-` captures.
 | # | Item | ✓/⚠/✗ | Evidence (node id · command output · file:line) |
 |---|---|---|---|
 | 1 | SOURCE budget | ✓ | §2: 1 source file |
-| 2 | Tests in this increment | ✓ | `tests/test_startup_backdrop.py` (8 nodes) |
+| 2 | Tests in this increment | ✓ | `tests/test_startup_backdrop.py` (9 nodes) |
 | 3 | Layer 0 where it applies | ✓ | not due — cyclomatic 1 declaration, no boundary crossed |
 | 4 | RED counterfactual | ✓ | §4 — mutation-001.txt, restore digest verified |
 | 5 | Reverse census | ✓ | §4 — reverse-census-001.txt + suite-002.txt |

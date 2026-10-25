@@ -298,7 +298,10 @@ and the new node
 `::test_AT_2802_enter_on_the_home_opens_the_offer_over_the_chosen_board`
 (parametrized 118x30 and 80x24),
 `::test_AT_2803_team_mode_shows_the_board_behind_both_modals_in_todays_order`
-(118x30 and 80x24, plus the picker-geometry pin at 118x30). Every AT node
+(118x30 and 80x24, plus the picker-geometry pin at 118x30), and the pin nodes
+`::test_AT_2804_the_unchanged_start_paths_stay_unchanged` (the on-disk arm of the
+AT-2804 regression pin; the pin's body is the P4 suite) and
+`::test_TC_2801_quitting_with_the_picker_open_writes_nothing`. Every AT node
 asserts its modal is the top screen and locates the box's title row in the render
 **before** counting rows outside the box — a missing modal or an unlocated box
 fails the node; it never yields a vacuous 0-count pass (review finding Q2,

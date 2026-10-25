@@ -232,6 +232,28 @@ async def test_AT_2803_the_picker_keeps_its_pre_batch_geometry(tmp_path):
 
 
 # --------------------------------------------------------------------------- #
+# AT-2804 — the unchanged start paths stay unchanged (HLR-2804, the pin)
+# --------------------------------------------------------------------------- #
+async def test_AT_2804_the_unchanged_start_paths_stay_unchanged(tmp_path):
+    """AT-2804 (US-001, HLR-2804): a start that owes no start-up modal is
+    byte-behaviour identical to before this batch — no modal opens, the board
+    paints as today. (The rest of the pin is the P4 full suite: every existing
+    offer/picker/home/team arm re-run there.)"""
+    path = tmp_path / "board.json"
+    b = Board.load(path)            # seeded marks: the offer never opens
+    b.settings[RENUMBER] = True
+    b.save()
+    before = path.read_bytes()
+    app = TaskboardApp(board_path=str(path), team_sync_interval=1e9)
+    async with app.run_test(size=(118, 30)) as pilot:
+        await pilot.pause()
+        assert type(app.screen).__name__ == "Screen"
+        rows = _strips(app)
+        assert sum(1 for r in rows if r.strip()) > 0, "the board did not paint"
+    assert path.read_bytes() == before
+
+
+# --------------------------------------------------------------------------- #
 # TC-2801 — quitting with the picker open writes nothing (LLR-2801.3)
 # --------------------------------------------------------------------------- #
 def _snapshot(folder: Path) -> dict[str, bytes]:
