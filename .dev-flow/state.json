@@ -214,8 +214,8 @@
   }
  ],
  "guided": false,
- "current_station": "P0",
- "phase_status": "not-started",
+ "current_station": "P5",
+ "phase_status": "closed",
  "stations_active": [
   "P0",
   "ARQ",
@@ -229,7 +229,7 @@
  ],
  "iterations_per_station": {
   "P0": 0,
-  "P1": 0,
+  "P1": 1,
   "P2": 0,
   "P3": 0,
   "P4": 0,
@@ -286,7 +286,58 @@
  },
  "base_ref": "e67ff4ff8a34370669754157d9e8f3e984188414",
  "artifacts": {},
- "decisions_log": [],
+ "decisions_log": [
+  {
+   "station": "P0",
+   "date": "2026-10-25",
+   "decision": "P0 intake approved under the batch's standing authorization — «Sigue, tú planeas, la implementación dásela a kimi 2.8» (.dev-flow/COMMISSION-startup-backdrop.md); US-001 READY; triggers A2/B1/D1 fired, ARQ/PDR/DDR taken up; ARQ is next."
+  },
+  {
+   "station": "ARQ",
+   "date": "2026-10-25",
+   "decision": "ARQ approved under the batch's standing authorization — module map checked against the tree: all 16 taskboard/*.py claimed by exactly one layer, the batch's expected touch set (app layer + tests/) covered, no staleness, no amendment needed; P1 requirements is next."
+  },
+  {
+   "station": "P1",
+   "date": "2026-10-25",
+   "decision": "P1 approved under the batch's standing authorization — 1 US, 4 HLR, 6 LLR, AT-2801..AT-2804, IFC Part A + Part B no, premise table 6 rows (one FALSE: the commission's own hypothesis, refuted per SB-1), scan clean (flags: none, security_required: false), RED probe reproduced at base_ref (evidence/red-p1.txt); P2 review is next."
+  },
+  {
+   "station": "P2",
+   "date": "2026-10-25",
+   "decision": "P2 round 1 returned iterate-to-refine under the batch's standing authorization — architect lens: 1 blocker (A1: the shared rule's align: center middle would move TeamIdentityPicker off its top-left placement, unpinned), 1 major (A2: 'names every other modal' is false — ~16 ModalScreen subclasses unlisted), 3 minor; qa lens: 4 minor (Q1-Q4). 02-review.md records all nine; the security lens is declared not-run (family C did not fire, the scanner stands in its place). P1 is amended next, then the full P2 re-review."
+  },
+  {
+   "station": "P1",
+   "date": "2026-10-25",
+   "decision": "P2 round 2 approved under the batch's standing authorization — both lenses PASS-WITH-FINDINGS after the full re-review of the amended contract; all round-2 findings folded (LED-2801.1) or named open (picker-placement design note to the PDR; team-dir snapshot note to P3); 02-review.md records both rounds."
+  },
+  {
+   "station": "P2",
+   "date": "2026-10-25",
+   "decision": "P2 closed under the batch's standing authorization — the gate is approve; the PDR is next."
+  },
+  {
+   "station": "PDR",
+   "date": "2026-10-25",
+   "decision": "PDR approved with conditions under the batch's standing authorization — three lenses (architect, qa, ux) as independent sub-agents; conditions 1-3 discharge at P3/P5 (picker-placement backlog item at close, increment packet touch-set statement, QA-P4-B01-flake battery arm), conditions 4-5 folded at intake; the sealed record binds D1 (picker placement blessed) and D2 (the background-only declaration); increment 001 is next."
+  },
+  {
+   "station": "P3",
+   "date": "2026-10-25",
+   "decision": "P3 increment 001 approved under the batch's standing authorization — the background-only #0007 declaration (taskboard.tcss) + 9 new nodes green (8 B-layer + 1 A-layer pin); 144 + 145 passed in the affected and B1-observer suites; the mutation battery killed all six AT arms with the geometry arm and TC-2801 surviving by design; QA-P4-B01-flake 50x PASS (min 4/3); code-reviewer PASS-WITH-NOTES, 0 HIGH (F1/F2 folded); PDR conditions 2 and 3 discharged in the packet; the DDR is next."
+  },
+  {
+   "station": "DDR",
+   "date": "2026-10-25",
+   "decision": "DDR approved with conditions under the batch's standing authorization — qa + ux lenses as independent sub-agents; the increment conforms to the PDR on every gated axis (deviations named and justified, C-18 satisfied per the PDR's own sanction, ledger reconciles, conditions 2-5 discharged by re-reading); C-1/C-3 carry to P5 (BACKLOG: the picker-placement item + the dimness hardening note), C-2 to P4 (captures name their content-check mechanism); P4 is next."
+  },
+  {
+   "station": "P4",
+   "date": "2026-10-25",
+   "decision": "P4 approved under the batch's standing authorization — the gate run is green (3258 passed, 0 skipped, 0 failed in 3 sequential chunks on d5c9e18; the skip-turned-pass delta named), qa-reviewer returned PASS-WITH-NOTES (QA-P4-01..04 folded in the record), the six b01- captures accepted with the scripted content checks and the persisted no-leftover assertion, and the matrix holds 10/10 requirements; the DDR's C-2 discharged in the captures; C-1/C-3 carry to P5."
+  }
+ ],
  "obsidian_synced": false,
  "created_at": "2026-10-25T13:50:36.431719"
 }
