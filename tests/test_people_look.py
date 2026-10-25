@@ -104,8 +104,8 @@ def test_TC_2506_a_name_that_looks_like_markup_is_printed_as_typed():
     row2 = Text.from_markup(views.kanban_card(b.tasks[0], b, 40, False, today=fx.TODAY)[1]).plain
     assert "@[b]Bold[/b]" in row2
     marks = views.mention_marks(evil)
-    row = Text.from_markup(views._present_note_markup(("", views.present_mentions("hi @x.y", evil)),
-                                                      40, marks)).plain
+    row = Text.from_markup(views._present_note_markup(
+        ("", [(views.present_mentions("hi @x.y", evil), "ink")]), 40, marks)).plain
     assert row.rstrip() == f"hi @[b]Bold[/b]{NB}[/]"
 
 
@@ -143,24 +143,26 @@ def test_TC_2506_one_person_has_no_count_and_a_tight_card_keeps_the_due():
 def test_TC_2506_present_lines_write_the_name_and_never_split_it():
     rows = views.present_note_lines("Review the 40 questions with @ana.ruiz in Tuesday's sync",
                                     24, PEOPLE)
-    flat = [r for _lead, r in rows]
+    flat = [seg for _lead, pieces in rows for seg, _tone in pieces]
     assert any(f"@Ana{NB}Ruiz" in r for r in flat)
     assert all(not r.endswith("@Ana") for r in flat)
-    assert views.present_note_lines("with @ana.ruiz", 40) == [("", "with @ana.ruiz")]
+    assert views.present_note_lines("with @ana.ruiz", 40) == [("", [("with @ana.ruiz", "ink")])]
 
 
 def test_TC_2506_a_present_row_paints_each_mention_pink_bold():
     marks = views.mention_marks(PEOPLE)
     assert [len(m) for m in marks] == sorted((len(m) for m in marks), reverse=True)   # QA-10
     assert set(marks) == {"@" + p.name.replace(" ", NB) for p in PEOPLE.values()}
-    row = views._present_note_markup(("• ", f"@Andrés{NB}Lima adds @Ana{NB}Ruiz"), 40, marks)
+    row = views._present_note_markup(("• ", [(f"@Andrés{NB}Lima adds @Ana{NB}Ruiz", "ink")]), 40, marks)
     t = Text.from_markup(row)
     st = _spans(t)
     assert st[f"@Andrés{NB}Lima"] == f"bold {PINK}" and st[f"@Ana{NB}Ruiz"] == f"bold {PINK}"
-    assert views._present_note_markup(("", "plain"), 10) == views._present_note_markup(("", "plain"), 10, ())
+    assert views._present_note_markup(("", [("plain", "ink")]), 10) == \
+        views._present_note_markup(("", [("plain", "ink")]), 10, ())
     # code review CR-3: typed text that only starts like a name is not painted
     ana = views.mention_marks({"ana": Person("ana", "Ana")})
-    t2 = Text.from_markup(views._present_note_markup(("", "mail @Anabel, ask @Ana"), 40, ana))
+    t2 = Text.from_markup(views._present_note_markup(
+        ("", [("mail @Anabel, ask @Ana", "ink")]), 40, ana))
     pink = [(s.start, t2.plain[s.start:s.end]) for s in t2.spans if str(s.style) == f"bold {PINK}"]
     assert pink == [(t2.plain.index("ask @Ana") + 4, "@Ana")]          # only the whole word
 

@@ -75,28 +75,31 @@ def test_TC_1801_line_breaks_bullets_and_numbers_are_kept():
              "1. step one\n12. step twelve that is long enough to wrap twice here\nLast.")
     got = views.present_note_lines(notes, 24)
     assert got == [
-        ("", "First line."),
-        ("• ", "a dash item"),
-        ("• ", "a star item"),
-        ("• ", "a dot item"),
-        ("", ""),
-        ("1. ", "step one"),
-        ("12. ", "step twelve that is"),
-        ("    ", "long enough to wrap"),
-        ("    ", "twice here"),
-        ("", "Last."),
+        ("", [("First line.", "ink")]),
+        ("• ", [("a dash item", "ink")]),
+        ("• ", [("a star item", "ink")]),
+        ("• ", [("a dot item", "ink")]),
+        ("", []),
+        ("1. ", [("step one", "ink")]),
+        ("12. ", [("step twelve that is", "ink")]),
+        ("    ", [("long enough to wrap", "ink")]),
+        ("    ", [("twice here", "ink")]),
+        ("", [("Last.", "ink")]),
     ], got
     assert views.present_note_lines("\n\n  \n", 40) == []
     assert views.present_note_lines("", 40) == []
     assert views.present_note_lines(None, 40) == []
-    for lead, txt in views.present_note_lines(nb.NOTES[nb.LONG], 30):
+    for lead, pieces in views.present_note_lines(nb.NOTES[nb.LONG], 30):
+        txt = "".join(seg for seg, _ in pieces)
         assert views.vis(lead + txt) <= 30, (lead, txt)
     # wide glyphs (code-review F1): rows fit the CELLS, and no glyph is lost
     wide = "発表の前に全部のメモを確認する 🚀🚀 ok\n- 項目ひとつめ、とても長い説明がここに続きます"
     rows = views.present_note_lines(wide, 20)
-    for lead, txt in rows:
+    for lead, pieces in rows:
+        txt = "".join(seg for seg, _ in pieces)
         assert views.vis(lead + txt) <= 20, (lead, txt, views.vis(lead + txt))
-    flat = "".join(txt for _, txt in rows).replace(" ", "")
+    flat = "".join("".join(seg for seg, _ in pieces)
+                   for _, pieces in rows).replace(" ", "")
     assert flat == wide.replace("\n- ", "").replace(" ", ""), flat
     i = [lead for lead, _ in rows].index("• ")
     assert i > 0 and all(lead == "  " for lead, _ in rows[i + 1:]), rows
@@ -186,7 +189,9 @@ def test_TC_1804_every_shown_open_task_with_notes_shows_its_text(tmp_path, w, h)
         cw = (w - 5) // 2 if w >= 100 else w - 2
         for n in noted:                                  # each cut note says so, in its block
             block = _block(body, n.title, w)
-            whole = [x for _, x in views.present_note_lines(n.notes, cw - 2) if x]
+            whole = ["".join(seg for seg, _ in pieces)
+                     for _, pieces in views.present_note_lines(n.notes, cw - 2)]
+            whole = [x for x in whole if x]          # blank rows carry no text
             if any(x not in block for x in whole):
                 assert "… +" in block, (w, h, t.id, n.id, block)
         bar = [r for r in body if r.strip()]
@@ -359,7 +364,8 @@ def test_TC_1806_paging_down_shows_every_row_of_the_note(tmp_path, w, h, cursor,
     tasks = _shown_open_with_notes(b) if whole else [b.task_by_id(cursor)]
     cw = (w - 5) // 2 if w >= 100 else w - 2
     for t in tasks:
-        for lead, txt in views.present_note_lines(t.notes, cw - 2):
+        for _lead, pieces in views.present_note_lines(t.notes, cw - 2):
+            txt = "".join(seg for seg, _ in pieces)
             if txt:
                 assert txt in text, (w, h, t.id, txt)
 

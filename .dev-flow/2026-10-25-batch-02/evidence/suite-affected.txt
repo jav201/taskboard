@@ -1,0 +1,600 @@
+C:\Users\jjgh8\anaconda3\Lib\site-packages\pytest_asyncio\plugin.py:207: PytestDeprecationWarning: The configuration option "asyncio_default_fixture_loop_scope" is unset.
+The event loop scope for asynchronous fixtures will default to the fixture caching scope. Future versions of pytest-asyncio will default the loop scope for asynchronous fixtures to function scope. Set the default fixture loop scope explicitly in order to avoid unexpected behavior in the future. Valid fixture loop scopes are: "function", "class", "module", "package", "session"
+
+  warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCOPE_UNSET))
+........................F..............FFFFFFFFF.........FFFF........... [ 36%]
+.......................................................F...F............ [ 72%]
+........................................................                 [100%]
+================================== FAILURES ===================================
+____________ test_TC_1801_line_breaks_bullets_and_numbers_are_kept ____________
+
+    def test_TC_1801_line_breaks_bullets_and_numbers_are_kept():
+        """TC-1801 (LLR-1801.1): every line break starts a new row; `- ` / `* ` /
+        `• ` become `• `; `1. ` and `12. ` keep their number; an item's wrapped
+        rows hang under its text; a run of blank lines is one blank row; leading
+        and trailing blank lines and an empty note give nothing."""
+        notes = ("First line.\n- a dash item\n* a star item\n• a dot item\n\n\n"
+                 "1. step one\n12. step twelve that is long enough to wrap twice here\nLast.")
+        got = views.present_note_lines(notes, 24)
+        assert got == [
+            ("", [("First line.", "ink")]),
+            ("• ", [("a dash item", "ink")]),
+            ("• ", [("a star item", "ink")]),
+            ("• ", [("a dot item", "ink")]),
+            ("", []),
+            ("1. ", [("step one", "ink")]),
+            ("12. ", [("step twelve that is", "ink")]),
+            ("    ", [("long enough to wrap", "ink")]),
+            ("    ", [("twice here", "ink")]),
+            ("", [("Last.", "ink")]),
+        ], got
+        assert views.present_note_lines("\n\n  \n", 40) == []
+        assert views.present_note_lines("", 40) == []
+        assert views.present_note_lines(None, 40) == []
+        for lead, txt in views.present_note_lines(nb.NOTES[nb.LONG], 30):
+>           assert views.vis(lead + txt) <= 30, (lead, txt)
+E           TypeError: can only concatenate str (not "list") to str
+
+tests\test_present_views.py:93: TypeError
+____ test_TC_1804_every_shown_open_task_with_notes_shows_its_text[118-30] _____
+
+tmp_path = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-25920/test_TC_1804_every_shown_open_0')
+w = 118, h = 30
+
+    @pytest.mark.parametrize("w, h", SIZES)
+    def test_TC_1804_every_shown_open_task_with_notes_shows_its_text(tmp_path, w, h):
+        """TC-1804 (LLR-1801.2): for every cursor, every shown open task WITH notes
+        has its own note text on screen at the same time; a task with no notes says
+        `no notes` on its heading; every cut note says `… +` (a silent cut is a lie
+        to the room); two columns from 100 wide, one below."""
+        b = nb.build(tmp_path / "board.json")
+        noted = _shown_open_with_notes(b)
+        assert len(noted) == 4, [t.id for t in noted]           # the rule's population
+        for t in [x for x in b.visible_tasks(False) if x.project_id == pb.PROJECT_ID
+                  and not b.is_done(x)]:
+            rows = _rows(b, t.id, w, h)
+            body = rows[10:]
+            joined = "\n".join(body)
+            for n in noted:
+                assert _first_words(n.notes) in joined, (w, h, t.id, n.id, joined)
+            assert "no notes" in joined, (w, h, t.id)
+            cw = (w - 5) // 2 if w >= 100 else w - 2
+            for n in noted:                                  # each cut note says so, in its block
+                block = _block(body, n.title, w)
+                whole = [x for _, x in views.present_note_lines(n.notes, cw - 2) if x]
+>               if any(x not in block for x in whole):
+
+tests\test_present_views.py:190: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+.0 = <list_iterator object at 0x000001FBF15FAA40>
+
+>   if any(x not in block for x in whole):
+E   TypeError: 'in <string>' requires string as left operand, not list
+
+tests\test_present_views.py:190: TypeError
+_____ test_TC_1804_every_shown_open_task_with_notes_shows_its_text[80-24] _____
+
+tmp_path = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-25920/test_TC_1804_every_shown_open_1')
+w = 80, h = 24
+
+    @pytest.mark.parametrize("w, h", SIZES)
+    def test_TC_1804_every_shown_open_task_with_notes_shows_its_text(tmp_path, w, h):
+        """TC-1804 (LLR-1801.2): for every cursor, every shown open task WITH notes
+        has its own note text on screen at the same time; a task with no notes says
+        `no notes` on its heading; every cut note says `… +` (a silent cut is a lie
+        to the room); two columns from 100 wide, one below."""
+        b = nb.build(tmp_path / "board.json")
+        noted = _shown_open_with_notes(b)
+        assert len(noted) == 4, [t.id for t in noted]           # the rule's population
+        for t in [x for x in b.visible_tasks(False) if x.project_id == pb.PROJECT_ID
+                  and not b.is_done(x)]:
+            rows = _rows(b, t.id, w, h)
+            body = rows[10:]
+            joined = "\n".join(body)
+            for n in noted:
+                assert _first_words(n.notes) in joined, (w, h, t.id, n.id, joined)
+            assert "no notes" in joined, (w, h, t.id)
+            cw = (w - 5) // 2 if w >= 100 else w - 2
+            for n in noted:                                  # each cut note says so, in its block
+                block = _block(body, n.title, w)
+                whole = [x for _, x in views.present_note_lines(n.notes, cw - 2) if x]
+>               if any(x not in block for x in whole):
+
+tests\test_present_views.py:190: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+.0 = <list_iterator object at 0x000001FBF141E9B0>
+
+>   if any(x not in block for x in whole):
+E   TypeError: 'in <string>' requires string as left operand, not list
+
+tests\test_present_views.py:190: TypeError
+____ test_TC_1804_every_shown_open_task_with_notes_shows_its_text[100-30] _____
+
+tmp_path = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-25920/test_TC_1804_every_shown_open_2')
+w = 100, h = 30
+
+    @pytest.mark.parametrize("w, h", SIZES)
+    def test_TC_1804_every_shown_open_task_with_notes_shows_its_text(tmp_path, w, h):
+        """TC-1804 (LLR-1801.2): for every cursor, every shown open task WITH notes
+        has its own note text on screen at the same time; a task with no notes says
+        `no notes` on its heading; every cut note says `… +` (a silent cut is a lie
+        to the room); two columns from 100 wide, one below."""
+        b = nb.build(tmp_path / "board.json")
+        noted = _shown_open_with_notes(b)
+        assert len(noted) == 4, [t.id for t in noted]           # the rule's population
+        for t in [x for x in b.visible_tasks(False) if x.project_id == pb.PROJECT_ID
+                  and not b.is_done(x)]:
+            rows = _rows(b, t.id, w, h)
+            body = rows[10:]
+            joined = "\n".join(body)
+            for n in noted:
+                assert _first_words(n.notes) in joined, (w, h, t.id, n.id, joined)
+            assert "no notes" in joined, (w, h, t.id)
+            cw = (w - 5) // 2 if w >= 100 else w - 2
+            for n in noted:                                  # each cut note says so, in its block
+                block = _block(body, n.title, w)
+                whole = [x for _, x in views.present_note_lines(n.notes, cw - 2) if x]
+>               if any(x not in block for x in whole):
+
+tests\test_present_views.py:190: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+.0 = <list_iterator object at 0x000001FBF1739480>
+
+>   if any(x not in block for x in whole):
+E   TypeError: 'in <string>' requires string as left operand, not list
+
+tests\test_present_views.py:190: TypeError
+_____ test_TC_1804_every_shown_open_task_with_notes_shows_its_text[99-30] _____
+
+tmp_path = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-25920/test_TC_1804_every_shown_open_3')
+w = 99, h = 30
+
+    @pytest.mark.parametrize("w, h", SIZES)
+    def test_TC_1804_every_shown_open_task_with_notes_shows_its_text(tmp_path, w, h):
+        """TC-1804 (LLR-1801.2): for every cursor, every shown open task WITH notes
+        has its own note text on screen at the same time; a task with no notes says
+        `no notes` on its heading; every cut note says `… +` (a silent cut is a lie
+        to the room); two columns from 100 wide, one below."""
+        b = nb.build(tmp_path / "board.json")
+        noted = _shown_open_with_notes(b)
+        assert len(noted) == 4, [t.id for t in noted]           # the rule's population
+        for t in [x for x in b.visible_tasks(False) if x.project_id == pb.PROJECT_ID
+                  and not b.is_done(x)]:
+            rows = _rows(b, t.id, w, h)
+            body = rows[10:]
+            joined = "\n".join(body)
+            for n in noted:
+                assert _first_words(n.notes) in joined, (w, h, t.id, n.id, joined)
+            assert "no notes" in joined, (w, h, t.id)
+            cw = (w - 5) // 2 if w >= 100 else w - 2
+            for n in noted:                                  # each cut note says so, in its block
+                block = _block(body, n.title, w)
+                whole = [x for _, x in views.present_note_lines(n.notes, cw - 2) if x]
+>               if any(x not in block for x in whole):
+
+tests\test_present_views.py:190: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+.0 = <list_iterator object at 0x000001FBF170E890>
+
+>   if any(x not in block for x in whole):
+E   TypeError: 'in <string>' requires string as left operand, not list
+
+tests\test_present_views.py:190: TypeError
+____ test_TC_1804_every_shown_open_task_with_notes_shows_its_text[140-40] _____
+
+tmp_path = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-25920/test_TC_1804_every_shown_open_4')
+w = 140, h = 40
+
+    @pytest.mark.parametrize("w, h", SIZES)
+    def test_TC_1804_every_shown_open_task_with_notes_shows_its_text(tmp_path, w, h):
+        """TC-1804 (LLR-1801.2): for every cursor, every shown open task WITH notes
+        has its own note text on screen at the same time; a task with no notes says
+        `no notes` on its heading; every cut note says `… +` (a silent cut is a lie
+        to the room); two columns from 100 wide, one below."""
+        b = nb.build(tmp_path / "board.json")
+        noted = _shown_open_with_notes(b)
+        assert len(noted) == 4, [t.id for t in noted]           # the rule's population
+        for t in [x for x in b.visible_tasks(False) if x.project_id == pb.PROJECT_ID
+                  and not b.is_done(x)]:
+            rows = _rows(b, t.id, w, h)
+            body = rows[10:]
+            joined = "\n".join(body)
+            for n in noted:
+                assert _first_words(n.notes) in joined, (w, h, t.id, n.id, joined)
+            assert "no notes" in joined, (w, h, t.id)
+            cw = (w - 5) // 2 if w >= 100 else w - 2
+            for n in noted:                                  # each cut note says so, in its block
+                block = _block(body, n.title, w)
+                whole = [x for _, x in views.present_note_lines(n.notes, cw - 2) if x]
+>               if any(x not in block for x in whole):
+
+tests\test_present_views.py:190: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+.0 = <list_iterator object at 0x000001FBF10D00D0>
+
+>   if any(x not in block for x in whole):
+E   TypeError: 'in <string>' requires string as left operand, not list
+
+tests\test_present_views.py:190: TypeError
+____ test_TC_1804_every_shown_open_task_with_notes_shows_its_text[118-24] _____
+
+tmp_path = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-25920/test_TC_1804_every_shown_open_5')
+w = 118, h = 24
+
+    @pytest.mark.parametrize("w, h", SIZES)
+    def test_TC_1804_every_shown_open_task_with_notes_shows_its_text(tmp_path, w, h):
+        """TC-1804 (LLR-1801.2): for every cursor, every shown open task WITH notes
+        has its own note text on screen at the same time; a task with no notes says
+        `no notes` on its heading; every cut note says `… +` (a silent cut is a lie
+        to the room); two columns from 100 wide, one below."""
+        b = nb.build(tmp_path / "board.json")
+        noted = _shown_open_with_notes(b)
+        assert len(noted) == 4, [t.id for t in noted]           # the rule's population
+        for t in [x for x in b.visible_tasks(False) if x.project_id == pb.PROJECT_ID
+                  and not b.is_done(x)]:
+            rows = _rows(b, t.id, w, h)
+            body = rows[10:]
+            joined = "\n".join(body)
+            for n in noted:
+                assert _first_words(n.notes) in joined, (w, h, t.id, n.id, joined)
+            assert "no notes" in joined, (w, h, t.id)
+            cw = (w - 5) // 2 if w >= 100 else w - 2
+            for n in noted:                                  # each cut note says so, in its block
+                block = _block(body, n.title, w)
+                whole = [x for _, x in views.present_note_lines(n.notes, cw - 2) if x]
+>               if any(x not in block for x in whole):
+
+tests\test_present_views.py:190: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+.0 = <list_iterator object at 0x000001FBF170C4C0>
+
+>   if any(x not in block for x in whole):
+E   TypeError: 'in <string>' requires string as left operand, not list
+
+tests\test_present_views.py:190: TypeError
+_____ test_TC_1804_every_shown_open_task_with_notes_shows_its_text[80-30] _____
+
+tmp_path = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-25920/test_TC_1804_every_shown_open_6')
+w = 80, h = 30
+
+    @pytest.mark.parametrize("w, h", SIZES)
+    def test_TC_1804_every_shown_open_task_with_notes_shows_its_text(tmp_path, w, h):
+        """TC-1804 (LLR-1801.2): for every cursor, every shown open task WITH notes
+        has its own note text on screen at the same time; a task with no notes says
+        `no notes` on its heading; every cut note says `… +` (a silent cut is a lie
+        to the room); two columns from 100 wide, one below."""
+        b = nb.build(tmp_path / "board.json")
+        noted = _shown_open_with_notes(b)
+        assert len(noted) == 4, [t.id for t in noted]           # the rule's population
+        for t in [x for x in b.visible_tasks(False) if x.project_id == pb.PROJECT_ID
+                  and not b.is_done(x)]:
+            rows = _rows(b, t.id, w, h)
+            body = rows[10:]
+            joined = "\n".join(body)
+            for n in noted:
+                assert _first_words(n.notes) in joined, (w, h, t.id, n.id, joined)
+            assert "no notes" in joined, (w, h, t.id)
+            cw = (w - 5) // 2 if w >= 100 else w - 2
+            for n in noted:                                  # each cut note says so, in its block
+                block = _block(body, n.title, w)
+                whole = [x for _, x in views.present_note_lines(n.notes, cw - 2) if x]
+>               if any(x not in block for x in whole):
+
+tests\test_present_views.py:190: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+.0 = <list_iterator object at 0x000001FBF178AA40>
+
+>   if any(x not in block for x in whole):
+E   TypeError: 'in <string>' requires string as left operand, not list
+
+tests\test_present_views.py:190: TypeError
+____ test_TC_1804_every_shown_open_task_with_notes_shows_its_text[120-36] _____
+
+tmp_path = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-25920/test_TC_1804_every_shown_open_7')
+w = 120, h = 36
+
+    @pytest.mark.parametrize("w, h", SIZES)
+    def test_TC_1804_every_shown_open_task_with_notes_shows_its_text(tmp_path, w, h):
+        """TC-1804 (LLR-1801.2): for every cursor, every shown open task WITH notes
+        has its own note text on screen at the same time; a task with no notes says
+        `no notes` on its heading; every cut note says `… +` (a silent cut is a lie
+        to the room); two columns from 100 wide, one below."""
+        b = nb.build(tmp_path / "board.json")
+        noted = _shown_open_with_notes(b)
+        assert len(noted) == 4, [t.id for t in noted]           # the rule's population
+        for t in [x for x in b.visible_tasks(False) if x.project_id == pb.PROJECT_ID
+                  and not b.is_done(x)]:
+            rows = _rows(b, t.id, w, h)
+            body = rows[10:]
+            joined = "\n".join(body)
+            for n in noted:
+                assert _first_words(n.notes) in joined, (w, h, t.id, n.id, joined)
+            assert "no notes" in joined, (w, h, t.id)
+            cw = (w - 5) // 2 if w >= 100 else w - 2
+            for n in noted:                                  # each cut note says so, in its block
+                block = _block(body, n.title, w)
+                whole = [x for _, x in views.present_note_lines(n.notes, cw - 2) if x]
+>               if any(x not in block for x in whole):
+
+tests\test_present_views.py:190: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+.0 = <list_iterator object at 0x000001FBF119C6D0>
+
+>   if any(x not in block for x in whole):
+E   TypeError: 'in <string>' requires string as left operand, not list
+
+tests\test_present_views.py:190: TypeError
+_____ test_TC_1804_every_shown_open_task_with_notes_shows_its_text[80-19] _____
+
+tmp_path = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-25920/test_TC_1804_every_shown_open_8')
+w = 80, h = 19
+
+    @pytest.mark.parametrize("w, h", SIZES)
+    def test_TC_1804_every_shown_open_task_with_notes_shows_its_text(tmp_path, w, h):
+        """TC-1804 (LLR-1801.2): for every cursor, every shown open task WITH notes
+        has its own note text on screen at the same time; a task with no notes says
+        `no notes` on its heading; every cut note says `… +` (a silent cut is a lie
+        to the room); two columns from 100 wide, one below."""
+        b = nb.build(tmp_path / "board.json")
+        noted = _shown_open_with_notes(b)
+        assert len(noted) == 4, [t.id for t in noted]           # the rule's population
+        for t in [x for x in b.visible_tasks(False) if x.project_id == pb.PROJECT_ID
+                  and not b.is_done(x)]:
+            rows = _rows(b, t.id, w, h)
+            body = rows[10:]
+            joined = "\n".join(body)
+            for n in noted:
+                assert _first_words(n.notes) in joined, (w, h, t.id, n.id, joined)
+            assert "no notes" in joined, (w, h, t.id)
+            cw = (w - 5) // 2 if w >= 100 else w - 2
+            for n in noted:                                  # each cut note says so, in its block
+                block = _block(body, n.title, w)
+                whole = [x for _, x in views.present_note_lines(n.notes, cw - 2) if x]
+>               if any(x not in block for x in whole):
+
+tests\test_present_views.py:190: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+.0 = <list_iterator object at 0x000001FBF1739420>
+
+>   if any(x not in block for x in whole):
+E   TypeError: 'in <string>' requires string as left operand, not list
+
+tests\test_present_views.py:190: TypeError
+____ test_TC_1806_paging_down_shows_every_row_of_the_note[80-24-tw5-False] ____
+
+tmp_path = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-25920/test_TC_1806_paging_down_shows0')
+w = 80, h = 24, cursor = 'tw5', whole = False
+
+    @pytest.mark.parametrize("w, h, cursor, whole", [(80, 24, nb.LONG, False),
+                                                     (118, 30, nb.LONG, False),
+                                                     (80, 30, nb.LONG, False),
+                                                     (60, 20, nb.CURSOR, True)])
+    def test_TC_1806_paging_down_shows_every_row_of_the_note(tmp_path, w, h, cursor, whole):
+        """TC-1806 (LLR-1801.3; ux-reviewer UX-1): paging down from page 0 to the
+        last page puts EVERY wrapped row of the scrolled text on screen at least
+        once — the cursor's note, or every note when the whole area scrolls — so a
+        page never jumps over rows the presenter could not then reach; the pages
+        stop changing at the last one."""
+        b = nb.build(tmp_path / "board.json")
+        seen, prev = set(), None
+        for page in range(60):
+            rows = _rows(b, cursor, w, h, scroll=page)[10:]
+            seen.update(r.strip() for r in rows)
+            if rows == prev:
+                break
+            prev = rows
+        else:
+            raise AssertionError("the pages never stopped changing")
+        text = "\n".join(seen)
+        tasks = _shown_open_with_notes(b) if whole else [b.task_by_id(cursor)]
+        cw = (w - 5) // 2 if w >= 100 else w - 2
+        for t in tasks:
+            for lead, txt in views.present_note_lines(t.notes, cw - 2):
+                if txt:
+>                   assert txt in text, (w, h, t.id, txt)
+E                   TypeError: 'in <string>' requires string as left operand, not list
+
+tests\test_present_views.py:364: TypeError
+___ test_TC_1806_paging_down_shows_every_row_of_the_note[118-30-tw5-False] ____
+
+tmp_path = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-25920/test_TC_1806_paging_down_shows1')
+w = 118, h = 30, cursor = 'tw5', whole = False
+
+    @pytest.mark.parametrize("w, h, cursor, whole", [(80, 24, nb.LONG, False),
+                                                     (118, 30, nb.LONG, False),
+                                                     (80, 30, nb.LONG, False),
+                                                     (60, 20, nb.CURSOR, True)])
+    def test_TC_1806_paging_down_shows_every_row_of_the_note(tmp_path, w, h, cursor, whole):
+        """TC-1806 (LLR-1801.3; ux-reviewer UX-1): paging down from page 0 to the
+        last page puts EVERY wrapped row of the scrolled text on screen at least
+        once — the cursor's note, or every note when the whole area scrolls — so a
+        page never jumps over rows the presenter could not then reach; the pages
+        stop changing at the last one."""
+        b = nb.build(tmp_path / "board.json")
+        seen, prev = set(), None
+        for page in range(60):
+            rows = _rows(b, cursor, w, h, scroll=page)[10:]
+            seen.update(r.strip() for r in rows)
+            if rows == prev:
+                break
+            prev = rows
+        else:
+            raise AssertionError("the pages never stopped changing")
+        text = "\n".join(seen)
+        tasks = _shown_open_with_notes(b) if whole else [b.task_by_id(cursor)]
+        cw = (w - 5) // 2 if w >= 100 else w - 2
+        for t in tasks:
+            for lead, txt in views.present_note_lines(t.notes, cw - 2):
+                if txt:
+>                   assert txt in text, (w, h, t.id, txt)
+E                   TypeError: 'in <string>' requires string as left operand, not list
+
+tests\test_present_views.py:364: TypeError
+____ test_TC_1806_paging_down_shows_every_row_of_the_note[80-30-tw5-False] ____
+
+tmp_path = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-25920/test_TC_1806_paging_down_shows2')
+w = 80, h = 30, cursor = 'tw5', whole = False
+
+    @pytest.mark.parametrize("w, h, cursor, whole", [(80, 24, nb.LONG, False),
+                                                     (118, 30, nb.LONG, False),
+                                                     (80, 30, nb.LONG, False),
+                                                     (60, 20, nb.CURSOR, True)])
+    def test_TC_1806_paging_down_shows_every_row_of_the_note(tmp_path, w, h, cursor, whole):
+        """TC-1806 (LLR-1801.3; ux-reviewer UX-1): paging down from page 0 to the
+        last page puts EVERY wrapped row of the scrolled text on screen at least
+        once — the cursor's note, or every note when the whole area scrolls — so a
+        page never jumps over rows the presenter could not then reach; the pages
+        stop changing at the last one."""
+        b = nb.build(tmp_path / "board.json")
+        seen, prev = set(), None
+        for page in range(60):
+            rows = _rows(b, cursor, w, h, scroll=page)[10:]
+            seen.update(r.strip() for r in rows)
+            if rows == prev:
+                break
+            prev = rows
+        else:
+            raise AssertionError("the pages never stopped changing")
+        text = "\n".join(seen)
+        tasks = _shown_open_with_notes(b) if whole else [b.task_by_id(cursor)]
+        cw = (w - 5) // 2 if w >= 100 else w - 2
+        for t in tasks:
+            for lead, txt in views.present_note_lines(t.notes, cw - 2):
+                if txt:
+>                   assert txt in text, (w, h, t.id, txt)
+E                   TypeError: 'in <string>' requires string as left operand, not list
+
+tests\test_present_views.py:364: TypeError
+____ test_TC_1806_paging_down_shows_every_row_of_the_note[60-20-tw3-True] _____
+
+tmp_path = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-25920/test_TC_1806_paging_down_shows3')
+w = 60, h = 20, cursor = 'tw3', whole = True
+
+    @pytest.mark.parametrize("w, h, cursor, whole", [(80, 24, nb.LONG, False),
+                                                     (118, 30, nb.LONG, False),
+                                                     (80, 30, nb.LONG, False),
+                                                     (60, 20, nb.CURSOR, True)])
+    def test_TC_1806_paging_down_shows_every_row_of_the_note(tmp_path, w, h, cursor, whole):
+        """TC-1806 (LLR-1801.3; ux-reviewer UX-1): paging down from page 0 to the
+        last page puts EVERY wrapped row of the scrolled text on screen at least
+        once — the cursor's note, or every note when the whole area scrolls — so a
+        page never jumps over rows the presenter could not then reach; the pages
+        stop changing at the last one."""
+        b = nb.build(tmp_path / "board.json")
+        seen, prev = set(), None
+        for page in range(60):
+            rows = _rows(b, cursor, w, h, scroll=page)[10:]
+            seen.update(r.strip() for r in rows)
+            if rows == prev:
+                break
+            prev = rows
+        else:
+            raise AssertionError("the pages never stopped changing")
+        text = "\n".join(seen)
+        tasks = _shown_open_with_notes(b) if whole else [b.task_by_id(cursor)]
+        cw = (w - 5) // 2 if w >= 100 else w - 2
+        for t in tasks:
+            for lead, txt in views.present_note_lines(t.notes, cw - 2):
+                if txt:
+>                   assert txt in text, (w, h, t.id, txt)
+E                   TypeError: 'in <string>' requires string as left operand, not list
+
+tests\test_present_views.py:364: TypeError
+_______ test_TC_2506_a_name_that_looks_like_markup_is_printed_as_typed ________
+
+    def test_TC_2506_a_name_that_looks_like_markup_is_printed_as_typed():
+        """code review CR-2: the preview (Text pieces), and the two markup paths — the card's
+        token and the presentation's painted row — print a markup-looking name as typed."""
+        evil = {"x.y": Person("x.y", "[b]Bold[/b] [/]")}
+        t = modals.notes_preview("see @x.y", evil)
+        assert t.plain == "see @[b]Bold[/b] [/]"
+        b = Board([], [Task(title="T", phase="Doing", due_date="2026-10-20", notes="@x.y", id="t1")],
+                  Path("unused.json"))
+        b.people = evil
+        row2 = Text.from_markup(views.kanban_card(b.tasks[0], b, 40, False, today=fx.TODAY)[1]).plain
+        assert "@[b]Bold[/b]" in row2
+        marks = views.mention_marks(evil)
+>       row = Text.from_markup(views._present_note_markup(("", views.present_mentions("hi @x.y", evil)),
+                                                          40, marks)).plain
+
+tests\test_people_look.py:107: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+row = ('', 'hi @[b]Bold[/b]\xa0[/]'), w = 40, marks = ('@[b]Bold[/b]\xa0[/]',)
+
+    def _present_note_markup(row: tuple[str, list[tuple[str, str]]], w: int,
+                             marks: tuple[str, ...] = ()) -> str:
+        """One note row; the lead in `mut`, each piece in its tone, `marks` bold
+        pink. The pieces are clipped to `w - vis(lead)` cells BEFORE the paint —
+        walking them by cells, a glyph straddling the cut dropped (mirroring
+        `set_cell_size`), the cut declared `…` in the tone of the piece being cut
+        (mirroring `clip`); a row that fits is untouched, then padded to `w`."""
+        lead, pieces = row
+        budget = w - vis(lead)
+        kept: list[tuple[str, str]] = []
+        used, cut_tone = 0, None
+>       for seg, tone in pieces:
+E       ValueError: not enough values to unpack (expected 2, got 1)
+
+taskboard\views.py:6813: ValueError
+__________ test_TC_2506_a_present_row_paints_each_mention_pink_bold ___________
+
+    def test_TC_2506_a_present_row_paints_each_mention_pink_bold():
+        marks = views.mention_marks(PEOPLE)
+        assert [len(m) for m in marks] == sorted((len(m) for m in marks), reverse=True)   # QA-10
+        assert set(marks) == {"@" + p.name.replace(" ", NB) for p in PEOPLE.values()}
+>       row = views._present_note_markup(("• ", f"@Andrés{NB}Lima adds @Ana{NB}Ruiz"), 40, marks)
+
+tests\test_people_look.py:156: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+row = ('• ', '@Andrés\xa0Lima adds @Ana\xa0Ruiz'), w = 40
+marks = ('@Pablo\xa0Ortiz', '@Elena\xa0Vidal', '@Andrés\xa0Lima', '@Juana\xa0Soto', '@Diego\xa0Paz', '@Luis\xa0Mora', ...)
+
+    def _present_note_markup(row: tuple[str, list[tuple[str, str]]], w: int,
+                             marks: tuple[str, ...] = ()) -> str:
+        """One note row; the lead in `mut`, each piece in its tone, `marks` bold
+        pink. The pieces are clipped to `w - vis(lead)` cells BEFORE the paint —
+        walking them by cells, a glyph straddling the cut dropped (mirroring
+        `set_cell_size`), the cut declared `…` in the tone of the piece being cut
+        (mirroring `clip`); a row that fits is untouched, then padded to `w`."""
+        lead, pieces = row
+        budget = w - vis(lead)
+        kept: list[tuple[str, str]] = []
+        used, cut_tone = 0, None
+>       for seg, tone in pieces:
+E       ValueError: not enough values to unpack (expected 2, got 1)
+
+taskboard\views.py:6813: ValueError
+=========================== short test summary info ===========================
+FAILED tests/test_present_views.py::test_TC_1801_line_breaks_bullets_and_numbers_are_kept
+FAILED tests/test_present_views.py::test_TC_1804_every_shown_open_task_with_notes_shows_its_text[118-30]
+FAILED tests/test_present_views.py::test_TC_1804_every_shown_open_task_with_notes_shows_its_text[80-24]
+FAILED tests/test_present_views.py::test_TC_1804_every_shown_open_task_with_notes_shows_its_text[100-30]
+FAILED tests/test_present_views.py::test_TC_1804_every_shown_open_task_with_notes_shows_its_text[99-30]
+FAILED tests/test_present_views.py::test_TC_1804_every_shown_open_task_with_notes_shows_its_text[140-40]
+FAILED tests/test_present_views.py::test_TC_1804_every_shown_open_task_with_notes_shows_its_text[118-24]
+FAILED tests/test_present_views.py::test_TC_1804_every_shown_open_task_with_notes_shows_its_text[80-30]
+FAILED tests/test_present_views.py::test_TC_1804_every_shown_open_task_with_notes_shows_its_text[120-36]
+FAILED tests/test_present_views.py::test_TC_1804_every_shown_open_task_with_notes_shows_its_text[80-19]
+FAILED tests/test_present_views.py::test_TC_1806_paging_down_shows_every_row_of_the_note[80-24-tw5-False]
+FAILED tests/test_present_views.py::test_TC_1806_paging_down_shows_every_row_of_the_note[118-30-tw5-False]
+FAILED tests/test_present_views.py::test_TC_1806_paging_down_shows_every_row_of_the_note[80-30-tw5-False]
+FAILED tests/test_present_views.py::test_TC_1806_paging_down_shows_every_row_of_the_note[60-20-tw3-True]
+FAILED tests/test_people_look.py::test_TC_2506_a_name_that_looks_like_markup_is_printed_as_typed
+FAILED tests/test_people_look.py::test_TC_2506_a_present_row_paints_each_mention_pink_bold
+16 failed, 184 passed in 272.58s (0:04:32)
+
+# re-run after the LED-2905.3 mechanical row-shape fixes (2026-10-25T23:41:08Z)
+........................................................................ [ 72%]
+........................................................                 [100%]
+200 passed in 285.99s (0:04:45)

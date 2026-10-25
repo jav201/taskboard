@@ -6637,18 +6637,21 @@ PRESENT_NARROW = tuple(r.format(PRESENT_MIN_WIDTH) for r in (
 _PRESENT_ITEM = re.compile(r"\d{1,3}\. ")
 
 
-def present_note_lines(notes: str, w: int, people: dict | None = None) -> list[tuple[str, str]]:
-    """A task's notes as (lead, text) rows that fit `w` cells: every line break
-    kept, a run of blank lines collapsed to one blank row, `- ` / `* ` / `• `
-    items drawn `• ` and `1. ` items keeping their number, each item's wrapped
-    rows hanging under its text (the prototype's `wrap_notes`); with `people`, a
+def present_note_lines(notes: str, w: int, people: dict | None = None) -> list:
+    """A task's notes as (lead, pieces) rows that fit `w` cells: every line
+    break kept, a run of blank lines collapsed to one blank row, `- ` / `* ` /
+    `• ` items drawn `• ` and `1. ` items keeping their number, each item's
+    wrapped rows hanging under its text (the prototype's `wrap_notes`); the
+    highlights are tokenised before the wrap (`highlight_segments` — the one
+    tokeniser, batch 2026-10-25-batch-02) and each row's `pieces` carry their
+    tone, `mut` mapped to the presentation's base `ink`; with `people`, a
     mention is written `@Name` (`present_mentions`)."""
-    out: list[tuple[str, str]] = []
+    out: list[tuple[str, list[tuple[str, str]]]] = []
     for para in present_mentions(notes, people).strip().split("\n"):
         body = para.strip()
         if not body:
             if out and out[-1][1]:
-                out.append(("", ""))
+                out.append(("", []))
             continue
         lead = ""
         if body[:2] in ("- ", "* ", "• "):
@@ -6656,9 +6659,18 @@ def present_note_lines(notes: str, w: int, people: dict | None = None) -> list[t
         elif m := _PRESENT_ITEM.match(body):
             lead, body = m.group(0), body[m.end():]
         tw = max(4, w - vis(lead))
-        rows = (textwrap.wrap(body, tw) if vis(body) == len(body) else _wrap_cells(body, tw)) or [""]
-        out.append((lead, rows[0]))
-        out += [(" " * vis(lead), r) for r in rows[1:]]
+        pieces = [(seg, "ink" if tone == "mut" else tone)
+                  for seg, tone in highlight_segments(body)]
+        plain = "".join(seg for seg, _ in pieces)
+        rows = (textwrap.wrap(plain, tw) if vis(plain) == len(plain)
+                else _wrap_cells(plain, tw)) or [""]
+        flat = [(ch, tone) for seg, tone in pieces for ch in seg]
+        toned, at = [], 0
+        for r in rows:
+            p, at = _tone_walk(r, flat, at)
+            toned.append(p)
+        out.append((lead, toned[0]))
+        out += [(" " * vis(lead), p) for p in toned[1:]]
     return out
 
 
@@ -6687,6 +6699,67 @@ def _wrap_cells(text: str, w: int) -> list[str]:
     return rows + ([line] if line else [])
 
 
+_WS = " \t\n\r\f\v"     # ASCII whitespace: the two divergence classes _tone_row allows
+
+
+def _tone_row(row: str, pieces: list[tuple[str, str]], start: int = 0
+              ) -> tuple[list[tuple[str, str]], int]:
+    """A wrapped row (plain, marker-free) re-attributed to its toned `pieces`:
+    a two-pointer walk over the row's chars and the flattened (char, tone)
+    stream, grouping consecutive same-tone chars. The matcher allows exactly
+    two divergence classes: (a) ASCII whitespace the wrap dropped at a row
+    break, (b) the wrap's whitespace substitution (`\\t \\n \\r \\f \\v` drawn
+    as a space). Anything else is a wrap that mutated non-whitespace — an
+    AssertionError, a bug alarm, never reachable by user text.
+
+    `start` is the stream index the row begins at (the caller wrapping a
+    paragraph threads the returned index, so the whole note walks the stream
+    once); the default 0 attributes a first row. Returns the row's pieces and
+    the index just past its last consumed char; an empty row stays put.
+
+    The whitespace draws diverge three ways, all in the whitespace domain: the
+    wrap drops ASCII whitespace at a row break; it substitutes one whitespace
+    char for another (``replace_whitespace``); and `expand_tabs` draws one tab
+    as several spaces, the extra drawn spaces having no stream char. The walk
+    absorbs exactly those; a divergence outside it is a wrap that mutated
+    non-whitespace — the AssertionError, a bug alarm."""
+    return _tone_walk(row, [(ch, tone) for seg, tone in pieces for ch in seg], start)
+
+
+def _tone_walk(row: str, flat: list[tuple[str, str]], start: int = 0
+               ) -> tuple[list[tuple[str, str]], int]:
+    """`_tone_row` over an already-flattened stream — `present_note_lines`
+    flattens a paragraph's pieces once and walks every row against that one
+    list, so a long note is attributed in one linear pass."""
+    if not row:
+        return [("", "ink")], start
+    out: list[tuple[str, str]] = []
+    i = start
+    for ch in row:
+        skip = False
+        while True:
+            if i >= len(flat):
+                raise AssertionError(f"the wrap emitted {ch!r} past the segment stream")
+            fch, tone = flat[i]
+            if fch == ch or (fch in _WS and ch in _WS):
+                break                         # kept, or a whitespace drawn differently
+            if fch in _WS:
+                i += 1                        # whitespace dropped at a row break
+                continue
+            if ch in _WS:
+                skip = True                   # expand_tabs: a drawn space, no stream char
+                break
+            raise AssertionError(f"the wrap turned {fch!r} into {ch!r}")
+        fch, tone = flat[i]
+        if out and out[-1][1] == tone:
+            out[-1] = (out[-1][0] + ch, tone)
+        else:
+            out.append((ch, tone))
+        if not skip:
+            i += 1
+    return out, i
+
+
 @functools.lru_cache(maxsize=8)
 def _marks_re(marks: tuple[str, ...]) -> re.Pattern:
     """`marks` as one pattern, built once per directory, not per row (security N-2); a
@@ -6694,23 +6767,70 @@ def _marks_re(marks: tuple[str, ...]) -> re.Pattern:
     return re.compile("(?:" + "|".join(re.escape(k) for k in marks) + r")(?!\w)")
 
 
-def _paint_marks(txt: str, marks: tuple[str, ...]) -> str:
-    """`txt` as `ink` markup, each of `marks` (`mention_marks`) in it bold pink."""
-    body, last = "", 0
+def _paint_group(key: tuple[str, bool], chars: list[tuple[str, str]]) -> str:
+    """One run of same-style chars as markup — a `marks` mention bold pink, a
+    piece's chars in its tone; the text escaped before it enters markup."""
+    text = "".join(ch for ch, _ in chars)
+    return c(escape(text), "pink", bold=True) if key[1] else c(escape(text), key[0])
+
+
+def _paint_marks(pieces: list[tuple[str, str]], marks: tuple[str, ...]) -> str:
+    """A row's `pieces` as markup: every char in its piece's tone, each of
+    `marks` (`mention_marks`) found in the row's plain text bold pink inside
+    whatever span holds it; every user byte escaped, the only tags constant
+    HEX colours. A row with no pieces paints one empty `ink` group — the blank
+    row's shape since batch 2026-10-18-batch-01."""
+    flat = [(ch, tone) for seg, tone in pieces for ch in seg]
+    if not flat:
+        return c("", "ink")
+    marked = [False] * len(flat)
     if marks:
-        for m in _marks_re(marks).finditer(txt):
-            body += c(escape(txt[last:m.start()]), "ink") + c(escape(m.group(0)), "pink", bold=True)
-            last = m.end()
-    return body + c(escape(txt[last:]), "ink")
+        plain = "".join(ch for ch, _ in flat)
+        for m in _marks_re(marks).finditer(plain):
+            marked[m.start():m.end()] = [True] * (m.end() - m.start())
+    out, start, key = "", 0, None
+    for i, ((ch, tone), mk) in enumerate(zip(flat, marked)):
+        k = ("pink", True) if mk else (tone, False)
+        if key is None:
+            key, start = k, i
+        elif k != key:
+            out += _paint_group(key, flat[start:i])
+            key, start = k, i
+    return out + _paint_group(key, flat[start:])
 
 
-def _present_note_markup(row: tuple[str, str], w: int, marks: tuple[str, ...] = ()) -> str:
-    """One note row; each of `marks` (`mention_marks`) in it painted bold pink."""
-    lead, txt = row
-    return _pad(c(escape(lead), "mut") + _paint_marks(clip(txt, w - vis(lead)), marks), w)
+def _present_note_markup(row: tuple[str, list[tuple[str, str]]], w: int,
+                         marks: tuple[str, ...] = ()) -> str:
+    """One note row; the lead in `mut`, each piece in its tone, `marks` bold
+    pink. The pieces are clipped to `w - vis(lead)` cells BEFORE the paint —
+    walking them by cells, a glyph straddling the cut dropped (mirroring
+    `set_cell_size`), the cut declared `…` in the tone of the piece being cut
+    (mirroring `clip`); a row that fits is untouched, then padded to `w`."""
+    lead, pieces = row
+    budget = w - vis(lead)
+    kept: list[tuple[str, str]] = []
+    used, cut_tone = 0, None
+    for seg, tone in pieces:
+        part = ""
+        for ch in seg:
+            if used + vis(ch) > budget:
+                cut_tone = tone
+                break
+            part += ch
+            used += vis(ch)
+        if part:
+            kept.append((part, tone))
+        if cut_tone is not None:
+            break
+    if cut_tone is not None:
+        if kept and kept[-1][1] == cut_tone:
+            kept[-1] = (kept[-1][0] + "…", cut_tone)
+        else:
+            kept.append(("…", cut_tone))
+    return _pad(c(escape(lead), "mut") + _paint_marks(kept, marks), w)
 
 
-def _present_cut(rows: list[tuple[str, str]], k: int, w: int,
+def _present_cut(rows: list[tuple[str, list[tuple[str, str]]]], k: int, w: int,
                  marks: tuple[str, ...] = ()) -> list[str]:
     """`k` rows of a note, `w` cells each; a cut is always declared: the last
     row says `… +N lines`, and a note kept to one row is its first line, cut,
@@ -6721,10 +6841,25 @@ def _present_cut(rows: list[tuple[str, str]], k: int, w: int,
         return []
     if k == 1:
         tag = f" … +{len(rows) - 1} lines"
-        first = (rows[0][0] + rows[0][1]).rstrip()
-        if vis(first) > w - vis(tag):     # the cut mark already says "more": no second "…"
-            first = set_cell_size(first, max(0, w - vis(tag)))
-        return [_pad(_paint_marks(first, marks) + c(escape(clip(tag, w)), "reached"), w)]
+        lead, pieces = rows[0]
+        flat = ([(ch, "mut") for ch in lead]
+                + [(ch, tone) for seg, tone in pieces for ch in seg])
+        if vis("".join(ch for ch, _ in flat)) > w - vis(tag):   # the cut mark already says "more"
+            budget = max(0, w - vis(tag))
+            kept, used = [], 0
+            for ch, tone in flat:
+                if used + vis(ch) > budget:      # a glyph straddling the cut is dropped
+                    break
+                kept.append((ch, tone))
+                used += vis(ch)
+            while kept and kept[-1][0] in _WS:
+                kept.pop()                       # the rstrip, on the flat char list
+            flat = kept
+        nlead = next((i for i, (_ch, tone) in enumerate(flat) if tone != "mut"), len(flat))
+        lead_txt = "".join(ch for ch, _ in flat[:nlead])
+        lead_mk = c(escape(lead_txt), "mut") if lead_txt else ""
+        return [_pad(lead_mk + _paint_marks(flat[nlead:], marks)
+                     + c(escape(clip(tag, w)), "reached"), w)]
     more = c(escape(clip(f"… +{len(rows) - k + 1} lines", w)), "reached")
     return [_present_note_markup(r, w, marks) for r in rows[:k - 1]] + [_pad(more, w)]
 

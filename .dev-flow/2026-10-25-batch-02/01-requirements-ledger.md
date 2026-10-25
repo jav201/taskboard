@@ -53,3 +53,10 @@
 - **Amends:** HLR-2905 statement, LLR-2905.1 statement
 - **Reason:** PDR condition C1 (PDR-2026-10-25-batch-02) — the design realizes LLR-2901.1's declared row type, which makes LLR-2901.1 and LLR-2905.1 jointly unsatisfiable against tests/test_present_views.py:77-94 and tests/test_people_look.py:144-149, which assert the old shape by equality/string ops
 - **Content:** those files' ROW-SHAPE equality asserts are expected, justified updates (the type change is contracted by LLR-2901.1; the updates carry no marker-content change), confirmed by the P3 census; nothing else in those files may change.
+
+### LED-2905.3 — the P3 census completes the casualty list: 16 row-shape consumers in the two authorised files
+- **Date:** 2026-10-25
+- **Requirement:** HLR-2905, LLR-2905.1
+- **Amends:** HLR-2905 statement, LLR-2905.1 statement
+- **Reason:** the increment's affected-suite run surfaced 16 failing nodes the P2 census missed — all in `tests/test_present_views.py` and `tests/test_people_look.py` (the two files LED-2905.2 already authorises), all consumers of the contracted row-type change, none marker-content oracles: `test_TC_1801…` (:92-102, `lead + txt` joins and the wide-glyph flat-join), `test_TC_1804…` ×9 (:189-191, `x in row` membership), `test_TC_1806…` ×4 (:362-364), `test_TC_2506…` in test_people_look.py (:107, :156, :160, :163-165, hand-built `("", str)` rows).
+- **Content:** the LED-2905.2 exception is extended to the whole files' row-shape consumers — mechanical updates only (unwrap pieces to plain text, or build rows in the new shape); no assertion's intent changes; the rest of the suite (184 nodes incl. all frozen byte-oracle frames) is green at the increment.

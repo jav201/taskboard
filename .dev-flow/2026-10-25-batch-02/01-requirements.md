@@ -301,8 +301,8 @@ regression pin HLR-2905 (AT-e).
 
 ### LLR-2905.1 — the rest of the app is byte-unchanged
 - **Traceability:** HLR-2905
-- **Ledger:** LED-2905.2
-- **Statement:** No file outside `taskboard/views.py` (and the new tests) shall change; inside `views.py`, the board's markup (`_highlight_markup`, `notes_text`, `_focus_note_snippet`), the details/editor preview callers, the gantt/kanban/swimlanes note snippets and every presentation surface other than the note rows' paint shall stay byte-identical. The exception, named by LED-2905.2: the row-shape equality asserts of `tests/test_present_views.py:77-94` and `tests/test_people_look.py:144-149` are updated to the contracted row type — nothing else in those files changes.
+- **Ledger:** LED-2905.2, LED-2905.3
+- **Statement:** No file outside `taskboard/views.py` (and the new tests) shall change; inside `views.py`, the board's markup (`_highlight_markup`, `notes_text`, `_focus_note_snippet`), the details/editor preview callers, the gantt/kanban/swimlanes note snippets and every presentation surface other than the note rows' paint shall stay byte-identical. The exceptions, named by LED-2905.2 and LED-2905.3: the row-shape asserts and consumers of the old `(lead, text)` row type in `tests/test_present_views.py` and `tests/test_people_look.py` (equality lists, `lead + text` joins, `x in row` membership, hand-built rows) are mechanically updated to the contracted `(lead, [(segment, tone)])` type — confirmed by the P3 census at 16 nodes, the full list in LED-2905.3; nothing else in those files changes, and no assertion's intent is altered (each unwraps pieces or builds rows in the new shape).
 - **Validation:** `inspection`
 - **Executed verification:** the packet's §2 diff census (P3) and the P4 full suite (AT-2905).
 - **Numeric pass threshold:** 0 modified files outside `taskboard/views.py` + tests; the diff hunks outside the note pipeline == 0.

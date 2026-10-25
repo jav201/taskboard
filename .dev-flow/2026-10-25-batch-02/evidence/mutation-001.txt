@@ -1,0 +1,58 @@
+# Mutation battery (C-40) — batch 2026-10-25-batch-02, increment 001
+# target: C:\Users\jjgh8\Github\taskboard-wt\present-hl\taskboard\views.py
+
+## arm a / AT-2901
+mutation: bypass highlight_segments in the note pipeline: paint the raw text (markers kept, no tones)
+applied: YES (md5 52bdb41e8c118709a8d6790ccd681580 -> 2b84f235e2fbbd42fc7bd933b15d4b0b)
+nodes: test_AT_2901_gantt_cursor_note_colours_highlights
+verdict: RED
+run tail:
+1 failed in 0.84s
+restored: YES (md5 52bdb41e8c118709a8d6790ccd681580, pre-mutation 52bdb41e8c118709a8d6790ccd681580)
+
+## arm b / AT-2902
+mutation: tokenise AFTER the wrap: the wrap measures the marker-counting width again (plain := body)
+applied: YES (md5 52bdb41e8c118709a8d6790ccd681580 -> bc7d5d74c1388c36d79054ace0b1301c)
+nodes: test_AT_2902_split_view_colours_highlights_two_sizes
+verdict: RED
+run tail:
+2 failed in 6.14s
+restored: YES (md5 52bdb41e8c118709a8d6790ccd681580, pre-mutation 52bdb41e8c118709a8d6790ccd681580)
+
+## arm c / AT-2903
+mutation: strip the tones at the export boundary: save_present_svg re-paints the three tone hexes ink before writing
+applied: YES (md5 52bdb41e8c118709a8d6790ccd681580 -> 89383c787b40aa0fb56f934418e141a4)
+nodes: test_AT_2903_split_export_svg_carries_tones
+verdict: RED
+run tail:
+1 failed in 2.50s
+restored: YES (md5 52bdb41e8c118709a8d6790ccd681580, pre-mutation 52bdb41e8c118709a8d6790ccd681580)
+
+## arm d1 / AT-2904 (mention arm)
+mutation: drop the mention pass inside the toned paint (_paint_marks: if marks -> if marks and False)
+applied: YES (md5 52bdb41e8c118709a8d6790ccd681580 -> a856355743ecef4f868cfa3295c039e4)
+nodes: test_AT_2904_mentions_bullets_unpaired_markers
+verdict: RED
+run tail:
+1 failed in 0.80s
+restored: YES (md5 52bdb41e8c118709a8d6790ccd681580, pre-mutation 52bdb41e8c118709a8d6790ccd681580)
+
+## arm d2 / AT-2904 (hostile arm)
+mutation: remove escape on the toned segments (_paint_group: escape(text) -> text)
+applied: YES (md5 52bdb41e8c118709a8d6790ccd681580 -> c83da28b573e868cd1083c0d85653421)
+nodes: test_AT_2904_mentions_bullets_unpaired_markers
+verdict: RED
+run tail:
+1 failed in 0.85s
+restored: YES (md5 52bdb41e8c118709a8d6790ccd681580, pre-mutation 52bdb41e8c118709a8d6790ccd681580)
+
+## arm e / layer-0 (unit arms)
+mutation: permute a tone in _tone_row: every 'soon' char attributed 'over'
+applied: YES (md5 52bdb41e8c118709a8d6790ccd681580 -> 2da7dc661414a7cdab414637a8585d7d)
+nodes: test_L0_tone_row_whitespace_drops_at_row_breaks test_L0_tone_row_zero_misattributed_chars test_L0_cut_seat_k1_paints_lead_span_and_tag
+verdict: RED
+run tail:
+2 failed, 1 passed in 0.56s
+restored: YES (md5 52bdb41e8c118709a8d6790ccd681580, pre-mutation 52bdb41e8c118709a8d6790ccd681580)
+
+# battery complete; views.py final md5 52bdb41e8c118709a8d6790ccd681580
