@@ -117,7 +117,7 @@ observer suites: see the **Reverse census** field (`evidence/suite-002.txt`).
 
 | Evidence artifact | Path — under `artifact_homes.evidence` | SHA-256 |
 |---|---|---|
-| suite-000.txt | .dev-flow/2026-10-25-batch-01/evidence/suite-000.txt | dd0603729a7b6f064afd25b2015515bb57ab2683221d5b5f446be0b0348eea1e |
+| suite-000.txt | .dev-flow/2026-10-25-batch-01/evidence/suite-000.txt | c2f26b7c5fb3fed2fdde1ed8b4811e4c4b6924c88593928fabb2f89c463bb913 |
 | suite-001.txt | .dev-flow/2026-10-25-batch-01/evidence/suite-001.txt | 2583c02e4e309ba89aab09dd1cc241e4338c68d4e6e0ecfc281766fcd369e17e |
 | suite-002.txt | .dev-flow/2026-10-25-batch-01/evidence/suite-002.txt | e6d6f66f091836e872a30be2e87c494925d5688ad154d2be913a3ecd94aef400 |
 | mutation-001.txt | .dev-flow/2026-10-25-batch-01/evidence/mutation-001.txt | 4a4898ed240b9c13215a1c8134cff21d331d4742529de8f9340a65b2f62484f3 |
