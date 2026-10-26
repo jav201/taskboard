@@ -1,9 +1,9 @@
 {
   "project": "taskboard",
   "language": "en",
-  "batch_id": "2026-10-25-batch-02",
-  "batch_objective": "the presentation's note rows (gantt cursor note view 1, split view 2 and their x exports; view 3 checked) colour the notes' ==..==, !!..!! and ++..++ highlights through views.highlight_segments, dropping the markers and keeping the presentation's own base tone, so the room never sees raw markers (PH-1..PH-4)",
-  "owner": "C:/Users/jjgh8/Github/taskboard-wt/present-hl",
+  "batch_id": "2026-10-26-batch-01",
+  "batch_objective": "retroactive dev-flow audit of the shipped change f4b53cc «fix(gantt): done work keeps its row — only archiving hides it» on fix/gantt-done-visible (= main): done, non-archived tasks keep their rows on the board's gantt (quiet, check chip, never late); only archiving hides work; the presentation stays byte-identical (G4); 4 reviewer lenses (architect, code-reviewer, qa-reviewer, ux-reviewer), requirements written retroactively from the operator's request and decisions G1-G5, no taskboard/ source change",
+  "owner": "C:/Users/jjgh8/Github/taskboard-wt/gantt-done",
   "mode": "core",
   "mode_history": [
     {
@@ -217,6 +217,12 @@
       "to": "core",
       "date": "2026-10-25",
       "reason": "batch 2026-10-25-batch-02 opened by rollover from 2026-10-25-batch-01; mode core declared by the commission"
+    },
+    {
+      "from": null,
+      "to": "core",
+      "date": "2026-10-26",
+      "reason": "batch 2026-10-26-batch-01 opened by rollover from 2026-10-25-batch-02; an audit of the already-shipped change f4b53cc, commissioned retroactively by the operator (implementation preceded the flow at the operator's order)"
     }
   ],
   "guided": false,
@@ -234,7 +240,7 @@
   ],
   "iterations_per_station": {
     "P0": 0,
-    "P1": 2,
+    "P1": 0,
     "P2": 0,
     "P3": 0,
     "P4": 0,
@@ -243,10 +249,9 @@
     "DDR": 0
   },
   "triggers": {
-    "evaluated_at": "2026-10-25",
+    "evaluated_at": "2026-10-26",
     "fired": [
-      "B1",
-      "C8",
+      "B3",
       "D1"
     ],
     "not_fired": [
@@ -254,8 +259,8 @@
       "A2",
       "A3",
       "A4",
+      "B1",
       "B2",
-      "B3",
       "B4",
       "C1",
       "C2",
@@ -264,6 +269,7 @@
       "C5",
       "C6",
       "C7",
+      "C8",
       "D2",
       "E1",
       "E2",
@@ -271,87 +277,52 @@
       "F1",
       "F2"
     ],
-    "record": ".dev-flow/2026-10-25-batch-02/PLAN.md#triggers"
+    "record": ".dev-flow/2026-10-26-batch-01/PLAN.md#triggers"
   },
   "artifact_homes": {
-    "requirements": "repo:.dev-flow/2026-10-25-batch-02/01-requirements.md",
-    "requirements_ledger": "repo:.dev-flow/2026-10-25-batch-02/01-requirements-ledger.md",
-    "traceability": "repo:.dev-flow/2026-10-25-batch-02/06-docs/traceability-matrix.md",
+    "requirements": "repo:.dev-flow/2026-10-26-batch-01/01-requirements.md",
+    "requirements_ledger": "repo:.dev-flow/2026-10-26-batch-01/01-requirements-ledger.md",
+    "traceability": "repo:.dev-flow/2026-10-26-batch-01/06-docs/traceability-matrix.md",
     "tests": "repo:tests/",
     "module_map": "repo:docs/ARCHITECTURE.md",
-    "increments": "repo:.dev-flow/2026-10-25-batch-02/03-increments/",
-    "evidence": "repo:.dev-flow/2026-10-25-batch-02/evidence/",
+    "increments": "repo:.dev-flow/2026-10-26-batch-01/03-increments/",
+    "evidence": "repo:.dev-flow/2026-10-26-batch-01/evidence/",
     "backlog": "repo:.dev-flow/BACKLOG.md",
-    "design_pdr": "vault:taskboard/design/PDR-2026-10-25-batch-02.md",
-    "design_ddr": "vault:taskboard/design/DDR-2026-10-25-batch-02.md",
-    "postmortem": "vault:taskboard/dev-flow-batches/2026-10-25-batch-02/",
-    "metrics": "vault:taskboard/dev-flow-batches/2026-10-25-batch-02/README.md",
+    "design_pdr": "repo:.dev-flow/2026-10-26-batch-01/design/PDR-2026-10-26-batch-01.md",
+    "design_ddr": "repo:.dev-flow/2026-10-26-batch-01/design/DDR-2026-10-26-batch-01.md",
+    "postmortem": "repo:.dev-flow/2026-10-26-batch-01/",
+    "metrics": "repo:.dev-flow/2026-10-26-batch-01/METRICS.md",
     "requirements_canon": "repo:REQUIREMENTS.md"
   },
-  "base_ref": "d1bb1975ddce25f031cbc2773acb7f277bdd8dcb",
+  "base_ref": "f4b53cc7d89bd645a99e0615dbafb7c102de2abd",
   "artifacts": {},
   "decisions_log": [
     {
       "station": "P0",
-      "date": "2026-10-25",
-      "decision": "P0 intake approved under the batch's standing authorization — «Sigue con 4 con Kimi.» (.dev-flow/COMMISSION-present-note-highlights.md); RC-1/RC-2 verified (origin/main 6e72e2a; origin answered; story not already shipped); triggers B1/C8/D1 fired (record: PLAN.md#triggers); PDR and DDR taken up at intake by the operator's directive, the commission naming the architect review at the PDR and the qa+ux reviews at the DDR; US-2901 READY (INVEST closed, DoR passed); P1 requirements is next."
+      "date": "2026-10-26",
+      "decision": "P0 intake approved under the batch's standing authorization — «Haz el cambio rápido, esta vez sólo implementa. Haz push y merge verificando que funciona y después auditas el cambio con dev flow.»; state.json re-stamped for the audit (batch 2026-10-26-batch-01, owner this worktree, base_ref f4b53cc7d89bd645a99e0615dbafb7c102de2abd); the 10 V59 blocks were the stale base_ref, cleared by the re-stamp; triggers B3/D1 fired; the implementation-preceded-flow premise recorded honestly. P1 next."
     },
     {
       "station": "P1",
-      "date": "2026-10-25",
-      "decision": "P1 approved under the batch's standing authorization — 1 US, 5 HLR, 6 LLR, AT-2901..AT-2905 (one node per AT, minted at P3); IFC Part A written, Part B answered no; 6 premises all TRUE by executed probe (evidence/red-p1.txt, the defect confirmed at base_ref: 12 marker chars, 0 tone colours); security scan flags role/form/escape answered in §6.3 (escape is the C-17 control, LLR-2901.2); scan + gate transcripts at evidence/scan-p1.txt, evidence/gate-p1.txt (0 block); P2 review is next."
+      "date": "2026-10-26",
+      "decision": "P1 approved under the batch's standing authorization — «Haz el cambio rápido, esta vez sólo implementa. Haz push y merge verificando que funciona y después auditas el cambio con dev flow.» — retroactive requirements from the operator's request + G1-G5: US-3001, HLR-3001..3005 with Statements, 11 LLRs, AT-3001..AT-3006 mapped to the shipped nodes; retroactive authorship declared, not disguised; gate 0 block (evidence/gate-p1.txt). P2 next."
     },
     {
       "station": "P2",
-      "date": "2026-10-25",
-      "decision": "P2 round 1 returned iterate-to-refine under the batch's standing authorization — three lenses as independent spawned sub-agents (architect, qa-reviewer, security-reviewer; family C fired so the security lens is owed): 0 blockers, 3 majors (A1: the IFC Part A node list omits _paint_marks though the fix changes it; A2: the changing LLRs do not declare their touched symbols for the C-26 reverse census; Q1: HLR-2905 does not name the known oracle casualty, tests/test_people_look.py's people_round_fixture c5 '++sign-off by the sponsor++'), ~13 minors, all recorded in 02-review.md. The route is iterate-to-refine: amend P1 with ledger entries, then the full P2 re-review."
-    },
-    {
-      "station": "P1",
-      "date": "2026-10-25",
-      "decision": "P1 iteration 1 approved under the batch's standing authorization — the P2 round-1 folds landed (IFC _paint_marks node; C-26 symbol declarations; HLR-2905 oracle-casualty naming + style pin + executed-baseline pin; marker-run predicate; per-arm negative controls; PNG scoping; SVG escape assertion; escape seats and hostile payloads), ledger entries LED-2901, LED-2901.2, LED-2901.3, LED-2903, LED-2905; the re-scan holds the same three flags (role/form/escape) answered in §6.3; gate 0 block (evidence/gate-p1-iter1.txt); P2 round 2 is next."
-    },
-    {
-      "station": "P2",
-      "date": "2026-10-25",
-      "decision": "P2 round 2 returned iterate-to-refine under the batch's standing authorization — the architect lens's full re-review verified all round-1 folds (A1, A2 verified; A3/Q2/... folded) but found one major: LED-2905's named oracle casualty is factually wrong on both limbs — the fixture holds ++sign-off by the sponsor++ in task c7 (tests/people_round_fixture.py:76, task c7 at :102), not c5, and tests/test_people_look.py:182-186 asserts mention membership, not marker bytes, so it stays green; a repo-wide grep confirms no test asserts any marker string (verified by the orchestrator). Plus 3 minors (boundary-catalog checkbox convention, LLR-2903.1 stale paraphrase, a surviving 'rose' in HLR-2901's outcome prose). Route: P1 iteration 2, one corrective ledger entry LED-2905.1, then the round-3 verification pass."
-    },
-    {
-      "station": "P1",
-      "date": "2026-10-25",
-      "decision": "P1 iteration 2 approved under the batch's standing authorization — the round-2 correction landed: LED-2905.1 appends the c7/not-c5 + no-marker-keyed-oracle correction, HLR-2905 restated honestly, the three minors folded; scan holds the same answered flags; gate 0 block (evidence/gate-p1-iter2.txt); P2 round 3 (fold verification) is next."
-    },
-    {
-      "station": "P2",
-      "date": "2026-10-25",
-      "decision": "P2 closed under the batch's standing authorization — three rounds on record (02-review.md): round 1 iterate-to-refine (0 blockers, 3 majors, 14 minors, three lenses), round 2 iterate-to-refine (one major: LED-2905's casualty claim factually wrong — corrected by LED-2905.1), round 3 PASS (folds verified, V26 pairs clean). The gate is approve; the PDR is next (design proposal authored at design/design-proposal.md against the amended contract)."
-    },
-    {
-      "station": "PDR",
-      "date": "2026-10-25",
-      "decision": "PDR approved with conditions under the batch's standing authorization — the architect lens's review of the design proposal against the amended contract: 4 conditions, all discharged in one commit (C1 by LED-2905.2 naming the row-shape equality asserts; C2-C4 by the proposal delta: the k==1 cut-seat build, the two-class matcher spec, the _paint_marks name kept); the IFC FLOW block rewritten to the canonical one-owner grammar under the PDR gate; the record sealed at design/PDR-2026-10-25-batch-02.md; gate 0 block (evidence/gate-pdr.txt); the sealed record binds D1..D5; increment 001 is next."
-    },
-    {
-      "station": "P3",
-      "date": "2026-10-25",
-      "decision": "P3 increment 001 approved under the batch's standing authorization — the note pipeline colours highlights through highlight_segments (1 source file; 20 test nodes: AT-2901..AT-2905 + 10 layer-0 arms); the code review returned BLOCK on F1 (HIGH: NBSP at a wrap boundary crashed the render), the fixes landed RED-first and the reviewer's re-read of the fixed diff discharged F1-F4 — OK-TO-ADVANCE, 0 HIGH; the mutation battery ran twice, the second against the shipped bytes, 6/6 arms RED with hash-verified restores; the affected suites hold 200 passed = base_ref; the P3 census completed the casualty list (16 row-shape consumers under LED-2905.3); PDR conditions C1-C4 discharged; gate 0 block (evidence/gate-p3.txt); the DDR is next."
-    },
-    {
-      "station": "DDR",
-      "date": "2026-10-25",
-      "decision": "DDR approved with conditions under the batch's standing authorization — qa + ux lenses as independent spawned sub-agents: the qa lens discharged the PDR conditions C1-C4 by re-reading, bound the 7 deviations (all justified), verified C-18, the census, the battery re-run against the shipped bytes and the frozen set; COND-1 folded at once (the packet's signed-balance line), COND-2 (the Q5 baseline reconciliation) and UX-1 (the painted contrast evidence) carry to P4; the record sealed at design/DDR-2026-10-25-batch-02.md binding the shipped characteristics (incl. the three-draw isspace() matcher, DDR#D3); P4 validation is next."
+      "date": "2026-10-26",
+      "decision": "P2 closed under the batch's standing authorization — «Haz el cambio rápido, esta vez sólo implementa. Haz push y merge verificando que funciona y después auditas el cambio con dev flow.» — four lenses as spawned generic sub-agents (architect iterate-to-refine: AX-1 canon HIGH, AX-2 toast HIGH, AX-3 legend MEDIUM; code-reviewer OK-TO-ADVANCE 0 HIGH; qa PASS golden CLEAN; ux PASS, 4 captures, window-cleanup PASS); gate 0 block (evidence/gate-p2.txt). No P3 of new code — the audited increment is f4b53cc (retroactive packet). P4 next."
     },
     {
       "station": "P4",
-      "date": "2026-10-25",
-      "decision": "P4 approved under the batch's standing authorization — the orchestrator's gate run (C-25) in 3 sequential chunks: 1440 + 959 + 879 = 3278 passed, 0 skipped, 0 failed on HEAD 0ffde24 (= the commission's 3258 baseline + 20 new nodes; TC-1902 the clipboard arm ran, no skip — the delta named); the qa-reviewer's evaluation returned PASS with 10/10 evidence rows (attribution per row), QA-P4-01..05 folded in the record; the four n01- captures discharge DDR UX-1 (each READY gate asserted the tones and zero marker runs on the live frame, 8+ colours, no leftover window); COND-2's baseline reconciliation named and discharged in 04-validation.md; gate 0 block (evidence/gate-p4.txt); P5 close is next."
+      "date": "2026-10-26",
+      "decision": "P4 closed under the batch's standing authorization — «Haz el cambio rápido, esta vez sólo implementa. Haz push y merge verificando que funciona y después auditas el cambio con dev flow.» — PASS-WITH-NOTES: consumed 3280-passed chunks; targeted re-runs 123+62 passed post-probe; golden CLEAN (4/40 frames, .plain only); captures PASS; HIGHs are records-layer, proposed not applied; gate 0 block (evidence/gate-p4.txt). P5 next."
     },
     {
       "station": "P5",
-      "date": "2026-10-25",
-      "decision": "P5 close under the batch's standing authorization — the canon folded (11 ids into REQUIREMENTS.md), the station closed, the close record filled (§0-§6), the backlog reconciled (item 4 done in place, no new carries), the scratch swept; the deliverable commit and the close commit follow, then the final gate; no push/merge (not granted)."
+      "date": "2026-10-26",
+      "decision": "P5 close under the batch's standing authorization — «Haz el cambio rápido, esta vez sólo implementa. Haz push y merge verificando que funciona y después auditas el cambio con dev flow.» — canon audit annex folded (20 ids; stale-row amendment open as AUD-01, not applied), BACKLOG carries AUD-01..AUD-08, .scratch-evidence git-mv'd into the batch evidence, close record filled, final gate next; no push/merge (not granted)."
     }
   ],
   "obsidian_synced": false,
-  "created_at": "2026-10-25T16:40:10.708105"
+  "created_at": "2026-10-26T10:32:12.947365"
 }

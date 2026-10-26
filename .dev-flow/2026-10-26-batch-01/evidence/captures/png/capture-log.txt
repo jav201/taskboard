@@ -1,0 +1,5 @@
+﻿ok   gantt 118x30 (1095 x 627, 31 colours sampled) via PrintWindow, try 1 - window closed
+ok   gantt 80x24 (753 x 513, 12 colours sampled) via PrintWindow, try 1 - window closed
+ok   busy 80x24 (753 x 513, 12 colours sampled) via PrintWindow, try 1 - window closed
+ok   busyoff 80x24 (753 x 513, 13 colours sampled) via PrintWindow, try 1 - window closed
+ok   busyoff 80x24 (753 x 513, 13 colours sampled) via PrintWindow, try 1 - window closed

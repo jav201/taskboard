@@ -384,3 +384,30 @@ The project's index of what it demands: one row per requirement id, its current 
 | LLR-2903.1 | save_present_svg, present_paths and present_all_export shall stay byte-unchanged; the x exports shall show whatever tones the composed frame carries. No SVG-specific colouring code shall be added. | 2026-10-25-batch-02 | active |
 | LLR-2904.1 | Mention detection shall run inside each tone span (the existing mention_marks/_marks_re machinery, taskboard/views.py:3496, :6690-6694): a mention of a person the directory holds is painted bold pink wherever it appears — inside or outside a highlight; the rest of the span keeps its tone. A mention across a row boundary keeps bold pink on every row it touches. | 2026-10-25-batch-02 | active |
 | LLR-2905.1 | No file outside taskboard/views.py (and the new tests) shall change; inside views.py, the board's markup (_highlight_markup, notes_text, _focus_note_snippet), the details/editor preview callers, the gantt/kanban/swimlanes note snippets and every presentation surface other than the note rows' paint shall stay byte-identical. The exceptions, named by LED-2905.2 and LED-2905.3: the row-shape asserts and consumers of the old (lead, text) row type in tests/test_present_views.py and tests/test_people_look.py (equality lists, lead + text joins, x in row membership, hand-built rows) are mechanically updated to the contracted (lead, [(segment, tone)]) type — confirmed by the P3 census at 16 nodes, the full list in LED-2905.3; nothing else in those files changes, and no assertion's intent is altered (each unwraps pieces or builds rows in the new shape). | 2026-10-25-batch-02 | active |
+
+## Audit annex — 2026-10-26-batch-01 (f4b53cc: done work keeps its gantt row)
+
+Written retroactively by the audit batch `2026-10-26-batch-01` at the operator's order
+(implementation preceded the flow). These ids are the live contract of the shipped change.
+NOTE: the pre-existing rows HLR-102, HLR-104, LLR-101.3 and LLR-602.1 above still carry the
+retired G-A law («done folds to ✓n»); amending them is open as finding AUD-01 in
+`.dev-flow/BACKLOG.md` — a decision for the orchestrator, deliberately not applied by the audit.
+
+| ID | Requirement | Batch | Status |
+|---|---|---|---|
+| US-3001 | Done work stays visible on the board's gantt; only archiving hides it (the operator, 2026-10-26). | 2026-10-26-batch-01 | active |
+| HLR-3001 | On the board's gantt view, a group's drawn rows shall be its open rows with its reached milestones placed by date exactly as before (D-606), followed at the tail by its DONE, NOT-archived, non-milestone tasks sorted by due; a group with no open work but done work shall show its done rows, and archived tasks shall never draw a row. | 2026-10-26-batch-01 | active |
+| LLR-3001.1 | gantt_plan shall compute the done tail only when done_rows is set; the default shall be off (taskboard/views.py:2438, 2473-2482). | 2026-10-26-batch-01 | active |
+| LLR-3001.2 | The tail shall be appended after the open+milestone merge in due order; done milestones stay governed by D-606 (the tail excludes milestones) (taskboard/views.py:2485-2490). | 2026-10-26-batch-01 | active |
+| LLR-3001.3 | Only the board's gantt view shall set the flag — render_gantt, nav_model (gantt mode), the gantt legend seat of legend_entries (taskboard/views.py:3265, 8370, 8662); the reverse census is in the batch's 02-review.md. | 2026-10-26-batch-01 | active |
+| HLR-3002 | A done row shall be quiet: bar in the existing reached tone with no flow packet, no over/late colouring and no critical-chain weight; title dimmed like a reached milestone's; right-hand chip ✓ in the reached tone instead of the due chip, so finished work never reads as ▲Nd late. | 2026-10-26-batch-01 | active |
+| LLR-3002.1 | _gantt_done_bar shall paint the open-bar geometry entirely in reached with OFF_LEFT/OFF_RIGHT edge markers off the window (taskboard/views.py:2842-2867). | 2026-10-26-batch-01 | active |
+| LLR-3002.2 | A one-date done task shall render as a ◆ diamond in reached at its date (taskboard/views.py:2852-2857). | 2026-10-26-batch-01 | active |
+| LLR-3002.3 | The painter's done branch shall dim the title c(title_markup(...), "reached") and emit the ✓ chip instead of gantt_due_chip (taskboard/views.py:3399-3406). | 2026-10-26-batch-01 | active |
+| HLR-3003 | The span row's ✓n count shall stay as a summary; folding and pressure shall be computed from open work, a group unfolding as a whole with done rows included in its height; gantt_window shall be computed from open work; a done bar outside the window clips to the edge like any bar. | 2026-10-26-batch-01 | active |
+| HLR-3004 | Presentation mode (R, views 1/2/3, render_present*, x exports) shall keep its behaviour; where it shares gantt_plan/the frame seat its output shall be byte-identical, realised by the done_rows default (False) that only the board's gantt view overrides; link mode included. | 2026-10-26-batch-01 | active |
+| LLR-3004.1 | Every gantt_plan/_gantt_frame call site without the flag shall draw no done row; the call-site census is in the batch's 02-review.md (architect lens). | 2026-10-26-batch-01 | active |
+| LLR-3004.2 | The TC-2203 golden regeneration shall move only the gantt frames; the qa verdict in the batch's 02-review.md: CLEAN — exactly 4 of 40 frames, .plain only. | 2026-10-26-batch-01 | active |
+| HLR-3005 | Lanes, kanban, agenda, focus, people, keys and hints shall not change; the cursor shall reach a done row by keys because nav_model reads the same g.rows the screen draws (F-3); an archived selection shall still be moved to a drawn row by the F-3 guard. | 2026-10-26-batch-01 | active |
+| LLR-3005.1 | nav_model's gantt mode shall pass done_rows=True and flatten g.rows (taskboard/views.py:8366-8371). | 2026-10-26-batch-01 | active |
+| LLR-3005.2 | The F-3 selection guard shall concern archived selections only (taskboard/app.py:2113-2123); _notify_folded's wording is finding AUD-02 (open). | 2026-10-26-batch-01 | active |

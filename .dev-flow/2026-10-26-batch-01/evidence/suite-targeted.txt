@@ -1,0 +1,5 @@
+
+  warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCOPE_UNSET))
+........................................................................ [ 58%]
+...................................................                      [100%]
+123 passed in 29.81s

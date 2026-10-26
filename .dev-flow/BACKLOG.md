@@ -4,7 +4,7 @@ Shared by `/dev-flow` and `/fast-dev-flow`. Every open item lives here exactly o
 No `docs/engineering-rules.md` exists in this repo, so this is the default location.
 
 **Base ref:** `620f58c` (`main` = `origin/main` at batch 2026-10-18-batch-03's open; the batch's commits sit on the local branch `present-polish`, not pushed — the commission forbids a push)
-· **Last refresh:** 2026-10-25 (2026-10-25-batch-02 close)
+· **Last refresh:** 2026-10-26 (2026-10-26-batch-01 close — the audit of f4b53cc)
 **Status (2026-10-16-batch-01 close):** 2634 tests collected on `present-v2` (2632 passed in `suite-004.txt`; the P4 gate run: 2631 passed + the 2 pre-existing standup failures + 1 clipboard environment failure)
 **Status:** **2592 tests** (batch `2026-10-07-batch-09`, templates v3: scratch authoring — the `I`
 picker gains a leading `New template...` row (reserved id `__new__`, the house `L`-picker create-row
@@ -1569,3 +1569,57 @@ diff is two docstrings, proven prose-only by comparing the AST with every docstr
 - **The redesign batch is unblocked**: with the model fixed and pinned, "the project row states
   its demand; the curve moves to a disclosure row" becomes row substitution against a known
   budget. O-1, O-2, O-3, O-4 are all ruled; nothing in this batch reopened them.
+
+## Open — raised by the 2026-10-26 audit of f4b53cc (done work keeps its gantt row)
+
+The audit batch `2026-10-26-batch-01` shipped change `f4b53cc` was verified faithful to G1–G5
+(suite 3280 passed; targeted re-runs 185 passed; golden CLEAN; real-terminal captures PASS) —
+and found the records layer lagging the code. All proposed fixes are written in the batch's
+`02-review.md`; nothing below is applied — the orchestrator decides.
+
+- **AUD-01 (HIGH, from AX-1) — the live canon still encodes the reversed law.** `REQUIREMENTS.md`
+  rows HLR-102 (:27 «shall never draw a row for rest work»), HLR-104 (:29), LLR-101.3 (:39) and
+  LLR-602.1 (:139, rows = open + reached milestones only) predate the 2026-10-26 reversal and no
+  ledger entry records it. *Proposed fix:* one canon amendment (e.g. LED-2026-10-26) restating
+  those rows to the new law; history (batch artifacts, this backlog) stays. A dated audit annex
+  was appended to `REQUIREMENTS.md` by the close as an interim pointer — it does NOT amend the
+  stale rows.
+- **AUD-02 (HIGH, from AX-2 / CR-1 / QA-1) — the finish toast still says «folded into ✓N».**
+  `taskboard/app.py:2313` tells the user a finished task folded away while it now keeps its row;
+  the docstring (:2297-2300) already says kept; the wording is pinned by HLR-206/LLR-206.1 and
+  asserted by `tests/test_gantt_polish.py` (AT-206/TC-208). *Proposed fix:* reword the toast
+  (e.g. «done · kept on the gantt · u undo»), revise HLR-206/LLR-206.1, update the asserting tests.
+- **AUD-03 (MEDIUM, from AX-3) — the gantt legend gloss misdescribes finished work and its
+  swatch tone ≠ the drawn chip tone.** `taskboard/views.py:8702` («finished work, folded into a
+  count», swatch `done` #3f9c6d) vs the done-row chip painted `reached`. *Proposed fix:* reword
+  + paint the swatch `c("✓", "reached")`.
+- **AUD-04 (MEDIUM, from CR-2) — the colour-budget rebaseline is declared but real.**
+  `tests/test_gantt.py` dropped the at-height ink-direction arm and loosened the dead bound
+  25.5→29.5 (compensated by `len(done)==5` + height-0 arms). Accepted for this change; flagged so
+  the next visual batch sees the threshold moved.
+- **AUD-05 (LOW, from AX-4) — nav/frame body-height gap, amplified by done tails.** nav gantt
+  body = height−1−RULER (`views.py:8367`) vs the frame's strip/search adjustments
+  (`views.py:3303-3304`, `:7954/7981`; kanban-only adjustment at `app.py:2061-2065`) — a 2-row
+  difference can flip unfold decisions screen-vs-cursor (F-3 parity edge). *Proposed fix:* pass
+  the strip/search-adjusted body height into `nav_model`'s gantt branch.
+- **AUD-06 (LOW, from CR-3/CR-4/CR-5/QA-2/QA-3/QA-4/AX-5) — documentation/test-picture drift.**
+  Stale G-A citations (`views.py:3280`, `:8655`, `tests/test_gantt_board.py:10` docstring);
+  TC-118 chain check moved 118x30→118x40 (`tests/test_colour_budget.py:144` — chain rendering at
+  the production size no longer pinned; *fix:* add an 118x30 companion asserting the folded group
+  draws no `━` reaches and no accent hue); AT-207 pins loosened +1 (justified, RED-on-base kept);
+  emptiness bound 25.5→29.5 (margin 0.96).
+- **AUD-07 (LOW, from UX-1) — G3 fold trade-off on busy 80x24 boards, awaiting the operator's
+  eyes.** Done rows consume fold room: on the busy fixture only 2/8 groups unfold while 2
+  unfolded groups spend 3 of 5 rows on finished tasks (side-by-side captures in the batch's
+  `evidence/captures/png/`). By design per G3 — but the operator has never seen it on a busy
+  board. If it reads wrong in daily use, the lever is pressure accounting (e.g. done rows at
+  half weight), which is a behaviour change for its own batch.
+- **AUD-08 (LOW, from UX-2) — the first-run «View keys renumbered» toast photobombs captures.**
+  Fresh-home scenes show it bottom-right; never covers labels/chips. Cosmetic; dismiss before
+  shooting in future capture batches.
+
+### Carried forward from this batch
+
+- The audit applied NOTHING to `taskboard/` — all findings above are open by design; AUD-01 and
+  AUD-02 are the two the orchestrator should schedule first (both are user-visible or
+  contract-visible statements of the retired law).
