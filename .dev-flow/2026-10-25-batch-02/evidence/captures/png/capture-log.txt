@@ -1,0 +1,4 @@
+﻿ok   gantt 118x30 (1095 x 627, 18 colours sampled) via PrintWindow, try 1; PNG 11 colours, 30831 bytes - window closed
+ok   gantt 80x24 (753 x 513, 13 colours sampled) via PrintWindow, try 1; PNG 10 colours, 26113 bytes - window closed
+ok   split 118x30 (1095 x 627, 16 colours sampled) via PrintWindow, try 1; PNG 14 colours, 34534 bytes - window closed
+ok   split 80x24 (753 x 513, 13 colours sampled) via PrintWindow, try 1; PNG 11 colours, 28770 bytes - window closed
