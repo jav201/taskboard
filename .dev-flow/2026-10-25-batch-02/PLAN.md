@@ -21,7 +21,7 @@ orchestrator presents the full plan in-conversation at each phase gate.
 | Project | taskboard |
 | Batch | 2026-10-25-batch-02 |
 | Objective | the presentation's note rows (gantt cursor note view 1, split view 2 and their x exports; view 3 checked) colour the notes' ==..==, !!..!! and ++..++ highlights through views.highlight_segments, dropping the markers and keeping the presentation's own base tone, so the room never sees raw markers (PH-1..PH-4) |
-| Last updated | P2 · 2026-10-25 |
+| Last updated | P5 · 2026-10-25 |
 | Standing authorization | The operator, 2026-10-25, on the ordered backlog: «Sigue con 4 con Kimi.» — item 4 of `.dev-flow/BACKLOG.md` (the people-round finding), commissioned in `.dev-flow/COMMISSION-present-note-highlights.md`. Read from the commission and the task: autonomy over the gates the commission names (P0..P5 plus the commissioned PDR/DDR reviews); merge/push NOT granted («Do NOT push or merge»); a HIGH finding blocks regardless and returns to the operator. |
 | First gate | exit 0 · 0 block / 165 notice / 62 n/a · `V7`: bundle identical to the manifest it ships, both directions (57 declared files unmoved, 0 undeclared) at `2026-10-12-rev102` |
 | Premises / RC-1 | `origin/main` verified at `6e72e2a` (2026-10-25 15:53 -0600); RC-1(a): merge-base of HEAD equals the origin/main tip — HEAD is strictly ahead (rebase a no-op); RC-1(b): the story is NOT already shipped — `origin/main:taskboard/views.py` still draws the presentation note rows without `highlight_segments`; RC-2: `git ls-remote --exit-code --heads origin` answered (refs listed; newest `origin/main` commit dated today). Premises: `views.highlight_segments` is the one tokeniser; the presentation keeps its own base tone (`ink`); tests drive the app by keys. |

@@ -220,8 +220,8 @@
     }
   ],
   "guided": false,
-  "current_station": "P0",
-  "phase_status": "not-started",
+  "current_station": "P5",
+  "phase_status": "closed",
   "stations_active": [
     "P0",
     "P1",
@@ -234,7 +234,7 @@
   ],
   "iterations_per_station": {
     "P0": 0,
-    "P1": 0,
+    "P1": 2,
     "P2": 0,
     "P3": 0,
     "P4": 0,
@@ -290,7 +290,68 @@
   },
   "base_ref": "d1bb1975ddce25f031cbc2773acb7f277bdd8dcb",
   "artifacts": {},
-  "decisions_log": [],
+  "decisions_log": [
+    {
+      "station": "P0",
+      "date": "2026-10-25",
+      "decision": "P0 intake approved under the batch's standing authorization — «Sigue con 4 con Kimi.» (.dev-flow/COMMISSION-present-note-highlights.md); RC-1/RC-2 verified (origin/main 6e72e2a; origin answered; story not already shipped); triggers B1/C8/D1 fired (record: PLAN.md#triggers); PDR and DDR taken up at intake by the operator's directive, the commission naming the architect review at the PDR and the qa+ux reviews at the DDR; US-2901 READY (INVEST closed, DoR passed); P1 requirements is next."
+    },
+    {
+      "station": "P1",
+      "date": "2026-10-25",
+      "decision": "P1 approved under the batch's standing authorization — 1 US, 5 HLR, 6 LLR, AT-2901..AT-2905 (one node per AT, minted at P3); IFC Part A written, Part B answered no; 6 premises all TRUE by executed probe (evidence/red-p1.txt, the defect confirmed at base_ref: 12 marker chars, 0 tone colours); security scan flags role/form/escape answered in §6.3 (escape is the C-17 control, LLR-2901.2); scan + gate transcripts at evidence/scan-p1.txt, evidence/gate-p1.txt (0 block); P2 review is next."
+    },
+    {
+      "station": "P2",
+      "date": "2026-10-25",
+      "decision": "P2 round 1 returned iterate-to-refine under the batch's standing authorization — three lenses as independent spawned sub-agents (architect, qa-reviewer, security-reviewer; family C fired so the security lens is owed): 0 blockers, 3 majors (A1: the IFC Part A node list omits _paint_marks though the fix changes it; A2: the changing LLRs do not declare their touched symbols for the C-26 reverse census; Q1: HLR-2905 does not name the known oracle casualty, tests/test_people_look.py's people_round_fixture c5 '++sign-off by the sponsor++'), ~13 minors, all recorded in 02-review.md. The route is iterate-to-refine: amend P1 with ledger entries, then the full P2 re-review."
+    },
+    {
+      "station": "P1",
+      "date": "2026-10-25",
+      "decision": "P1 iteration 1 approved under the batch's standing authorization — the P2 round-1 folds landed (IFC _paint_marks node; C-26 symbol declarations; HLR-2905 oracle-casualty naming + style pin + executed-baseline pin; marker-run predicate; per-arm negative controls; PNG scoping; SVG escape assertion; escape seats and hostile payloads), ledger entries LED-2901, LED-2901.2, LED-2901.3, LED-2903, LED-2905; the re-scan holds the same three flags (role/form/escape) answered in §6.3; gate 0 block (evidence/gate-p1-iter1.txt); P2 round 2 is next."
+    },
+    {
+      "station": "P2",
+      "date": "2026-10-25",
+      "decision": "P2 round 2 returned iterate-to-refine under the batch's standing authorization — the architect lens's full re-review verified all round-1 folds (A1, A2 verified; A3/Q2/... folded) but found one major: LED-2905's named oracle casualty is factually wrong on both limbs — the fixture holds ++sign-off by the sponsor++ in task c7 (tests/people_round_fixture.py:76, task c7 at :102), not c5, and tests/test_people_look.py:182-186 asserts mention membership, not marker bytes, so it stays green; a repo-wide grep confirms no test asserts any marker string (verified by the orchestrator). Plus 3 minors (boundary-catalog checkbox convention, LLR-2903.1 stale paraphrase, a surviving 'rose' in HLR-2901's outcome prose). Route: P1 iteration 2, one corrective ledger entry LED-2905.1, then the round-3 verification pass."
+    },
+    {
+      "station": "P1",
+      "date": "2026-10-25",
+      "decision": "P1 iteration 2 approved under the batch's standing authorization — the round-2 correction landed: LED-2905.1 appends the c7/not-c5 + no-marker-keyed-oracle correction, HLR-2905 restated honestly, the three minors folded; scan holds the same answered flags; gate 0 block (evidence/gate-p1-iter2.txt); P2 round 3 (fold verification) is next."
+    },
+    {
+      "station": "P2",
+      "date": "2026-10-25",
+      "decision": "P2 closed under the batch's standing authorization — three rounds on record (02-review.md): round 1 iterate-to-refine (0 blockers, 3 majors, 14 minors, three lenses), round 2 iterate-to-refine (one major: LED-2905's casualty claim factually wrong — corrected by LED-2905.1), round 3 PASS (folds verified, V26 pairs clean). The gate is approve; the PDR is next (design proposal authored at design/design-proposal.md against the amended contract)."
+    },
+    {
+      "station": "PDR",
+      "date": "2026-10-25",
+      "decision": "PDR approved with conditions under the batch's standing authorization — the architect lens's review of the design proposal against the amended contract: 4 conditions, all discharged in one commit (C1 by LED-2905.2 naming the row-shape equality asserts; C2-C4 by the proposal delta: the k==1 cut-seat build, the two-class matcher spec, the _paint_marks name kept); the IFC FLOW block rewritten to the canonical one-owner grammar under the PDR gate; the record sealed at design/PDR-2026-10-25-batch-02.md; gate 0 block (evidence/gate-pdr.txt); the sealed record binds D1..D5; increment 001 is next."
+    },
+    {
+      "station": "P3",
+      "date": "2026-10-25",
+      "decision": "P3 increment 001 approved under the batch's standing authorization — the note pipeline colours highlights through highlight_segments (1 source file; 20 test nodes: AT-2901..AT-2905 + 10 layer-0 arms); the code review returned BLOCK on F1 (HIGH: NBSP at a wrap boundary crashed the render), the fixes landed RED-first and the reviewer's re-read of the fixed diff discharged F1-F4 — OK-TO-ADVANCE, 0 HIGH; the mutation battery ran twice, the second against the shipped bytes, 6/6 arms RED with hash-verified restores; the affected suites hold 200 passed = base_ref; the P3 census completed the casualty list (16 row-shape consumers under LED-2905.3); PDR conditions C1-C4 discharged; gate 0 block (evidence/gate-p3.txt); the DDR is next."
+    },
+    {
+      "station": "DDR",
+      "date": "2026-10-25",
+      "decision": "DDR approved with conditions under the batch's standing authorization — qa + ux lenses as independent spawned sub-agents: the qa lens discharged the PDR conditions C1-C4 by re-reading, bound the 7 deviations (all justified), verified C-18, the census, the battery re-run against the shipped bytes and the frozen set; COND-1 folded at once (the packet's signed-balance line), COND-2 (the Q5 baseline reconciliation) and UX-1 (the painted contrast evidence) carry to P4; the record sealed at design/DDR-2026-10-25-batch-02.md binding the shipped characteristics (incl. the three-draw isspace() matcher, DDR#D3); P4 validation is next."
+    },
+    {
+      "station": "P4",
+      "date": "2026-10-25",
+      "decision": "P4 approved under the batch's standing authorization — the orchestrator's gate run (C-25) in 3 sequential chunks: 1440 + 959 + 879 = 3278 passed, 0 skipped, 0 failed on HEAD 0ffde24 (= the commission's 3258 baseline + 20 new nodes; TC-1902 the clipboard arm ran, no skip — the delta named); the qa-reviewer's evaluation returned PASS with 10/10 evidence rows (attribution per row), QA-P4-01..05 folded in the record; the four n01- captures discharge DDR UX-1 (each READY gate asserted the tones and zero marker runs on the live frame, 8+ colours, no leftover window); COND-2's baseline reconciliation named and discharged in 04-validation.md; gate 0 block (evidence/gate-p4.txt); P5 close is next."
+    },
+    {
+      "station": "P5",
+      "date": "2026-10-25",
+      "decision": "P5 close under the batch's standing authorization — the canon folded (11 ids into REQUIREMENTS.md), the station closed, the close record filled (§0-§6), the backlog reconciled (item 4 done in place, no new carries), the scratch swept; the deliverable commit and the close commit follow, then the final gate; no push/merge (not granted)."
+    }
+  ],
   "obsidian_synced": false,
   "created_at": "2026-10-25T16:40:10.708105"
 }
