@@ -512,6 +512,32 @@ async def test_TC_210_the_legend_asks_the_same_frame(tmp_path, frozen, monkeypat
     assert seen == ["pa"], seen
 
 
+def test_TC_211_the_done_legend_wears_the_done_rows_tone():
+    """AUD-03 (HLR-201: a legend swatch takes its mark's tone): the gantt
+    legend's finished-work swatch wears the SAME tone as the drawn done row's
+    ✓ chip (reached), and its gloss says the row is kept, not folded."""
+    b = kg_board.build(Path("never.json"))
+    text = render_gantt(b, False, "tw1", TODAY, width=118, height=30)
+    lines = str(text).split("\n")
+    done = next(l for l in lines if "Design homepage mockups" in l)
+    assert done.rstrip().endswith("✓"), done      # the done row draws its ✓ chip
+    i = text.plain.index("Design homepage mockups")
+    row_start = text.plain.rindex("\n", 0, i) + 1
+    row_end = text.plain.find("\n", i)
+    row_end = len(text.plain) if row_end == -1 else row_end
+    chips = [s for s in text.spans
+             if s.start >= row_start and s.end <= row_end
+             and text.plain[s.start:s.end].strip() == "✓"]
+    assert chips, "the done row must draw a ✓ chip for the check to bite"
+    assert all(views.HEX["reached"] in str(s.style) for s in chips), \
+        [str(s.style) for s in chips]
+    entries = views.legend_entries("gantt", b, TODAY, 118, 30, selected_id="tw1")
+    swatch, gloss = next(e for e in entries if "finished work" in e[1])
+    assert gloss == "finished work, kept as a quiet row", gloss
+    tones = {k for k, v in views.HEX.items() if v in swatch}
+    assert tones == {"reached"}, (tones, swatch)    # legend tone == row chip tone
+
+
 @pytest.mark.parametrize("size,max_up", [((80, 24), 3), ((118, 30), 2)])
 async def test_AT_207_the_project_just_left_stays_open(tmp_path, frozen, size, max_up):
     """AT-207 (HLR-207) — ONE node over the two terminal sizes (C-18, qa P4
@@ -551,7 +577,7 @@ async def test_AT_207_the_project_just_left_stays_open(tmp_path, frozen, size, m
 
 
 # =========================================================================== #
-# TC-208 / AT-206 — finishing a task in the gantt says where it went (HLR-206)
+# TC-208 / AT-206 — finishing a task in the gantt says it stays (HLR-206)
 # =========================================================================== #
 def toasts(app) -> list[str]:
     """The fold notices (HLR-206). Since batch 2026-10-04-batch-01 finishing a
@@ -560,11 +586,12 @@ def toasts(app) -> list[str]:
     return [n.message for n in app._notifications if n.title != "Ready"]
 
 
-async def test_AT_206_a_finished_task_says_where_it_folded(tmp_path, frozen):
-    """AT-206 (HLR-206). Terminal 118x30, key `3`: the entry selection is `tw1`
-    (done — it keeps its row since 2026-10-26); put the cursor on `tw2` (Review)
-    and `]` → exactly one notice, `Build component library done · folded into
-    ✓2 · u undo`. RED on the base tree: no notice (P-10)."""
+async def test_AT_206_a_finished_task_says_it_keeps_its_row(tmp_path, frozen):
+    """AT-206 (HLR-206, amended 2026-10-26). Terminal 118x30, key `3`: the entry
+    selection is `tw1` (done — it keeps its row since 2026-10-26); put the
+    cursor on `tw2` (Review) and `]` → exactly one notice, `Build component
+    library done · kept on the gantt · u undo`. RED on the base tree: no
+    notice (P-10)."""
     app = _app(tmp_path)
     async with app.run_test(size=(118, 30)) as pilot:
         await pilot.pause()
@@ -577,7 +604,7 @@ async def test_AT_206_a_finished_task_says_where_it_folded(tmp_path, frozen):
         before = len(toasts(app))
         await pilot.press("]")
         await pilot.pause()
-        assert toasts(app)[before:] == ["Build component library done · folded into ✓2 · u undo"]
+        assert toasts(app)[before:] == ["Build component library done · kept on the gantt · u undo"]
 
 
 async def test_TC_208_only_the_move_that_finishes_notifies(tmp_path, frozen):
@@ -599,7 +626,7 @@ async def test_TC_208_only_the_move_that_finishes_notifies(tmp_path, frozen):
         assert len(toasts(app)) == n
         await pilot.press("]")
         await pilot.pause()
-        assert toasts(app)[n:] == ["Fix checkout 500 error done · folded into ✓2 · u undo"]
+        assert toasts(app)[n:] == ["Fix checkout 500 error done · kept on the gantt · u undo"]
     app = _app(tmp_path / "k")
     async with app.run_test(size=(118, 30)) as pilot:
         await pilot.pause()
@@ -615,10 +642,10 @@ async def test_TC_208_only_the_move_that_finishes_notifies(tmp_path, frozen):
         assert len(toasts(app)) == n
 
 
-async def test_TC_208_the_count_is_the_groups_own_with_v_on(tmp_path, frozen):
-    """The count is the `✓n` of the finished task's OWN group, archived work
-    included while `v` shows it (code review F1): Mobile App, one done task
-    archived, `v` on, `tm6` (Review) finished → `✓2`."""
+async def test_TC_208_the_toast_is_unchanged_with_v_on(tmp_path, frozen):
+    """With `v` on and one done task archived the toast is unchanged (AUD-02):
+    the task is kept on the gantt, not counted — the ✓N count left the toast
+    with the 2026-10-26 reversal (old shape: Mobile App, `✓2`)."""
     b = kg_board.build(tmp_path / "board.json")
     b.task_by_id("tm1").archived = True
     app = _app(tmp_path, b)
@@ -633,13 +660,13 @@ async def test_TC_208_the_count_is_the_groups_own_with_v_on(tmp_path, frozen):
         await pilot.pause()
         await pilot.press("]")
         await pilot.pause()
-        assert toasts(app)[-1] == "Crash reporting done · folded into ✓2 · u undo"
+        assert toasts(app)[-1] == "Crash reporting done · kept on the gantt · u undo"
 
 
-async def test_TC_208_the_count_follows_the_filter(tmp_path, frozen):
-    """Under a `/` filter the count is the filtered group's (code review F1):
-    filtering on "Build", `tw2` finished → `✓1` (the filter hides the other
-    finished task)."""
+async def test_TC_208_the_toast_is_unchanged_under_a_filter(tmp_path, frozen):
+    """Under a `/` filter the toast is unchanged (AUD-02): the finished task
+    is kept on the gantt, not counted — filtering on "Build", `tw2` finished
+    (old shape: `✓1`)."""
     app = _app(tmp_path)
     async with app.run_test(size=(118, 30)) as pilot:
         await pilot.pause()
@@ -654,7 +681,7 @@ async def test_TC_208_the_count_follows_the_filter(tmp_path, frozen):
         assert app.selected_task_id == "tw2"
         await pilot.press("]")
         await pilot.pause()
-        assert toasts(app)[-1] == "Build component library done · folded into ✓1 · u undo"
+        assert toasts(app)[-1] == "Build component library done · kept on the gantt · u undo"
 
 
 def test_TC_209_the_filtered_view_keeps_the_previous_group_too():
@@ -688,7 +715,7 @@ async def test_TC_208_a_markup_title_is_shown_literally(tmp_path, frozen, title)
         await pilot.pause()
         await pilot.press("]")
         await pilot.pause()
-        assert toasts(app)[-1] == f"{title} done · folded into ✓2 · u undo"
+        assert toasts(app)[-1] == f"{title} done · kept on the gantt · u undo"
         await pilot.pause()
         painted_toasts = [str(t.render()) for t in app.screen.query("Toast")]
         assert any(title in p for p in painted_toasts), painted_toasts

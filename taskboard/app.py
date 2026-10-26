@@ -2294,23 +2294,23 @@ class TaskboardApp(App):
         return True
 
     def _notify_folded(self, task: Task) -> None:
-        """A task `]` finished: on the gantt it keeps its quiet row now, and it
-        is counted in its group's `✓n`. Say so, once, with the way back (answer
-        D14, HLR-206). The title is board text: shown raw with markup OFF,
-        never escaped (security S-1)."""
-        group = gantt_group_key(self.board, task)
-        board = self._view_board()
-        g = next((g for g in gantt_plan(board, self.show_archived, None, date.today(),
-                                        10 ** 6, self.focused_project_id)
-                  if group_key(g.project) == group), None)
-        if task.milestone and g is not None and any(t is task for t in g.rows):
-            # a reached milestone stays drawn among its group's rows (D-606, D-614)
-            glyph, _style, chip = milestone_mark(task, board, date.today())
-            self.notify(f"{clip(task.title, 40)} reached · {glyph}{chip} · u undo",
-                        markup=False)
-            return
-        rest = len(g.rest) if g is not None else 0
-        self.notify(f"{task.title} done · folded into ✓{rest} · u undo", markup=False)
+        """A task `]` finished: on the gantt it keeps its quiet row now (done
+        work stays visible until it is archived, 2026-10-26), so say it is done
+        and stays, once, with the way back (answer D14, HLR-206). The title is
+        board text: shown raw with markup OFF, never escaped (security S-1)."""
+        if task.milestone:
+            group = gantt_group_key(self.board, task)
+            board = self._view_board()
+            g = next((g for g in gantt_plan(board, self.show_archived, None, date.today(),
+                                            10 ** 6, self.focused_project_id)
+                      if group_key(g.project) == group), None)
+            if g is not None and any(t is task for t in g.rows):
+                # a reached milestone stays drawn among its group's rows (D-606, D-614)
+                glyph, _style, chip = milestone_mark(task, board, date.today())
+                self.notify(f"{clip(task.title, 40)} reached · {glyph}{chip} · u undo",
+                            markup=False)
+                return
+        self.notify(f"{task.title} done · kept on the gantt · u undo", markup=False)
 
     def action_prio_cycle(self) -> None:
         """`!` — cycle the selected task's priority low→normal→high→low."""

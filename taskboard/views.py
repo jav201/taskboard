@@ -8699,7 +8699,7 @@ def legend_entries(mode: str, board: Board, today: date | None = None,
         if any(not g.unfolded for g in groups):
             out.append((c("▸", hue), "a folded project: its open count, no rows"))
         if g_label >= 26 and re.search(r"✓\d", body):
-            out.append((c("✓2", "done"), "finished work, folded into a count"))
+            out.append((c("✓2", "reached"), "finished work, kept as a quiet row"))
     if mode == "agenda":
         out.append((c("●", "over"), "a task's due date, on the shared day axis"))
         out.append((c("─", "dim"), "its reach: from today to that date"))
