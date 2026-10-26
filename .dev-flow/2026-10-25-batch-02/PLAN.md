@@ -53,7 +53,7 @@ The trigger evaluation `state.json`'s `triggers.record` points at: one row per t
 
 ## Where we are
 
-P2 review, round 3. Round 1 (architect + qa + security lenses): 0 blockers, 3 majors, 14 minors → iterate-to-refine, folded at P1 iteration 1 (LED-2901, LED-2901.2, LED-2901.3, LED-2903, LED-2905). Round 2 (full architect re-review): the folds verified except LED-2905's casualty claim — factually wrong (c7 not c5; mention-membership oracle, no marker-keyed byte oracle exists) → iterate-to-refine, corrected at P1 iteration 2 (LED-2905.1). Round 3 (fold verification) is running; owed next: close P2, then the PDR (design proposal ready in design/design-proposal.md), then increment 001.
+DDR. P3 closed: increment 001 (1 source file, 20 test nodes) with the full code-review arc (BLOCK on F1 → RED-first fixes → re-read OK-TO-ADVANCE) and the mutation battery re-run against the shipped bytes (6/6 RED). The DDR's ux lens approved with one condition — the P4 real-terminal captures must show the tones (discharges at P4; the capture harness adaptation is running). The qa lens is out; owed next: close the DDR, then P4 (the 3-chunk gate suite, the qa-reviewer pass, the n01- captures), then P5 close.
 
 ## Objective
 

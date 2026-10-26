@@ -85,7 +85,7 @@ env -u NO_COLOR python -m pytest -q tests/test_present.py tests/test_present_pol
 | Transcript | `evidence/mutation-001.txt` — arm (a): AT-2901 RED, `12 marker chars, 0 tone colours` reproduced |
 | Restore proven by | file hash: final `taskboard/views.py` md5 `52bdb41e…` equals the pre-battery value, recorded per arm in the transcript |
 | Bytecode cache | `PYTHONDONTWRITEBYTECODE=1` on every run |
-| Arms resolved at baseline | 22 in the battery's node set (16 new + the pinned regression nodes the arms touch); expected-arm counts asserted per arm in the script |
+| Arms resolved at baseline | 9 node-resolutions across the six arms (1+2+1+1+1+3), per the transcript's per-arm tails; expected-arm counts asserted per arm in the script |
 | Verdict granularity | per resolved node id, recorded per arm |
 | Arms that stayed GREEN | none |
 
@@ -176,7 +176,7 @@ env -u NO_COLOR python -m pytest -q tests/test_present.py tests/test_present_pol
 
 ### Signed-balance test ledger
 
-`post = base − deleted + added` → `post = 200 − 0 + 16` → the affected suites hold 200 (baseline) and the new module adds 16: `200 + 20 = 220` green across the census — 200 in the affected suites (base line held) and 20 in the new module (`suite-001.txt`: 16, then 17, then 20 passed across the increment's three states; the final 20 is the figure of record).
+`post = base − deleted + added` → `post = 200 − 0 + 16` → the affected suites hold 200 (baseline) and the new module adds 16: `base 200 − deleted 0 + added 20 = post 220` — 200 in the affected suites (the base_ref baseline held) and 20 in the new module; the 16 oracle updates are the CORRECTION POPULATION (in-place, §4 above), not additions (`suite-001.txt`: 16, then 17, then 20 passed across the increment's three states; the final 20 is the figure of record). DDR COND-1 folded: the middle term no longer conflates the correction population with the added count.
 
 ---
 
