@@ -139,9 +139,11 @@ def test_TC_117_the_title_is_bold_bright(mode, pres):
 def test_TC_118_the_critical_chain_is_structure_not_hue():
     """TC-118 (LLR-103.2). The four chain tasks' reaches are `━` in bold
     bright (a flow packet may ride one cell); the header counts `chain 4` in
-    `hd`; no chain cell wears the accent."""
+    `hd`; no chain cell wears the accent. At 118x40 every group unfolds — the
+    chain lives in Mobile App, which folds at 118x30 since its done row counts
+    in its height (2026-10-26), and a folded group draws no reaches to check."""
     b = oracle()
-    text = render_view("gantt", b, False, "tw3", TODAY, 118, 30, {})
+    text = render_view("gantt", b, False, "tw3", TODAY, 118, 40, {})
     lines = text.plain.split("\n")
     assert re.search(r"\bchain 4\b", lines[0]) and "━ chain" not in lines[0]
     starts = [0]

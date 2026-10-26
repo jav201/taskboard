@@ -384,15 +384,19 @@ def test_TC_212_the_one_date_forms_clip_too():
 
 
 async def test_AT_210_the_echo_shows_where_the_task_starts_earlier(tmp_path, frozen):
-    """AT-210 (HLR-210). Terminal 118x30, key `3`: the entry selection is `tw2`,
-    which starts before the window — the painted day row opens with `◂`, not
-    `⟦`. RED on the base tree: `⟦`."""
+    """AT-210 (HLR-210). Terminal 118x30, key `3`: the entry selection is `tw1`
+    (done — it keeps its row since 2026-10-26); put the cursor on `tw2`, which
+    starts before the window — the painted day row opens with `◂`, not `⟦`.
+    RED on the base tree: `⟦`."""
     app = _app(tmp_path)
     async with app.run_test(size=(118, 30)) as pilot:
         await pilot.pause()
         await pilot.press("3")
         await pilot.pause()
-        assert app.selected_task_id == "tw2"
+        assert app.selected_task_id == "tw1"
+        app.selected_task_id = "tw2"
+        app.refresh_view()
+        await pilot.pause()
         line = painted(app)[2]
         label_w = gantt_columns(len(painted(app)[0]))[0]
         assert line[label_w + 1] == "◂" and "⟦" not in line, line
@@ -471,7 +475,8 @@ async def test_TC_210_the_legend_asks_the_same_frame(tmp_path, frozen, monkeypat
         await pilot.pause()
         await pilot.press("3")
         await pilot.pause()
-        for _ in range(5):                  # tw2 .. tw6, then tm6
+        assert app.selected_task_id == "tw1"   # entry: the done task keeps its row
+        for _ in range(1):                     # one step into Mobile App (tm6)
             await pilot.press("down")
             await pilot.pause()
         assert app.selected_task_id == "tm6"
@@ -507,24 +512,29 @@ async def test_TC_210_the_legend_asks_the_same_frame(tmp_path, frozen, monkeypat
     assert seen == ["pa"], seen
 
 
-@pytest.mark.parametrize("size,max_up", [((80, 24), 2), ((118, 30), 1)])
+@pytest.mark.parametrize("size,max_up", [((80, 24), 3), ((118, 30), 2)])
 async def test_AT_207_the_project_just_left_stays_open(tmp_path, frozen, size, max_up):
     """AT-207 (HLR-207) — ONE node over the two terminal sizes (C-18, qa P4
-    G-001). Walking `down` from the entry selection through all 25 open tasks:
-    stepping from `tw6` into Mobile App (`tm6`) keeps Website Redesign `▾` and
-    the highlight does not move up; at API Platform (`ta1`) Mobile App — now the
-    group just left — is `▾`; the highlight moves up at most twice at 80x24
-    (base: three times, P-7) and at most once at 118x30. RED on the base tree at
-    80x24: Website Redesign folds on `tm6`; at 118x30 the fold checks are RED on
-    base too, while its up-move bound alone is only a regression PIN — the base
-    also moves up once there (qa P4 G-002, G-006)."""
+    G-001). Walking from the top of the column through all 28 drawn tasks
+    (25 open + 3 done kept at their groups' tails, 2026-10-26): stepping into
+    Mobile App (`tm6`) keeps Website Redesign `▾` and the highlight does not
+    move up; at API Platform (`ta1`) Mobile App — now the group just left —
+    is `▾`; the highlight moves up at most three times at 80x24 (base: four
+    times, P-7) and at most twice at 118x30 — each one more than the pre-done
+    rows pin, a group's done tail being one more row the fold must swallow.
+    RED on the base tree at 80x24: Website Redesign folds on `tm6`; at 118x30
+    the fold checks are RED on base too, while its up-move bound alone is only
+    a regression PIN — the base also moves up once there (qa P4 G-002, G-006)."""
     app = _app(tmp_path)
     async with app.run_test(size=size) as pilot:
         await pilot.pause()
         await pilot.press("3")
         await pilot.pause()
+        for _ in range(40):                 # to the top of the drawn column
+            await pilot.press("up")
+            await pilot.pause()
         walk = [(app.selected_task_id, app._line_map[app.selected_task_id])]
-        for _ in range(24):
+        for _ in range(27):
             await pilot.press("down")
             await pilot.pause()
             sel = app.selected_task_id
@@ -535,7 +545,7 @@ async def test_AT_207_the_project_just_left_stays_open(tmp_path, frozen, size, m
             if sel == "ta1":
                 assert any(ln.startswith("▾ Mobile") for ln in painted(app)), painted(app)
         ids = [t for t, _r in walk]
-        assert "tm6" in ids and "ta1" in ids and len(set(ids)) == 25
+        assert "tm6" in ids and "ta1" in ids and len(set(ids)) == 28
         ups = [(a, b) for a, b in zip(walk, walk[1:]) if b[1] < a[1]]
         assert len(ups) <= max_up, ups
 
@@ -551,15 +561,19 @@ def toasts(app) -> list[str]:
 
 
 async def test_AT_206_a_finished_task_says_where_it_folded(tmp_path, frozen):
-    """AT-206 (HLR-206). Terminal 118x30, key `3`: the entry selection `tw2`
-    (Review) and `]` → exactly one notice, `Build component library done ·
-    folded into ✓2 · u undo`. RED on the base tree: no notice (P-10)."""
+    """AT-206 (HLR-206). Terminal 118x30, key `3`: the entry selection is `tw1`
+    (done — it keeps its row since 2026-10-26); put the cursor on `tw2` (Review)
+    and `]` → exactly one notice, `Build component library done · folded into
+    ✓2 · u undo`. RED on the base tree: no notice (P-10)."""
     app = _app(tmp_path)
     async with app.run_test(size=(118, 30)) as pilot:
         await pilot.pause()
         await pilot.press("3")
         await pilot.pause()
-        assert app.selected_task_id == "tw2"
+        assert app.selected_task_id == "tw1"
+        app.selected_task_id = "tw2"
+        app.refresh_view()
+        await pilot.pause()
         before = len(toasts(app))
         await pilot.press("]")
         await pilot.pause()
@@ -574,7 +588,9 @@ async def test_TC_208_only_the_move_that_finishes_notifies(tmp_path, frozen):
         await pilot.pause()
         await pilot.press("3")
         await pilot.pause()
-        await pilot.press("down")
+        assert app.selected_task_id == "tw1"   # done work keeps its row: the entry
+        app.selected_task_id = "tw3"
+        app.refresh_view()
         await pilot.pause()
         assert app.selected_task_id == "tw3"
         n = len(toasts(app))
@@ -665,6 +681,10 @@ async def test_TC_208_a_markup_title_is_shown_literally(tmp_path, frozen, title)
     async with app.run_test(size=(118, 30), notifications=True) as pilot:   # paint the toast
         await pilot.pause()
         await pilot.press("3")
+        await pilot.pause()
+        assert app.selected_task_id == "tw1"   # done work keeps its row: the entry
+        app.selected_task_id = "tw2"           # Review: one `]` finishes it
+        app.refresh_view()
         await pilot.pause()
         await pilot.press("]")
         await pilot.pause()

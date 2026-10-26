@@ -226,9 +226,10 @@ def test_within_each_group_the_soonest_due_comes_first(tmp_path):
 
 
 def test_the_rendered_gantt_shows_that_order(tmp_path):
-    """The open work in that order. Finished work no longer sinks to the tail
-    as rows: it folds into its project's `✓n` (D2 / HLR-102, batch
-    2026-10-02-batch-01, G-A: "done folds to ✓n")."""
+    """The open work in that order, then the done work at the tail in its own
+    due order — a done task KEEPS its row, painted quiet with a `✓` chip, and
+    is still counted in its project's `✓n` (the operator, 2026-10-26: done
+    work leaves the gantt only when archived)."""
     b, p = _mixed(tmp_path)
     out = str(render_gantt(b, False, None, TODAY, width=120, height=30)).split("\n")
     rows = {}
@@ -238,25 +239,29 @@ def test_the_rendered_gantt_shows_that_order(tmp_path):
             if title in line:
                 rows[title] = i
     assert rows["Active soon"] < rows["Active late"] < rows["Active undated"]
-    assert "Done early" not in rows and "Done later" not in rows
-    assert "✓2" in next(l for l in out if "Alpha" in l)
+    assert rows["Active undated"] < rows["Done early"] < rows["Done later"]
+    assert "Done early" in rows and "Done later" in rows   # both done rows drawn
+    alpha = next(l for l in out if "Alpha" in l)
+    assert "✓2" in alpha
 
 
 def test_navigation_walks_the_order_the_gantt_draws(tmp_path):
-    """Nav order == draw order (F-3), and the gantt draws open work only
-    (HLR-104, batch 2026-10-02-batch-01), undated open work included."""
+    """Nav order == draw order (F-3): open work first, then the group's done
+    work at the tail (2026-10-26), undated open work included."""
     b, p = _mixed(tmp_path)
     ids = nav_model("gantt", b, False, TODAY, 120, 30)[0]
-    open_ = [t.id for t in gantt_tasks(b, b.visible_tasks(False), p.id)
-             if not b.is_done(t)]
-    assert ids == open_
+    order = [t.id for t in gantt_tasks(b, b.visible_tasks(False), p.id)
+             if not t.archived]
+    assert ids == order
     assert [b.task_by_id(i).title for i in ids] == ["Active soon", "Active late",
-                                                     "Active undated"]
+                                                     "Active undated",
+                                                     "Done early", "Done later"]
 
 
 def test_the_gantt_never_lists_an_archived_task(tmp_path):
     """With `v` off the archived task is invisible; with `v` on it is counted,
-    never listed — rest work folds into `✓n` (D2, batch 2026-10-02-batch-01)."""
+    never listed — archiving, not finishing, is what hides a task (D2; the
+    operator, 2026-10-26). The done-but-not-archived rows stay."""
     b, p = _mixed(tmp_path)
     swept = b.tasks[0]
     swept.phase_changed = iso(-40)
@@ -264,6 +269,7 @@ def test_the_gantt_never_lists_an_archived_task(tmp_path):
     off = str(render_gantt(b, False, None, TODAY, width=120, height=30))
     on = str(render_gantt(b, True, None, TODAY, width=120, height=30))
     assert "Done early" not in off and "Done early" not in on
+    assert "Done later" in off and "Done later" in on   # done, not archived: drawn
     alpha = lambda out: next(l for l in out.split("\n") if "Alpha" in l)  # noqa: E731
     assert "✓1" in alpha(off) and "✓2" in alpha(on)
 

@@ -185,6 +185,7 @@ EXCLUSION_LINES = {
     'marks[ax.cell(pd)] = ("◆", proj.color)': 2,      # the presentation rulers' dues
     'segs.append(f"{pn} +{over}d past ◆")': 1,        # app: the slip notice
     'cells[x] = ("◆", tone)': 1,                       # a one-date TASK, not a milestone
+    'cells[x] = ("◆", "reached")': 1,                  # a one-date DONE task (2026-10-26)
     'if any(gl == "◆"': 1,                             # the span row's drawn-set probe
 }
 

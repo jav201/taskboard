@@ -2113,11 +2113,12 @@ class TaskboardApp(App):
             # (`gantt_plan`, below) applies the focus itself.
             tasks = [t for t in tasks if t.project_id == self.focused_project_id]
         if self.view_mode == "gantt":
-            # The gantt draws OPEN work only (rest work is its group's `✓n`),
-            # so a done or archived selection would park the cursor on a row
-            # the view does not draw (F-3). Move to the neighbour it had in
-            # its group's draw order — one row away, so an extra `]` cannot
-            # land on a distant task — else to the first task drawn.
+            # The gantt draws open work and its groups' done work (2026-10-26);
+            # only ARCHIVED work is its group's `✓n`, so an archived selection
+            # would park the cursor on a row the view does not draw (F-3). Move
+            # to the neighbour it had in its group's draw order — one row away,
+            # so an extra `]` cannot land on a distant task — else to the first
+            # task drawn.
             order = self._nav_flat()
             if self.selected_task_id in order:
                 return
@@ -2293,9 +2294,10 @@ class TaskboardApp(App):
         return True
 
     def _notify_folded(self, task: Task) -> None:
-        """A task `]` finished has left the gantt — it folded into its group's
-        `✓n`. Say so, once, with the way back (answer D14, HLR-206). The title is
-        board text: shown raw with markup OFF, never escaped (security S-1)."""
+        """A task `]` finished: on the gantt it keeps its quiet row now, and it
+        is counted in its group's `✓n`. Say so, once, with the way back (answer
+        D14, HLR-206). The title is board text: shown raw with markup OFF,
+        never escaped (security S-1)."""
         group = gantt_group_key(self.board, task)
         board = self._view_board()
         g = next((g for g in gantt_plan(board, self.show_archived, None, date.today(),

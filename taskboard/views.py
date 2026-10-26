@@ -2407,7 +2407,9 @@ class GanttGroup(NamedTuple):
     late: int
     unfolded: bool
     # what the group DRAWS (LLR-602.1): its open work and, while it has any, its
-    # reached milestones, merged by due. `open` and `rest` keep their counts.
+    # reached milestones, merged by due; with `done_rows` the board's gantt also
+    # keeps its done work visible, quietly, at the tail (2026-10-26). `open` and
+    # `rest` keep their counts.
     rows: tuple = ()
 
 
@@ -2433,7 +2435,7 @@ def _gantt_open(board: Board, t: Task) -> bool:
 def gantt_plan(board: Board, show_archived: bool, selected_id: str | None,
                today: date, body_rows: int,
                focus: str | None = None, previous: str | None = None,
-               pinned: str | None = None) -> list[GanttGroup]:
+               pinned: str | None = None, done_rows: bool = False) -> list[GanttGroup]:
     """THE ONE SEAT for what the gantt draws and in what order — the renderer
     and `nav_model` both read it, so the cursor cannot walk an order the screen
     does not show (F-3).
@@ -2445,8 +2447,13 @@ def gantt_plan(board: Board, show_archived: bool, selected_id: str | None,
     `previous` is the group the selection was in before its current one: it is
     offered rows right after the selected group, so walking into the next
     project does not fold the one just left (answer UXV-2, HLR-207).
-    Rest work (done or archived) never draws a row: it is the `✓n` on its span
-    row (G-A: "done folds to ✓n")."""
+
+    Folding and pressure count OPEN work only, but what a group DRAWS is its
+    open rows (its reached milestones merged by due while it has open work,
+    D-606) and, when `done_rows` — only the board's gantt view sets it — its
+    DONE, NOT-archived, non-milestone tasks at the tail, sorted by due: a done
+    task stays visible until it is archived (the operator, 2026-10-26). Archived
+    work never draws a row: it is only counted in the `✓n` on its span row."""
     tasks = board.visible_tasks(show_archived)
     raw: list[tuple[object | None, list[Task], list[Task]]] = []
     for p in board.visible_projects(show_archived):
@@ -2463,10 +2470,19 @@ def gantt_plan(board: Board, show_archived: bool, selected_id: str | None,
     def late_n(ts):
         return sum(1 for t in ts if (d := parse_iso(t.due_date)) and d < today)
 
+    def done_tail(r: list[Task]) -> list[Task]:
+        # the operator, 2026-10-26: "en el GANTT no quiero que desaparezca...
+        # sólo deberían dejar de ser visibles si están archivadas"
+        return (sort_by_due([t for t in r if not t.milestone
+                             and board.is_done(t) and not t.archived])
+                if done_rows else [])
+
     # a reached milestone is a row among its group's open rows, by date, while the
-    # group has open work (D-606, M-1: "◆✓ reached")
-    rows = [tuple(sort_by_due(o + [t for t in r if t.milestone and board.is_done(t)
-                                   and not t.archived])) if o else ()
+    # group has open work (D-606, M-1: "◆✓ reached"); done work follows at the
+    # tail, so a group of only-done work still shows it (2026-10-26)
+    rows = [tuple((sort_by_due(o + [t for t in r if t.milestone and board.is_done(t)
+                                    and not t.archived]) if o else [])
+                  + done_tail(r))
             for _p, o, r in raw]
 
     sel = board.task_by_id(selected_id) if selected_id else None
@@ -2820,6 +2836,35 @@ def _gantt_bar(task: Task, board: Board, ax: GanttAxis, chain: set[str],
     lo, hi = max(0, a) + (1 if a < 0 else 0), min(ax.w - 1, b)   # clear of `◂`
     if hi > lo and _flowing(board, task):
         cells[lo + tick % (hi - lo)] = ("▬", "mut")
+    return cells
+
+
+def _gantt_done_bar(task: Task, board: Board, ax: GanttAxis
+                    ) -> list[tuple[str, str]]:
+    """A DONE task's reach (2026-10-26): the same geometry as an open bar, but
+    all in the quiet `reached` tone — no flow packet, no priority hue, no
+    critical-chain weight: finished work reads as finished, never as late. Off
+    the window it clips to the edge like any bar (G3)."""
+    cells = [(" ", "dim")] * ax.w
+    s, e = parse_iso(task.start_date), parse_iso(task.due_date)
+    if s is None and e is None:
+        return cells
+    if s is not None and e is not None and s == e:
+        x = ax.cell(e)
+        if 0 <= x < ax.w:
+            cells[x] = ("◆", "reached")
+        return cells
+    a, b = ax.cell(s or ax.today), ax.end_cell(e or ax.today)
+    if b < a:
+        a, b = b, a
+    for x in range(max(0, a), min(ax.w, b)):
+        cells[x] = (FIELD_TASK, "reached")
+    if 0 <= b < ax.w:
+        cells[b] = (FIELD_PHASE_TIP[min(3, board.phase_index(task))], "reached")
+    if a < 0:
+        cells[0] = (OFF_LEFT, "mut")
+    if b >= ax.w:
+        cells[-1] = (OFF_RIGHT, "mut")
     return cells
 
 
@@ -3217,7 +3262,7 @@ def render_gantt(board, show_archived, selected_id, today=None,
     one-line legend when a row is spare (LLR-101.10)."""
     lines, drawn, _groups, _ax = _gantt_frame(board, show_archived, selected_id, today,
                                               width, height, line_map, tick, focus,
-                                              previous)
+                                              previous, done_rows=True)
     w = _clamp_width(width)
     pinned = 0
     if len(lines) < (height or 24):
@@ -3230,16 +3275,20 @@ def render_gantt(board, show_archived, selected_id, today=None,
 
 def _gantt_frame(board, show_archived, selected_id, today=None, width=68, height=0,
                  line_map=None, tick=0, focus: str | None = None,
-                 previous: str | None = None, pinned_id: str | None = None):
+                 previous: str | None = None, pinned_id: str | None = None,
+                 done_rows: bool = False):
     """THE WHOLE BOARD, FITTED (G-A), WITH A RULER THAT ANSWERS (AX-2).
 
     The shipped gantt laid every board on two days per cell with today at 30 %
     of the field and drew rows until the height ran out — "+9 not shown" on the
     board the operator judged it on, a whole project invisible. Now the window
     is fitted to the open work, projects fold to one span row when rows run
-    out (the selected task's first, then the most urgent), finished work folds to
-    `✓n`, and the dates sit on a two-row ruler at the top instead of an axis
-    that dropped the month you were in.
+    out, finished work is counted as `✓n` on its span row, and the dates sit on
+    a two-row ruler at the top instead of an axis that dropped the month you
+    were in. With `done_rows` — the board's gantt view — a group's done,
+    not-archived tasks also keep their own quiet rows at the tail
+    (2026-10-26); the presentation and the link mode leave the flag off, so
+    their output is unchanged.
 
     `focus` is a project id; when set only that project is drawn, and the
     Inbox is hidden, as in the kanban. Returns the rows (header, ruler, body),
@@ -3255,7 +3304,8 @@ def _gantt_frame(board, show_archived, selected_id, today=None, width=68, height
     body_rows = max(0, h - 1 - GANTT_RULER_ROWS - (1 if strip else 0)) if height else 10 ** 6
     pinned_t = board.task_by_id(pinned_id) if pinned_id else None
     groups = gantt_plan(board, show_archived, selected_id, today, body_rows, focus,
-                        previous, gantt_group_key(board, pinned_t) if pinned_t else None)
+                        previous, gantt_group_key(board, pinned_t) if pinned_t else None,
+                        done_rows)
     ax = gantt_axis(field_w, today, *gantt_window(groups, today))
     guides, weekends = ax.guides(), ax.weekends()
     chain = set(critical_chain(board))
@@ -3346,10 +3396,15 @@ def _gantt_frame(board, show_archived, selected_id, today=None, width=68, height
             label = " " + c(glyph, style) + " " + title + " "
             return row(label, mark, gantt_milestone_cells(t, board, ax, today),
                        gantt_milestone_chip(t, board, today, chip_w))
+        label = "  " + title_markup(t, label_w - 3, t.id == selected_id) + " "
+        if board.is_done(t):       # done but not archived: a quiet row, kept
+            label = ("  " + c(title_markup(t, label_w - 3, t.id == selected_id),
+                              "reached") + " ")
+            return row(label, mark, _gantt_done_bar(t, board, ax),
+                       c(fit("✓", chip_w, "right"), "reached") if chip_w else "")
         cells = _gantt_bar(t, board, ax, chain, tick)
         if any(tone == "crit" for _, tone in cells):
             drawn.add("crit")
-        label = "  " + title_markup(t, label_w - 3, t.id == selected_id) + " "
         return row(label, mark, cells, gantt_due_chip(t.due_date, today, chip_w))
 
     rows: list[tuple[str, str | None]] = []
@@ -8308,9 +8363,11 @@ def nav_model(mode, board, show_archived, today=None, width: int = 68,
         undated = [t for t in tasks if parse_iso(t.due_date) is None]
         return [[t.id for t in sort_by_due(dated)] + [t.id for t in undated]]
 
-    if mode == "gantt":       # THE renderer's seat: open work, in draw order
+    if mode == "gantt":       # THE renderer's seat: its rows, in draw order —
+        # open work first, then done work kept visible at each group's tail
         body = max(0, height - 1 - GANTT_RULER_ROWS) if height else 10 ** 6
-        groups = gantt_plan(board, show_archived, selected_id, today, body, gantt_focus)
+        groups = gantt_plan(board, show_archived, selected_id, today, body, gantt_focus,
+                            done_rows=True)
         return [[t.id for g in groups for t in g.rows]]
 
     return [[t.id for t in tasks]]
@@ -8601,7 +8658,8 @@ def legend_entries(mode: str, board: Board, today: date | None = None,
         # cannot be missing (code review F3, batch 2026-10-02-batch-01).
         g_lines, drawn, groups, gax = _gantt_frame(board, show_archived, selected_id,
                                                    today, width, height, None, 0,
-                                                   gantt_focus, gantt_previous)
+                                                   gantt_focus, gantt_previous,
+                                                   done_rows=True)
         body = "\n".join(g_lines[1 + GANTT_RULER_ROWS:])
         g_label = gantt_columns(_clamp_width(width))[0]
         if any(g.project is not None for g in groups):

@@ -117,7 +117,9 @@ async def test_AT_101_the_whole_board_is_on_screen(tmp_path, frozen, size):
         for name in ("Website Re", "Mobile App", "API Platfo", "Data Wareh", "Ops & Secu"):
             assert any(name in l for l in spans), (name, spans)
         assert not any("not shown" in l for l in out)
-        assert not any("Design homepage" in l for l in out), "done work drew a row"
+        # the operator, 2026-10-26: done work KEEPS its row — "Design homepage
+        # mockups" is done and must be drawn, quietly, at its group's tail
+        assert any("Design homepage" in l for l in out), "a done row vanished"
 
 
 # =========================================================================== #
@@ -128,20 +130,21 @@ async def test_AT_102_down_walks_the_drawn_open_work(tmp_path, frozen, size):
     """AT-102 (HLR-104, C-12). From the first task row, `down` until the end:
     after EVERY press the selected task is painted in reverse on a row the
     viewport shows (the consumer of `line_map`) and the ruler is still rows 1–2;
-    the walk visits every open task exactly once and nothing else; one more
+    the walk visits every drawn task exactly once and nothing else — open work
+    and, since 2026-10-26, each group's done work at the tail; one more
     `down` at the end does nothing. RED on the base tree: the walk reaches done
     tasks and rows the view does not draw."""
     app = _app(tmp_path)
     async with app.run_test(size=size) as pilot:
         await pilot.pause()
-        opened = {t.id for t in app.board.tasks if not app.board.is_done(t) and not t.archived}
+        drawn = {t.id for t in app.board.tasks if not t.archived}
         await pilot.press("3")
         await pilot.pause()
         for _ in range(40):
             await pilot.press("up")
         await pilot.pause()
         seen = [app.selected_task_id]
-        for _ in range(len(opened) - 1):
+        for _ in range(len(drawn) - 1):
             await pilot.press("down")
             await pilot.pause()
             sel = app.selected_task_id
@@ -162,7 +165,7 @@ async def test_AT_102_down_walks_the_drawn_open_work(tmp_path, frozen, size):
                 sel, "not painted as selected")
             out = painted(app)
             assert re.search(r"(September|October|November|Sep|Oct|Nov)", out[1]), out[1]
-        assert len(seen) == len(set(seen)) and set(seen) == opened, seen
+        assert len(seen) == len(set(seen)) and set(seen) == drawn, seen
         await pilot.press("down")
         await pilot.pause()
         assert app.selected_task_id == seen[-1], "the end of the list is not a no-op"
@@ -352,8 +355,10 @@ async def test_AT_105_the_echo_follows_the_selection(tmp_path, frozen):
 # =========================================================================== #
 async def test_AT_108_entering_on_a_done_task_lands_on_drawn_work(tmp_path, frozen):
     """AT-108 (HLR-104, LLR-101.9). Enter the gantt with `tw1` (done) selected:
-    the selection lands on `tw2`, the open task after it in Website Redesign's
-    draw order, and `down` moves. RED on the base tree: `tw1` stays selected
+    since 2026-10-26 a done task KEEPS its row, so the selection stays on `tw1`
+    — it IS drawn work — and `down` moves to the next drawn row (Mobile App's
+    first task). Was: the selection moved to `tw2`, the open task after it,
+    because done work drew no row. RED on the base tree: `tw1` stays selected
     and `down` does nothing (P-9)."""
     app = _app(tmp_path)
     async with app.run_test(size=(118, 34)) as pilot:
@@ -361,18 +366,22 @@ async def test_AT_108_entering_on_a_done_task_lands_on_drawn_work(tmp_path, froz
         app.selected_task_id = "tw1"
         await pilot.press("3")
         await pilot.pause()
-        assert app.selected_task_id == "tw2"
+        assert app.selected_task_id == "tw1"
+        web = [l for l in painted(app) if "Design homepage" in l]
+        assert len(web) == 1 and web[0].rstrip().endswith("✓"), web
         await pilot.press("down")
         await pilot.pause()
-        assert app.selected_task_id == "tw3"
+        assert app.selected_task_id == "tm6"
 
 
-async def test_AT_113_finishing_a_task_moves_one_row_and_an_extra_key_is_local(
+async def test_AT_113_finishing_a_task_keeps_it_drawn_and_an_extra_key_is_local(
         tmp_path, frozen):
-    """AT-113 (HLR-104, UX-15). `]` until `tw3` is done: it leaves the gantt (`✓2` on
-    its project) and the cursor moves to `tw4`, the open task that followed it
-    — one row away. One more `]` advances THAT task, and only that task: no
-    distant task changes phase."""
+    """AT-113 (HLR-104, UX-15). `]` until `tw3` is done: since 2026-10-26 the
+    finished task KEEPS its row — painted quiet with a `✓`, counted in its
+    project's `✓2` — and the cursor stays on it (it is drawn work; the F-3
+    law). `down` walks to the next drawn row; one more `]` advances THAT task,
+    and only that task: no distant task changes phase. Was: finishing folded
+    the task into `✓n` and moved the cursor to `tw4`."""
     app = _app(tmp_path)
     async with app.run_test(size=(118, 34)) as pilot:
         await _open_gantt(pilot, app, "tw3")
@@ -380,17 +389,19 @@ async def test_AT_113_finishing_a_task_moves_one_row_and_an_extra_key_is_local(
         while app.board.task_by_id("tw3").phase != "Done":
             await pilot.press("]")
             await pilot.pause()
-        assert app.selected_task_id == "tw4"
+        assert app.selected_task_id == "tw3"
         assert any("Website Redesign" in l and "✓2" in l for l in painted(app))
+        done_row = next(l for l in painted(app) if "Fix checkout 500" in l)
+        assert done_row.rstrip().endswith("✓"), done_row
+        await pilot.press("down")
+        await pilot.pause()
+        assert app.selected_task_id == "tm6"
         await pilot.press("]")
         await pilot.pause()
         after = {t.id: t.phase for t in app.board.tasks}
         changed = {k for k in after if after[k] != before[k]}
-        assert changed == {"tw3", "tw4"}, changed
-        assert after["tw4"] == "Doing"
-        await pilot.press("down")
-        await pilot.pause()
-        assert app.selected_task_id == "tw5"
+        assert changed == {"tw3", "tm6"}, changed
+        assert after["tm6"] == "Done"
 
 
 # =========================================================================== #
@@ -509,14 +520,18 @@ def _folds(b, w, h, sel="tw3"):
 
 
 def test_TC_103_the_fold_rule_matches_the_verdict_frames():
-    """TC-103 (LLR-101.3, HLR-102). The frames' own strings at both sizes."""
+    """TC-103 (LLR-101.3, HLR-102). The frames' own strings at both sizes.
+    Restated 2026-10-26: a group's done rows count in its height, so the
+    one-extra-row groups fold one step sooner — Mobile App folds at 118x30
+    (Data Warehouse's place in the old frames) and API Platform folds too at
+    80x24."""
     b = kg_board.build()
     big = _folds(b, 118, 30)
-    assert [l[:31] for l in big if l.startswith("▸")] == ["▸ Data Warehouse    4 open ✓1  "]
+    assert [l[:31] for l in big if l.startswith("▸")] == ["▸ Mobile App        5 open ✓1  "]
     assert len([l for l in big if l.startswith("▾")]) == 4
     small = _folds(b, 80, 24)
     assert [l[:20] for l in small if l.startswith("▸")] == ["▸ Mobile App      5 ",
-                                                           "▸ Data Warehouse  4 "]
+                                                           "▸ API Platform 6 ▲2 "]
 
 
 def test_TC_103_a_group_that_does_not_fit_is_skipped_not_the_end():
@@ -544,7 +559,8 @@ def test_TC_103_a_late_tie_unfolds_the_earlier_due_first_and_height_0_unfolds_al
     plan = {g.project.name: g.unfolded for g in gantt_plan(b, False, None, TODAY, 4)}
     assert plan == {"Later": False, "Sooner": True}
     lines, lm, _t = render(kg_board.build(), 118, 0, "tw3")
-    assert not any(l.startswith("▸") for l in lines) and len(lm) == 25
+    # 25 open rows + 3 done rows kept (2026-10-26): every drawn row is mapped
+    assert not any(l.startswith("▸") for l in lines) and len(lm) == 28
 
 
 def test_TC_104_the_due_chip():
@@ -587,14 +603,16 @@ def test_TC_105_the_dependency_mark():
     assert gantt_dep_mark(missing, b, set()) == " "
 
 
-def test_TC_106_nav_is_the_plans_open_work_and_every_selection_is_drawn():
-    """TC-106 (LLR-101.6). Nav == the plan's open ids in order (25 on the oracle
-    board, no rest work); selecting each in turn at panel 80x24 draws it."""
+def test_TC_106_nav_is_the_plans_rows_and_every_selection_is_drawn():
+    """TC-106 (LLR-101.6). Nav == the plan's row ids in order (28 on the oracle
+    board — 25 open + the 3 done tasks kept at their groups' tails,
+    2026-10-26); selecting each in turn at panel 80x24 draws it, a done row
+    included (the `↓` walk reaches it)."""
     b = kg_board.build()
     nav = nav_model("gantt", b, False, TODAY, 80, 24)[0]
-    groups = gantt_plan(b, False, None, TODAY, 21)
-    assert nav == [t.id for g in groups for t in g.open] and len(nav) == 25
-    assert not {"tw1", "tm1", "td1"} & set(nav)
+    groups = gantt_plan(b, False, None, TODAY, 21, done_rows=True)
+    assert nav == [t.id for g in groups for t in g.rows] and len(nav) == 28
+    assert {"tw1", "tm1", "td1"} <= set(nav)
     for tid in nav:
         _lines, lm, _t = render(b, 80, 24, tid)
         assert tid in lm, tid
@@ -671,21 +689,24 @@ def test_TC_110_every_row_is_exactly_the_width(w):
 
 
 def test_TC_110_the_vertical_split():
-    """TC-110 (LLR-101.10). 118x30: header, ruler, 26 body rows, legend.
-    80x24: header, ruler, 21 body rows, no legend."""
+    """TC-110 (LLR-101.10). 118x30: header, ruler, 27 body rows — the done rows
+    kept since 2026-10-26 fill the spare row the legend used to take. 80x24:
+    header, ruler, 21 body rows, no legend."""
     lines, _lm, _t = render(kg_board.build(), 118, 30)
-    assert len(lines) == 30 and "↳ waits on open work" in lines[-1]
-    assert len([l for l in lines[3:-1] if l.strip()]) == 26
+    assert len(lines) == 30 and lines[-1].startswith("  ")
+    assert len([l for l in lines[3:] if l.strip()]) == 27
     lines, _lm, _t = render(kg_board.build(), 80, 24)
     assert len(lines) == 24 and lines[-1].startswith(("  ", "▾", "▸"))
     assert gantt_columns(118) == (30, 7, 79) and gantt_columns(80) == (20, 6, 52)
 
 
 def test_TC_111_the_group_label_forms():
-    """TC-111 (LLR-101.11). Wide: `N open ▲n ✓n`; narrow (< 26): `N ▲n`."""
+    """TC-111 (LLR-101.11). Wide: `N open ▲n ✓n`; narrow (< 26): `N ▲n` — on
+    the span rows, folded (`▸ Mobile App`) or unfolded alike (2026-10-26: it
+    folds now, its done row counting in its height)."""
     big = {l[:31] for l in _folds(kg_board.build(), 118, 30)}
     assert "▾ Website Redesign      ▲2 ✓1  " in big
-    assert "▾ Mobile App               ✓1  " in big
+    assert "▸ Mobile App        5 open ✓1  " in big
     small = {l[:20] for l in _folds(kg_board.build(), 80, 24)}
     assert "▾ Website Redes… ▲2 " in small
 
@@ -754,15 +775,40 @@ def test_TC_115_the_echo_falls_back_to_the_label_column_untruncated():
 
 
 def test_TC_116_the_legend_names_what_the_gantt_draws():
-    """TC-116 (LLR-102.5). The ruler's month mark and the chain are named; the
-    old axis and the due meter are not."""
+    """TC-116 (LLR-102.5). The ruler's month mark and the folded project are
+    named at 118x30 — where Mobile App now folds (its done row counts in its
+    height, 2026-10-26) and its critical-chain tasks are not drawn; the chain
+    is named where it IS drawn (118x40, every group unfolded). The old axis
+    and the due meter are never named."""
     b = kg_board.build()
     entries = [txt for _sw, txt in legend_entries("gantt", b, TODAY, 118, 30)]
     assert any("month starts" in t for t in entries)
-    assert any("critical chain" in t for t in entries)
     assert any("folded project" in t for t in entries)
+    assert not any("critical chain" in t for t in entries)
+    tall = [txt for _sw, txt in legend_entries("gantt", b, TODAY, 118, 40)]
+    assert any("critical chain" in t for t in tall)
     assert not any("axis" in t or "counting down" in t for t in entries)
     assert critical_chain(b) == ["tm2", "tm3", "tm4", "tm5"]
+
+
+def test_TC_117_done_rows_are_the_board_gantts_flag_only():
+    """TC-117 (2026-10-26, G4/G5). The kept done rows are the BOARD gantt view's
+    behaviour alone: `render_gantt` (and the nav and legend that read the same
+    frame) draw them; the shared seat's default — the link mode's frame,
+    `gantt_plan` called anywhere else — draws no done row, byte-for-byte the
+    old output; and the presentation never reads the seat (its own law, that
+    done work is out of every present view, is pinned in
+    test_present_views.py::test_TC_1804_hidden_and_done_tasks_are_in_neither_part)."""
+    b = kg_board.build()
+    lines, lm, _t = render(b, 118, 0, "tw3")
+    assert {"tw1", "tm1", "td1"} <= set(lm), "the board's gantt lost a done row"
+    frame_lines, _drawn, _g, _ax = views._gantt_frame(b, False, "tw3", TODAY, 118, 0)
+    assert not any(title in l for l in frame_lines
+                   for title in ("Design homepage", "Set up CI", "Migrate user")), (
+        "the seat's default draws done rows — the link mode changed")
+    plan = gantt_plan(b, False, None, TODAY, 10 ** 6)
+    assert all(not (b.is_done(t) and not t.milestone)
+               for g in plan for t in g.rows)
 
 
 # =========================================================================== #

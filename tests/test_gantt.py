@@ -76,28 +76,62 @@ def body_rows(lines):
 # --------------------------------------------------------------------------- #
 def test_every_row_ends_in_a_date_reading(tmp_path):
     """HLR-103 (batch 2026-10-02-batch-01). Every row that carries open work ends
-    in ONE due chip — `▲Nd`, `today`, a date, or `no due`. The blank-edge trap
-    the old law caught still applies: an edge of pure ground says nothing."""
+    in ONE due chip — `▲Nd`, `today`, a date, or `no due`; a DONE row ends in
+    the quiet `✓` instead, so finished work never reads as a due date
+    (2026-10-26). The blank-edge trap the old law caught still applies: an
+    edge of pure ground says nothing."""
     b, _p = fixture(tmp_path)
     _label, chip_w, _f = gantt_columns(96)
     body = body_rows(rows(b, 96, 20))
     assert len(body) >= 3
     for line in body:
         edge = line[-chip_w:]
-        assert re.search(r"(▲\d+d|today|no due|(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec) \d{1,2})$",
+        assert re.search(r"(▲\d+d|today|no due|(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec) \d{1,2}|✓)$",
                          edge.strip()), f"{edge!r} is not a due reading"
 
 
-def test_finished_work_folds_into_its_projects_count(tmp_path):
-    """Superseded by D2 / HLR-102 (batch 2026-10-02-batch-01, G-A: "done folds
-    to ✓n"). Was: finished work rested at the tail in ash with its dates. Now it
-    draws no row at all and is counted on its project's span row — at a label of
-    at least 26 cells, which 118 columns give."""
+def test_finished_work_keeps_a_quiet_row_and_the_count(tmp_path):
+    """The operator, 2026-10-26: a done task must NOT disappear from the gantt —
+    it keeps a row at its group's tail, painted in the quiet `reached` tone with
+    a `✓` chip (never `▲Nd` late), and it is still counted on its project's
+    span row. Only archiving hides it. Was G-A "done folds to ✓n" (batch
+    2026-10-02-batch-01), now reversed by the operator's verdict."""
     b, _p = fixture(tmp_path)
-    out = rows(b, 118, 30)
-    assert not any("Old finis" in l for l in out), "a finished task still draws a row"
+    text = render_gantt(b, False, None, TODAY, width=118, height=30)
+    out = str(text).split("\n")
+    done = next(l for l in out if "Old finis" in l)
+    open_ = next(l for l in out if "Checkout returns" in l)
+    assert out.index(done) > out.index(open_)   # the done row rests at the tail
+    assert done.rstrip().endswith("✓"), done
+    assert "▲" not in done and "d ago" not in done, "a finished task reads late"
+    done_spans = [s for s in text.spans if s.start <= text.plain.index("Old finis")
+                  < s.end and HEX["reached"] in str(s.style)]
+    assert done_spans, "the done title is not dimmed in the reached tone"
+    assert not any(HEX["over"] in str(s.style) for s in done_spans), "done wears over"
     atlas = next(l for l in out if "Atlas" in l)
     assert "✓1" in atlas, atlas
+
+
+def test_a_project_of_only_done_work_still_shows_it(tmp_path):
+    """The operator, 2026-10-26: a project whose tasks are all DONE must not go
+    blank on the gantt — a group with no open work still draws its done rows
+    (G1), in due order at the tail, quiet with `✓` chips; the span keeps the
+    count."""
+    b = board(tmp_path)
+    p = Project("Solo", "sky", "on_track", start_date=iso(-30), due_date=iso(-5))
+    b.projects.append(p)
+    b.tasks += [
+        Task("Ship the report", p.id, "Done", "normal",
+             start_date=iso(-10), due_date=iso(-7)),
+        Task("Wrap up billing", p.id, "Done", "normal",
+             start_date=iso(-20), due_date=iso(-12)),
+    ]
+    out = rows(b, 118, 20)
+    wrap = next(l for l in out if "Wrap up billing" in l)
+    ship = next(l for l in out if "Ship the report" in l)
+    assert out.index(wrap) < out.index(ship)      # the tail keeps its due order
+    assert wrap.rstrip().endswith("✓") and ship.rstrip().endswith("✓")
+    assert "✓2" in next(l for l in out if "Solo" in l)
 
 
 def test_the_project_row_carries_its_due_chip(tmp_path):
@@ -256,13 +290,28 @@ def test_more_data_no_longer_produces_less_screen(tmp_path):
     The old gantt was the one view where MORE data produced LESS used screen:
     from typical to extreme its ink FELL 23.3 % -> 21.0 % and its emptiness ROSE
     55.4 % -> 64.2 %, because an axis with no past drew every overdue project as
-    a blank row. Measured now: ink RISES and dead FALLS with the data."""
+    a blank row.
+
+    Restated 2026-10-26, when done work KEPT its row: a group's done rows count
+    in its height (G3), so the extreme board folds sooner and the ink DIRECTION
+    law died with it — folded is not hidden, every span stays on screen. What
+    still holds, and now guards the same defect: given the room (height 0,
+    nothing folded) the extreme board inks markedly MORE than the typical board
+    — more data uses more screen, never less; and at 96x30 the typical board's
+    finished work is fully drawn (5 done rows for 5 done tasks), while the
+    extreme board's emptiness stays bounded (see the emptiness test)."""
     typical = _census(rows(_load(tmp_path, 5, 21, "t.json"), 96, 30))
     extreme = _census(rows(_load(tmp_path, 8, 44, "e.json"), 96, 30))
-    assert extreme["ink"] > typical["ink"], (typical["ink"], extreme["ink"])
-    # emptiness must not RUN AWAY with the data as it used to (+8.8 points from
-    # typical to extreme); on this fixture it moves by a fraction of a point
-    assert extreme["dead"] <= typical["dead"] + 1.0,         (typical["dead"], extreme["dead"])
+    free_typical = _census(rows(_load(tmp_path, 5, 21, "t0.json"), 96, 0))
+    free_extreme = _census(rows(_load(tmp_path, 8, 44, "e0.json"), 96, 0))
+    assert free_extreme["ink"] > free_typical["ink"]
+    assert free_extreme["marked"] > free_typical["marked"]
+    assert free_extreme["dead"] < free_typical["dead"]
+    out = rows(_load(tmp_path, 5, 21, "t1.json"), 96, 30)
+    done = [l for l in out if l.startswith("  ") and l.rstrip().endswith("✓")]
+    assert len(done) == 5, (len(done), "finished work of the typical board not drawn")
+    assert typical["dead"] <= 23.0 and extreme["dead"] <= 29.5, (
+        typical["dead"], extreme["dead"])
 
 
 def test_the_carrying_fraction_clears_what_rev3_measured(tmp_path):
@@ -288,9 +337,15 @@ def test_emptiness_is_bounded_where_the_content_could_actually_fill_the_screen(t
     The guard that keeps it from going vacuous changed with the design: the
     extreme fixture used to OVERFLOW (`+N not shown`); with folding (HLR-102)
     nothing is hidden, so the proof that the content exceeds the screen is now
-    that some project had to fold."""
+    that some project had to fold.
+
+    Rebaselined 2026-10-26, when done work kept its row: the extreme fixture's
+    15 finished tasks now count in their groups' heights (G3), so five of eight
+    projects fold and the slack under the content grew — measured 28.54 % dead,
+    bound 29.5. The bound is the post-change measurement, written up half a
+    point; the anti-vacuity guards below are unchanged."""
     out = rows(_load(tmp_path, 8, 44, "dead_e.json"), 96, 30)
-    assert _census(out)["dead"] <= 25.5, _census(out)["dead"]
+    assert _census(out)["dead"] <= 29.5, _census(out)["dead"]
     assert any(l.startswith("▸") for l in out), (
         "the extreme fixture no longer exceeds the screen; this law went vacuous")
     assert not any("not shown" in l for l in out), "folding should have held it"

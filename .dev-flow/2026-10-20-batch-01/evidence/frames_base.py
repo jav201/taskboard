@@ -8,6 +8,9 @@ on 2026-10-20, at widths 40, 80, 118, 160 and height 40 — each frame's plain t
 and its markup-free style signature (the spans' text and style per row 0).
 The board comes from `tests/multi_board_fixture.py`: whenever that fixture
 changes, re-run this on a worktree at 783397e and commit the new JSON (qa QA-26).
+Regenerated 2026-10-26 on fix/gantt-done-visible: the ONLY frames that moved are
+the gantt's — done work keeps its row there (the operator's verdict); every
+other view is byte-identical to the base_ref render.
 """
 import json
 import sys
