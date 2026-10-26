@@ -53,9 +53,11 @@ presentation byte-identical (G4, default-off flag); nothing else changes (G5).
 | Full suite (with the change, consumed) | 3280 | **3280 passed, 0 failed** — 1440 + 961 + 879 in 3 sequential chunks (`evidence/scratch-evidence/suite-chunk0{0,1,2}.txt`) = baseline 3278 + 2 new |
 | Import probe | — | `taskboard.__file__` = the worktree (`evidence/import-probe.txt`) |
 
-## 4b · Independent review
+## 4b · Independent review — the lens the author cannot be
 
-`code-reviewer — spawned as a generic agent with agents/code-reviewer.md · OK-TO-ADVANCE (0 HIGH; 2 MEDIUM, 3 LOW — in 02-review.md)`; architect lens: seam APPROVE / records iterate (AX-1..AX-5); qa lens: PASS, golden CLEAN (QA-1..QA-4); ux lens: PASS (UX-1, UX-2).
+| Field | Value |
+|---|---|
+| **Independent review** | `code-reviewer` — spawned as a generic agent with agents/code-reviewer.md · OK-TO-ADVANCE, 0 HIGH (2 MEDIUM: CR-1 toast/legend copy — same defect as AX-2/QA-1, CR-2 the declared colour-budget rebaseline; 3 LOW) — full findings in 02-review.md · the audit's other three lenses (architect, qa-reviewer, ux-reviewer) were spawned the same way and their verdicts are recorded in 02-review.md and 04-validation.md |
 
 ## Evidence files — bytes at a declared home, verbatim, hash-verified
 
