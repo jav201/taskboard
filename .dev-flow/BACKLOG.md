@@ -1577,23 +1577,23 @@ The audit batch `2026-10-26-batch-01` shipped change `f4b53cc` was verified fait
 and found the records layer lagging the code. All proposed fixes are written in the batch's
 `02-review.md`; nothing below is applied — the orchestrator decides.
 
-- **AUD-01 (HIGH, from AX-1) — the live canon still encodes the reversed law.** `REQUIREMENTS.md`
+- **AUD-01 (HIGH, from AX-1) — the live canon still encodes the reversed law.** ✓ done 2026-10-26 (`58c64d7`): HLR-102, HLR-104, LLR-101.3 and LLR-602.1 are restated to the kept-row law (done, non-archived work keeps a quiet row at its group's tail; archived work never draws a row; the presentation is unchanged), HLR-206/LLR-206.1 with the toast, and LED-2026-10-26 records the reversal — the operator's words «…sólo deberían dejar de ser visibles sólo si están archivadas», commit `f4b53cc` and this audit batch; the annex's interim NOTE became a pointer to the ledger. Original item: `REQUIREMENTS.md`
   rows HLR-102 (:27 «shall never draw a row for rest work»), HLR-104 (:29), LLR-101.3 (:39) and
   LLR-602.1 (:139, rows = open + reached milestones only) predate the 2026-10-26 reversal and no
   ledger entry records it. *Proposed fix:* one canon amendment (e.g. LED-2026-10-26) restating
   those rows to the new law; history (batch artifacts, this backlog) stays. A dated audit annex
   was appended to `REQUIREMENTS.md` by the close as an interim pointer — it does NOT amend the
   stale rows.
-- **AUD-02 (HIGH, from AX-2 / CR-1 / QA-1) — the finish toast still says «folded into ✓N».**
+- **AUD-02 (HIGH, from AX-2 / CR-1 / QA-1) — the finish toast still says «folded into ✓N».** ✓ done 2026-10-26 (`58c64d7`): the toast now reads «‹title› done · kept on the gantt · u undo» (`taskboard/app.py` `_notify_folded`, docstring and the dead rest-count lookup with it), HLR-206/LLR-206.1 are restated, and the asserting tests (AT-206/TC-208) are updated. Original item:
   `taskboard/app.py:2313` tells the user a finished task folded away while it now keeps its row;
   the docstring (:2297-2300) already says kept; the wording is pinned by HLR-206/LLR-206.1 and
   asserted by `tests/test_gantt_polish.py` (AT-206/TC-208). *Proposed fix:* reword the toast
   (e.g. «done · kept on the gantt · u undo»), revise HLR-206/LLR-206.1, update the asserting tests.
 - **AUD-03 (MEDIUM, from AX-3) — the gantt legend gloss misdescribes finished work and its
-  swatch tone ≠ the drawn chip tone.** `taskboard/views.py:8702` («finished work, folded into a
+  swatch tone ≠ the drawn chip tone.** ✓ done 2026-10-26 (`58c64d7`): the gloss now says «finished work, kept as a quiet row» and the swatch is painted `reached`, the done row's ✓ chip tone; `test_TC_211_the_done_legend_wears_the_done_rows_tone` pins legend tone == row chip tone. Original item: `taskboard/views.py:8702` («finished work, folded into a
   count», swatch `done` #3f9c6d) vs the done-row chip painted `reached`. *Proposed fix:* reword
   + paint the swatch `c("✓", "reached")`.
-- **AUD-04 (MEDIUM, from CR-2) — the colour-budget rebaseline is declared but real.**
+- **AUD-04 (MEDIUM, from CR-2) — the colour-budget rebaseline is declared but real.** ✓ done 2026-10-26 (`58c64d7`): recorded in LED-2026-10-26 — the bound of `tests/test_gantt.py::test_emptiness_is_bounded_where_the_content_could_actually_fill_the_screen` moved 25.5→29.5 when `f4b53cc` landed (the extreme fixture's finished tasks now count in their groups' heights, five of eight projects fold, the slack grew — measured 28.54 % dead). Original item:
   `tests/test_gantt.py` dropped the at-height ink-direction arm and loosened the dead bound
   25.5→29.5 (compensated by `len(done)==5` + height-0 arms). Accepted for this change; flagged so
   the next visual batch sees the threshold moved.
