@@ -4,7 +4,7 @@ Shared by `/dev-flow` and `/fast-dev-flow`. Every open item lives here exactly o
 No `docs/engineering-rules.md` exists in this repo, so this is the default location.
 
 **Base ref:** `620f58c` (`main` = `origin/main` at batch 2026-10-18-batch-03's open; the batch's commits sit on the local branch `present-polish`, not pushed — the commission forbids a push)
-· **Last refresh:** 2026-10-25 (2026-10-25-batch-01 close)
+· **Last refresh:** 2026-10-25 (2026-10-25-batch-02 close)
 **Status (2026-10-16-batch-01 close):** 2634 tests collected on `present-v2` (2632 passed in `suite-004.txt`; the P4 gate run: 2631 passed + the 2 pre-existing standup failures + 1 clipboard environment failure)
 **Status:** **2592 tests** (batch `2026-10-07-batch-09`, templates v3: scratch authoring — the `I`
 picker gains a leading `New template...` row (reserved id `__new__`, the house `L`-picker create-row
@@ -172,7 +172,7 @@ recorded full-suite run).
 ## Open — after `2026-10-21-batch-01` (the people round: the operator's verdict on `prototypes/people_round/`)
 
 - ✓ done in `2026-10-21-batch-01` (on the local branch `feat/people`, not pushed) — **the people round** (the verdict «D1–D5: de acuerdo · formato: handle · 1 view: A · OBJECIÓN: «… robar de C el contexto, pero también robar de B el recuadro de progreso …» · 2 picker: A · 3 search: A · 4 look: A»): one directory `~/.taskboard/people.json` for every board; `@handle` mentions picked from a dropdown in the editor's notes; `@` the people view (`PEOPLE · directory`: A's two panes, C's quote under each task, B's `late · today · open` box); `/` then `@` filters to a person's tasks; `@Name` in pink in the details, the card and the presentation. Increments 001–005; the DDR approved (one node per AT, the real captures), P4 3152 passed in three chunks, closed 2026-10-21 (`05-close.md`).
-- the presentation's split view draws the notes' `!!…!!` and `++…++` markers raw (the people round's finding, pre-existing: `views._present_note_markup` paints the text `ink` with no `highlight_segments`; the rest of the app colours them). Logged by the commission, not fixed.
+- ✓ done in `2026-10-25-batch-02` — **the presentation colours the notes' highlights** (this item, the people round's finding): the presentation's note rows (views 1 and 2, the gantt cursor note and the split blocks) and their `x` exports tokenise the notes through `views.highlight_segments` — markers dropped, spans in their tones, the unmarked text in the presentation's own `ink`, mentions bold pink inside spans, the wrap on the marker-free text; one increment, 20 new test nodes, P4 3278 passed in three chunks, closed 2026-10-25 (`05-close.md`).
 - deleting a person from the directory (none of the round's variants offered it; a person no note mentions any more stays listed with `nothing open`).
 - mentions in the views the verdict did not name — the focus view's note snippet, the swimlanes, the HTML report — still show the stored `@handle`.
 - D4 (the round): the team roster (view `9`, `People`) and the directory stay apart; a teammate who is also a contact appears in both until a round merges them.
