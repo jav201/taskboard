@@ -7,7 +7,7 @@
 
 | Field | Value |
 |---|---|
-| Gate record | `python "C:/Users/jjgh8/.claude/skills/dev-flow/scripts/devflow-validate.py" --brief .` from the project root · P1 exit 0 (0 block / 177 notice / 57 n/a) · P2 exit 0 (0 block / 187 notice / 49 n/a) · P4 exit 0 (0 block / 187 notice / 49 n/a) · 2026-10-26 |
+| Gate record | `python "C:/Users/jjgh8/.claude/skills/dev-flow/scripts/devflow-validate.py" --brief .` from the project root · P1 exit 0 (0 block / 177 notice / 57 n/a) · P2 exit 0 (0 block / 187 notice / 49 n/a) · P4 exit 0 (0 block / 187 notice / 49 n/a) · **final gate exit 0 · 0 block / 211 notice / 47 n/a · 2026-10-26** (transcript: `evidence/gate-final.txt`) |
 | Gated tree | `f4b53cc7d89bd645a99e0615dbafb7c102de2abd` (the audited change = HEAD = origin/main) + the audit's own record commits; final gate transcript: `evidence/gate-final.txt` |
 | Requirements canon | `REQUIREMENTS.md` — 20 ids folded by the close as the dated **Audit annex — 2026-10-26-batch-01** (US-3001, HLR-3001..3005, LLR-3001.1-.3, LLR-3002.1-.3, LLR-3004.1/.2, LLR-3005.1/.2); the pre-existing stale rows (HLR-102/104, LLR-101.3/602.1) are deliberately NOT amended — that is finding AUD-01, the orchestrator's decision |
 
