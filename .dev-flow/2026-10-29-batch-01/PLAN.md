@@ -21,7 +21,7 @@ orchestrator presents the full plan in-conversation at each phase gate.
 | Project | taskboard |
 | Batch | 2026-10-29-batch-01 |
 | Objective | the app exports two HTML reports from ONE data extraction of every loaded board: variant B, the interactive workspace (gantt, table, notes, HR-3 controls with URL-hash state, HR-4 export of the configured view as print-to-PDF and as a filtered self-contained download), and variant C, the concise vector deck (one slide per chosen project); a global H modal (b/c/a, p/o scope, esc) writes them to <board dir>/reports/ and a toast offers o to open (HR-1..HR-6) |
-| Last updated | P0 · 2026-10-29 |
+| Last updated | P2 · 2026-10-29 |
 | Standing authorization | The operator, 2026-10-29, on `prototypes/html_report/html-report-round.html`: the verdict block quoted verbatim in `.dev-flow/COMMISSION-html-report.md` («Variante B: ELEGIDA · Variante C: ELEGIDA · Recomendación general (B, H global, todos los boards, convive con SVG): no confirmada (no objection)» and the note «…mejoraras los controles para el display y filtro de información y de proyectos… una opción dentro del mismo reporte para exportar la vista… a PDF…»), then «decide cómo continuar, con opus o sonnet»; the orchestrator's task: gates close under it, «Do NOT push or merge». Read from the commission and the task: autonomy over the gates the commission names (P0..P5, ARQ, PDR, DDR); merge/push NOT granted; a HIGH finding blocks regardless and returns to the operator. |
 | First gate | start run (`evidence/gate-start.txt`, over the closed 2026-10-26-batch-01 record): exit 1 · 38 block, ALL `V59` — the closed batch's stale `base_ref` `f4b53cc` charged against the prototype commits; cleared by the rollover's re-stamp (`base_ref` = HEAD `9da7438`), the same remedy as 2026-10-26-batch-01's P0. After rollover (`evidence/gate-p0-rollover.txt`): exit 0 · 0 block / 182 notice / 47 n/a · `V7`: bundle identical to the manifest it ships, both directions (57 declared files unmoved, 0 undeclared) at `2026-10-12-rev102` · `V25`: origin answered (5 refs, newest 2.83 days old) · `V30` half (3.12.7 witnessed; 3 derived floors not derivable from a bundle) |
 | Premises / RC-1 | `origin/main` verified at `9cc7d4e` (`9cc7d4e20db24dbe928a2b95045a8ef120ccedd1`, 2026-10-26 11:59 -0600) = the merge-base of HEAD; RC-1(a): HEAD `9da7438` is strictly ahead (7 commits ahead, 0 behind) — no rebase; RC-1(b): the story is NOT already shipped — `git show origin/main:taskboard/keymap.py \| grep -n 'Key("H"'` exits 1 (no `H` seat) and `git ls-tree origin/main taskboard/` lists no `report_html.py`, `report_workspace.py` or `report_deck.py` (only `report.py`); RC-2: `git ls-remote --exit-code --heads origin` exit 0, 5 heads, newest `origin/main` 2026-10-26 (`evidence/rc-p0.txt`). Premises: the design is the prototype round (B, C); the CLI report stays (HR-1); synthetic data only; tests drive the app by keys and the pages in headless Chromium. |
@@ -54,7 +54,7 @@ The trigger evaluation `state.json`'s `triggers.record` points at: one row per t
 
 ## Where we are
 
-P0. Intake done: rollover re-stamped `base_ref`, triggers recorded, RC-1/RC-2 verified, US-3101 READY (§2.6 of `01-requirements.md`). The module map (`docs/ARCHITECTURE.md`) and the P1 contract are drafted from the brief. Owed next: the P0 gate run and the batch-open commit, then ARQ (the module map against the tree), then P1 (scan, gate), then P2 review.
+P2. P1 closed under the standing authorization (gate 0 block, `evidence/gate-p1.txt`): the live contract holds US-3101, HLR-3101..HLR-3107, 18 LLRs, AT-3101..AT-3107 and TC-3101..TC-3121, three IFC `FLOW` blocks and the family-C answers; the module map was approved at ARQ. Owed next: the P2 review (`02-review.md`) — the review lenses spawned with their `agents/` role files, the architect lens re-reading the module map and the contract's census symbols, the security pass over §6.3 (C4, C6, C8) — then PDR before P3.
 
 ## Objective
 
@@ -65,10 +65,11 @@ Export, from the app, two HTML reports of every loaded board built from one extr
 | Story / station | Status | Notes |
 |---|---|---|
 | US-3101 | READY | INVEST ✓ on six axes; DoR passed; the sole story |
-| P0 | in-progress | intake done; gate + batch-open commit owed |
-| ARQ | pending | module map drafted (3 new layers, 6 interfaces, 4 rationale rows, §6 worksheet) |
-| P1 | pending | contract drafted: US-3101, HLR-3101..3107, 18 LLRs, AT-3101..3107, TC-3101..3121, 3 FLOW blocks |
-| P2, PDR, P3, DDR, P4, P5 | pending | — |
+| P0 | approved | gate 0 block (`evidence/gate-p0.txt`); batch opened `cb76bee` |
+| ARQ | approved | module map amended (3 new layers, 6 interfaces, 4 rationale rows, §6 worksheet); tree check: map current (`evidence/arq-map-check.txt`); gate 0 block (`evidence/gate-arq.txt`) |
+| P1 | approved | contract: US-3101, HLR-3101..3107, 18 LLRs, AT-3101..3107, TC-3101..3121, 3 FLOW blocks; scan answered (§6.3); gate 0 block (`evidence/gate-p1.txt`) |
+| P2 | in-progress | the review lenses owed (`02-review.md`) |
+| PDR, P3, DDR, P4, P5 | pending | — |
 
 ## Roadmap + increment plan
 
@@ -122,6 +123,9 @@ PDR precedes P3 (architect lens + ux), DDR follows it; the full suite runs at P4
 - **Runtime absences (named once, per `SKILL.md` §*What refuses an invocation here* step 5):** no named reviewer roles, no hooks, no prompt guard, no slash commands. Reviewer roles run as spawned generic sub-agents carrying the bundle's `agents/<role>.md`; implementation increments are authored by spawned `software-dev` sub-agents under orchestrator briefs and reviewed by different spawned agents; the batch's artefacts are written by a spawned scribe sub-agent from the orchestrator's brief. Every gate that would ask closes under the standing authorization above. Rules `not-run` from a bundle: `V15` (no canon tree), `V16` (no checkout table), `V17` (no `settings.json` hooks). `V30` runs half (witnesses 3.12.7; the three derived floors are not derivable from a bundle). dev-flow-sync: `not-run` — no export destination declared, and push/merge not granted.
 - **Start gate** (`evidence/gate-start.txt`): exit 1, 38 block, all `V59` (stale `base_ref` `f4b53cc`); cleared by the rollover's re-stamp.
 - **Rollover gate** (`evidence/gate-p0-rollover.txt`): exit 0 · 0 block / 182 notice / 47 n/a.
+- **P1 gate** (`evidence/gate-p1.txt`): exit 0 · 0 block / 216 notice / 49 n/a — the same families as the ARQ gate, each declared below; `V53` carries the 32 planned-node mention lines of the contract (expected at steps 7–9); 0 `V33`/`V34`/`V35`/`V45`/`V46` findings on this contract (every `Negative control`, `Boundary catalog`, `Acceptance test(s)`, `Premise evaluation`, `Fork preconditions` filled); `V26` the declared budget NOTICE.
+- **P1 scan** (`evidence/scan-p1.txt`): exit 1, `security_required: true`, flags `token`, `role`, `hash`, `user input`, `form`, `escape` — every flag traced to its match and answered in `01-requirements.md` §6.3 (`hash` → LLR-3102.3, C6; `escape` → LLR-3106.1, C8; the C4 control is LLR-3103.1; `token`, `role`, `form`, `user input` are prose matches); the scanner's 5 control rows all `ok`.
+- **ARQ gate** (`evidence/gate-arq.txt`): exit 0 · 0 block / 216 notice / 49 n/a — `V27` left with the P0 decision; the rest are the families declared below, unchanged.
 - **P0 gate** (`evidence/gate-p0.txt`): exit 0 · 0 block / 217 notice / 48 n/a — every NOTICE family declared in the table below; `V25` not raised (origin answered); the closed batch's `decisions-log.json` and the rollover land in the batch-open commit.
 
 **NOTICE families, declared** (each printed by the gate; why it stands; when it leaves):
@@ -133,7 +137,7 @@ PDR precedes P3 (architect lens + ux), DDR follows it; the full suite runs at P4
 | `V22` | closed batches' LLRs never used as owners; here LLR-3106.2 (a constraint: offline, themes, width) and LLR-3107.5 (a regression pin) own no transform by design | stays (a question, never a gate) |
 | `V23` | design-review citations in closed records that do not parse, and the seeded `design/` templates' placeholder ids (6 lines in `design/*.md`) | the seeds' lines at PDR/DDR; the closed ones stay |
 | `V26` | the live contract is past the lean budget (`_LEAN_MAX_CHARS`) — 7 HLRs and 18 LLRs over three new modules and three touched ones, each LLR carrying its census symbols and nodes | P2 may fold narration into the ledger |
-| `V27` | no dated `decisions_log` entry yet | the first `--decision` (this P0 close) |
+| `V27` | no dated `decisions_log` entry yet (P0 gate only) | left with the P0 `--decision` (2026-10-29) |
 | `V30` | the gate runs from a bundle | never (every gate) |
 | `V31`, `V32`, `V36`, `V37`, `V38`, `V41`, `V43`, `V44` | `increment-001.md` seed fields hold their placeholders | 001's packet |
 | `V42` | deferral markers in closed records too short to key or outside a lane (sealed); the batch record untracked until the P0 commit | the step-3 one with the P0 commit; the closed ones stay |
@@ -148,3 +152,11 @@ PDR precedes P3 (architect lens + ux), DDR follows it; the full suite runs at P4
 |---|---|---|
 | `env -u NO_COLOR python -m pytest .scratch/test_import_probe.py -s -q` (from the worktree root) | 2026-10-29 | 1 passed — `taskboard.__file__ = C:\Users\jjgh8\Github\taskboard-wt\report-proto\taskboard\__init__.py`, inside the worktree (`evidence/import-probe.txt`) |
 | `env -u NO_COLOR python -m pytest -q tests/test_report.py` (P1 probe 6, the CLI report's pin) | 2026-10-29 | 18 passed (`evidence/p1-probes.txt`) |
+
+## Decision log (human-readable mirror of `state.json`)
+
+| Station | Date | Decision |
+|---|---|---|
+| P0 | 2026-10-29 | P0 intake approved under the batch's standing authorization — the operator's verdict (B and C chosen, the round's recommendation not objected) and «decide cómo continuar, con opus o sonnet», quoted in the commission; rollover re-stamped `base_ref` 9da7438 (the start gate's 38 `V59` blocks cleared); RC-1(a) no rebase, RC-1(b) not shipped, RC-2 origin answered; triggers A1 A2 B1 B4 C4 C6 C8 D1 E1 fired (ARQ, PDR, DDR taken up); US-3101 READY; gate 0 block; batch opened in `cb76bee`. ARQ next. |
+| ARQ | 2026-10-29 | ARQ module map approved under the batch's standing authorization — three new layers (`report_html`, `report_workspace`, `report_deck`), their dependency bans and import direction, six interface rows, four rationale rows, a one-lane serial worksheet; the tree check: map current (`evidence/arq-map-check.txt`); gate 0 block; the architect lens reads the map again at P2. P1 next. |
+| P1 | 2026-10-29 | P1 requirements approved under the batch's standing authorization — US-3101; HLR-3101..3107; 18 LLRs with source module, C-26 symbols and TC node; AT-3101..3107 (one planned black-box node each); 9 premises TRUE; one lane; three FLOW blocks; the scan's 6 flags answered with the C4/C6/C8 controls; gate 0 block (`V26`, `V53` declared). P2 review is next. |

@@ -232,8 +232,8 @@
     }
   ],
   "guided": false,
-  "current_station": "P0",
-  "phase_status": "not-started",
+  "current_station": "P2",
+  "phase_status": "in-progress",
   "stations_active": [
     "P0",
     "ARQ",
@@ -304,7 +304,23 @@
   },
   "base_ref": "9da7438d906d42b8527bab7b309903937d462578",
   "artifacts": {},
-  "decisions_log": [],
+  "decisions_log": [
+    {
+      "station": "P0",
+      "date": "2026-10-29",
+      "decision": "P0 intake approved under the batch's standing authorization — the operator's verdict on html-report-round.html (B and C ELEGIDA, the round's recommendation not objected) and «decide cómo continuar, con opus o sonnet», quoted in .dev-flow/COMMISSION-html-report.md; rollover re-stamped base_ref 9da7438 (the start gate's 38 V59 blocks cleared), RC-1(a) merge-base = origin/main 9cc7d4e with no rebase, RC-1(b) not shipped, RC-2 origin answered, triggers A1 A2 B1 B4 C4 C6 C8 D1 E1 fired (ARQ, PDR, DDR taken up), US-3101 READY; P0 gate 0 block, batch opened in cb76bee; ARQ next."
+    },
+    {
+      "station": "ARQ",
+      "date": "2026-10-29",
+      "decision": "ARQ module map approved under the batch's standing authorization — docs/ARCHITECTURE.md gains the layers report_html (the one extraction, notes HTML, script-safe JSON, names, write_reports), report_workspace and report_deck (render(d) from the dict alone, banned from models/views/app/modals/keymap), their dependency rows (renderers -> report_html at module level, write_reports -> renderers function-local), six interface rows, four rationale rows (HR-1 one extraction, the CLI report stays, the page builds the filtered view, the import direction) and a one-lane serial worksheet; the tree check found every tracked taskboard/ file in exactly one layer and the 3 planned files claimed (evidence/arq-map-check.txt); gate 0 block (evidence/gate-arq.txt); the architect lens reads the map again at P2. P1 next."
+    },
+    {
+      "station": "P1",
+      "date": "2026-10-29",
+      "decision": "P1 requirements approved under the batch's standing authorization — US-3101 READY; HLR-3101..HLR-3107 (one per HR limb) with 18 LLRs, each naming its source module, its C-26 touched symbols and its verification node (TC-3101..TC-3121 minted, nodes planned in increments 001..004); AT-3101..AT-3107 one planned black-box node each, driving the app by keys or the written HTML in headless Chromium; 9 premises TRUE (evidence/p1-probes.txt), one lane, three IFC FLOW blocks (Part B no); the scan flagged 6 words, each answered in §6.3 with the C4/C6/C8 controls (LLR-3103.1, LLR-3102.3, LLR-3106.1); gate 0 block (evidence/gate-p1.txt; V26 budget and V53 planned-node notices declared). P2 review is next."
+    }
+  ],
   "obsidian_synced": false,
   "created_at": "2026-10-29T07:57:06.944896"
 }

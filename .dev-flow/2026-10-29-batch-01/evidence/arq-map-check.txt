@@ -1,0 +1,26 @@
+# ARQ — the module map's paths against the real tree (2026-10-29, HEAD cb76bee)
+$ git ls-files taskboard/  -> 16 files
+  __init__.py            -> app
+  __main__.py            -> app
+  app.py                 -> app
+  boards.py              -> models
+  history.py             -> models
+  keymap.py              -> keymap
+  marks.py               -> models
+  modals.py              -> modals
+  models.py              -> models
+  people.py              -> models
+  report.py              -> report
+  ribbon.py              -> views
+  taskboard.tcss         -> app
+  team_sync.py           -> team_sync
+  views.py               -> views
+  wave.py                -> views
+planned NEW files (this batch):
+  report_html.py         -> report_html
+  report_workspace.py    -> report_workspace
+  report_deck.py         -> report_deck
+touched existing files (increment 004): app.py -> ['app'] · modals.py -> ['modals'] · keymap.py -> ['keymap']
+unclaimed tracked files: none
+files claimed by more than one layer: none
+staleness verdict: map current
