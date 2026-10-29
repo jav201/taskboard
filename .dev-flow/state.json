@@ -247,7 +247,7 @@
   ],
   "iterations_per_station": {
     "P0": 0,
-    "P1": 0,
+    "P1": 1,
     "P2": 0,
     "P3": 0,
     "P4": 0,
@@ -319,6 +319,16 @@
       "station": "P1",
       "date": "2026-10-29",
       "decision": "P1 requirements approved under the batch's standing authorization — US-3101 READY; HLR-3101..HLR-3107 (one per HR limb) with 18 LLRs, each naming its source module, its C-26 touched symbols and its verification node (TC-3101..TC-3121 minted, nodes planned in increments 001..004); AT-3101..AT-3107 one planned black-box node each, driving the app by keys or the written HTML in headless Chromium; 9 premises TRUE (evidence/p1-probes.txt), one lane, three IFC FLOW blocks (Part B no); the scan flagged 6 words, each answered in §6.3 with the C4/C6/C8 controls (LLR-3103.1, LLR-3102.3, LLR-3106.1); gate 0 block (evidence/gate-p1.txt; V26 budget and V53 planned-node notices declared). P2 review is next."
+    },
+    {
+      "station": "P2",
+      "date": "2026-10-29",
+      "decision": "P2 round 1: iterate-to-refine — architect, qa-reviewer and security-reviewer lenses (S1 HIGH: task URL schemes); dispositions D1–D20 fold into the contract by amendment; P1 is next."
+    },
+    {
+      "station": "P1",
+      "date": "2026-10-29",
+      "decision": "P1 amendment approved under the batch's standing authorization — D1–D20 folded as LED-2026-10-29-batch-01.1 … .20 (D1 http(s)-only URLs for S1 HIGH, D2/D3/D5/D13 the download's leak surface, D4 one innerHTML exception, D6 keys between tasks and the full fact list, D7 new LLR-3103.3 CSV/JSON visible rows only, D8 default o as an accepted risk with two controls, D9 the opener's ground, D10 AT-3107 black-box, D11 Tab oracle, D12 deck counts, D14 print arm, D15 no browser skip, D16 clock seam, D17 boundary arms, D18 Inbox, D19 one status rule, D20 board-slugged names); new TC-3122..TC-3125; scan re-run (evidence/scan-p1-iter2.txt), gate 0 block (evidence/gate-p1-iter2.txt); P2 round 2 is next."
     }
   ],
   "obsidian_synced": false,

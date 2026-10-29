@@ -1,0 +1,30 @@
+# P1 iteration 1 draft-time probes — 2026-10-29, tree 2b9343d
+
+## probe 9 — views.valid_url keeps http(s) only (taskboard/views.py:273)
+'https://example.test/a' -> 'https://example.test/a'
+'http://example.test' -> 'http://example.test'
+'javascript:alert(1)' -> None
+'data:text/html,<b>x</b>' -> None
+'file:///C:/x' -> None
+'  https://example.test/b  ' -> 'https://example.test/b'
+'https://a b' -> None
+'vbscript:x' -> None
+
+## probe 10 — the Inbox lane: project-less tasks (taskboard/views.py:987-990)
+    inbox = [t for t in tasks if board.project_by_id(t.project_id) is None]
+    if inbox:
+        out.append(lane_facts(board, today, "Inbox", "dim", "on_track", None,
+                              inbox, start_date=None))
+
+## probe 11 — report_path's slug rule (taskboard/report.py:265-271)
+def report_path(board: Board, today: date | None = None,
+                project: str | None = None) -> Path:
+    """Beside the board it came from — so a fixture's report lands by the fixture
+    and the real app's lands in its own directory."""
+    today = today or date.today()
+    slug = "board" if project is None else "".join(
+        ch.lower() if ch.isalnum() else "-" for ch in project).strip("-")[:40]
+'Client A' -> client-a-2026-10-29.html
+'Storefront relaunch' -> storefront-relaunch-2026-10-29.html
+'Año 2026 — ñandú' -> año-2026---ñandú-2026-10-29.html
+'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa' -> aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa-2026-10-29.html
