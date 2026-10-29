@@ -1,0 +1,798 @@
+M01 report_workspace.py:731 [the download re-embeds the full data (no reduction)]
+    run: tests/test_report_workspace.py -k "AT_3103" -> exit 1; 1 failed, 21 deselected in 1.34s
+    RED nodes: ['test_AT_3103_download_this_view_holds_only_the_filtered_tasks']
+    verdict: KILLED (named node test_AT_3103_download_this_view_holds_only_the_filtered_tasks)
+    sha256 before 59124359e0c85db209678982d00e1f625639b8e3862c599f272a98e8fdbc10cb
+    sha256 after  59124359e0c85db209678982d00e1f625639b8e3862c599f272a98e8fdbc10cb (restored, identical)
+M02 report_workspace.py:699 [deps/chain keys of dropped tasks kept]
+    run: tests/test_report_workspace.py -k "AT_3103" -> exit 1; 1 failed, 21 deselected in 1.27s
+    RED nodes: ['test_AT_3103_download_this_view_holds_only_the_filtered_tasks']
+    verdict: KILLED (named node test_AT_3103_download_this_view_holds_only_the_filtered_tasks)
+    sha256 before 59124359e0c85db209678982d00e1f625639b8e3862c599f272a98e8fdbc10cb
+    sha256 after  59124359e0c85db209678982d00e1f625639b8e3862c599f272a98e8fdbc10cb (restored, identical)
+M03 report_workspace.py:715 [R3: meta.scope.boards (header N/names) not reduced]
+    run: tests/test_report_workspace.py -k "AT_3103" -> exit 1; 1 failed, 21 deselected in 1.29s
+    RED nodes: ['test_AT_3103_download_this_view_holds_only_the_filtered_tasks']
+    verdict: KILLED (named node test_AT_3103_download_this_view_holds_only_the_filtered_tasks)
+    sha256 before 59124359e0c85db209678982d00e1f625639b8e3862c599f272a98e8fdbc10cb
+    sha256 after  59124359e0c85db209678982d00e1f625639b8e3862c599f272a98e8fdbc10cb (restored, identical)
+M04 report_workspace.py:720 [LLR-3103.1 negative control: the full people list kept]
+    run: tests/test_report_workspace.py -k "TC_3109" -> exit 1; 1 failed, 21 deselected in 1.30s
+    RED nodes: ['test_TC_3109_the_download_keeps_only_used_entries']
+    verdict: KILLED (named node test_TC_3109_the_download_keeps_only_used_entries)
+    sha256 before 59124359e0c85db209678982d00e1f625639b8e3862c599f272a98e8fdbc10cb
+    sha256 after  59124359e0c85db209678982d00e1f625639b8e3862c599f272a98e8fdbc10cb (restored, identical)
+M05 report_workspace.py:730 [D3: the file composed by String.replace (pattern semantics: $' re-inserts the shell)]
+    run: tests/test_report_workspace.py -k "TC_3109" -> exit 1; 1 failed, 21 deselected in 1.31s
+    RED nodes: ['test_TC_3109_the_download_keeps_only_used_entries']
+    verdict: KILLED (named node test_TC_3109_the_download_keeps_only_used_entries)
+    sha256 before 59124359e0c85db209678982d00e1f625639b8e3862c599f272a98e8fdbc10cb
+    sha256 after  59124359e0c85db209678982d00e1f625639b8e3862c599f272a98e8fdbc10cb (restored, identical)
+M06 report_workspace.py:731 [LLR-3106.1: the JSON enters the file with raw < > &]
+    run: tests/test_report_workspace.py -k "TC_3109" -> exit 1; 1 failed, 21 deselected in 1.24s
+    RED nodes: ['test_TC_3109_the_download_keeps_only_used_entries']
+    verdict: KILLED (named node test_TC_3109_the_download_keeps_only_used_entries)
+    sha256 before 59124359e0c85db209678982d00e1f625639b8e3862c599f272a98e8fdbc10cb
+    sha256 after  59124359e0c85db209678982d00e1f625639b8e3862c599f272a98e8fdbc10cb (restored, identical)
+M07 report_workspace.py:700 [notes kept when the notes section is off]
+    run: tests/test_report_workspace.py -k "TC_3110" -> exit 1; 1 failed, 21 deselected in 1.33s
+    RED nodes: ['test_TC_3110_notes_off_strips_the_notes']
+    verdict: KILLED (named node test_TC_3110_notes_off_strips_the_notes)
+    sha256 before 59124359e0c85db209678982d00e1f625639b8e3862c599f272a98e8fdbc10cb
+    sha256 after  59124359e0c85db209678982d00e1f625639b8e3862c599f272a98e8fdbc10cb (restored, identical)
+M08 report_workspace.py:700 [PA2/C2: notes_html stripped but notes_text kept]
+    run: tests/test_report_workspace.py -k "TC_3110" -> exit 1; 1 failed, 21 deselected in 1.34s
+    RED nodes: ['test_TC_3110_notes_off_strips_the_notes']
+    verdict: KILLED (named node test_TC_3110_notes_off_strips_the_notes)
+    sha256 before 59124359e0c85db209678982d00e1f625639b8e3862c599f272a98e8fdbc10cb
+    sha256 after  59124359e0c85db209678982d00e1f625639b8e3862c599f272a98e8fdbc10cb (restored, identical)
+M09 report_workspace.py:149,827 [the shell captured after rendering (controls rebuilt twice, rendered rows travel)]
+    run: tests/test_report_workspace.py -k "TC_3111_the_view_file" -> exit 1; 1 failed, 21 deselected in 1.29s
+    RED nodes: ['test_TC_3111_the_view_file_reopens_on_its_view']
+    verdict: KILLED (named node test_TC_3111_the_view_file_reopens_on_its_view)
+    sha256 before 59124359e0c85db209678982d00e1f625639b8e3862c599f272a98e8fdbc10cb
+    sha256 after  59124359e0c85db209678982d00e1f625639b8e3862c599f272a98e8fdbc10cb (restored, identical)
+M10 report_workspace.py:799 [D5: the downloaded file ignores meta.view (opens on the default view)]
+    run: tests/test_report_workspace.py -k "TC_3111_the_view_file" -> exit 1; 1 failed, 21 deselected in 1.41s
+    RED nodes: ['test_TC_3111_the_view_file_reopens_on_its_view']
+    verdict: KILLED (named node test_TC_3111_the_view_file_reopens_on_its_view)
+    sha256 before 59124359e0c85db209678982d00e1f625639b8e3862c599f272a98e8fdbc10cb
+    sha256 after  59124359e0c85db209678982d00e1f625639b8e3862c599f272a98e8fdbc10cb (restored, identical)
+M11 report_workspace.py:864 [C6: the print caption not visible without interaction]
+    run: tests/test_report_workspace.py -k "TC_3111_the_export_captions" -> exit 1; 1 failed, 21 deselected in 1.09s
+    RED nodes: ['test_TC_3111_the_export_captions_show_without_hover']
+    verdict: KILLED (named node test_TC_3111_the_export_captions_show_without_hover)
+    sha256 before 59124359e0c85db209678982d00e1f625639b8e3862c599f272a98e8fdbc10cb
+    sha256 after  59124359e0c85db209678982d00e1f625639b8e3862c599f272a98e8fdbc10cb (restored, identical)
+M12 report_workspace.py:126 [the control bar (.controls / nav, the same element) dropped from the print rule]
+    run: tests/test_report_workspace.py -k "AT_3104" -> exit 1; 1 failed, 21 deselected in 1.25s
+    RED nodes: ['test_AT_3104_print_hides_the_controls_and_shows_the_filter_header']
+    verdict: KILLED (named node test_AT_3104_print_hides_the_controls_and_shows_the_filter_header)
+    sha256 before 59124359e0c85db209678982d00e1f625639b8e3862c599f272a98e8fdbc10cb
+    sha256 after  59124359e0c85db209678982d00e1f625639b8e3862c599f272a98e8fdbc10cb (restored, identical)
+M13 report_workspace.py:802 [the beforeprint handler does not stamp the printed date]
+    run: tests/test_report_workspace.py -k "AT_3104" -> exit 1; 1 failed, 21 deselected in 1.27s
+    RED nodes: ['test_AT_3104_print_hides_the_controls_and_shows_the_filter_header']
+    verdict: KILLED (named node test_AT_3104_print_hides_the_controls_and_shows_the_filter_header)
+    sha256 before 59124359e0c85db209678982d00e1f625639b8e3862c599f272a98e8fdbc10cb
+    sha256 after  59124359e0c85db209678982d00e1f625639b8e3862c599f272a98e8fdbc10cb (restored, identical)
+M14 report_workspace.py:141 [C14: #gantt{min-width:0!important} dropped (gantt wider than 794 px)]
+    run: tests/test_report_workspace.py -k "TC_3112" -> exit 1; 1 failed, 21 deselected in 1.20s
+    RED nodes: ['test_TC_3112_the_print_rules_hold']
+    verdict: KILLED (named node test_TC_3112_the_print_rules_hold)
+    sha256 before 59124359e0c85db209678982d00e1f625639b8e3862c599f272a98e8fdbc10cb
+    sha256 after  59124359e0c85db209678982d00e1f625639b8e3862c599f272a98e8fdbc10cb (restored, identical)
+M15 report_workspace.py:124 [C7: @page{margin:0} dropped]
+    run: tests/test_report_workspace.py -k "TC_3112" -> exit 1; 1 failed, 21 deselected in 1.29s
+    RED nodes: ['test_TC_3112_the_print_rules_hold']
+    verdict: KILLED (named node test_TC_3112_the_print_rules_hold)
+    sha256 before 59124359e0c85db209678982d00e1f625639b8e3862c599f272a98e8fdbc10cb
+    sha256 after  59124359e0c85db209678982d00e1f625639b8e3862c599f272a98e8fdbc10cb (restored, identical)
+M16 report_workspace.py:487 [the svg viewBox dropped: the print clips the timeline instead of scaling it]
+    run: tests/test_report_workspace.py -k "TC_3112" -> exit 1; 1 failed, 21 deselected in 1.29s
+    RED nodes: ['test_TC_3112_the_print_rules_hold']
+    verdict: KILLED (named node test_TC_3112_the_print_rules_hold)
+    sha256 before 59124359e0c85db209678982d00e1f625639b8e3862c599f272a98e8fdbc10cb
+    sha256 after  59124359e0c85db209678982d00e1f625639b8e3862c599f272a98e8fdbc10cb (restored, identical)
+M17 report_workspace.py:128 [C7: the print shows 'of N' (a count over hidden tasks)]
+    run: tests/test_report_workspace.py -k "TC_3112" -> exit 1; 1 failed, 21 deselected in 1.36s
+    RED nodes: ['test_TC_3112_the_print_rules_hold']
+    verdict: KILLED (named node test_TC_3112_the_print_rules_hold)
+    sha256 before 59124359e0c85db209678982d00e1f625639b8e3862c599f272a98e8fdbc10cb
+    sha256 after  59124359e0c85db209678982d00e1f625639b8e3862c599f272a98e8fdbc10cb (restored, identical)
+M18 report_workspace.py:766 [the CSV exports the full data]
+    run: tests/test_report_workspace.py -k "TC_3122" -> exit 1; 1 failed, 21 deselected in 1.41s
+    RED nodes: ['test_TC_3122_csv_and_json_hold_the_visible_rows_only']
+    verdict: KILLED (named node test_TC_3122_csv_and_json_hold_the_visible_rows_only)
+    sha256 before 59124359e0c85db209678982d00e1f625639b8e3862c599f272a98e8fdbc10cb
+    sha256 after  59124359e0c85db209678982d00e1f625639b8e3862c599f272a98e8fdbc10cb (restored, identical)
+M19 report_workspace.py:740 [the ' formula guard dropped]
+    run: tests/test_report_workspace.py -k "TC_3122" -> exit 1; 1 failed, 21 deselected in 1.52s
+    RED nodes: ['test_TC_3122_csv_and_json_hold_the_visible_rows_only']
+    verdict: KILLED (named node test_TC_3122_csv_and_json_hold_the_visible_rows_only)
+    sha256 before 59124359e0c85db209678982d00e1f625639b8e3862c599f272a98e8fdbc10cb
+    sha256 after  59124359e0c85db209678982d00e1f625639b8e3862c599f272a98e8fdbc10cb (restored, identical)
+M20 report_workspace.py:740 [prefix class '=' unguarded]
+    run: tests/test_report_workspace.py -k "TC_3122" -> exit 1; 1 failed, 21 deselected in 1.33s
+    RED nodes: ['test_TC_3122_csv_and_json_hold_the_visible_rows_only']
+    verdict: KILLED (named node test_TC_3122_csv_and_json_hold_the_visible_rows_only)
+    sha256 before 59124359e0c85db209678982d00e1f625639b8e3862c599f272a98e8fdbc10cb
+    sha256 after  59124359e0c85db209678982d00e1f625639b8e3862c599f272a98e8fdbc10cb (restored, identical)
+M21 report_workspace.py:740 [prefix class '+' unguarded]
+    run: tests/test_report_workspace.py -k "TC_3122" -> exit 1; 1 failed, 21 deselected in 1.37s
+    RED nodes: ['test_TC_3122_csv_and_json_hold_the_visible_rows_only']
+    verdict: KILLED (named node test_TC_3122_csv_and_json_hold_the_visible_rows_only)
+    sha256 before 59124359e0c85db209678982d00e1f625639b8e3862c599f272a98e8fdbc10cb
+    sha256 after  59124359e0c85db209678982d00e1f625639b8e3862c599f272a98e8fdbc10cb (restored, identical)
+M22 report_workspace.py:740 [prefix class '-' unguarded]
+    run: tests/test_report_workspace.py -k "TC_3122" -> exit 1; 1 failed, 21 deselected in 1.34s
+    RED nodes: ['test_TC_3122_csv_and_json_hold_the_visible_rows_only']
+    verdict: KILLED (named node test_TC_3122_csv_and_json_hold_the_visible_rows_only)
+    sha256 before 59124359e0c85db209678982d00e1f625639b8e3862c599f272a98e8fdbc10cb
+    sha256 after  59124359e0c85db209678982d00e1f625639b8e3862c599f272a98e8fdbc10cb (restored, identical)
+M23 report_workspace.py:740 [prefix class '@' unguarded]
+    run: tests/test_report_workspace.py -k "TC_3122" -> exit 1; 1 failed, 21 deselected in 1.34s
+    RED nodes: ['test_TC_3122_csv_and_json_hold_the_visible_rows_only']
+    verdict: KILLED (named node test_TC_3122_csv_and_json_hold_the_visible_rows_only)
+    sha256 before 59124359e0c85db209678982d00e1f625639b8e3862c599f272a98e8fdbc10cb
+    sha256 after  59124359e0c85db209678982d00e1f625639b8e3862c599f272a98e8fdbc10cb (restored, identical)
+M24 report_workspace.py:740 [prefix class TAB unguarded]
+    run: tests/test_report_workspace.py -k "TC_3122" -> exit 1; 1 failed, 21 deselected in 1.33s
+    RED nodes: ['test_TC_3122_csv_and_json_hold_the_visible_rows_only']
+    verdict: KILLED (named node test_TC_3122_csv_and_json_hold_the_visible_rows_only)
+    sha256 before 59124359e0c85db209678982d00e1f625639b8e3862c599f272a98e8fdbc10cb
+    sha256 after  59124359e0c85db209678982d00e1f625639b8e3862c599f272a98e8fdbc10cb (restored, identical)
+M25 report_workspace.py:740 [prefix class CR unguarded]
+    run: tests/test_report_workspace.py -k "TC_3122" -> exit 1; 1 failed, 21 deselected in 1.38s
+    RED nodes: ['test_TC_3122_csv_and_json_hold_the_visible_rows_only']
+    verdict: KILLED (named node test_TC_3122_csv_and_json_hold_the_visible_rows_only)
+    sha256 before 59124359e0c85db209678982d00e1f625639b8e3862c599f272a98e8fdbc10cb
+    sha256 after  59124359e0c85db209678982d00e1f625639b8e3862c599f272a98e8fdbc10cb (restored, identical)
+M26 report_workspace.py:740 [C13: plain numbers prefixed too]
+    run: tests/test_report_workspace.py -k "TC_3122" -> exit 1; 1 failed, 21 deselected in 1.39s
+    RED nodes: ['test_TC_3122_csv_and_json_hold_the_visible_rows_only']
+    verdict: KILLED (named node test_TC_3122_csv_and_json_hold_the_visible_rows_only)
+    sha256 before 59124359e0c85db209678982d00e1f625639b8e3862c599f272a98e8fdbc10cb
+    sha256 after  59124359e0c85db209678982d00e1f625639b8e3862c599f272a98e8fdbc10cb (restored, identical)
+M27 report_workspace.py:760 [the CSV/JSON name a dropped dependency's title]
+    run: tests/test_report_workspace.py -k "TC_3122" -> exit 1; 1 failed, 21 deselected in 1.61s
+    RED nodes: ['test_TC_3122_csv_and_json_hold_the_visible_rows_only']
+    verdict: KILLED (named node test_TC_3122_csv_and_json_hold_the_visible_rows_only)
+    sha256 before 59124359e0c85db209678982d00e1f625639b8e3862c599f272a98e8fdbc10cb
+    sha256 after  59124359e0c85db209678982d00e1f625639b8e3862c599f272a98e8fdbc10cb (restored, identical)
+M28 report_workspace.py:762 [the CSV/JSON carry notes while the notes section is off]
+    run: tests/test_report_workspace.py -k "TC_3122" -> exit 1; 1 failed, 21 deselected in 1.57s
+    RED nodes: ['test_TC_3122_csv_and_json_hold_the_visible_rows_only']
+    verdict: KILLED (named node test_TC_3122_csv_and_json_hold_the_visible_rows_only)
+    sha256 before 59124359e0c85db209678982d00e1f625639b8e3862c599f272a98e8fdbc10cb
+    sha256 after  59124359e0c85db209678982d00e1f625639b8e3862c599f272a98e8fdbc10cb (restored, identical)
+M29 report_workspace.py:399 [the downloaded file's header does not say it is a filtered view]
+    run: tests/test_report_workspace.py -k "AT_3103" -> exit 1; 1 failed, 21 deselected in 1.40s
+    RED nodes: ['test_AT_3103_download_this_view_holds_only_the_filtered_tasks']
+    verdict: KILLED (named node test_AT_3103_download_this_view_holds_only_the_filtered_tasks)
+    sha256 before 59124359e0c85db209678982d00e1f625639b8e3862c599f272a98e8fdbc10cb
+    sha256 after  59124359e0c85db209678982d00e1f625639b8e3862c599f272a98e8fdbc10cb (restored, identical)
+
+29/29 mutants killed
+
+# ---- rerun 2026-10-29T09:44:13-06:00: projects[] facts recomputed over kept tasks (keptFacts); M30 added; M01-M29 re-run against the new file ----
+M01 report_workspace.py:748 [the download re-embeds the full data (no reduction)]
+    run: tests/test_report_workspace.py -k "AT_3103" -> exit 1; 1 failed, 21 deselected in 1.72s
+    RED nodes: ['test_AT_3103_download_this_view_holds_only_the_filtered_tasks']
+    verdict: KILLED (named node test_AT_3103_download_this_view_holds_only_the_filtered_tasks)
+    sha256 before fa71da6e590d8a15f8b6de86c560ea4a0640c86d782707d833fb67967d1e66a1
+    sha256 after  fa71da6e590d8a15f8b6de86c560ea4a0640c86d782707d833fb67967d1e66a1 (restored, identical)
+M02 report_workspace.py:716 [deps/chain keys of dropped tasks kept]
+    run: tests/test_report_workspace.py -k "AT_3103" -> exit 1; 1 failed, 21 deselected in 1.71s
+    RED nodes: ['test_AT_3103_download_this_view_holds_only_the_filtered_tasks']
+    verdict: KILLED (named node test_AT_3103_download_this_view_holds_only_the_filtered_tasks)
+    sha256 before fa71da6e590d8a15f8b6de86c560ea4a0640c86d782707d833fb67967d1e66a1
+    sha256 after  fa71da6e590d8a15f8b6de86c560ea4a0640c86d782707d833fb67967d1e66a1 (restored, identical)
+M03 report_workspace.py:732 [R3: meta.scope.boards (header N/names) not reduced]
+    run: tests/test_report_workspace.py -k "AT_3103" -> exit 1; 1 failed, 21 deselected in 1.61s
+    RED nodes: ['test_AT_3103_download_this_view_holds_only_the_filtered_tasks']
+    verdict: KILLED (named node test_AT_3103_download_this_view_holds_only_the_filtered_tasks)
+    sha256 before fa71da6e590d8a15f8b6de86c560ea4a0640c86d782707d833fb67967d1e66a1
+    sha256 after  fa71da6e590d8a15f8b6de86c560ea4a0640c86d782707d833fb67967d1e66a1 (restored, identical)
+M04 report_workspace.py:737 [LLR-3103.1 negative control: the full people list kept]
+    run: tests/test_report_workspace.py -k "TC_3109" -> exit 1; 1 failed, 21 deselected in 1.60s
+    RED nodes: ['test_TC_3109_the_download_keeps_only_used_entries']
+    verdict: KILLED (named node test_TC_3109_the_download_keeps_only_used_entries)
+    sha256 before fa71da6e590d8a15f8b6de86c560ea4a0640c86d782707d833fb67967d1e66a1
+    sha256 after  fa71da6e590d8a15f8b6de86c560ea4a0640c86d782707d833fb67967d1e66a1 (restored, identical)
+M05 report_workspace.py:747 [D3: the file composed by String.replace (pattern semantics: $' re-inserts the shell)]
+    run: tests/test_report_workspace.py -k "TC_3109" -> exit 1; 1 failed, 21 deselected in 1.69s
+    RED nodes: ['test_TC_3109_the_download_keeps_only_used_entries']
+    verdict: KILLED (named node test_TC_3109_the_download_keeps_only_used_entries)
+    sha256 before fa71da6e590d8a15f8b6de86c560ea4a0640c86d782707d833fb67967d1e66a1
+    sha256 after  fa71da6e590d8a15f8b6de86c560ea4a0640c86d782707d833fb67967d1e66a1 (restored, identical)
+M06 report_workspace.py:748 [LLR-3106.1: the JSON enters the file with raw < > &]
+    run: tests/test_report_workspace.py -k "TC_3109" -> exit 1; 1 failed, 21 deselected in 1.64s
+    RED nodes: ['test_TC_3109_the_download_keeps_only_used_entries']
+    verdict: KILLED (named node test_TC_3109_the_download_keeps_only_used_entries)
+    sha256 before fa71da6e590d8a15f8b6de86c560ea4a0640c86d782707d833fb67967d1e66a1
+    sha256 after  fa71da6e590d8a15f8b6de86c560ea4a0640c86d782707d833fb67967d1e66a1 (restored, identical)
+M07 report_workspace.py:717 [notes kept when the notes section is off]
+    run: tests/test_report_workspace.py -k "TC_3110" -> exit 1; 1 failed, 21 deselected in 1.65s
+    RED nodes: ['test_TC_3110_notes_off_strips_the_notes']
+    verdict: KILLED (named node test_TC_3110_notes_off_strips_the_notes)
+    sha256 before fa71da6e590d8a15f8b6de86c560ea4a0640c86d782707d833fb67967d1e66a1
+    sha256 after  fa71da6e590d8a15f8b6de86c560ea4a0640c86d782707d833fb67967d1e66a1 (restored, identical)
+M08 report_workspace.py:717 [PA2/C2: notes_html stripped but notes_text kept]
+    run: tests/test_report_workspace.py -k "TC_3110" -> exit 1; 1 failed, 21 deselected in 1.68s
+    RED nodes: ['test_TC_3110_notes_off_strips_the_notes']
+    verdict: KILLED (named node test_TC_3110_notes_off_strips_the_notes)
+    sha256 before fa71da6e590d8a15f8b6de86c560ea4a0640c86d782707d833fb67967d1e66a1
+    sha256 after  fa71da6e590d8a15f8b6de86c560ea4a0640c86d782707d833fb67967d1e66a1 (restored, identical)
+M09 report_workspace.py:149,844 [the shell captured after rendering (controls rebuilt twice, rendered rows travel)]
+    run: tests/test_report_workspace.py -k "TC_3111_the_view_file" -> exit 1; 1 failed, 21 deselected in 1.73s
+    RED nodes: ['test_TC_3111_the_view_file_reopens_on_its_view']
+    verdict: KILLED (named node test_TC_3111_the_view_file_reopens_on_its_view)
+    sha256 before fa71da6e590d8a15f8b6de86c560ea4a0640c86d782707d833fb67967d1e66a1
+    sha256 after  fa71da6e590d8a15f8b6de86c560ea4a0640c86d782707d833fb67967d1e66a1 (restored, identical)
+M10 report_workspace.py:816 [D5: the downloaded file ignores meta.view (opens on the default view)]
+    run: tests/test_report_workspace.py -k "TC_3111_the_view_file" -> exit 1; 1 failed, 21 deselected in 1.66s
+    RED nodes: ['test_TC_3111_the_view_file_reopens_on_its_view']
+    verdict: KILLED (named node test_TC_3111_the_view_file_reopens_on_its_view)
+    sha256 before fa71da6e590d8a15f8b6de86c560ea4a0640c86d782707d833fb67967d1e66a1
+    sha256 after  fa71da6e590d8a15f8b6de86c560ea4a0640c86d782707d833fb67967d1e66a1 (restored, identical)
+M11 report_workspace.py:881 [C6: the print caption not visible without interaction]
+    run: tests/test_report_workspace.py -k "TC_3111_the_export_captions" -> exit 1; 1 failed, 21 deselected in 1.34s
+    RED nodes: ['test_TC_3111_the_export_captions_show_without_hover']
+    verdict: KILLED (named node test_TC_3111_the_export_captions_show_without_hover)
+    sha256 before fa71da6e590d8a15f8b6de86c560ea4a0640c86d782707d833fb67967d1e66a1
+    sha256 after  fa71da6e590d8a15f8b6de86c560ea4a0640c86d782707d833fb67967d1e66a1 (restored, identical)
+M12 report_workspace.py:126 [the control bar (.controls / nav, the same element) dropped from the print rule]
+    run: tests/test_report_workspace.py -k "AT_3104" -> exit 1; 1 failed, 21 deselected in 1.56s
+    RED nodes: ['test_AT_3104_print_hides_the_controls_and_shows_the_filter_header']
+    verdict: KILLED (named node test_AT_3104_print_hides_the_controls_and_shows_the_filter_header)
+    sha256 before fa71da6e590d8a15f8b6de86c560ea4a0640c86d782707d833fb67967d1e66a1
+    sha256 after  fa71da6e590d8a15f8b6de86c560ea4a0640c86d782707d833fb67967d1e66a1 (restored, identical)
+M13 report_workspace.py:819 [the beforeprint handler does not stamp the printed date]
+    run: tests/test_report_workspace.py -k "AT_3104" -> exit 1; 1 failed, 21 deselected in 1.55s
+    RED nodes: ['test_AT_3104_print_hides_the_controls_and_shows_the_filter_header']
+    verdict: KILLED (named node test_AT_3104_print_hides_the_controls_and_shows_the_filter_header)
+    sha256 before fa71da6e590d8a15f8b6de86c560ea4a0640c86d782707d833fb67967d1e66a1
+    sha256 after  fa71da6e590d8a15f8b6de86c560ea4a0640c86d782707d833fb67967d1e66a1 (restored, identical)
+M14 report_workspace.py:141 [C14: #gantt{min-width:0!important} dropped (gantt wider than 794 px)]
+    run: tests/test_report_workspace.py -k "TC_3112" -> exit 1; 1 failed, 21 deselected in 1.50s
+    RED nodes: ['test_TC_3112_the_print_rules_hold']
+    verdict: KILLED (named node test_TC_3112_the_print_rules_hold)
+    sha256 before fa71da6e590d8a15f8b6de86c560ea4a0640c86d782707d833fb67967d1e66a1
+    sha256 after  fa71da6e590d8a15f8b6de86c560ea4a0640c86d782707d833fb67967d1e66a1 (restored, identical)
+M15 report_workspace.py:124 [C7: @page{margin:0} dropped]
+    run: tests/test_report_workspace.py -k "TC_3112" -> exit 1; 1 failed, 21 deselected in 1.46s
+    RED nodes: ['test_TC_3112_the_print_rules_hold']
+    verdict: KILLED (named node test_TC_3112_the_print_rules_hold)
+    sha256 before fa71da6e590d8a15f8b6de86c560ea4a0640c86d782707d833fb67967d1e66a1
+    sha256 after  fa71da6e590d8a15f8b6de86c560ea4a0640c86d782707d833fb67967d1e66a1 (restored, identical)
+M16 report_workspace.py:487 [the svg viewBox dropped: the print clips the timeline instead of scaling it]
+    run: tests/test_report_workspace.py -k "TC_3112" -> exit 1; 1 failed, 21 deselected in 1.50s
+    RED nodes: ['test_TC_3112_the_print_rules_hold']
+    verdict: KILLED (named node test_TC_3112_the_print_rules_hold)
+    sha256 before fa71da6e590d8a15f8b6de86c560ea4a0640c86d782707d833fb67967d1e66a1
+    sha256 after  fa71da6e590d8a15f8b6de86c560ea4a0640c86d782707d833fb67967d1e66a1 (restored, identical)
+M17 report_workspace.py:128 [C7: the print shows 'of N' (a count over hidden tasks)]
+    run: tests/test_report_workspace.py -k "TC_3112" -> exit 1; 1 failed, 21 deselected in 1.54s
+    RED nodes: ['test_TC_3112_the_print_rules_hold']
+    verdict: KILLED (named node test_TC_3112_the_print_rules_hold)
+    sha256 before fa71da6e590d8a15f8b6de86c560ea4a0640c86d782707d833fb67967d1e66a1
+    sha256 after  fa71da6e590d8a15f8b6de86c560ea4a0640c86d782707d833fb67967d1e66a1 (restored, identical)
+M18 report_workspace.py:783 [the CSV exports the full data]
+    run: tests/test_report_workspace.py -k "TC_3122" -> exit 1; 1 failed, 21 deselected in 1.76s
+    RED nodes: ['test_TC_3122_csv_and_json_hold_the_visible_rows_only']
+    verdict: KILLED (named node test_TC_3122_csv_and_json_hold_the_visible_rows_only)
+    sha256 before fa71da6e590d8a15f8b6de86c560ea4a0640c86d782707d833fb67967d1e66a1
+    sha256 after  fa71da6e590d8a15f8b6de86c560ea4a0640c86d782707d833fb67967d1e66a1 (restored, identical)
+M19 report_workspace.py:757 [the ' formula guard dropped]
+    run: tests/test_report_workspace.py -k "TC_3122" -> exit 1; 1 failed, 21 deselected in 1.80s
+    RED nodes: ['test_TC_3122_csv_and_json_hold_the_visible_rows_only']
+    verdict: KILLED (named node test_TC_3122_csv_and_json_hold_the_visible_rows_only)
+    sha256 before fa71da6e590d8a15f8b6de86c560ea4a0640c86d782707d833fb67967d1e66a1
+    sha256 after  fa71da6e590d8a15f8b6de86c560ea4a0640c86d782707d833fb67967d1e66a1 (restored, identical)
+M20 report_workspace.py:757 [prefix class '=' unguarded]
+    run: tests/test_report_workspace.py -k "TC_3122" -> exit 1; 1 failed, 21 deselected in 1.58s
+    RED nodes: ['test_TC_3122_csv_and_json_hold_the_visible_rows_only']
+    verdict: KILLED (named node test_TC_3122_csv_and_json_hold_the_visible_rows_only)
+    sha256 before fa71da6e590d8a15f8b6de86c560ea4a0640c86d782707d833fb67967d1e66a1
+    sha256 after  fa71da6e590d8a15f8b6de86c560ea4a0640c86d782707d833fb67967d1e66a1 (restored, identical)
+M21 report_workspace.py:757 [prefix class '+' unguarded]
+    run: tests/test_report_workspace.py -k "TC_3122" -> exit 1; 1 failed, 21 deselected in 1.72s
+    RED nodes: ['test_TC_3122_csv_and_json_hold_the_visible_rows_only']
+    verdict: KILLED (named node test_TC_3122_csv_and_json_hold_the_visible_rows_only)
+    sha256 before fa71da6e590d8a15f8b6de86c560ea4a0640c86d782707d833fb67967d1e66a1
+    sha256 after  fa71da6e590d8a15f8b6de86c560ea4a0640c86d782707d833fb67967d1e66a1 (restored, identical)
+M22 report_workspace.py:757 [prefix class '-' unguarded]
+    run: tests/test_report_workspace.py -k "TC_3122" -> exit 1; 1 failed, 21 deselected in 1.65s
+    RED nodes: ['test_TC_3122_csv_and_json_hold_the_visible_rows_only']
+    verdict: KILLED (named node test_TC_3122_csv_and_json_hold_the_visible_rows_only)
+    sha256 before fa71da6e590d8a15f8b6de86c560ea4a0640c86d782707d833fb67967d1e66a1
+    sha256 after  fa71da6e590d8a15f8b6de86c560ea4a0640c86d782707d833fb67967d1e66a1 (restored, identical)
+M23 report_workspace.py:757 [prefix class '@' unguarded]
+    run: tests/test_report_workspace.py -k "TC_3122" -> exit 1; 1 failed, 21 deselected in 1.64s
+    RED nodes: ['test_TC_3122_csv_and_json_hold_the_visible_rows_only']
+    verdict: KILLED (named node test_TC_3122_csv_and_json_hold_the_visible_rows_only)
+    sha256 before fa71da6e590d8a15f8b6de86c560ea4a0640c86d782707d833fb67967d1e66a1
+    sha256 after  fa71da6e590d8a15f8b6de86c560ea4a0640c86d782707d833fb67967d1e66a1 (restored, identical)
+M24 report_workspace.py:757 [prefix class TAB unguarded]
+    run: tests/test_report_workspace.py -k "TC_3122" -> exit 1; 1 failed, 21 deselected in 1.70s
+    RED nodes: ['test_TC_3122_csv_and_json_hold_the_visible_rows_only']
+    verdict: KILLED (named node test_TC_3122_csv_and_json_hold_the_visible_rows_only)
+    sha256 before fa71da6e590d8a15f8b6de86c560ea4a0640c86d782707d833fb67967d1e66a1
+    sha256 after  fa71da6e590d8a15f8b6de86c560ea4a0640c86d782707d833fb67967d1e66a1 (restored, identical)
+M25 report_workspace.py:757 [prefix class CR unguarded]
+    run: tests/test_report_workspace.py -k "TC_3122" -> exit 1; 1 failed, 21 deselected in 1.74s
+    RED nodes: ['test_TC_3122_csv_and_json_hold_the_visible_rows_only']
+    verdict: KILLED (named node test_TC_3122_csv_and_json_hold_the_visible_rows_only)
+    sha256 before fa71da6e590d8a15f8b6de86c560ea4a0640c86d782707d833fb67967d1e66a1
+    sha256 after  fa71da6e590d8a15f8b6de86c560ea4a0640c86d782707d833fb67967d1e66a1 (restored, identical)
+M26 report_workspace.py:757 [C13: plain numbers prefixed too]
+    run: tests/test_report_workspace.py -k "TC_3122" -> exit 1; 1 failed, 21 deselected in 1.76s
+    RED nodes: ['test_TC_3122_csv_and_json_hold_the_visible_rows_only']
+    verdict: KILLED (named node test_TC_3122_csv_and_json_hold_the_visible_rows_only)
+    sha256 before fa71da6e590d8a15f8b6de86c560ea4a0640c86d782707d833fb67967d1e66a1
+    sha256 after  fa71da6e590d8a15f8b6de86c560ea4a0640c86d782707d833fb67967d1e66a1 (restored, identical)
+M27 report_workspace.py:777 [the CSV/JSON name a dropped dependency's title]
+    run: tests/test_report_workspace.py -k "TC_3122" -> exit 1; 1 failed, 21 deselected in 1.85s
+    RED nodes: ['test_TC_3122_csv_and_json_hold_the_visible_rows_only']
+    verdict: KILLED (named node test_TC_3122_csv_and_json_hold_the_visible_rows_only)
+    sha256 before fa71da6e590d8a15f8b6de86c560ea4a0640c86d782707d833fb67967d1e66a1
+    sha256 after  fa71da6e590d8a15f8b6de86c560ea4a0640c86d782707d833fb67967d1e66a1 (restored, identical)
+M28 report_workspace.py:779 [the CSV/JSON carry notes while the notes section is off]
+    run: tests/test_report_workspace.py -k "TC_3122" -> exit 1; 1 failed, 21 deselected in 2.12s
+    RED nodes: ['test_TC_3122_csv_and_json_hold_the_visible_rows_only']
+    verdict: KILLED (named node test_TC_3122_csv_and_json_hold_the_visible_rows_only)
+    sha256 before fa71da6e590d8a15f8b6de86c560ea4a0640c86d782707d833fb67967d1e66a1
+    sha256 after  fa71da6e590d8a15f8b6de86c560ea4a0640c86d782707d833fb67967d1e66a1 (restored, identical)
+M29 report_workspace.py:399 [the downloaded file's header does not say it is a filtered view]
+    run: tests/test_report_workspace.py -k "AT_3103" -> exit 1; 1 failed, 21 deselected in 1.83s
+    RED nodes: ['test_AT_3103_download_this_view_holds_only_the_filtered_tasks']
+    verdict: KILLED (named node test_AT_3103_download_this_view_holds_only_the_filtered_tasks)
+    sha256 before fa71da6e590d8a15f8b6de86c560ea4a0640c86d782707d833fb67967d1e66a1
+    sha256 after  fa71da6e590d8a15f8b6de86c560ea4a0640c86d782707d833fb67967d1e66a1 (restored, identical)
+M30 report_workspace.py:735 [projects[] facts (open/late/done/high/worst/momentum) carried unchanged: they count dropped tasks]
+    run: tests/test_report_workspace.py -k "TC_3109" -> exit 1; 1 failed, 21 deselected in 1.99s
+    RED nodes: ['test_TC_3109_the_download_keeps_only_used_entries']
+    verdict: KILLED (named node test_TC_3109_the_download_keeps_only_used_entries)
+    sha256 before fa71da6e590d8a15f8b6de86c560ea4a0640c86d782707d833fb67967d1e66a1
+    sha256 after  fa71da6e590d8a15f8b6de86c560ea4a0640c86d782707d833fb67967d1e66a1 (restored, identical)
+
+30/30 mutants killed
+exit 0
+
+# ---- rerun 2026-10-29T09:46:24-06:00: keptFacts' project-date variable renamed (due_in -> pdays) so TC-3125's no-status-derivation grep stays green; all 30 mutants against the final file ----
+M01 report_workspace.py:749 [the download re-embeds the full data (no reduction)]
+    run: tests/test_report_workspace.py -k "AT_3103" -> exit 1; 1 failed, 21 deselected in 1.41s
+    RED nodes: ['test_AT_3103_download_this_view_holds_only_the_filtered_tasks']
+    verdict: KILLED (named node test_AT_3103_download_this_view_holds_only_the_filtered_tasks)
+    sha256 before 33e2811628596c06bcec45b2991cc2d7237d8e6c529f58fb5508f43e99128f2f
+    sha256 after  33e2811628596c06bcec45b2991cc2d7237d8e6c529f58fb5508f43e99128f2f (restored, identical)
+M02 report_workspace.py:717 [deps/chain keys of dropped tasks kept]
+    run: tests/test_report_workspace.py -k "AT_3103" -> exit 1; 1 failed, 21 deselected in 1.37s
+    RED nodes: ['test_AT_3103_download_this_view_holds_only_the_filtered_tasks']
+    verdict: KILLED (named node test_AT_3103_download_this_view_holds_only_the_filtered_tasks)
+    sha256 before 33e2811628596c06bcec45b2991cc2d7237d8e6c529f58fb5508f43e99128f2f
+    sha256 after  33e2811628596c06bcec45b2991cc2d7237d8e6c529f58fb5508f43e99128f2f (restored, identical)
+M03 report_workspace.py:733 [R3: meta.scope.boards (header N/names) not reduced]
+    run: tests/test_report_workspace.py -k "AT_3103" -> exit 1; 1 failed, 21 deselected in 1.40s
+    RED nodes: ['test_AT_3103_download_this_view_holds_only_the_filtered_tasks']
+    verdict: KILLED (named node test_AT_3103_download_this_view_holds_only_the_filtered_tasks)
+    sha256 before 33e2811628596c06bcec45b2991cc2d7237d8e6c529f58fb5508f43e99128f2f
+    sha256 after  33e2811628596c06bcec45b2991cc2d7237d8e6c529f58fb5508f43e99128f2f (restored, identical)
+M04 report_workspace.py:738 [LLR-3103.1 negative control: the full people list kept]
+    run: tests/test_report_workspace.py -k "TC_3109" -> exit 1; 1 failed, 21 deselected in 1.43s
+    RED nodes: ['test_TC_3109_the_download_keeps_only_used_entries']
+    verdict: KILLED (named node test_TC_3109_the_download_keeps_only_used_entries)
+    sha256 before 33e2811628596c06bcec45b2991cc2d7237d8e6c529f58fb5508f43e99128f2f
+    sha256 after  33e2811628596c06bcec45b2991cc2d7237d8e6c529f58fb5508f43e99128f2f (restored, identical)
+M05 report_workspace.py:748 [D3: the file composed by String.replace (pattern semantics: $' re-inserts the shell)]
+    run: tests/test_report_workspace.py -k "TC_3109" -> exit 1; 1 failed, 21 deselected in 1.44s
+    RED nodes: ['test_TC_3109_the_download_keeps_only_used_entries']
+    verdict: KILLED (named node test_TC_3109_the_download_keeps_only_used_entries)
+    sha256 before 33e2811628596c06bcec45b2991cc2d7237d8e6c529f58fb5508f43e99128f2f
+    sha256 after  33e2811628596c06bcec45b2991cc2d7237d8e6c529f58fb5508f43e99128f2f (restored, identical)
+M06 report_workspace.py:749 [LLR-3106.1: the JSON enters the file with raw < > &]
+    run: tests/test_report_workspace.py -k "TC_3109" -> exit 1; 1 failed, 21 deselected in 1.44s
+    RED nodes: ['test_TC_3109_the_download_keeps_only_used_entries']
+    verdict: KILLED (named node test_TC_3109_the_download_keeps_only_used_entries)
+    sha256 before 33e2811628596c06bcec45b2991cc2d7237d8e6c529f58fb5508f43e99128f2f
+    sha256 after  33e2811628596c06bcec45b2991cc2d7237d8e6c529f58fb5508f43e99128f2f (restored, identical)
+M07 report_workspace.py:718 [notes kept when the notes section is off]
+    run: tests/test_report_workspace.py -k "TC_3110" -> exit 1; 1 failed, 21 deselected in 1.46s
+    RED nodes: ['test_TC_3110_notes_off_strips_the_notes']
+    verdict: KILLED (named node test_TC_3110_notes_off_strips_the_notes)
+    sha256 before 33e2811628596c06bcec45b2991cc2d7237d8e6c529f58fb5508f43e99128f2f
+    sha256 after  33e2811628596c06bcec45b2991cc2d7237d8e6c529f58fb5508f43e99128f2f (restored, identical)
+M08 report_workspace.py:718 [PA2/C2: notes_html stripped but notes_text kept]
+    run: tests/test_report_workspace.py -k "TC_3110" -> exit 1; 1 failed, 21 deselected in 1.45s
+    RED nodes: ['test_TC_3110_notes_off_strips_the_notes']
+    verdict: KILLED (named node test_TC_3110_notes_off_strips_the_notes)
+    sha256 before 33e2811628596c06bcec45b2991cc2d7237d8e6c529f58fb5508f43e99128f2f
+    sha256 after  33e2811628596c06bcec45b2991cc2d7237d8e6c529f58fb5508f43e99128f2f (restored, identical)
+M09 report_workspace.py:149,845 [the shell captured after rendering (controls rebuilt twice, rendered rows travel)]
+    run: tests/test_report_workspace.py -k "TC_3111_the_view_file" -> exit 1; 1 failed, 21 deselected in 1.48s
+    RED nodes: ['test_TC_3111_the_view_file_reopens_on_its_view']
+    verdict: KILLED (named node test_TC_3111_the_view_file_reopens_on_its_view)
+    sha256 before 33e2811628596c06bcec45b2991cc2d7237d8e6c529f58fb5508f43e99128f2f
+    sha256 after  33e2811628596c06bcec45b2991cc2d7237d8e6c529f58fb5508f43e99128f2f (restored, identical)
+M10 report_workspace.py:817 [D5: the downloaded file ignores meta.view (opens on the default view)]
+    run: tests/test_report_workspace.py -k "TC_3111_the_view_file" -> exit 1; 1 failed, 21 deselected in 1.56s
+    RED nodes: ['test_TC_3111_the_view_file_reopens_on_its_view']
+    verdict: KILLED (named node test_TC_3111_the_view_file_reopens_on_its_view)
+    sha256 before 33e2811628596c06bcec45b2991cc2d7237d8e6c529f58fb5508f43e99128f2f
+    sha256 after  33e2811628596c06bcec45b2991cc2d7237d8e6c529f58fb5508f43e99128f2f (restored, identical)
+M11 report_workspace.py:882 [C6: the print caption not visible without interaction]
+    run: tests/test_report_workspace.py -k "TC_3111_the_export_captions" -> exit 1; 1 failed, 21 deselected in 1.10s
+    RED nodes: ['test_TC_3111_the_export_captions_show_without_hover']
+    verdict: KILLED (named node test_TC_3111_the_export_captions_show_without_hover)
+    sha256 before 33e2811628596c06bcec45b2991cc2d7237d8e6c529f58fb5508f43e99128f2f
+    sha256 after  33e2811628596c06bcec45b2991cc2d7237d8e6c529f58fb5508f43e99128f2f (restored, identical)
+M12 report_workspace.py:126 [the control bar (.controls / nav, the same element) dropped from the print rule]
+    run: tests/test_report_workspace.py -k "AT_3104" -> exit 1; 1 failed, 21 deselected in 1.22s
+    RED nodes: ['test_AT_3104_print_hides_the_controls_and_shows_the_filter_header']
+    verdict: KILLED (named node test_AT_3104_print_hides_the_controls_and_shows_the_filter_header)
+    sha256 before 33e2811628596c06bcec45b2991cc2d7237d8e6c529f58fb5508f43e99128f2f
+    sha256 after  33e2811628596c06bcec45b2991cc2d7237d8e6c529f58fb5508f43e99128f2f (restored, identical)
+M13 report_workspace.py:820 [the beforeprint handler does not stamp the printed date]
+    run: tests/test_report_workspace.py -k "AT_3104" -> exit 1; 1 failed, 21 deselected in 1.21s
+    RED nodes: ['test_AT_3104_print_hides_the_controls_and_shows_the_filter_header']
+    verdict: KILLED (named node test_AT_3104_print_hides_the_controls_and_shows_the_filter_header)
+    sha256 before 33e2811628596c06bcec45b2991cc2d7237d8e6c529f58fb5508f43e99128f2f
+    sha256 after  33e2811628596c06bcec45b2991cc2d7237d8e6c529f58fb5508f43e99128f2f (restored, identical)
+M14 report_workspace.py:141 [C14: #gantt{min-width:0!important} dropped (gantt wider than 794 px)]
+    run: tests/test_report_workspace.py -k "TC_3112" -> exit 1; 1 failed, 21 deselected in 1.23s
+    RED nodes: ['test_TC_3112_the_print_rules_hold']
+    verdict: KILLED (named node test_TC_3112_the_print_rules_hold)
+    sha256 before 33e2811628596c06bcec45b2991cc2d7237d8e6c529f58fb5508f43e99128f2f
+    sha256 after  33e2811628596c06bcec45b2991cc2d7237d8e6c529f58fb5508f43e99128f2f (restored, identical)
+M15 report_workspace.py:124 [C7: @page{margin:0} dropped]
+    run: tests/test_report_workspace.py -k "TC_3112" -> exit 1; 1 failed, 21 deselected in 1.24s
+    RED nodes: ['test_TC_3112_the_print_rules_hold']
+    verdict: KILLED (named node test_TC_3112_the_print_rules_hold)
+    sha256 before 33e2811628596c06bcec45b2991cc2d7237d8e6c529f58fb5508f43e99128f2f
+    sha256 after  33e2811628596c06bcec45b2991cc2d7237d8e6c529f58fb5508f43e99128f2f (restored, identical)
+M16 report_workspace.py:487 [the svg viewBox dropped: the print clips the timeline instead of scaling it]
+    run: tests/test_report_workspace.py -k "TC_3112" -> exit 1; 1 failed, 21 deselected in 1.24s
+    RED nodes: ['test_TC_3112_the_print_rules_hold']
+    verdict: KILLED (named node test_TC_3112_the_print_rules_hold)
+    sha256 before 33e2811628596c06bcec45b2991cc2d7237d8e6c529f58fb5508f43e99128f2f
+    sha256 after  33e2811628596c06bcec45b2991cc2d7237d8e6c529f58fb5508f43e99128f2f (restored, identical)
+M17 report_workspace.py:128 [C7: the print shows 'of N' (a count over hidden tasks)]
+    run: tests/test_report_workspace.py -k "TC_3112" -> exit 1; 1 failed, 21 deselected in 1.42s
+    RED nodes: ['test_TC_3112_the_print_rules_hold']
+    verdict: KILLED (named node test_TC_3112_the_print_rules_hold)
+    sha256 before 33e2811628596c06bcec45b2991cc2d7237d8e6c529f58fb5508f43e99128f2f
+    sha256 after  33e2811628596c06bcec45b2991cc2d7237d8e6c529f58fb5508f43e99128f2f (restored, identical)
+M18 report_workspace.py:784 [the CSV exports the full data]
+    run: tests/test_report_workspace.py -k "TC_3122" -> exit 1; 1 failed, 21 deselected in 1.34s
+    RED nodes: ['test_TC_3122_csv_and_json_hold_the_visible_rows_only']
+    verdict: KILLED (named node test_TC_3122_csv_and_json_hold_the_visible_rows_only)
+    sha256 before 33e2811628596c06bcec45b2991cc2d7237d8e6c529f58fb5508f43e99128f2f
+    sha256 after  33e2811628596c06bcec45b2991cc2d7237d8e6c529f58fb5508f43e99128f2f (restored, identical)
+M19 report_workspace.py:758 [the ' formula guard dropped]
+    run: tests/test_report_workspace.py -k "TC_3122" -> exit 1; 1 failed, 21 deselected in 1.32s
+    RED nodes: ['test_TC_3122_csv_and_json_hold_the_visible_rows_only']
+    verdict: KILLED (named node test_TC_3122_csv_and_json_hold_the_visible_rows_only)
+    sha256 before 33e2811628596c06bcec45b2991cc2d7237d8e6c529f58fb5508f43e99128f2f
+    sha256 after  33e2811628596c06bcec45b2991cc2d7237d8e6c529f58fb5508f43e99128f2f (restored, identical)
+M20 report_workspace.py:758 [prefix class '=' unguarded]
+    run: tests/test_report_workspace.py -k "TC_3122" -> exit 1; 1 failed, 21 deselected in 1.39s
+    RED nodes: ['test_TC_3122_csv_and_json_hold_the_visible_rows_only']
+    verdict: KILLED (named node test_TC_3122_csv_and_json_hold_the_visible_rows_only)
+    sha256 before 33e2811628596c06bcec45b2991cc2d7237d8e6c529f58fb5508f43e99128f2f
+    sha256 after  33e2811628596c06bcec45b2991cc2d7237d8e6c529f58fb5508f43e99128f2f (restored, identical)
+M21 report_workspace.py:758 [prefix class '+' unguarded]
+    run: tests/test_report_workspace.py -k "TC_3122" -> exit 1; 1 failed, 21 deselected in 1.33s
+    RED nodes: ['test_TC_3122_csv_and_json_hold_the_visible_rows_only']
+    verdict: KILLED (named node test_TC_3122_csv_and_json_hold_the_visible_rows_only)
+    sha256 before 33e2811628596c06bcec45b2991cc2d7237d8e6c529f58fb5508f43e99128f2f
+    sha256 after  33e2811628596c06bcec45b2991cc2d7237d8e6c529f58fb5508f43e99128f2f (restored, identical)
+M22 report_workspace.py:758 [prefix class '-' unguarded]
+    run: tests/test_report_workspace.py -k "TC_3122" -> exit 1; 1 failed, 21 deselected in 1.37s
+    RED nodes: ['test_TC_3122_csv_and_json_hold_the_visible_rows_only']
+    verdict: KILLED (named node test_TC_3122_csv_and_json_hold_the_visible_rows_only)
+    sha256 before 33e2811628596c06bcec45b2991cc2d7237d8e6c529f58fb5508f43e99128f2f
+    sha256 after  33e2811628596c06bcec45b2991cc2d7237d8e6c529f58fb5508f43e99128f2f (restored, identical)
+M23 report_workspace.py:758 [prefix class '@' unguarded]
+    run: tests/test_report_workspace.py -k "TC_3122" -> exit 1; 1 failed, 21 deselected in 1.35s
+    RED nodes: ['test_TC_3122_csv_and_json_hold_the_visible_rows_only']
+    verdict: KILLED (named node test_TC_3122_csv_and_json_hold_the_visible_rows_only)
+    sha256 before 33e2811628596c06bcec45b2991cc2d7237d8e6c529f58fb5508f43e99128f2f
+    sha256 after  33e2811628596c06bcec45b2991cc2d7237d8e6c529f58fb5508f43e99128f2f (restored, identical)
+M24 report_workspace.py:758 [prefix class TAB unguarded]
+    run: tests/test_report_workspace.py -k "TC_3122" -> exit 1; 1 failed, 21 deselected in 1.41s
+    RED nodes: ['test_TC_3122_csv_and_json_hold_the_visible_rows_only']
+    verdict: KILLED (named node test_TC_3122_csv_and_json_hold_the_visible_rows_only)
+    sha256 before 33e2811628596c06bcec45b2991cc2d7237d8e6c529f58fb5508f43e99128f2f
+    sha256 after  33e2811628596c06bcec45b2991cc2d7237d8e6c529f58fb5508f43e99128f2f (restored, identical)
+M25 report_workspace.py:758 [prefix class CR unguarded]
+    run: tests/test_report_workspace.py -k "TC_3122" -> exit 1; 1 failed, 21 deselected in 1.35s
+    RED nodes: ['test_TC_3122_csv_and_json_hold_the_visible_rows_only']
+    verdict: KILLED (named node test_TC_3122_csv_and_json_hold_the_visible_rows_only)
+    sha256 before 33e2811628596c06bcec45b2991cc2d7237d8e6c529f58fb5508f43e99128f2f
+    sha256 after  33e2811628596c06bcec45b2991cc2d7237d8e6c529f58fb5508f43e99128f2f (restored, identical)
+M26 report_workspace.py:758 [C13: plain numbers prefixed too]
+    run: tests/test_report_workspace.py -k "TC_3122" -> exit 1; 1 failed, 21 deselected in 1.35s
+    RED nodes: ['test_TC_3122_csv_and_json_hold_the_visible_rows_only']
+    verdict: KILLED (named node test_TC_3122_csv_and_json_hold_the_visible_rows_only)
+    sha256 before 33e2811628596c06bcec45b2991cc2d7237d8e6c529f58fb5508f43e99128f2f
+    sha256 after  33e2811628596c06bcec45b2991cc2d7237d8e6c529f58fb5508f43e99128f2f (restored, identical)
+M27 report_workspace.py:778 [the CSV/JSON name a dropped dependency's title]
+    run: tests/test_report_workspace.py -k "TC_3122" -> exit 1; 1 failed, 21 deselected in 1.64s
+    RED nodes: ['test_TC_3122_csv_and_json_hold_the_visible_rows_only']
+    verdict: KILLED (named node test_TC_3122_csv_and_json_hold_the_visible_rows_only)
+    sha256 before 33e2811628596c06bcec45b2991cc2d7237d8e6c529f58fb5508f43e99128f2f
+    sha256 after  33e2811628596c06bcec45b2991cc2d7237d8e6c529f58fb5508f43e99128f2f (restored, identical)
+M28 report_workspace.py:780 [the CSV/JSON carry notes while the notes section is off]
+    run: tests/test_report_workspace.py -k "TC_3122" -> exit 1; 1 failed, 21 deselected in 1.65s
+    RED nodes: ['test_TC_3122_csv_and_json_hold_the_visible_rows_only']
+    verdict: KILLED (named node test_TC_3122_csv_and_json_hold_the_visible_rows_only)
+    sha256 before 33e2811628596c06bcec45b2991cc2d7237d8e6c529f58fb5508f43e99128f2f
+    sha256 after  33e2811628596c06bcec45b2991cc2d7237d8e6c529f58fb5508f43e99128f2f (restored, identical)
+M29 report_workspace.py:399 [the downloaded file's header does not say it is a filtered view]
+    run: tests/test_report_workspace.py -k "AT_3103" -> exit 1; 1 failed, 21 deselected in 1.55s
+    RED nodes: ['test_AT_3103_download_this_view_holds_only_the_filtered_tasks']
+    verdict: KILLED (named node test_AT_3103_download_this_view_holds_only_the_filtered_tasks)
+    sha256 before 33e2811628596c06bcec45b2991cc2d7237d8e6c529f58fb5508f43e99128f2f
+    sha256 after  33e2811628596c06bcec45b2991cc2d7237d8e6c529f58fb5508f43e99128f2f (restored, identical)
+M30 report_workspace.py:736 [projects[] facts (open/late/done/high/worst/momentum) carried unchanged: they count dropped tasks]
+    run: tests/test_report_workspace.py -k "TC_3109" -> exit 1; 1 failed, 21 deselected in 1.67s
+    RED nodes: ['test_TC_3109_the_download_keeps_only_used_entries']
+    verdict: KILLED (named node test_TC_3109_the_download_keeps_only_used_entries)
+    sha256 before 33e2811628596c06bcec45b2991cc2d7237d8e6c529f58fb5508f43e99128f2f
+    sha256 after  33e2811628596c06bcec45b2991cc2d7237d8e6c529f58fb5508f43e99128f2f (restored, identical)
+
+30/30 mutants killed
+exit 0
+
+# ---- rerun 2026-10-29T09:52:22-06:00: review folds CR2-1 (keptCounts, worst/momentum null), CR2-2 (viewFromLocation), CR2-3 (afterprint; print control only calls window.print), SD1 (mentions off with notes off); M31-M40 added; whole battery on the final bytes ----
+  File "C:\Users\jjgh8\Github\taskboard-wt\report-proto\.dev-flow\2026-10-29-batch-01\evidence\mutation-002.py", line 124
+    ("M39", [("  window.addEventListener('afterprint', unsetPrinted);
+              ^
+SyntaxError: unterminated string literal (detected at line 124)
+exit 1
+
+# ---- rerun 2026-10-29T09:52:54-06:00: the previous block failed to start (a SyntaxError in the harness's new M39 entry, fixed); whole battery M01-M40 on the final bytes ----
+M01 report_workspace.py:749 [the download re-embeds the full data (no reduction)]
+    run: tests/test_report_workspace.py -k "AT_3103" -> exit 1; 1 failed, 21 deselected in 1.32s
+    RED nodes: ['test_AT_3103_download_this_view_holds_only_the_filtered_tasks']
+    verdict: KILLED (named node test_AT_3103_download_this_view_holds_only_the_filtered_tasks)
+    sha256 before 99a97735c581126ce1cc481fc2adc1c4e81129f0672cf5baa58df27f58870f83
+    sha256 after  99a97735c581126ce1cc481fc2adc1c4e81129f0672cf5baa58df27f58870f83 (restored, identical)
+M02 report_workspace.py:716 [deps/chain keys of dropped tasks kept]
+    run: tests/test_report_workspace.py -k "AT_3103" -> exit 1; 1 failed, 21 deselected in 1.52s
+    RED nodes: ['test_AT_3103_download_this_view_holds_only_the_filtered_tasks']
+    verdict: KILLED (named node test_AT_3103_download_this_view_holds_only_the_filtered_tasks)
+    sha256 before 99a97735c581126ce1cc481fc2adc1c4e81129f0672cf5baa58df27f58870f83
+    sha256 after  99a97735c581126ce1cc481fc2adc1c4e81129f0672cf5baa58df27f58870f83 (restored, identical)
+M03 report_workspace.py:733 [R3: meta.scope.boards (header N/names) not reduced]
+    run: tests/test_report_workspace.py -k "AT_3103" -> exit 1; 1 failed, 21 deselected in 1.34s
+    RED nodes: ['test_AT_3103_download_this_view_holds_only_the_filtered_tasks']
+    verdict: KILLED (named node test_AT_3103_download_this_view_holds_only_the_filtered_tasks)
+    sha256 before 99a97735c581126ce1cc481fc2adc1c4e81129f0672cf5baa58df27f58870f83
+    sha256 after  99a97735c581126ce1cc481fc2adc1c4e81129f0672cf5baa58df27f58870f83 (restored, identical)
+M04 report_workspace.py:738 [LLR-3103.1 negative control: the full people list kept]
+    run: tests/test_report_workspace.py -k "TC_3109" -> exit 1; 1 failed, 21 deselected in 1.30s
+    RED nodes: ['test_TC_3109_the_download_keeps_only_used_entries']
+    verdict: KILLED (named node test_TC_3109_the_download_keeps_only_used_entries)
+    sha256 before 99a97735c581126ce1cc481fc2adc1c4e81129f0672cf5baa58df27f58870f83
+    sha256 after  99a97735c581126ce1cc481fc2adc1c4e81129f0672cf5baa58df27f58870f83 (restored, identical)
+M05 report_workspace.py:748 [D3: the file composed by String.replace (pattern semantics: $' re-inserts the shell)]
+    run: tests/test_report_workspace.py -k "TC_3109" -> exit 1; 1 failed, 21 deselected in 1.36s
+    RED nodes: ['test_TC_3109_the_download_keeps_only_used_entries']
+    verdict: KILLED (named node test_TC_3109_the_download_keeps_only_used_entries)
+    sha256 before 99a97735c581126ce1cc481fc2adc1c4e81129f0672cf5baa58df27f58870f83
+    sha256 after  99a97735c581126ce1cc481fc2adc1c4e81129f0672cf5baa58df27f58870f83 (restored, identical)
+M06 report_workspace.py:749 [LLR-3106.1: the JSON enters the file with raw < > &]
+    run: tests/test_report_workspace.py -k "TC_3109" -> exit 1; 1 failed, 21 deselected in 1.31s
+    RED nodes: ['test_TC_3109_the_download_keeps_only_used_entries']
+    verdict: KILLED (named node test_TC_3109_the_download_keeps_only_used_entries)
+    sha256 before 99a97735c581126ce1cc481fc2adc1c4e81129f0672cf5baa58df27f58870f83
+    sha256 after  99a97735c581126ce1cc481fc2adc1c4e81129f0672cf5baa58df27f58870f83 (restored, identical)
+M07 report_workspace.py:717 [notes kept when the notes section is off]
+    run: tests/test_report_workspace.py -k "TC_3110" -> exit 1; 1 failed, 21 deselected in 1.35s
+    RED nodes: ['test_TC_3110_notes_off_strips_the_notes']
+    verdict: KILLED (named node test_TC_3110_notes_off_strips_the_notes)
+    sha256 before 99a97735c581126ce1cc481fc2adc1c4e81129f0672cf5baa58df27f58870f83
+    sha256 after  99a97735c581126ce1cc481fc2adc1c4e81129f0672cf5baa58df27f58870f83 (restored, identical)
+M08 report_workspace.py:717 [PA2/C2: notes_html stripped but notes_text kept]
+    run: tests/test_report_workspace.py -k "TC_3110" -> exit 1; 1 failed, 21 deselected in 1.36s
+    RED nodes: ['test_TC_3110_notes_off_strips_the_notes']
+    verdict: KILLED (named node test_TC_3110_notes_off_strips_the_notes)
+    sha256 before 99a97735c581126ce1cc481fc2adc1c4e81129f0672cf5baa58df27f58870f83
+    sha256 after  99a97735c581126ce1cc481fc2adc1c4e81129f0672cf5baa58df27f58870f83 (restored, identical)
+M09 report_workspace.py:149,849 [the shell captured after rendering (controls rebuilt twice, rendered rows travel)]
+    run: tests/test_report_workspace.py -k "TC_3111_the_view_file" -> exit 1; 1 failed, 21 deselected in 1.35s
+    RED nodes: ['test_TC_3111_the_view_file_reopens_on_its_view']
+    verdict: KILLED (named node test_TC_3111_the_view_file_reopens_on_its_view)
+    sha256 before 99a97735c581126ce1cc481fc2adc1c4e81129f0672cf5baa58df27f58870f83
+    sha256 after  99a97735c581126ce1cc481fc2adc1c4e81129f0672cf5baa58df27f58870f83 (restored, identical)
+M10 report_workspace.py:811 [D5: the downloaded file ignores meta.view (opens on the default view)]
+    run: tests/test_report_workspace.py -k "TC_3111_the_view_file" -> exit 1; 1 failed, 21 deselected in 1.29s
+    RED nodes: ['test_TC_3111_the_view_file_reopens_on_its_view']
+    verdict: KILLED (named node test_TC_3111_the_view_file_reopens_on_its_view)
+    sha256 before 99a97735c581126ce1cc481fc2adc1c4e81129f0672cf5baa58df27f58870f83
+    sha256 after  99a97735c581126ce1cc481fc2adc1c4e81129f0672cf5baa58df27f58870f83 (restored, identical)
+M11 report_workspace.py:886 [C6: the print caption not visible without interaction]
+    run: tests/test_report_workspace.py -k "TC_3111_the_export_captions" -> exit 1; 1 failed, 21 deselected in 1.04s
+    RED nodes: ['test_TC_3111_the_export_captions_show_without_hover']
+    verdict: KILLED (named node test_TC_3111_the_export_captions_show_without_hover)
+    sha256 before 99a97735c581126ce1cc481fc2adc1c4e81129f0672cf5baa58df27f58870f83
+    sha256 after  99a97735c581126ce1cc481fc2adc1c4e81129f0672cf5baa58df27f58870f83 (restored, identical)
+M12 report_workspace.py:126 [the control bar (.controls / nav, the same element) dropped from the print rule]
+    run: tests/test_report_workspace.py -k "AT_3104" -> exit 1; 1 failed, 21 deselected in 1.22s
+    RED nodes: ['test_AT_3104_print_hides_the_controls_and_shows_the_filter_header']
+    verdict: KILLED (named node test_AT_3104_print_hides_the_controls_and_shows_the_filter_header)
+    sha256 before 99a97735c581126ce1cc481fc2adc1c4e81129f0672cf5baa58df27f58870f83
+    sha256 after  99a97735c581126ce1cc481fc2adc1c4e81129f0672cf5baa58df27f58870f83 (restored, identical)
+M13 report_workspace.py:823 [the beforeprint handler does not stamp the printed date]
+    run: tests/test_report_workspace.py -k "AT_3104" -> exit 1; 1 failed, 21 deselected in 1.27s
+    RED nodes: ['test_AT_3104_print_hides_the_controls_and_shows_the_filter_header']
+    verdict: KILLED (named node test_AT_3104_print_hides_the_controls_and_shows_the_filter_header)
+    sha256 before 99a97735c581126ce1cc481fc2adc1c4e81129f0672cf5baa58df27f58870f83
+    sha256 after  99a97735c581126ce1cc481fc2adc1c4e81129f0672cf5baa58df27f58870f83 (restored, identical)
+M14 report_workspace.py:141 [C14: #gantt{min-width:0!important} dropped (gantt wider than 794 px)]
+    run: tests/test_report_workspace.py -k "TC_3112" -> exit 1; 1 failed, 21 deselected in 1.28s
+    RED nodes: ['test_TC_3112_the_print_rules_hold']
+    verdict: KILLED (named node test_TC_3112_the_print_rules_hold)
+    sha256 before 99a97735c581126ce1cc481fc2adc1c4e81129f0672cf5baa58df27f58870f83
+    sha256 after  99a97735c581126ce1cc481fc2adc1c4e81129f0672cf5baa58df27f58870f83 (restored, identical)
+M15 report_workspace.py:124 [C7: @page{margin:0} dropped]
+    run: tests/test_report_workspace.py -k "TC_3112" -> exit 1; 1 failed, 21 deselected in 1.27s
+    RED nodes: ['test_TC_3112_the_print_rules_hold']
+    verdict: KILLED (named node test_TC_3112_the_print_rules_hold)
+    sha256 before 99a97735c581126ce1cc481fc2adc1c4e81129f0672cf5baa58df27f58870f83
+    sha256 after  99a97735c581126ce1cc481fc2adc1c4e81129f0672cf5baa58df27f58870f83 (restored, identical)
+M16 report_workspace.py:487 [the svg viewBox dropped: the print clips the timeline instead of scaling it]
+    run: tests/test_report_workspace.py -k "TC_3112" -> exit 1; 1 failed, 21 deselected in 1.27s
+    RED nodes: ['test_TC_3112_the_print_rules_hold']
+    verdict: KILLED (named node test_TC_3112_the_print_rules_hold)
+    sha256 before 99a97735c581126ce1cc481fc2adc1c4e81129f0672cf5baa58df27f58870f83
+    sha256 after  99a97735c581126ce1cc481fc2adc1c4e81129f0672cf5baa58df27f58870f83 (restored, identical)
+M17 report_workspace.py:128 [C7: the print shows 'of N' (a count over hidden tasks)]
+    run: tests/test_report_workspace.py -k "TC_3112" -> exit 1; 1 failed, 21 deselected in 1.22s
+    RED nodes: ['test_TC_3112_the_print_rules_hold']
+    verdict: KILLED (named node test_TC_3112_the_print_rules_hold)
+    sha256 before 99a97735c581126ce1cc481fc2adc1c4e81129f0672cf5baa58df27f58870f83
+    sha256 after  99a97735c581126ce1cc481fc2adc1c4e81129f0672cf5baa58df27f58870f83 (restored, identical)
+M18 report_workspace.py:784 [the CSV exports the full data]
+    run: tests/test_report_workspace.py -k "TC_3122" -> exit 1; 1 failed, 21 deselected in 1.32s
+    RED nodes: ['test_TC_3122_csv_and_json_hold_the_visible_rows_only']
+    verdict: KILLED (named node test_TC_3122_csv_and_json_hold_the_visible_rows_only)
+    sha256 before 99a97735c581126ce1cc481fc2adc1c4e81129f0672cf5baa58df27f58870f83
+    sha256 after  99a97735c581126ce1cc481fc2adc1c4e81129f0672cf5baa58df27f58870f83 (restored, identical)
+M19 report_workspace.py:758 [the ' formula guard dropped]
+    run: tests/test_report_workspace.py -k "TC_3122" -> exit 1; 1 failed, 21 deselected in 1.32s
+    RED nodes: ['test_TC_3122_csv_and_json_hold_the_visible_rows_only']
+    verdict: KILLED (named node test_TC_3122_csv_and_json_hold_the_visible_rows_only)
+    sha256 before 99a97735c581126ce1cc481fc2adc1c4e81129f0672cf5baa58df27f58870f83
+    sha256 after  99a97735c581126ce1cc481fc2adc1c4e81129f0672cf5baa58df27f58870f83 (restored, identical)
+M20 report_workspace.py:758 [prefix class '=' unguarded]
+    run: tests/test_report_workspace.py -k "TC_3122" -> exit 1; 1 failed, 21 deselected in 1.44s
+    RED nodes: ['test_TC_3122_csv_and_json_hold_the_visible_rows_only']
+    verdict: KILLED (named node test_TC_3122_csv_and_json_hold_the_visible_rows_only)
+    sha256 before 99a97735c581126ce1cc481fc2adc1c4e81129f0672cf5baa58df27f58870f83
+    sha256 after  99a97735c581126ce1cc481fc2adc1c4e81129f0672cf5baa58df27f58870f83 (restored, identical)
+M21 report_workspace.py:758 [prefix class '+' unguarded]
+    run: tests/test_report_workspace.py -k "TC_3122" -> exit 1; 1 failed, 21 deselected in 1.35s
+    RED nodes: ['test_TC_3122_csv_and_json_hold_the_visible_rows_only']
+    verdict: KILLED (named node test_TC_3122_csv_and_json_hold_the_visible_rows_only)
+    sha256 before 99a97735c581126ce1cc481fc2adc1c4e81129f0672cf5baa58df27f58870f83
+    sha256 after  99a97735c581126ce1cc481fc2adc1c4e81129f0672cf5baa58df27f58870f83 (restored, identical)
+M22 report_workspace.py:758 [prefix class '-' unguarded]
+    run: tests/test_report_workspace.py -k "TC_3122" -> exit 1; 1 failed, 21 deselected in 1.86s
+    RED nodes: ['test_TC_3122_csv_and_json_hold_the_visible_rows_only']
+    verdict: KILLED (named node test_TC_3122_csv_and_json_hold_the_visible_rows_only)
+    sha256 before 99a97735c581126ce1cc481fc2adc1c4e81129f0672cf5baa58df27f58870f83
+    sha256 after  99a97735c581126ce1cc481fc2adc1c4e81129f0672cf5baa58df27f58870f83 (restored, identical)
+M23 report_workspace.py:758 [prefix class '@' unguarded]
+    run: tests/test_report_workspace.py -k "TC_3122" -> exit 1; 1 failed, 21 deselected in 1.38s
+    RED nodes: ['test_TC_3122_csv_and_json_hold_the_visible_rows_only']
+    verdict: KILLED (named node test_TC_3122_csv_and_json_hold_the_visible_rows_only)
+    sha256 before 99a97735c581126ce1cc481fc2adc1c4e81129f0672cf5baa58df27f58870f83
+    sha256 after  99a97735c581126ce1cc481fc2adc1c4e81129f0672cf5baa58df27f58870f83 (restored, identical)
+M24 report_workspace.py:758 [prefix class TAB unguarded]
+    run: tests/test_report_workspace.py -k "TC_3122" -> exit 1; 1 failed, 21 deselected in 1.35s
+    RED nodes: ['test_TC_3122_csv_and_json_hold_the_visible_rows_only']
+    verdict: KILLED (named node test_TC_3122_csv_and_json_hold_the_visible_rows_only)
+    sha256 before 99a97735c581126ce1cc481fc2adc1c4e81129f0672cf5baa58df27f58870f83
+    sha256 after  99a97735c581126ce1cc481fc2adc1c4e81129f0672cf5baa58df27f58870f83 (restored, identical)
+M25 report_workspace.py:758 [prefix class CR unguarded]
+    run: tests/test_report_workspace.py -k "TC_3122" -> exit 1; 1 failed, 21 deselected in 1.33s
+    RED nodes: ['test_TC_3122_csv_and_json_hold_the_visible_rows_only']
+    verdict: KILLED (named node test_TC_3122_csv_and_json_hold_the_visible_rows_only)
+    sha256 before 99a97735c581126ce1cc481fc2adc1c4e81129f0672cf5baa58df27f58870f83
+    sha256 after  99a97735c581126ce1cc481fc2adc1c4e81129f0672cf5baa58df27f58870f83 (restored, identical)
+M26 report_workspace.py:758 [C13: plain numbers prefixed too]
+    run: tests/test_report_workspace.py -k "TC_3122" -> exit 1; 1 failed, 21 deselected in 1.36s
+    RED nodes: ['test_TC_3122_csv_and_json_hold_the_visible_rows_only']
+    verdict: KILLED (named node test_TC_3122_csv_and_json_hold_the_visible_rows_only)
+    sha256 before 99a97735c581126ce1cc481fc2adc1c4e81129f0672cf5baa58df27f58870f83
+    sha256 after  99a97735c581126ce1cc481fc2adc1c4e81129f0672cf5baa58df27f58870f83 (restored, identical)
+M27 report_workspace.py:778 [the CSV/JSON name a dropped dependency's title]
+    run: tests/test_report_workspace.py -k "TC_3122" -> exit 1; 1 failed, 21 deselected in 1.63s
+    RED nodes: ['test_TC_3122_csv_and_json_hold_the_visible_rows_only']
+    verdict: KILLED (named node test_TC_3122_csv_and_json_hold_the_visible_rows_only)
+    sha256 before 99a97735c581126ce1cc481fc2adc1c4e81129f0672cf5baa58df27f58870f83
+    sha256 after  99a97735c581126ce1cc481fc2adc1c4e81129f0672cf5baa58df27f58870f83 (restored, identical)
+M28 report_workspace.py:780 [the CSV/JSON carry notes while the notes section is off]
+    run: tests/test_report_workspace.py -k "TC_3122" -> exit 1; 1 failed, 21 deselected in 1.54s
+    RED nodes: ['test_TC_3122_csv_and_json_hold_the_visible_rows_only']
+    verdict: KILLED (named node test_TC_3122_csv_and_json_hold_the_visible_rows_only)
+    sha256 before 99a97735c581126ce1cc481fc2adc1c4e81129f0672cf5baa58df27f58870f83
+    sha256 after  99a97735c581126ce1cc481fc2adc1c4e81129f0672cf5baa58df27f58870f83 (restored, identical)
+M29 report_workspace.py:399 [the downloaded file's header does not say it is a filtered view]
+    run: tests/test_report_workspace.py -k "AT_3103" -> exit 1; 1 failed, 21 deselected in 1.43s
+    RED nodes: ['test_AT_3103_download_this_view_holds_only_the_filtered_tasks']
+    verdict: KILLED (named node test_AT_3103_download_this_view_holds_only_the_filtered_tasks)
+    sha256 before 99a97735c581126ce1cc481fc2adc1c4e81129f0672cf5baa58df27f58870f83
+    sha256 after  99a97735c581126ce1cc481fc2adc1c4e81129f0672cf5baa58df27f58870f83 (restored, identical)
+M30 report_workspace.py:736 [projects[] facts carried unchanged: they count dropped tasks]
+    run: tests/test_report_workspace.py -k "TC_3109" -> exit 1; 1 failed, 21 deselected in 1.33s
+    RED nodes: ['test_TC_3109_the_download_keeps_only_used_entries']
+    verdict: KILLED (named node test_TC_3109_the_download_keeps_only_used_entries)
+    sha256 before 99a97735c581126ce1cc481fc2adc1c4e81129f0672cf5baa58df27f58870f83
+    sha256 after  99a97735c581126ce1cc481fc2adc1c4e81129f0672cf5baa58df27f58870f83 (restored, identical)
+M31 report_workspace.py:702 [CR2-1: open carried from the source project]
+    run: tests/test_report_workspace.py -k "TC_3109" -> exit 1; 1 failed, 21 deselected in 1.53s
+    RED nodes: ['test_TC_3109_the_download_keeps_only_used_entries']
+    verdict: KILLED (named node test_TC_3109_the_download_keeps_only_used_entries)
+    sha256 before 99a97735c581126ce1cc481fc2adc1c4e81129f0672cf5baa58df27f58870f83
+    sha256 after  99a97735c581126ce1cc481fc2adc1c4e81129f0672cf5baa58df27f58870f83 (restored, identical)
+M32 report_workspace.py:703 [CR2-1: late carried from the source project]
+    run: tests/test_report_workspace.py -k "TC_3109" -> exit 1; 1 failed, 21 deselected in 1.53s
+    RED nodes: ['test_TC_3109_the_download_keeps_only_used_entries']
+    verdict: KILLED (named node test_TC_3109_the_download_keeps_only_used_entries)
+    sha256 before 99a97735c581126ce1cc481fc2adc1c4e81129f0672cf5baa58df27f58870f83
+    sha256 after  99a97735c581126ce1cc481fc2adc1c4e81129f0672cf5baa58df27f58870f83 (restored, identical)
+M33 report_workspace.py:703 [CR2-1: late counted as open]
+    run: tests/test_report_workspace.py -k "TC_3109" -> exit 1; 1 failed, 21 deselected in 1.34s
+    RED nodes: ['test_TC_3109_the_download_keeps_only_used_entries']
+    verdict: KILLED (named node test_TC_3109_the_download_keeps_only_used_entries)
+    sha256 before 99a97735c581126ce1cc481fc2adc1c4e81129f0672cf5baa58df27f58870f83
+    sha256 after  99a97735c581126ce1cc481fc2adc1c4e81129f0672cf5baa58df27f58870f83 (restored, identical)
+M34 report_workspace.py:704 [CR2-1: done carried from the source project]
+    run: tests/test_report_workspace.py -k "TC_3109" -> exit 1; 1 failed, 21 deselected in 1.69s
+    RED nodes: ['test_TC_3109_the_download_keeps_only_used_entries']
+    verdict: KILLED (named node test_TC_3109_the_download_keeps_only_used_entries)
+    sha256 before 99a97735c581126ce1cc481fc2adc1c4e81129f0672cf5baa58df27f58870f83
+    sha256 after  99a97735c581126ce1cc481fc2adc1c4e81129f0672cf5baa58df27f58870f83 (restored, identical)
+M35 report_workspace.py:705 [CR2-1: high carried from the source project]
+    run: tests/test_report_workspace.py -k "TC_3109" -> exit 1; 1 failed, 21 deselected in 1.55s
+    RED nodes: ['test_TC_3109_the_download_keeps_only_used_entries']
+    verdict: KILLED (named node test_TC_3109_the_download_keeps_only_used_entries)
+    sha256 before 99a97735c581126ce1cc481fc2adc1c4e81129f0672cf5baa58df27f58870f83
+    sha256 after  99a97735c581126ce1cc481fc2adc1c4e81129f0672cf5baa58df27f58870f83 (restored, identical)
+M36 report_workspace.py:705 [CR2-1: worst and momentum (server-derived) kept in the download]
+    run: tests/test_report_workspace.py -k "TC_3109" -> exit 1; 1 failed, 21 deselected in 1.32s
+    RED nodes: ['test_TC_3109_the_download_keeps_only_used_entries']
+    verdict: KILLED (named node test_TC_3109_the_download_keeps_only_used_entries)
+    sha256 before 99a97735c581126ce1cc481fc2adc1c4e81129f0672cf5baa58df27f58870f83
+    sha256 after  99a97735c581126ce1cc481fc2adc1c4e81129f0672cf5baa58df27f58870f83 (restored, identical)
+M37 report_workspace.py:710 [SD1: mentions travel while the notes section is off]
+    run: tests/test_report_workspace.py -k "TC_3110" -> exit 1; 1 failed, 21 deselected in 1.37s
+    RED nodes: ['test_TC_3110_notes_off_strips_the_notes']
+    verdict: KILLED (named node test_TC_3110_notes_off_strips_the_notes)
+    sha256 before 99a97735c581126ce1cc481fc2adc1c4e81129f0672cf5baa58df27f58870f83
+    sha256 after  99a97735c581126ce1cc481fc2adc1c4e81129f0672cf5baa58df27f58870f83 (restored, identical)
+M38 report_workspace.py:822 [CR2-2: clearing the hash of a downloaded view falls to the default view]
+    run: tests/test_report_workspace.py -k "TC_3111_the_view_file" -> exit 1; 1 failed, 21 deselected in 11.46s
+    RED nodes: ['test_TC_3111_the_view_file_reopens_on_its_view']
+    verdict: KILLED (named node test_TC_3111_the_view_file_reopens_on_its_view)
+    sha256 before 99a97735c581126ce1cc481fc2adc1c4e81129f0672cf5baa58df27f58870f83
+    sha256 after  99a97735c581126ce1cc481fc2adc1c4e81129f0672cf5baa58df27f58870f83 (restored, identical)
+M39 report_workspace.py:824 [CR2-3: the printed line stays after printing]
+    run: tests/test_report_workspace.py -k "TC_3112" -> exit 1; 1 failed, 21 deselected in 1.33s
+    RED nodes: ['test_TC_3112_the_print_rules_hold']
+    verdict: KILLED (named node test_TC_3112_the_print_rules_hold)
+    sha256 before 99a97735c581126ce1cc481fc2adc1c4e81129f0672cf5baa58df27f58870f83
+    sha256 after  99a97735c581126ce1cc481fc2adc1c4e81129f0672cf5baa58df27f58870f83 (restored, identical)
+M40 report_workspace.py:693 [CR2-3: the print control stamps the date itself (a second stamp path)]
+    run: tests/test_report_workspace.py -k "TC_3112" -> exit 1; 1 failed, 21 deselected in 1.21s
+    RED nodes: ['test_TC_3112_the_print_rules_hold']
+    verdict: KILLED (named node test_TC_3112_the_print_rules_hold)
+    sha256 before 99a97735c581126ce1cc481fc2adc1c4e81129f0672cf5baa58df27f58870f83
+    sha256 after  99a97735c581126ce1cc481fc2adc1c4e81129f0672cf5baa58df27f58870f83 (restored, identical)
+
+40/40 mutants killed
+exit 0

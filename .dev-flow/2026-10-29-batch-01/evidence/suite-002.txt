@@ -1,0 +1,72 @@
+# increment 002 suite (final, after review folds CR2-1/2/3 + SD1) — 2026-10-29T09:54:43-06:00 — worktree report-proto, HEAD 0b0eeff + working tree
+# sha256 taskboard/report_workspace.py 99a97735c581126ce1cc481fc2adc1c4e81129f0672cf5baa58df27f58870f83
+$ env -u NO_COLOR python -m pytest .scratch/test_import_probe.py -s -q -p no:cacheprovider
+
+taskboard.__file__ = C:\Users\jjgh8\Github\taskboard-wt\report-proto\taskboard\__init__.py
+.
+1 passed in 0.02s
+$ env -u NO_COLOR TASKBOARD_REQUIRE_BROWSER=1 python -m pytest tests/test_report_workspace.py tests/test_report_html.py tests/test_report.py -v -p no:cacheprovider
+The event loop scope for asynchronous fixtures will default to the fixture caching scope. Future versions of pytest-asyncio will default the loop scope for asynchronous fixtures to function scope. Set the default fixture loop scope explicitly in order to avoid unexpected behavior in the future. Valid fixture loop scopes are: "function", "class", "module", "package", "session"
+
+============================= test session starts =============================
+platform win32 -- Python 3.12.7, pytest-8.3.4, pluggy-1.6.0 -- C:\Users\jjgh8\anaconda3\python.exe
+rootdir: C:\Users\jjgh8\Github\taskboard-wt\report-proto
+configfile: pyproject.toml
+plugins: anyio-4.2.0, asyncio-0.25.0, cov-7.1.0, textual-snapshot-1.1.0, timeout-2.3.1, syrupy-4.8.0
+asyncio: mode=Mode.AUTO, asyncio_default_fixture_loop_scope=None
+collecting ... collected 52 items
+
+tests/test_report_workspace.py::test_AT_3102_filters_and_the_hash_round_trip PASSED [  1%]
+tests/test_report_workspace.py::test_TC_3105_the_bar_is_native_and_counted PASSED [  3%]
+tests/test_report_workspace.py::test_TC_3106_filters_follow_the_truth_table[projects] PASSED [  5%]
+tests/test_report_workspace.py::test_TC_3106_filters_follow_the_truth_table[status] PASSED [  7%]
+tests/test_report_workspace.py::test_TC_3106_filters_follow_the_truth_table[people] PASSED [  9%]
+tests/test_report_workspace.py::test_TC_3106_filters_follow_the_truth_table[classes] PASSED [ 11%]
+tests/test_report_workspace.py::test_TC_3106_filters_follow_the_truth_table[dates] PASSED [ 13%]
+tests/test_report_workspace.py::test_TC_3106_filters_follow_the_truth_table[search] PASSED [ 15%]
+tests/test_report_workspace.py::test_TC_3106_the_edges_of_the_table PASSED [ 17%]
+tests/test_report_workspace.py::test_TC_3107_a_hostile_hash_is_dropped PASSED [ 19%]
+tests/test_report_workspace.py::test_TC_3108_reset_restores_the_defaults PASSED [ 21%]
+tests/test_report_workspace.py::test_TC_3116_offline_themes_and_phone_width PASSED [ 23%]
+tests/test_report_workspace.py::test_TC_3125_the_page_follows_the_status_field PASSED [ 25%]
+tests/test_report_workspace.py::test_the_page_shell_holds_no_board_text PASSED [ 26%]
+tests/test_report_workspace.py::test_AT_3103_download_this_view_holds_only_the_filtered_tasks PASSED [ 28%]
+tests/test_report_workspace.py::test_TC_3109_the_download_keeps_only_used_entries PASSED [ 30%]
+tests/test_report_workspace.py::test_TC_3110_notes_off_strips_the_notes PASSED [ 32%]
+tests/test_report_workspace.py::test_TC_3111_the_view_file_reopens_on_its_view PASSED [ 34%]
+tests/test_report_workspace.py::test_TC_3111_the_export_captions_show_without_hover PASSED [ 36%]
+tests/test_report_workspace.py::test_AT_3104_print_hides_the_controls_and_shows_the_filter_header PASSED [ 38%]
+tests/test_report_workspace.py::test_TC_3112_the_print_rules_hold PASSED [ 40%]
+tests/test_report_workspace.py::test_TC_3122_csv_and_json_hold_the_visible_rows_only PASSED [ 42%]
+tests/test_report_html.py::test_TC_3101_extract_is_json_and_holds_every_fact PASSED [ 44%]
+tests/test_report_html.py::test_TC_3101_extract_never_writes_a_board PASSED [ 46%]
+tests/test_report_html.py::test_TC_3102_due_words_are_the_cli_reports PASSED [ 48%]
+tests/test_report_html.py::test_TC_3103_project_scope_keeps_one_project PASSED [ 50%]
+tests/test_report_html.py::test_TC_3103_an_unknown_project_key_is_refused PASSED [ 51%]
+tests/test_report_html.py::test_TC_3104_renderers_read_the_dict_only PASSED [ 53%]
+tests/test_report_html.py::test_TC_3115_embed_json_and_notes_are_inert PASSED [ 55%]
+tests/test_report_html.py::test_TC_3123_the_slug_is_the_cli_reports PASSED [ 57%]
+tests/test_report_html.py::test_TC_3123_write_reports_lands_in_the_folder_and_overwrites PASSED [ 59%]
+tests/test_report_html.py::test_TC_3124_extract_keeps_only_http_urls PASSED [ 61%]
+tests/test_report_html.py::test_TC_3125_one_status_rule PASSED           [ 63%]
+tests/test_report_html.py::test_PQ6_spike_an_async_test_checks_the_page_in_a_worker_thread PASSED [ 65%]
+tests/test_report.py::test_generating_a_report_never_writes_the_board PASSED [ 67%]
+tests/test_report.py::test_the_report_lands_beside_its_own_board PASSED  [ 69%]
+tests/test_report.py::test_the_document_needs_nothing_from_the_network PASSED [ 71%]
+tests/test_report.py::test_the_counts_are_the_boards_real_counts PASSED  [ 73%]
+tests/test_report.py::test_a_scoped_report_covers_only_that_project PASSED [ 75%]
+tests/test_report.py::test_the_horizon_buckets_add_up_to_the_tasks PASSED [ 76%]
+tests/test_report.py::test_work_with_no_recorded_date_reads_unaged_never_zero PASSED [ 78%]
+tests/test_report.py::test_a_closed_project_is_never_judged PASSED       [ 80%]
+tests/test_report.py::test_the_document_states_no_forecast PASSED        [ 82%]
+tests/test_report.py::test_the_document_never_addresses_or_grades_the_reader PASSED [ 84%]
+tests/test_report.py::test_no_figure_carries_meaning_in_hue_alone PASSED [ 86%]
+tests/test_report.py::test_the_horizon_is_a_table_as_well_as_a_bar PASSED [ 88%]
+tests/test_report.py::test_a_hostile_title_cannot_break_out_into_markup PASSED [ 90%]
+tests/test_report.py::test_the_cli_writes_a_report_and_says_where PASSED [ 92%]
+tests/test_report.py::test_the_cli_scopes_to_a_project_and_refuses_an_unknown_one PASSED [ 94%]
+tests/test_report.py::test_the_present_key_is_in_the_seat PASSED         [ 96%]
+tests/test_report.py::test_pressing_R_opens_the_presentation_read_only PASSED [ 98%]
+tests/test_report.py::test_an_empty_board_still_produces_a_document PASSED [100%]
+
+============================= 52 passed in 12.93s =============================

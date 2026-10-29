@@ -1,5 +1,6 @@
 """The interactive workspace report, driven in headless Chromium (batch 2026-10-29-batch-01,
-increment 001: HLR-3102, LLR-3102.1..3, LLR-3106.2's workspace arm, LLR-3101.1's status).
+increment 001: HLR-3102, LLR-3102.1..3, LLR-3106.2's workspace arm, LLR-3101.1's status;
+increment 002: HLR-3103, HLR-3104, LLR-3103.1..3, LLR-3104.1 — export this view).
 
 Black-box: the page is written by `report_html.write_reports` (the call the `H` export
 makes), opened from disk, and driven by clicks, key presses and typed values; the
@@ -12,8 +13,12 @@ One Chromium per module, a fresh context per test, a 10 s default timeout per ac
 """
 from __future__ import annotations
 
+import csv
+import io
 import json
 import re
+from collections import Counter
+from datetime import date
 
 import pytest
 import report_fixture as F
@@ -219,8 +224,9 @@ def test_TC_3105_the_bar_is_native_and_counted(ctx, page_file):
             + [["INPUT", "f-from"], ["INPUT", "f-to"], ["INPUT", "f-q"]]
             + [["BUTTON", f"sections:{s}"] for s in ("gantt", "table", "notes", "milestones")]
             + [["BUTTON", f"zoom:{z}"] for z in ("fit", "day", "week", "month")]
-            + [["BUTTON", "dl-csv"], ["BUTTON", "dl-json"]])
-    assert len(want) == 43
+            + [["BUTTON", "print"], ["BUTTON", "dl-view"], ["BUTTON", "dl-csv"],
+               ["BUTTON", "dl-json"]])
+    assert len(want) == 45
     assert _tab_order(page, len(want)) == want
 
     def pressed():
@@ -439,3 +445,536 @@ def test_the_page_shell_holds_no_board_text(page_file):
     for word in ("Personal", "Storefront relaunch", "Ana Ruiz", "Launch", "qzT1", "qzP1",
                  "Pack kitchen"):
         assert word not in shell, word
+
+
+
+# ==== increment 002: export this view (HLR-3103, HLR-3104) ======================================
+#
+# The downloads are caught with `expect_download` and saved under `tmp_path`; the oracle reads
+# the SAVED bytes. Every dropped item is searched for in its raw and its JSON-escaped form
+# (the form the page's script writes: a JSON string with `<`, `>`, `&` as \u escapes).
+
+PRINT_CAPTION = "Print / Save as PDF — a PDF of what is shown; this HTML file still holds every task"
+VIEW_CAPTION = "Download this view — a new HTML file with only these tasks"
+TOKENS = ("qzP1", "qzB1", "qzU1", "qzM1", "qzT1", "qzL1", "qzN1", "qzK1")
+CARMEN_VIEW = {"client-a:tst9", "client-a:tsp2", "course:tvd1", "course:tcm1"}
+NOT_SIDE = F.DEFAULT_SHOWN - {"#3:tqzK1"}
+DATA_RE = re.compile(r'<script id="board-data" type="application/json">(.*?)</script>', re.S)
+STUB_PRINT = "(() => { window.__prints = 0; window.print = () => { window.__prints += 1; }; })()"
+
+
+def escaped(s: str) -> str:
+    return (json.dumps(s, ensure_ascii=False)[1:-1]
+            .replace("<", "\\u003c").replace(">", "\\u003e").replace("&", "\\u0026"))
+
+
+def absent(raw: str, s: str) -> bool:
+    return s not in raw and escaped(s) not in raw
+
+
+def fetch(page, selector, folder):
+    """Press a download control; the saved file and the name the page suggested."""
+    with page.expect_download() as info:
+        page.click(selector)
+    dl = info.value
+    path = folder / f"{len(list(folder.iterdir()))}-{dl.suggested_filename}"
+    dl.save_as(path)
+    return path, dl.suggested_filename
+
+
+def embedded(raw: str) -> tuple:
+    found = DATA_RE.findall(raw)
+    assert len(found) == 1, f"{len(found)} data elements"
+    return found[0], json.loads(found[0])
+
+
+def dropped_strings(d: dict, keep: set) -> list:
+    """Every board-derived string of an item the view drops — task keys (quoted), titles,
+    URLs and notes, and the keys and names of projects, boards, people and classes no kept
+    task uses — minus any string a kept item or the page's constant text also holds."""
+    kept = [t for t in d["tasks"] if t["key"] in keep]
+    used = {"projects": {t["project"] for t in kept}, "boards": {t["board"] for t in kept},
+            "people": {h for t in kept for h in t["mentions"]},
+            "marks": {t["mark"] for t in kept if t["mark"]}}
+    blob = [report_workspace.CSS, report_workspace.JS, report_workspace.SHELL]
+    out = []
+    for t in d["tasks"]:
+        if t["key"] in keep:
+            blob.append(json.dumps(t, ensure_ascii=False))
+        else:
+            out += [f'"{t["key"]}"', t["title"], t["notes_text"], *t["urls"]]
+    for kind, idk in (("projects", "key"), ("boards", "key"), ("people", "id"), ("marks", "key")):
+        for x in d[kind]:
+            if x[idk] in used[kind]:
+                blob.append(json.dumps(x, ensure_ascii=False))
+            else:
+                out += [f'"{x[idk]}"', x["name"]]
+    text = "\n".join(blob)
+    return [s for s in out if s and s not in text]
+
+
+def dangling(d2: dict) -> list:
+    keys = {t["key"] for t in d2["tasks"]}
+    return [k for t in d2["tasks"] for k in t["deps"] + t["chain"] if k not in keys]
+
+
+def open_card_and_tip(page, key: str):
+    page.click(f'#tbody tr[data-key="{key}"]')
+    page.dispatch_event(f'#gantt .gbar[data-key="{key}"]', "mousemove",
+                        {"clientX": 200, "clientY": 200})
+    assert page.is_visible("#card")
+    assert page.eval_on_selector("#tt", "e => getComputedStyle(e).display") == "block"
+
+
+PRINT_STATE = """() => {
+    const cs = e => getComputedStyle(e);
+    const controls = [...document.querySelectorAll('button, input, select, textarea, summary')]
+        .filter(e => !e.closest('thead'));
+    const wrap = document.querySelector('.gantt-wrap').getBoundingClientRect();
+    return {
+        visible: controls.filter(e => e.getClientRects().length > 0)
+            .map(e => e.id || (e.dataset.group + ':' + e.dataset.value)),
+        total: controls.length,
+        nav: cs(document.querySelector('nav')).display,
+        card: cs(document.getElementById('card')).display,
+        tt: cs(document.getElementById('tt')).display,
+        header: cs(document.getElementById('view-header')).display,
+        headerText: document.getElementById('view-header').innerText,
+        rows: [...document.querySelectorAll('#tbody tr')].map(e => cs(e).breakInside),
+        cards: [...document.querySelectorAll('.note, .ms')].map(e => cs(e).breakInside),
+        bodyPad: cs(document.body).paddingTop,
+        text: document.body.innerText,
+        docWidth: document.documentElement.scrollWidth,
+        gantt: document.getElementById('gantt').getBoundingClientRect().width,
+        bars: document.querySelectorAll('#gantt .gbar').length,
+        barsOut: [...document.querySelectorAll('#gantt .gbar')]
+            .filter(b => b.getBoundingClientRect().right > wrap.right + 1).length,
+    };
+}"""
+
+PRINT_RULES = """() => {
+    const out = [];
+    const walk = (rules, print) => { for(const r of rules){
+        if(r.media){ walk(r.cssRules, print || r.media.mediaText === 'print'); continue; }
+        if(print) out.push(r.cssText); } };
+    for(const s of document.styleSheets) walk(s.cssRules, false);
+    return out;
+}"""
+
+
+# ---- AT-3103 -----------------------------------------------------------------------------------
+
+def test_AT_3103_download_this_view_holds_only_the_filtered_tasks(ctx, page_file, data, tmp_path):
+    """AT-3103 (HLR-3103): with the hidden board's project unchecked and one person filter
+    on, "Download this view" saves a file whose data holds exactly the shown tasks; no
+    dropped project, board, person, class, task, URL, note or key is in its bytes, raw or
+    JSON-escaped; a kept task's dependency on a dropped one is cut; re-opened, the file
+    shows the same rows (as a multiset) on the same view, says it is a filtered view with
+    its export date, and logs no error and fetches nothing."""
+    o = open_page(ctx, page_file)
+    page = o.page
+    open_projects(page)
+    box(page, "#3:pside").uncheck()
+    chip(page, "people", "carmen.vega").click()
+    shown = shown_ids(page)
+    assert set(shown) == CARMEN_VIEW == expected(
+        data, p=set(F.PROJECT_KEYS) - {"#3:pside"}, u=("carmen.vega",))
+    path, name = fetch(page, "#dl-view", tmp_path)
+    assert re.fullmatch(r"workspace-view-\d{4}-\d{2}-\d{2}\.html", name)
+    raw = path.read_text(encoding="utf-8")
+    _, d2 = embedded(raw)
+
+    assert Counter(t["key"] for t in d2["tasks"]) == shown
+    for token in TOKENS:
+        assert token not in raw, token
+    gone = dropped_strings(data, CARMEN_VIEW)
+    assert len(gone) > 80
+    literals = ["Personal", "Taxes 2026", "Move apartment", "Ana Ruiz", "Luis Prado",
+                F.HOSTILE_PERSON, F.HOSTILE_NAME, F.HOSTILE_TITLE, F.SIDE_BOARD_NAME,
+                "FAQ rewrite", "Delivery", "Billing", "Launch", "ana.ruiz",
+                "https://staging.example.test/storefront", '"client-a:tsp1"']
+    for s in gone + literals:
+        assert absent(raw, s), s
+    assert dangling(d2) == []
+    before = next(t for t in data["tasks"] if t["key"] == "client-a:tsp2")
+    after = next(t for t in d2["tasks"] if t["key"] == "client-a:tsp2")
+    assert before["deps"] == ["client-a:tsp1"] and after["deps"] == []
+    assert [t["title"] for t in d2["tasks"]].count(F.DOLLAR_TITLE) == 1
+    assert d2["meta"]["scope"]["boards"] == ["Client A", "Course"]
+    assert [p["id"] for p in d2["people"]] == ["carmen.vega"] and d2["marks"] == []
+
+    again = open_page(ctx, path)
+    rp = again.page
+    assert shown_ids(rp) == shown
+    assert chip(rp, "people", "carmen.vega").get_attribute("aria-pressed") == "true"
+    assert rp.text_content("#view-summary") == d2["meta"]["view"]["summary"] == "People: Carmen Vega"
+    origin = rp.text_content("#view-origin")
+    assert rp.is_visible("#view-origin") and origin.startswith("A filtered view, exported ")
+    assert d2["meta"]["view"]["exported"] in origin
+    assert rp.text_content("#scope-line") == "All loaded boards (2): Client A, Course"
+    assert o.problems() == [] and again.problems() == []
+
+
+# ---- TC-3109 -----------------------------------------------------------------------------------
+
+def test_TC_3109_the_download_keeps_only_used_entries(ctx, page_file, data, tmp_path):
+    """TC-3109 (LLR-3103.1, D2/D3): the downloaded data holds the shown tasks and only the
+    projects, boards, people and classes they use (0 unused, 0 dangling keys); the JSON
+    holds no raw `<`, `>`, `&`; the `$&` / `$'` title arrives once, as text, and the data is
+    still exactly the kept set (a `String.replace` composition would re-insert the shell)."""
+    o = open_page(ctx, page_file)
+    page = o.page
+    open_projects(page)
+    box(page, "#3:pside").uncheck()
+    assert set(shown_ids(page)) == NOT_SIDE
+    path, _ = fetch(page, "#dl-view", tmp_path)
+    raw = path.read_text(encoding="utf-8")
+    text, d2 = embedded(raw)
+    assert not {"<", ">", "&"} & set(text)
+    ids = [t["key"] for t in d2["tasks"]]
+    assert len(ids) == len(NOT_SIDE) == 32 and set(ids) == NOT_SIDE
+    tasks = d2["tasks"]
+    assert [p["key"] for p in d2["projects"]] == [
+        k for k in F.PROJECT_KEYS if k in {t["project"] for t in tasks}]
+    assert {t["project"] for t in tasks} == {p["key"] for p in d2["projects"]}
+    assert [b["key"] for b in d2["boards"]] == ["personal", "client-a", "course"]
+    assert [p["id"] for p in d2["people"]] == ["ana.ruiz", "luis.prado", "carmen.vega", "zed.hostile"]
+    assert {h for t in tasks for h in t["mentions"]} == {p["id"] for p in d2["people"]}
+    assert [m["key"] for m in d2["marks"]] == ["delivery", "billing", "launch"]
+    assert {t["mark"] for t in tasks if t["mark"]} == {m["key"] for m in d2["marks"]}
+    assert dangling(d2) == []
+    for token in TOKENS:
+        assert token not in raw, token
+    for s in dropped_strings(data, NOT_SIDE):
+        assert absent(raw, s), s
+    assert [t["title"] for t in tasks].count(F.DOLLAR_TITLE) == 1
+    assert raw.count(escaped(F.DOLLAR_TITLE)) == 1 and raw.count('id="board-data"') == 1
+    assert d2["meta"]["scope"] == {"kind": "all", "project": None,
+                                   "boards": ["Personal", "Client A", "Course"]}
+    # every kept project keeps all its non-archived tasks here, so its counts equal the
+    # extraction's; worst and momentum (server-derived) leave the download
+    source = {p["key"]: p for p in data["projects"]}
+    assert d2["projects"]
+    for p in d2["projects"]:
+        assert p["worst"] is None and p["momentum"] is None
+        assert {**p, "worst": 0, "momentum": 0} == {**source[p["key"]], "worst": 0, "momentum": 0}
+
+    # a view hiding part of each kept project: its facts describe the kept tasks only
+    f = open_page(ctx, page_file, hash="v=1&s=open,late&u=ana.ruiz,luis.prado")
+    fpath, _ = fetch(f.page, "#dl-view", tmp_path)
+    _, d3 = embedded(fpath.read_text(encoding="utf-8"))
+    assert {t["key"] for t in d3["tasks"]} == {
+        "personal:tmv2", "personal:ttx1", "client-a:tst2", "client-a:tsp1"}
+    facts = ("open", "late", "done", "high", "worst", "momentum")
+    got = {p["key"]: tuple(p[k] for k in facts) for p in d3["projects"]}
+    assert got == {
+        "personal:pmove": (1, 1, 0, 1, None, None),
+        "personal:ptax": (1, 0, 0, 0, None, None),
+        "client-a:prel": (1, 0, 0, 1, None, None),
+        "client-a:pdocs": (1, 0, 0, 0, None, None),
+    }
+    assert tuple(source["client-a:prel"][k] for k in facts)[:4] == (10, 2, 1, 4)
+    assert tuple(source["personal:pmove"][k] for k in facts)[:4] == (4, 1, 1, 2)
+    assert o.problems() == [] and f.problems() == []
+
+
+# ---- TC-3110 -----------------------------------------------------------------------------------
+
+def test_TC_3110_notes_off_strips_the_notes(ctx, page_file, tmp_path):
+    """TC-3110 (LLR-3103.1, PDR C2/PA2, security SD1): with the notes section on, the notes
+    and their mentions travel (the kept hidden-board task's `qzN1` note included); with it
+    off, every `notes_html` AND every `notes_text` is empty and no note text is in the file,
+    the tasks all stay; the mentions go too, but for the pressed people filter's own, and
+    `people` keeps only the persons still referenced (the CSV/JSON mentions follow)."""
+    o = open_page(ctx, page_file)
+    page = o.page
+    path, _ = fetch(page, "#dl-view", tmp_path)
+    raw_on = path.read_text(encoding="utf-8")
+    _, on = embedded(raw_on)
+    assert sum(1 for t in on["tasks"] if t["notes_html"]) == 13
+    assert sum(1 for t in on["tasks"] if t["notes_text"]) == 13 and "qzN1" in raw_on
+    chip(page, "sections", "notes").click()
+    path, _ = fetch(page, "#dl-view", tmp_path)
+    raw = path.read_text(encoding="utf-8")
+    _, off = embedded(raw)
+    assert len(off["tasks"]) == len(F.DEFAULT_SHOWN) == 33
+    assert [t for t in off["tasks"] if t["notes_html"] or t["notes_text"]] == []
+    for s in ("qzN1", "narrates once the script settles", "still missing boxes", "scanner app works"):
+        assert absent(raw, s), s
+    assert sum(len(t["mentions"]) for t in on["tasks"]) > 0 and len(on["people"]) == 5
+    assert [t for t in off["tasks"] if t["mentions"]] == [] and off["people"] == []
+    for s in ("Ana Ruiz", "Luis Prado", "Una qzU1", F.HOSTILE_PERSON, "ana.ruiz", "una.qz"):
+        assert absent(raw, s), s
+
+    pressed = open_page(ctx, page_file, hash="v=1&u=ana.ruiz&sec=gantt,table,milestones")
+    path, _ = fetch(pressed.page, "#dl-view", tmp_path)
+    raw = path.read_text(encoding="utf-8")
+    _, ana = embedded(raw)
+    assert {t["key"]: t["mentions"] for t in ana["tasks"]} == {
+        "personal:ttx1": ["ana.ruiz"], "client-a:tst2": ["ana.ruiz"], "client-a:tsp1": ["ana.ruiz"]}
+    assert [p["id"] for p in ana["people"]] == ["ana.ruiz"]
+    assert absent(raw, "Luis Prado") and absent(raw, "luis.prado")
+    again = open_page(ctx, path)
+    assert chip(again.page, "people", "ana.ruiz").get_attribute("aria-pressed") == "true"
+    assert set(shown_ids(again.page)) == {"personal:ttx1", "client-a:tst2", "client-a:tsp1"}
+    cpath, _ = fetch(pressed.page, "#dl-csv", tmp_path)
+    jpath, _ = fetch(pressed.page, "#dl-json", tmp_path)
+    assert {r["mentions"] for r in read_csv(cpath)} == {"'@ana.ruiz"}
+    assert {r["mentions"] for r in json.loads(jpath.read_text(encoding="utf-8"))["tasks"]} == {"@ana.ruiz"}
+    assert "luis.prado" not in cpath.read_text(encoding="utf-8")
+    assert o.problems() == [] and pressed.problems() == [] and again.problems() == []
+
+
+# ---- TC-3111 -----------------------------------------------------------------------------------
+
+VIEW_HASH = ("v=1&p=client-a%3Apdocs,course%3Apvid,course%3Apcom&s=open,late,done,archived"
+             "&sec=gantt,table&z=week")
+VIEW_SET = {"client-a:tsp1", "client-a:tsp2", "client-a:tsp3", "course:tvd1", "course:tvd2",
+            "course:tvd3", "course:tvd4", "course:tvd5", "course:tvd6", "course:tcm1",
+            "course:tcm2"}
+
+
+def test_TC_3111_the_view_file_reopens_on_its_view(ctx, page_file, data, tmp_path):
+    """TC-3111 (LLR-3103.2, D5): the saved file is `workspace-view-<date>.html`; opened,
+    it shows the source's rows as a multiset, its controls built once (no duplicate chip
+    or box) in the source's states, its header names the summary and the export date;
+    downloading again from it gives the same data; a `meta.view` edited to name an unknown
+    project is whitelisted on restore; a view keeping nothing opens and says so."""
+    o = open_page(ctx, page_file, hash=VIEW_HASH)
+    page = o.page
+    shown = shown_ids(page)
+    assert set(shown) == VIEW_SET == expected(
+        data, p={"client-a:pdocs", "course:pvid", "course:pcom"},
+        s=("open", "late", "done", "archived"))
+    path, name = fetch(page, "#dl-view", tmp_path)
+    assert re.fullmatch(r"workspace-view-\d{4}-\d{2}-\d{2}\.html", name)
+    assert name == f"workspace-view-{date.today().isoformat()}.html"
+    raw = path.read_text(encoding="utf-8")
+    _, d2 = embedded(raw)
+    mv = d2["meta"]["view"]
+    assert mv["exported"] == date.today().isoformat()
+    assert mv["state"] == "v=1&s=open,late,done,archived&sec=gantt,table&z=week"
+
+    again = open_page(ctx, path)
+    rp = again.page
+    assert shown_ids(rp) == shown
+    st = controls_state(rp)
+    want_chips = 4 + len(d2["people"]) + len(d2["marks"]) + 4 + 4
+    assert len(st["chips"]) == want_chips == 4 + 0 + 1 + 4 + 4    # notes off, no people filter: no person (SD1)
+    assert st["boxes"] == [["client-a:pdocs", True], ["course:pvid", True], ["course:pcom", True]]
+    pressed = {(g, v) for g, v, p in st["chips"] if p == "true"}
+    assert ("status", "archived") in pressed and ("zoom", "week") in pressed
+    assert ("sections", "notes") not in pressed and st["sections"] == [False, False, True, True]
+    assert st["summary"] == mv["summary"] == "Status: open, late, done, archived"
+    assert mv["exported"] in rp.text_content("#view-origin")
+    rp.evaluate("location.hash = ''")          # CR2-2: back to the file's own view
+    rp.wait_for_function("location.hash !== ''")
+    assert shown_ids(rp) == shown
+    assert ("status", "archived") in {(g, v) for g, v, p in controls_state(rp)["chips"] if p == "true"}
+
+    path3, _ = fetch(rp, "#dl-view", tmp_path)
+    _, d3 = embedded(path3.read_text(encoding="utf-8"))
+    for k in ("tasks", "projects", "boards", "people", "marks"):
+        assert d3[k] == d2[k], k
+    assert d3["meta"]["view"]["state"] == mv["state"]
+
+    edited = json.loads(json.dumps(d2))
+    edited["meta"]["view"]["state"] = "v=1&p=ghost%3Aqq,course%3Apcom&s=open,late,done,archived"
+    text, _ = embedded(raw)
+    path4 = tmp_path / "edited-view.html"
+    path4.write_text(raw.replace(text, report_html.embed_json(edited)), encoding="utf-8")
+    ed = open_page(ctx, path4)
+    assert set(shown_ids(ed.page)) == {"course:tcm1", "course:tcm2"}
+    assert [b for b in controls_state(ed.page)["boxes"] if b[1]] == [["course:pcom", True]]
+
+    empty = open_page(ctx, page_file, hash="v=1&s=")
+    path5, _ = fetch(empty.page, "#dl-view", tmp_path)
+    _, d5 = embedded(path5.read_text(encoding="utf-8"))
+    assert d5["tasks"] == [] and d5["people"] == [] and d5["boards"] == []
+    nothing = open_page(ctx, path5)
+    assert shown_ids(nothing.page) == {} and nothing.page.is_visible("#tempty")
+    assert nothing.page.is_visible("#view-origin")
+    for x in (o, again, ed, empty, nothing):
+        assert x.problems() == []
+
+
+def test_TC_3111_the_export_captions_show_without_hover(browser, page_file):
+    """TC-3111's label arm (LLR-3103.2/3103.3, PDR C6): at 1366 and 390 px, light and dark,
+    each export control's caption is on the page verbatim and visible beside it with no
+    hover, inside the viewport's width; the CSV and JSON labels say "visible rows only"."""
+    for width, scheme in ((1366, "dark"), (1366, "light"), (390, "dark"), (390, "light")):
+        ctx = new_context(browser, scheme=scheme, viewport=(width, 900))
+        try:
+            o = open_page(ctx, page_file)
+            page = o.page
+            assert page.text_content("#f-export .lbl") == "Export this view"
+            for sel, caption in (("#x-print", PRINT_CAPTION), ("#x-view", VIEW_CAPTION)):
+                assert page.text_content(sel) == caption
+                assert page.inner_text(sel) == caption
+                cap = page.locator(f"{sel} .cap")
+                assert cap.is_visible()
+                b = cap.bounding_box()
+                assert b["width"] > 0 and b["x"] + b["width"] <= width
+            for sel in ("#dl-csv", "#dl-json"):
+                assert page.text_content(sel).endswith("visible rows only")
+                assert page.locator(sel).is_visible()
+            assert o.problems() == []
+        finally:
+            ctx.close()
+
+
+# ---- AT-3104 -----------------------------------------------------------------------------------
+
+def test_AT_3104_print_hides_the_controls_and_shows_the_filter_header(ctx, page_file):
+    """AT-3104 (HLR-3104): with no filter the header says "all tasks"; with one filter on,
+    the task card and the tooltip open and `beforeprint` dispatched, in print media every
+    control, the card and the tooltip are gone (0 visible), the header shows the filter
+    summary, the generated date and the printed date, rows and cards never split, the
+    gantt fits the page; "Print / Save as PDF" calls `window.print` once per press."""
+    o = open_page(ctx, page_file)
+    page = o.page
+    assert "all tasks" in page.text_content("#view-summary")
+    chip(page, "people", "ana.ruiz").click()
+    page.evaluate(STUB_PRINT)
+    page.click("#print")
+    assert page.evaluate("window.__prints") == 1
+    page.click("#print")
+    assert page.evaluate("window.__prints") == 2
+    page.evaluate("(() => { const e = document.getElementById('print-line');"
+                  " e.hidden = true; e.textContent = ''; })()")
+    open_card_and_tip(page, "client-a:tst2")
+    page.evaluate("window.dispatchEvent(new Event('beforeprint'))")
+    page.emulate_media(media="print")
+    st = page.evaluate(PRINT_STATE)
+    assert st["total"] >= 45 and st["visible"] == []
+    assert st["nav"] == st["card"] == st["tt"] == "none"
+    assert st["header"] == "block"
+    head = st["headerText"]
+    assert "People: Ana Ruiz" in head and "Generated 2026-10-29" in head
+    assert f"Printed {date.today().isoformat()}" in head
+    assert st["rows"] and set(st["rows"]) == {"avoid"}
+    assert st["cards"] and set(st["cards"]) == {"avoid"}
+    assert st["gantt"] <= 1366 and st["docWidth"] <= 1366
+    assert o.problems() == []
+
+
+# ---- TC-3112 -----------------------------------------------------------------------------------
+
+def test_TC_3112_the_print_rules_hold(browser, page_file):
+    """TC-3112 (LLR-3104.1, PDR C7/C14): the print stylesheet holds the three full-gantt rules
+    and `@page { margin: 0 }` with a body padding; at a printed-page viewport of 794 px, on
+    the day zoom (a timeline far wider than the page), the gantt's width and the page's
+    scroll width are <= 794 and every bar lies inside the printed figure; with a project
+    hidden, the printed text names it nowhere and every printed count is over kept tasks."""
+    ctx = new_context(browser, viewport=(794, 1123))
+    try:
+        o = open_page(ctx, page_file, hash="v=1&z=day")
+        page = o.page
+        open_projects(page)
+        box(page, "personal:ptax").uncheck()
+        page.evaluate(STUB_PRINT)
+        page.click("#print")
+        assert page.evaluate("window.__prints") == 1
+        assert page.is_hidden("#print-line")    # the stamp is beforeprint's, not the button's
+        assert page.eval_on_selector("#gantt", "e => e.scrollWidth") > 794 * 2
+        open_card_and_tip(page, "client-a:tst2")
+        page.evaluate("window.dispatchEvent(new Event('beforeprint'))")
+        page.emulate_media(media="print")
+
+        rules = page.evaluate(PRINT_RULES)
+        gantt_rules = [
+            any(r.startswith(".gantt-wrap {") and "overflow: visible" in r for r in rules),
+            any(r.startswith("#gantt {") and "min-width: 0px !important" in r for r in rules),
+            any(r.startswith("#gantt svg {") and "width: 100%" in r and "height: auto" in r
+                for r in rules)]
+        assert gantt_rules == [True, True, True]
+        assert sum(1 for r in rules if r.startswith("@page") and "margin: 0px" in r) == 1
+        st = page.evaluate(PRINT_STATE)
+        assert st["bodyPad"] != "0px"
+        assert st["visible"] == [] and st["card"] == st["tt"] == "none"
+        assert st["docWidth"] <= 794 and st["gantt"] <= 794
+        assert st["bars"] == 28 and st["barsOut"] == 0     # 31 kept, 3 undated
+        text = st["text"]
+        assert "Taxes 2026" not in text and "Gather deduction receipts" not in text
+        assert "Showing 31 tasks" in text and "of 37" not in text
+        tiles = sum(int(page.text_content(f"#tile-{s}")) for s in ("open", "late", "done", "archived"))
+        assert tiles == 31
+        assert st["headerText"].count(f"Printed {date.today().isoformat()}") == 1
+        page.evaluate("window.dispatchEvent(new Event('afterprint'))")
+        assert page.is_hidden("#print-line")
+        assert o.problems() == []
+    finally:
+        ctx.close()
+
+
+# ---- TC-3122 -----------------------------------------------------------------------------------
+
+def guarded(v) -> str:
+    """LLR-3103.3's CSV rule, the oracle side: `'` before a formula-leading cell, except a
+    plain number."""
+    s = "" if v is None else str(v)
+    if re.match(r"[=+\-@\t\r]", s) and not re.fullmatch(r"-?\d+(\.\d+)?", s):
+        return "'" + s
+    return s
+
+
+def read_csv(path) -> list:
+    return list(csv.DictReader(io.StringIO(path.read_bytes().decode("utf-8"), newline="")))
+
+
+def test_TC_3122_csv_and_json_hold_the_visible_rows_only(ctx, page_file, data, tmp_path):
+    """TC-3122 (LLR-3103.3, D7, PDR C13): with the hidden board's project unchecked, the CSV
+    and the JSON hold exactly the shown rows and none of its tokens; titles starting with
+    `=`, `+`, `-`, `@` reach the CSV `'`-prefixed, a `-3d`, TAB and CR cell too, while the
+    `due_in` number `-1` stays a number; a kept task's dependency on a dropped one leaves
+    no title; notes off empties every notes cell; an empty view writes the header only."""
+    o = open_page(ctx, page_file)
+    page = o.page
+    for sel in ("#dl-csv", "#dl-json"):
+        assert "visible rows only" in page.text_content(sel)
+    open_projects(page)
+    box(page, "#3:pside").uncheck()
+    cpath, _ = fetch(page, "#dl-csv", tmp_path)
+    jpath, _ = fetch(page, "#dl-json", tmp_path)
+    craw, jraw = cpath.read_text(encoding="utf-8"), jpath.read_text(encoding="utf-8")
+    rows, jrows = read_csv(cpath), json.loads(jraw)["tasks"]
+    bn = {b["key"]: b["name"] for b in data["boards"]}
+    pn = {p["key"]: p["name"] for p in data["projects"]}
+    kept = [t for t in data["tasks"] if t["key"] in NOT_SIDE]
+    assert len(rows) == len(jrows) == 32
+    assert Counter((r["board"], r["project"], r["task"]) for r in rows) == Counter(
+        (guarded(bn[t["board"]]), guarded(pn[t["project"]]), guarded(t["title"])) for t in kept)
+    assert Counter((r["board"], r["project"], r["task"]) for r in jrows) == Counter(
+        (bn[t["board"]], pn[t["project"]], t["title"]) for t in kept)
+    for token in TOKENS + ("una.qz",):
+        assert token not in craw and token not in jraw, token
+    titles = {r["task"] for r in rows}
+    assert {"'=1+1 sanity check", "'+1 follow-up call", "'-draft- outline", "'@home prep"} <= titles
+    pack = next(r for r in rows if r["task"] == "Pack kitchen")
+    assert pack["due_in"] == "-1" and pack["mentions"] == "'@luis.prado"
+    assert next(r for r in rows if r["task"] == "API reference")["depends_on"] == "Homepage build"
+    assert any(r["notes"] for r in rows) and any(r["notes"] for r in jrows)
+    assert page.evaluate("csvCell('-3d')") == "'-3d"
+    assert page.evaluate("csvCell('\\tx')") == "'\tx"
+    assert page.evaluate("csvCell('\\rx')") == "\"'\rx\""
+    assert page.evaluate("[csvCell(-1), csvCell('-1.5'), csvCell('12')]") == ["-1", "-1.5", "12"]
+
+    second = open_page(ctx, page_file, hash="v=1&u=carmen.vega&sec=gantt,table,milestones")
+    c2, _ = fetch(second.page, "#dl-csv", tmp_path)
+    j2, _ = fetch(second.page, "#dl-json", tmp_path)
+    rows2, jrows2 = read_csv(c2), json.loads(j2.read_text(encoding="utf-8"))["tasks"]
+    by = {t["key"]: t for t in data["tasks"]}
+    assert sorted(r["task"] for r in rows2) == sorted(by[k]["title"] for k in CARMEN_VIEW)
+    assert next(r for r in rows2 if r["task"] == "Tutorial videos")["depends_on"] == ""
+    for raw2 in (c2.read_text(encoding="utf-8"), j2.read_text(encoding="utf-8")):
+        assert "FAQ rewrite" not in raw2
+    assert all(r["notes"] == "" for r in rows2) and all(r["notes"] == "" for r in jrows2)
+    assert {r["mentions"] for r in rows2} == {"'@carmen.vega"}
+
+    third = open_page(ctx, page_file, hash="v=1&s=")
+    c3, _ = fetch(third.page, "#dl-csv", tmp_path)
+    j3, _ = fetch(third.page, "#dl-json", tmp_path)
+    assert c3.read_text(encoding="utf-8") == craw.split("\n")[0]
+    assert json.loads(j3.read_text(encoding="utf-8"))["tasks"] == []
+    for x in (o, second, third):
+        assert x.problems() == []

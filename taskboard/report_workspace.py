@@ -58,6 +58,10 @@ details#f-projects>summary{cursor:pointer;font-weight:600;font-size:.9rem}
 .pboard{font-size:.78rem;text-transform:uppercase;letter-spacing:.05em;color:var(--mut);margin:.3rem 0 .15rem}
 .pitem{display:inline-flex;align-items:center;gap:.3rem;margin:0 .9rem .2rem 0;font-size:.88rem}
 .dl{background:transparent;border-style:dashed}
+.xgroup{display:flex;flex-direction:column;gap:.35rem;width:100%}
+.xitem{font-size:.85rem}
+.cap{color:var(--mut)}
+.prt{display:none}
 .gantt-wrap{overflow-x:auto;border:1px solid var(--line);border-radius:10px;
   background:var(--panel)}
 .gantt-wrap svg{display:block}
@@ -116,8 +120,13 @@ footer{color:var(--mut);font-size:.82rem;margin-top:3rem;border-top:1px solid va
 .gtodaylbl{fill:var(--accent);font-size:10px;font-weight:700}
 .gweekend{fill:rgba(139,152,165,.07)}
 @media print{
-  body{background:#fff;color:#000;padding:0}
-  .controls,nav,#tt,#card,.dl,.zbtn{display:none!important}
+  /* no page margin, so the browser prints no header or footer (no file path, no URL) */
+  @page{margin:0}
+  body{background:#fff;color:#000;padding:12mm 14mm}
+  .controls,nav,.xgroup,#tt,#card,.dl,.zbtn{display:none!important}
+  #view-header{display:block}
+  .scr{display:none!important}
+  .prt{display:inline!important}
   .tile,.tbl-wrap,table,.note,.ms{background:#fff;border-color:#bbb}
   th,td{border-color:#ccc}
   .sub,.tile .k,th button,.showing,footer{color:#444}
@@ -136,6 +145,8 @@ footer{color:var(--mut);font-size:.82rem;margin-top:3rem;border-top:1px solid va
 
 JS = r"""
 'use strict';
+// the pristine shell, FIRST, before anything renders: "Download this view" rebuilds from it
+const PRISTINE = document.documentElement.outerHTML;
 const DATA = JSON.parse(document.getElementById('board-data').textContent);
 const $ = s => document.querySelector(s);
 const NS = 'http://www.w3.org/2000/svg';
@@ -170,8 +181,8 @@ function colourOf(t){ const p = PROJECTS.get(t.project); return hue(p ? p.colour
 function markOf(t){ return t.mark ? MARKS.get(t.mark) || null : null; }
 
 // ---- the view and its hash ---------------------------------------------------
-function defaultView(){
-  return {p: new Set(WL.p), s: new Set(STATUS_DEFAULT), u: new Set(), m: new Set(),
+function defaultView(wl = WL){
+  return {p: new Set(wl.p), s: new Set(STATUS_DEFAULT), u: new Set(), m: new Set(),
           from: '', to: '', q: '', sec: new Set(SECTIONS), z: 'fit'};
 }
 function realDate(s){
@@ -214,10 +225,10 @@ function sameSet(a, b){
   for(const x of a) if(!b.has(x)) return false;
   return true;
 }
-function hashOf(v){
-  const d = defaultView(), out = [];
+function hashOf(v, wl = WL){
+  const d = defaultView(wl), out = [];
   const enc = encodeURIComponent;
-  const listed = k => [...WL[k]].filter(x => v[k].has(x)).map(enc).join(',');
+  const listed = k => [...wl[k]].filter(x => v[k].has(x)).map(enc).join(',');
   if(!sameSet(v.p, d.p)) out.push('p=' + listed('p'));
   if(!sameSet(v.s, d.s)) out.push('s=' + listed('s'));
   if(v.u.size) out.push('u=' + listed('u'));
@@ -338,6 +349,8 @@ function buildControls(){
     b.classList.add('zbtn');
   }
   $('#reset').addEventListener('click', () => { view = defaultView(); render(); });
+  $('#print').addEventListener('click', printView);
+  $('#dl-view').addEventListener('click', downloadView);
   $('#dl-csv').addEventListener('click', dlCsv);
   $('#dl-json').addEventListener('click', dlJson);
 }
@@ -364,28 +377,39 @@ function scopeLine(){
   return 'All loaded boards (' + sc.boards.length + '): ' + sc.boards.join(', ');
 }
 function names(set, wl, nameOf){ return [...wl].filter(x => set.has(x)).map(nameOf).join(', '); }
-function summaryText(v){
-  const d = defaultView(), parts = [];
-  if(!sameSet(v.p, d.p)) parts.push('Projects ' + v.p.size + '/' + WL.p.size +
-    (v.p.size ? ': ' + names(v.p, WL.p, projectName) : ''));
-  if(!sameSet(v.s, d.s)) parts.push('Status: ' + (v.s.size ? names(v.s, WL.s, x => x) : 'none'));
-  if(v.u.size) parts.push('People: ' + names(v.u, WL.u, x => PEOPLE.get(x).name));
-  if(v.m.size) parts.push('Classes: ' + names(v.m, WL.m, x => MARKS.get(x).name));
+function summaryText(v, wl = WL){
+  const d = defaultView(wl), parts = [];
+  if(!sameSet(v.p, d.p)) parts.push('Projects ' + v.p.size + '/' + wl.p.size +
+    (v.p.size ? ': ' + names(v.p, wl.p, projectName) : ''));
+  if(!sameSet(v.s, d.s)) parts.push('Status: ' + (v.s.size ? names(v.s, wl.s, x => x) : 'none'));
+  if(v.u.size) parts.push('People: ' + names(v.u, wl.u, x => PEOPLE.get(x).name));
+  if(v.m.size) parts.push('Classes: ' + names(v.m, wl.m, x => MARKS.get(x).name));
   if(v.from || v.to) parts.push('Dates: ' + (v.from || '…') + ' to ' + (v.to || '…'));
   if(v.q) parts.push('Search: "' + v.q + '"');
-  return parts.length ? parts.join(' · ') : 'No filters: every project, status open · late · done';
+  return parts.length ? parts.join(' · ') : 'No filters: all tasks (open · late · done) of every project';
+}
+function localIso(){
+  const d = new Date(), p = n => String(n).padStart(2, '0');
+  return d.getFullYear() + '-' + p(d.getMonth() + 1) + '-' + p(d.getDate());
 }
 function renderHeader(){
   $('#scope-line').textContent = scopeLine();
   $('#gen-line').textContent = 'Generated ' + DATA.meta.generated + ' · statuses as of ' + DATA.meta.today;
+  const mv = DATA.meta.view;
+  $('#view-origin').hidden = !mv;
+  if(mv) $('#view-origin').textContent = 'A filtered view, exported ' + mv.exported +
+    ': this file holds only the tasks of this view';
   const n = activeKinds(view).length;
   $('#active-count').textContent = n + (n === 1 ? ' filter active' : ' filters active');
   $('#view-summary').textContent = summaryText(view);
 }
 function renderTiles(kept){
   for(const s of STATUS) $('#tile-' + s).textContent = kept.filter(t => t.status === s).length;
-  $('#showing').textContent = 'Showing ' + kept.length + ' of ' + DATA.tasks.length +
-    ' tasks · counts and dates only, nothing here is a forecast';
+  // the screen names the file's total; the print counts the kept tasks only
+  const tail = ' · counts and dates only, nothing here is a forecast';
+  $('#showing').replaceChildren(
+    make('span', 'scr', 'Showing ' + kept.length + ' of ' + DATA.tasks.length + ' tasks' + tail),
+    make('span', 'prt', 'Showing ' + kept.length + ' tasks' + tail));
 }
 
 // ---- gantt ----------------------------------------------------------------------------
@@ -459,7 +483,9 @@ function renderGantt(list){
   const W = Math.ceil(span * ppd) + gutter + 10;
   const rowH = 26, headH = 34;
   const H = headH + rows.length * rowH + 6;
-  const svg = svgEl('svg', {width: W, height: H, role: 'img', 'aria-label': 'gantt of dated tasks'}, fig);
+  // the viewBox lets the print scale the WHOLE timeline to the page instead of clipping it
+  const svg = svgEl('svg', {width: W, height: H, viewBox: `0 0 ${W} ${H}`, role: 'img',
+    'aria-label': 'gantt of dated tasks'}, fig);
   const X = d => gutter + diffD(lo, d) * ppd;
   if(mode === 'day'){
     for(let d = new Date(lo); d <= hi; d = addD(d, 1))
@@ -656,10 +682,81 @@ function renderMilestones(list){
   $('#ms-empty').hidden = ms.length > 0;
 }
 
-// ---- downloads (the round's CSV / JSON) -----------------------------------------------------
+// ---- export this view: print (LLR-3104.1) -------------------------------------------------------
+function setPrinted(){
+  const e = $('#print-line');
+  e.textContent = 'Printed ' + localIso();
+  e.hidden = false;
+}
+function unsetPrinted(){ $('#print-line').hidden = true; }
+// the browser fires beforeprint (the one stamp) and afterprint around window.print()
+function printView(){ window.print(); }
+
+// ---- export this view: the filtered file (LLR-3103.1, LLR-3103.2) --------------------------------
+function inOrder(list, id, used){ return new Set(list.map(id).filter(x => used.has(x))); }
+// a project's counts over the KEPT tasks' own status / priority fields; worst and
+// momentum, which only the server can derive, leave the download
+function keptCounts(p, tasks){
+  const mine = tasks.filter(t => t.project === p.key);
+  const open = mine.filter(t => t.status === 'open' || t.status === 'late');
+  return Object.assign({}, p, {open: open.length,
+    late: mine.filter(t => t.status === 'late').length,
+    done: mine.filter(t => t.status === 'done').length,
+    high: open.filter(t => t.priority === 'high').length, worst: null, momentum: null});
+}
+// with the notes off a mention travels only when its person is a pressed people filter
+function keptMentions(t){
+  if(view.sec.has('notes')) return t.mentions;
+  return t.mentions.filter(h => view.u.has(h));
+}
+function reduce(kept){
+  const keys = new Set(kept.map(t => t.key));
+  const notes = view.sec.has('notes');
+  const tasks = kept.map(t => Object.assign({}, t, {
+    deps: t.deps.filter(k => keys.has(k)), chain: t.chain.filter(k => keys.has(k)),
+    notes_html: notes ? t.notes_html : '', notes_text: notes ? t.notes_text : '',
+    mentions: keptMentions(t)}));
+  const wl = {
+    p: inOrder(DATA.projects, p => p.key, new Set(tasks.map(t => t.project))),
+    s: WL.s,
+    u: inOrder(DATA.people, p => p.id, new Set(tasks.flatMap(t => t.mentions))),
+    m: inOrder(DATA.marks, m => m.key, new Set(tasks.map(t => t.mark).filter(Boolean))),
+    sec: WL.sec, z: WL.z};
+  const boards = DATA.boards.filter(b => tasks.some(t => t.board === b.key));
+  const only = (set, allowed) => new Set([...set].filter(x => allowed.has(x)));
+  const rv = Object.assign({}, view, {p: only(view.p, wl.p), u: only(view.u, wl.u), m: only(view.m, wl.m)});
+  const sc = DATA.meta.scope;
+  return {
+    v: DATA.v,
+    meta: {generated: DATA.meta.generated, today: DATA.meta.today,
+      scope: {kind: sc.kind, project: wl.p.has(sc.project) ? sc.project : null,
+              boards: boards.map(b => b.name)},
+      view: {state: hashOf(rv, wl), summary: summaryText(rv, wl), exported: localIso()}},
+    boards,
+    projects: DATA.projects.filter(p => wl.p.has(p.key)).map(p => keptCounts(p, tasks)),
+    tasks,
+    people: DATA.people.filter(p => wl.u.has(p.id)),
+    marks: DATA.marks.filter(m => wl.m.has(m.key)),
+  };
+}
+function scriptSafe(json){
+  return json.replace(/[<>&]/g, c => '\\u' + c.charCodeAt(0).toString(16).padStart(4, '0'));
+}
+function downloadView(){
+  const d2 = reduce(applyFilters(view, DATA.tasks));
+  // a DOM build, never String.replace with a string: `$&` / `$'` in board text insert nothing
+  const doc = new DOMParser().parseFromString(PRISTINE, 'text/html');
+  doc.getElementById('board-data').textContent = scriptSafe(JSON.stringify(d2));
+  download('workspace-view-' + d2.meta.view.exported + '.html',
+           '<!doctype html>\n' + doc.documentElement.outerHTML, 'text/html');
+}
+
+// ---- the CSV / JSON of the visible rows (LLR-3103.3) ---------------------------------------------
 function csvCell(v){
   v = v === null || v === undefined ? '' : String(v);
-  return /[",\n]/.test(v) ? '"' + v.replace(/"/g, '""') + '"' : v;
+  // a formula-leading cell is neutralised; a plain number (due_in -1) is a number, kept
+  if(/^[=+\-@\t\r]/.test(v) && !/^-?\d+(\.\d+)?$/.test(v)) v = "'" + v;
+  return /[",\n\r]/.test(v) ? '"' + v.replace(/"/g, '""') + '"' : v;
 }
 function download(name, text, mime){
   const b = new Blob([text], {type: mime});
@@ -669,19 +766,23 @@ function download(name, text, mime){
   setTimeout(() => URL.revokeObjectURL(u), 500);
 }
 function exportRows(list){
+  const keys = new Set(list.map(t => t.key));
+  const notes = view.sec.has('notes');
   return list.map(t => ({
     board: boardName(t.board), project: projectName(t.project), task: t.title, phase: t.phase,
     priority: t.priority, status: cellText(t, 'status'), start: t.start || '', due: t.due || '',
+    due_in: t.due_in === null ? '' : t.due_in,
     days_in_phase: t.age === null ? '' : t.age,
     milestone: t.milestone ? (markOf(t) ? markOf(t).name : 'yes') : '',
     blocked: t.blocked ? 'yes' : '', archived: t.archived ? 'yes' : '',
-    depends_on: t.deps.map(k => TASKS.get(k)).filter(Boolean).map(x => x.title).join(' | '),
-    mentions: t.mentions.map(h => '@' + h).join(' '), urls: t.urls.join(' '), notes: t.notes_text,
+    depends_on: t.deps.filter(k => keys.has(k)).map(k => TASKS.get(k).title).join(' | '),
+    mentions: keptMentions(t).map(h => '@' + h).join(' '), urls: t.urls.join(' '),
+    notes: notes ? t.notes_text : '',
   }));
 }
 function dlCsv(){
   const rows = exportRows(applyFilters(view, DATA.tasks));
-  const head = Object.keys(rows[0] || {board: 0, project: 0, task: 0});
+  const head = Object.keys(exportRows(DATA.tasks.slice(0, 1))[0] || {board: 0, project: 0, task: 0});
   const body = [head.join(',')].concat(rows.map(r => head.map(k => csvCell(r[k])).join(',')));
   download('taskboard-tasks-' + DATA.meta.today + '.csv', body.join('\n'), 'text/csv');
 }
@@ -705,6 +806,10 @@ function render(){
   renderMilestones(kept);
   writeHash();
 }
+// a downloaded view falls back to its own state, through the same whitelists as the hash
+function viewFromLocation(){
+  return parseHash(location.hash || (DATA.meta.view ? DATA.meta.view.state : ''));
+}
 function start(){
   if(DATA.v !== 1){
     $('#view-summary').textContent = 'This file holds report data of an unknown version; nothing is shown.';
@@ -712,9 +817,11 @@ function start(){
   }
   buildControls();
   renderHead();
-  view = parseHash(location.hash);
+  view = viewFromLocation();
   render();
-  window.addEventListener('hashchange', () => { view = parseHash(location.hash); render(); });
+  window.addEventListener('hashchange', () => { view = viewFromLocation(); render(); });
+  window.addEventListener('beforeprint', setPrinted);
+  window.addEventListener('afterprint', unsetPrinted);
   const fig = $('#gantt');
   fig.addEventListener('click', e => {
     const n = e.target.closest('[data-key]');
@@ -752,6 +859,8 @@ SHELL = """<!doctype html>
 <h1>taskboard · interactive workspace</h1>
 <p class="sub" id="scope-line"></p>
 <p class="sub" id="gen-line"></p>
+<p class="sub" id="view-origin" hidden></p>
+<p class="sub" id="print-line" hidden></p>
 <p id="view-summary"></p>
 </header>
 
@@ -773,9 +882,11 @@ SHELL = """<!doctype html>
     <input type="search" id="f-q" placeholder="title, notes, project"></div>
   <div class="cgroup" id="f-sections" role="group" aria-label="sections"><span class="lbl">sections</span></div>
   <div class="cgroup" id="f-zoom" role="group" aria-label="zoom"><span class="lbl">zoom</span></div>
-  <div class="cgroup"><span class="lbl">export</span>
-    <button type="button" class="dl" id="dl-csv">Download CSV</button>
-    <button type="button" class="dl" id="dl-json">Download JSON</button></div>
+  <div class="xgroup" id="f-export" role="group" aria-label="Export this view"><span class="lbl">Export this view</span>
+    <div class="xitem" id="x-print"><button type="button" class="dl" id="print">Print / Save as PDF</button><span class="cap"> — a PDF of what is shown; this HTML file still holds every task</span></div>
+    <div class="xitem" id="x-view"><button type="button" class="dl" id="dl-view">Download this view</button><span class="cap"> — a new HTML file with only these tasks</span></div>
+    <div class="xitem" id="x-rows"><button type="button" class="dl" id="dl-csv">Download CSV · visible rows only</button>
+      <button type="button" class="dl" id="dl-json">Download JSON · visible rows only</button></div></div>
 </nav>
 
 <div class="tiles">
