@@ -253,7 +253,7 @@ def main() -> None:
         const="",
         default=None,
         help="write the HTML reports of the boards (or of one PROJECT) and exit; "
-             "asks which board when you have several",
+             "asks which board when the registry lists several",
     )
     parser.add_argument(
         "--report-kind",

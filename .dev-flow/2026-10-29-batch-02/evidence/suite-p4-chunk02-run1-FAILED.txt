@@ -1,0 +1,45 @@
+C:\Users\jjgh8\anaconda3\Lib\site-packages\pytest_asyncio\plugin.py:207: PytestDeprecationWarning: The configuration option "asyncio_default_fixture_loop_scope" is unset.
+The event loop scope for asynchronous fixtures will default to the fixture caching scope. Future versions of pytest-asyncio will default the loop scope for asynchronous fixtures to function scope. Set the default fixture loop scope explicitly in order to avoid unexpected behavior in the future. Valid fixture loop scopes are: "function", "class", "module", "package", "session"
+
+  warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCOPE_UNSET))
+........................................................................ [  8%]
+..........................................................F............. [ 16%]
+........................................................................ [ 24%]
+........................................................................ [ 33%]
+........................................................................ [ 41%]
+........................................................................ [ 49%]
+........................................................................ [ 57%]
+........................................................................ [ 66%]
+........................................................................ [ 74%]
+........................................................................ [ 82%]
+........................................................................ [ 90%]
+........................................................................ [ 99%]
+........                                                                 [100%]
+================================== FAILURES ===================================
+__________ test_no_literal_in_the_source_can_emit_the_second_person ___________
+
+    def test_no_literal_in_the_source_can_emit_the_second_person():
+        """At the source, not just in one render: a string the app could ever print
+        is checked, so a rarely-hit branch cannot smuggle a voice in."""
+        # ONE named exemption, because a named exemption is honest and a weakened
+        # pattern is not: "We" here is Wednesday, in the date picker's weekday row
+        # (a dim Text piece since batch 2026-10-02-batch-04: the literal lost its markup).
+        EXEMPT = {"Mo Tu We Th Fr Sa Su"}
+        offenders = []
+        for path in sorted(SRC.glob("*.py")):
+            src = path.read_text(encoding="utf-8")
+            # strings only, and not docstrings/comments: this is about what the app
+            # PRINTS, and the reasoning around it is written in prose on purpose
+            src = re.sub(r'"""[\s\S]*?"""', "", src)
+            src = re.sub(r"^\s*#.*$", "", src, flags=re.M)
+            for lit in re.findall(r'"([^"\n]{4,})"', src) + re.findall(r"'([^'\n]{4,})'", src):
+                if lit in EXEMPT:
+                    continue
+                if SECOND_PERSON.search(lit) and not lit.strip().startswith("#"):
+                    offenders.append((path.name, lit[:60]))
+>       assert not offenders, f"literals in the app's voice: {offenders[:5]}"
+E       AssertionError: literals in the app's voice: [('__main__.py', 'asks which board when you have several')]
+E       assert not [('__main__.py', 'asks which board when you have several')]
+
+tests\test_prism_laws.py:209: AssertionError
+1 failed, 871 passed in 178.46s (0:02:58)
