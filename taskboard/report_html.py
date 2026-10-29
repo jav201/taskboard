@@ -6,7 +6,8 @@ dict, so they cannot disagree on a project, a task, a status or a due word.
 
 ONE STATUS RULE, here and nowhere else: archived > done > late (not done, due
 before today) > open. The page and the deck read `status` and `due_word`; they
-never re-derive them. Due words are the CLI report's own (`report._due_word`).
+never re-derive them. Due words are the CLI report's own (`report._due_word`);
+finished work (done, archived) is never late: it gets the plain distance (`-3d`).
 
 UNTRUSTED TEXT. Board strings reach HTML only escaped (`esc` = `report._e`), or
 through the page's `textContent`; `notes_html` is built here from escaped
@@ -134,18 +135,19 @@ def extract(boards: list, people: dict, marks: dict, today: date,
                 due = parse_iso(t.due_date)
                 due_in = (due - today).days if due else None
                 mark = t.mark if t.milestone and t.mark in marks else None
+                status = _status(board, t, today)
                 out_tasks.append({
                     "key": f"{bkey}:{t.id}", "project": pkey, "board": bkey,
                     "title": t.title, "phase": t.phase, "priority": t.priority,
                     "start": _iso(t.start_date), "due": due.isoformat() if due else None,
                     "due_in": due_in, "age": days_in_phase(t, today),
                     "done": board.is_done(t), "archived": t.archived,
-                    "status": _status(board, t, today), "blocked": t.blocked,
+                    "status": status, "blocked": t.blocked,
                     "milestone": t.milestone, "mark": mark,
                     "mentions": [h for h in mention_ids(t.notes) if h in people],
                     "deps": [f"{bkey}:{d}" for d in t.depends_on if d in in_scope],
                     "chain": [],
-                    "due_word": _due_word(due_in),
+                    "due_word": _due_word(due_in, closed=status in ("done", "archived")),
                     "notes_html": notes_html(t.notes, people),
                     "notes_text": _notes_text(t.notes),
                     "urls": [u for u in map(valid_url, t.urls) if u],

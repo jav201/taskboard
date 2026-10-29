@@ -6,8 +6,8 @@ survive: hostile text (a `<script>` title, a note and a person name carrying
 `</script>` and `&`, an `<img onerror>` project and board name), non-http URLs, a
 `$&`/`$'` title, formula-like titles (`=`, `+`, `-`, `@`), a 120-character and a
 Unicode title, an Inbox task, a cross-project dependency and a chain of three, an
-archived task, an archived project, a project whose tasks are all archived, a
-task-less project, two boards each holding a project `Docs` with the SAME id, an
+archived task, an archived project, a hostile class and phase name (the side board), a
+project whose tasks are all archived, a task-less project, two boards each holding a project `Docs` with the SAME id, an
 unlisted board (registry id None), undated tasks, `start == due`, a task due today.
 
 Every item a filtered view may hide carries a unique token no UI string holds:
@@ -36,6 +36,8 @@ HOSTILE_NAME = "<img src=x onerror=window.__x=2>"
 LONG_TITLE = ("Long title " + "abcdefghij" * 11)[:120]
 UNICODE_TITLE = "Año nuevo — ñandú 日本語"
 DOLLAR_TITLE = "Price $& terms $' check"
+HOSTILE_MARK = "Secret qzM1 <img src=x onerror=window.__x=3>"
+HOSTILE_PHASE = "Done <img src=x onerror=window.__x=4>"
 
 PEOPLE: dict[str, Person] = {
     "ana.ruiz": Person(id="ana.ruiz", name="Ana Ruiz", role="Design lead"),
@@ -50,7 +52,7 @@ MARKS: dict[str, Mark] = {
     "delivery": Mark(id="delivery", name="Delivery", shape="▲", colour="rose"),
     "billing": Mark(id="billing", name="Billing", shape="■", colour="amber"),
     "launch": Mark(id="launch", name="Launch", shape="★", colour="lime"),
-    "secret": Mark(id="secret", name="Secret qzM1", shape="◆", colour="cyan"),
+    "secret": Mark(id="secret", name=HOSTILE_MARK, shape="◆", colour="cyan"),
     "unused": Mark(id="unused", name="Unused", shape="●", colour="blue"),
 }
 
@@ -170,7 +172,7 @@ def side(path: Path | str = "rf-side-never-saved.json") -> Board:
            milestone=True, mark="secret", notes="qzN1 private @una.qz",
            urls=["https://example.test/qzL1"]),
     ]
-    return Board(projects, tasks, Path(path), {}, PHASES)
+    return Board(projects, tasks, Path(path), {}, PHASES[:-1] + [HOSTILE_PHASE])
 
 
 SIDE_BOARD_NAME = "Side qzB1 " + HOSTILE_NAME

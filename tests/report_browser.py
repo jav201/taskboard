@@ -59,7 +59,7 @@ def new_context(browser, *, scheme: str = "dark", viewport=(1366, 900)):
     return ctx
 
 
-def open_page(ctx, path: Path, *, hash: str = "") -> Opened:
+def open_page(ctx, path: Path, *, hash: str = "", ready: str = "#tbody") -> Opened:
     own = Path(path).resolve().as_uri()
     page = ctx.new_page()
     o = Opened(page=page, own=own)
@@ -73,7 +73,7 @@ def open_page(ctx, path: Path, *, hash: str = "") -> Opened:
         d.dismiss()
     page.on("dialog", on_dialog)
     page.goto(own + (("#" + hash.lstrip("#")) if hash else ""))
-    page.wait_for_selector("#tbody", state="attached")
+    page.wait_for_selector(ready, state="attached")
     return o
 
 

@@ -118,13 +118,22 @@ def test_TC_3101_extract_never_writes_a_board(tmp_path, monkeypatch):
     assert {p: hashlib.sha256(p.read_bytes()).hexdigest() for p in before} == before
 
 
+# finished work is never late: a done or an archived task past its due date reads the plain
+# distance, an open one past it reads "overdue" (typed from the fixture's offsets)
+FINISHED_WORDS = {"client-a:tst1": "-30d", "personal:tmv1": "-18d", "personal:ttx0": "-380d",
+                  "client-a:tst4": "3d overdue"}
+
+
 def test_TC_3102_due_words_are_the_cli_reports():
     """TC-3102 (LLR-3101.2): every task's due word is `report._due_word` of its distance —
-    the workspace and the CLI report cannot disagree on `3d overdue`."""
+    the workspace and the CLI report cannot disagree on `3d overdue` — and finished work
+    (done, archived) takes the CLI's closed form, the plain distance: it is never late."""
     d = _d()
     for t in d["tasks"]:
-        assert t["due_word"] == _due_word(t["due_in"]), t["key"]
+        closed = t["status"] in ("done", "archived")
+        assert t["due_word"] == _due_word(t["due_in"], closed), t["key"]
     assert {k: _task(d, k)["due_word"] for k in F.DUE_WORDS} == F.DUE_WORDS
+    assert {k: _task(d, k)["due_word"] for k in FINISHED_WORDS} == FINISHED_WORDS
 
 
 def test_TC_3103_project_scope_keeps_one_project():
