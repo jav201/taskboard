@@ -238,7 +238,7 @@
     }
   ],
   "guided": false,
-  "current_station": "P3",
+  "current_station": "P4",
   "phase_status": "in-progress",
   "stations_active": [
     "P0",
@@ -329,6 +329,11 @@
       "station": "P2",
       "date": "2026-10-29",
       "decision": "P2 approved under the batch's standing authorization — qa-reviewer and security-reviewer both spawned, the amended contract re-checked (F1-F5 closed, F6-F8 accepted, N1 fixed); increment 001 is next."
+    },
+    {
+      "station": "P3",
+      "date": "2026-10-29",
+      "decision": "P3 increment 001 approved under the batch's standing authorization — code-reviewer PASS with notes 0 HIGH (re-read of the folds PASS), security-reviewer PASS 0 HIGH, 27 of 27 mutants killed, 89 passed in the affected files; P4 validation is next."
     }
   ],
   "obsidian_synced": false,
