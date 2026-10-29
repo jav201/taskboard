@@ -52,9 +52,9 @@ board, Client A) and selects task `tst2` (Storefront relaunch), as TC-3118 does.
 |---|---|---|
 | `report-modal` | `esc`, select `tst2`, `H` | top screen `ReportExport`; `Export an HTML report`, `● all boards (3)`, `○ Storefront relaunch on Client A`, `Personal · Client A · Course`, `Writes to … reports`, the key words |
 | `report-modal-p` | same, then `p` | top screen `ReportExport`; `○ all boards (3)`, `● Storefront relaunch on Client A`, same names / folder / keys |
-| `report-toast` | `esc`, select `tst2`, `H`, `b` | main `Screen`; exactly one `Report` toast whose text is `Report written: workspace-2026-10-29.html to <home>\.taskboard\boards\client-a\reports — o opens it (10 s)`; the file exists; `Report written:` and `o opens it (10 s)` painted. The grab happens about 3 s after `b`, inside the 10 s |
+| `report-toast` | `esc`, select `tst2`, `H`, `b` | main `Screen`; exactly one `Report` toast whose text is exactly the three lines `Report written: workspace-2026-10-29.html` / `<home>\.taskboard\boards\client-a\reports` / `o opens it (10 s)` (increment 005); the file exists; `Report written: workspace-2026-10-29.html` and `o opens it (10 s)` painted. The grab happens about 3 s after `b`, inside the 10 s |
 
-## Results (2026-10-29, HEAD `e8ec477`)
+## Results (2026-10-29, modal shots at HEAD `e8ec477`, toast re-shot at `7b47714`)
 
 All three accepted on try 1 (PrintWindow); READY `OK` each; `no hx-* window left open`
 after both runs; no `hx-cap-*` home, `hx-*.ready` or `hx-*.cmd` left in TEMP.
@@ -63,13 +63,13 @@ after both runs; no `hx-cap-*` home, `hx-*.ready` or `hx-*.cmd` left in TEMP.
 |---|---|---|
 | `png/report-modal_118x30.png` | 14 / 18 | 29,396 |
 | `png/report-modal-p_118x30.png` | 14 / 19 | 29,241 |
-| `png/report-toast_118x30.png` | 36 / 40 | 54,848 |
+| `png/report-toast_118x30.png` (re-shot at `7b47714`) | 37 / 37 | 54,800 |
 
 Seen in the PNGs (eyeballed):
 
 - Key line in both modal shots: `b workspace   c deck   a both   p Storefront relaunch   o all boards   esc close`.
 - `Writes to` shows the head-clipped folder `…Users\<user>\AppData\Local\Temp\hx-cap-*\.taskboard\boards\client-a\reports\`.
-- Toast: `Report` / `Report written: workspace-2026-10-29.html to C:\Users\<user>\AppData\Local\Temp\hx-cap-*\.taskboard\boards\client-a\reports — o opens it (10 s)`, wrapped over three rows. The folder breaks mid-word (`.task` / `board`).
+- Toast (re-shot after increment 005): `Report` / `Report written: workspace-2026-10-29.html` / `C:\Users\<user>\AppData\Local\Temp\hx-cap-*\.taskboard\boards\client-a\reports` (the folder line still wraps mid-word, `.task` / `board`) / `o opens it (10 s)`.
 - Every shot also shows the app's own `Archived old work` toast (Client A's done task
   finished more than 20 days ago is auto-archived on open — fixture data, see the
   `STOREFRONT` note in `tests/test_report_export_app.py`).

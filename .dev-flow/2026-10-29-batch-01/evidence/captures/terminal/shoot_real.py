@@ -141,13 +141,12 @@ def _check_toast(app: Shot) -> str | None:
     msg = toasts[0].message
     name = f"workspace-{F.TODAY.isoformat()}.html"
     folder = HOME / ".taskboard" / "boards" / "client-a" / "reports"
-    if not msg.startswith(f"Report written: {name} to {folder}") or \
-            not msg.endswith("o opens it (10 s)"):
+    if msg != f"Report written: {name}\n{folder}\no opens it (10 s)":   # increment 005: 3 lines
         return f"toast text {msg!r}"
     if not (folder / name).is_file():
         return f"{name} not written"
     flat = " ".join(_strips(app).split())
-    for w in ("Report written:", "o opens it (10 s)"):
+    for w in (f"Report written: {name}", "o opens it (10 s)"):
         if w not in flat:
             return f"{w!r} not painted"
     return None
