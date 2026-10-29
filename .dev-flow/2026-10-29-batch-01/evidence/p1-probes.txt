@@ -1,0 +1,66 @@
+# P1 draft-time probes — 2026-10-29, tree 9da7438 (= base_ref), Windows, Python 3.12.7
+
+## probe 1 — H is free in the key seat (HEAD)
+$ grep -n 'Key("H"' taskboard/keymap.py
+(exit 1)
+$ python -c "from taskboard.keymap import KEYMAP; print(sorted({k.show for k in KEYMAP if k.show.isupper()}))"
+['A', 'B', 'F', 'I', 'L', 'M', 'P', 'R', 'S', 'T', 'X']
+
+## probe 2 — symbols the new modules consume (file:line)
+78:def _e(text: object) -> str:
+85:def _due_word(days: int | None, closed: bool = False) -> str:
+226:def build_report(board: Board, today: date | None = None,
+265:def report_path(board: Board, today: date | None = None,
+45:HEX = {
+978:def lanes_of(board: Board, show_archived: bool, today: date) -> list[LaneFacts]:
+1744:def sitting(lane: LaneFacts, today: date) -> str:
+3505:def highlight_segments(text: str) -> list[tuple[str, str]]:
+67:def mention_ids(text: str) -> list[str]:
+75:def split_mentions(text: str) -> list[tuple[str, str | None]]:
+648:def parse_iso(value: str | None) -> date | None:
+790:def days_in_phase(task: "Task", today: date) -> int | None:
+841:def board_lanes(app) -> tuple[list, list]:
+3526:    def action_open_url(self) -> None:
+3565:            os.startfile(ref)                       # Windows-only (DD-4)
+614:def peek_board(path) -> Board:
+267:INVENTORY: dict[str, dict[str, str]] = {
+
+## probe 3 — the slug rule report_path applies, executed
+$ python (Board(projects=[], tasks=[], path='C:/x/board.json'); report_path / _due_word / _e)
+C:\x\reports\client-a-2026-10-29.html
+C:\x\reports\board-2026-10-29.html
+['3d overdue', 'due today', 'in 4d', 'no date'] -3d
+&lt;script&gt;alert(1)&lt;/script&gt; &amp; &quot;q&quot;
+
+## probe 4 — highlight_segments and split_mentions on a note
+[('a', 'soon'), (' ', 'mut'), ('b', 'over'), (' ', 'mut'), ('c', 'green'), (' <b>x</b>', 'mut')]
+[('ask ', None), ('@ana', 'ana'), (' about <i>it</i>', None)]
+
+## probe 5 — the AT/TC files and the fixture do not exist yet (NEW at P3)
+ls: cannot access 'tests/report_fixture.py': No such file or directory
+ls: cannot access 'tests/test_report_html.py': No such file or directory
+ls: cannot access 'tests/test_report_workspace.py': No such file or directory
+ls: cannot access 'tests/test_report_deck.py': No such file or directory
+ls: cannot access 'tests/test_report_export_app.py': No such file or directory
+ls: cannot access 'taskboard/report_html.py': No such file or directory
+ls: cannot access 'taskboard/report_workspace.py': No such file or directory
+ls: cannot access 'taskboard/report_deck.py': No such file or directory
+
+## probe 6 — the old CLI report suite (pinned unchanged)
+18 passed in 2.64s
+
+## probe 7 — Playwright on this machine; the sync API inside a running asyncio loop
+playwright 1.62.0
+(grep -in playwright requirements.txt pyproject.toml: exit 1 — not a declared dependency)
+chromium 151.0.7922.34
+sync inside loop: Error It looks like you are using Playwright Sync API inside the asyncio loop.
+
+## probe 8 — B1 census (tests naming the touched seats)
+$ grep -rl KEYMAP tests/
+tests/test_app.py tests/test_archive.py tests/test_boards_home.py tests/test_dependencies.py tests/test_help_keys.py tests/test_kanban_priority.py tests/test_keymap.py tests/test_legend.py tests/test_link_picker.py tests/test_links.py tests/test_marks_manager.py tests/test_momentum.py tests/test_people_view.py tests/test_readme.py tests/test_report.py 
+$ grep -rl INVENTORY tests/
+tests/test_modal_keys.py 
+$ grep -rl open_url tests/
+tests/test_app.py tests/test_keymap.py 
+$ grep -rl build_report tests/
+tests/test_report.py 

@@ -1,0 +1,27 @@
+[
+  {
+    "station": "P0",
+    "date": "2026-10-26",
+    "decision": "P0 intake approved under the batch's standing authorization — «Haz el cambio rápido, esta vez sólo implementa. Haz push y merge verificando que funciona y después auditas el cambio con dev flow.»; state.json re-stamped for the audit (batch 2026-10-26-batch-01, owner this worktree, base_ref f4b53cc7d89bd645a99e0615dbafb7c102de2abd); the 10 V59 blocks were the stale base_ref, cleared by the re-stamp; triggers B3/D1 fired; the implementation-preceded-flow premise recorded honestly. P1 next."
+  },
+  {
+    "station": "P1",
+    "date": "2026-10-26",
+    "decision": "P1 approved under the batch's standing authorization — «Haz el cambio rápido, esta vez sólo implementa. Haz push y merge verificando que funciona y después auditas el cambio con dev flow.» — retroactive requirements from the operator's request + G1-G5: US-3001, HLR-3001..3005 with Statements, 11 LLRs, AT-3001..AT-3006 mapped to the shipped nodes; retroactive authorship declared, not disguised; gate 0 block (evidence/gate-p1.txt). P2 next."
+  },
+  {
+    "station": "P2",
+    "date": "2026-10-26",
+    "decision": "P2 closed under the batch's standing authorization — «Haz el cambio rápido, esta vez sólo implementa. Haz push y merge verificando que funciona y después auditas el cambio con dev flow.» — four lenses as spawned generic sub-agents (architect iterate-to-refine: AX-1 canon HIGH, AX-2 toast HIGH, AX-3 legend MEDIUM; code-reviewer OK-TO-ADVANCE 0 HIGH; qa PASS golden CLEAN; ux PASS, 4 captures, window-cleanup PASS); gate 0 block (evidence/gate-p2.txt). No P3 of new code — the audited increment is f4b53cc (retroactive packet). P4 next."
+  },
+  {
+    "station": "P4",
+    "date": "2026-10-26",
+    "decision": "P4 closed under the batch's standing authorization — «Haz el cambio rápido, esta vez sólo implementa. Haz push y merge verificando que funciona y después auditas el cambio con dev flow.» — PASS-WITH-NOTES: consumed 3280-passed chunks; targeted re-runs 123+62 passed post-probe; golden CLEAN (4/40 frames, .plain only); captures PASS; HIGHs are records-layer, proposed not applied; gate 0 block (evidence/gate-p4.txt). P5 next."
+  },
+  {
+    "station": "P5",
+    "date": "2026-10-26",
+    "decision": "P5 close under the batch's standing authorization — «Haz el cambio rápido, esta vez sólo implementa. Haz push y merge verificando que funciona y después auditas el cambio con dev flow.» — canon audit annex folded (20 ids; stale-row amendment open as AUD-01, not applied), BACKLOG carries AUD-01..AUD-08, .scratch-evidence git-mv'd into the batch evidence, close record filled, final gate next; no push/merge (not granted)."
+  }
+]

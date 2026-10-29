@@ -1,9 +1,9 @@
 {
   "project": "taskboard",
   "language": "en",
-  "batch_id": "2026-10-26-batch-01",
-  "batch_objective": "retroactive dev-flow audit of the shipped change f4b53cc «fix(gantt): done work keeps its row — only archiving hides it» on fix/gantt-done-visible (= main): done, non-archived tasks keep their rows on the board's gantt (quiet, check chip, never late); only archiving hides work; the presentation stays byte-identical (G4); 4 reviewer lenses (architect, code-reviewer, qa-reviewer, ux-reviewer), requirements written retroactively from the operator's request and decisions G1-G5, no taskboard/ source change",
-  "owner": "C:/Users/jjgh8/Github/taskboard-wt/gantt-done",
+  "batch_id": "2026-10-29-batch-01",
+  "batch_objective": "the app exports two HTML reports from ONE data extraction of every loaded board: variant B, the interactive workspace (gantt, table, notes, HR-3 controls with URL-hash state, HR-4 export of the configured view as print-to-PDF and as a filtered self-contained download), and variant C, the concise vector deck (one slide per chosen project); a global H modal (b/c/a, p/o scope, esc) writes them to <board dir>/reports/ and a toast offers o to open (HR-1..HR-6)",
+  "owner": "C:/Users/jjgh8/Github/taskboard-wt/report-proto",
   "mode": "core",
   "mode_history": [
     {
@@ -223,16 +223,25 @@
       "to": "core",
       "date": "2026-10-26",
       "reason": "batch 2026-10-26-batch-01 opened by rollover from 2026-10-25-batch-02; an audit of the already-shipped change f4b53cc, commissioned retroactively by the operator (implementation preceded the flow at the operator's order)"
+    },
+    {
+      "from": null,
+      "to": "core",
+      "date": "2026-10-29",
+      "reason": "batch 2026-10-29-batch-01 opened by rollover from 2026-10-26-batch-01; mode core declared by the commission"
     }
   ],
   "guided": false,
-  "current_station": "P5",
-  "phase_status": "closed",
+  "current_station": "P0",
+  "phase_status": "not-started",
   "stations_active": [
     "P0",
+    "ARQ",
     "P1",
     "P2",
+    "PDR",
     "P3",
+    "DDR",
     "P4",
     "P5"
   ],
@@ -242,83 +251,60 @@
     "P2": 0,
     "P3": 0,
     "P4": 0,
-    "P5": 0
+    "P5": 0,
+    "ARQ": 0,
+    "DDR": 0,
+    "PDR": 0
   },
   "triggers": {
-    "evaluated_at": "2026-10-26",
+    "evaluated_at": "2026-10-29T07:57:35",
     "fired": [
-      "B3",
-      "D1"
-    ],
-    "not_fired": [
       "A1",
       "A2",
+      "B1",
+      "B4",
+      "C4",
+      "C6",
+      "C8",
+      "D1",
+      "E1"
+    ],
+    "not_fired": [
       "A3",
       "A4",
-      "B1",
       "B2",
-      "B4",
+      "B3",
       "C1",
       "C2",
       "C3",
-      "C4",
       "C5",
-      "C6",
       "C7",
-      "C8",
       "D2",
-      "E1",
       "E2",
       "E3",
       "F1",
       "F2"
     ],
-    "record": ".dev-flow/2026-10-26-batch-01/PLAN.md#triggers"
+    "record": ".dev-flow/2026-10-29-batch-01/PLAN.md#triggers"
   },
   "artifact_homes": {
-    "requirements": "repo:.dev-flow/2026-10-26-batch-01/01-requirements.md",
-    "requirements_ledger": "repo:.dev-flow/2026-10-26-batch-01/01-requirements-ledger.md",
-    "traceability": "repo:.dev-flow/2026-10-26-batch-01/06-docs/traceability-matrix.md",
+    "requirements": "repo:.dev-flow/2026-10-29-batch-01/01-requirements.md",
+    "requirements_ledger": "repo:.dev-flow/2026-10-29-batch-01/01-requirements-ledger.md",
+    "traceability": "repo:.dev-flow/2026-10-29-batch-01/06-docs/traceability-matrix.md",
     "tests": "repo:tests/",
     "module_map": "repo:docs/ARCHITECTURE.md",
-    "increments": "repo:.dev-flow/2026-10-26-batch-01/03-increments/",
-    "evidence": "repo:.dev-flow/2026-10-26-batch-01/evidence/",
+    "increments": "repo:.dev-flow/2026-10-29-batch-01/03-increments/",
+    "evidence": "repo:.dev-flow/2026-10-29-batch-01/evidence/",
     "backlog": "repo:.dev-flow/BACKLOG.md",
-    "design_pdr": "repo:.dev-flow/2026-10-26-batch-01/design/PDR-2026-10-26-batch-01.md",
-    "design_ddr": "repo:.dev-flow/2026-10-26-batch-01/design/DDR-2026-10-26-batch-01.md",
-    "postmortem": "repo:.dev-flow/2026-10-26-batch-01/",
-    "metrics": "repo:.dev-flow/2026-10-26-batch-01/METRICS.md",
+    "design_pdr": "vault:taskboard/design/PDR-2026-10-29-batch-01.md",
+    "design_ddr": "vault:taskboard/design/DDR-2026-10-29-batch-01.md",
+    "postmortem": "vault:taskboard/dev-flow-batches/2026-10-29-batch-01/",
+    "metrics": "vault:taskboard/dev-flow-batches/2026-10-29-batch-01/README.md",
     "requirements_canon": "repo:REQUIREMENTS.md"
   },
-  "base_ref": "f4b53cc7d89bd645a99e0615dbafb7c102de2abd",
+  "base_ref": "9da7438d906d42b8527bab7b309903937d462578",
   "artifacts": {},
-  "decisions_log": [
-    {
-      "station": "P0",
-      "date": "2026-10-26",
-      "decision": "P0 intake approved under the batch's standing authorization — «Haz el cambio rápido, esta vez sólo implementa. Haz push y merge verificando que funciona y después auditas el cambio con dev flow.»; state.json re-stamped for the audit (batch 2026-10-26-batch-01, owner this worktree, base_ref f4b53cc7d89bd645a99e0615dbafb7c102de2abd); the 10 V59 blocks were the stale base_ref, cleared by the re-stamp; triggers B3/D1 fired; the implementation-preceded-flow premise recorded honestly. P1 next."
-    },
-    {
-      "station": "P1",
-      "date": "2026-10-26",
-      "decision": "P1 approved under the batch's standing authorization — «Haz el cambio rápido, esta vez sólo implementa. Haz push y merge verificando que funciona y después auditas el cambio con dev flow.» — retroactive requirements from the operator's request + G1-G5: US-3001, HLR-3001..3005 with Statements, 11 LLRs, AT-3001..AT-3006 mapped to the shipped nodes; retroactive authorship declared, not disguised; gate 0 block (evidence/gate-p1.txt). P2 next."
-    },
-    {
-      "station": "P2",
-      "date": "2026-10-26",
-      "decision": "P2 closed under the batch's standing authorization — «Haz el cambio rápido, esta vez sólo implementa. Haz push y merge verificando que funciona y después auditas el cambio con dev flow.» — four lenses as spawned generic sub-agents (architect iterate-to-refine: AX-1 canon HIGH, AX-2 toast HIGH, AX-3 legend MEDIUM; code-reviewer OK-TO-ADVANCE 0 HIGH; qa PASS golden CLEAN; ux PASS, 4 captures, window-cleanup PASS); gate 0 block (evidence/gate-p2.txt). No P3 of new code — the audited increment is f4b53cc (retroactive packet). P4 next."
-    },
-    {
-      "station": "P4",
-      "date": "2026-10-26",
-      "decision": "P4 closed under the batch's standing authorization — «Haz el cambio rápido, esta vez sólo implementa. Haz push y merge verificando que funciona y después auditas el cambio con dev flow.» — PASS-WITH-NOTES: consumed 3280-passed chunks; targeted re-runs 123+62 passed post-probe; golden CLEAN (4/40 frames, .plain only); captures PASS; HIGHs are records-layer, proposed not applied; gate 0 block (evidence/gate-p4.txt). P5 next."
-    },
-    {
-      "station": "P5",
-      "date": "2026-10-26",
-      "decision": "P5 close under the batch's standing authorization — «Haz el cambio rápido, esta vez sólo implementa. Haz push y merge verificando que funciona y después auditas el cambio con dev flow.» — canon audit annex folded (20 ids; stale-row amendment open as AUD-01, not applied), BACKLOG carries AUD-01..AUD-08, .scratch-evidence git-mv'd into the batch evidence, close record filled, final gate next; no push/merge (not granted)."
-    }
-  ],
+  "decisions_log": [],
   "obsidian_synced": false,
-  "created_at": "2026-10-26T10:32:12.947365"
+  "created_at": "2026-10-29T07:57:06.944896"
 }

@@ -1,0 +1,23 @@
+# RC-1 / RC-2 probes — 2026-10-29 (P0, batch 2026-10-29-batch-01)
+$ git fetch origin && git rev-parse origin/main && git merge-base HEAD origin/main && git rev-parse HEAD
+9cc7d4e20db24dbe928a2b95045a8ef120ccedd1
+9cc7d4e20db24dbe928a2b95045a8ef120ccedd1
+9da7438d906d42b8527bab7b309903937d462578
+$ git rev-list --count origin/main..HEAD ; git rev-list --count HEAD..origin/main
+7
+0
+$ git show origin/main:taskboard/keymap.py | grep -n 'Key("H"'
+(exit 1)
+$ git ls-tree origin/main taskboard/ | grep report
+100644 blob 16b85f8f216785312d7daa6ee8516fb6a4297ed2	taskboard/report.py
+$ git ls-tree origin/main taskboard/report_html.py taskboard/report_workspace.py taskboard/report_deck.py | wc -l
+0
+$ git ls-remote --exit-code --heads origin
+90b1b1919c43af24ae8ae35c003bdf8e63e96002	refs/heads/batch-04-reconstruction
+0f1f025600590442a580481a2a9798cb8f4a0a9f	refs/heads/fix-people-nav-none
+4a4dd6a1c9487369e76ee08a82d3501490997ef3	refs/heads/kanban-variants
+9cc7d4e20db24dbe928a2b95045a8ef120ccedd1	refs/heads/main
+b6adac83bd6489d57babec2b08a56bb95f7e0f8c	refs/heads/view-survival-law
+(exit 0)
+$ git log -1 --format="%ci %h" origin/main
+2026-10-26 11:59:31 -0600 9cc7d4e
