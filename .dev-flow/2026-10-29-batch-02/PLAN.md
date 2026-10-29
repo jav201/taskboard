@@ -21,7 +21,7 @@ orchestrator presents the full plan in-conversation at each phase gate.
 | Project | taskboard |
 | Batch | 2026-10-29-batch-02 |
 | Objective | `taskboard --report` exports the new HTML reports (workspace B and deck C) through the code path the `H` modal uses, asks which board when the registry holds more than one (number, enter = default, a = all, q/EOF = exit 1, non-TTY empty = exit 2), keeps PROJECT as the project scope, refuses a missing --board path before building anything, and retires the old static report from the CLI (CR-1..CR-5) |
-| Last updated | P0 · 2026-10-29 |
+| Last updated | P2 · 2026-10-29 |
 | Standing authorization | The operator (`username_subject`), 2026-10-29, on the review of `2026-10-29-batch-01` (which answered `"push": "si"`): «Que el comando --report exporte el html, que pregunte por el board.», quoted in `.dev-flow/COMMISSION-cli-report-html.md`; the orchestrator's task: gates close under it, «Do NOT push or merge». Read from the commission and the task: autonomy over the gates P0..P5; push and merge NOT granted; a HIGH finding blocks regardless and returns to the operator; independent review by spawned reviewers (code-reviewer, security-reviewer for CR-5, qa-reviewer at P4). |
 | First gate | start run (`evidence/gate-start.txt`, over the closed 2026-10-29-batch-01 record, after the rollover re-stamped `base_ref`): exit 0 · 0 block · `V7`: bundle identical to the manifest it ships, both directions (57 declared files unmoved, 0 undeclared) at `2026-10-12-rev102` · `V25`: origin answered (5 refs, newest 0.01 day) · `V30` half (3.12.7 witnessed). The pre-rollover `--brief` run at the start also read 0 block / 180 notice. |
 | Premises / RC-1 | `origin/main` verified at `4ca4a7d` (`4ca4a7d0e2de3c17ecc0f5231660e309b2cb50b6`, 2026-10-29 11:55 -0600) after `git fetch origin`; RC-1(a): HEAD is 0 behind and 1 ahead (the commission commit) — no rebase; RC-1(b): the story is NOT already shipped — `git show origin/main:taskboard/__main__.py` still imports `write_report` at line 73 and has no `report_html` (`evidence/rc-p0.txt`); RC-2: `git ls-remote --exit-code --heads origin` exit 0, 5 heads. Premises: the in-app `H` path (`report_html.extract` + `write_reports`) is the single code path; synthetic data only; CLI tests are subprocesses on a temp HOME and USERPROFILE. |
@@ -54,7 +54,7 @@ The trigger evaluation `state.json`'s `triggers.record` points at: one row per t
 
 ## Where we are
 
-P0 intake. The batch opened by rollover from `2026-10-29-batch-01`; the commission is committed (`45649ba`). Owed next: P1 requirements (one story, five HLR, the IFC, the ATs), then P2 review.
+P1 requirements are written and the gate closed under the standing authorization (`evidence/gate-p1.txt`, 0 block): US-4101, HLR-4101..4105, 13 LLRs, the `report-cli` flow, AT-4101..AT-4107. The station is P2: `qa-reviewer` (testability) and `security-reviewer` (family C fired) are spawned over the contract. Owed next: the P2 gate, then increment 001.
 
 ## Objective
 
@@ -64,8 +64,10 @@ P0 intake. The batch opened by rollover from `2026-10-29-batch-01`; the commissi
 
 | Story / station | Status | Notes |
 |---|---|---|
-| P0 | in progress | rollover done; plan, triggers and gate recorded |
-| US-4101 | not started | the operator's words, refined at P1 |
+| P0 | closed | rollover, plan, triggers, gate (`evidence/gate-p0.txt`) |
+| P1 | closed | contract, ledger (empty), scan, gate (`evidence/gate-p1.txt`) |
+| P2 | in progress | reviewers spawned |
+| US-4101 | READY | HLR-4101..4105 |
 
 ## Roadmap + increment plan
 
