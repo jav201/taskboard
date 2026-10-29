@@ -346,14 +346,31 @@ share one history), or when that board's file is missing or unreadable.
 From the shell:
 
 ```powershell
-taskboard --report                       # the whole board
+taskboard --report                       # the reports of a board, asking which one
 taskboard --report "Website Redesign"    # one project
+taskboard --report --report-kind deck    # only the deck (workspace | deck | both)
+taskboard --board PATH --report          # that file, no question
 ```
 
-Each writes one self-contained HTML file to a `reports` folder beside your board file and
-prints the path. It shows counts and dates only — no forecasts — and never modifies an
-existing board (pointed at a board file that does not exist yet, it creates the demo board
-first, as the app does). An unknown project name exits with code 2 and lists the projects.
+`--report` writes the same two HTML reports as `H` in the app: the interactive workspace and the
+deck. They land in a `reports` folder beside the board's file, and the command prints each path on
+its own line (stdout). It does not start the app, and it only reads: no board file and no
+registry entry is written, and a `--board PATH` is not added to your boards. The old static
+report is no longer written.
+
+With more than one board in your list, the command prints them numbered (the default board
+marked) and asks on stdin: a number picks that board, an empty line takes the default, `a` takes
+every board, `q` quits. `a` combines all the boards' titles, notes, links and people into one
+pair of files in the default board's `reports` folder, so do not run it into a folder you share.
+With one board, or with `--board PATH` or `--open PATH`, it does not ask. A piped answer works
+(`echo 2 | taskboard --report`).
+
+`PROJECT` limits the files to that project of the chosen board (it cannot be combined with `a`).
+Exit code 2: an unknown project (the message lists the board's projects), a board file that does
+not exist (the command never creates one), or stdin that is not a terminal and gave no answer
+(the message lists the boards and says to pass `--board PATH`). Exit code 1: `q`, or the end of
+the input at the question (a terminal such as Windows `NUL` counts here), or reports that could
+not be written.
 
 ## Clocks
 
@@ -404,7 +421,8 @@ files that carry your board's text.
 | `taskboard` | Run the app: the home when you have several boards, else `~/.taskboard/board.json` |
 | `taskboard --board PATH` | Run it on another board file, and add that file to your boards (an archived one comes back) |
 | `taskboard --open PATH` | Open an existing board file without adding it to your boards: the head row says `<name> · not listed`, the home does not open at start, and projects cannot be moved out of it |
-| `taskboard --report [PROJECT]` | Write a report and exit |
+| `taskboard --report [PROJECT]` | Write the workspace and deck HTML reports of a board (it asks which, when you have several) and exit |
+| `taskboard --report-kind {workspace,deck,both}` | With `--report`: which report to write (default `both`) |
 
 `python -m taskboard` is the same command.
 

@@ -1,0 +1,48 @@
+__main__.py sha256 before: d64642da58f1a607771e7f4ca157fa6d48df0a6ae81ad60d55d9c013ff4a5cb4
+BASELINE (-k report): exit 0, failed none | 32 passed in 23.31s
+M01 KILLED: LLR-4104.2: the registry read with `load`, which copies an unreadable file aside
+    -k 'TC_4110': exit 1, red ['test_TC_4110_a_corrupt_registry_people_and_marks_are_not_copied_aside'] | 1 failed, 1 passed, 30 deselected in 2.04s
+M02 KILLED: LLR-4102.2: an invalid answer takes the default instead of asking again
+    -k 'AT_4103 or TC_4103': exit 1, red ['test_AT_4103_q_and_an_end_of_input_after_a_bad_answer_exit_1[x\\n]', 'test_AT_4103_q_and_an_end_of_input_after_a_bad_answer_exit_1[9\\n]', 'test_AT_4103_q_and_an_end_of_input_after_a_bad_answer_exit_1[0\\n]', 'test_AT_4103_q_and_an_end_of_input_after_a_bad_answer_exit_1[-1\\n]'] | 5 failed, 4 passed, 23 deselected in 4.41s
+M03 KILLED: LLR-4102.3: an empty piped stdin exits 1, not 2
+    -k 'AT_4103 or TC_4103': exit 1, red ['test_AT_4103_empty_piped_stdin_exits_2_with_the_list', 'test_TC_4103_the_prompt_answers'] | 2 failed, 7 passed, 23 deselected in 4.34s
+M04 KILLED: LLR-4102.4 negative control: `a` reads only the default board
+    -k 'AT_4102': exit 1, red ['test_AT_4102_a_writes_reports_covering_all_boards'] | 1 failed, 31 deselected in 0.92s
+M05 KILLED: LLR-4103.1 negative control: PROJECT ignored
+    -k 'AT_4104': exit 1, red ['test_AT_4104_board_flag_does_not_prompt_and_project_scopes'] | 1 failed, 31 deselected in 1.49s
+M06 KILLED: LLR-4101.2 negative control: the files written beside the CWD
+    -k 'AT_4101': exit 1, red ['test_AT_4101_two_boards_pick_two_writes_b_and_c_for_board_two'] | 1 failed, 31 deselected in 0.92s
+M07 KILLED: LLR-4104.3 negative control: the raw board name printed
+    -k 'TC_4106': exit 1, red ['test_TC_4106_names_and_paths_are_printed_without_control_bytes'] | 1 failed, 1 passed, 30 deselected in 1.48s
+M08 KILLED: LLR-4104.1 negative control: a missing --board path is not refused (the loader seeds it)
+    -k 'AT_4105': exit 1, red ['test_AT_4105_missing_board_path_is_refused_and_creates_nothing'] | 1 failed, 31 deselected in 0.91s
+M09 KILLED: LLR-4104.2 negative control: a --board path is registered
+    -k 'TC_4113': exit 1, red ['test_TC_4113_a_board_flag_registers_nothing'] | 1 failed, 31 deselected in 0.95s
+M10 KILLED: LLR-4101.1: --report-kind ignored
+    -k 'TC_4101': exit 1, red ['test_TC_4101_report_kind_selects_the_files[workspace-expected0]', 'test_TC_4101_report_kind_selects_the_files[deck-expected1]'] | 2 failed, 1 passed, 29 deselected in 2.07s
+M12 KILLED: LLR-4101.2: the write unguarded (an OSError reaches the user as a traceback)
+    -k 'TC_4111': exit 1, red ['test_TC_4111_a_reports_path_that_cannot_be_a_folder_exits_1'] | 1 failed, 31 deselected in 1.00s
+M13 KILLED: LLR-4102.5: a closed stdin (None) raises
+    -k 'TC_4110': exit 1, red ['test_TC_4110_stdin_that_misbehaves_never_tracebacks'] | 1 failed, 1 passed, 30 deselected in 2.03s
+M14 KILLED: LLR-4104.3: stdout paths collapsed
+    -k 'TC_4106': exit 1, red ['test_TC_4106_a_path_with_two_spaces_is_printed_unchanged'] | 1 failed, 1 passed, 30 deselected in 2.02s
+M15 KILLED: LLR-4102.2: the wrong board marked as the default
+    -k 'TC_4103': exit 1, red ['test_TC_4103_the_prompt_answers'] | 1 failed, 1 passed, 30 deselected in 0.37s
+M16 KILLED: LLR-4102.2: `q` exits 0
+    -k 'AT_4103': exit 1, red ['test_AT_4103_q_and_an_end_of_input_after_a_bad_answer_exit_1[q\\n]', 'test_AT_4103_q_and_an_end_of_input_after_a_bad_answer_exit_1[Q\\n]'] | 2 failed, 5 passed, 25 deselected in 4.29s
+M17 KILLED: LLR-4102.4: the fallback folder is the last readable board, not the first
+    -k 'TC_4112': exit 1, red ['test_TC_4112_a_falls_back_when_the_default_board_is_unreadable'] | 1 failed, 31 deselected in 0.92s
+M18 KILLED: LLR-4102.4: the skipped boards are not counted
+    -k 'TC_4104': exit 1, red ['test_TC_4104_a_skips_and_counts_a_missing_board'] | 1 failed, 31 deselected in 0.90s
+M20 KILLED: LLR-4104.3: bidi overrides and separators kept
+    -k 'TC_4106': exit 1, red ['test_TC_4106_names_and_paths_are_printed_without_control_bytes'] | 1 failed, 1 passed, 30 deselected in 1.48s
+M21 KILLED: LLR-4101.1: --report-kind accepted without --report
+    -k 'TC_4102': exit 1, red ['test_TC_4102_report_kind_is_validated'] | 1 failed, 31 deselected in 120.96s (0:02:00)
+M22 KILLED: LLR-4103.1: PROJECT with `a` accepted
+    -k 'TC_4105': exit 1, red ['test_TC_4105_project_with_a_is_refused'] | 1 failed, 31 deselected in 0.93s
+M23 KILLED: SEC-N2: a missing registry file raises instead of reading as absent
+    -k 'TC_4108': exit 1, red ['test_TC_4108_one_board_does_not_prompt_and_a_missing_default_is_refused'] | 1 failed, 31 deselected in 1.57s
+M24 KILLED: LLR-4105.1: the CLI reaches the old report again
+    -k 'TC_4109': exit 1, red ['test_TC_4109_the_source_and_the_readme_pin_the_new_behaviour'] | 1 failed, 31 deselected in 0.37s
+__main__.py sha256 after restore: d64642da58f1a607771e7f4ca157fa6d48df0a6ae81ad60d55d9c013ff4a5cb4 (IDENTICAL)
+killed 22, survived 0

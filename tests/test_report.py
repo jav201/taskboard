@@ -12,6 +12,7 @@ project by hue alone.
 """
 
 import hashlib
+from pathlib import Path
 import json
 import re
 import subprocess
@@ -257,36 +258,40 @@ def _home_env(tmp_path):
 
 
 def test_the_cli_writes_a_report_and_says_where(tmp_path):
+    # batch 2026-10-29-batch-02 (LLR-4105.3): `--report` now writes the two new HTML
+    # reports through the `H` path; this test keeps its two facts: the command says where
+    # it wrote, and the board it read is byte-identical afterwards.
     b = loaded(tmp_path, "cli.json")
     path = tmp_path / "cli.json"
     before = hashlib.md5(path.read_bytes()).hexdigest()
     r = subprocess.run([sys.executable, "-m", "taskboard", "--board", str(path),
-                        "--report"], capture_output=True, text=True, env=_home_env(tmp_path))
+                        "--report"], capture_output=True, text=True, env=_home_env(tmp_path),
+                       cwd=Path(__file__).resolve().parents[1])
     assert r.returncode == 0, r.stderr
     assert not (tmp_path / "home" / ".taskboard").exists()     # --report registers nothing
-    assert "Report written to" in r.stdout
-    written = r.stdout.split("Report written to", 1)[1].strip()
-    assert written.endswith(".html")
-    from pathlib import Path
-    assert Path(written).exists()
+    written = r.stdout.split()
+    assert [Path(p).name.split("-")[0] for p in written] == ["workspace", "deck"]
+    assert all(Path(p).exists() and Path(p).parent == tmp_path / "reports" for p in written)
+    assert "Report written to" not in r.stdout
     assert hashlib.md5(path.read_bytes()).hexdigest() == before   # still read-only
 
 
 def test_the_cli_scopes_to_a_project_and_refuses_an_unknown_one(tmp_path):
     loaded(tmp_path, "cli2.json")
     path = tmp_path / "cli2.json"
+    here = Path(__file__).resolve().parents[1]
     ok = subprocess.run([sys.executable, "-m", "taskboard", "--board", str(path),
                          "--report", "Platform"], capture_output=True, text=True,
-                        env=_home_env(tmp_path))
-    assert ok.returncode == 0 and "platform-" in ok.stdout
+                        env=_home_env(tmp_path), cwd=here)
+    assert ok.returncode == 0 and "workspace-cli2-platform-" in ok.stdout
 
     bad = subprocess.run([sys.executable, "-m", "taskboard", "--board", str(path),
                           "--report", "Nope"], capture_output=True, text=True,
-                         env=_home_env(tmp_path))
+                         env=_home_env(tmp_path), cwd=here)
     assert bad.returncode != 0
     assert "no project named" in (bad.stderr + bad.stdout)
     assert "Website Redesign" in (bad.stderr + bad.stdout)   # it names the real ones
-    assert not list((tmp_path / "reports").glob("nope-*.html"))
+    assert not list((tmp_path / "reports").glob("*nope*.html"))
 
 
 # --------------------------------------------------------------------------- #
