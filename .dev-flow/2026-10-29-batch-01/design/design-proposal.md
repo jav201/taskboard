@@ -96,26 +96,23 @@ order, then the board's project order (Inbox last), then the board's task order.
 | `meta.scope` | `{kind: "all" \| "project", project: str \| None, boards: [str]}` | `project` = the project key in scope `p`; `boards` = board NAMES in scope (the header's `All loaded boards (N): <names>` / `Project <name> on <board>`) |
 | `meta.view` | `dict \| None` | `None` in an exported report; in a downloaded view: `{state: <the hash state object>, summary: str, exported: str date}` |
 | `boards[]` | `{key: str, name: str, colour: str}` | `key` = registry id, or `#<position>` for an unlisted board (id None) |
-| `projects[]` | `{key, board, id, name, colour, archived, inbox, status, closed, momentum, open, done, late, worst, high, due, due_word, phases}` | `key` = `<board key>:<project id>` or `<board key>:inbox`; `board` = board key; `id` str or None (Inbox); `inbox` bool; `status` = the lane status (`on_track`, `at_risk`, …); `closed` bool; `momentum` = `views.sitting(...)` or `"nothing open"`; `open`/`done`/`late`/`high` ints; `worst` int or None; `due` date or None; `due_word` = `report._due_word(due_in, closed)` (the project's own word); `phases` = the board's phase list |
+| `projects[]` | `{key, board, id, name, colour, archived, status, momentum, open, done, late, worst, high, due, due_word, phases}` | `key` = `<board key>:<project id>` or `<board key>:inbox`; `board` = board key; `id` str or None (`None` marks the Inbox — no separate flag); `status` = the lane status (`on_track`, `at_risk`, …); `momentum` = `views.sitting(...)` or `"nothing open"`; `open`/`done`/`late`/`high` ints; `worst` int or None; `due` date or None; `due_word` = `report._due_word(due_in, closed)` computed inside `extract` (the project's own word; `closed` is read there, never emitted); `phases` = the board's phase list |
 | `tasks[]` | `{key, project, board, title, phase, priority, start, due, due_in, age, done, archived, status, blocked, milestone, mark, mentions, deps, chain, due_word, notes_html, notes_text, urls}` | `key` = `<board key>:<task id>`; `project`/`board` = keys; `priority` str; `start`/`due` date or None; `due_in` int or None; `age` = `models.days_in_phase` int or None; `status` ∈ `archived` > `done` > `late` > `open` (§1.3); `mark` = class key or None; `mentions` = person ids; `deps` = task keys this task waits on; `chain` = task keys downstream of it (transitive); `due_word` = `report._due_word(due_in)`; `notes_html` = `notes_html(notes, people)`; `notes_text` = the notes with markers dropped (search only); `urls` = `views.valid_url` results only |
 | `people[]` | `{id: str, name: str, role: str}` | directory people mentioned in at least one task in scope |
 | `marks[]` | `{key: str, name: str, shape: str, colour: str}` | classes used by at least one milestone in scope |
 
-**Open for the PDR (P-1):** `priority`, `age`, `due_in`, `notes_text`, `inbox`, `closed`, `high`,
-`worst` and `v` are facts both renderers need (B's table and search, C's meta line and slide
-header) that LLR-3101.1's list does not name. The proposal is to name them in LLR-3101.1 by a
-ledger entry at the PDR close; until then they are design characteristics of this record.
+**Closed by the PDR (P-1, C1, `LED-2026-10-29-batch-01.22`):** `priority`, `age`, `due_in`, `notes_text`, `high`, `worst`, `v`, `tasks[].board`, `projects[].id` and `people[].role` are admitted in LLR-3101.1 (the table above is the shape); `closed` and `inbox` are dropped (`closed` only fed the project's due word, the Inbox is the project whose `id` is `None`). Discharged.
 
 ### 3.2 `report_html` — public functions
 
 | Signature | Behaviour |
 |---|---|
-| `extract(boards: list[tuple[str \| None, str, str, Board]], people: dict[str, Person], marks: dict[str, Mark], today: date, project: str \| None = None) -> dict` | the §3.1 dict; `boards` = `(registry id, name, colour, board)` from `board_lanes`, `None` boards already skipped by the caller; reads, never writes |
+| `extract(boards: list[tuple[str \| None, str, str, Board]], people: dict[str, Person], marks: dict[str, Mark], today: date, project: str \| None = None) -> dict` | the §3.1 dict; `boards` = `(registry id, name, colour, board)` from `board_lanes`, `None` boards already skipped by the caller; `project` = the project KEY `<board key>:<project id>` that `app` builds, never the bare id (C5); reads, never writes |
 | `notes_html(text: str, people: dict[str, Person]) -> str` | per line: `highlight_segments` → per segment `split_mentions`; each piece `esc`-aped inside `<span class="hl-<tone>">` (a known mention `<span class="hl-<tone> mention">@<name></span>`); lines joined by `<br>` — only constant tags |
 | `embed_json(d: dict) -> str` | `json.dumps(d, ensure_ascii=False, separators=(",", ":"))` then `<` → `\u003c`, `>` → `\u003e`, `&` → `\u0026` |
 | `slug(name: str) -> str` | `"".join(c.lower() if c.isalnum() else "-" for c in name).strip("-")[:40]` (the CLI's rule, pinned by TC-3123) |
 | `report_name(kind: str, today: date, board_slug: str \| None = None, project_slug: str \| None = None) -> str` | `workspace-<date>.html`, or `workspace-<board slug>-<project slug>-<date>.html`; `kind` ∈ {`workspace`, `deck`} |
-| `write_reports(d: dict, kinds: tuple[str, ...], folder: Path, today: date) -> list[Path]` | `folder.mkdir(parents=True, exist_ok=True)`; for each kind, renders through a function-local `importlib.import_module(RENDERERS[kind])` with `RENDERERS = {"workspace": "taskboard.report_workspace", "deck": "taskboard.report_deck"}` (written in 001, so 003 adds no line here) and writes UTF-8; overwrites a same-day file; returns the paths in `kinds` order |
+| `write_reports(d: dict, kinds: tuple[str, ...], folder: Path, today: date) -> list[Path]` | `folder.mkdir(parents=True, exist_ok=True)`; for each kind, renders each kind through a plain function-local `from . import report_workspace` / `from . import report_deck` (C4: no `importlib`, which the AST walk cannot see; the deck branch is written in 001 and its import resolves once 003 adds the module, so 003 adds no line here) and writes UTF-8; overwrites a same-day file; returns the paths in `kinds` order |
 
 ### 3.3 `report_workspace` — page structure and JS inventory
 
@@ -199,7 +196,7 @@ dict's filtered `urls` and the page's `safeHref` re-check.
 - The scope mark is `●`/`○`; `p`/`o` move it (re-render, modal stays); with no current project the `p` row reads `no project selected` and `p` leaves `o` marked.
 - The destination line is the open board's `reports/` folder; the board count is the readable lanes of `board_lanes` (skipped ones are counted in the toast, not here).
 - `b`/`c`/`a` dismiss `(kinds, scope)`; `escape` dismisses `None` and writes nothing.
-- `app.TaskboardApp.action_report_export`: lanes → `extract` → `write_reports` → `notify("Report written: <name> to <dir> — o opens it", title="Report", severity="information", timeout=10, markup=False)` (both names joined by ` and `; ` · <n> board(s) skipped`); the offer = `(path, deadline = self._report_clock() + 10)`; `_report_clock = time.monotonic` (the test seam).
+- `app.TaskboardApp.action_report_export`: lanes → `extract` → `write_reports` → `notify("Report written: <name> to <dir> — o opens it (10 s)", title="Report", severity="information", timeout=10, markup=False)` (both names joined by ` and `; ` · <n> board(s) skipped`); the offer = `(path, deadline = self._report_clock() + 10)`; `_report_clock = time.monotonic` (the test seam).
 - `action_open_url`: if an offer is live (`_report_clock() < deadline`), open the offer's path (`os.startfile` on Windows, else `webbrowser.open(path.as_uri())`, `OSError` swallowed) and return; else today's behaviour.
 - `KEYMAP` row: `Key("H", "H", "report_export", "Report", group="misc", bar=False)`; README's key table gains `H`.
 
@@ -219,7 +216,9 @@ dict's filtered `urls` and the page's `safeHref` re-check.
 | the hash grammar `#v=1&p=..&s=..&u=..&m=..&from=..&to=..&q=..&sec=..&z=..` | — (NEW) | LLR-3102.3 | the page, `meta.view`, bookmarks | versioned by `v` |
 | `KEYMAP` | no `H` | one `H` row | `app` bindings, help, palette, README law | n/a (one lane) |
 | `action_open_url` | opens task URLs | the offer branch first | the `o` key | n/a |
-| `report._e`, `report._due_word`, `views.valid_url`, `views.highlight_segments`, `views.lanes_of`, `views.sitting`, `people.split_mentions`, `people.mention_ids`, `models.parse_iso`, `models.days_in_phase`, `app.board_lanes`, `keymap.key_line` | — | **byte-unchanged**, consumed | everyone | **frozen** — a change returns to the trunk (A3) |
+| `report._e`, `report._due_word`, `views.valid_url`, `views.HEX`, `views.highlight_segments`, `views.lanes_of`, `views.sitting`, `people.split_mentions`, `people.mention_ids`, `models.parse_iso`, `models.days_in_phase`, `app.board_lanes`, `keymap.key_line` | — | **byte-unchanged**, consumed | everyone | **frozen** — a change returns to the trunk (A3) |
+
+**PDR conditions discharged in this file (`LED-2026-10-29-batch-01.22`):** C1 (§3.1 — the dict shape), C3 (this §4 — `views.HEX` frozen and consumed), C4 and C5 (§3.2 — `write_reports` imports, `project` is the key). C2 and C6–C14 land in the contract; the increment-owned conditions are listed in `PDR-2026-10-29-batch-01.md`.
 
 ## 5 · Proposed test cases
 
@@ -297,7 +296,7 @@ Layer 0 applies to `extract`, `notes_html`, `embed_json`, `slug` (cyclomatic ≥
 | A subprocess per app-level browser check as the default | slower and harder to debug than `asyncio.to_thread`; kept as the declared fallback (§3.6) |
 | Default scope `p` | D8 keeps `o` (the round's default, HR-2) with two visible controls |
 
-Risks: the dict's open facts (P-1) need a ledger entry at the PDR close; a fact the deck lacks at
+Risks: the dict's open facts (P-1) were closed at the PDR by `LED-2026-10-29-batch-01.22`; a fact the deck lacks at
 003 re-opens this PDR; the gantt SVG's width at 390 px needs `.gantt-wrap` scrolling, not page
 scrolling (TC-3116); the browser tests are invisible to CI (declared in `01-requirements.md` §6.3).
 

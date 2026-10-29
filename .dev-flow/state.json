@@ -232,7 +232,7 @@
     }
   ],
   "guided": false,
-  "current_station": "PDR",
+  "current_station": "P3",
   "phase_status": "in-progress",
   "stations_active": [
     "P0",
@@ -334,6 +334,11 @@
       "station": "P2",
       "date": "2026-10-29",
       "decision": "P2 approved under the batch's standing authorization — round 2: architect, qa-reviewer, security-reviewer approve; S1 HIGH discharged at contract level; LED .21 folds the round-2 minors; PDR is next."
+    },
+    {
+      "station": "PDR",
+      "date": "2026-10-29",
+      "decision": "PDR approved with conditions under the batch's standing authorization — architect, qa-reviewer, ux-reviewer; LED .22 discharges the PDR-close conditions C1–C14 at the contract; the increment-owned conditions pass to increments 001–004; P3 is next."
     }
   ],
   "obsidian_synced": false,
