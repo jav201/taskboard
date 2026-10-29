@@ -1,0 +1,30 @@
+HEAD: 18e605706b7810f890d9aa129ae345b9c1e51b98
+cmd: env -u NO_COLOR TASKBOARD_REQUIRE_BROWSER=1 python -m pytest -q -rs -p no:cacheprovider tests/test_agenda.py tests/test_all_agenda.py tests/test_app.py tests/test_archive.py tests/test_backup_write.py tests/test_boards.py tests/test_boards_backlog_round.py tests/test_boards_concurrency.py tests/test_boards_forms.py tests/test_boards_home.py tests/test_boards_move.py tests/test_cascade.py tests/test_cascade_app.py tests/test_cells.py tests/test_chainmap.py tests/test_chainmap_app.py tests/test_cities.py tests/test_cleanup.py tests/test_colour_budget.py tests/test_colour_budget_app.py tests/test_control_bytes.py tests/test_dependencies.py tests/test_details_grid.py tests/test_details_links.py tests/test_details_markup.py tests/test_directory_refresh.py tests/test_edit_window.py tests/test_emoji_picker.py tests/test_english.py tests/test_field.py tests/test_flow.py tests/test_flow_view.py tests/test_focus.py tests/test_gantt.py tests/test_gantt_board.py tests/test_gantt_link.py tests/test_gantt_milestones.py tests/test_gantt_polish.py tests/test_help_clip.py
+
+C:\Users\jjgh8\anaconda3\Lib\site-packages\pytest_asyncio\plugin.py:207: PytestDeprecationWarning: The configuration option "asyncio_default_fixture_loop_scope" is unset.
+The event loop scope for asynchronous fixtures will default to the fixture caching scope. Future versions of pytest-asyncio will default the loop scope for asynchronous fixtures to function scope. Set the default fixture loop scope explicitly in order to avoid unexpected behavior in the future. Valid fixture loop scopes are: "function", "class", "module", "package", "session"
+
+  warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCOPE_UNSET))
+........................................................................ [  4%]
+........................................................................ [  9%]
+........................................................................ [ 14%]
+........................................................................ [ 19%]
+........................................................................ [ 24%]
+........................................................................ [ 29%]
+........................................................................ [ 34%]
+........................................................................ [ 39%]
+........................................................................ [ 44%]
+........................................................................ [ 49%]
+........................................................................ [ 54%]
+........................................................................ [ 59%]
+........................................................................ [ 64%]
+........................................................................ [ 69%]
+........................................................................ [ 74%]
+........................................................................ [ 79%]
+........................................................................ [ 84%]
+........................................................................ [ 89%]
+........................................................................ [ 94%]
+........................................................................ [ 99%]
+...                                                                      [100%]
+1443 passed in 296.75s (0:04:56)
+exit: 0

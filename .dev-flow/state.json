@@ -232,8 +232,8 @@
     }
   ],
   "guided": false,
-  "current_station": "P4",
-  "phase_status": "in-progress",
+  "current_station": "P5",
+  "phase_status": "closed",
   "stations_active": [
     "P0",
     "ARQ",
@@ -374,6 +374,16 @@
       "station": "DDR",
       "date": "2026-10-29",
       "decision": "DDR approved under the batch's standing authorization — C-DDR-1 discharged by increment 005; P4 is next."
+    },
+    {
+      "station": "P4",
+      "date": "2026-10-29",
+      "decision": "P4 approved under the batch's standing authorization — 3332 passed / 0 failed / 0 skipped in 3 sequential chunks (baseline 3281 + 51 new nodes); qa-reviewer accept with notes; P5 close is next."
+    },
+    {
+      "station": "P5",
+      "date": "2026-10-29",
+      "decision": "P5 close approved under the batch's standing authorization — 26 requirement ids folded into REQUIREMENTS.md; 05-close.md written (HR-1: the CLI --report stays as it is; residual risks D8, SD2 and the toast path wrap accepted); BACKLOG refreshed with the batch's carries; deliverable and close commits on the local branch feat/html-report; push and merge NOT granted, the operator owns the landing; dev-flow-sync not-run (no export destination)."
     }
   ],
   "obsidian_synced": false,

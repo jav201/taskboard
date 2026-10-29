@@ -1,0 +1,133 @@
+<!doctype html>
+<html lang="es"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Revisión: reportes HTML</title>
+<style>
+:root{--bg:#ffffff;--fg:#1f2328;--mut:#59636e;--line:#d0d7de;--card:#f6f8fa;--acc:#0f766e;--warn:#b45309;--bad:#be123c}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--bg:#0d1117;--fg:#e6edf3;--mut:#8b98a5;--line:#30363d;--card:#161b22;--acc:#2dd4bf;--warn:#f59e0b;--bad:#fb7185}}
+:root[data-theme="dark"]{--bg:#0d1117;--fg:#e6edf3;--mut:#8b98a5;--line:#30363d;--card:#161b22;--acc:#2dd4bf;--warn:#f59e0b;--bad:#fb7185}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font:15px/1.55 system-ui,-apple-system,"Segoe UI",sans-serif}
+main{max-width:64rem;margin:0 auto;padding:1.5rem 16px 4rem}
+h1{font-size:1.55rem;margin:.2rem 0 .3rem}h2{font-size:1.15rem;margin:2.4rem 0 .6rem;padding-bottom:.3rem;border-bottom:1px solid var(--line)}
+h3{font-size:1rem;margin:1.4rem 0 .4rem}
+.sub{color:var(--mut);margin:0 0 1rem}
+.bluf{background:var(--card);border:1px solid var(--line);border-left:4px solid var(--acc);border-radius:8px;padding:.9rem 1rem}
+figure{margin:1rem 0;background:var(--card);border:1px solid var(--line);border-radius:8px;padding:.6rem}
+figure img{display:block;max-width:100%;height:auto;border-radius:4px;cursor:zoom-in}
+figcaption{color:var(--mut);font-size:.88rem;margin-top:.4rem}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(15rem,1fr));gap:.8rem}
+table{border-collapse:collapse;width:100%;font-size:.92rem}th,td{border-bottom:1px solid var(--line);padding:.4rem .5rem;text-align:left;vertical-align:top}
+th{color:var(--mut);font-weight:600}
+code{font-size:.88em;background:var(--card);padding:.05rem .3rem;border-radius:4px}
+.q{background:var(--card);border:1px solid var(--line);border-radius:8px;padding:.8rem 1rem;margin:.8rem 0}
+.q label{display:block;font-weight:600;margin-bottom:.3rem}
+.q .opts label{display:inline-block;font-weight:400;margin-right:1rem}
+textarea{width:100%;min-height:4.2rem;font:inherit;background:var(--bg);color:var(--fg);border:1px solid var(--line);border-radius:6px;padding:.4rem}
+button{font:inherit;background:var(--acc);color:#fff;border:0;border-radius:6px;padding:.55rem 1rem;cursor:pointer}
+.ok{color:var(--acc)}.warn{color:var(--warn)}
+a{color:var(--acc)}
+#zoom{position:fixed;inset:0;background:rgba(0,0,0,.85);display:none;overflow:auto;z-index:9}
+#zoom img{display:block;margin:1rem auto;max-width:none}
+#out{white-space:pre-wrap;font-size:.85rem;background:var(--card);border:1px solid var(--line);border-radius:6px;padding:.6rem;display:none}
+</style></head>
+<body><main>
+<h1>Reportes HTML desde la app — revisión antes del push</h1>
+<p class="sub">Batch <code>2026-10-29-batch-01</code> · rama <code>feat/html-report</code> · 2026-10-29 · sin push ni merge</p>
+
+<div class="bluf"><strong>Conclusión:</strong> la app ya exporta los dos reportes que elegiste. <kbd>H</kbd> abre un modal: <kbd>b</kbd> workspace (variante B), <kbd>c</kbd> deck (variante C), <kbd>a</kbd> ambos; alcance <kbd>p</kbd> este proyecto u <kbd>o</kbd> todos los boards. Dentro del workspace hay controles nuevos (HR-3) y «Export this view» (HR-4): imprimir a PDF lo configurado, o descargar un HTML nuevo que <em>solo</em> contiene lo filtrado. Lo que te pido: juzgar los controles de HR-3 y las dos salidas de HR-4 antes del push. Al final hay un formulario con «Exportar respuestas».</div>
+
+<h2>1. Lo que decides aquí</h2>
+<ul>
+<li><strong>Controles de HR-3</strong> (proyectos, estado, personas, clases, fechas, secciones, Reset, contador): ¿claros y rápidos?</li>
+<li><strong>Las dos salidas de HR-4</strong>: ¿se entiende cuál deja fuera la información oculta? (solo la descarga; el PDF solo la oculta en papel, el HTML original la conserva).</li>
+<li><strong>Carpeta de destino</strong>: los archivos caen en <code>reports\</code> junto al board abierto. Con alcance <kbd>o</kbd> el archivo lleva <em>todos</em> los boards cargados. ¿Esas carpetas se comparten con clientes? (pregunta PU3 de la revisión de UX).</li>
+</ul>
+
+<h2>2. El workspace (variante B) con los controles nuevos</h2>
+<p>Todo el estado de los controles vive en el <code>#hash</code> de la URL: una vista configurada se puede guardar como marcador o reabrir. El contador dice «N filters active» y Reset vuelve a cero. Cada control es un elemento nativo alcanzable con Tab.</p>
+<figure><img src="evidence/captures/workspace-configured-view.png" alt="Workspace con dos proyectos de Client A y estado open+late">
+<figcaption>Vista configurada: solo los proyectos de Client A, estados open y late — «2 filters active». Abajo, las cuatro secciones (gantt, tabla, notas, milestones) y «Export this view» con su leyenda junto a cada botón.</figcaption></figure>
+<div class="grid">
+<figure><img src="evidence/captures/workspace-desktop-light.png" alt="Workspace escritorio claro"><figcaption>Escritorio 1366, tema claro, sin filtros.</figcaption></figure>
+<figure><img src="evidence/captures/workspace-desktop-dark.png" alt="Workspace escritorio oscuro"><figcaption>Escritorio 1366, tema oscuro.</figcaption></figure>
+<figure><img src="evidence/captures/workspace-phone-light.png" alt="Workspace teléfono claro"><figcaption>Teléfono 390: contador y Reset en la primera pantalla.</figcaption></figure>
+<figure><img src="evidence/captures/workspace-phone-dark.png" alt="Workspace teléfono oscuro"><figcaption>Teléfono 390, oscuro.</figcaption></figure>
+</div>
+<p>Archivos reales para abrir en tu navegador: <a href="evidence/captures/reports/workspace-2026-10-29.html">workspace-2026-10-29.html</a> · prueba esta vista: <a href="evidence/captures/reports/workspace-2026-10-29.html#v=1&amp;p=client-a%3Aprel,client-a%3Apdoc&amp;s=open,late">misma vista por hash</a>.</p>
+
+<h2>3. Exportar la vista configurada (HR-4)</h2>
+<h3>a) Print / Save as PDF</h3>
+<p>Imprime solo la vista: sin controles, con un encabezado que dice qué boards y proyectos se muestran, la fecha de generación y la de impresión. La revisión de diseño (DDR) encontró que el encabezado impreso nombraba boards ocultos y contaba «Projects 2/6», y que la tabla se cortaba: lo corrigió el incremento 005. <span class="warn">Ojo:</span> el PDF solo oculta en papel; el HTML original sigue teniendo todo.</p>
+<div class="grid">
+<figure><img src="evidence/captures/workspace-print-preview.png" alt="Vista previa de impresión"><figcaption>Vista de impresión (794 px): «Boards in this view (1): Client A», todas las columnas dentro de la página.</figcaption></figure>
+<figure><img src="evidence/captures/workspace-downloaded-view.png" alt="Archivo descargado de la vista"><figcaption>b) «Download this view»: el archivo nuevo, reabierto. Sus datos embebidos solo tienen las 7 tareas visibles; 0 títulos ocultos en sus bytes.</figcaption></figure>
+</div>
+<p>Archivos: <a href="evidence/captures/reports/workspace-configured-view.pdf">PDF de la vista</a> · <a href="evidence/captures/reports/workspace-view-2026-10-29.html">HTML descargado de la vista</a>. CSV y JSON dentro del workspace también exportan solo las filas visibles, con protección contra fórmulas de hoja de cálculo.</p>
+
+<h2>4. El deck (variante C)</h2>
+<p>Portada, panorama y una diapositiva por proyecto del alcance; flechas, PageUp/PageDown, Home/End; al imprimir, una diapositiva por página.</p>
+<div class="grid">
+<figure><img src="evidence/captures/deck-desktop-light.png" alt="Deck escritorio claro"><figcaption>Escritorio, claro.</figcaption></figure>
+<figure><img src="evidence/captures/deck-desktop-dark.png" alt="Deck escritorio oscuro"><figcaption>Escritorio, oscuro.</figcaption></figure>
+<figure><img src="evidence/captures/deck-phone-light.png" alt="Deck teléfono claro"><figcaption>Teléfono 390.</figcaption></figure>
+<figure><img src="evidence/captures/deck-phone-dark.png" alt="Deck teléfono oscuro"><figcaption>Teléfono 390, oscuro.</figcaption></figure>
+</div>
+<p>Archivos: <a href="evidence/captures/reports/deck-2026-10-29.html">deck-2026-10-29.html</a> · <a href="evidence/captures/reports/deck.pdf">deck.pdf</a> (una página por diapositiva).</p>
+
+<h2>5. La tecla <kbd>H</kbd> en la app (Windows Terminal real, 118x30)</h2>
+<div class="grid">
+<figure><img src="evidence/captures/terminal/png/report-modal_118x30.png" alt="Modal H"><figcaption>El modal: <code>b workspace · c deck · a both · p &lt;proyecto&gt; · o all boards · esc close</code>, carpeta de destino y nombres de boards.</figcaption></figure>
+<figure><img src="evidence/captures/terminal/png/report-modal-p_118x30.png" alt="Modal con p"><figcaption>Tras <kbd>p</kbd>: la marca pasa al proyecto actual.</figcaption></figure>
+<figure><img src="evidence/captures/terminal/png/report-toast_118x30.png" alt="Toast"><figcaption>Tras <kbd>b</kbd>: el toast nombra el archivo y la carpeta; <kbd>o</kbd> lo abre durante 10 s (una sola vez); después <kbd>o</kbd> vuelve a abrir URLs.</figcaption></figure>
+</div>
+<p>El export SVG/PNG de <kbd>x</kbd> dentro de <kbd>R</kbd> no cambió (conviven).</p>
+
+<h2>6. Decisiones que tomé (bajo tu autorización «decide cómo continuar»)</h2>
+<table><tr><th>Id</th><th>Decisión</th><th>Por qué</th></tr>
+<tr><td>HR-1</td><td>El reporte CLI <code>taskboard --report</code> se queda como está.</td><td>Es un documento de un solo board, sin JavaScript, con sus propias leyes probadas; sirve para scripts. Reemplazarlo cambiaría una salida ya publicada. El reporte nuevo reutiliza sus reglas de honestidad (palabras de vencimiento, «unaged»). Retirarlo o redirigirlo queda en BACKLOG para que lo decidas.</td></tr>
+<tr><td>Una sola extracción</td><td>B y C se generan del mismo diccionario de datos.</td><td>No pueden contradecirse sobre los hechos del board.</td></tr>
+<tr><td>Alcance por defecto</td><td><kbd>o</kbd> todos los boards, como recomendó la ronda.</td><td>Riesgo aceptado y declarado: el modal muestra carpeta y boards antes de escribir; el encabezado del archivo dice el alcance.</td></tr>
+<tr><td>Trabajo terminado</td><td>Una tarea hecha o archivada nunca dice «overdue» (muestra la distancia simple, p. ej. <code>-30d</code>).</td><td>Lo terminado no está atrasado.</td></tr>
+<tr><td>Notas apagadas</td><td>Si la sección de notas está apagada, la descarga quita también las menciones (salvo filtro de persona activo).</td><td>Las menciones salen del texto de las notas retenidas.</td></tr>
+<tr><td>Enlaces</td><td>Solo http/https; todo texto del board escapado.</td><td>El archivo del board se trata como no confiable (hallazgo HIGH de seguridad, cerrado y verificado).</td></tr>
+</table>
+
+<h2>7. Tu veredicto</h2>
+<div class="q"><label>A. Controles de HR-3 (filtros y display)</label>
+<div class="opts"><label><input type="radio" name="hr3" value="ok"> Los apruebo</label><label><input type="radio" name="hr3" value="cambios"> Quiero cambios</label></div>
+<textarea id="hr3n" placeholder="Qué cambiarías (opcional)"></textarea></div>
+<div class="q"><label>B. Exportar la vista (PDF y descarga filtrada)</label>
+<div class="opts"><label><input type="radio" name="hr4" value="ok"> Lo apruebo</label><label><input type="radio" name="hr4" value="cambios"> Quiero cambios</label></div>
+<textarea id="hr4n" placeholder="Qué cambiarías (opcional)"></textarea></div>
+<div class="q"><label>C. ¿Las carpetas de tus boards se comparten con clientes? (destino <code>reports\</code>, alcance <kbd>o</kbd>)</label>
+<div class="opts"><label><input type="radio" name="pu3" value="no"> No, son solo mías</label><label><input type="radio" name="pu3" value="si"> Sí, algunas — cambiar destino o alcance por defecto</label></div>
+<textarea id="pu3n" placeholder="Detalle (opcional)"></textarea></div>
+<div class="q"><label>D. Reporte CLI viejo (<code>--report</code>)</label>
+<div class="opts"><label><input type="radio" name="cli" value="queda"> Que se quede</label><label><input type="radio" name="cli" value="b"> Que pase a ser la variante B</label><label><input type="radio" name="cli" value="retirar"> Retirarlo</label></div></div>
+<div class="q"><label>E. ¿Push y PR?</label>
+<div class="opts"><label><input type="radio" name="push" value="si"> Sí, adelante</label><label><input type="radio" name="push" value="no"> Todavía no</label></div></div>
+<div class="q"><label>Notas generales y peticiones nuevas</label><textarea id="gen" placeholder="Cualquier otra cosa"></textarea></div>
+<button id="exp">Exportar respuestas</button> <span id="msg" class="ok"></span>
+<pre id="out"></pre>
+
+<h2>8. Evidencia (para auditoría)</h2>
+<p>Suite completa en 3 bloques secuenciales, mutaciones por incremento, revisores independientes (arquitecto, código, seguridad, QA, UX) y el validador del flujo: ver <a href="04-validation.md">04-validation.md</a>, <a href="05-close.md">05-close.md</a>, <a href="PLAN.md">PLAN.md</a> y los paquetes en <code>03-increments/</code>. Datos sintéticos únicamente.</p>
+</main>
+<div id="zoom" role="dialog" aria-label="imagen ampliada"><img alt=""></div>
+<script>
+document.querySelectorAll('figure img').forEach(function(i){i.addEventListener('click',function(){var z=document.getElementById('zoom');z.querySelector('img').src=i.src;z.style.display='block';});});
+document.getElementById('zoom').addEventListener('click',function(){this.style.display='none';});
+document.addEventListener('keydown',function(e){if(e.key==='Escape')document.getElementById('zoom').style.display='none';});
+function pick(n){var r=document.querySelector('input[name="'+n+'"]:checked');return r?r.value:null;}
+document.getElementById('exp').addEventListener('click',function(){
+  var a={batch:'2026-10-29-batch-01',hr3:pick('hr3'),hr3_notas:document.getElementById('hr3n').value,
+    hr4:pick('hr4'),hr4_notas:document.getElementById('hr4n').value,carpetas_compartidas:pick('pu3'),
+    carpetas_notas:document.getElementById('pu3n').value,cli_report:pick('cli'),push:pick('push'),
+    notas_generales:document.getElementById('gen').value};
+  var t=JSON.stringify(a,null,2),o=document.getElementById('out');o.textContent=t;o.style.display='block';
+  var m=document.getElementById('msg');
+  try{navigator.clipboard.writeText(t).then(function(){m.textContent='Copiado al portapapeles.';},function(){m.textContent='Cópialo del recuadro.';});}catch(e){m.textContent='Cópialo del recuadro.';}
+});
+</script>
+</body></html>
