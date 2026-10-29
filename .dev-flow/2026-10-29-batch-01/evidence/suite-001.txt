@@ -1,0 +1,88 @@
+# increment 001 suite transcript (re-run after code review CR2/CR3/CR4/CR7) — 2026-10-29T09:19:38-06:00
+# HEAD d117ea0; worktree /c/Users/jjgh8/Github/taskboard-wt/report-proto
+$ env -u NO_COLOR python -m pytest .scratch/test_import_probe.py -s -q -p no:cacheprovider
+taskboard.__file__ = C:\Users\jjgh8\Github\taskboard-wt\report-proto\taskboard\__init__.py
+.
+1 passed in 0.02s
+
+$ env -u NO_COLOR TASKBOARD_REQUIRE_BROWSER=1 python -m pytest tests/test_report_html.py tests/test_report_workspace.py tests/test_report.py -v -p no:cacheprovider
+
+============================= test session starts =============================
+platform win32 -- Python 3.12.7, pytest-8.3.4, pluggy-1.6.0 -- C:\Users\jjgh8\anaconda3\python.exe
+rootdir: C:\Users\jjgh8\Github\taskboard-wt\report-proto
+configfile: pyproject.toml
+plugins: anyio-4.2.0, asyncio-0.25.0, cov-7.1.0, textual-snapshot-1.1.0, timeout-2.3.1, syrupy-4.8.0
+asyncio: mode=Mode.AUTO, asyncio_default_fixture_loop_scope=None
+collecting ... collected 44 items
+
+tests/test_report_html.py::test_TC_3101_extract_is_json_and_holds_every_fact PASSED [  2%]
+tests/test_report_html.py::test_TC_3101_extract_never_writes_a_board PASSED [  4%]
+tests/test_report_html.py::test_TC_3102_due_words_are_the_cli_reports PASSED [  6%]
+tests/test_report_html.py::test_TC_3103_project_scope_keeps_one_project PASSED [  9%]
+tests/test_report_html.py::test_TC_3103_an_unknown_project_key_is_refused PASSED [ 11%]
+tests/test_report_html.py::test_TC_3104_renderers_read_the_dict_only PASSED [ 13%]
+tests/test_report_html.py::test_TC_3115_embed_json_and_notes_are_inert PASSED [ 15%]
+tests/test_report_html.py::test_TC_3123_the_slug_is_the_cli_reports PASSED [ 18%]
+tests/test_report_html.py::test_TC_3123_write_reports_lands_in_the_folder_and_overwrites PASSED [ 20%]
+tests/test_report_html.py::test_TC_3124_extract_keeps_only_http_urls PASSED [ 22%]
+tests/test_report_html.py::test_TC_3125_one_status_rule PASSED           [ 25%]
+tests/test_report_html.py::test_PQ6_spike_an_async_test_checks_the_page_in_a_worker_thread PASSED [ 27%]
+tests/test_report_workspace.py::test_AT_3102_filters_and_the_hash_round_trip PASSED [ 29%]
+tests/test_report_workspace.py::test_TC_3105_the_bar_is_native_and_counted PASSED [ 31%]
+tests/test_report_workspace.py::test_TC_3106_filters_follow_the_truth_table[projects] PASSED [ 34%]
+tests/test_report_workspace.py::test_TC_3106_filters_follow_the_truth_table[status] PASSED [ 36%]
+tests/test_report_workspace.py::test_TC_3106_filters_follow_the_truth_table[people] PASSED [ 38%]
+tests/test_report_workspace.py::test_TC_3106_filters_follow_the_truth_table[classes] PASSED [ 40%]
+tests/test_report_workspace.py::test_TC_3106_filters_follow_the_truth_table[dates] PASSED [ 43%]
+tests/test_report_workspace.py::test_TC_3106_filters_follow_the_truth_table[search] PASSED [ 45%]
+tests/test_report_workspace.py::test_TC_3106_the_edges_of_the_table PASSED [ 47%]
+tests/test_report_workspace.py::test_TC_3107_a_hostile_hash_is_dropped PASSED [ 50%]
+tests/test_report_workspace.py::test_TC_3108_reset_restores_the_defaults PASSED [ 52%]
+tests/test_report_workspace.py::test_TC_3116_offline_themes_and_phone_width PASSED [ 54%]
+tests/test_report_workspace.py::test_TC_3125_the_page_follows_the_status_field PASSED [ 56%]
+tests/test_report_workspace.py::test_the_page_shell_holds_no_board_text PASSED [ 59%]
+tests/test_report.py::test_generating_a_report_never_writes_the_board PASSED [ 61%]
+tests/test_report.py::test_the_report_lands_beside_its_own_board PASSED  [ 63%]
+tests/test_report.py::test_the_document_needs_nothing_from_the_network PASSED [ 65%]
+tests/test_report.py::test_the_counts_are_the_boards_real_counts PASSED  [ 68%]
+tests/test_report.py::test_a_scoped_report_covers_only_that_project PASSED [ 70%]
+tests/test_report.py::test_the_horizon_buckets_add_up_to_the_tasks PASSED [ 72%]
+tests/test_report.py::test_work_with_no_recorded_date_reads_unaged_never_zero PASSED [ 75%]
+tests/test_report.py::test_a_closed_project_is_never_judged PASSED       [ 77%]
+tests/test_report.py::test_the_document_states_no_forecast PASSED        [ 79%]
+tests/test_report.py::test_the_document_never_addresses_or_grades_the_reader PASSED [ 81%]
+tests/test_report.py::test_no_figure_carries_meaning_in_hue_alone PASSED [ 84%]
+tests/test_report.py::test_the_horizon_is_a_table_as_well_as_a_bar PASSED [ 86%]
+tests/test_report.py::test_a_hostile_title_cannot_break_out_into_markup PASSED [ 88%]
+tests/test_report.py::test_the_cli_writes_a_report_and_says_where PASSED [ 90%]
+tests/test_report.py::test_the_cli_scopes_to_a_project_and_refuses_an_unknown_one PASSED [ 93%]
+tests/test_report.py::test_the_present_key_is_in_the_seat PASSED         [ 95%]
+tests/test_report.py::test_pressing_R_opens_the_presentation_read_only PASSED [ 97%]
+tests/test_report.py::test_an_empty_board_still_produces_a_document PASSED [100%]
+
+============================= 44 passed in 8.05s ==============================
+
+$ env -u NO_COLOR TASKBOARD_REQUIRE_BROWSER=1 python -m pytest tests/test_report_workspace.py -q -p no:cacheprovider --durations=0   (PQ7: the browser module alone)
+
+..............                                                           [100%]
+============================== slowest durations ==============================
+1.22s call     tests/test_report_workspace.py::test_AT_3102_filters_and_the_hash_round_trip
+0.51s setup    tests/test_report_workspace.py::test_AT_3102_filters_and_the_hash_round_trip
+0.48s call     tests/test_report_workspace.py::test_TC_3105_the_bar_is_native_and_counted
+0.41s call     tests/test_report_workspace.py::test_TC_3107_a_hostile_hash_is_dropped
+0.34s call     tests/test_report_workspace.py::test_TC_3106_the_edges_of_the_table
+0.33s call     tests/test_report_workspace.py::test_TC_3106_filters_follow_the_truth_table[projects]
+0.31s call     tests/test_report_workspace.py::test_TC_3108_reset_restores_the_defaults
+0.29s call     tests/test_report_workspace.py::test_TC_3116_offline_themes_and_phone_width
+0.24s call     tests/test_report_workspace.py::test_TC_3125_the_page_follows_the_status_field
+0.19s call     tests/test_report_workspace.py::test_TC_3106_filters_follow_the_truth_table[classes]
+0.19s call     tests/test_report_workspace.py::test_TC_3106_filters_follow_the_truth_table[people]
+0.19s call     tests/test_report_workspace.py::test_TC_3106_filters_follow_the_truth_table[status]
+0.15s call     tests/test_report_workspace.py::test_TC_3106_filters_follow_the_truth_table[dates]
+0.15s call     tests/test_report_workspace.py::test_TC_3106_filters_follow_the_truth_table[search]
+0.04s teardown tests/test_report_workspace.py::test_the_page_shell_holds_no_board_text
+0.01s setup    tests/test_report_workspace.py::test_TC_3125_the_page_follows_the_status_field
+
+(26 durations < 0.005s hidden.  Use -vv to show these durations.)
+14 passed in 5.24s
+wall time: 6.19 s

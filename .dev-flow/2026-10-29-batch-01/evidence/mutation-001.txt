@@ -1,0 +1,443 @@
+# increment 001 mutation battery — 2026-10-29T09:11:50-06:00
+$ env -u NO_COLOR python .dev-flow/2026-10-29-batch-01/evidence/mutation-001.py
+M01 report_html.py:106 [projects keyed by the bare id: the two `Docs` (id pdocs) collide]
+    run: tests/test_report_html.py -k "TC_3101_extract_is_json" -> exit 1; 1 failed, 10 deselected in 0.54s
+    RED nodes: ['test_TC_3101_extract_is_json_and_holds_every_fact']
+    verdict: KILLED (named node test_TC_3101_extract_is_json_and_holds_every_fact)
+    sha256 before f3852dbb81e821c174424746d1554e60674626c54badf03cc27898e1c622214e
+    sha256 after  f3852dbb81e821c174424746d1554e60674626c54badf03cc27898e1c622214e (restored, identical)
+M02 report_html.py:114 [extract saves the board]
+    run: tests/test_report_html.py -k "never_writes" -> exit 1; 1 failed, 10 deselected in 0.48s
+    RED nodes: ['test_TC_3101_extract_never_writes_a_board']
+    verdict: KILLED (named node test_TC_3101_extract_never_writes_a_board)
+    sha256 before f3852dbb81e821c174424746d1554e60674626c54badf03cc27898e1c622214e
+    sha256 after  f3852dbb81e821c174424746d1554e60674626c54badf03cc27898e1c622214e (restored, identical)
+M03 report_html.py:147 [the due word formatted locally]
+    run: tests/test_report_html.py -k "TC_3102" -> exit 1; 1 failed, 10 deselected in 0.48s
+    RED nodes: ['test_TC_3102_due_words_are_the_cli_reports']
+    verdict: KILLED (named node test_TC_3102_due_words_are_the_cli_reports)
+    sha256 before f3852dbb81e821c174424746d1554e60674626c54badf03cc27898e1c622214e
+    sha256 after  f3852dbb81e821c174424746d1554e60674626c54badf03cc27898e1c622214e (restored, identical)
+M04 report_html.py:110 [the scope ignores `project`]
+    run: tests/test_report_html.py -k "TC_3103" -> exit 1; 1 failed, 10 deselected in 0.47s
+    RED nodes: ['test_TC_3103_project_scope_keeps_one_project']
+    verdict: KILLED (named node test_TC_3103_project_scope_keeps_one_project)
+    sha256 before f3852dbb81e821c174424746d1554e60674626c54badf03cc27898e1c622214e
+    sha256 after  f3852dbb81e821c174424746d1554e60674626c54badf03cc27898e1c622214e (restored, identical)
+M05 report_html.py:212 [PA3: a module-level renderer import in report_html]
+    run: tests/test_report_html.py -k "TC_3104" -> exit 1; 1 failed, 10 deselected in 0.51s
+    RED nodes: ['test_TC_3104_renderers_read_the_dict_only']
+    verdict: KILLED (named node test_TC_3104_renderers_read_the_dict_only)
+    sha256 before f3852dbb81e821c174424746d1554e60674626c54badf03cc27898e1c622214e
+    sha256 after  f3852dbb81e821c174424746d1554e60674626c54badf03cc27898e1c622214e (restored, identical)
+M06 report_workspace.py:12 [the renderer imports views.HEX]
+    run: tests/test_report_html.py -k "TC_3104" -> exit 1; 1 failed, 10 deselected in 0.49s
+    RED nodes: ['test_TC_3104_renderers_read_the_dict_only']
+    verdict: KILLED (named node test_TC_3104_renderers_read_the_dict_only)
+    sha256 before 8106e67dc8e2ed509e82489fab37eeb02575e545d24545007d196cefdc43d231
+    sha256 after  8106e67dc8e2ed509e82489fab37eeb02575e545d24545007d196cefdc43d231 (restored, identical)
+M07 report_workspace.py:12 [PQ10: a dynamic import in the renderer]
+    run: tests/test_report_html.py -k "TC_3104" -> exit 1; 1 failed, 10 deselected in 0.53s
+    RED nodes: ['test_TC_3104_renderers_read_the_dict_only']
+    verdict: KILLED (named node test_TC_3104_renderers_read_the_dict_only)
+    sha256 before 8106e67dc8e2ed509e82489fab37eeb02575e545d24545007d196cefdc43d231
+    sha256 after  8106e67dc8e2ed509e82489fab37eeb02575e545d24545007d196cefdc43d231 (restored, identical)
+M08 report_html.py:67 [the prototype's `</`-only replace in embed_json]
+    run: tests/test_report_html.py -k "TC_3115" -> exit 1; 1 failed, 10 deselected in 0.51s
+    RED nodes: ['test_TC_3115_embed_json_and_notes_are_inert']
+    verdict: KILLED (named node test_TC_3115_embed_json_and_notes_are_inert)
+    sha256 before f3852dbb81e821c174424746d1554e60674626c54badf03cc27898e1c622214e
+    sha256 after  f3852dbb81e821c174424746d1554e60674626c54badf03cc27898e1c622214e (restored, identical)
+M09 report_html.py:54 [a notes piece left unescaped]
+    run: tests/test_report_html.py -k "TC_3115" -> exit 1; 1 failed, 10 deselected in 0.47s
+    RED nodes: ['test_TC_3115_embed_json_and_notes_are_inert']
+    verdict: KILLED (named node test_TC_3115_embed_json_and_notes_are_inert)
+    sha256 before f3852dbb81e821c174424746d1554e60674626c54badf03cc27898e1c622214e
+    sha256 after  f3852dbb81e821c174424746d1554e60674626c54badf03cc27898e1c622214e (restored, identical)
+M10 report_html.py:174 [the slug lower-cases only]
+    run: tests/test_report_html.py -k "TC_3123_the_slug" -> exit 1; 1 failed, 10 deselected in 0.50s
+    RED nodes: ['test_TC_3123_the_slug_is_the_cli_reports']
+    verdict: KILLED (named node test_TC_3123_the_slug_is_the_cli_reports)
+    sha256 before f3852dbb81e821c174424746d1554e60674626c54badf03cc27898e1c622214e
+    sha256 after  f3852dbb81e821c174424746d1554e60674626c54badf03cc27898e1c622214e (restored, identical)
+M11 report_html.py:183 [the project file name drops the board slug]
+    run: tests/test_report_html.py -k "TC_3123" -> exit 1; 2 failed, 9 deselected in 0.60s
+    RED nodes: ['test_TC_3123_the_slug_is_the_cli_reports', 'test_TC_3123_write_reports_lands_in_the_folder_and_overwrites']
+    verdict: KILLED (named node test_TC_3123_write_reports_lands_in_the_folder_and_overwrites)
+    sha256 before f3852dbb81e821c174424746d1554e60674626c54badf03cc27898e1c622214e
+    sha256 after  f3852dbb81e821c174424746d1554e60674626c54badf03cc27898e1c622214e (restored, identical)
+M12 report_html.py:150 [the valid_url filter dropped]
+    run: tests/test_report_html.py -k "TC_3124" -> exit 1; 1 failed, 10 deselected in 0.48s
+    RED nodes: ['test_TC_3124_extract_keeps_only_http_urls']
+    verdict: KILLED (named node test_TC_3124_extract_keeps_only_http_urls)
+    sha256 before f3852dbb81e821c174424746d1554e60674626c54badf03cc27898e1c622214e
+    sha256 after  f3852dbb81e821c174424746d1554e60674626c54badf03cc27898e1c622214e (restored, identical)
+M13 report_html.py:76 [late derived with <= (the due-today task turns late)]
+    run: tests/test_report_html.py -k "TC_3125_one_status" -> exit 1; 1 failed, 10 deselected in 0.54s
+    RED nodes: ['test_TC_3125_one_status_rule']
+    verdict: KILLED (named node test_TC_3125_one_status_rule)
+    sha256 before f3852dbb81e821c174424746d1554e60674626c54badf03cc27898e1c622214e
+    sha256 after  f3852dbb81e821c174424746d1554e60674626c54badf03cc27898e1c622214e (restored, identical)
+M14 report_workspace.py:275 [a chip built as a <span onclick>]
+    run: tests/test_report_workspace.py -k "TC_3105" -> exit 1; 1 failed, 13 deselected in 1.60s
+    RED nodes: ['test_TC_3105_the_bar_is_native_and_counted']
+    verdict: KILLED (named node test_TC_3105_the_bar_is_native_and_counted)
+    sha256 before 8106e67dc8e2ed509e82489fab37eeb02575e545d24545007d196cefdc43d231
+    sha256 after  8106e67dc8e2ed509e82489fab37eeb02575e545d24545007d196cefdc43d231 (restored, identical)
+M15 report_workspace.py:50 [C12: the pressed chip loses its check mark]
+    run: tests/test_report_workspace.py -k "TC_3105" -> exit 1; 1 failed, 13 deselected in 1.54s
+    RED nodes: ['test_TC_3105_the_bar_is_native_and_counted']
+    verdict: KILLED (named node test_TC_3105_the_bar_is_native_and_counted)
+    sha256 before 8106e67dc8e2ed509e82489fab37eeb02575e545d24545007d196cefdc43d231
+    sha256 after  8106e67dc8e2ed509e82489fab37eeb02575e545d24545007d196cefdc43d231 (restored, identical)
+M16 report_workspace.py:245 [the status chips map late to open]
+    run: tests/test_report_workspace.py -k "TC_3106 and status" -> exit 1; 1 failed, 13 deselected in 1.34s
+    RED nodes: ['test_TC_3106_filters_follow_the_truth_table[status]']
+    verdict: KILLED (named node test_TC_3106_filters_follow_the_truth_table[status])
+    sha256 before 8106e67dc8e2ed509e82489fab37eeb02575e545d24545007d196cefdc43d231
+    sha256 after  8106e67dc8e2ed509e82489fab37eeb02575e545d24545007d196cefdc43d231 (restored, identical)
+M17 report_workspace.py:246 [people: ANY becomes ALL]
+    run: tests/test_report_workspace.py -k "TC_3106 and people" -> exit 1; 1 failed, 13 deselected in 1.26s
+    RED nodes: ['test_TC_3106_filters_follow_the_truth_table[people]']
+    verdict: KILLED (named node test_TC_3106_filters_follow_the_truth_table[people])
+    sha256 before 8106e67dc8e2ed509e82489fab37eeb02575e545d24545007d196cefdc43d231
+    sha256 after  8106e67dc8e2ed509e82489fab37eeb02575e545d24545007d196cefdc43d231 (restored, identical)
+M18 report_workspace.py:244 [the project filter ignored]
+    run: tests/test_report_workspace.py -k "TC_3106 and projects" -> exit 1; 1 failed, 13 deselected in 1.35s
+    RED nodes: ['test_TC_3106_filters_follow_the_truth_table[projects]']
+    verdict: KILLED (named node test_TC_3106_filters_follow_the_truth_table[projects])
+    sha256 before 8106e67dc8e2ed509e82489fab37eeb02575e545d24545007d196cefdc43d231
+    sha256 after  8106e67dc8e2ed509e82489fab37eeb02575e545d24545007d196cefdc43d231 (restored, identical)
+M19 report_workspace.py:247 [the class filter ignored]
+    run: tests/test_report_workspace.py -k "TC_3106 and classes" -> exit 1; 1 failed, 13 deselected in 1.34s
+    RED nodes: ['test_TC_3106_filters_follow_the_truth_table[classes]']
+    verdict: KILLED (named node test_TC_3106_filters_follow_the_truth_table[classes])
+    sha256 before 8106e67dc8e2ed509e82489fab37eeb02575e545d24545007d196cefdc43d231
+    sha256 after  8106e67dc8e2ed509e82489fab37eeb02575e545d24545007d196cefdc43d231 (restored, identical)
+M20 report_workspace.py:252 [a span starting ON `to` is dropped]
+    run: tests/test_report_workspace.py -k "TC_3106 and dates" -> exit 1; 1 failed, 13 deselected in 1.27s
+    RED nodes: ['test_TC_3106_filters_follow_the_truth_table[dates]']
+    verdict: KILLED (named node test_TC_3106_filters_follow_the_truth_table[dates])
+    sha256 before 8106e67dc8e2ed509e82489fab37eeb02575e545d24545007d196cefdc43d231
+    sha256 after  8106e67dc8e2ed509e82489fab37eeb02575e545d24545007d196cefdc43d231 (restored, identical)
+M21 report_workspace.py:257 [search without case folding]
+    run: tests/test_report_workspace.py -k "TC_3106 and search" -> exit 1; 1 failed, 13 deselected in 1.06s
+    RED nodes: ['test_TC_3106_filters_follow_the_truth_table[search]']
+    verdict: KILLED (named node test_TC_3106_filters_follow_the_truth_table[search])
+    sha256 before 8106e67dc8e2ed509e82489fab37eeb02575e545d24545007d196cefdc43d231
+    sha256 after  8106e67dc8e2ed509e82489fab37eeb02575e545d24545007d196cefdc43d231 (restored, identical)
+M22 report_workspace.py:249 [`from` after `to` no longer empties the view]
+    run: tests/test_report_workspace.py -k "TC_3106_the_edges" -> exit 1; 1 failed, 13 deselected in 1.25s
+    RED nodes: ['test_TC_3106_the_edges_of_the_table']
+    verdict: KILLED (named node test_TC_3106_the_edges_of_the_table)
+    sha256 before 8106e67dc8e2ed509e82489fab37eeb02575e545d24545007d196cefdc43d231
+    sha256 after  8106e67dc8e2ed509e82489fab37eeb02575e545d24545007d196cefdc43d231 (restored, identical)
+M23 report_workspace.py:383 [PQ2(a): the hash echoed into the summary via innerHTML]
+    run: tests/test_report_workspace.py -k "TC_3107" -> exit 1; 1 failed, 13 deselected in 1.22s
+    RED nodes: ['test_TC_3107_a_hostile_hash_is_dropped']
+    verdict: KILLED (named node test_TC_3107_a_hostile_hash_is_dropped)
+    sha256 before 8106e67dc8e2ed509e82489fab37eeb02575e545d24545007d196cefdc43d231
+    sha256 after  8106e67dc8e2ed509e82489fab37eeb02575e545d24545007d196cefdc43d231 (restored, identical)
+M24 report_workspace.py:200 [PQ2(b): the whitelist bypassed; unknown values reach the controls and the summary]
+    run: tests/test_report_workspace.py -k "TC_3107" -> exit 1; 1 failed, 13 deselected in 1.34s
+    RED nodes: ['test_TC_3107_a_hostile_hash_is_dropped']
+    verdict: KILLED (named node test_TC_3107_a_hostile_hash_is_dropped)
+    sha256 before 8106e67dc8e2ed509e82489fab37eeb02575e545d24545007d196cefdc43d231
+    sha256 after  8106e67dc8e2ed509e82489fab37eeb02575e545d24545007d196cefdc43d231 (restored, identical)
+M25 report_workspace.py:340 [Reset leaves the rows and the hash]
+    run: tests/test_report_workspace.py -k "TC_3108" -> exit 1; 1 failed, 13 deselected in 1.38s
+    RED nodes: ['test_TC_3108_reset_restores_the_defaults']
+    verdict: KILLED (named node test_TC_3108_reset_restores_the_defaults)
+    sha256 before 8106e67dc8e2ed509e82489fab37eeb02575e545d24545007d196cefdc43d231
+    sha256 after  8106e67dc8e2ed509e82489fab37eeb02575e545d24545007d196cefdc43d231 (restored, identical)
+M26 report_workspace.py:705 [writeHash skipped]
+    run: tests/test_report_workspace.py -k "AT_3102" -> exit 1; 1 failed, 13 deselected in 1.92s
+    RED nodes: ['test_AT_3102_filters_and_the_hash_round_trip']
+    verdict: KILLED (named node test_AT_3102_filters_and_the_hash_round_trip)
+    sha256 before 8106e67dc8e2ed509e82489fab37eeb02575e545d24545007d196cefdc43d231
+    sha256 after  8106e67dc8e2ed509e82489fab37eeb02575e545d24545007d196cefdc43d231 (restored, identical)
+M27 report_workspace.py:245 [the status chips map late to open (AT's late arm)]
+    run: tests/test_report_workspace.py -k "AT_3102" -> exit 1; 1 failed, 13 deselected in 1.26s
+    RED nodes: ['test_AT_3102_filters_and_the_hash_round_trip']
+    verdict: KILLED (named node test_AT_3102_filters_and_the_hash_round_trip)
+    sha256 before 8106e67dc8e2ed509e82489fab37eeb02575e545d24545007d196cefdc43d231
+    sha256 after  8106e67dc8e2ed509e82489fab37eeb02575e545d24545007d196cefdc43d231 (restored, identical)
+M28 report_workspace.py:747 [PQ5: a Google Fonts <link> (one external request)]
+    run: tests/test_report_workspace.py -k "TC_3116" -> exit 1; 1 failed, 13 deselected in 3.96s
+    RED nodes: ['test_TC_3116_offline_themes_and_phone_width']
+    verdict: KILLED (named node test_TC_3116_offline_themes_and_phone_width)
+    sha256 before 8106e67dc8e2ed509e82489fab37eeb02575e545d24545007d196cefdc43d231
+    sha256 after  8106e67dc8e2ed509e82489fab37eeb02575e545d24545007d196cefdc43d231 (restored, identical)
+M29 report_workspace.py:26 [a fixed 600 px layout overflows 390 px]
+    run: tests/test_report_workspace.py -k "TC_3116" -> exit 1; 1 failed, 13 deselected in 1.08s
+    RED nodes: ['test_TC_3116_offline_themes_and_phone_width']
+    verdict: KILLED (named node test_TC_3116_offline_themes_and_phone_width)
+    sha256 before 8106e67dc8e2ed509e82489fab37eeb02575e545d24545007d196cefdc43d231
+    sha256 after  8106e67dc8e2ed509e82489fab37eeb02575e545d24545007d196cefdc43d231 (restored, identical)
+M30 report_workspace.py:18 [the light palette never applies]
+    run: tests/test_report_workspace.py -k "TC_3116" -> exit 1; 1 failed, 13 deselected in 1.24s
+    RED nodes: ['test_TC_3116_offline_themes_and_phone_width']
+    verdict: KILLED (named node test_TC_3116_offline_themes_and_phone_width)
+    sha256 before 8106e67dc8e2ed509e82489fab37eeb02575e545d24545007d196cefdc43d231
+    sha256 after  8106e67dc8e2ed509e82489fab37eeb02575e545d24545007d196cefdc43d231 (restored, identical)
+M31 report_workspace.py:245 [PQ8: the page re-derives status from the dates]
+    run: tests/test_report_workspace.py -k "TC_3125" -> exit 1; 1 failed, 13 deselected in 1.09s
+    RED nodes: ['test_TC_3125_the_page_follows_the_status_field']
+    verdict: KILLED (named node test_TC_3125_the_page_follows_the_status_field)
+    sha256 before 8106e67dc8e2ed509e82489fab37eeb02575e545d24545007d196cefdc43d231
+    sha256 after  8106e67dc8e2ed509e82489fab37eeb02575e545d24545007d196cefdc43d231 (restored, identical)
+M32 report_workspace.py:832 [D2: a board name written into the shell]
+    run: tests/test_report_workspace.py -k "shell_holds_no_board_text" -> exit 1; 1 failed, 13 deselected in 0.44s
+    RED nodes: ['test_the_page_shell_holds_no_board_text']
+    verdict: KILLED (named node test_the_page_shell_holds_no_board_text)
+    sha256 before 8106e67dc8e2ed509e82489fab37eeb02575e545d24545007d196cefdc43d231
+    sha256 after  8106e67dc8e2ed509e82489fab37eeb02575e545d24545007d196cefdc43d231 (restored, identical)
+M33 report_workspace.py:741 [the page script does not run (a syntax error)]
+    run: tests/test_report_html.py -k "PQ6" -> exit 1; 1 failed, 10 deselected in 0.98s
+    RED nodes: ['test_PQ6_spike_an_async_test_checks_the_page_in_a_worker_thread']
+    verdict: KILLED (named node test_PQ6_spike_an_async_test_checks_the_page_in_a_worker_thread)
+    sha256 before 8106e67dc8e2ed509e82489fab37eeb02575e545d24545007d196cefdc43d231
+    sha256 after  8106e67dc8e2ed509e82489fab37eeb02575e545d24545007d196cefdc43d231 (restored, identical)
+
+33/33 mutants killed
+exit 0
+
+# appended after code review (CR2, CR3) — 2026-10-29T09:19:54-06:00
+$ env -u NO_COLOR python .dev-flow/2026-10-29-batch-01/evidence/mutation-001.py M34 M35
+M34 report_html.py:127 [CR2: project done counts archived tasks (lane.done_n)]
+    run: tests/test_report_html.py -k "TC_3101_extract_is_json" -> exit 1; 1 failed, 11 deselected in 0.38s
+    RED nodes: ['test_TC_3101_extract_is_json_and_holds_every_fact']
+    verdict: KILLED (named node test_TC_3101_extract_is_json_and_holds_every_fact)
+    sha256 before 53942a406a5c5207ee4841a56ee9628a45932966a26e9a72e39a116097167fc4
+    sha256 after  53942a406a5c5207ee4841a56ee9628a45932966a26e9a72e39a116097167fc4 (restored, identical)
+M35 SETUP-ERROR: '    bad = [k for k in kinds if k not in ("workspace", "deck")]\n    if bad:' occurs 0 times in report_html.py
+exit 2
+
+# M35 re-run (the first attempt above reported SETUP-ERROR: the anchor text was not found at that moment; the file then read identical, sha256 53942a40…; re-run) — 2026-10-29T09:20:24-06:00
+$ env -u NO_COLOR python .dev-flow/2026-10-29-batch-01/evidence/mutation-001.py M35
+M35 SETUP-ERROR: '    bad = [k for k in kinds if k not in ("workspace", "deck")]\n    if bad:' occurs 0 times in report_html.py
+exit 2
+
+# M35 failed twice above with SETUP-ERROR: the CR fixes were written in text mode, so both source files now hold CRLF line endings (the checkout's own convention, core.autocrlf=true, as taskboard/report.py) and the harness's multi-line anchors held LF. The harness now matches anchors to the file's newline. FULL battery re-run on the final bytes (M01-M35) — 2026-10-29T09:20:55-06:00
+$ env -u NO_COLOR python .dev-flow/2026-10-29-batch-01/evidence/mutation-001.py
+  File "C:\Users\jjgh8\Github\taskboard-wt\report-proto\.dev-flow\2026-10-29-batch-01\evidence\mutation-001.py", line 183
+    nl = "
+         ^
+SyntaxError: unterminated string literal (detected at line 183)
+exit 1
+
+# the re-run above failed on a SyntaxError in the harness's own newline fix (repaired); FULL battery on the final bytes (M01-M35) — 2026-10-29T09:21:27-06:00
+$ env -u NO_COLOR python .dev-flow/2026-10-29-batch-01/evidence/mutation-001.py
+M01 report_html.py:106 [projects keyed by the bare id: the two `Docs` (id pdocs) collide]
+    run: tests/test_report_html.py -k "TC_3101_extract_is_json" -> exit 1; 1 failed, 11 deselected in 0.38s
+    RED nodes: ['test_TC_3101_extract_is_json_and_holds_every_fact']
+    verdict: KILLED (named node test_TC_3101_extract_is_json_and_holds_every_fact)
+    sha256 before 53942a406a5c5207ee4841a56ee9628a45932966a26e9a72e39a116097167fc4
+    sha256 after  53942a406a5c5207ee4841a56ee9628a45932966a26e9a72e39a116097167fc4 (restored, identical)
+M02 report_html.py:114 [extract saves the board]
+    run: tests/test_report_html.py -k "never_writes" -> exit 1; 1 failed, 11 deselected in 0.38s
+    RED nodes: ['test_TC_3101_extract_never_writes_a_board']
+    verdict: KILLED (named node test_TC_3101_extract_never_writes_a_board)
+    sha256 before 53942a406a5c5207ee4841a56ee9628a45932966a26e9a72e39a116097167fc4
+    sha256 after  53942a406a5c5207ee4841a56ee9628a45932966a26e9a72e39a116097167fc4 (restored, identical)
+M03 report_html.py:148 [the due word formatted locally]
+    run: tests/test_report_html.py -k "TC_3102" -> exit 1; 1 failed, 11 deselected in 0.38s
+    RED nodes: ['test_TC_3102_due_words_are_the_cli_reports']
+    verdict: KILLED (named node test_TC_3102_due_words_are_the_cli_reports)
+    sha256 before 53942a406a5c5207ee4841a56ee9628a45932966a26e9a72e39a116097167fc4
+    sha256 after  53942a406a5c5207ee4841a56ee9628a45932966a26e9a72e39a116097167fc4 (restored, identical)
+M04 report_html.py:110 [the scope ignores `project`]
+    run: tests/test_report_html.py -k "TC_3103" -> exit 1; 2 failed, 10 deselected in 0.39s
+    RED nodes: ['test_TC_3103_project_scope_keeps_one_project', 'test_TC_3103_an_unknown_project_key_is_refused']
+    verdict: KILLED (named node test_TC_3103_project_scope_keeps_one_project)
+    sha256 before 53942a406a5c5207ee4841a56ee9628a45932966a26e9a72e39a116097167fc4
+    sha256 after  53942a406a5c5207ee4841a56ee9628a45932966a26e9a72e39a116097167fc4 (restored, identical)
+M05 report_html.py:219 [PA3: a module-level renderer import in report_html]
+    run: tests/test_report_html.py -k "TC_3104" -> exit 1; 1 failed, 11 deselected in 0.38s
+    RED nodes: ['test_TC_3104_renderers_read_the_dict_only']
+    verdict: KILLED (named node test_TC_3104_renderers_read_the_dict_only)
+    sha256 before 53942a406a5c5207ee4841a56ee9628a45932966a26e9a72e39a116097167fc4
+    sha256 after  53942a406a5c5207ee4841a56ee9628a45932966a26e9a72e39a116097167fc4 (restored, identical)
+M06 report_workspace.py:12 [the renderer imports views.HEX]
+    run: tests/test_report_html.py -k "TC_3104" -> exit 1; 1 failed, 11 deselected in 0.36s
+    RED nodes: ['test_TC_3104_renderers_read_the_dict_only']
+    verdict: KILLED (named node test_TC_3104_renderers_read_the_dict_only)
+    sha256 before 3f69ea1cc0e9de5923f5e11a7ebd98ced878a61bf694c914cfa2a2a47906b658
+    sha256 after  3f69ea1cc0e9de5923f5e11a7ebd98ced878a61bf694c914cfa2a2a47906b658 (restored, identical)
+M07 report_workspace.py:12 [PQ10: a dynamic import in the renderer]
+    run: tests/test_report_html.py -k "TC_3104" -> exit 1; 1 failed, 11 deselected in 0.38s
+    RED nodes: ['test_TC_3104_renderers_read_the_dict_only']
+    verdict: KILLED (named node test_TC_3104_renderers_read_the_dict_only)
+    sha256 before 3f69ea1cc0e9de5923f5e11a7ebd98ced878a61bf694c914cfa2a2a47906b658
+    sha256 after  3f69ea1cc0e9de5923f5e11a7ebd98ced878a61bf694c914cfa2a2a47906b658 (restored, identical)
+M08 report_html.py:67 [the prototype's `</`-only replace in embed_json]
+    run: tests/test_report_html.py -k "TC_3115" -> exit 1; 1 failed, 11 deselected in 0.37s
+    RED nodes: ['test_TC_3115_embed_json_and_notes_are_inert']
+    verdict: KILLED (named node test_TC_3115_embed_json_and_notes_are_inert)
+    sha256 before 53942a406a5c5207ee4841a56ee9628a45932966a26e9a72e39a116097167fc4
+    sha256 after  53942a406a5c5207ee4841a56ee9628a45932966a26e9a72e39a116097167fc4 (restored, identical)
+M09 report_html.py:54 [a notes piece left unescaped]
+    run: tests/test_report_html.py -k "TC_3115" -> exit 1; 1 failed, 11 deselected in 0.40s
+    RED nodes: ['test_TC_3115_embed_json_and_notes_are_inert']
+    verdict: KILLED (named node test_TC_3115_embed_json_and_notes_are_inert)
+    sha256 before 53942a406a5c5207ee4841a56ee9628a45932966a26e9a72e39a116097167fc4
+    sha256 after  53942a406a5c5207ee4841a56ee9628a45932966a26e9a72e39a116097167fc4 (restored, identical)
+M10 report_html.py:177 [the slug lower-cases only]
+    run: tests/test_report_html.py -k "TC_3123_the_slug" -> exit 1; 1 failed, 11 deselected in 0.37s
+    RED nodes: ['test_TC_3123_the_slug_is_the_cli_reports']
+    verdict: KILLED (named node test_TC_3123_the_slug_is_the_cli_reports)
+    sha256 before 53942a406a5c5207ee4841a56ee9628a45932966a26e9a72e39a116097167fc4
+    sha256 after  53942a406a5c5207ee4841a56ee9628a45932966a26e9a72e39a116097167fc4 (restored, identical)
+M11 report_html.py:186 [the project file name drops the board slug]
+    run: tests/test_report_html.py -k "TC_3123" -> exit 1; 2 failed, 10 deselected in 0.43s
+    RED nodes: ['test_TC_3123_the_slug_is_the_cli_reports', 'test_TC_3123_write_reports_lands_in_the_folder_and_overwrites']
+    verdict: KILLED (named node test_TC_3123_write_reports_lands_in_the_folder_and_overwrites)
+    sha256 before 53942a406a5c5207ee4841a56ee9628a45932966a26e9a72e39a116097167fc4
+    sha256 after  53942a406a5c5207ee4841a56ee9628a45932966a26e9a72e39a116097167fc4 (restored, identical)
+M12 report_html.py:151 [the valid_url filter dropped]
+    run: tests/test_report_html.py -k "TC_3124" -> exit 1; 1 failed, 11 deselected in 0.37s
+    RED nodes: ['test_TC_3124_extract_keeps_only_http_urls']
+    verdict: KILLED (named node test_TC_3124_extract_keeps_only_http_urls)
+    sha256 before 53942a406a5c5207ee4841a56ee9628a45932966a26e9a72e39a116097167fc4
+    sha256 after  53942a406a5c5207ee4841a56ee9628a45932966a26e9a72e39a116097167fc4 (restored, identical)
+M13 report_html.py:76 [late derived with <= (the due-today task turns late)]
+    run: tests/test_report_html.py -k "TC_3125_one_status" -> exit 1; 1 failed, 11 deselected in 0.39s
+    RED nodes: ['test_TC_3125_one_status_rule']
+    verdict: KILLED (named node test_TC_3125_one_status_rule)
+    sha256 before 53942a406a5c5207ee4841a56ee9628a45932966a26e9a72e39a116097167fc4
+    sha256 after  53942a406a5c5207ee4841a56ee9628a45932966a26e9a72e39a116097167fc4 (restored, identical)
+M14 report_workspace.py:275 [a chip built as a <span onclick>]
+    run: tests/test_report_workspace.py -k "TC_3105" -> exit 1; 1 failed, 13 deselected in 1.11s
+    RED nodes: ['test_TC_3105_the_bar_is_native_and_counted']
+    verdict: KILLED (named node test_TC_3105_the_bar_is_native_and_counted)
+    sha256 before 3f69ea1cc0e9de5923f5e11a7ebd98ced878a61bf694c914cfa2a2a47906b658
+    sha256 after  3f69ea1cc0e9de5923f5e11a7ebd98ced878a61bf694c914cfa2a2a47906b658 (restored, identical)
+M15 report_workspace.py:50 [C12: the pressed chip loses its check mark]
+    run: tests/test_report_workspace.py -k "TC_3105" -> exit 1; 1 failed, 13 deselected in 1.07s
+    RED nodes: ['test_TC_3105_the_bar_is_native_and_counted']
+    verdict: KILLED (named node test_TC_3105_the_bar_is_native_and_counted)
+    sha256 before 3f69ea1cc0e9de5923f5e11a7ebd98ced878a61bf694c914cfa2a2a47906b658
+    sha256 after  3f69ea1cc0e9de5923f5e11a7ebd98ced878a61bf694c914cfa2a2a47906b658 (restored, identical)
+M16 report_workspace.py:245 [the status chips map late to open]
+    run: tests/test_report_workspace.py -k "TC_3106 and status" -> exit 1; 1 failed, 13 deselected in 1.07s
+    RED nodes: ['test_TC_3106_filters_follow_the_truth_table[status]']
+    verdict: KILLED (named node test_TC_3106_filters_follow_the_truth_table[status])
+    sha256 before 3f69ea1cc0e9de5923f5e11a7ebd98ced878a61bf694c914cfa2a2a47906b658
+    sha256 after  3f69ea1cc0e9de5923f5e11a7ebd98ced878a61bf694c914cfa2a2a47906b658 (restored, identical)
+M17 report_workspace.py:246 [people: ANY becomes ALL]
+    run: tests/test_report_workspace.py -k "TC_3106 and people" -> exit 1; 1 failed, 13 deselected in 1.04s
+    RED nodes: ['test_TC_3106_filters_follow_the_truth_table[people]']
+    verdict: KILLED (named node test_TC_3106_filters_follow_the_truth_table[people])
+    sha256 before 3f69ea1cc0e9de5923f5e11a7ebd98ced878a61bf694c914cfa2a2a47906b658
+    sha256 after  3f69ea1cc0e9de5923f5e11a7ebd98ced878a61bf694c914cfa2a2a47906b658 (restored, identical)
+M18 report_workspace.py:244 [the project filter ignored]
+    run: tests/test_report_workspace.py -k "TC_3106 and projects" -> exit 1; 1 failed, 13 deselected in 1.15s
+    RED nodes: ['test_TC_3106_filters_follow_the_truth_table[projects]']
+    verdict: KILLED (named node test_TC_3106_filters_follow_the_truth_table[projects])
+    sha256 before 3f69ea1cc0e9de5923f5e11a7ebd98ced878a61bf694c914cfa2a2a47906b658
+    sha256 after  3f69ea1cc0e9de5923f5e11a7ebd98ced878a61bf694c914cfa2a2a47906b658 (restored, identical)
+M19 report_workspace.py:247 [the class filter ignored]
+    run: tests/test_report_workspace.py -k "TC_3106 and classes" -> exit 1; 1 failed, 13 deselected in 1.02s
+    RED nodes: ['test_TC_3106_filters_follow_the_truth_table[classes]']
+    verdict: KILLED (named node test_TC_3106_filters_follow_the_truth_table[classes])
+    sha256 before 3f69ea1cc0e9de5923f5e11a7ebd98ced878a61bf694c914cfa2a2a47906b658
+    sha256 after  3f69ea1cc0e9de5923f5e11a7ebd98ced878a61bf694c914cfa2a2a47906b658 (restored, identical)
+M20 report_workspace.py:252 [a span starting ON `to` is dropped]
+    run: tests/test_report_workspace.py -k "TC_3106 and dates" -> exit 1; 1 failed, 13 deselected in 0.97s
+    RED nodes: ['test_TC_3106_filters_follow_the_truth_table[dates]']
+    verdict: KILLED (named node test_TC_3106_filters_follow_the_truth_table[dates])
+    sha256 before 3f69ea1cc0e9de5923f5e11a7ebd98ced878a61bf694c914cfa2a2a47906b658
+    sha256 after  3f69ea1cc0e9de5923f5e11a7ebd98ced878a61bf694c914cfa2a2a47906b658 (restored, identical)
+M21 report_workspace.py:257 [search without case folding]
+    run: tests/test_report_workspace.py -k "TC_3106 and search" -> exit 1; 1 failed, 13 deselected in 0.98s
+    RED nodes: ['test_TC_3106_filters_follow_the_truth_table[search]']
+    verdict: KILLED (named node test_TC_3106_filters_follow_the_truth_table[search])
+    sha256 before 3f69ea1cc0e9de5923f5e11a7ebd98ced878a61bf694c914cfa2a2a47906b658
+    sha256 after  3f69ea1cc0e9de5923f5e11a7ebd98ced878a61bf694c914cfa2a2a47906b658 (restored, identical)
+M22 report_workspace.py:249 [`from` after `to` no longer empties the view]
+    run: tests/test_report_workspace.py -k "TC_3106_the_edges" -> exit 1; 1 failed, 13 deselected in 1.17s
+    RED nodes: ['test_TC_3106_the_edges_of_the_table']
+    verdict: KILLED (named node test_TC_3106_the_edges_of_the_table)
+    sha256 before 3f69ea1cc0e9de5923f5e11a7ebd98ced878a61bf694c914cfa2a2a47906b658
+    sha256 after  3f69ea1cc0e9de5923f5e11a7ebd98ced878a61bf694c914cfa2a2a47906b658 (restored, identical)
+M23 report_workspace.py:383 [PQ2(a): the hash echoed into the summary via innerHTML]
+    run: tests/test_report_workspace.py -k "TC_3107" -> exit 1; 1 failed, 13 deselected in 1.08s
+    RED nodes: ['test_TC_3107_a_hostile_hash_is_dropped']
+    verdict: KILLED (named node test_TC_3107_a_hostile_hash_is_dropped)
+    sha256 before 3f69ea1cc0e9de5923f5e11a7ebd98ced878a61bf694c914cfa2a2a47906b658
+    sha256 after  3f69ea1cc0e9de5923f5e11a7ebd98ced878a61bf694c914cfa2a2a47906b658 (restored, identical)
+M24 report_workspace.py:200 [PQ2(b): the whitelist bypassed; unknown values reach the controls and the summary]
+    run: tests/test_report_workspace.py -k "TC_3107" -> exit 1; 1 failed, 13 deselected in 1.06s
+    RED nodes: ['test_TC_3107_a_hostile_hash_is_dropped']
+    verdict: KILLED (named node test_TC_3107_a_hostile_hash_is_dropped)
+    sha256 before 3f69ea1cc0e9de5923f5e11a7ebd98ced878a61bf694c914cfa2a2a47906b658
+    sha256 after  3f69ea1cc0e9de5923f5e11a7ebd98ced878a61bf694c914cfa2a2a47906b658 (restored, identical)
+M25 report_workspace.py:340 [Reset leaves the rows and the hash]
+    run: tests/test_report_workspace.py -k "TC_3108" -> exit 1; 1 failed, 13 deselected in 1.09s
+    RED nodes: ['test_TC_3108_reset_restores_the_defaults']
+    verdict: KILLED (named node test_TC_3108_reset_restores_the_defaults)
+    sha256 before 3f69ea1cc0e9de5923f5e11a7ebd98ced878a61bf694c914cfa2a2a47906b658
+    sha256 after  3f69ea1cc0e9de5923f5e11a7ebd98ced878a61bf694c914cfa2a2a47906b658 (restored, identical)
+M26 report_workspace.py:705 [writeHash skipped]
+    run: tests/test_report_workspace.py -k "AT_3102" -> exit 1; 1 failed, 13 deselected in 1.86s
+    RED nodes: ['test_AT_3102_filters_and_the_hash_round_trip']
+    verdict: KILLED (named node test_AT_3102_filters_and_the_hash_round_trip)
+    sha256 before 3f69ea1cc0e9de5923f5e11a7ebd98ced878a61bf694c914cfa2a2a47906b658
+    sha256 after  3f69ea1cc0e9de5923f5e11a7ebd98ced878a61bf694c914cfa2a2a47906b658 (restored, identical)
+M27 report_workspace.py:245 [the status chips map late to open (AT's late arm)]
+    run: tests/test_report_workspace.py -k "AT_3102" -> exit 1; 1 failed, 13 deselected in 1.20s
+    RED nodes: ['test_AT_3102_filters_and_the_hash_round_trip']
+    verdict: KILLED (named node test_AT_3102_filters_and_the_hash_round_trip)
+    sha256 before 3f69ea1cc0e9de5923f5e11a7ebd98ced878a61bf694c914cfa2a2a47906b658
+    sha256 after  3f69ea1cc0e9de5923f5e11a7ebd98ced878a61bf694c914cfa2a2a47906b658 (restored, identical)
+M28 report_workspace.py:747 [PQ5: a Google Fonts <link> (one external request)]
+    run: tests/test_report_workspace.py -k "TC_3116" -> exit 1; 1 failed, 13 deselected in 3.84s
+    RED nodes: ['test_TC_3116_offline_themes_and_phone_width']
+    verdict: KILLED (named node test_TC_3116_offline_themes_and_phone_width)
+    sha256 before 3f69ea1cc0e9de5923f5e11a7ebd98ced878a61bf694c914cfa2a2a47906b658
+    sha256 after  3f69ea1cc0e9de5923f5e11a7ebd98ced878a61bf694c914cfa2a2a47906b658 (restored, identical)
+M29 report_workspace.py:26 [a fixed 600 px layout overflows 390 px]
+    run: tests/test_report_workspace.py -k "TC_3116" -> exit 1; 1 failed, 13 deselected in 0.97s
+    RED nodes: ['test_TC_3116_offline_themes_and_phone_width']
+    verdict: KILLED (named node test_TC_3116_offline_themes_and_phone_width)
+    sha256 before 3f69ea1cc0e9de5923f5e11a7ebd98ced878a61bf694c914cfa2a2a47906b658
+    sha256 after  3f69ea1cc0e9de5923f5e11a7ebd98ced878a61bf694c914cfa2a2a47906b658 (restored, identical)
+M30 report_workspace.py:18 [the light palette never applies]
+    run: tests/test_report_workspace.py -k "TC_3116" -> exit 1; 1 failed, 13 deselected in 1.15s
+    RED nodes: ['test_TC_3116_offline_themes_and_phone_width']
+    verdict: KILLED (named node test_TC_3116_offline_themes_and_phone_width)
+    sha256 before 3f69ea1cc0e9de5923f5e11a7ebd98ced878a61bf694c914cfa2a2a47906b658
+    sha256 after  3f69ea1cc0e9de5923f5e11a7ebd98ced878a61bf694c914cfa2a2a47906b658 (restored, identical)
+M31 report_workspace.py:245 [PQ8: the page re-derives status from the dates]
+    run: tests/test_report_workspace.py -k "TC_3125" -> exit 1; 1 failed, 13 deselected in 1.08s
+    RED nodes: ['test_TC_3125_the_page_follows_the_status_field']
+    verdict: KILLED (named node test_TC_3125_the_page_follows_the_status_field)
+    sha256 before 3f69ea1cc0e9de5923f5e11a7ebd98ced878a61bf694c914cfa2a2a47906b658
+    sha256 after  3f69ea1cc0e9de5923f5e11a7ebd98ced878a61bf694c914cfa2a2a47906b658 (restored, identical)
+M32 report_workspace.py:832 [D2: a board name written into the shell]
+    run: tests/test_report_workspace.py -k "shell_holds_no_board_text" -> exit 1; 1 failed, 13 deselected in 0.45s
+    RED nodes: ['test_the_page_shell_holds_no_board_text']
+    verdict: KILLED (named node test_the_page_shell_holds_no_board_text)
+    sha256 before 3f69ea1cc0e9de5923f5e11a7ebd98ced878a61bf694c914cfa2a2a47906b658
+    sha256 after  3f69ea1cc0e9de5923f5e11a7ebd98ced878a61bf694c914cfa2a2a47906b658 (restored, identical)
+M33 report_workspace.py:741 [the page script does not run (a syntax error)]
+    run: tests/test_report_html.py -k "PQ6" -> exit 1; 1 failed, 11 deselected in 1.00s
+    RED nodes: ['test_PQ6_spike_an_async_test_checks_the_page_in_a_worker_thread']
+    verdict: KILLED (named node test_PQ6_spike_an_async_test_checks_the_page_in_a_worker_thread)
+    sha256 before 3f69ea1cc0e9de5923f5e11a7ebd98ced878a61bf694c914cfa2a2a47906b658
+    sha256 after  3f69ea1cc0e9de5923f5e11a7ebd98ced878a61bf694c914cfa2a2a47906b658 (restored, identical)
+M34 report_html.py:127 [CR2: project done counts archived tasks (lane.done_n)]
+    run: tests/test_report_html.py -k "TC_3101_extract_is_json" -> exit 1; 1 failed, 11 deselected in 0.37s
+    RED nodes: ['test_TC_3101_extract_is_json_and_holds_every_fact']
+    verdict: KILLED (named node test_TC_3101_extract_is_json_and_holds_every_fact)
+    sha256 before 53942a406a5c5207ee4841a56ee9628a45932966a26e9a72e39a116097167fc4
+    sha256 after  53942a406a5c5207ee4841a56ee9628a45932966a26e9a72e39a116097167fc4 (restored, identical)
+M35 report_html.py:205 [CR3: the folder is created before the kinds are checked]
+    run: tests/test_report_html.py -k "write_reports_lands" -> exit 1; 1 failed, 11 deselected in 0.44s
+    RED nodes: ['test_TC_3123_write_reports_lands_in_the_folder_and_overwrites']
+    verdict: KILLED (named node test_TC_3123_write_reports_lands_in_the_folder_and_overwrites)
+    sha256 before 53942a406a5c5207ee4841a56ee9628a45932966a26e9a72e39a116097167fc4
+    sha256 after  53942a406a5c5207ee4841a56ee9628a45932966a26e9a72e39a116097167fc4 (restored, identical)
+
+35/35 mutants killed
+exit 0
