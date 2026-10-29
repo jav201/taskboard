@@ -21,7 +21,7 @@ orchestrator presents the full plan in-conversation at each phase gate.
 | Project | taskboard |
 | Batch | 2026-10-29-batch-02 |
 | Objective | `taskboard --report` exports the new HTML reports (workspace B and deck C) through the code path the `H` modal uses, asks which board when the registry holds more than one (number, enter = default, a = all, q/EOF = exit 1, non-TTY empty = exit 2), keeps PROJECT as the project scope, refuses a missing --board path before building anything, and retires the old static report from the CLI (CR-1..CR-5) |
-| Last updated | P4 · 2026-10-29 |
+| Last updated | P5 · 2026-10-29 |
 | Standing authorization | The operator (`username_subject`), 2026-10-29, on the review of `2026-10-29-batch-01` (which answered `"push": "si"`): «Que el comando --report exporte el html, que pregunte por el board.», quoted in `.dev-flow/COMMISSION-cli-report-html.md`; the orchestrator's task: gates close under it, «Do NOT push or merge». Read from the commission and the task: autonomy over the gates P0..P5; push and merge NOT granted; a HIGH finding blocks regardless and returns to the operator; independent review by spawned reviewers (code-reviewer, security-reviewer for CR-5, qa-reviewer at P4). |
 | First gate | start run (`evidence/gate-start.txt`, over the closed 2026-10-29-batch-01 record, after the rollover re-stamped `base_ref`): exit 0 · 0 block · `V7`: bundle identical to the manifest it ships, both directions (57 declared files unmoved, 0 undeclared) at `2026-10-12-rev102` · `V25`: origin answered (5 refs, newest 0.01 day) · `V30` half (3.12.7 witnessed). The pre-rollover `--brief` run at the start also read 0 block / 180 notice. |
 | Premises / RC-1 | `origin/main` verified at `4ca4a7d` (`4ca4a7d0e2de3c17ecc0f5231660e309b2cb50b6`, 2026-10-29 11:55 -0600) after `git fetch origin`; RC-1(a): HEAD is 0 behind and 1 ahead (the commission commit) — no rebase; RC-1(b): the story is NOT already shipped — `git show origin/main:taskboard/__main__.py` still imports `write_report` at line 73 and has no `report_html` (`evidence/rc-p0.txt`); RC-2: `git ls-remote --exit-code --heads origin` exit 0, 5 heads. Premises: the in-app `H` path (`report_html.extract` + `write_reports`) is the single code path; synthetic data only; CLI tests are subprocesses on a temp HOME and USERPROFILE. |
@@ -54,7 +54,7 @@ The trigger evaluation `state.json`'s `triggers.record` points at: one row per t
 
 ## Where we are
 
-P3 closed under the standing authorization: increment 001 is committed (`c8bc4d9`, review folds `d30acf0`); `code-reviewer` PASS with notes (0 HIGH, 6 LOW, all folded and re-read), `security-reviewer` PASS (0 HIGH, F1 folded, F2/F3 accepted), 27 of 27 mutants killed, 89 passed in the affected files (`evidence/suite-001.txt`), gate 0 block (`evidence/gate-p3-001.txt`). The station is P4: the full suite in three sequential chunks, then `qa-reviewer`. Owed after: the close (fold canon, backlog, `05-close.md`).
+**Closed, 2026-10-29 (P5).** P4 approved: `04-validation.md` `PASS-WITH-NOTES` — the full suite in 3 sequential chunks, 3365 passed / 0 failed / 0 skipped (3332 + 33 new nodes; the first chunk-2 run failed one prism law on a second-person help text, fixed in `9a0d1b1` and re-run), AT-4101..AT-4107 one node each, qa-reviewer PASS-WITH-NOTES (0 HIGH, 5 LOW). The close: 20 ids folded into `REQUIREMENTS.md`, `05-close.md` written, `BACKLOG.md` refreshed (S-3 for `--report` closed; the old static report's retirement added). Commits on the local branch `feat/cli-report-html`; push and merge are NOT granted. `dev-flow-sync`: `not-run` (no export destination; push/merge not granted).
 
 ## Objective
 
@@ -68,7 +68,8 @@ P3 closed under the standing authorization: increment 001 is committed (`c8bc4d9
 | P1 | closed | contract, ledger (empty), scan, gate (`evidence/gate-p1.txt`) |
 | P2 | closed | one iterate-to-refine pass; `02-review.md` |
 | P3 | closed | increment 001 (`increment-001.md`) |
-| P4 | in progress | full suite in 3 chunks, qa-reviewer |
+| P4 | closed | 3365 passed, qa-reviewer PASS-WITH-NOTES (`04-validation.md`) |
+| P5 | closed | `05-close.md`, backlog |
 | US-4101 | READY | HLR-4101..4105 |
 
 ## Roadmap + increment plan

@@ -441,7 +441,7 @@ taskboard/
   models.py       Project / Task / Board: JSON store, seeding, rescue
   history.py      the log of phase moves and added tasks (history.jsonl)
   team_sync.py    team mode: the shared folder's files, merge, health check
-  report.py       the HTML report
+  report.py       the old static report (no longer written by `--report`) and the due-date helpers the new reports use
   ribbon.py       the bottom clock ribbon
   wave.py         the lanes waves engine
   taskboard.tcss  styles
