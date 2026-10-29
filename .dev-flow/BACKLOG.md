@@ -1623,3 +1623,12 @@ and found the records layer lagging the code. All proposed fixes are written in 
 - The audit applied NOTHING to `taskboard/` — all findings above are open by design; AUD-01 and
   AUD-02 are the two the orchestrator should schedule first (both are user-visible or
   contract-visible statements of the retired law).
+
+## Open — cross-platform CI (the operator, 2026-10-29: «Deja en backlog los arreglos para linux y macOS»)
+
+- **The GitHub CI (ubuntu, py3.12) has been red since 2026-10-07.** Every failure is Linux-only and passes on Windows. The three tests:
+  - `tests/test_present.py::test_AT_1001_R_presents_the_project_and_the_frame_is_the_oracle`, since ~2026-10-20, `AssertionError: []`;
+  - `tests/test_boards_backlog_round.py::test_TC_2409_the_markers`, since 2026-10-21, presence markers read `[]`;
+  - `tests/test_present_all.py::test_AT_2102_the_order_and_hidden_projects_survive_a_restart`, since 2026-10-25, frame mismatch.
+
+  To fix: diagnose each test on Linux and fix the cause, in the test or in the code. Likely causes are dates or timezone, file times or permissions, and path handling. Then add a macOS job to the CI matrix and fix whatever it shows. Done means CI is green on Linux and macOS, not green locally.
