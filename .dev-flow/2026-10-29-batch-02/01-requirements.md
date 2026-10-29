@@ -115,7 +115,7 @@ Python 3.11+, the existing dependencies, no new one. At most 4 source files per 
 
 ### HLR-4102 — `--report` asks which board when there is more than one
 - **Traceability:** US-4101
-- **Ledger:** none
+- **Ledger:** LED-2026-10-29-batch-02.3, LED-2026-10-29-batch-02.4
 - **Statement:** When `taskboard --report` runs with neither `--board` nor `--open` and the registry holds more than one active board, the system shall print a numbered list of the boards (name and file path, the default board marked) and read an answer from stdin: a number picks that board, an empty line picks the default board, `a` picks every board, an invalid answer asks again, and `q` or end of input exits with code 1 writing nothing; and when stdin is not a TTY and ends before any line, the system shall exit with code 2, print the list and say to pass `--board PATH`, writing nothing.
 - **Rationale (informative):** CR-2. A multi-board user must choose; a script must never hang on a hidden prompt.
 - **Validation:** `test`
@@ -147,7 +147,7 @@ Python 3.11+, the existing dependencies, no new one. At most 4 source files per 
 
 ### HLR-4104 — reading is safe: nothing is written but the reports, and a missing path is refused
 - **Traceability:** US-4101
-- **Ledger:** none
+- **Ledger:** LED-2026-10-29-batch-02.1, LED-2026-10-29-batch-02.2, LED-2026-10-29-batch-02.4
 - **Statement:** When `taskboard --report` runs, the system shall write no board file and no registry file, shall not register a `--board` path, shall refuse a `--board` path (or a default or picked board) that is not an existing board file with exit code 2 before anything is built and without creating anything at that path, and shall print every board name and file path it shows with control characters removed.
 - **Rationale (informative):** CR-5, security S-3. `Board.load` seeds a missing path (§2.7 row 4); `--open` already refuses one.
 - **Validation:** `test`
@@ -163,15 +163,15 @@ Python 3.11+, the existing dependencies, no new one. At most 4 source files per 
 
 ### HLR-4105 — the CLI no longer reaches the old report, and the README says what it does now
 - **Traceability:** US-4101
-- **Ledger:** none
+- **Ledger:** LED-2026-10-29-batch-02.5, LED-2026-10-29-batch-02.6
 - **Statement:** The system shall not call `report.write_report` from the command line, and the README's `--report` section and command table shall describe the new behaviour (both reports, the board prompt, `PROJECT`, `--report-kind`, the output folder, the exit codes, and that the old static report is no longer written).
 - **Rationale (informative):** CR-4. `taskboard/report.py` stays byte-unchanged (D-4).
 - **Validation:** `test`
-- **Executed verification:** `env -u NO_COLOR python -m pytest -q tests/test_report_cli.py -k AT_4107` and `env -u NO_COLOR python -m pytest -q tests/test_readme.py -k TC_120`
-- **Numeric pass threshold:** `grep -c write_report taskboard/__main__.py` → 0; `git diff 4ca4a7d -- taskboard/report.py` → 0 lines; the README holds the strings `--report-kind`, `reports`, `exit code 2`, `exit code 1` and not `Report written to`; the CLI's stdout holds no `Report written to`; TC-120 (every flag documented) passes.
+- **Executed verification:** `env -u NO_COLOR python -m pytest -q tests/test_report_cli.py -k "AT_4107 or TC_4109"`, `env -u NO_COLOR python -m pytest -q tests/test_readme.py -k TC_120` and `env -u NO_COLOR python -m pytest -q tests/test_report.py`
+- **Numeric pass threshold:** AT-4107 (black-box): the CLI's stdout holds 2 new paths and no `Report written to`; TC-4109: `grep -c write_report taskboard/__main__.py` → 0 and the README holds `--report-kind`, `reports`, `exit code 2` and `exit code 1` and not `Report written to`; `git diff 4ca4a7d -- taskboard/report.py` → 0 lines; TC-120 (every flag documented) passes; `tests/test_report.py` 0 failed after its two CLI tests are rewritten (LLR-4105.3).
 - **Priority:** medium
 - **Acceptance (black-box) — the user-verified outcome (the WHAT):**
-  - **Observable outcome:** `--report` output is the new files; the README tells the same story.
+  - **Observable outcome:** `--report` output is the new files, not the old report.
   - **Shipped surface:** the command line and the README.
   - **Acceptance test(s):** AT-4107
   - **Boundary catalog (QC-3):** none — documentation and a deletion of one call; no input class applies.
@@ -193,11 +193,11 @@ Python 3.11+, the existing dependencies, no new one. At most 4 source files per 
 
 ### LLR-4101.2 — extract once, write through the `H` path
 - **Traceability:** HLR-4101, HLR-4103
-- **Ledger:** none
-- **Statement:** The report branch shall build `(registry id | None, name, colour, Board)` for each chosen board, read the people and marks directories beside the registry, call `report_html.extract` with the project key `<board key>:<project id>` when `PROJECT` is given, and call `report_html.write_reports` with the kinds of `--report-kind`, `today` and the folder `<primary board dir>/reports`, where the primary board is the single chosen board or, for `a`, the default board.
+- **Ledger:** LED-2026-10-29-batch-02.5
+- **Statement:** The report branch shall build `(registry id | None, name, colour, Board)` for each chosen board, read the people and marks directories beside the registry, call `report_html.extract` with the project key `<board key>:<project id>` when `PROJECT` is given, and call `report_html.write_reports` with the kinds of `--report-kind`, `today` and the folder `<primary board dir>/reports`, where the primary board is the single chosen board or, for `a`, the default board when it is readable, else the first readable board; when `write_reports` raises `OSError` it shall print `taskboard: report not written: <message>` to stderr and exit with code 1.
 - **Validation:** `test (integration)`
-- **Executed verification:** `tests/test_report_cli.py::test_TC_4101_report_kind_selects_the_files` and `tests/test_report_cli.py::test_TC_4107_the_cli_bytes_equal_the_h_path_bytes`
-- **Numeric pass threshold:** TC-4101: files `{workspace}`, `{deck}`, `{workspace, deck}` for the three kinds; TC-4107: 2 of 2 files byte-equal to an in-process `extract` + `write_reports` on the same boards, people and marks.
+- **Executed verification:** `tests/test_report_cli.py::test_TC_4101_report_kind_selects_the_files`, `tests/test_report_cli.py::test_TC_4107_the_cli_bytes_equal_the_h_path_bytes` and `tests/test_report_cli.py::test_TC_4111_a_reports_path_that_cannot_be_a_folder_exits_1`
+- **Numeric pass threshold:** TC-4101: files `{workspace}`, `{deck}`, `{workspace, deck}` for the three kinds; TC-4107: 2 of 2 files byte-equal to an in-process `extract` + `write_reports` on the same boards, people and marks; TC-4111: a plain file named `reports` beside the board → exit 1, stderr `report not written`, 0 `Traceback`.
 - **Negative control:** a mutant that writes to the current directory instead of the board's folder turns TC-4101 red.
 - **Boundary catalog:** ☑ empty (a board with no tasks) ☑ boundary (same-day rerun overwrites) ☐ invalid (N/A) ☑ error (an unwritable folder: exit 1)
 
@@ -233,13 +233,23 @@ Python 3.11+, the existing dependencies, no new one. At most 4 source files per 
 
 ### LLR-4102.4 — all boards
 - **Traceability:** HLR-4102
-- **Ledger:** none
-- **Statement:** For `a`, the report branch shall read every active board whose file exists and parses as a board (`peek_board`, `load_report["file_unreadable"]` false), skip the others, say on stderr how many were skipped, and write the reports of the rest into the default board's folder; with none readable it shall exit 2 and write nothing.
+- **Ledger:** LED-2026-10-29-batch-02.4, LED-2026-10-29-batch-02.5
+- **Statement:** For `a`, the report branch shall read every active board whose file exists and parses as a board (`peek_board`, `load_report["file_unreadable"]` false), skip the others, say on stderr how many were skipped, say on stderr before writing that N boards are combined into the default board's `reports` folder (naming it), and write the reports of the rest there (when the default board is not among the readable ones, the first readable board's folder: the refusal of LLR-4104.1 applies to a SINGLE chosen board, not to a skipped member of `a`); with none readable it shall exit 2 and write nothing.
 - **Validation:** `test (integration)`
-- **Executed verification:** `tests/test_report_cli.py::test_AT_4102_a_writes_reports_covering_all_boards` and `tests/test_report_cli.py::test_TC_4104_a_skips_and_counts_a_missing_board`
-- **Numeric pass threshold:** AT-4102: the workspace's embedded `boards` names Alpha and Beta; TC-4104: a third board with a missing file → 1 skipped on stderr, still exit 0 and 2 files.
+- **Executed verification:** `tests/test_report_cli.py::test_AT_4102_a_writes_reports_covering_all_boards`, `tests/test_report_cli.py::test_TC_4104_a_skips_and_counts_a_missing_board` and `tests/test_report_cli.py::test_TC_4112_a_falls_back_when_the_default_board_is_unreadable`
+- **Numeric pass threshold:** TC-4112: with the default board's file missing among three boards, `a` exits 0 and the files land in the first readable board's `reports/`; AT-4102: stderr holds `2 boards` and the folder name before the paths appear, and the workspace's embedded `boards` names Alpha and Beta; TC-4104: a third board with a missing file → 1 skipped on stderr, still exit 0 and 2 files.
 - **Negative control:** a mutant that reads only the default board turns AT-4102 red.
 - **Boundary catalog:** ☑ empty (all missing → exit 2) ☑ boundary (one skipped) ☐ invalid (N/A) ☑ error
+
+### LLR-4102.5 — stdin that misbehaves
+- **Traceability:** HLR-4102
+- **Ledger:** LED-2026-10-29-batch-02.3
+- **Statement:** The prompt shall read at most 4096 characters per answer and treat a longer line as an invalid answer, shall treat a closed stdin (`sys.stdin` is `None`), an `OSError` and a `UnicodeDecodeError` as end of input, and shall never raise a traceback for any stdin content.
+- **Validation:** `test (integration)`
+- **Executed verification:** `tests/test_report_cli.py::test_TC_4110_stdin_that_misbehaves_never_tracebacks`
+- **Numeric pass threshold:** invalid UTF-8 bytes on a pipe, a 10000-character line, and an in-process `None` stdin: 3 of 3 exit 1 or 2 with 0 occurrences of `Traceback` and 0 files written.
+- **Negative control:** a mutant that reads an unbounded line turns the 10000-character arm red (it is read whole, not refused as one answer).
+- **Boundary catalog:** ☑ empty ☑ boundary (exactly 4096) ☑ invalid ☑ error
 
 ### LLR-4103.1 — the project lookup
 - **Traceability:** HLR-4103
@@ -253,8 +263,8 @@ Python 3.11+, the existing dependencies, no new one. At most 4 source files per 
 
 ### LLR-4104.1 — refuse a path that is no board
 - **Traceability:** HLR-4104
-- **Ledger:** none
-- **Statement:** Before any board is read, the report branch shall refuse, with exit code 2 and `taskboard: no board file at <path>`, a `--board` path and a default or picked board whose file is not a regular file parsing to a JSON object (the `--open` test, `_a_board_file`), and shall create nothing at that path.
+- **Ledger:** LED-2026-10-29-batch-02.4
+- **Statement:** Before any board is read, the report branch shall refuse, with exit code 2 and `taskboard: no board file at <path>`, the resolved path of every source (`--board`, including an empty value, the default board and a picked board) whose file is not a regular file parsing to a JSON object (the `--open` test, `_a_board_file`), and shall create nothing at that path.
 - **Validation:** `test (integration)`
 - **Executed verification:** `tests/test_report_cli.py::test_AT_4105_missing_board_path_is_refused_and_creates_nothing`
 - **Numeric pass threshold:** missing path, folder, text file, ESC-byte path: 4 of 4 exit 2; the tree under the temp HOME and the target's parent has the same file list before and after.
@@ -263,21 +273,21 @@ Python 3.11+, the existing dependencies, no new one. At most 4 source files per 
 
 ### LLR-4104.2 — nothing else is written
 - **Traceability:** HLR-4104
-- **Ledger:** none
-- **Statement:** The report branch shall not call `Registry.register`, `Registry.touch`, `Registry.save`, `Board.save` or any other writer, and shall create no file but the reports and the `reports/` folder.
+- **Ledger:** LED-2026-10-29-batch-02.1
+- **Statement:** The report branch shall not call `Registry.register`, `Registry.touch`, `Registry.save`, `Board.save` or any other writer, shall read the registry, the people directory and the marks directory with their non-copying readers (`Registry._read`, `people.Directory._read`, `marks.Directory._read`, never `load`, which copies an unreadable file aside), treating an unreadable one as absent, and shall create no file but the reports and the `reports/` folder.
 - **Validation:** `test (integration)`
 - **Executed verification:** `tests/test_report_cli.py::test_AT_4101_two_boards_pick_two_writes_b_and_c_for_board_two` (hash arms) and `tests/test_report_cli.py::test_TC_4106_names_and_paths_are_printed_without_control_bytes`
-- **Numeric pass threshold:** every board file and `boards.json` keeps its SHA-256 and mtime; `--board` of an unlisted file leaves `boards.json` absent or unchanged.
+- **Numeric pass threshold:** every board file and `boards.json` keeps its SHA-256 and mtime; `--board` of an unlisted file leaves `boards.json` absent or unchanged; with a corrupt `boards.json`, `people.json` and `marks.json` the run exits 0 and the file listing under the temp HOME differs from before only by the `reports/` folder (0 `.corrupt` files).
 - **Negative control:** a mutant that registers the `--board` path turns the registry-bytes arm red.
 - **Boundary catalog:** ☑ empty (no registry file) ☐ boundary (N/A) ☐ invalid (N/A) ☐ error (N/A)
 
 ### LLR-4104.3 — printed text
 - **Traceability:** HLR-4104
-- **Ledger:** none
-- **Statement:** Every board name and file path the prompt, the messages or the skip count print shall go through `strip_controls` and have its whitespace runs collapsed to one space, so a name or a path cannot add a line or send a control sequence to the terminal.
+- **Ledger:** LED-2026-10-29-batch-02.2
+- **Statement:** Every file-derived or typed text the command prints to the terminal — board names, board paths, project names, the echo of an invalid answer, the text of an `OSError` and the folder named by the notice — shall go through one function that removes control characters (`strip_controls`), writes a tab and a newline as `\t` and `\n`, and drops the line and paragraph separators and the bidirectional overrides, so it cannot add a line or send a control sequence; the paths printed on stdout are the real paths of the files written and are printed unchanged.
 - **Validation:** `test (integration)`
 - **Executed verification:** `tests/test_report_cli.py::test_TC_4106_names_and_paths_are_printed_without_control_bytes`
-- **Numeric pass threshold:** a board named `Evil\x1b[2J\nFAKE 3. injected` prints on exactly one list line with 0 ESC bytes.
+- **Numeric pass threshold:** a board named `Evil\x1b[2J\nFAKE 3. injected` and a project named `P\nFAKE: x` each print on exactly one line with 0 ESC bytes and 0 bytes of U+2028, U+2029 and U+202E; a written path containing two adjacent spaces is printed with both.
 - **Negative control:** a mutant that prints the raw name turns it red.
 - **Boundary catalog:** ☐ empty (N/A) ☐ boundary (N/A) ☑ invalid ☐ error (N/A)
 
@@ -301,6 +311,26 @@ Python 3.11+, the existing dependencies, no new one. At most 4 source files per 
 - **Negative control:** at the base README the new strings are absent: the test is RED there.
 - **Boundary catalog:** none — documentation.
 
+### LLR-4105.3 — the two CLI tests of the old report
+- **Traceability:** HLR-4105
+- **Ledger:** LED-2026-10-29-batch-02.5
+- **Statement:** `tests/test_report.py::test_the_cli_writes_a_report_and_says_where` and `tests/test_report.py::test_the_cli_scopes_to_a_project_and_refuses_an_unknown_one` shall be rewritten to assert the new behaviour through the same subprocess seam (two paths under `<board dir>/reports/`, the board's bytes unchanged, `~/.taskboard` not created; the project scope and the unknown-project error), and no other test in `tests/test_report.py` shall change.
+- **Validation:** `test (integration)`
+- **Executed verification:** `env -u NO_COLOR python -m pytest -q tests/test_report.py` (packet §2 lists the two nodes as changed, with the reason)
+- **Numeric pass threshold:** `tests/test_report.py` 0 failed; `git diff` of that file touches only those two functions.
+- **Negative control:** the rewritten tests are RED against the base `__main__.py` (they assert two paths and no `Report written to`).
+- **Boundary catalog:** ☑ invalid (unknown project) ☐ empty (N/A) ☐ boundary (N/A) ☐ error (N/A)
+
+### LLR-4105.4 — the backlog
+- **Traceability:** HLR-4105
+- **Ledger:** LED-2026-10-29-batch-02.6
+- **Statement:** `.dev-flow/BACKLOG.md` shall mark its line «`taskboard --report --board <missing path>` seeds and saves sample data at that path (security S-3 …)» as closed by this batch and shall carry one open item for the retirement of the old static report and its law suite (D-4).
+- **Validation:** `inspection`
+- **Executed verification:** `grep -n "S-3" .dev-flow/BACKLOG.md` and `grep -n "static report" .dev-flow/BACKLOG.md` at the close (packet §2, `05-close.md`)
+- **Numeric pass threshold:** 1 line marked closed, 1 new open item.
+- **Negative control:** none — an inspection pin, not a gate (C-40's corollary).
+- **Boundary catalog:** none — documentation.
+
 ### Information Flow Contract (IFC) — C-54
 
 - **Part A — flows:**
@@ -319,7 +349,7 @@ FLOW: report-cli
       out   : the boards in play, the default board
     - fn    : __main__ — the refusal of a path that is no board
       owner : LLR-4104.1
-      in    : a path
+      in    : the resolved path of each source
       out   : the path accepted, or exit 2 with nothing created
     - fn    : __main__ — the prompt
       owner : LLR-4102.2
@@ -329,6 +359,10 @@ FLOW: report-cli
       owner : LLR-4102.3
       in    : stdin that is not a TTY and ends at once
       out   : exit 2 and the list on stderr
+    - fn    : __main__ — stdin that misbehaves
+      owner : LLR-4102.5
+      in    : bytes of any shape on stdin, or no stdin
+      out   : an answer, or end of input
     - fn    : __main__ — all boards
       owner : LLR-4102.4
       in    : every active board
@@ -340,7 +374,7 @@ FLOW: report-cli
     - fn    : __main__ — printed text
       owner : LLR-4104.3
       in    : board names and paths
-      out   : one clean line each (strip_controls)
+      out   : one clean line each (the one print function)
     - fn    : report_html.extract (unchanged) via __main__
       owner : LLR-4101.2
       in    : the boards, people, marks, today, the project key
@@ -357,6 +391,14 @@ FLOW: report-cli
       owner : LLR-4105.1
       in    : the module's imports
       out   : no call to write_report
+    - fn    : tests/test_report.py — the two CLI tests
+      owner : LLR-4105.3
+      in    : the new behaviour
+      out   : tests that assert it
+    - fn    : .dev-flow/BACKLOG.md — the S-3 line and the retirement item
+      owner : LLR-4105.4
+      in    : this batch's outcome
+      out   : the marked line and the new item
     - fn    : README.md — the Reports section and the command table
       owner : LLR-4105.2
       in    : the behaviour above
@@ -376,6 +418,8 @@ FLOW: report-cli
 > - **Layer A — white-box / functional (`TC-NNN`):** validates the HLR/LLR mechanism (the HOW). Methods: `test`, `inspection`.
 > - **Layer B — black-box / behavioral acceptance (`AT-NNN`):** validates the story's outcome through the shipped surface (the WHAT). Method: `acceptance`, as subprocesses of `python -m taskboard` on a temp HOME and USERPROFILE with the repo root as the working directory.
 
+The «Negative control» lines that name a mutant are executed in the P3 mutation battery (`evidence/mutation-001.txt`); those that name the base behaviour are in `evidence/base-behaviour.txt`.
+
 The browser check (AT-4106) runs under `TASKBOARD_REQUIRE_BROWSER=1`, so a missing Playwright fails instead of skipping.
 
 | AT | Commission | Asserts |
@@ -386,7 +430,7 @@ The browser check (AT-4106) runs under `TASKBOARD_REQUIRE_BROWSER=1`, so a missi
 | AT-4104 | AT-d | `--board` does not prompt; `PROJECT` scopes; an unknown project errors with the list |
 | AT-4105 | AT-e | a missing `--board` path is refused and nothing is created |
 | AT-4106 | AT-f | the written files load headless with 0 console errors |
-| AT-4107 | CR-4 | no `Report written to`, the README tells the new story |
+| AT-4107 | CR-4 | the CLI's stdout holds two new paths and no `Report written to` (the README and source pins are TC-4109) |
 
 ### 5.2 Batch acceptance criteria
 - Every LLR is covered by at least one TC or AT with a passing result, or an inspection row.
@@ -408,16 +452,18 @@ See §1.3.
 - **D-3** `--report` never registers a `--board` path and never records «last opened».
 - **D-4** `taskboard/report.py` stays byte-unchanged: `write_report`, `build_report` and `report_path` are used by `tests/test_report.py` and `report_path` is TC-3123's oracle; the commission removes entry points only when nothing else uses them. The backlog gets the retirement of the static report and its law suite.
 - **D-5** With `a`, the files land in the default board's `reports/`, as `H` writes beside the open board.
+- **D-7** The two CLI tests of the old report in `tests/test_report.py` are rewritten, not deleted (LLR-4105.3): they pin the same two facts (the command writes where it says, and scopes or refuses a project) against the new files. The README says that a terminal at end of input (Windows `NUL`) exits 1, not 2.
 - **D-6** `PROJECT` is looked up by exact name among the visible projects; the first match wins.
 
 ### 6.3 Open risks
 Security questions routed by the Phase-1 scan (`security_required: true`, flag `hash`, `evidence/scan-spec.txt`), answered:
 - **The flag.** `hash` matched the SHA-256 digests the tests compare to prove a file is unchanged. No credential or secret is hashed or stored; the batch has no auth surface.
 - **Input surface.** One line of stdin and the argv. Both are parsed as a number, `a`, `q` or empty; nothing is executed or interpolated into a path: a board is picked only by its index in the registry's own list (LLR-4102.2). `PROJECT` is looked up by equality, never used as a path (the file name uses `report_html.slug`).
-- **Printed text.** Board names and paths are file-derived; they pass `strip_controls` and have whitespace collapsed (LLR-4104.3), so they cannot inject lines or terminal sequences.
+- **Printed text.** Board names, paths, project names and error text are file-derived or typed; they pass one print function that strips controls, shows tab and newline as `	` and `
+` and drops separators and bidi overrides (LLR-4104.3), so they cannot inject lines or terminal sequences; the paths on stdout are unchanged.
 - **Reading never writes.** Missing `--board` paths are refused before `Board.load` can seed them (LLR-4104.1, closes BACKLOG's S-3 item for `--report`); the registry is not written (D-3).
-- **Data exposure.** `a` puts every board's data in one folder, the same exposure as `H` scope `o` (README warns). A wrong default pick exports one board the owner did not mean: the prompt marks the default and a script must name `--board`.
-- **Residual.** A pipe held open without data waits. `Registry.load` may copy an unreadable `boards.json` aside, as every start does (security S-2).
+- **Data exposure.** `a` puts every board's data in one folder, the same exposure as `H` scope `o`; the command names the folder and the board count on stderr before writing and the README warns (LLR-4102.4). A wrong default pick exports one board the owner did not mean: the prompt marks the default and a script must name `--board`.
+- **Residual.** TC-4107's oracle is an in-process `extract` + `write_reports` written by this batch; it is not compared with the app's `H` handler (accepted: both call the same two functions, and batch-01's AT-3101 pins the handler). A pipe held open without data waits. A `reports` folder or a same-named report file that is a symlink is followed, exactly as in `H` (the file names are fixed words, the date and slugs; the folder is the owner's own). The board file is parsed twice (check, then read); `peek_board` seeds nothing, so a swap in between cannot create a board. The slug of a symbol-only name can be empty (`workspace--proj-…`); it holds no separator, so it cannot leave the folder.
 
 ### 6.4 Phase-1 reconciliation log — moved to the ledger (§7)
 

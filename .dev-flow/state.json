@@ -238,7 +238,7 @@
     }
   ],
   "guided": false,
-  "current_station": "P2",
+  "current_station": "P3",
   "phase_status": "in-progress",
   "stations_active": [
     "P0",
@@ -250,7 +250,7 @@
   ],
   "iterations_per_station": {
     "P0": 0,
-    "P1": 0,
+    "P1": 1,
     "P2": 0,
     "P3": 0,
     "P4": 0,
@@ -314,6 +314,21 @@
       "station": "P1",
       "date": "2026-10-29",
       "decision": "P1 requirements approved under the batch's standing authorization — US-4101, HLR-4101..4105, LLR-4101.1..4105.2, the report-cli FLOW and AT-4101..AT-4107 written; the security scan ran (security_required, answered in 6.3); P2 review is next."
+    },
+    {
+      "station": "P2",
+      "date": "2026-10-29",
+      "decision": "P2 first pass iterate-to-refine under the batch's standing authorization — QA-1..QA-3 majors and SEC-1..SEC-4 mediums are requirement defects; amended in the contract with ledger entries .1-.6."
+    },
+    {
+      "station": "P1",
+      "date": "2026-10-29",
+      "decision": "P1 amended under the batch's standing authorization — LLR-4102.5, LLR-4105.3, LLR-4105.4 added and six ledger entries written; P2 review of the amended contract is next."
+    },
+    {
+      "station": "P2",
+      "date": "2026-10-29",
+      "decision": "P2 approved under the batch's standing authorization — qa-reviewer and security-reviewer both spawned, the amended contract re-checked (F1-F5 closed, F6-F8 accepted, N1 fixed); increment 001 is next."
     }
   ],
   "obsidian_synced": false,
