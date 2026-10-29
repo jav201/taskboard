@@ -13,6 +13,7 @@ from __future__ import annotations
 import hashlib
 import os
 import re
+import shutil
 import subprocess
 import sys
 from pathlib import Path
@@ -73,7 +74,7 @@ MUTANTS = [
     ("M13", [("        if stream is None:\n            return \"\"\n", "")],
      ("TC_4110", ["test_TC_4110_stdin_that_misbehaves_never_tracebacks"]),
      "LLR-4102.5: a closed stdin (None) raises"),
-    ("M14", [("        print(os.path.abspath(p))", "        print(\" \".join(os.path.abspath(p).split()))")],
+    ("M14", [("        line = os.path.abspath(p)\n", "        line = ' '.join(os.path.abspath(p).split())\n")],
      ("TC_4106", ["test_TC_4106_a_path_with_two_spaces_is_printed_unchanged"]),
      "LLR-4104.3: stdout paths collapsed"),
     ("M15", [("if e.id == default.id else", "if e.id != default.id else")],
@@ -102,6 +103,21 @@ MUTANTS = [
     ("M23", [("    except OSError:\n        reg = None\n", "    except ZeroDivisionError:\n        reg = None\n")],
      ("TC_4108", ["test_TC_4108_one_board_does_not_prompt_and_a_missing_default_is_refused"]),
      "SEC-N2: a missing registry file raises instead of reading as absent"),
+    ("M25", [("        if len(line.rstrip(\"\\r\\n\")) > ANSWER_MAX:", "        if False:")],
+     ("TC_4110", ["test_TC_4110_stdin_that_misbehaves_never_tracebacks"]),
+     "LLR-4102.5: no cap on the answer line"),
+    ("M26", [("answer.isascii() and answer.isdecimal() and ", "answer.isdecimal() and ")],
+     ("TC_4103", ["test_TC_4103_the_prompt_answers"]),
+     "LLR-4102.2: a non-ASCII digit read as a pick"),
+    ("M27", [("        return stream is not None and stream.isatty()", "        return stream is not None")],
+     ("TC_4103", ["test_TC_4103_the_prompt_answers"]),
+     "LLR-4102.3: every stream counts as a terminal (the exit-2 rule never fires)"),
+    ("M28", [("        if not _a_board_file(pick.path):\n            print(f", "        if False:\n            print(f")],
+     ("TC_4103", ["test_TC_4103_a_picked_board_whose_file_is_gone_asks_again"]),
+     "LLR-4102.2: a picked board whose file is gone is accepted"),
+    ("M29", [("        except UnicodeEncodeError:          # a console codepage that cannot spell the path", "        except ZeroDivisionError:")],
+     ("TC_4114", ["test_TC_4114_a_stdout_that_cannot_spell_the_path_still_prints_it"]),
+     "stdout encoding: an unspellable path raises after the files are written"),
     ("M24", [("    if args.report is not None:\n        run_report(args, parser)",
               "    if args.report is not None:\n        from .report import write_report\n        write_report(peek_board(default_board_path()))\n        run_report(args, parser)")],
      ("TC_4109", ["test_TC_4109_the_source_and_the_readme_pin_the_new_behaviour"]),
@@ -135,6 +151,7 @@ def main() -> int:
         print("baseline not green: stop")
         return 2
     killed = survived = 0
+    had_reports = (ROOT / "reports").exists()
     for mid, edits, (k, names), what in MUTANTS:
         if only and mid not in only:
             continue
@@ -147,6 +164,9 @@ def main() -> int:
             code, failed, tail = run(k)
         finally:
             MAIN.write_bytes(original)
+            stray = ROOT / "reports"             # a mutant that writes beside the CWD
+            if stray.exists() and not had_reports:
+                shutil.rmtree(stray)
         hit = [n for n in names if any(f.startswith(n.split("[")[0]) for f in failed)]
         verdict = "KILLED" if code != 0 and hit else "SURVIVED"
         killed += verdict == "KILLED"

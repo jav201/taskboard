@@ -27,6 +27,7 @@ import taskboard
 from taskboard import __main__ as entry
 from taskboard import report_html
 from taskboard.boards import peek_board
+from taskboard.people import Person
 
 REPO = Path(__file__).resolve().parents[1]
 TODAY = date.today().isoformat()
@@ -61,8 +62,8 @@ def make_home(tmp_path: Path, boards=(ALPHA, BETA), last: str = "alpha", missing
     return home, files
 
 
-def cli(home: Path, *args: str, stdin: str = ""):
-    env = dict(os.environ, HOME=str(home), USERPROFILE=str(home), PYTHONIOENCODING="utf-8")
+def cli(home: Path, *args: str, stdin: str = "", io: str = "utf-8"):
+    env = dict(os.environ, HOME=str(home), USERPROFILE=str(home), PYTHONIOENCODING=io)
     return subprocess.run([sys.executable, "-m", "taskboard", *args], capture_output=True,
                           text=True, encoding="utf-8", errors="replace", env=env, cwd=REPO,
                           input=stdin, timeout=120)
@@ -305,6 +306,9 @@ def test_TC_4103_the_prompt_answers(tmp_path):
     assert ask(["9\n", "x\n", "2\n"], err=err) is es[1]
     assert "".join(err).count("Not a choice") == 2
     assert ask(["A\n"]) is None
+    err2 = Err()
+    assert ask(["\u0662\n", "\u00b2\n", "1\n"], err=err2) is es[0]     # Arabic-Indic two, superscript two
+    assert "".join(err2).count("Not a choice") == 2
     with pytest.raises(SystemExit) as e1:
         ask([], tty=True)
     assert e1.value.code == 1
@@ -378,14 +382,18 @@ def test_TC_4107_the_cli_bytes_equal_the_h_path_bytes(tmp_path):
     `report_html.extract` + `write_reports` write in-process for the same boards. The CLI
     and the app cannot drift."""
     home, files = make_home(tmp_path)
+    (home / ".taskboard" / "people.json").write_text(json.dumps({"people": [
+        {"id": "luis.prado", "name": "Luis Prado", "role": "Developer"}]}), encoding="utf-8")
     r = cli(home, "--report", stdin="a\n")
     assert r.returncode == 0, r.stderr
+    assert [p["id"] for p in embedded(Path(lines(r)[0]))["people"]] == ["luis.prado"]
     boards = []
     for bid, name, _ in (ALPHA, BETA):
         board = peek_board(files[bid])
         board.marks = {}
         boards.append((bid, name, "sky", board))
-    data = report_html.extract(boards, {}, {}, date.today())
+    people = {"luis.prado": Person("luis.prado", "Luis Prado", "Developer")}
+    data = report_html.extract(boards, people, {}, date.today())
     out = report_html.write_reports(data, ("workspace", "deck"), tmp_path / "inproc", date.today())
     for cli_path, mine in zip(lines(r), out):
         assert Path(cli_path).read_bytes() == mine.read_bytes()
@@ -432,8 +440,12 @@ def test_TC_4110_stdin_that_misbehaves_never_tracebacks(tmp_path):
     with pytest.raises(SystemExit) as e:
         entry.ask_board(_entries(tmp_path), _entries(tmp_path)[0], None, Err())
     assert e.value.code == 2
-    exact = entry._read_answer(Stream(["1" * 4096], True))
-    assert exact == "1" * 4096
+    exact = entry._read_answer(Stream(["1" * 4096 + "\n"], True))
+    assert exact == "1" * 4096 + "\n"                  # the newline is not counted
+    assert entry._read_answer(Stream(["1" * 4097 + "\n"], True)) == "?\n"
+    padded = cli(home, "--report", stdin=" " * 5000 + "2\n1\n")
+    assert padded.returncode == 0 and "Not a choice" in padded.stderr      # the cap, observable
+    assert reports_in(files, "alpha") != [] and "Traceback" not in padded.stderr
 
 
 def test_TC_4110_a_corrupt_registry_people_and_marks_are_not_copied_aside(tmp_path):
@@ -491,3 +503,17 @@ def test_TC_4113_a_board_flag_registers_nothing(tmp_path):
     r2 = cli(bare, "--board", str(other), "--report", stdin="")
     assert r2.returncode == 0, r2.stderr
     assert tree(bare) == []
+
+
+def test_TC_4114_a_stdout_that_cannot_spell_the_path_still_prints_it(tmp_path):
+    """TC-4114 (LLR-4101.2): a board folder whose name the console codepage cannot spell
+    still gets its paths printed (escaped), after the files are written, exit 0."""
+    home, files = make_home(tmp_path)
+    odd = tmp_path / "ma\u00f1ana"
+    odd.mkdir()
+    board = odd / "b.json"
+    F.personal(board).save()
+    r = cli(home, "--board", str(board), "--report", stdin="", io="ascii")
+    assert r.returncode == 0, r.stderr
+    assert len(lines(r)) == 2 and "\\xf1" in lines(r)[0]
+    assert sorted(p.name for p in (odd / "reports").iterdir()) == [f"deck-{TODAY}.html", f"workspace-{TODAY}.html"]

@@ -12,11 +12,11 @@ project by hue alone.
 """
 
 import hashlib
-from pathlib import Path
 import json
 import re
 import subprocess
 import sys
+from pathlib import Path
 from datetime import date, timedelta
 
 from taskboard.models import Board, Project, Task

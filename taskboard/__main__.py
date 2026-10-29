@@ -92,10 +92,10 @@ def _read_answer(stream) -> str:
     try:
         if stream is None:
             return ""
-        line = stream.readline(ANSWER_MAX + 1)
-        if len(line) > ANSWER_MAX:
+        line = stream.readline(ANSWER_MAX + 2)
+        if len(line.rstrip("\r\n")) > ANSWER_MAX:
             while line and not line.endswith("\n"):
-                line = stream.readline(ANSWER_MAX + 1)
+                line = stream.readline(ANSWER_MAX + 2)
             return "?\n"
         return line
     except (OSError, ValueError, UnicodeDecodeError):
@@ -120,7 +120,11 @@ def ask_board(entries, default, stdin, err):
     while True:
         err.write(f"Board [1-{len(entries)}, enter = default, a = all, q = quit]: ")
         err.flush()
-        line = _read_answer(stdin)
+        try:
+            line = _read_answer(stdin)
+        except KeyboardInterrupt:
+            print("\ntaskboard: no board chosen", file=err)
+            raise SystemExit(1)
         if line == "":
             if not answered and not _is_tty(stdin):
                 print("taskboard: stdin is not a terminal and gave no answer; "
@@ -216,7 +220,12 @@ def run_report(args, parser) -> None:
         print(f"{skipped} board{'s' if skipped > 1 else ''} skipped "
               "(file missing or unreadable)", file=sys.stderr)
     for p in paths:
-        print(os.path.abspath(p))
+        line = os.path.abspath(p)
+        try:
+            print(line)
+        except UnicodeEncodeError:          # a console codepage that cannot spell the path
+            enc = sys.stdout.encoding or "ascii"
+            print(line.encode(enc, "backslashreplace").decode(enc))
 
 
 def main() -> None:
@@ -258,7 +267,7 @@ def main() -> None:
     if args.open is not None and not _a_board_file(args.open):
         # before --report and before anything is built: the loader would seed a
         # missing path (security S-3)
-        parser.exit(2, f"taskboard: no board file at {strip_controls(args.open)} "
+        parser.exit(2, f"taskboard: no board file at {_safe(args.open)} "
                        "(--open opens an existing one)\n")
     if args.report is not None and args.board is not None and not _a_board_file(args.board):
         # the same refusal for `--board` (batch 2026-10-29-batch-02, LLR-4104.1)

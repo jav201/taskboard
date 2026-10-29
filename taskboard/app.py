@@ -1907,7 +1907,8 @@ class TaskboardApp(App):
         """`R` — open the presentation of the selected task's project (the
         focused project when set): the gantt field on top, the brief blocks
         below, a `⟦━⟧` cursor. The presentation replaces the HTML report the
-        key used to write; `--report` from the shell still writes that."""
+        key used to write; `--report` from the shell writes the new HTML reports (batch
+        2026-10-29-batch-02)."""
         project_id = present_project_id(self.board, self.selected_task_id,
                                         self.focused_project_id)
         if project_id is None:
