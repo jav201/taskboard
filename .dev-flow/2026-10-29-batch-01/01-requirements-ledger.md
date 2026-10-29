@@ -241,3 +241,13 @@ _P1, 2026-10-29: the live contract is born at v1 (US-3101, HLR-3101..HLR-3107, 1
 - **Parent HLR re-read:** HLR-3102 re-read — no change required (it states the outcome, controls with a counted, visible state; the LLR binds the label). TC-3105, TC-3108 and AT-3102 re-derived: each asserts the three-form label through the shipped page; no new node.
 - **Body edit landed:** LLR-3102.1 `Statement` and `Numeric pass threshold` (`01-requirements.md:332`, `:335`) and its `Ledger:` field (`01-requirements.md:331`).
 - **Owning increment:** 001.
+
+### LED-2026-10-29-batch-01.24 — the download keeps no derived project facts and no mentions of withheld notes (SD1, CR2-1)
+- **Requirement:** LLR-3103.1
+- **Date:** 2026-10-29
+- **What changed:** before — LLR-3103.1 stripped `notes_html` and `notes_text` when the notes section is off but said nothing of the mentions, so the People chips and directory and the CSV/JSON mentions column still named who was mentioned in the withheld notes; and a kept project's `open`/`late`/`done`/`high`/`worst`/`momentum` were silent, so the first implementation re-derived them client-side over the kept tasks (a second engine of `views.sitting`/`lane_facts` that nothing reads). After — with the notes section off the download drops the mentions unless a person filter is active, and then only the pressed people's; `people` reduce to those still referenced; the CSV and JSON follow. A kept project's `momentum` and `worst` are null; its open, late, done and high counts are plain counts over the kept tasks. New: the mention rule and the null facts. Deleted: nothing.
+- **Why:** increment 002's security-reviewer finding SD1 (minor: a withheld note's mentions revealed who is named in it) and the code-reviewer's CR2-1 (MEDIUM: `keptFacts` was a second client-side engine with no consumer); the orchestrator's dispositions, under the batch's standing authorization, fixed both in code and amend the contract so it names what the code does.
+- **Evidence:** `.scratch/p3/sec-002.md` SD1; `.scratch/p3/cr-002.md` CR2-1; `evidence/suite-002.txt` (52 passed); `evidence/mutation-002.txt` M30..M37 (40/40 killed); `tests/test_report_workspace.py::test_TC_3110_notes_off_strips_the_notes` and `::test_TC_3109_the_download_keeps_only_used_entries`.
+- **Parent HLR re-read:** HLR-3103 re-read — no change required (it states the outcome: only the kept tasks and what they use leave the file; the LLR binds the mechanism).
+- **Body edit landed:** LLR-3103.1 `Ledger:`, `Statement` and `Numeric pass threshold` (`01-requirements.md:372`, `:373`, `:376`).
+- **Owning increment:** 002.
