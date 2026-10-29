@@ -232,8 +232,8 @@
     }
   ],
   "guided": false,
-  "current_station": "P3",
-  "phase_status": "iterating",
+  "current_station": "P4",
+  "phase_status": "in-progress",
   "stations_active": [
     "P0",
     "ARQ",
@@ -364,6 +364,16 @@
       "station": "DDR",
       "date": "2026-10-29",
       "decision": "DDR approved with conditions under the batch's standing authorization — qa-reviewer and ux-reviewer: the print view clips the task table and names hidden boards / counts hidden projects (DQ1, DQ2 high) plus low findings; correction increment 005 discharges them; P3 is next."
+    },
+    {
+      "station": "P3",
+      "date": "2026-10-29",
+      "decision": "P3 increment 005 approved under the batch's standing authorization — the DDR correction: code-reviewer OK to advance (LOW only; post-review print-wrap fix not re-read, declared); 68 passed, 15/15 mutants killed; LED .27; DDR is next."
+    },
+    {
+      "station": "DDR",
+      "date": "2026-10-29",
+      "decision": "DDR approved under the batch's standing authorization — C-DDR-1 discharged by increment 005; P4 is next."
     }
   ],
   "obsidian_synced": false,
