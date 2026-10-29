@@ -1,0 +1,153 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Status report · taskboard · 2026-10-29</title>
+<style>
+:root { color-scheme: light dark; }
+* { box-sizing: border-box; }
+body { margin: 0; padding: 1.75rem 1.25rem 3rem;
+       font: 15px/1.5 ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+       background: #0d1117; color: #e6edf3;
+       --line: #21262d; --panel: #161b22; --mut: #8b98a5;
+       --chip-bg: #1c2129; --mark: #c9d4e0; }
+main { max-width: 62rem; margin: 0 auto; }
+h1 { font-size: 1.45rem; margin: 0 0 .2rem; letter-spacing: .01em; }
+h2 { font-size: 1rem; margin: 2rem 0 .6rem; padding-bottom: .3rem;
+     border-bottom: 1px solid var(--line); font-weight: 650; }
+h2 .tag { float: right; font-size: .72rem; color: var(--mut); font-weight: 500;
+          text-transform: uppercase; letter-spacing: .07em; padding-top: .25rem; }
+.sub { color: var(--mut); margin: 0 0 1.5rem; font-size: .88rem; }
+.sub b { color: var(--mark); font-weight: 600; }
+.tiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(7.2rem, 1fr));
+         gap: .6rem; margin: 0 0 .25rem; }
+.tile { background: var(--panel); border: 1px solid var(--line); border-radius: 8px;
+        padding: .6rem .75rem; }
+.tile .n { font-size: 1.55rem; font-weight: 650; letter-spacing: -.01em; }
+.tile .n small { font-size: .8rem; color: var(--mut); font-weight: 500; }
+.tile .k { color: var(--mut); font-size: .72rem; text-transform: uppercase;
+           letter-spacing: .06em; margin-top: .1rem; }
+.cols { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; align-items: start; }
+@media (max-width: 780px) { .cols { grid-template-columns: 1fr; } }
+.panel { background: var(--panel); border: 1px solid var(--line); border-radius: 8px;
+         padding: .35rem .8rem .6rem; }
+.panel h3 { font-size: .78rem; text-transform: uppercase; letter-spacing: .07em;
+            color: var(--mut); margin: .5rem 0 .35rem; font-weight: 650; }
+table { border-collapse: collapse; width: 100%; margin: .4rem 0 0; font-size: .87rem; }
+th, td { text-align: left; padding: .4rem .55rem; border-bottom: 1px solid var(--line);
+         vertical-align: top; overflow-wrap: anywhere; }
+th { color: var(--mut); font-weight: 600; font-size: .72rem; text-transform: uppercase;
+     letter-spacing: .06em; overflow-wrap: anywhere; }
+td.n, th.n { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
+th.n { white-space: normal; }
+@media (max-width: 560px) { .col-open, .col-mom { display: none; } }
+tr:last-child td { border-bottom: none; }
+.chip { display: inline-block; width: .58rem; height: .58rem; border-radius: 2px;
+        margin-right: .4rem; vertical-align: baseline; }
+.board-chip { display: inline-block; font-size: .68rem; font-weight: 650; padding: 0 .4rem;
+              border-radius: 99px; border: 1px solid var(--line); background: var(--chip-bg);
+              color: var(--mut); letter-spacing: .04em; white-space: nowrap; }
+.mark { font-weight: 650; }
+.mut { color: var(--mut); }
+.over { color: #f43f5e; font-weight: 600; }
+.blocked { color: #fb923c; font-weight: 650; }
+.done { color: #4ade80; }
+.hl-soon { color: #fbbf24; }
+.hl-over { color: #f43f5e; font-weight: 600; }
+.hl-green { color: #4ade80; }
+.mention { color: #f472b6; font-weight: 650; }
+.note, .meta { color: var(--mut); font-size: .82rem; }
+.list { list-style: none; margin: .3rem 0 0; padding: 0; }
+.list li { padding: .45rem 0; border-bottom: 1px solid var(--line); }
+.list li:last-child { border-bottom: none; }
+.list .when { font-variant-numeric: tabular-nums; white-space: nowrap; }
+.chain { margin: .4rem 0 0; padding: 0; list-style: none; }
+.chain li { display: flex; gap: .5rem; align-items: baseline; padding: .28rem 0;
+            border-bottom: none; }
+.chain .arrow { color: var(--mut); flex: 0 0 auto; }
+.chain .dot { flex: 0 0 auto; width: .5rem; height: .5rem; border-radius: 50%;
+              background: var(--mut); align-self: center; }
+.chain .dot.done { background: #4ade80; }
+.chain .dot.late { background: #f43f5e; }
+.chain .dot.open { background: #38bdf8; }
+.prog { width: 100%; min-width: 5.5rem; }
+.prog .bar { height: .5rem; border-radius: 3px; background: var(--chip-bg);
+             overflow: hidden; margin-top: .2rem; }
+.prog .bar i { display: block; height: 100%; border-radius: 3px; }
+.prog .lbl { font-size: .74rem; color: var(--mut); font-variant-numeric: tabular-nums; }
+footer { color: var(--mut); font-size: .8rem; margin-top: 2.5rem;
+         border-top: 1px solid var(--line); padding-top: .7rem; }
+h2, h3 { page-break-after: avoid; }
+.panel, .chain { page-break-inside: avoid; }
+tr { page-break-inside: avoid; }
+@media (prefers-color-scheme: light) {
+  body { background: #ffffff; color: #1f2328;
+         --line: #d0d7de; --panel: #f6f8fa; --mut: #59636e;
+         --chip-bg: #eaeef2; --mark: #1f2328; }
+}
+@media print {
+  body { background: #fff; color: #000; padding: 0;
+         font-size: 8.6px; line-height: 1.25;
+         --line: #bbb; --panel: #fff; --mut: #444; --chip-bg: #eee; --mark: #000; }
+  main { max-width: none; }
+  h1 { font-size: 1.05rem; }
+  h2 { font-size: .78rem; margin: .55rem 0 .2rem; }
+  h2 .tag { display: none; }
+  h3 { font-size: .68rem; }
+  section .sub { display: none; }
+  .sub { font-size: .72rem; margin-bottom: .45rem; }
+  .tiles { grid-template-columns: repeat(auto-fit, minmax(4.5rem, 1fr)); gap: .3rem; }
+  .tile { border-color: #999; padding: .2rem .35rem; }
+  .tile .n { font-size: .9rem; }
+  .tile .k { font-size: .54rem; }
+  th, td { padding: .1rem .25rem; }
+  th { font-size: .56rem; }
+  .note, .meta { font-size: .68rem; }
+  .cols { gap: .8rem; }
+  .panel { padding: .05rem .4rem .15rem; border-color: #999; margin-bottom: .3rem; }
+  .note { display: none; }  /* print is the compact one-pager; note snippets stay on screen */
+  div.meta { display: inline; font-size: .95em; }
+  div.meta::before { content: " · "; color: #999; }
+  .list li, .chain li { padding: .06rem 0; }
+  .board-chip { font-size: .56rem; }
+  footer { margin-top: .5rem; font-size: .6rem; color: #444; }
+  .sub, footer { color: #444; }
+  .over, .hl-over { color: #b00020; }
+  .done, .hl-green { color: #1a7f37; }
+  .hl-soon { color: #8a6100; }
+  .mention { color: #a0247a; }
+  .blocked { color: #b35000; }
+  section { page-break-inside: auto; }
+}
+</style></head>
+<body><main>
+
+<h1>Status report · all boards</h1>
+<p class="sub">Generated <b>2026-10-29</b> · covers Personal, Client A and
+Course · counts and dates only — nothing here is a forecast. Work with no recorded
+phase-change date reads <em>unaged</em>, exactly as the board says.</p>
+
+<section><h2>Where everything stands <span class="tag">3 boards</span></h2>
+<div class="tiles"><div class="tile"><div class="n">3</div><div class="k">boards</div></div><div class="tile"><div class="n">6</div><div class="k">projects</div></div><div class="tile"><div class="n">18</div><div class="k">open</div></div><div class="tile"><div class="n">3</div><div class="k">done</div></div><div class="tile"><div class="n">3</div><div class="k">overdue</div></div><div class="tile"><div class="n">5</div><div class="k">due ≤ 7d</div></div><div class="tile"><div class="n">8</div><div class="k">high prio</div></div><div class="tile"><div class="n">2</div><div class="k">archived</div></div></div>
+</section>
+<section><h2>What changed in the last 7 days <span class="tag">16 tasks</span></h2>
+<p class="sub" style="margin-bottom:.4rem">Every task whose phase moved since
+2026-10-22, oldest move first.</p>
+<table><thead><tr><th class='n'>moved</th><th>task</th><th>now in</th></tr></thead><tbody><tr><td class="n mut">0d ago</td><td>Keys handover<div class="meta">Move apartment · <span class="board-chip">Personal</span></div></td><td>Next · 0d in phase</td></tr><tr><td class="n mut">0d ago</td><td>Launch day<div class="meta">Storefront relaunch · <span class="board-chip">Client A</span></div></td><td>Backlog · 0d in phase</td></tr><tr><td class="n mut">0d ago</td><td>Final invoice<div class="meta">Storefront relaunch · <span class="board-chip">Client A</span></div></td><td>Backlog · 0d in phase</td></tr><tr><td class="n mut">0d ago</td><td>Module 3 live<div class="meta">Video module 3 · <span class="board-chip">Course</span></div></td><td>Backlog · 0d in phase</td></tr><tr><td class="n mut">1d ago</td><td>Welcome thread refresh<div class="meta">Community forum · <span class="board-chip">Course</span></div></td><td>Backlog · 1d in phase</td></tr><tr><td class="n mut">2d ago</td><td>Transfer internet contract<div class="meta">Move apartment · <span class="board-chip">Personal</span></div></td><td>Next · 2d in phase</td></tr><tr><td class="n mut">2d ago</td><td>Draft the return<div class="meta">Taxes 2026 · <span class="board-chip">Personal</span></div></td><td>Backlog · 2d in phase</td></tr><tr><td class="n mut">2d ago</td><td>Edit module 3<div class="meta">Video module 3 · <span class="board-chip">Course</span></div></td><td>Next · 2d in phase</td></tr><tr><td class="n mut">3d ago</td><td>Tutorial videos<div class="meta">Support docs · <span class="board-chip">Client A</span></div></td><td>Backlog · 3d in phase</td></tr><tr><td class="n mut">3d ago</td><td>Script module 3<div class="meta">Video module 3 · <span class="board-chip">Course</span></div></td><td>done · 3d in phase</td></tr><tr><td class="n mut">4d ago</td><td>Pack kitchen<div class="meta">Move apartment · <span class="board-chip">Personal</span></div></td><td>Doing · 4d in phase</td></tr><tr><td class="n mut">4d ago</td><td>Record lesson 3.1<div class="meta">Video module 3 · <span class="board-chip">Course</span></div></td><td>Doing · 4d in phase</td></tr><tr><td class="n mut">5d ago</td><td>FAQ rewrite<div class="meta">Support docs · <span class="board-chip">Client A</span></div></td><td>Doing · 5d in phase</td></tr><tr><td class="n mut">6d ago</td><td>Gather deduction receipts<div class="meta">Taxes 2026 · <span class="board-chip">Personal</span></div></td><td>Doing · 6d in phase</td></tr><tr><td class="n mut">6d ago</td><td>Product photos<div class="meta">Storefront relaunch · <span class="board-chip">Client A</span></div></td><td>Doing · 6d in phase</td></tr><tr><td class="n mut">6d ago</td><td>Moderation guidelines<div class="meta">Community forum · <span class="board-chip">Course</span></div></td><td>Backlog · 6d in phase</td></tr></tbody></table>
+</section>
+<section><h2>The two horizons <span class="tag">late · next 7 days</span></h2>
+<div class="cols"><div class="panel"><h3>Late work · 3 tasks</h3><table><thead><tr><th class='n'>due</th><th>task</th><th>phase</th></tr></thead><tbody><tr><td class="n over">3d overdue</td><td>Homepage build<div class="meta">Storefront relaunch · <span class="board-chip">Client A</span></div></td><td class='mut'>Doing · 12d</td></tr><tr><td class="n over">1d overdue</td><td><span class="blocked">blocked</span> · Pack kitchen<div class="meta">Move apartment · <span class="board-chip">Personal</span></div><div class="note"><span class="hl-over">still missing boxes</span><span class="mut"> </span><span class="mention">@Luis Prado</span><span class="mut"> brings more Thursday</span></div></td><td class='mut'>Doing · 4d</td></tr><tr><td class="n over">1d overdue</td><td>Content final<div class="meta">Storefront relaunch · <span class="board-chip">Client A</span></div><div class="note"><span class="hl-over">legal still reviewing the refund paragraph</span></div></td><td class='mut'>Review · 9d</td></tr></tbody></table></div><div class="panel"><h3>Next 7 days · 5 tasks</h3><table><thead><tr><th class='n'>due</th><th>task</th><th>phase</th></tr></thead><tbody><tr><td class="n ">in 1d</td><td>Record lesson 3.1<div class="meta">Video module 3 · <span class="board-chip">Course</span></div><div class="note"><span class="hl-over">mic hiss on retakes</span><span class="mut"> swap the interface cable</span></div></td><td class='mut'>Doing · 4d</td></tr><tr><td class="n ">in 2d</td><td>Transfer internet contract<div class="meta">Move apartment · <span class="board-chip">Personal</span></div><div class="note"><span class="hl-soon">price locked until Friday</span><span class="mut"> then it rises</span></div></td><td class='mut'>Next · 2d</td></tr><tr><td class="n ">in 2d</td><td>Product photos<div class="meta">Storefront relaunch · <span class="board-chip">Client A</span></div><div class="note"><span class="mention">@Ana Ruiz</span><span class="mut"> shot the hero set </span><span class="hl-soon">approved by client</span></div></td><td class='mut'>Doing · 6d</td></tr><tr><td class="n ">in 4d</td><td>FAQ rewrite<div class="meta">Support docs · <span class="board-chip">Client A</span></div><div class="note"><span class="mut">- [ ] draft sections</span><br><span class="mut">- [x] outline</span></div></td><td class='mut'>Doing · 5d</td></tr><tr><td class="n ">in 5d</td><td>Gather deduction receipts<div class="meta">Taxes 2026 · <span class="board-chip">Personal</span></div><div class="note"><span class="hl-green">scanner app works great</span><span class="mut"> all PDFs in the folder</span></div></td><td class='mut'>Doing · 6d</td></tr></tbody></table></div></div>
+</section>
+<section><h2>Milestones by class <span class="tag">4 upcoming</span></h2>
+<h3 style="margin-top:1rem"><span class="chip" style="background:#fb7185"></span>Delivery <span class="mark">▲</span></h3><table><thead><tr><th>milestone</th><th>phase</th><th class='n'>due</th></tr></thead><tbody><tr><td>Keys handover<div class="meta">Move apartment · <span class="board-chip">Personal</span></div><div class="note"><span class="mut">one date, its due — the class is </span><span class="hl-soon">Delivery ▲</span></div></td><td style="white-space:nowrap">Next</td><td class="n ">in 12d</td></tr><tr><td>Module 3 live<div class="meta">Video module 3 · <span class="board-chip">Course</span></div><div class="meta">after: Edit module 3 (1 still open)</div></td><td style="white-space:nowrap">Backlog</td><td class="n ">in 14d</td></tr></tbody></table><h3 style="margin-top:1rem"><span class="chip" style="background:#fbbf24"></span>Billing <span class="mark">■</span></h3><table><thead><tr><th>milestone</th><th>phase</th><th class='n'>due</th></tr></thead><tbody><tr><td>Final invoice<div class="meta">Storefront relaunch · <span class="board-chip">Client A</span></div></td><td style="white-space:nowrap">Backlog</td><td class="n ">in 30d</td></tr></tbody></table><h3 style="margin-top:1rem"><span class="chip" style="background:#a3e635"></span>Launch <span class="mark">★</span></h3><table><thead><tr><th>milestone</th><th>phase</th><th class='n'>due</th></tr></thead><tbody><tr><td>Launch day<div class="meta">Storefront relaunch · <span class="board-chip">Client A</span></div><div class="note"><span class="mut">the whole chain lands here — class </span><span class="hl-soon">Launch ★</span></div><div class="meta">after: Homepage build (1 still open)</div></td><td style="white-space:nowrap">Backlog</td><td class="n ">in 21d</td></tr></tbody></table>
+</section>
+<section><h2>Dependency chains <span class="tag">what waits on what</span></h2>
+<div class="panel" style="margin-bottom:.7rem"><h3>Taxes 2026 · <span class="board-chip">Personal</span></h3><ul class="chain"><li><span class="arrow"></span><span class="dot open"></span><span>Gather deduction receipts<span class="meta"> — Doing · 6d in phase</span></span></li><li><span class="arrow">→</span><span class="dot open"></span><span>Draft the return<span class="meta"> — Backlog · 2d in phase</span></span></li></ul></div><div class="panel" style="margin-bottom:.7rem"><h3>Move apartment · <span class="board-chip">Personal</span></h3><ul class="chain"><li><span class="arrow"></span><span class="dot late"></span><span>Pack kitchen<span class="meta"> — <span class="blocked">blocked</span> · 4d in phase</span></span></li><li><span class="arrow">→</span><span class="dot open"></span><span>Update address everywhere<span class="meta"> — Backlog · 11d in phase</span></span></li></ul></div><div class="panel" style="margin-bottom:.7rem"><h3>Support docs · <span class="board-chip">Client A</span></h3><ul class="chain"><li><span class="arrow"></span><span class="dot open"></span><span>FAQ rewrite<span class="meta"> — Doing · 5d in phase</span></span></li><li><span class="arrow">→</span><span class="dot open"></span><span>Tutorial videos<span class="meta"> — Backlog · 3d in phase</span></span></li></ul></div><div class="panel" style="margin-bottom:.7rem"><h3>Storefront relaunch · <span class="board-chip">Client A</span></h3><ul class="chain"><li><span class="arrow"></span><span class="dot open"></span><span>Product photos<span class="meta"> — Doing · 6d in phase</span></span></li><li><span class="arrow">→</span><span class="dot late"></span><span>Content final<span class="meta"> — <span class="over">1d overdue</span> · 9d in phase</span></span></li><li><span class="arrow">→</span><span class="dot late"></span><span>Homepage build<span class="meta"> — <span class="over">3d overdue</span> · 12d in phase</span></span></li><li><span class="arrow">→</span><span class="dot open"></span><span>Launch day<span class="meta"> — Backlog · 0d in phase</span></span></li></ul></div><div class="panel" style="margin-bottom:.7rem"><h3>Video module 3 · <span class="board-chip">Course</span></h3><ul class="chain"><li><span class="arrow"></span><span class="dot open"></span><span>Record lesson 3.1<span class="meta"> — Doing · 4d in phase</span></span></li><li><span class="arrow">→</span><span class="dot open"></span><span>Edit module 3<span class="meta"> — Next · 2d in phase</span></span></li><li><span class="arrow">→</span><span class="dot open"></span><span>Module 3 live<span class="meta"> — Backlog · 0d in phase</span></span></li></ul></div>
+</section>
+<section><h2>Per-project progress <span class="tag">done vs open</span></h2>
+<table><thead><tr><th>project</th><th>progress</th><th class='n col-open'>open</th><th class='n'>late</th><th class='n'>project due</th><th class='col-mom'>momentum</th></tr></thead><tbody><tr><td><span class='chip' style='background:#a78bfa'></span>Move apartment<div class="meta"><span class="board-chip">Personal</span></div></td><td><div class="prog"><div class="lbl">1/5 done (20%)</div><div class="bar"><i style="width:20%;background:#a78bfa"></i></div></div></td><td class='n'>4</td><td class='n'><span class="over">1 overdue</span></td><td class='n mut'>in 12d</td><td class='mut col-mom'>11d in phase</td></tr><tr><td><span class='chip' style='background:#fbbf24'></span>Taxes 2026<div class="meta"><span class="board-chip">Personal</span></div></td><td><div class="prog"><div class="lbl">0/2 done (0%)</div><div class="bar"><i style="width:0%;background:#fbbf24"></i></div></div></td><td class='n'>2</td><td class='n'>0 overdue</td><td class='n mut'>in 40d</td><td class='mut col-mom'>6d in phase</td></tr><tr><td><span class='chip' style='background:#38bdf8'></span>Storefront relaunch<div class="meta"><span class="board-chip">Client A</span> · at_risk</div></td><td><div class="prog"><div class="lbl">1/6 done (17%)</div><div class="bar"><i style="width:17%;background:#38bdf8"></i></div></div></td><td class='n'>5</td><td class='n'><span class="over">2 overdue</span></td><td class='n mut'>in 21d</td><td class='mut col-mom'>12d in phase</td></tr><tr><td><span class='chip' style='background:#a3e635'></span>Support docs<div class="meta"><span class="board-chip">Client A</span></div></td><td><div class="prog"><div class="lbl">0/2 done (0%)</div><div class="bar"><i style="width:0%;background:#a3e635"></i></div></div></td><td class='n'>2</td><td class='n'>0 overdue</td><td class='n mut'>in 35d</td><td class='mut col-mom'>5d in phase</td></tr><tr><td><span class='chip' style='background:#e879f9'></span>Video module 3<div class="meta"><span class="board-chip">Course</span></div></td><td><div class="prog"><div class="lbl">1/4 done (25%)</div><div class="bar"><i style="width:25%;background:#e879f9"></i></div></div></td><td class='n'>3</td><td class='n'>0 overdue</td><td class='n mut'>in 14d</td><td class='mut col-mom'>4d in phase</td></tr><tr><td><span class='chip' style='background:#818cf8'></span>Community forum<div class="meta"><span class="board-chip">Course</span></div></td><td><div class="prog"><div class="lbl">0/2 done (0%)</div><div class="bar"><i style="width:0%;background:#818cf8"></i></div></div></td><td class='n'>2</td><td class='n'>0 overdue</td><td class='n mut'>no date</td><td class='mut col-mom'>6d in phase</td></tr></tbody></table>
+</section>
+<section><h2>Who the notes point at <span class="tag">@mentions</span></h2><table><thead><tr><th>person</th><th>mentioned on open work</th></tr></thead><tbody><tr><td>@Ana Ruiz<div class="meta">Design lead</div></td><td>Product photos (Storefront relaunch · <span class="board-chip">Client A</span>); FAQ rewrite (Support docs · <span class="board-chip">Client A</span>)</td></tr><tr><td>@Luis Prado<div class="meta">Developer</div></td><td>Pack kitchen (Move apartment · <span class="board-chip">Personal</span>)</td></tr><tr><td>@Carmen Vega<div class="meta">Community</div></td><td>Tutorial videos (Support docs · <span class="board-chip">Client A</span>); Moderation guidelines (Community forum · <span class="board-chip">Course</span>)</td></tr></tbody></table></section>
+<footer>taskboard · a local file, generated on demand. Every figure above carries
+its own label; project colour is decoration, never the message. Archived work is
+counted but never "late" — nothing is expected of it.</footer>
+</main></body></html>
