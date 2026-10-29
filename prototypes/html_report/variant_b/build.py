@@ -228,7 +228,7 @@ footer{color:var(--mut);font-size:.82rem;margin-top:3rem;border-top:1px solid va
 .gweekend{fill:rgba(139,152,165,.07)}
 @media print{
   body{background:#fff;color:#000;padding:0}
-  .controls,#ganttsec,#tt,#modal,.dl,.zbtn{display:none!important}
+  .controls,#tt,#modal,.dl,.zbtn{display:none!important}
   .tile,.tbl-wrap,table,.card{background:#fff;border-color:#bbb}
   th,td{border-color:#ccc}
   .sub,.tile .k,th button,.showing,footer{color:#444}
@@ -237,6 +237,13 @@ footer{color:var(--mut);font-size:.82rem;margin-top:3rem;border-top:1px solid va
   h2{break-after:avoid}
   .tiles{break-inside:avoid}
   a{color:#000;text-decoration:none}
+  /* the gantt prints COMPLETE, not clipped: drop the on-screen scroll window,
+     neutralise the JS min-width, and scale the whole svg to the page width.
+     the svg carries fixed width/height attributes, so it has an intrinsic
+     aspect ratio and height:auto keeps the timeline proportional. */
+  .gantt-wrap{overflow:visible;background:#fff;border-color:#bbb}
+  #gantt{min-width:0!important}
+  #gantt svg{width:100%;height:auto;max-width:none}
 }
 """
 
