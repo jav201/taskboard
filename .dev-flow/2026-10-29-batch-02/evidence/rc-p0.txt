@@ -1,0 +1,7 @@
+73:        from .report import write_report
+83:        out = write_report(board, project=wanted)
+90b1b1919c43af24ae8ae35c003bdf8e63e96002	refs/heads/batch-04-reconstruction
+0f1f025600590442a580481a2a9798cb8f4a0a9f	refs/heads/fix-people-nav-none
+4a4dd6a1c9487369e76ee08a82d3501490997ef3	refs/heads/kanban-variants
+4ca4a7d0e2de3c17ecc0f5231660e309b2cb50b6	refs/heads/main
+b6adac83bd6489d57babec2b08a56bb95f7e0f8c	refs/heads/view-survival-law

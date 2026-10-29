@@ -1,0 +1,7 @@
+P1 registry_path under temp HOME: C:\Users\jjgh8\AppData\Local\Temp\p02-fxatpo5r\home\.taskboard\boards.json | C:\Users\jjgh8\Github\taskboard-wt\cli-report\taskboard\__init__.py
+P2 peek_board on an existing board: tasks=1 bytes_unchanged=True mtime_unchanged=True 
+P3 Board.load(missing) creates the file: True 
+P4 Registry.load, no registry file: entries=1, ~/.taskboard created=False
+P5 stdin input='2\n' -> isatty, first readline: False '2\n'
+P5 stdin DEVNULL -> isatty, first readline: True ''
+P6 extract+write_reports without the app: ['workspace-2026-10-29.html', 'deck-2026-10-29.html'] 

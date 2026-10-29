@@ -1,0 +1,6 @@
+$ taskboard --report << '2\n'
+ exit 0 | stdout: Report written to C:\Users\jjgh8\AppData\Local\Temp\base-52s30whl\home\.taskboard\reports\board-2026-10-29.html | stderr: 
+ files: ['.taskboard\\reports\\board-2026-10-29.html']
+$ taskboard --board C:\Users\jjgh8\AppData\Local\Temp\base-52s30whl\nope\m.json --report << ''
+ exit 0 | stdout: Report written to C:\Users\jjgh8\AppData\Local\Temp\base-52s30whl\nope\reports\board-2026-10-29.html | stderr: 
+ missing path created at base: True
