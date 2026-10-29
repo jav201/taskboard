@@ -1,0 +1,31 @@
+{
+  "desktop-light": {
+    "console_errors": [],
+    "page_errors": [],
+    "external_requests": [],
+    "horizontal_overflow": false,
+    "height": 30469
+  },
+  "desktop-dark": {
+    "console_errors": [],
+    "page_errors": [],
+    "external_requests": [],
+    "horizontal_overflow": false,
+    "height": 30469
+  },
+  "phone-light": {
+    "console_errors": [],
+    "page_errors": [],
+    "external_requests": [],
+    "horizontal_overflow": false,
+    "height": 25128
+  },
+  "phone-dark": {
+    "console_errors": [],
+    "page_errors": [],
+    "external_requests": [],
+    "horizontal_overflow": false,
+    "height": 25128
+  },
+  "_ok": true
+}
