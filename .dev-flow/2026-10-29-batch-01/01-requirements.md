@@ -308,12 +308,12 @@ the `H` action makes; AT-3101, AT-3105 and AT-3107 drive the app by keys.
 
 ### LLR-3101.2 — the extraction reuses the CLI report's honesty helpers; the CLI report is unchanged
 - **Traceability:** HLR-3101
-- **Ledger:** LED-2026-10-29-batch-01.19
-- **Statement:** Every task's `due_word` in the dict shall be `report._due_word(days)` (`taskboard/report.py:85`) for the task's due distance — tasks never pass `closed` — and every server-side escape in the reports shall go through `report._e` (`:78`); `taskboard/report.py` and `tests/test_report.py` shall stay byte-unchanged. Source: `taskboard/report_html.py`. Touched symbols: none in `report.py` (consumed only).
+- **Ledger:** LED-2026-10-29-batch-01.19, LED-2026-10-29-batch-01.25
+- **Statement:** Every task's `due_word` in the dict shall be `report._due_word(days, closed)` (`taskboard/report.py:85`) for the task's due distance — a done or archived task passes `closed=True` (the plain distance, `-3d`: finished work is never late), an open or late task passes `closed=False` — and every server-side escape in the reports shall go through `report._e` (`:78`); `taskboard/report.py` and `tests/test_report.py` shall stay byte-unchanged. Source: `taskboard/report_html.py`. Touched symbols: none in `report.py` (consumed only).
 - **Validation:** `test (unit)` + `inspection`
 - **Executed verification:** `tests/test_report_html.py::test_TC_3102_due_words_are_the_cli_reports` (TC-3102, increment 001); `git diff 9da7438 -- taskboard/report.py tests/test_report.py` empty at every increment; `tests/test_report.py` re-run.
-- **Numeric pass threshold:** for every fixture task, `due_word == _due_word(...)` (0 mismatches); the diff is 0 lines; `tests/test_report.py` 18 passed.
-- **Negative control:** a mutation formatting the due word locally (`f"{d}d"`) reddens TC-3102's late-task arm (`3d overdue` ≠ `-3d`).
+- **Numeric pass threshold:** for every fixture task, `due_word == _due_word(days, closed)` with `closed` true exactly for the done and archived tasks (0 mismatches; a done task past its date reads `-30d`, never `30d overdue`); the diff is 0 lines; `tests/test_report.py` 18 passed.
+- **Negative control:** a mutation formatting the due word locally (`f"{d}d"`) reddens TC-3102's late-task arm (`3d overdue` ≠ `-3d`); a mutation passing `closed=False` for done tasks reddens TC-3102 and the finished-work node (mutants M30, M31 of increment 003).
 - **Boundary catalog:** ☑ boundary (due today → `due today`; one day late → `1d overdue`) ☑ empty (no due → `no date`) ☐ invalid (N/A) ☐ error (N/A)
 
 ### LLR-3101.3 — the scope filters the extraction, and the renderers read the dict alone
@@ -409,11 +409,11 @@ the `H` action makes; AT-3101, AT-3105 and AT-3107 drive the app by keys.
 
 ### LLR-3105.1 — the deck's slides come from the dict in scope
 - **Traceability:** HLR-3105, HLR-3101
-- **Ledger:** LED-2026-10-29-batch-01.8, LED-2026-10-29-batch-01.12, LED-2026-10-29-batch-01.17, LED-2026-10-29-batch-01.18, LED-2026-10-29-batch-01.19, LED-2026-10-29-batch-01.21
-- **Statement:** `report_deck.render(d) -> str` shall emit a cover (the scope line — `All loaded boards (N): <names>` or `Project <name> on <board>` — totals per board, the class legend), an overview (every project in scope on one timeline) and one slide for every non-archived project of the dict — the Inbox included — that holds at least one task of any status, in the dict's board-then-project order, each a vector gantt with real `<text>` labels, today's rule, dependency arrows, the project's notes, the printed count `<n> tasks` (its non-archived tasks, open and done) and, when k > 0, `<k> archived` in its footer — reading every task's `status` and `due_word` from the dict, never re-deriving them. Source: `taskboard/report_deck.py` (NEW). Touched symbols: `report_deck.render` NEW.
+- **Ledger:** LED-2026-10-29-batch-01.8, LED-2026-10-29-batch-01.12, LED-2026-10-29-batch-01.17, LED-2026-10-29-batch-01.18, LED-2026-10-29-batch-01.19, LED-2026-10-29-batch-01.21, LED-2026-10-29-batch-01.25
+- **Statement:** `report_deck.render(d) -> str` shall emit a cover (the scope line — `All loaded boards (N): <names>` or `Project <name> on <board>` — totals per board, the class legend), an overview (every project in scope on one timeline) and one slide for every non-archived project of the dict — the Inbox included — that holds at least one task of any status, in the dict's board-then-project order, each a vector gantt with real `<text>` labels, today's rule, dependency arrows, the project's notes, the printed count `1 task` / `N tasks` (its non-archived tasks, open and done) and, when k > 0, `<k> archived` in its footer — reading every task's `status` and `due_word` from the dict, never re-deriving them. Source: `taskboard/report_deck.py` (NEW). Touched symbols: `report_deck.render` NEW.
 - **Validation:** `test (unit)`
 - **Executed verification:** `tests/test_report_deck.py::test_TC_3113_one_slide_per_project` (TC-3113, increment 003).
-- **Numeric pass threshold:** slide count == 2 + the fixture's literal count of slide-bearing projects; slide titles in order == those literal names; each slide's `<n> tasks` and `<k> archived` == the fixture's literals; the fixture's all-archived Inbox has its slide (`0 tasks · k archived`) and its task-less project has none; scope-`p` dict → 3 slides; a scope-`p` dict on a project whose tasks are all archived → 3 slides, its slide reading `0 tasks · k archived`.
+- **Numeric pass threshold:** slide count == 2 + the fixture's literal count of slide-bearing projects; slide titles in order == those literal names; each slide's `1 task` / `N tasks` and `<k> archived` == the fixture's literals; the fixture's all-archived Inbox has its slide (`0 tasks · k archived`) and its task-less project has none; scope-`p` dict → 3 slides; a scope-`p` dict on a project whose tasks are all archived → 3 slides, its slide reading `0 tasks · k archived`.
 - **Negative control:** a mutation iterating every project (archived included) adds one slide — the count arm goes red.
 - **Boundary catalog:** ☑ empty (no project → cover and overview only; a project with no task → no slide; a project or an Inbox whose tasks are all archived → its slide reads `0 tasks · k archived`) ☑ boundary (one project) ☐ invalid (N/A) ☐ error (N/A)
 

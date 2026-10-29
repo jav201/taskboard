@@ -138,6 +138,8 @@ recorded full-suite run).
 ## Open — after `2026-10-29-batch-01` (the HTML reports: workspace and deck)
 
 - **CR5 — the Inbox key can collide with a hand-edited project id `inbox`** (code-reviewer, increment 001, LOW, `taskboard/report_html.py:109`): the Inbox lane's key is `<board index>:inbox`; a project whose id was hand-edited to `inbox` gets the same key, so in the report ONLY the two merge into one project row. The board file and the app are unaffected (the report is read-only). Declared risk of increment 001; fix: give the Inbox a key no project id can take (for example a reserved prefix) and pin it with a fixture project whose id is `inbox`. Open.
+- **CR3-4 — the deck's class legend takes its phases from the first project** (code-reviewer, increment 003, LOW, `taskboard/report_deck.py:312`): the cover's phase legend reads `projects[0]`'s phases, as the prototype did; a board whose later projects use other phase names shows a legend that does not name them. Known limit, no data is wrong on the slides themselves (each bar is labelled directly). Fix: build the legend from the union of phases in scope. Open.
+- **CR3-5 — a slide taller than a page spans pages in print** (code-reviewer, increment 003, LOW, `taskboard/report_deck.py:463`): the deck prints one slide per page (`break-after: page`, N pages for N slides on the fixture), but a project with enough rows to make its slide taller than the page continues onto a second page. Known limit, as the prototype. Fix: scale the slide to the page in print, or split long slides. Open.
 
 ## Open — after `2026-10-25-batch-01` (the board shows behind the start-up modals)
 

@@ -251,3 +251,13 @@ _P1, 2026-10-29: the live contract is born at v1 (US-3101, HLR-3101..HLR-3107, 1
 - **Parent HLR re-read:** HLR-3103 re-read — no change required (it states the outcome: only the kept tasks and what they use leave the file; the LLR binds the mechanism).
 - **Body edit landed:** LLR-3103.1 `Ledger:`, `Statement` and `Numeric pass threshold` (`01-requirements.md:372`, `:373`, `:376`).
 - **Owning increment:** 002.
+
+### LED-2026-10-29-batch-01.25 — finished work is never late; the slide count reads `1 task` / `N tasks` (increment 003)
+- **Requirement:** LLR-3101.2, LLR-3105.1
+- **Date:** 2026-10-29
+- **What changed:** before — LLR-3101.2 said "tasks never pass `closed`" (decision D19), so a done or archived task past its date read `30d overdue` in the dict's `due_word`, and LLR-3105.1 printed the count as `<n> tasks`, which reads "1 tasks". After — a done or archived task passes `closed=True` to `report._due_word` (the plain distance, `-30d`), an open or late task passes `closed=False`; D19's "tasks never pass `closed`" is superseded. The slide prints `1 task` for one and `N tasks` otherwise. New: the `closed` rule per status. Deleted: the sentence "tasks never pass `closed`".
+- **Why:** increment 003's implementer found the deck printing "30d overdue" on a finished task, a contradiction of the one status rule (a done task is not late); the same wording fault as LED .23 for the singular. The orchestrator's disposition under the batch's standing authorization.
+- **Evidence:** `.scratch/p3/impl-003.md`; `evidence/suite-003.txt` (58 passed); `evidence/mutation-003.txt` M30, M31 (37/37 killed); `tests/test_report_html.py::test_TC_3102_due_words_are_the_cli_reports`, `tests/test_report_deck.py::test_finished_work_is_never_late_in_either_report` and `::test_TC_3113_one_slide_per_project`.
+- **Parent HLR re-read:** HLR-3101 and HLR-3105 re-read — no change required (they state the outcome: one set of facts for both reports; the LLRs bind the due-word and count wording). The frozen dict shape is unchanged (only the value of `due_word` for finished tasks), so the PDR is not re-opened.
+- **Body edit landed:** LLR-3101.2 `Ledger:`, `Statement`, `Numeric pass threshold`, `Negative control`; LLR-3105.1 `Ledger:`, `Statement`, `Numeric pass threshold` (`01-requirements.md`).
+- **Owning increment:** 003.

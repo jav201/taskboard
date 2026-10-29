@@ -349,6 +349,11 @@
       "station": "P3",
       "date": "2026-10-29",
       "decision": "P3 increment 002 approved under the batch's standing authorization — code-reviewer PASS after re-read (CR2-1 MEDIUM resolved), security-reviewer PASS (SD1 fixed by LED .24, SD2 accepted); 52 passed, 40/40 mutants killed; P3 continues with the next increment."
+    },
+    {
+      "station": "P3",
+      "date": "2026-10-29",
+      "decision": "P3 increment 003 approved under the batch's standing authorization — code-reviewer OK to advance (LOW CR3-2/CR3-3 fixed, CR3-4/CR3-5 to BACKLOG), security-reviewer PASS (S1 verified both sides, SI1 and SC1 discharged); LED .25; 58 passed, 37/37 mutants killed; P3 continues with the next increment."
     }
   ],
   "obsidian_synced": false,
