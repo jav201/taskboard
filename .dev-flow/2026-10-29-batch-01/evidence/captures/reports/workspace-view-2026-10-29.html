@@ -19,7 +19,7 @@ h1{font-size:1.45rem;margin:0 0 .25rem;letter-spacing:.01em}
 h2{font-size:1.02rem;margin:2.2rem 0 .6rem;padding-bottom:.35rem;
   border-bottom:1px solid var(--line);font-weight:600}
 .sub{color:var(--mut);margin:0 0 .3rem;font-size:.88rem}
-#view-summary{margin:.2rem 0 1rem;font-size:.88rem}
+#view-summary,#print-summary{margin:.2rem 0 1rem;font-size:.88rem}
 .tiles{display:flex;flex-wrap:wrap;gap:.7rem;margin:1rem 0 .4rem}
 .tile{flex:1 1 6rem;background:var(--panel);border:1px solid var(--line);
   border-radius:8px;padding:.6rem .8rem;min-width:5.5rem}
@@ -52,7 +52,7 @@ details#f-projects>summary{cursor:pointer;font-weight:600;font-size:.9rem}
 .xgroup{display:flex;flex-direction:column;gap:.35rem;width:100%}
 .xitem{font-size:.85rem}
 .cap{color:var(--mut)}
-.prt{display:none}
+.prt,.prtb{display:none}
 .gantt-wrap{overflow-x:auto;border:1px solid var(--line);border-radius:10px;
   background:var(--panel)}
 .gantt-wrap svg{display:block}
@@ -118,6 +118,7 @@ footer{color:var(--mut);font-size:.82rem;margin-top:3rem;border-top:1px solid va
   #view-header{display:block}
   .scr{display:none!important}
   .prt{display:inline!important}
+  .prtb{display:block!important}
   .tile,.tbl-wrap,table,.note,.ms{background:#fff;border-color:#bbb}
   th,td{border-color:#ccc}
   .sub,.tile .k,th button,.showing,footer{color:#444}
@@ -131,16 +132,26 @@ footer{color:var(--mut);font-size:.82rem;margin-top:3rem;border-top:1px solid va
   .gantt-wrap{overflow:visible;background:#fff;border-color:#bbb}
   #gantt{min-width:0!important}
   #gantt svg{width:100%;height:auto;max-width:none}
+  /* the table prints EVERY column inside the page: no scroll window; text wraps between
+     words, a header, date, priority, phase or age never splits; only a word wider than
+     its task, board, project or status column may break */
+  .tbl-wrap{overflow:visible}
+  table{font-size:.7rem}
+  th,td{white-space:normal;overflow-wrap:normal;padding:.25rem .3rem}
+  th,td[data-col=phase],td[data-col=priority],td[data-col=start],td[data-col=due],td[data-col=age]{white-space:nowrap}
+  td[data-col=title],td[data-col=board],td[data-col=project],td[data-col=status]{overflow-wrap:anywhere}
 }
 </style></head>
 <body><main>
 <header id="view-header">
 <h1>taskboard · interactive workspace</h1>
-<p class="sub" id="scope-line"></p>
+<p class="sub scr" id="scope-line"></p>
+<p class="sub prtb" id="print-scope"></p>
 <p class="sub" id="gen-line"></p>
 <p class="sub" id="view-origin" hidden=""></p>
 <p class="sub" id="print-line" hidden=""></p>
-<p id="view-summary"></p>
+<p class="scr" id="view-summary"></p>
+<p class="prtb" id="print-summary"></p>
 </header>
 
 <nav class="controls panel" aria-label="Filters">
@@ -442,13 +453,24 @@ function scopeLine(){
     const p = PROJECTS.get(sc.project);
     return p ? 'Project ' + p.name + ' on ' + boardName(p.board) : 'Project scope';
   }
+  if(DATA.meta.view) return boardsLine(sc.boards);    // a downloaded view holds only its boards
   return 'All loaded boards (' + sc.boards.length + '): ' + sc.boards.join(', ');
 }
+function boardsLine(list){
+  return 'Boards in this view (' + list.length + ')' + (list.length ? ': ' + list.join(', ') : '');
+}
+// the PDF is what a recipient gets: it names only the boards a shown task is on
+function printScope(kept){
+  if(DATA.meta.scope.kind === 'project' && kept.length) return scopeLine();
+  return boardsLine(DATA.boards.filter(b => kept.some(t => t.board === b.key)).map(b => b.name));
+}
 function names(set, wl, nameOf){ return [...wl].filter(x => set.has(x)).map(nameOf).join(', '); }
-function summaryText(v, wl = WL){
+// the print names the shown projects only, never the file's total
+function summaryText(v, wl = WL, print = false){
   const d = defaultView(wl), parts = [];
-  if(!sameSet(v.p, d.p)) parts.push('Projects ' + v.p.size + '/' + wl.p.size +
-    (v.p.size ? ': ' + names(v.p, wl.p, projectName) : ''));
+  if(!sameSet(v.p, d.p)) parts.push(print
+    ? 'Projects: ' + (v.p.size ? names(v.p, wl.p, projectName) : 'none')
+    : 'Projects ' + v.p.size + '/' + wl.p.size + (v.p.size ? ': ' + names(v.p, wl.p, projectName) : ''));
   if(!sameSet(v.s, d.s)) parts.push('Status: ' + (v.s.size ? names(v.s, wl.s, x => x) : 'none'));
   if(v.u.size) parts.push('People: ' + names(v.u, wl.u, x => PEOPLE.get(x).name));
   if(v.m.size) parts.push('Classes: ' + names(v.m, wl.m, x => MARKS.get(x).name));
@@ -460,8 +482,9 @@ function localIso(){
   const d = new Date(), p = n => String(n).padStart(2, '0');
   return d.getFullYear() + '-' + p(d.getMonth() + 1) + '-' + p(d.getDate());
 }
-function renderHeader(){
+function renderHeader(kept){
   $('#scope-line').textContent = scopeLine();
+  $('#print-scope').textContent = printScope(kept);
   $('#gen-line').textContent = 'Generated ' + DATA.meta.generated + ' · statuses as of ' + DATA.meta.today;
   const mv = DATA.meta.view;
   $('#view-origin').hidden = !mv;
@@ -470,6 +493,7 @@ function renderHeader(){
   const n = activeKinds(view).length;
   $('#active-count').textContent = n + (n === 1 ? ' filter active' : ' filters active');
   $('#view-summary').textContent = summaryText(view);
+  $('#print-summary').textContent = summaryText(view, WL, true);
 }
 function renderTiles(kept){
   for(const s of STATUS) $('#tile-' + s).textContent = kept.filter(t => t.status === s).length;
@@ -499,14 +523,15 @@ function ticks(lo, hi, zoom){
   const out = [];
   if(zoom === 'month'){
     let d = new Date(lo.getFullYear(), lo.getMonth(), 1);
-    while(d <= hi){ out.push({d: new Date(d), lbl: MONTHS[d.getMonth()]});
+    while(d <= hi){ out.push({d: new Date(d), lbl: MONTHS[d.getMonth()], major: true});
       d = new Date(d.getFullYear(), d.getMonth() + 1, 1); }
   } else if(zoom === 'week'){
     for(let d = new Date(lo); d <= hi; d = addD(d, 7))
-      out.push({d: new Date(d), lbl: MONTHS[d.getMonth()] + ' ' + d.getDate()});
+      out.push({d: new Date(d), lbl: MONTHS[d.getMonth()] + ' ' + d.getDate(), major: true});
   } else {
     for(let d = new Date(lo); d <= hi; d = addD(d, 1))
-      out.push({d: new Date(d), lbl: d.getDate() === 1 ? MONTHS[d.getMonth()] + ' 1' : String(d.getDate())});
+      out.push({d: new Date(d), lbl: d.getDate() === 1 ? MONTHS[d.getMonth()] + ' 1' : String(d.getDate()),
+                major: d.getDate() === 1});
   }
   return out;
 }
@@ -560,9 +585,16 @@ function renderGantt(list){
       if(d.getDay() === 0 || d.getDay() === 6)
         svgEl('rect', {x: X(d), y: 0, width: ppd, height: H, 'class': 'gweekend'}, svg);
   }
-  for(const tk of ticks(lo, hi, mode)){
+  const tks = ticks(lo, hi, mode), placed = [];
+  for(const tk of tks)
     svgEl('line', {x1: X(tk.d), y1: headH - 4, x2: X(tk.d), y2: H, 'class': 'gline'}, svg);
-    svgText(svg, X(tk.d) + 3, 13, tk.lbl, 'gtick');
+  // the month labels first, then each day label that leaves them (and the others) readable
+  for(const major of [true, false]) for(const tk of tks){
+    if(tk.major !== major) continue;
+    const x = X(tk.d) + 3, e = svgText(svg, x, 13, tk.lbl, 'gtick');
+    const w = e.getComputedTextLength() || tk.lbl.length * 6;
+    if(placed.some(([a, b]) => x < b + 4 && x + w + 4 > a)) e.remove();
+    else placed.push([x, x + w]);
   }
   svgEl('line', {x1: X(TODAY_D), y1: 0, x2: X(TODAY_D), y2: H, 'class': 'gtoday'}, svg);
   svgText(svg, X(TODAY_D) + 4, 26, 'today', 'gtodaylbl');
@@ -695,6 +727,7 @@ function renderTable(list){
     tr.dataset.key = t.key;
     for(const [c] of COLS){
       const td = make('td');
+      td.dataset.col = c;
       if(c === 'title'){
         const dot = make('span', 'dot');
         dot.style.background = colourOf(t);
@@ -865,7 +898,7 @@ function dlJson(){
 function render(){
   const kept = applyFilters(view, DATA.tasks);
   syncControls();
-  renderHeader();
+  renderHeader(kept);
   renderTiles(kept);
   for(const s of SECTIONS) $('#s-' + s).hidden = !view.sec.has(s);
   renderGantt(kept);

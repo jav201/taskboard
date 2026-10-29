@@ -1957,10 +1957,10 @@ class TaskboardApp(App):
             self.notify(f"Report not (fully) written: {e}", title="Report", severity="error",
                         timeout=10, markup=False)
             return
-        text = (f"Report written: {' and '.join(p.name for p in paths)} to {folder}"
-                " — o opens it (10 s)")
+        text = f"Report written: {' and '.join(p.name for p in paths)}"
         if skipped:
             text += f" · {skipped} board{'s' if skipped > 1 else ''} skipped"
+        text += f"\n{folder}\no opens it (10 s)"     # a line each: a long path never splits the names
         self.notify(text, title="Report", severity="information", timeout=10, markup=False)
         self._report_offer = (paths[0], self._report_clock() + 10)
 

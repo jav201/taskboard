@@ -304,9 +304,12 @@ TRUTH_ARMS = {
     "status": (_status, dict(s=("late",)), F.LATE),
     "people": (_people, dict(u=("ana.ruiz", "luis.prado")), F.ANA_OR_LUIS),
     "classes": (_classes, dict(m=("launch", "billing")), F.LAUNCH_OR_BILLING),
+    # DQ5: every dated open span that touches Oct 31..Nov 1, listed by hand from the fixture;
     # to == mv4's start (Nov 1) and from == mv3's due (Oct 31): both shown
     "dates": (_dates, dict(frm="2026-10-31", to="2026-11-01"),
-              {"personal:tmv3", "personal:tmv4"}),
+              {"personal:tmv3", "personal:tmv4", "personal:ttx1", "client-a:tsp1",
+               "client-a:tst2", "client-a:tst8", "client-a:tst10", "course:tvd3",
+               "course:tvd5", "course:tvd6"}),
     "search": (_search, dict(q="faq"), F.FAQ),
 }
 
@@ -314,7 +317,7 @@ TRUTH_ARMS = {
 @pytest.mark.parametrize("arm", list(TRUTH_ARMS))
 def test_TC_3106_filters_follow_the_truth_table(ctx, page_file, data, arm):
     """TC-3106 (LLR-3102.2): one arm per row of the truth table; the shown set equals the
-    table's rule applied in Python, and contains the arm's literal tasks (the dates arm:
+    table's rule applied in Python, and equals the arm's literal task set (the dates arm:
     a span touching `to` with its start and `from` with its due both show)."""
     assert len(TRUTH_ARMS) == 6
     act, rule, literal = TRUTH_ARMS[arm]
@@ -322,7 +325,7 @@ def test_TC_3106_filters_follow_the_truth_table(ctx, page_file, data, arm):
     act(o.page)
     got = set(shown_ids(o.page))
     assert got == expected(data, **rule)
-    assert literal <= got if arm == "dates" else got == literal
+    assert got == literal
     assert count(o.page) == "1 filter active"
     assert o.problems() == []
 
@@ -549,8 +552,57 @@ PRINT_STATE = """() => {
         bars: document.querySelectorAll('#gantt .gbar').length,
         barsOut: [...document.querySelectorAll('#gantt .gbar')]
             .filter(b => b.getBoundingClientRect().right > wrap.right + 1).length,
+        tblOverflow: cs(document.querySelector('.tbl-wrap')).overflowX,
+        tblRight: document.querySelector('#s-table table').getBoundingClientRect().right,
+        cellsRight: Math.max(...[...document.querySelectorAll('#s-table th, #s-table td')]
+            .map(c => c.getBoundingClientRect().right)),
+        lastHead: [...document.querySelectorAll('#thead-row th')].map(th => ({text: th.innerText,
+            right: th.getBoundingClientRect().right, width: th.getBoundingClientRect().width})).pop(),
     };
 }"""
+
+# DU3/O3: the axis labels' boxes, left to right; a pair closer than 1 px collides
+TICK_COLLISIONS = """() => {
+    const r = [...document.querySelectorAll('#gantt text.gtick')]
+        .map(e => e.getBoundingClientRect()).sort((a, b) => a.left - b.left);
+    let n = 0;
+    for(let i = 0; i < r.length; i++) for(let j = i + 1; j < r.length; j++)
+        if(r[j].left < r[i].right + 1 && r[i].left < r[j].right + 1) n++;
+    return {labels: r.length, collisions: n};
+}"""
+
+# DQ1 follow-up: in print every header and every date / priority / phase / age cell is ONE
+# line (its text's height < 1.5 x its line-height); the wrapping cells (task, board, project,
+# status) break a line only at a space, unless the word itself is wider than the column
+TABLE_LINES = """() => {
+    const lines = e => { const r = document.createRange(); r.selectNodeContents(e);
+        const cs = getComputedStyle(e);
+        const lh = cs.lineHeight === 'normal' ? parseFloat(cs.fontSize) * 1.2 : parseFloat(cs.lineHeight);
+        return r.getBoundingClientRect().height / lh; };
+    const one = [...document.querySelectorAll('#thead-row th button, #tbody td[data-col=start], '
+        + '#tbody td[data-col=due], #tbody td[data-col=priority], #tbody td[data-col=phase], '
+        + '#tbody td[data-col=age]')];
+    const splits = new Set();
+    for(const td of document.querySelectorAll('#tbody td[data-col=title], #tbody td[data-col=board], '
+            + '#tbody td[data-col=project], #tbody td[data-col=status]')){
+        const walk = document.createTreeWalker(td, NodeFilter.SHOW_TEXT);
+        for(let n; (n = walk.nextNode());){
+            const s = n.textContent; let top = null;
+            for(let i = 0; i < s.length; i++){
+                const r = document.createRange(); r.setStart(n, i); r.setEnd(n, i + 1);
+                const rc = r.getClientRects()[0];
+                if(!rc) continue;
+                if(top !== null && rc.top > top + 2 && s[i - 1] !== ' ' && s[i] !== ' ')
+                    splits.add(s.slice(0, i).split(' ').pop() + s.slice(i).split(' ')[0]);
+                top = rc.top;
+            }
+        }
+    }
+    return {checked: one.length, multi: one.filter(e => lines(e) >= 1.5).map(e => e.textContent),
+            splits: [...splits]};
+}"""
+# the fixture's words wider than any print column: the only words a print line may split
+OVERLONG = {F.HOSTILE_TITLE, "onerror=window.__x=2>", F.LONG_TITLE.split()[-1]}
 
 PRINT_RULES = """() => {
     const out = [];
@@ -611,7 +663,7 @@ def test_AT_3103_download_this_view_holds_only_the_filtered_tasks(ctx, page_file
     origin = rp.text_content("#view-origin")
     assert rp.is_visible("#view-origin") and origin.startswith("A filtered view, exported ")
     assert d2["meta"]["view"]["exported"] in origin
-    assert rp.text_content("#scope-line") == "All loaded boards (2): Client A, Course"
+    assert rp.text_content("#scope-line") == "Boards in this view (2): Client A, Course"
     assert o.problems() == [] and again.problems() == []
 
 
@@ -739,7 +791,8 @@ def test_TC_3111_the_view_file_reopens_on_its_view(ctx, page_file, data, tmp_pat
     it shows the source's rows as a multiset, its controls built once (no duplicate chip
     or box) in the source's states, its header names the summary and the export date;
     downloading again from it gives the same data; a `meta.view` edited to name an unknown
-    project is whitelisted on restore; a view keeping nothing opens and says so."""
+    project is whitelisted on restore; a view keeping nothing opens and says so; the file's
+    scope line reads "Boards in this view (N): …" naming only its own boards (DU5)."""
     o = open_page(ctx, page_file, hash=VIEW_HASH)
     page = o.page
     shown = shown_ids(page)
@@ -767,6 +820,8 @@ def test_TC_3111_the_view_file_reopens_on_its_view(ctx, page_file, data, tmp_pat
     assert ("sections", "notes") not in pressed and st["sections"] == [False, False, True, True]
     assert st["summary"] == mv["summary"] == "Status: open, late, done, archived"
     assert mv["exported"] in rp.text_content("#view-origin")
+    # DU5: a filtered file names the boards IT holds, never "All loaded boards"
+    assert rp.text_content("#scope-line") == "Boards in this view (2): Client A, Course"
     rp.evaluate("location.hash = ''")          # CR2-2: back to the file's own view
     rp.wait_for_function("location.hash !== ''")
     assert shown_ids(rp) == shown
@@ -794,6 +849,7 @@ def test_TC_3111_the_view_file_reopens_on_its_view(ctx, page_file, data, tmp_pat
     nothing = open_page(ctx, path5)
     assert shown_ids(nothing.page) == {} and nothing.page.is_visible("#tempty")
     assert nothing.page.is_visible("#view-origin")
+    assert nothing.page.text_content("#scope-line") == "Boards in this view (0)"
     for x in (o, again, ed, empty, nothing):
         assert x.problems() == []
 
@@ -830,7 +886,8 @@ def test_AT_3104_print_hides_the_controls_and_shows_the_filter_header(ctx, page_
     the task card and the tooltip open and `beforeprint` dispatched, in print media every
     control, the card and the tooltip are gone (0 visible), the header shows the filter
     summary, the generated date and the printed date, rows and cards never split, the
-    gantt fits the page; "Print / Save as PDF" calls `window.print` once per press."""
+    gantt fits the printed page (794 px, DQ4); "Print / Save as PDF" calls `window.print`
+    once per press."""
     o = open_page(ctx, page_file)
     page = o.page
     assert "all tasks" in page.text_content("#view-summary")
@@ -844,6 +901,7 @@ def test_AT_3104_print_hides_the_controls_and_shows_the_filter_header(ctx, page_
                   " e.hidden = true; e.textContent = ''; })()")
     open_card_and_tip(page, "client-a:tst2")
     page.evaluate("window.dispatchEvent(new Event('beforeprint'))")
+    page.set_viewport_size({"width": 794, "height": 1123})    # an A4 page's CSS width
     page.emulate_media(media="print")
     st = page.evaluate(PRINT_STATE)
     assert st["total"] >= 45 and st["visible"] == []
@@ -854,7 +912,7 @@ def test_AT_3104_print_hides_the_controls_and_shows_the_filter_header(ctx, page_
     assert f"Printed {date.today().isoformat()}" in head
     assert st["rows"] and set(st["rows"]) == {"avoid"}
     assert st["cards"] and set(st["cards"]) == {"avoid"}
-    assert st["gantt"] <= 1366 and st["docWidth"] <= 1366
+    assert st["gantt"] <= 794 and st["docWidth"] <= 794
     assert o.problems() == []
 
 
@@ -864,8 +922,10 @@ def test_TC_3112_the_print_rules_hold(browser, page_file):
     """TC-3112 (LLR-3104.1, PDR C7/C14): the print stylesheet holds the three full-gantt rules
     and `@page { margin: 0 }` with a body padding; at a printed-page viewport of 794 px, on
     the day zoom (a timeline far wider than the page), the gantt's width and the page's
-    scroll width are <= 794 and every bar lies inside the printed figure; with a project
-    hidden, the printed text names it nowhere and every printed count is over kept tasks."""
+    scroll width are <= 794 and every bar lies inside the printed figure; the task table
+    shows every column inside the page, STATUS last (DQ1/DU2); with a project hidden, the
+    printed text names it nowhere and every printed count is over kept tasks, the printed
+    header included: no "/<total>" (DQ2/DU1)."""
     ctx = new_context(browser, viewport=(794, 1123))
     try:
         o = open_page(ctx, page_file, hash="v=1&z=day")
@@ -894,6 +954,20 @@ def test_TC_3112_the_print_rules_hold(browser, page_file):
         assert st["visible"] == [] and st["card"] == st["tt"] == "none"
         assert st["docWidth"] <= 794 and st["gantt"] <= 794
         assert st["bars"] == 28 and st["barsOut"] == 0     # 31 kept, 3 undated
+        # DQ1/DU2: no scroll window clips the table; its last column ends inside the page
+        assert st["tblOverflow"] == "visible"
+        assert st["tblRight"] <= 794 and st["cellsRight"] <= 794
+        assert st["lastHead"]["text"] == "STATUS" and 0 < st["lastHead"]["width"]
+        assert st["lastHead"]["right"] <= 794
+        # ...and splits no header, date, priority, phase or age, and no word that fits
+        tl = page.evaluate(TABLE_LINES)
+        assert tl["checked"] == 9 + 5 * 31 and tl["multi"] == []
+        assert set(tl["splits"]) <= OVERLONG, tl["splits"]
+        # DQ2: the printed summary names the shown projects and counts no file total
+        assert re.search(r"/\d", st["headerText"]) is None
+        assert ("Projects: Move apartment, Docs, Inbox, Storefront relaunch, Docs, Legacy site, "
+                "Old campaign, Video module 3, Community forum, Someday ideas, "
+                f"{F.HOSTILE_NAME}, Hidden qzP1") in st["headerText"]
         text = st["text"]
         assert "Taxes 2026" not in text and "Gather deduction receipts" not in text
         assert "Showing 31 tasks" in text and "of 37" not in text
@@ -905,6 +979,79 @@ def test_TC_3112_the_print_rules_hold(browser, page_file):
         assert o.problems() == []
     finally:
         ctx.close()
+
+
+def test_TC_3112_the_printed_header_names_only_the_shown_boards(browser, page_file):
+    """TC-3112's header arm (LLR-3104.1, PDR criterion 2, DQ2/DU1): the PDF is what a
+    recipient gets. With the side board's one project hidden, the screen keeps the file's
+    own scope line and "Projects 12/13", while the printed header names only the three
+    boards a shown task is on, names no hidden board or project, and prints no "/<total>"."""
+    total = len(F.PROJECT_KEYS)
+    ctx = new_context(browser, viewport=(794, 1123))
+    try:
+        o = open_page(ctx, page_file)
+        page = o.page
+        open_projects(page)
+        box(page, "#3:pside").uncheck()
+        assert set(shown_ids(page)) == NOT_SIDE
+        assert page.text_content("#scope-line") == F.SCOPE_LINE
+        assert page.text_content("#view-summary").startswith(f"Projects {total - 1}/{total}: ")
+        page.emulate_media(media="print")
+        st = page.evaluate(PRINT_STATE)
+        head = st["headerText"]
+        assert "Boards in this view (3): Personal, Client A, Course" in head
+        for gone in ("All loaded boards", "qzB1", "qzP1", F.SIDE_BOARD_NAME):
+            assert gone not in head and gone not in st["text"], gone
+        assert re.search(r"/\d", head) is None
+        assert f"Projects {total - 1}" not in head and "Projects: " in head
+        assert o.problems() == []
+    finally:
+        ctx.close()
+
+
+def test_TC_3112_a_project_file_with_its_project_hidden_prints_no_name(browser, tmp_path):
+    """TC-3112's project-scope arm (CR5-1): a workspace written for one project (Storefront
+    relaunch on Client A), that project unchecked: the printed header reads "Boards in this
+    view (0)" and names neither the project nor its board."""
+    d = report_html.extract(F.lanes(), F.PEOPLE, F.MARKS, F.TODAY, project="client-a:prel")
+    path = report_html.write_reports(d, ("workspace",), tmp_path, F.TODAY)[0]
+    ctx = new_context(browser, viewport=(794, 1123))
+    try:
+        o = open_page(ctx, path)
+        page = o.page
+        assert page.text_content("#scope-line") == "Project Storefront relaunch on Client A"
+        open_projects(page)
+        box(page, "client-a:prel").uncheck()
+        assert shown_ids(page) == {}
+        page.emulate_media(media="print")
+        head = page.evaluate(PRINT_STATE)["headerText"]
+        assert "Boards in this view (0)" in head
+        assert "Storefront relaunch" not in head and "Client A" not in head
+        assert o.problems() == []
+    finally:
+        ctx.close()
+
+
+def test_TC_3112_the_gantt_axis_labels_never_collide(browser, page_file):
+    """DU3/O3 (LLR-3104.1's printed gantt, LLR-3102.1's screen one): on the day zoom, where
+    a month label ("Nov 1") would sit on the next days' numbers, and on the default zoom,
+    the axis labels' boxes never touch: 0 pairs closer than 1 px at 1366 px on screen and
+    at the 794 px printed page; the month labels survive the skipping."""
+    for width, media in ((1366, "screen"), (794, "print")):
+        for hash_ in ("v=1&z=day", "v=1"):
+            ctx = new_context(browser, viewport=(width, 1123))
+            try:
+                o = open_page(ctx, page_file, hash=hash_)
+                page = o.page
+                page.emulate_media(media=media)
+                got = page.evaluate(TICK_COLLISIONS)
+                assert got["labels"] >= 10 and got["collisions"] == 0, (width, hash_, got)
+                if hash_ == "v=1&z=day":
+                    lbls = page.eval_on_selector_all("#gantt text.gtick", "es => es.map(e => e.textContent)")
+                    assert {"Oct 1", "Nov 1", "Dec 1"} <= set(lbls)
+                assert o.problems() == []
+            finally:
+                ctx.close()
 
 
 # ---- TC-3122 -----------------------------------------------------------------------------------

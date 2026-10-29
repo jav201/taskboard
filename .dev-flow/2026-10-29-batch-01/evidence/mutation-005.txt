@@ -1,0 +1,92 @@
+M01 report_workspace.py:417 [DQ2/DU1: the print keeps the old scope line (every loaded board, hidden ones too)]
+    run: tests/test_report_workspace.py -k "TC_3112_the_printed_header" -> exit 1; 1 failed, 24 deselected in 1.30s
+    RED nodes: ['test_TC_3112_the_printed_header_names_only_the_shown_boards']
+    verdict: KILLED (named node test_TC_3112_the_printed_header_names_only_the_shown_boards)
+    sha256 before 66195b9e94fe2b0187227af9bc028cc82c3ccd056ef1f30f237232185daaa1c1
+    sha256 after  66195b9e94fe2b0187227af9bc028cc82c3ccd056ef1f30f237232185daaa1c1 (restored, identical)
+M02 report_workspace.py:426 [DQ2/DU1: the printed summary keeps the file total "Projects n/N"]
+    run: tests/test_report_workspace.py -k "TC_3112_the_printed_header" -> exit 1; 1 failed, 24 deselected in 1.31s
+    RED nodes: ['test_TC_3112_the_printed_header_names_only_the_shown_boards']
+    verdict: KILLED (named node test_TC_3112_the_printed_header_names_only_the_shown_boards)
+    sha256 before 66195b9e94fe2b0187227af9bc028cc82c3ccd056ef1f30f237232185daaa1c1
+    sha256 after  66195b9e94fe2b0187227af9bc028cc82c3ccd056ef1f30f237232185daaa1c1 (restored, identical)
+M03 report_workspace.py:147 [DQ1/DU2: the print table rules dropped (the table clipped at the page edge)]
+    run: tests/test_report_workspace.py -k "TC_3112_the_print_rules" -> exit 1; 1 failed, 24 deselected in 1.41s
+    RED nodes: ['test_TC_3112_the_print_rules_hold']
+    verdict: KILLED (named node test_TC_3112_the_print_rules_hold)
+    sha256 before 66195b9e94fe2b0187227af9bc028cc82c3ccd056ef1f30f237232185daaa1c1
+    sha256 after  66195b9e94fe2b0187227af9bc028cc82c3ccd056ef1f30f237232185daaa1c1 (restored, identical)
+M04 report_workspace.py:147 [DQ1/DU2: the print keeps the table's scroll window]
+    run: tests/test_report_workspace.py -k "TC_3112_the_print_rules" -> exit 1; 1 failed, 24 deselected in 1.42s
+    RED nodes: ['test_TC_3112_the_print_rules_hold']
+    verdict: KILLED (named node test_TC_3112_the_print_rules_hold)
+    sha256 before 66195b9e94fe2b0187227af9bc028cc82c3ccd056ef1f30f237232185daaa1c1
+    sha256 after  66195b9e94fe2b0187227af9bc028cc82c3ccd056ef1f30f237232185daaa1c1 (restored, identical)
+M05 report_workspace.py:149 [DQ1/DU2: the cells never wrap in print (the table wider than the page)]
+    run: tests/test_report_workspace.py -k "TC_3112_the_print_rules" -> exit 1; 1 failed, 24 deselected in 1.43s
+    RED nodes: ['test_TC_3112_the_print_rules_hold']
+    verdict: KILLED (named node test_TC_3112_the_print_rules_hold)
+    sha256 before 66195b9e94fe2b0187227af9bc028cc82c3ccd056ef1f30f237232185daaa1c1
+    sha256 after  66195b9e94fe2b0187227af9bc028cc82c3ccd056ef1f30f237232185daaa1c1 (restored, identical)
+M06 report_workspace.py:386 [DU5: the downloaded view says "All loaded boards"]
+    run: tests/test_report_workspace.py -k "TC_3111_the_view_file" -> exit 1; 1 failed, 24 deselected in 1.50s
+    RED nodes: ['test_TC_3111_the_view_file_reopens_on_its_view']
+    verdict: KILLED (named node test_TC_3111_the_view_file_reopens_on_its_view)
+    sha256 before 66195b9e94fe2b0187227af9bc028cc82c3ccd056ef1f30f237232185daaa1c1
+    sha256 after  66195b9e94fe2b0187227af9bc028cc82c3ccd056ef1f30f237232185daaa1c1 (restored, identical)
+M07 report_workspace.py:526 [DU3/O3: no label is skipped (the day numbers run over the month label)]
+    run: tests/test_report_workspace.py -k "TC_3112_the_gantt_axis" -> exit 1; 1 failed, 24 deselected in 1.17s
+    RED nodes: ['test_TC_3112_the_gantt_axis_labels_never_collide']
+    verdict: KILLED (named node test_TC_3112_the_gantt_axis_labels_never_collide)
+    sha256 before 66195b9e94fe2b0187227af9bc028cc82c3ccd056ef1f30f237232185daaa1c1
+    sha256 after  66195b9e94fe2b0187227af9bc028cc82c3ccd056ef1f30f237232185daaa1c1 (restored, identical)
+M08 report_workspace.py:522 [DU3/O3: the day labels placed first, the month labels skipped]
+    run: tests/test_report_workspace.py -k "TC_3112_the_gantt_axis" -> exit 1; 1 failed, 24 deselected in 1.16s
+    RED nodes: ['test_TC_3112_the_gantt_axis_labels_never_collide']
+    verdict: KILLED (named node test_TC_3112_the_gantt_axis_labels_never_collide)
+    sha256 before 66195b9e94fe2b0187227af9bc028cc82c3ccd056ef1f30f237232185daaa1c1
+    sha256 after  66195b9e94fe2b0187227af9bc028cc82c3ccd056ef1f30f237232185daaa1c1 (restored, identical)
+M09 app.py:1963 [DU4: the toast back on one line (a long path splits the file name)]
+    run: tests/test_report_export_app.py -k "TC_3120" -> exit 1; 1 failed, 1 passed, 5 deselected in 1.64s
+    RED nodes: ['test_TC_3120_o_opens_the_report_while_the_toast_lives']
+    verdict: KILLED (named node test_TC_3120_o_opens_the_report_while_the_toast_lives)
+    sha256 before 701b551de8fefcaa37b029a92ae08033d64aeebe2f7455dfe89d904711703984
+    sha256 after  701b551de8fefcaa37b029a92ae08033d64aeebe2f7455dfe89d904711703984 (restored, identical)
+M10 report_workspace.py:273 [DQ5: a span whose due is `from` dropped (the literal dates set goes RED)]
+    run: tests/test_report_workspace.py -k "TC_3106_filters_follow" -> exit 1; 1 failed, 5 passed, 19 deselected in 2.41s
+    RED nodes: ['test_TC_3106_filters_follow_the_truth_table[dates]']
+    verdict: KILLED (named node test_TC_3106_filters_follow_the_truth_table[dates])
+    sha256 before 66195b9e94fe2b0187227af9bc028cc82c3ccd056ef1f30f237232185daaa1c1
+    sha256 after  66195b9e94fe2b0187227af9bc028cc82c3ccd056ef1f30f237232185daaa1c1 (restored, identical)
+M11 report_workspace.py:150 [DQ1 follow-up: headers, dates, priority, phase and age may wrap ("2026-10-/17")]
+    run: tests/test_report_workspace.py -k "TC_3112_the_print_rules" -> exit 1; 1 failed, 24 deselected in 1.36s
+    RED nodes: ['test_TC_3112_the_print_rules_hold']
+    verdict: KILLED (named node test_TC_3112_the_print_rules_hold)
+    sha256 before 66195b9e94fe2b0187227af9bc028cc82c3ccd056ef1f30f237232185daaa1c1
+    sha256 after  66195b9e94fe2b0187227af9bc028cc82c3ccd056ef1f30f237232185daaa1c1 (restored, identical)
+M12 report_workspace.py:149 [DQ1 follow-up: break-all back on the print cells ("norma/l")]
+    run: tests/test_report_workspace.py -k "TC_3112_the_print_rules" -> exit 1; 1 failed, 24 deselected in 1.45s
+    RED nodes: ['test_TC_3112_the_print_rules_hold']
+    verdict: KILLED (named node test_TC_3112_the_print_rules_hold)
+    sha256 before 66195b9e94fe2b0187227af9bc028cc82c3ccd056ef1f30f237232185daaa1c1
+    sha256 after  66195b9e94fe2b0187227af9bc028cc82c3ccd056ef1f30f237232185daaa1c1 (restored, identical)
+M13 report_workspace.py:151 [DQ1 follow-up: an over-long word cannot break (the table wider than the page)]
+    run: tests/test_report_workspace.py -k "TC_3112_the_print_rules" -> exit 1; 1 failed, 24 deselected in 1.35s
+    RED nodes: ['test_TC_3112_the_print_rules_hold']
+    verdict: KILLED (named node test_TC_3112_the_print_rules_hold)
+    sha256 before 66195b9e94fe2b0187227af9bc028cc82c3ccd056ef1f30f237232185daaa1c1
+    sha256 after  66195b9e94fe2b0187227af9bc028cc82c3ccd056ef1f30f237232185daaa1c1 (restored, identical)
+M14 report_workspace.py:660 [DQ1 follow-up: the cells lose their column tag (the per-column print rules match nothing)]
+    run: tests/test_report_workspace.py -k "TC_3112_the_print_rules" -> exit 1; 1 failed, 24 deselected in 1.40s
+    RED nodes: ['test_TC_3112_the_print_rules_hold']
+    verdict: KILLED (named node test_TC_3112_the_print_rules_hold)
+    sha256 before 66195b9e94fe2b0187227af9bc028cc82c3ccd056ef1f30f237232185daaa1c1
+    sha256 after  66195b9e94fe2b0187227af9bc028cc82c3ccd056ef1f30f237232185daaa1c1 (restored, identical)
+M15 report_workspace.py:394 [CR5-1: a project file with its project hidden prints the project and its board]
+    run: tests/test_report_workspace.py -k "TC_3112_a_project_file" -> exit 1; 1 failed, 24 deselected in 1.24s
+    RED nodes: ['test_TC_3112_a_project_file_with_its_project_hidden_prints_no_name']
+    verdict: KILLED (named node test_TC_3112_a_project_file_with_its_project_hidden_prints_no_name)
+    sha256 before 66195b9e94fe2b0187227af9bc028cc82c3ccd056ef1f30f237232185daaa1c1
+    sha256 after  66195b9e94fe2b0187227af9bc028cc82c3ccd056ef1f30f237232185daaa1c1 (restored, identical)
+
+15/15 mutants killed

@@ -515,4 +515,4 @@ async def test_AT_3107_the_report_modal_obeys_the_modal_key_law(home):
             named = _notes(app)[-1]
             written = {"b": ["workspace"], "c": ["deck"], "a": ["workspace", "deck"]}[key]
             assert named.startswith("Report written: " + " and ".join(
-                f"{k}-{day}.html" for k in written) + " to "), named
+                f"{k}-{day}.html" for k in written) + "\n"), named

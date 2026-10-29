@@ -1,0 +1,86 @@
+# increment 005 suite (DDR corrections DQ1/DQ2/DQ4/DQ5, DU1..DU5; DQ1 follow-up: no split word or date in the printed table; CR5-1) — 2026-10-29T11:19:11-06:00  HEAD fe2fe09 + working tree
+## import probe
+taskboard.__file__ = C:\Users\jjgh8\Github\taskboard-wt\report-proto\taskboard\__init__.py
+.
+1 passed in 0.03s
+## TC-3121 pin: git diff 9da7438 -- taskboard/report.py taskboard/__main__.py taskboard/views.py | wc -l
+0
+## sha256 of the increment's files
+66195b9e94fe2b0187227af9bc028cc82c3ccd056ef1f30f237232185daaa1c1 *taskboard/report_workspace.py
+701b551de8fefcaa37b029a92ae08033d64aeebe2f7455dfe89d904711703984 *taskboard/app.py
+164d2bc0932c376e99305eaa0fcd01cd50bd8ca15f97d2c92101e62fffd00c8e *tests/test_report_workspace.py
+40ae2e142545604a883280b3ccfbee221059e529097d9925c99ff1131bdb32ac *tests/test_report_export_app.py
+2a7199b0c3495a6eaf7e5e717f0664fe98ef291ba1247955f199b137ec60bf37 *tests/test_modal_keys.py
+## pytest (env -u NO_COLOR TASKBOARD_REQUIRE_BROWSER=1) — the five report files
+tests/test_report_workspace.py::test_AT_3102_filters_and_the_hash_round_trip PASSED [  1%]
+tests/test_report_workspace.py::test_TC_3105_the_bar_is_native_and_counted PASSED [  2%]
+tests/test_report_workspace.py::test_TC_3106_filters_follow_the_truth_table[projects] PASSED [  4%]
+tests/test_report_workspace.py::test_TC_3106_filters_follow_the_truth_table[status] PASSED [  5%]
+tests/test_report_workspace.py::test_TC_3106_filters_follow_the_truth_table[people] PASSED [  7%]
+tests/test_report_workspace.py::test_TC_3106_filters_follow_the_truth_table[classes] PASSED [  8%]
+tests/test_report_workspace.py::test_TC_3106_filters_follow_the_truth_table[dates] PASSED [ 10%]
+tests/test_report_workspace.py::test_TC_3106_filters_follow_the_truth_table[search] PASSED [ 11%]
+tests/test_report_workspace.py::test_TC_3106_the_edges_of_the_table PASSED [ 13%]
+tests/test_report_workspace.py::test_TC_3107_a_hostile_hash_is_dropped PASSED [ 14%]
+tests/test_report_workspace.py::test_TC_3108_reset_restores_the_defaults PASSED [ 16%]
+tests/test_report_workspace.py::test_TC_3116_offline_themes_and_phone_width PASSED [ 17%]
+tests/test_report_workspace.py::test_TC_3125_the_page_follows_the_status_field PASSED [ 19%]
+tests/test_report_workspace.py::test_the_page_shell_holds_no_board_text PASSED [ 20%]
+tests/test_report_workspace.py::test_AT_3103_download_this_view_holds_only_the_filtered_tasks PASSED [ 22%]
+tests/test_report_workspace.py::test_TC_3109_the_download_keeps_only_used_entries PASSED [ 23%]
+tests/test_report_workspace.py::test_TC_3110_notes_off_strips_the_notes PASSED [ 25%]
+tests/test_report_workspace.py::test_TC_3111_the_view_file_reopens_on_its_view PASSED [ 26%]
+tests/test_report_workspace.py::test_TC_3111_the_export_captions_show_without_hover PASSED [ 27%]
+tests/test_report_workspace.py::test_AT_3104_print_hides_the_controls_and_shows_the_filter_header PASSED [ 29%]
+tests/test_report_workspace.py::test_TC_3112_the_print_rules_hold PASSED [ 30%]
+tests/test_report_workspace.py::test_TC_3112_the_printed_header_names_only_the_shown_boards PASSED [ 32%]
+tests/test_report_workspace.py::test_TC_3112_a_project_file_with_its_project_hidden_prints_no_name PASSED [ 33%]
+tests/test_report_workspace.py::test_TC_3112_the_gantt_axis_labels_never_collide PASSED [ 35%]
+tests/test_report_workspace.py::test_TC_3122_csv_and_json_hold_the_visible_rows_only PASSED [ 36%]
+tests/test_report_html.py::test_TC_3101_extract_is_json_and_holds_every_fact PASSED [ 38%]
+tests/test_report_html.py::test_TC_3101_extract_never_writes_a_board PASSED [ 39%]
+tests/test_report_html.py::test_TC_3102_due_words_are_the_cli_reports PASSED [ 41%]
+tests/test_report_html.py::test_TC_3103_project_scope_keeps_one_project PASSED [ 42%]
+tests/test_report_html.py::test_TC_3103_an_unknown_project_key_is_refused PASSED [ 44%]
+tests/test_report_html.py::test_TC_3104_renderers_read_the_dict_only PASSED [ 45%]
+tests/test_report_html.py::test_TC_3115_embed_json_and_notes_are_inert PASSED [ 47%]
+tests/test_report_html.py::test_TC_3123_the_slug_is_the_cli_reports PASSED [ 48%]
+tests/test_report_html.py::test_TC_3123_write_reports_lands_in_the_folder_and_overwrites PASSED [ 50%]
+tests/test_report_html.py::test_TC_3124_extract_keeps_only_http_urls PASSED [ 51%]
+tests/test_report_html.py::test_TC_3125_one_status_rule PASSED           [ 52%]
+tests/test_report_html.py::test_PQ6_spike_an_async_test_checks_the_page_in_a_worker_thread PASSED [ 54%]
+tests/test_report_deck.py::test_TC_3113_one_slide_per_project PASSED     [ 55%]
+tests/test_report_deck.py::test_TC_3104_the_deck_reads_the_dict_only PASSED [ 57%]
+tests/test_report_deck.py::test_TC_3114_keys_page_and_print_splits PASSED [ 58%]
+tests/test_report_deck.py::test_TC_3116_offline_themes_and_phone_width PASSED [ 60%]
+tests/test_report_deck.py::test_finished_work_is_never_late_in_either_report PASSED [ 61%]
+tests/test_report_deck.py::test_AT_3106_board_text_is_escaped_in_both_reports PASSED [ 63%]
+tests/test_report_export_app.py::test_AT_3101_H_b_writes_the_workspace_and_the_toast_names_it PASSED [ 64%]
+tests/test_report_export_app.py::test_AT_3105_H_c_writes_the_deck_with_one_slide_per_chosen_project PASSED [ 66%]
+tests/test_report_export_app.py::test_TC_3117_H_is_seated_once_off_the_bar PASSED [ 67%]
+tests/test_report_export_app.py::test_TC_3118_scope_keys_and_no_project PASSED [ 69%]
+tests/test_report_export_app.py::test_TC_3119_files_land_beside_the_open_board PASSED [ 70%]
+tests/test_report_export_app.py::test_TC_3120_o_opens_the_report_while_the_toast_lives PASSED [ 72%]
+tests/test_report_export_app.py::test_TC_3120_a_failed_write_toasts_and_offers_nothing PASSED [ 73%]
+tests/test_report.py::test_generating_a_report_never_writes_the_board PASSED [ 75%]
+tests/test_report.py::test_the_report_lands_beside_its_own_board PASSED  [ 76%]
+tests/test_report.py::test_the_document_needs_nothing_from_the_network PASSED [ 77%]
+tests/test_report.py::test_the_counts_are_the_boards_real_counts PASSED  [ 79%]
+tests/test_report.py::test_a_scoped_report_covers_only_that_project PASSED [ 80%]
+tests/test_report.py::test_the_horizon_buckets_add_up_to_the_tasks PASSED [ 82%]
+tests/test_report.py::test_work_with_no_recorded_date_reads_unaged_never_zero PASSED [ 83%]
+tests/test_report.py::test_a_closed_project_is_never_judged PASSED       [ 85%]
+tests/test_report.py::test_the_document_states_no_forecast PASSED        [ 86%]
+tests/test_report.py::test_the_document_never_addresses_or_grades_the_reader PASSED [ 88%]
+tests/test_report.py::test_no_figure_carries_meaning_in_hue_alone PASSED [ 89%]
+tests/test_report.py::test_the_horizon_is_a_table_as_well_as_a_bar PASSED [ 91%]
+tests/test_report.py::test_a_hostile_title_cannot_break_out_into_markup PASSED [ 92%]
+tests/test_report.py::test_the_cli_writes_a_report_and_says_where PASSED [ 94%]
+tests/test_report.py::test_the_cli_scopes_to_a_project_and_refuses_an_unknown_one PASSED [ 95%]
+tests/test_report.py::test_the_present_key_is_in_the_seat PASSED         [ 97%]
+tests/test_report.py::test_pressing_R_opens_the_presentation_read_only PASSED [ 98%]
+tests/test_report.py::test_an_empty_board_still_produces_a_document PASSED [100%]
+============================= 68 passed in 30.78s =============================
+## pytest — the one test_modal_keys node whose toast prefix check changed (DU4)
+tests/test_modal_keys.py::test_AT_3107_the_report_modal_obeys_the_modal_key_law PASSED [100%]
+====================== 1 passed, 34 deselected in 3.02s =======================

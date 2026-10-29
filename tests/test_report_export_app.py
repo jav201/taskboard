@@ -122,7 +122,7 @@ def reports(home: Path, bid: str = "client-a") -> list[str]:
 
 
 def toast_text(names: list[str], folder: Path, skipped: str = "") -> str:
-    return f"Report written: {' and '.join(names)} to {folder} — o opens it (10 s){skipped}"
+    return f"Report written: {' and '.join(names)}{skipped}\n{folder}\no opens it (10 s)"
 
 
 def footer(n: int, k: int) -> str:
@@ -374,6 +374,10 @@ async def test_TC_3120_o_opens_the_report_while_the_toast_lives(home, monkeypatc
         await press(pilot, "H", "b")
         toast = report_toasts(app)
         assert len(toast) == 1 and toast[0].message == toast_text([path.name], folder)
+        # DU4: the names, the folder and the offer each on a line of their own, so a long
+        # folder path wraps on its own line and never splits a file name
+        assert toast[0].message.split("\n") == [f"Report written: workspace-{DAY}.html",
+                                                str(folder), "o opens it (10 s)"]
         now[0] = 109.9
         await press(pilot, "o")
         assert opened == [path] and urls == []
