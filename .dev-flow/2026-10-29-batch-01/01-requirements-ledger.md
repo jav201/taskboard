@@ -261,3 +261,13 @@ _P1, 2026-10-29: the live contract is born at v1 (US-3101, HLR-3101..HLR-3107, 1
 - **Parent HLR re-read:** HLR-3101 and HLR-3105 re-read — no change required (they state the outcome: one set of facts for both reports; the LLRs bind the due-word and count wording). The frozen dict shape is unchanged (only the value of `due_word` for finished tasks), so the PDR is not re-opened.
 - **Body edit landed:** LLR-3101.2 `Ledger:`, `Statement`, `Numeric pass threshold`, `Negative control`; LLR-3105.1 `Ledger:`, `Statement`, `Numeric pass threshold` (`01-requirements.md`).
 - **Owning increment:** 003.
+
+### LED-2026-10-29-batch-01.26 — the toast gains its failure wording and the singular skipped count (increment 004)
+- **Requirement:** LLR-3107.4
+- **Date:** 2026-10-29
+- **What changed:** before — LLR-3107.4 named only the success toast and printed the skipped count as `<n> board(s) skipped`; it said nothing of a write or an open that fails. After — the skipped count reads ` · 1 board skipped` / ` · <n> boards skipped`; a write that raises `OSError` (a partial write, workspace written and deck failed, included) toasts `Report not (fully) written: <error>` with severity error, clears any earlier offer and offers nothing; an open that raises `OSError` or returns false toasts `Could not open the report`. New: the two failure toasts and the plural rule. Deleted: the `board(s)` pattern. The offer's main-screen rule is unchanged in effect: the implementer's explicit main-screen guard was unreachable (an `o` over another screen never reaches `action_open_url`, mutant M19 survived), so it was removed and TC-3120 pins the behaviour from outside with `?` open.
+- **Why:** the code-reviewer's CR4-2 (MEDIUM: the `OSError` branch was untested and a partial write said nothing was written) and CR4-3 (LOW: a failed open was silent); the singular follows LED .23 and .25. The orchestrator's disposition under the batch's standing authorization.
+- **Evidence:** `.scratch/p3/impl-004.md`; `.scratch/p3/cr-004.md`; `evidence/suite-004.txt` (314 passed); `evidence/mutation-004.txt` M14, M26..M28; `tests/test_report_export_app.py::test_TC_3120_a_failed_write_toasts_and_offers_nothing`, `::test_TC_3119_files_land_beside_the_open_board`, `::test_TC_3120_o_opens_the_report_while_the_toast_lives`.
+- **Parent HLR re-read:** HLR-3107 re-read — no change required (it states the outcome: `H` writes the reports and the toast offers `o`; the LLR binds the wording and the failure paths).
+- **Body edit landed:** LLR-3107.4 `Ledger:`, `Statement` and `Numeric pass threshold` (`01-requirements.md`).
+- **Owning increment:** 004.

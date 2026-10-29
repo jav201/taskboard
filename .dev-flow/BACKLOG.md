@@ -1638,3 +1638,5 @@ and found the records layer lagging the code. All proposed fixes are written in 
   - `tests/test_present_all.py::test_AT_2102_the_order_and_hidden_projects_survive_a_restart`, since 2026-10-25, frame mismatch.
 
   To fix: diagnose each test on Linux and fix the cause, in the test or in the code. Likely causes are dates or timezone, file times or permissions, and path handling. Then add a macOS job to the CI matrix and fix whatever it shows. Done means CI is green on Linux and macOS, not green locally.
+
+- **CR4-4 — tests read Textual's private `_notifications` and the app's `_report_clock`** (code-reviewer, increment 004, LOW, `tests/test_report_export_app.py`): the toast is asserted from the app's private notification record, and the offer's expiry through the `_report_clock` seam (D16, accepted). Watch item: re-run `tests/test_report_export_app.py` on every Textual upgrade; if `_notifications` is renamed the nodes fail loudly (no silent pass). Open.

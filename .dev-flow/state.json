@@ -232,7 +232,7 @@
     }
   ],
   "guided": false,
-  "current_station": "P3",
+  "current_station": "DDR",
   "phase_status": "in-progress",
   "stations_active": [
     "P0",
@@ -354,6 +354,11 @@
       "station": "P3",
       "date": "2026-10-29",
       "decision": "P3 increment 003 approved under the batch's standing authorization — code-reviewer OK to advance (LOW CR3-2/CR3-3 fixed, CR3-4/CR3-5 to BACKLOG), security-reviewer PASS (S1 verified both sides, SI1 and SC1 discharged); LED .25; 58 passed, 37/37 mutants killed; P3 continues with the next increment."
+    },
+    {
+      "station": "P3",
+      "date": "2026-10-29",
+      "decision": "P3 increment 004 approved under the batch's standing authorization — code-reviewer OK to advance (CR4-2 MEDIUM resolved with a test and a mutant), security-reviewer PASS (SA1 README warning); 314 passed, 27/27 mutants killed; P3 closes, DDR is next."
     }
   ],
   "obsidian_synced": false,
