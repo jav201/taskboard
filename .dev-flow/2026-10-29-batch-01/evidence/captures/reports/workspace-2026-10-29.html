@@ -1,0 +1,919 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>taskboard · interactive workspace</title>
+<style>
+:root{color-scheme:light dark;
+  --bg:#0d1117;--panel:#161b22;--line:#30363d;--ink:#e6edf3;--mut:#8b98a5;
+  --accent:#2dd4bf;--over:#f43f5e;--soon:#fbbf24;--green:#4ade80;--chip:#1c2330;--on-ink:#06281f;}
+@media (prefers-color-scheme:light){
+  :root{--bg:#ffffff;--panel:#f6f8fa;--line:#d0d7de;--ink:#1f2328;--mut:#59636e;--chip:#eaeef2;
+    --accent:#0f766e;--on-ink:#ffffff;}
+}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+body{margin:0;padding:1.5rem 1.25rem 4rem;background:var(--bg);color:var(--ink);
+  font:15px/1.55 ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;overflow-wrap:anywhere}
+main{max-width:76rem;margin:0 auto}
+h1{font-size:1.45rem;margin:0 0 .25rem;letter-spacing:.01em}
+h2{font-size:1.02rem;margin:2.2rem 0 .6rem;padding-bottom:.35rem;
+  border-bottom:1px solid var(--line);font-weight:600}
+.sub{color:var(--mut);margin:0 0 .3rem;font-size:.88rem}
+#view-summary{margin:.2rem 0 1rem;font-size:.88rem}
+.tiles{display:flex;flex-wrap:wrap;gap:.7rem;margin:1rem 0 .4rem}
+.tile{flex:1 1 6rem;background:var(--panel);border:1px solid var(--line);
+  border-radius:8px;padding:.6rem .8rem;min-width:5.5rem}
+.tile .n{font-size:1.5rem;font-weight:650;letter-spacing:-.01em}
+.tile .k{color:var(--mut);font-size:.74rem;text-transform:uppercase;letter-spacing:.06em}
+.showing{color:var(--mut);font-size:.85rem;margin:.2rem 0 0}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:10px;
+  padding:.9rem 1rem;margin:0 0 1rem}
+.controls{display:flex;flex-wrap:wrap;gap:.8rem 1rem;align-items:flex-start}
+.bar-head{display:flex;flex-wrap:wrap;gap:.6rem;align-items:center;width:100%}
+#active-count{font-weight:600;font-size:.9rem}
+.cgroup{display:flex;flex-wrap:wrap;gap:.35rem;align-items:center}
+.lbl{font-size:.72rem;text-transform:uppercase;letter-spacing:.06em;
+  color:var(--mut);margin-right:.15rem}
+button{font:inherit;color:inherit;background:var(--chip);border:1px solid var(--line);
+  border-radius:999px;padding:.22rem .7rem;cursor:pointer;font-size:.85rem}
+button[aria-pressed="true"]{background:var(--accent);border:2px solid var(--ink);
+  color:var(--on-ink);font-weight:600}
+button[aria-pressed="true"]::before{content:"\2713\00a0"}
+button:focus-visible,input:focus-visible,summary:focus-visible{outline:2px solid var(--soon);outline-offset:2px}
+input[type=search],input[type=date]{font:inherit;color:var(--ink);background:var(--chip);
+  border:1px solid var(--line);border-radius:8px;padding:.24rem .5rem;font-size:.88rem;max-width:100%}
+input[type=search]{min-width:10rem;flex:1 1 10rem}
+details#f-projects{width:100%}
+details#f-projects>summary{cursor:pointer;font-weight:600;font-size:.9rem}
+.pgroup{margin:.5rem 0 0}
+.pboard{font-size:.78rem;text-transform:uppercase;letter-spacing:.05em;color:var(--mut);margin:.3rem 0 .15rem}
+.pitem{display:inline-flex;align-items:center;gap:.3rem;margin:0 .9rem .2rem 0;font-size:.88rem}
+.dl{background:transparent;border-style:dashed}
+.xgroup{display:flex;flex-direction:column;gap:.35rem;width:100%}
+.xitem{font-size:.85rem}
+.cap{color:var(--mut)}
+.prt{display:none}
+.gantt-wrap{overflow-x:auto;border:1px solid var(--line);border-radius:10px;
+  background:var(--panel)}
+.gantt-wrap svg{display:block}
+.tbl-wrap{overflow-x:auto;border:1px solid var(--line);border-radius:10px}
+table{border-collapse:collapse;width:100%;font-size:.88rem;background:var(--panel)}
+th,td{text-align:left;padding:.45rem .6rem;border-bottom:1px solid var(--line);
+  vertical-align:top;white-space:nowrap}
+th{background:var(--bg)}
+th button{border:none;background:none;border-radius:6px;padding:.1rem .3rem;
+  font-size:.74rem;text-transform:uppercase;letter-spacing:.06em;color:var(--mut);
+  cursor:pointer;font-weight:600}
+th button .ind{color:var(--accent)}
+tr.rowdone td{opacity:.6}
+tr.rowarch td{opacity:.5;font-style:italic}
+.dot{display:inline-block;width:.6rem;height:.6rem;border-radius:2px;margin-right:.4rem;flex:none}
+.flag{color:var(--over);font-weight:600}
+.blk{color:var(--soon);font-weight:600}
+.tmark{font-weight:700}
+a{color:var(--accent)}
+.hl-soon{background:color-mix(in srgb,var(--soon) 22%,transparent);border-radius:3px;padding:0 .15em}
+.hl-over{background:color-mix(in srgb,var(--over) 22%,transparent);border-radius:3px;padding:0 .15em}
+.hl-green{background:color-mix(in srgb,var(--green) 22%,transparent);border-radius:3px;padding:0 .15em}
+.mention{color:var(--accent);font-weight:600}
+.notes-list,.ms-list{display:grid;gap:.6rem;padding:0;margin:0;list-style:none}
+.note,.ms{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:.6rem .8rem}
+.note h3{font-size:.95rem;margin:0}
+.note .nsub,.ms .nsub{color:var(--mut);font-size:.8rem;margin:0 0 .3rem}
+.note .nbody{font-size:.88rem}
+#tt{position:fixed;z-index:40;display:none;max-width:20rem;background:var(--bg);
+  border:1px solid var(--line);border-radius:8px;padding:.55rem .7rem;
+  font-size:.8rem;box-shadow:0 6px 24px rgba(0,0,0,.4);pointer-events:none}
+.ttt{font-weight:650}
+.ttm{color:var(--mut)}
+#card{position:fixed;inset:0;z-index:50;display:none;align-items:center;
+  justify-content:center;background:rgba(0,0,0,.55);padding:1rem}
+#card.open{display:flex}
+.cardwrap{position:relative;width:100%;max-width:34rem}
+.cardbox{background:var(--bg);border:1px solid var(--line);border-radius:12px;
+  width:100%;max-height:88vh;overflow-y:auto;padding:1.2rem 1.3rem}
+.cardbox h3{margin:0 2.2rem .1rem 0;font-size:1.15rem}
+.cardbox .csub{color:var(--mut);font-size:.85rem;margin:0 0 .8rem}
+.cardbox dl{display:grid;grid-template-columns:7.5rem 1fr;gap:.25rem .8rem;
+  margin:.6rem 0;font-size:.88rem}
+.cardbox dt{color:var(--mut);font-size:.74rem;text-transform:uppercase;
+  letter-spacing:.05em;padding-top:.15rem}
+.cardbox dd{margin:0}
+.cardbox .notes{border:1px solid var(--line);border-radius:8px;padding:.6rem .75rem;
+  background:var(--panel);font-size:.88rem;margin:.5rem 0 0}
+#cclose{position:absolute;top:.7rem;right:.8rem;border-radius:8px}
+footer{color:var(--mut);font-size:.82rem;margin-top:3rem;border-top:1px solid var(--line);
+  padding-top:.75rem}
+.glabel{fill:var(--ink);font-size:11px}
+.gtick{fill:var(--mut);font-size:10px}
+.gline{stroke:var(--line);stroke-width:1}
+.gtoday{stroke:var(--accent);stroke-width:1.5}
+.gtodaylbl{fill:var(--accent);font-size:10px;font-weight:700}
+.gweekend{fill:rgba(139,152,165,.07)}
+@media print{
+  /* no page margin, so the browser prints no header or footer (no file path, no URL) */
+  @page{margin:0}
+  body{background:#fff;color:#000;padding:12mm 14mm}
+  .controls,nav,.xgroup,#tt,#card,.dl,.zbtn{display:none!important}
+  #view-header{display:block}
+  .scr{display:none!important}
+  .prt{display:inline!important}
+  .tile,.tbl-wrap,table,.note,.ms{background:#fff;border-color:#bbb}
+  th,td{border-color:#ccc}
+  .sub,.tile .k,th button,.showing,footer{color:#444}
+  tr,.note,.ms{break-inside:avoid}
+  thead{display:table-header-group}
+  h2{break-after:avoid}
+  .tiles{break-inside:avoid}
+  a{color:#000;text-decoration:none}
+  /* the gantt prints COMPLETE, not clipped (commit 6c1225f): drop the on-screen
+     scroll window, neutralise the JS min-width, scale the svg to the page. */
+  .gantt-wrap{overflow:visible;background:#fff;border-color:#bbb}
+  #gantt{min-width:0!important}
+  #gantt svg{width:100%;height:auto;max-width:none}
+}
+</style></head>
+<body><main>
+<header id="view-header">
+<h1>taskboard · interactive workspace</h1>
+<p class="sub" id="scope-line"></p>
+<p class="sub" id="gen-line"></p>
+<p class="sub" id="view-origin" hidden></p>
+<p class="sub" id="print-line" hidden></p>
+<p id="view-summary"></p>
+</header>
+
+<nav class="controls panel" aria-label="Filters">
+  <div class="bar-head"><span id="active-count" aria-live="polite"></span>
+    <button type="button" id="reset">Reset</button></div>
+  <details id="f-projects"><summary id="f-projects-sum">Projects</summary>
+    <div class="cgroup"><button type="button" id="p-all">All</button>
+      <button type="button" id="p-none">None</button></div>
+    <div id="f-projects-list"></div>
+  </details>
+  <div class="cgroup" id="f-status" role="group" aria-label="status"><span class="lbl">status</span></div>
+  <div class="cgroup" id="f-people" role="group" aria-label="people"><span class="lbl">people</span></div>
+  <div class="cgroup" id="f-marks" role="group" aria-label="classes"><span class="lbl">class</span></div>
+  <div class="cgroup"><span class="lbl">dates</span>
+    <label>from <input type="date" id="f-from"></label>
+    <label>to <input type="date" id="f-to"></label></div>
+  <div class="cgroup"><label class="lbl" for="f-q">search</label>
+    <input type="search" id="f-q" placeholder="title, notes, project"></div>
+  <div class="cgroup" id="f-sections" role="group" aria-label="sections"><span class="lbl">sections</span></div>
+  <div class="cgroup" id="f-zoom" role="group" aria-label="zoom"><span class="lbl">zoom</span></div>
+  <div class="xgroup" id="f-export" role="group" aria-label="Export this view"><span class="lbl">Export this view</span>
+    <div class="xitem" id="x-print"><button type="button" class="dl" id="print">Print / Save as PDF</button><span class="cap"> — a PDF of what is shown; this HTML file still holds every task</span></div>
+    <div class="xitem" id="x-view"><button type="button" class="dl" id="dl-view">Download this view</button><span class="cap"> — a new HTML file with only these tasks</span></div>
+    <div class="xitem" id="x-rows"><button type="button" class="dl" id="dl-csv">Download CSV · visible rows only</button>
+      <button type="button" class="dl" id="dl-json">Download JSON · visible rows only</button></div></div>
+</nav>
+
+<div class="tiles">
+  <div class="tile"><div class="n" id="tile-open">0</div><div class="k">open</div></div>
+  <div class="tile"><div class="n" id="tile-late">0</div><div class="k">late</div></div>
+  <div class="tile"><div class="n" id="tile-done">0</div><div class="k">done</div></div>
+  <div class="tile"><div class="n" id="tile-archived">0</div><div class="k">archived</div></div>
+</div>
+<p class="showing" id="showing"></p>
+
+<section id="s-gantt"><h2>The gantt: dated tasks</h2>
+<div class="gantt-wrap"><div id="gantt"></div></div></section>
+
+<section id="s-table"><h2>The tasks</h2>
+<div class="tbl-wrap"><table>
+<thead><tr id="thead-row"></tr></thead>
+<tbody id="tbody"></tbody>
+</table></div>
+<p class="showing" id="tempty" hidden>No tasks match the current filters.</p></section>
+
+<section id="s-notes"><h2>Notes</h2>
+<ul class="notes-list" id="notes-list"></ul>
+<p class="showing" id="notes-empty" hidden>No notes on the tasks shown.</p></section>
+
+<section id="s-milestones"><h2>Milestones</h2>
+<ul class="ms-list" id="ms-list"></ul>
+<p class="showing" id="ms-empty" hidden>No milestones among the tasks shown.</p></section>
+
+<div id="tt" role="tooltip"></div>
+<div id="card" role="dialog" aria-modal="true" aria-labelledby="c-title">
+  <div class="cardwrap"><div class="cardbox">
+    <button type="button" id="cclose" aria-label="close">✕</button>
+    <h3 id="c-title"></h3>
+    <p class="csub" id="c-sub"></p>
+    <dl id="c-fields"></dl>
+    <div id="c-urls-wrap"><span class="lbl">links</span><ul id="c-urls"></ul></div>
+    <div class="notes" id="c-notes"></div>
+  </div></div>
+</div>
+
+<footer>taskboard · a local file, generated on demand. Counts and dates only,
+nothing here is a forecast. Work with no recorded phase change reads
+<em>unaged</em> rather than a guess.</footer>
+</main>
+<script id="board-data" type="application/json">{"v":1,"meta":{"generated":"2026-10-29","today":"2026-10-29","scope":{"kind":"all","project":null,"boards":["Personal","Client A","Course"]},"view":null},"boards":[{"key":"personal","name":"Personal","colour":"#a78bfa"},{"key":"client-a","name":"Client A","colour":"#38bdf8"},{"key":"course","name":"Course","colour":"#e879f9"}],"projects":[{"key":"personal:pmove","board":"personal","id":"pmove","name":"Move apartment","colour":"#a78bfa","archived":false,"status":"on_track","momentum":"11d in phase","open":4,"late":1,"done":1,"worst":1,"high":2,"due":"2026-11-10","due_word":"in 12d","phases":["Backlog","Next","Doing","Review","Done"]},{"key":"personal:ptax","board":"personal","id":"ptax","name":"Taxes 2026","colour":"#fbbf24","archived":false,"status":"on_track","momentum":"6d in phase","open":2,"late":0,"done":0,"worst":null,"high":0,"due":"2026-12-08","due_word":"in 40d","phases":["Backlog","Next","Doing","Review","Done"]},{"key":"client-a:prel","board":"client-a","id":"prel","name":"Storefront relaunch","colour":"#38bdf8","archived":false,"status":"at_risk","momentum":"12d in phase","open":5,"late":2,"done":1,"worst":3,"high":4,"due":"2026-11-19","due_word":"in 21d","phases":["Backlog","Next","Doing","Review","Done"]},{"key":"client-a:pdoc","board":"client-a","id":"pdoc","name":"Support docs","colour":"#a3e635","archived":false,"status":"on_track","momentum":"5d in phase","open":2,"late":0,"done":0,"worst":null,"high":0,"due":"2026-12-03","due_word":"in 35d","phases":["Backlog","Next","Doing","Review","Done"]},{"key":"course:pvid","board":"course","id":"pvid","name":"Video module 3","colour":"#e879f9","archived":false,"status":"on_track","momentum":"4d in phase","open":3,"late":0,"done":1,"worst":null,"high":2,"due":"2026-11-12","due_word":"in 14d","phases":["Backlog","Next","Doing","Review","Done"]},{"key":"course:pcom","board":"course","id":"pcom","name":"Community forum","colour":"#818cf8","archived":false,"status":"on_track","momentum":"6d in phase","open":2,"late":0,"done":0,"worst":null,"high":0,"due":null,"due_word":"no date","phases":["Backlog","Next","Doing","Review","Done"]}],"tasks":[{"key":"personal:tmv1","project":"personal:pmove","board":"personal","title":"Book moving company","phase":"Done","priority":"normal","start":"2026-10-09","due":"2026-10-11","due_in":-18,"age":8,"done":true,"archived":false,"status":"done","blocked":false,"milestone":false,"mark":null,"mentions":[],"deps":[],"chain":[],"due_word":"-18d","notes_html":"\u003cspan class=\"hl-soon\"\u003econfirmed for the 8th\u003c/span\u003e\u003cspan class=\"hl-mut\"\u003e deposit paid\u003c/span\u003e","notes_text":"confirmed for the 8th deposit paid","urls":[]},{"key":"personal:tmv2","project":"personal:pmove","board":"personal","title":"Pack kitchen","phase":"Doing","priority":"high","start":"2026-10-25","due":"2026-10-28","due_in":-1,"age":4,"done":false,"archived":false,"status":"late","blocked":true,"milestone":false,"mark":null,"mentions":["luis.prado"],"deps":[],"chain":["personal:tmv4"],"due_word":"1d overdue","notes_html":"\u003cspan class=\"hl-over\"\u003estill missing boxes\u003c/span\u003e\u003cspan class=\"hl-mut\"\u003e \u003c/span\u003e\u003cspan class=\"hl-mut mention\"\u003e@Luis Prado\u003c/span\u003e\u003cspan class=\"hl-mut\"\u003e brings more Thursday\u003c/span\u003e","notes_text":"still missing boxes @luis.prado brings more Thursday","urls":[]},{"key":"personal:tmv3","project":"personal:pmove","board":"personal","title":"Transfer internet contract","phase":"Next","priority":"normal","start":"2026-10-28","due":"2026-10-31","due_in":2,"age":2,"done":false,"archived":false,"status":"open","blocked":false,"milestone":false,"mark":null,"mentions":[],"deps":[],"chain":[],"due_word":"in 2d","notes_html":"\u003cspan class=\"hl-soon\"\u003eprice locked until Friday\u003c/span\u003e\u003cspan class=\"hl-mut\"\u003e then it rises\u003c/span\u003e","notes_text":"price locked until Friday then it rises","urls":[]},{"key":"personal:tmv4","project":"personal:pmove","board":"personal","title":"Update address everywhere","phase":"Backlog","priority":"low","start":"2026-11-01","due":"2026-11-07","due_in":9,"age":11,"done":false,"archived":false,"status":"open","blocked":false,"milestone":false,"mark":null,"mentions":[],"deps":["personal:tmv2"],"chain":[],"due_word":"in 9d","notes_html":"","notes_text":"","urls":[]},{"key":"personal:tmv5","project":"personal:pmove","board":"personal","title":"Keys handover","phase":"Next","priority":"high","start":"2026-11-10","due":"2026-11-10","due_in":12,"age":0,"done":false,"archived":false,"status":"open","blocked":false,"milestone":true,"mark":"delivery","mentions":[],"deps":[],"chain":[],"due_word":"in 12d","notes_html":"\u003cspan class=\"hl-mut\"\u003eone date, its due — the class is \u003c/span\u003e\u003cspan class=\"hl-soon\"\u003eDelivery ▲\u003c/span\u003e","notes_text":"one date, its due — the class is Delivery ▲","urls":[]},{"key":"personal:ttx1","project":"personal:ptax","board":"personal","title":"Gather deduction receipts","phase":"Doing","priority":"normal","start":"2026-10-26","due":"2026-11-03","due_in":5,"age":6,"done":false,"archived":false,"status":"open","blocked":false,"milestone":false,"mark":null,"mentions":[],"deps":[],"chain":["personal:ttx2"],"due_word":"in 5d","notes_html":"\u003cspan class=\"hl-green\"\u003escanner app works great\u003c/span\u003e\u003cspan class=\"hl-mut\"\u003e all PDFs in the folder\u003c/span\u003e","notes_text":"scanner app works great all PDFs in the folder","urls":[]},{"key":"personal:ttx2","project":"personal:ptax","board":"personal","title":"Draft the return","phase":"Backlog","priority":"normal","start":"2026-11-04","due":"2026-11-23","due_in":25,"age":2,"done":false,"archived":false,"status":"open","blocked":false,"milestone":false,"mark":null,"mentions":[],"deps":["personal:ttx1"],"chain":[],"due_word":"in 25d","notes_html":"","notes_text":"","urls":[]},{"key":"personal:ttx0","project":"personal:ptax","board":"personal","title":"Old: 2024 filing","phase":"Done","priority":"low","start":"2025-09-24","due":"2025-10-14","due_in":-380,"age":380,"done":true,"archived":true,"status":"archived","blocked":false,"milestone":false,"mark":null,"mentions":[],"deps":[],"chain":[],"due_word":"-380d","notes_html":"","notes_text":"","urls":[]},{"key":"client-a:tst1","project":"client-a:prel","board":"client-a","title":"Stakeholder interviews","phase":"Done","priority":"normal","start":"2026-09-19","due":"2026-09-29","due_in":-30,"age":20,"done":true,"archived":false,"status":"done","blocked":false,"milestone":false,"mark":null,"mentions":[],"deps":[],"chain":[],"due_word":"-30d","notes_html":"\u003cspan class=\"hl-mut\"\u003esummary in the shared drive\u003c/span\u003e","notes_text":"summary in the shared drive","urls":[]},{"key":"client-a:tst2","project":"client-a:prel","board":"client-a","title":"Product photos","phase":"Doing","priority":"high","start":"2026-10-23","due":"2026-10-31","due_in":2,"age":6,"done":false,"archived":false,"status":"open","blocked":false,"milestone":false,"mark":null,"mentions":["ana.ruiz"],"deps":[],"chain":["client-a:tst3","client-a:tst4","client-a:tst5"],"due_word":"in 2d","notes_html":"\u003cspan class=\"hl-mut mention\"\u003e@Ana Ruiz\u003c/span\u003e\u003cspan class=\"hl-mut\"\u003e shot the hero set \u003c/span\u003e\u003cspan class=\"hl-soon\"\u003eapproved by client\u003c/span\u003e","notes_text":"@ana.ruiz shot the hero set approved by client","urls":[]},{"key":"client-a:tst3","project":"client-a:prel","board":"client-a","title":"Content final","phase":"Review","priority":"high","start":"2026-10-20","due":"2026-10-28","due_in":-1,"age":9,"done":false,"archived":false,"status":"late","blocked":false,"milestone":false,"mark":null,"mentions":[],"deps":["client-a:tst2"],"chain":["client-a:tst4","client-a:tst5"],"due_word":"1d overdue","notes_html":"\u003cspan class=\"hl-over\"\u003elegal still reviewing the refund paragraph\u003c/span\u003e","notes_text":"legal still reviewing the refund paragraph","urls":[]},{"key":"client-a:tst4","project":"client-a:prel","board":"client-a","title":"Homepage build","phase":"Doing","priority":"high","start":"2026-10-17","due":"2026-10-26","due_in":-3,"age":12,"done":false,"archived":false,"status":"late","blocked":false,"milestone":false,"mark":null,"mentions":[],"deps":["client-a:tst3"],"chain":["client-a:tst5"],"due_word":"3d overdue","notes_html":"","notes_text":"","urls":["https://staging.example.com/storefront"]},{"key":"client-a:tst5","project":"client-a:prel","board":"client-a","title":"Launch day","phase":"Backlog","priority":"high","start":"2026-11-19","due":"2026-11-19","due_in":21,"age":0,"done":false,"archived":false,"status":"open","blocked":false,"milestone":true,"mark":"launch","mentions":[],"deps":["client-a:tst4"],"chain":[],"due_word":"in 21d","notes_html":"\u003cspan class=\"hl-mut\"\u003ethe whole chain lands here — class \u003c/span\u003e\u003cspan class=\"hl-soon\"\u003eLaunch ★\u003c/span\u003e","notes_text":"the whole chain lands here — class Launch ★","urls":[]},{"key":"client-a:tst6","project":"client-a:prel","board":"client-a","title":"Final invoice","phase":"Backlog","priority":"normal","start":"2026-11-28","due":"2026-11-28","due_in":30,"age":0,"done":false,"archived":false,"status":"open","blocked":false,"milestone":true,"mark":"billing","mentions":[],"deps":[],"chain":[],"due_word":"in 30d","notes_html":"","notes_text":"","urls":[]},{"key":"client-a:tst7","project":"client-a:prel","board":"client-a","title":"Old homepage hero","phase":"Done","priority":"low","start":"2026-07-31","due":"2026-08-30","due_in":-60,"age":90,"done":true,"archived":true,"status":"archived","blocked":false,"milestone":false,"mark":null,"mentions":[],"deps":[],"chain":[],"due_word":"-60d","notes_html":"","notes_text":"","urls":[]},{"key":"client-a:tsp1","project":"client-a:pdoc","board":"client-a","title":"FAQ rewrite","phase":"Doing","priority":"normal","start":"2026-10-24","due":"2026-11-02","due_in":4,"age":5,"done":false,"archived":false,"status":"open","blocked":false,"milestone":false,"mark":null,"mentions":["ana.ruiz"],"deps":[],"chain":["client-a:tsp2"],"due_word":"in 4d","notes_html":"\u003cspan class=\"hl-mut\"\u003e- [ ] draft sections\u003c/span\u003e\u003cbr\u003e\u003cspan class=\"hl-mut\"\u003e- [x] outline\u003c/span\u003e\u003cbr\u003e\u003cspan class=\"hl-mut mention\"\u003e@Ana Ruiz\u003c/span\u003e\u003cspan class=\"hl-mut\"\u003e owns the tone \u003c/span\u003e\u003cspan class=\"hl-soon\"\u003ekeep it friendly\u003c/span\u003e","notes_text":"- [ ] draft sections\n- [x] outline\n@ana.ruiz owns the tone keep it friendly","urls":[]},{"key":"client-a:tsp2","project":"client-a:pdoc","board":"client-a","title":"Tutorial videos","phase":"Backlog","priority":"normal","start":"2026-11-06","due":"2026-11-16","due_in":18,"age":3,"done":false,"archived":false,"status":"open","blocked":false,"milestone":false,"mark":null,"mentions":["carmen.vega"],"deps":["client-a:tsp1"],"chain":[],"due_word":"in 18d","notes_html":"\u003cspan class=\"hl-mut mention\"\u003e@Carmen Vega\u003c/span\u003e\u003cspan class=\"hl-mut\"\u003e narrates once the script settles\u003c/span\u003e","notes_text":"@carmen.vega narrates once the script settles","urls":[]},{"key":"course:tvd1","project":"course:pvid","board":"course","title":"Script module 3","phase":"Done","priority":"normal","start":"2026-10-22","due":"2026-10-26","due_in":-3,"age":3,"done":true,"archived":false,"status":"done","blocked":false,"milestone":false,"mark":null,"mentions":["carmen.vega"],"deps":[],"chain":[],"due_word":"-3d","notes_html":"\u003cspan class=\"hl-green\"\u003ebest script so far\u003c/span\u003e\u003cspan class=\"hl-mut\"\u003e \u003c/span\u003e\u003cspan class=\"hl-mut mention\"\u003e@Carmen Vega\u003c/span\u003e\u003cspan class=\"hl-mut\"\u003e\u0026#x27;s outline helped\u003c/span\u003e","notes_text":"best script so far @carmen.vega's outline helped","urls":[]},{"key":"course:tvd2","project":"course:pvid","board":"course","title":"Record lesson 3.1","phase":"Doing","priority":"high","start":"2026-10-27","due":"2026-10-30","due_in":1,"age":4,"done":false,"archived":false,"status":"open","blocked":false,"milestone":false,"mark":null,"mentions":[],"deps":[],"chain":["course:tvd3","course:tvd4"],"due_word":"in 1d","notes_html":"\u003cspan class=\"hl-over\"\u003emic hiss on retakes\u003c/span\u003e\u003cspan class=\"hl-mut\"\u003e swap the interface cable\u003c/span\u003e","notes_text":"mic hiss on retakes swap the interface cable","urls":[]},{"key":"course:tvd3","project":"course:pvid","board":"course","title":"Edit module 3","phase":"Next","priority":"normal","start":"2026-10-31","due":"2026-11-06","due_in":8,"age":2,"done":false,"archived":false,"status":"open","blocked":false,"milestone":false,"mark":null,"mentions":[],"deps":["course:tvd2"],"chain":["course:tvd4"],"due_word":"in 8d","notes_html":"","notes_text":"","urls":[]},{"key":"course:tvd4","project":"course:pvid","board":"course","title":"Module 3 live","phase":"Backlog","priority":"high","start":"2026-11-12","due":"2026-11-12","due_in":14,"age":0,"done":false,"archived":false,"status":"open","blocked":false,"milestone":true,"mark":"delivery","mentions":[],"deps":["course:tvd3"],"chain":[],"due_word":"in 14d","notes_html":"","notes_text":"","urls":[]},{"key":"course:tcm1","project":"course:pcom","board":"course","title":"Moderation guidelines","phase":"Backlog","priority":"normal","start":null,"due":null,"due_in":null,"age":6,"done":false,"archived":false,"status":"open","blocked":false,"milestone":false,"mark":null,"mentions":["carmen.vega"],"deps":[],"chain":[],"due_word":"no date","notes_html":"\u003cspan class=\"hl-green\"\u003egreat examples from \u003c/span\u003e\u003cspan class=\"hl-green mention\"\u003e@Carmen Vega\u003c/span\u003e\u003cspan class=\"hl-mut\"\u003e in the pinned thread\u003c/span\u003e","notes_text":"great examples from @carmen.vega in the pinned thread","urls":[]},{"key":"course:tcm2","project":"course:pcom","board":"course","title":"Welcome thread refresh","phase":"Backlog","priority":"low","start":"2026-11-03","due":"2026-11-10","due_in":12,"age":1,"done":false,"archived":false,"status":"open","blocked":false,"milestone":false,"mark":null,"mentions":[],"deps":[],"chain":[],"due_word":"in 12d","notes_html":"","notes_text":"","urls":[]}],"people":[{"id":"ana.ruiz","name":"Ana Ruiz","role":"Design lead"},{"id":"luis.prado","name":"Luis Prado","role":"Developer"},{"id":"carmen.vega","name":"Carmen Vega","role":"Community"}],"marks":[{"key":"delivery","name":"Delivery","shape":"▲","colour":"#fb7185"},{"key":"billing","name":"Billing","shape":"■","colour":"#fbbf24"},{"key":"launch","name":"Launch","shape":"★","colour":"#a3e635"}]}</script>
+<script>
+'use strict';
+// the pristine shell, FIRST, before anything renders: "Download this view" rebuilds from it
+const PRISTINE = document.documentElement.outerHTML;
+const DATA = JSON.parse(document.getElementById('board-data').textContent);
+const $ = s => document.querySelector(s);
+const NS = 'http://www.w3.org/2000/svg';
+const STATUS = ['open', 'late', 'done', 'archived'];
+const STATUS_DEFAULT = ['open', 'late', 'done'];
+const SECTIONS = ['gantt', 'table', 'notes', 'milestones'];
+const ZOOMS = ['fit', 'day', 'week', 'month'];
+const MONTHS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+const BOARDS = new Map(DATA.boards.map(b => [b.key, b]));
+const PROJECTS = new Map(DATA.projects.map(p => [p.key, p]));
+const TASKS = new Map(DATA.tasks.map(t => [t.key, t]));
+const PEOPLE = new Map(DATA.people.map(p => [p.id, p]));
+const MARKS = new Map(DATA.marks.map(m => [m.key, m]));
+const WL = {p: new Set(PROJECTS.keys()), s: new Set(STATUS), u: new Set(PEOPLE.keys()),
+            m: new Set(MARKS.keys()), sec: new Set(SECTIONS), z: new Set(ZOOMS)};
+const sort = {key: 'due', dir: 1};
+const chips = [];
+const boxes = [];
+let view = defaultView();
+
+function make(tag, cls, text){
+  const e = document.createElement(tag);
+  if(cls) e.className = cls;
+  if(text !== undefined && text !== null) e.textContent = text;
+  return e;
+}
+function hue(c){ return /^#[0-9a-fA-F]{6}$/.test(c || '') ? c : '#8b98a5'; }
+function safeHref(u){ return /^https?:\/\//i.test(u || '') ? u : null; }
+function boardName(k){ const b = BOARDS.get(k); return b ? b.name : ''; }
+function projectName(k){ const p = PROJECTS.get(k); return p ? p.name : ''; }
+function colourOf(t){ const p = PROJECTS.get(t.project); return hue(p ? p.colour : ''); }
+function markOf(t){ return t.mark ? MARKS.get(t.mark) || null : null; }
+
+// ---- the view and its hash ---------------------------------------------------
+function defaultView(wl = WL){
+  return {p: new Set(wl.p), s: new Set(STATUS_DEFAULT), u: new Set(), m: new Set(),
+          from: '', to: '', q: '', sec: new Set(SECTIONS), z: 'fit'};
+}
+function realDate(s){
+  if(!/^\d{4}-\d{2}-\d{2}$/.test(s)) return false;
+  const [y, m, d] = s.split('-').map(Number);
+  const dt = new Date(Date.UTC(y, m - 1, d));
+  return dt.getUTCFullYear() === y && dt.getUTCMonth() === m - 1 && dt.getUTCDate() === d;
+}
+function dec(s){ try { return decodeURIComponent(s); } catch(e){ return null; } }
+function parseHash(str){
+  const v = defaultView();
+  const raw = String(str || '').replace(/^#/, '');
+  if(!raw) return v;
+  const pairs = new Map();
+  for(const part of raw.split('&')){
+    const i = part.indexOf('=');
+    if(i < 0) continue;
+    const k = part.slice(0, i);
+    if(!pairs.has(k)) pairs.set(k, part.slice(i + 1));
+  }
+  if(pairs.get('v') !== '1') return v;
+  for(const k of ['p', 's', 'u', 'm', 'sec']){
+    if(!pairs.has(k)) continue;
+    const given = pairs.get(k);
+    if(given === ''){ v[k] = new Set(); continue; }
+    const kept = given.split(',').map(dec).filter(x => x !== null && WL[k].has(x));
+    if(kept.length) v[k] = new Set(kept);
+  }
+  if(pairs.has('z')){ const z = dec(pairs.get('z')); if(z !== null && WL.z.has(z)) v.z = z; }
+  for(const k of ['from', 'to']){
+    if(!pairs.has(k)) continue;
+    const d = dec(pairs.get(k));
+    if(d !== null && realDate(d)) v[k] = d;
+  }
+  if(pairs.has('q')){ const q = dec(pairs.get('q')); if(q !== null) v.q = q; }
+  return v;
+}
+function sameSet(a, b){
+  if(a.size !== b.size) return false;
+  for(const x of a) if(!b.has(x)) return false;
+  return true;
+}
+function hashOf(v, wl = WL){
+  const d = defaultView(wl), out = [];
+  const enc = encodeURIComponent;
+  const listed = k => [...wl[k]].filter(x => v[k].has(x)).map(enc).join(',');
+  if(!sameSet(v.p, d.p)) out.push('p=' + listed('p'));
+  if(!sameSet(v.s, d.s)) out.push('s=' + listed('s'));
+  if(v.u.size) out.push('u=' + listed('u'));
+  if(v.m.size) out.push('m=' + listed('m'));
+  if(v.from) out.push('from=' + enc(v.from));
+  if(v.to) out.push('to=' + enc(v.to));
+  if(v.q) out.push('q=' + enc(v.q));
+  if(!sameSet(v.sec, d.sec)) out.push('sec=' + listed('sec'));
+  if(v.z !== d.z) out.push('z=' + enc(v.z));
+  return out.length ? 'v=1&' + out.join('&') : '';
+}
+function writeHash(){
+  const h = hashOf(view);
+  history.replaceState(null, '', h ? '#' + h : location.href.split('#')[0]);
+}
+
+// ---- the filters (LLR-3102.2) ---------------------------------------------------
+function spanOf(t){
+  const a = t.start || t.due, b = t.due || t.start;
+  if(!a) return null;
+  return a <= b ? [a, b] : [b, a];
+}
+function keeps(v, t){
+  if(!v.p.has(t.project)) return false;
+  if(!v.s.has(t.status)) return false;
+  if(v.u.size && !t.mentions.some(h => v.u.has(h))) return false;
+  if(v.m.size && !(t.mark && v.m.has(t.mark))) return false;
+  if(v.from || v.to){
+    if(v.from && v.to && v.from > v.to) return false;
+    const sp = spanOf(t);
+    if(!sp) return false;
+    if(v.to && sp[0] > v.to) return false;
+    if(v.from && sp[1] < v.from) return false;
+  }
+  if(v.q){
+    const hay = (t.title + ' ' + t.notes_text + ' ' + projectName(t.project)).toLowerCase();
+    if(!hay.includes(v.q.toLowerCase())) return false;
+  }
+  return true;
+}
+function applyFilters(v, tasks){ return tasks.filter(t => keeps(v, t)); }
+function activeKinds(v){
+  const d = defaultView(), out = [];
+  if(!sameSet(v.p, d.p)) out.push('projects');
+  if(!sameSet(v.s, d.s)) out.push('status');
+  if(v.u.size) out.push('people');
+  if(v.m.size) out.push('classes');
+  if(v.from || v.to) out.push('dates');
+  if(v.q) out.push('search');
+  return out;
+}
+
+// ---- the control bar (LLR-3102.1) ----------------------------------------------
+function chip(parent, group, value, label, onClick){
+  const b = make('button', null, label);
+  b.type = 'button';
+  b.dataset.group = group;
+  b.dataset.value = value;
+  b.setAttribute('aria-pressed', 'false');
+  b.addEventListener('click', onClick);
+  parent.appendChild(b);
+  chips.push(b);
+  return b;
+}
+function toggle(set, value){ if(set.has(value)) set.delete(value); else set.add(value); render(); }
+function buildControls(){
+  const list = $('#f-projects-list');
+  for(const b of DATA.boards){
+    const g = make('div', 'pgroup');
+    g.setAttribute('role', 'group');
+    const head = make('div', 'pboard');
+    const bd = make('span', 'dot');
+    bd.style.background = hue(b.colour);
+    head.appendChild(bd);
+    head.appendChild(document.createTextNode(b.name));
+    g.appendChild(head);
+    for(const p of DATA.projects.filter(x => x.board === b.key)){
+      const lab = make('label', 'pitem');
+      const box = make('input');
+      box.type = 'checkbox';
+      box.dataset.key = p.key;
+      box.addEventListener('change', () => {
+        if(box.checked) view.p.add(p.key); else view.p.delete(p.key);
+        render();
+      });
+      const dot = make('span', 'dot');
+      dot.style.background = hue(p.colour);
+      lab.appendChild(box);
+      lab.appendChild(dot);
+      lab.appendChild(make('span', null, p.name + (p.archived ? ' (archived)' : '')));
+      g.appendChild(lab);
+      boxes.push(box);
+    }
+    list.appendChild(g);
+  }
+  $('#p-all').addEventListener('click', () => { view.p = new Set(WL.p); render(); });
+  $('#p-none').addEventListener('click', () => { view.p = new Set(); render(); });
+  const fs = $('#f-status');
+  for(const s of STATUS) chip(fs, 'status', s, s, () => toggle(view.s, s));
+  const fu = $('#f-people');
+  for(const p of DATA.people) chip(fu, 'people', p.id, p.name, () => toggle(view.u, p.id));
+  fu.hidden = !DATA.people.length;
+  const fm = $('#f-marks');
+  for(const m of DATA.marks) chip(fm, 'marks', m.key, m.shape + ' ' + m.name, () => toggle(view.m, m.key));
+  fm.hidden = !DATA.marks.length;
+  for(const k of ['from', 'to']){
+    const inp = $('#f-' + k);
+    const set = () => { view[k] = realDate(inp.value) ? inp.value : ''; render(); };
+    inp.addEventListener('change', set);
+    inp.addEventListener('input', set);
+  }
+  $('#f-q').addEventListener('input', e => { view.q = e.target.value; render(); });
+  const fsec = $('#f-sections');
+  for(const s of SECTIONS) chip(fsec, 'sections', s, s, () => toggle(view.sec, s));
+  const fz = $('#f-zoom');
+  for(const z of ZOOMS){
+    const b = chip(fz, 'zoom', z, z, () => { view.z = z; render(); });
+    b.classList.add('zbtn');
+  }
+  $('#reset').addEventListener('click', () => { view = defaultView(); render(); });
+  $('#print').addEventListener('click', printView);
+  $('#dl-view').addEventListener('click', downloadView);
+  $('#dl-csv').addEventListener('click', dlCsv);
+  $('#dl-json').addEventListener('click', dlJson);
+}
+function syncControls(){
+  const sets = {status: view.s, people: view.u, marks: view.m, sections: view.sec};
+  for(const b of chips){
+    const g = b.dataset.group, v = b.dataset.value;
+    const on = g === 'zoom' ? view.z === v : sets[g].has(v);
+    b.setAttribute('aria-pressed', on ? 'true' : 'false');
+  }
+  for(const box of boxes) box.checked = view.p.has(box.dataset.key);
+  $('#f-projects-sum').textContent = 'Projects ' + view.p.size + '/' + WL.p.size;
+  for(const k of ['from', 'to']) if($('#f-' + k).value !== view[k]) $('#f-' + k).value = view[k];
+  if($('#f-q').value !== view.q) $('#f-q').value = view.q;
+}
+
+// ---- header, summary, tiles --------------------------------------------------------
+function scopeLine(){
+  const sc = DATA.meta.scope;
+  if(sc.kind === 'project'){
+    const p = PROJECTS.get(sc.project);
+    return p ? 'Project ' + p.name + ' on ' + boardName(p.board) : 'Project scope';
+  }
+  return 'All loaded boards (' + sc.boards.length + '): ' + sc.boards.join(', ');
+}
+function names(set, wl, nameOf){ return [...wl].filter(x => set.has(x)).map(nameOf).join(', '); }
+function summaryText(v, wl = WL){
+  const d = defaultView(wl), parts = [];
+  if(!sameSet(v.p, d.p)) parts.push('Projects ' + v.p.size + '/' + wl.p.size +
+    (v.p.size ? ': ' + names(v.p, wl.p, projectName) : ''));
+  if(!sameSet(v.s, d.s)) parts.push('Status: ' + (v.s.size ? names(v.s, wl.s, x => x) : 'none'));
+  if(v.u.size) parts.push('People: ' + names(v.u, wl.u, x => PEOPLE.get(x).name));
+  if(v.m.size) parts.push('Classes: ' + names(v.m, wl.m, x => MARKS.get(x).name));
+  if(v.from || v.to) parts.push('Dates: ' + (v.from || '…') + ' to ' + (v.to || '…'));
+  if(v.q) parts.push('Search: "' + v.q + '"');
+  return parts.length ? parts.join(' · ') : 'No filters: all tasks (open · late · done) of every project';
+}
+function localIso(){
+  const d = new Date(), p = n => String(n).padStart(2, '0');
+  return d.getFullYear() + '-' + p(d.getMonth() + 1) + '-' + p(d.getDate());
+}
+function renderHeader(){
+  $('#scope-line').textContent = scopeLine();
+  $('#gen-line').textContent = 'Generated ' + DATA.meta.generated + ' · statuses as of ' + DATA.meta.today;
+  const mv = DATA.meta.view;
+  $('#view-origin').hidden = !mv;
+  if(mv) $('#view-origin').textContent = 'A filtered view, exported ' + mv.exported +
+    ': this file holds only the tasks of this view';
+  const n = activeKinds(view).length;
+  $('#active-count').textContent = n + (n === 1 ? ' filter active' : ' filters active');
+  $('#view-summary').textContent = summaryText(view);
+}
+function renderTiles(kept){
+  for(const s of STATUS) $('#tile-' + s).textContent = kept.filter(t => t.status === s).length;
+  // the screen names the file's total; the print counts the kept tasks only
+  const tail = ' · counts and dates only, nothing here is a forecast';
+  $('#showing').replaceChildren(
+    make('span', 'scr', 'Showing ' + kept.length + ' of ' + DATA.tasks.length + ' tasks' + tail),
+    make('span', 'prt', 'Showing ' + kept.length + ' tasks' + tail));
+}
+
+// ---- gantt ----------------------------------------------------------------------------
+const PPD = {day: 26, week: 11, month: 4.5};
+function pd(s){ const [y, m, d] = s.split('-').map(Number); return new Date(y, m - 1, d); }
+function addD(dt, n){ const d = new Date(dt); d.setDate(d.getDate() + n); return d; }
+function diffD(a, b){ return Math.round((b - a) / 86400000); }
+const TODAY_D = pd(DATA.meta.today);
+function rowLabel(t){
+  let tag = '';
+  if(t.status === 'done') tag = ' ✓';
+  else if(t.status === 'archived') tag = ' · archived';
+  if(t.blocked) tag += ' ⛔';
+  if(t.status === 'late') tag += ' ' + t.due_word;
+  const m = markOf(t);
+  return boardName(t.board) + ' · ' + t.title + (m ? ' ' + m.shape : '') + tag;
+}
+function ticks(lo, hi, zoom){
+  const out = [];
+  if(zoom === 'month'){
+    let d = new Date(lo.getFullYear(), lo.getMonth(), 1);
+    while(d <= hi){ out.push({d: new Date(d), lbl: MONTHS[d.getMonth()]});
+      d = new Date(d.getFullYear(), d.getMonth() + 1, 1); }
+  } else if(zoom === 'week'){
+    for(let d = new Date(lo); d <= hi; d = addD(d, 7))
+      out.push({d: new Date(d), lbl: MONTHS[d.getMonth()] + ' ' + d.getDate()});
+  } else {
+    for(let d = new Date(lo); d <= hi; d = addD(d, 1))
+      out.push({d: new Date(d), lbl: d.getDate() === 1 ? MONTHS[d.getMonth()] + ' 1' : String(d.getDate())});
+  }
+  return out;
+}
+function svgEl(tag, attrs, parent){
+  const e = document.createElementNS(NS, tag);
+  for(const k in attrs) e.setAttribute(k, attrs[k]);
+  if(parent) parent.appendChild(e);
+  return e;
+}
+function svgText(parent, x, y, s, cls, anchor){
+  const e = svgEl('text', {x, y, 'class': cls}, parent);
+  if(anchor) e.setAttribute('text-anchor', anchor);
+  e.textContent = s;
+  return e;
+}
+function renderGantt(list){
+  const fig = $('#gantt');
+  fig.replaceChildren();
+  fig.style.minWidth = '';
+  const rows = list.filter(t => t.start || t.due)
+    .sort((a, b) => (a.start || a.due).localeCompare(b.start || b.due));
+  if(!rows.length){ fig.appendChild(make('p', 'showing', 'No dated tasks match the current filters.')); return; }
+  let lo = null, hi = null;
+  for(const t of rows) for(const s of [t.start, t.due]){
+    if(!s) continue;
+    const d = pd(s);
+    if(!lo || d < lo) lo = d;
+    if(!hi || d > hi) hi = d;
+  }
+  lo = addD(lo, -3); hi = addD(hi, 4);
+  if(TODAY_D < lo) lo = addD(TODAY_D, -3);
+  if(TODAY_D > hi) hi = addD(TODAY_D, 4);
+  const span = diffD(lo, hi);
+  const narrow = window.innerWidth < 560;
+  const gutter = narrow ? 150 : 240;
+  let ppd = PPD[view.z], mode = view.z;
+  if(view.z === 'fit'){
+    const avail = Math.max(320, Math.min(fig.parentElement.clientWidth || 900, 1400)) - gutter - 20;
+    ppd = Math.max(1.1, avail / span);
+    mode = ppd >= 16 ? 'day' : ppd >= 6 ? 'week' : 'month';
+  }
+  const W = Math.ceil(span * ppd) + gutter + 10;
+  const rowH = 26, headH = 34;
+  const H = headH + rows.length * rowH + 6;
+  // the viewBox lets the print scale the WHOLE timeline to the page instead of clipping it
+  const svg = svgEl('svg', {width: W, height: H, viewBox: `0 0 ${W} ${H}`, role: 'img',
+    'aria-label': 'gantt of dated tasks'}, fig);
+  const X = d => gutter + diffD(lo, d) * ppd;
+  if(mode === 'day'){
+    for(let d = new Date(lo); d <= hi; d = addD(d, 1))
+      if(d.getDay() === 0 || d.getDay() === 6)
+        svgEl('rect', {x: X(d), y: 0, width: ppd, height: H, 'class': 'gweekend'}, svg);
+  }
+  for(const tk of ticks(lo, hi, mode)){
+    svgEl('line', {x1: X(tk.d), y1: headH - 4, x2: X(tk.d), y2: H, 'class': 'gline'}, svg);
+    svgText(svg, X(tk.d) + 3, 13, tk.lbl, 'gtick');
+  }
+  svgEl('line', {x1: X(TODAY_D), y1: 0, x2: X(TODAY_D), y2: H, 'class': 'gtoday'}, svg);
+  svgText(svg, X(TODAY_D) + 4, 26, 'today', 'gtodaylbl');
+  rows.forEach((t, i) => {
+    const y = headH + i * rowH;
+    if(i % 2 === 0) svgEl('rect', {x: 0, y, width: W, height: rowH, fill: 'rgba(139,152,165,.045)'}, svg);
+    svgEl('line', {x1: 0, y1: y + rowH, x2: W, y2: y + rowH, 'class': 'gline'}, svg);
+    const lbl = rowLabel(t);
+    const maxc = Math.floor((gutter - 12) / (narrow ? 5.6 : 6.2));
+    const te = svgText(svg, gutter - 8, y + 17, lbl.length > maxc ? lbl.slice(0, maxc - 1) + '…' : lbl, 'glabel', 'end');
+    te.dataset.key = t.key;
+    const s = pd(t.start || t.due), d = pd(t.due || t.start);
+    const m = markOf(t);
+    if(t.milestone){
+      const cx = X(d), cy = y + rowH / 2, r = 8;
+      svgEl('path', {d: `M ${cx} ${cy - r} L ${cx + r} ${cy} L ${cx} ${cy + r} L ${cx - r} ${cy} Z`,
+        fill: m ? hue(m.colour) : 'var(--accent)', stroke: 'var(--bg)', 'stroke-width': 1,
+        'class': 'gbar', 'data-key': t.key}, svg);
+    } else {
+      const bx = X(s < d ? s : d), bw = Math.max(3, Math.abs(X(d) - X(s)));
+      const bar = svgEl('rect', {x: bx, y: y + 5, width: bw, height: rowH - 10, rx: 3,
+        fill: colourOf(t), 'class': 'gbar', 'data-key': t.key}, svg);
+      if(t.status === 'done') bar.setAttribute('fill-opacity', '0.45');
+      if(t.status === 'archived') bar.setAttribute('fill-opacity', '0.3');
+      if(t.blocked) bar.setAttribute('stroke', 'var(--soon)');
+      if(t.status === 'late')
+        svgEl('path', {d: `M ${bx + bw + 4} ${y + rowH - 8} l 4 -8 l 4 8 Z`, fill: 'var(--over)', 'data-key': t.key}, svg);
+    }
+  });
+  fig.style.minWidth = W + 'px';
+}
+
+// ---- tooltip and task card ----------------------------------------------------------------
+const tt = $('#tt');
+function fillTip(t){
+  tt.replaceChildren();
+  tt.appendChild(make('div', 'ttt', t.title));
+  tt.appendChild(make('div', 'ttm', boardName(t.board) + ' · ' + projectName(t.project)));
+  tt.appendChild(make('div', null, t.phase + ' · ' + t.priority + ' priority · ' + t.status + (t.blocked ? ' · blocked' : '')));
+  if(t.due) tt.appendChild(make('div', null, 'due ' + t.due + ' (' + t.due_word + ')'));
+  if(t.start) tt.appendChild(make('div', null, 'start ' + t.start));
+  const m = markOf(t);
+  if(m) tt.appendChild(make('div', null, m.shape + ' ' + m.name + ' milestone'));
+  const deps = t.deps.map(k => TASKS.get(k)).filter(Boolean).map(x => x.title);
+  if(deps.length) tt.appendChild(make('div', null, 'waits on: ' + deps.join(', ')));
+  tt.appendChild(make('div', 'ttm', 'click for the full card'));
+}
+function openCard(key){
+  const t = TASKS.get(key);
+  if(!t) return;
+  const m = markOf(t);
+  $('#c-title').textContent = t.title + (m ? '  ' + m.shape : '');
+  $('#c-sub').textContent = boardName(t.board) + ' · ' + projectName(t.project);
+  const titles = keys => keys.map(k => TASKS.get(k)).filter(Boolean).map(x => x.title);
+  const deps = titles(t.deps), chain = titles(t.chain);
+  const rows = [
+    ['Phase', t.phase], ['Priority', t.priority],
+    ['Status', t.status + (t.blocked ? ' · blocked' : '')],
+    ['Start', t.start || '—'], ['Due', t.due ? t.due + ' · ' + t.due_word : '—'],
+    ['In phase', t.age === null ? 'unaged' : t.age + 'd'],
+    ['Milestone', m ? m.shape + ' ' + m.name : (t.milestone ? 'unclassified' : '—')],
+    ['Depends on', deps.length ? deps.join(' → ') : '—'],
+    ['Downstream', chain.length ? chain.join(' → ') : '—'],
+    ['Mentions', t.mentions.length ? t.mentions.map(h => '@' + (PEOPLE.get(h) || {name: h}).name).join(', ') : '—'],
+  ];
+  const dl = $('#c-fields');
+  dl.replaceChildren();
+  for(const [k, v] of rows){ dl.appendChild(make('dt', null, k)); dl.appendChild(make('dd', null, v)); }
+  const ul = $('#c-urls');
+  ul.replaceChildren();
+  let links = 0;
+  for(const u of t.urls){
+    const href = safeHref(u);
+    if(!href) continue;
+    const li = make('li'), a = make('a', null, href);
+    a.href = href; a.target = '_blank'; a.rel = 'noopener noreferrer';
+    li.appendChild(a); ul.appendChild(li); links++;
+  }
+  $('#c-urls-wrap').hidden = !links;
+  const notes = $('#c-notes');
+  if(t.notes_html) notes.innerHTML = t.notes_html;
+  else notes.replaceChildren(make('span', 'ttm', 'no notes'));
+  $('#card').classList.add('open');
+  $('#cclose').focus();
+}
+function closeCard(){ $('#card').classList.remove('open'); }
+
+// ---- table --------------------------------------------------------------------------------
+const COLS = [['title', 'Task'], ['board', 'Board'], ['project', 'Project'], ['phase', 'Phase'],
+  ['priority', 'Prio'], ['start', 'Start'], ['due', 'Due'], ['age', 'In phase'], ['status', 'Status']];
+function cellText(t, k){
+  if(k === 'board') return boardName(t.board);
+  if(k === 'project') return projectName(t.project);
+  if(k === 'start' || k === 'due') return t[k] || '—';
+  if(k === 'age') return t.age === null ? 'unaged' : t.age + 'd';
+  if(k === 'status') return t.status + (t.status === 'late' ? ' · ' + t.due_word : '') + (t.blocked ? ' · blocked' : '');
+  if(k === 'title'){ const m = markOf(t); return m ? t.title + '  ' + m.shape : t.title; }
+  return String(t[k]);
+}
+function sortValue(t, k){
+  if(k === 'age') return t.age === null ? -1 : t.age;
+  if(k === 'start' || k === 'due') return t[k] || '';
+  return cellText(t, k);
+}
+function renderHead(){
+  const hr = $('#thead-row');
+  hr.replaceChildren();
+  for(const [k, label] of COLS){
+    const th = make('th'), b = make('button', null, label);
+    b.type = 'button';
+    if(sort.key === k) b.appendChild(make('span', 'ind', sort.dir > 0 ? ' ▲' : ' ▼'));
+    b.addEventListener('click', () => {
+      if(sort.key === k) sort.dir *= -1; else { sort.key = k; sort.dir = 1; }
+      renderHead(); render();
+    });
+    th.appendChild(b); hr.appendChild(th);
+  }
+}
+function renderTable(list){
+  const k = sort.key, dir = sort.dir;
+  const rows = [...list].sort((a, b) => {
+    const av = sortValue(a, k), bv = sortValue(b, k);
+    if(typeof av === 'number' && typeof bv === 'number') return (av - bv) * dir;
+    return String(av).localeCompare(String(bv)) * dir;
+  });
+  const tb = $('#tbody');
+  tb.replaceChildren();
+  for(const t of rows){
+    const tr = make('tr', t.status === 'done' ? 'rowdone' : (t.status === 'archived' ? 'rowarch' : ''));
+    tr.dataset.key = t.key;
+    for(const [c] of COLS){
+      const td = make('td');
+      if(c === 'title'){
+        const dot = make('span', 'dot');
+        dot.style.background = colourOf(t);
+        td.appendChild(dot);
+        td.appendChild(make('span', markOf(t) ? 'tmark' : null, cellText(t, c)));
+        if(t.blocked) td.appendChild(make('span', 'blk', ' ⛔'));
+        if(t.status === 'late') td.appendChild(make('span', 'flag', ' ' + t.due_word));
+      } else {
+        td.textContent = cellText(t, c);
+        if(c === 'due' && t.status === 'late') td.className = 'flag';
+      }
+      tr.appendChild(td);
+    }
+    tr.style.cursor = 'pointer';
+    tr.addEventListener('click', () => openCard(t.key));
+    tb.appendChild(tr);
+  }
+  $('#tempty').hidden = rows.length > 0;
+}
+
+// ---- notes and milestones -------------------------------------------------------------------
+function renderNotes(list){
+  const ul = $('#notes-list');
+  ul.replaceChildren();
+  const withNotes = list.filter(t => t.notes_html);
+  for(const t of withNotes){
+    const li = make('li', 'note');
+    li.dataset.key = t.key;
+    li.appendChild(make('h3', null, t.title));
+    li.appendChild(make('p', 'nsub', boardName(t.board) + ' · ' + projectName(t.project)));
+    const body = make('div', 'nbody');
+    body.innerHTML = t.notes_html;
+    li.appendChild(body);
+    ul.appendChild(li);
+  }
+  $('#notes-empty').hidden = withNotes.length > 0;
+}
+function renderMilestones(list){
+  const ul = $('#ms-list');
+  ul.replaceChildren();
+  const ms = list.filter(t => t.milestone)
+    .sort((a, b) => (a.due || '9999').localeCompare(b.due || '9999'));
+  for(const t of ms){
+    const m = markOf(t);
+    const li = make('li', 'ms');
+    li.dataset.key = t.key;
+    li.appendChild(make('p', 'nsub', (m ? m.shape + ' ' + m.name : 'unclassified') + ' · ' +
+      boardName(t.board) + ' · ' + projectName(t.project)));
+    li.appendChild(make('strong', null, t.title));
+    li.appendChild(make('div', null, (t.due || 'no date') + ' · ' + t.due_word + ' · ' + t.status));
+    ul.appendChild(li);
+  }
+  $('#ms-empty').hidden = ms.length > 0;
+}
+
+// ---- export this view: print (LLR-3104.1) -------------------------------------------------------
+function setPrinted(){
+  const e = $('#print-line');
+  e.textContent = 'Printed ' + localIso();
+  e.hidden = false;
+}
+function unsetPrinted(){ $('#print-line').hidden = true; }
+// the browser fires beforeprint (the one stamp) and afterprint around window.print()
+function printView(){ window.print(); }
+
+// ---- export this view: the filtered file (LLR-3103.1, LLR-3103.2) --------------------------------
+function inOrder(list, id, used){ return new Set(list.map(id).filter(x => used.has(x))); }
+// a project's counts over the KEPT tasks' own status / priority fields; worst and
+// momentum, which only the server can derive, leave the download
+function keptCounts(p, tasks){
+  const mine = tasks.filter(t => t.project === p.key);
+  const open = mine.filter(t => t.status === 'open' || t.status === 'late');
+  return Object.assign({}, p, {open: open.length,
+    late: mine.filter(t => t.status === 'late').length,
+    done: mine.filter(t => t.status === 'done').length,
+    high: open.filter(t => t.priority === 'high').length, worst: null, momentum: null});
+}
+// with the notes off a mention travels only when its person is a pressed people filter
+function keptMentions(t){
+  if(view.sec.has('notes')) return t.mentions;
+  return t.mentions.filter(h => view.u.has(h));
+}
+function reduce(kept){
+  const keys = new Set(kept.map(t => t.key));
+  const notes = view.sec.has('notes');
+  const tasks = kept.map(t => Object.assign({}, t, {
+    deps: t.deps.filter(k => keys.has(k)), chain: t.chain.filter(k => keys.has(k)),
+    notes_html: notes ? t.notes_html : '', notes_text: notes ? t.notes_text : '',
+    mentions: keptMentions(t)}));
+  const wl = {
+    p: inOrder(DATA.projects, p => p.key, new Set(tasks.map(t => t.project))),
+    s: WL.s,
+    u: inOrder(DATA.people, p => p.id, new Set(tasks.flatMap(t => t.mentions))),
+    m: inOrder(DATA.marks, m => m.key, new Set(tasks.map(t => t.mark).filter(Boolean))),
+    sec: WL.sec, z: WL.z};
+  const boards = DATA.boards.filter(b => tasks.some(t => t.board === b.key));
+  const only = (set, allowed) => new Set([...set].filter(x => allowed.has(x)));
+  const rv = Object.assign({}, view, {p: only(view.p, wl.p), u: only(view.u, wl.u), m: only(view.m, wl.m)});
+  const sc = DATA.meta.scope;
+  return {
+    v: DATA.v,
+    meta: {generated: DATA.meta.generated, today: DATA.meta.today,
+      scope: {kind: sc.kind, project: wl.p.has(sc.project) ? sc.project : null,
+              boards: boards.map(b => b.name)},
+      view: {state: hashOf(rv, wl), summary: summaryText(rv, wl), exported: localIso()}},
+    boards,
+    projects: DATA.projects.filter(p => wl.p.has(p.key)).map(p => keptCounts(p, tasks)),
+    tasks,
+    people: DATA.people.filter(p => wl.u.has(p.id)),
+    marks: DATA.marks.filter(m => wl.m.has(m.key)),
+  };
+}
+function scriptSafe(json){
+  return json.replace(/[<>&]/g, c => '\\u' + c.charCodeAt(0).toString(16).padStart(4, '0'));
+}
+function downloadView(){
+  const d2 = reduce(applyFilters(view, DATA.tasks));
+  // a DOM build, never String.replace with a string: `$&` / `$'` in board text insert nothing
+  const doc = new DOMParser().parseFromString(PRISTINE, 'text/html');
+  doc.getElementById('board-data').textContent = scriptSafe(JSON.stringify(d2));
+  download('workspace-view-' + d2.meta.view.exported + '.html',
+           '<!doctype html>\n' + doc.documentElement.outerHTML, 'text/html');
+}
+
+// ---- the CSV / JSON of the visible rows (LLR-3103.3) ---------------------------------------------
+function csvCell(v){
+  v = v === null || v === undefined ? '' : String(v);
+  // a formula-leading cell is neutralised; a plain number (due_in -1) is a number, kept
+  if(/^[=+\-@\t\r]/.test(v) && !/^-?\d+(\.\d+)?$/.test(v)) v = "'" + v;
+  return /[",\n\r]/.test(v) ? '"' + v.replace(/"/g, '""') + '"' : v;
+}
+function download(name, text, mime){
+  const b = new Blob([text], {type: mime});
+  const u = URL.createObjectURL(b);
+  const a = document.createElement('a');
+  a.href = u; a.download = name; document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(() => URL.revokeObjectURL(u), 500);
+}
+function exportRows(list){
+  const keys = new Set(list.map(t => t.key));
+  const notes = view.sec.has('notes');
+  return list.map(t => ({
+    board: boardName(t.board), project: projectName(t.project), task: t.title, phase: t.phase,
+    priority: t.priority, status: cellText(t, 'status'), start: t.start || '', due: t.due || '',
+    due_in: t.due_in === null ? '' : t.due_in,
+    days_in_phase: t.age === null ? '' : t.age,
+    milestone: t.milestone ? (markOf(t) ? markOf(t).name : 'yes') : '',
+    blocked: t.blocked ? 'yes' : '', archived: t.archived ? 'yes' : '',
+    depends_on: t.deps.filter(k => keys.has(k)).map(k => TASKS.get(k).title).join(' | '),
+    mentions: keptMentions(t).map(h => '@' + h).join(' '), urls: t.urls.join(' '),
+    notes: notes ? t.notes_text : '',
+  }));
+}
+function dlCsv(){
+  const rows = exportRows(applyFilters(view, DATA.tasks));
+  const head = Object.keys(exportRows(DATA.tasks.slice(0, 1))[0] || {board: 0, project: 0, task: 0});
+  const body = [head.join(',')].concat(rows.map(r => head.map(k => csvCell(r[k])).join(',')));
+  download('taskboard-tasks-' + DATA.meta.today + '.csv', body.join('\n'), 'text/csv');
+}
+function dlJson(){
+  const payload = {generated: DATA.meta.generated, today: DATA.meta.today,
+    note: 'counts and dates only — nothing here is a forecast',
+    tasks: exportRows(applyFilters(view, DATA.tasks))};
+  download('taskboard-tasks-' + DATA.meta.today + '.json', JSON.stringify(payload, null, 2), 'application/json');
+}
+
+// ---- render and wiring -------------------------------------------------------------------------
+function render(){
+  const kept = applyFilters(view, DATA.tasks);
+  syncControls();
+  renderHeader();
+  renderTiles(kept);
+  for(const s of SECTIONS) $('#s-' + s).hidden = !view.sec.has(s);
+  renderGantt(kept);
+  renderTable(kept);
+  renderNotes(kept);
+  renderMilestones(kept);
+  writeHash();
+}
+// a downloaded view falls back to its own state, through the same whitelists as the hash
+function viewFromLocation(){
+  return parseHash(location.hash || (DATA.meta.view ? DATA.meta.view.state : ''));
+}
+function start(){
+  if(DATA.v !== 1){
+    $('#view-summary').textContent = 'This file holds report data of an unknown version; nothing is shown.';
+    return;
+  }
+  buildControls();
+  renderHead();
+  view = viewFromLocation();
+  render();
+  window.addEventListener('hashchange', () => { view = viewFromLocation(); render(); });
+  window.addEventListener('beforeprint', setPrinted);
+  window.addEventListener('afterprint', unsetPrinted);
+  const fig = $('#gantt');
+  fig.addEventListener('click', e => {
+    const n = e.target.closest('[data-key]');
+    if(n) openCard(n.getAttribute('data-key'));
+  });
+  fig.addEventListener('mousemove', e => {
+    const n = e.target.closest('[data-key]');
+    const t = n ? TASKS.get(n.getAttribute('data-key')) : null;
+    if(!t){ tt.style.display = 'none'; return; }
+    fillTip(t);
+    tt.style.display = 'block';
+    const w = tt.offsetWidth, h = tt.offsetHeight;
+    let x = e.clientX + 14, y = e.clientY + 14;
+    if(x + w > window.innerWidth - 8) x = e.clientX - w - 14;
+    if(y + h > window.innerHeight - 8) y = e.clientY - h - 14;
+    tt.style.left = x + 'px'; tt.style.top = y + 'px';
+  });
+  fig.addEventListener('mouseleave', () => { tt.style.display = 'none'; });
+  $('#cclose').addEventListener('click', closeCard);
+  $('#card').addEventListener('click', e => { if(e.target.id === 'card') closeCard(); });
+  document.addEventListener('keydown', e => {
+    if(e.key === 'Escape' && $('#card').classList.contains('open')) closeCard();
+  });
+}
+start();
+</script>
+</body></html>

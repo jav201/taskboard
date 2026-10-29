@@ -232,8 +232,8 @@
     }
   ],
   "guided": false,
-  "current_station": "DDR",
-  "phase_status": "in-progress",
+  "current_station": "P3",
+  "phase_status": "iterating",
   "stations_active": [
     "P0",
     "ARQ",
@@ -249,7 +249,7 @@
     "P0": 0,
     "P1": 1,
     "P2": 0,
-    "P3": 0,
+    "P3": 1,
     "P4": 0,
     "P5": 0,
     "ARQ": 0,
@@ -359,6 +359,11 @@
       "station": "P3",
       "date": "2026-10-29",
       "decision": "P3 increment 004 approved under the batch's standing authorization — code-reviewer OK to advance (CR4-2 MEDIUM resolved with a test and a mutant), security-reviewer PASS (SA1 README warning); 314 passed, 27/27 mutants killed; P3 closes, DDR is next."
+    },
+    {
+      "station": "DDR",
+      "date": "2026-10-29",
+      "decision": "DDR approved with conditions under the batch's standing authorization — qa-reviewer and ux-reviewer: the print view clips the task table and names hidden boards / counts hidden projects (DQ1, DQ2 high) plus low findings; correction increment 005 discharges them; P3 is next."
     }
   ],
   "obsidian_synced": false,

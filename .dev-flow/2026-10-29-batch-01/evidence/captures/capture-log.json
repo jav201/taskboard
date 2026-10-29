@@ -1,0 +1,26 @@
+{
+  "files": [
+    "workspace-2026-10-29.html",
+    "deck-2026-10-29.html",
+    "workspace-view-2026-10-29.html",
+    "workspace-configured-view.pdf",
+    "deck.pdf"
+  ],
+  "view_hash": "#v=1&p=client-a%3Aprel,client-a%3Apdoc&s=open,late",
+  "shots": [
+    "workspace-desktop-light.png",
+    "workspace-desktop-dark.png",
+    "workspace-phone-light.png",
+    "workspace-phone-dark.png",
+    "deck-desktop-light.png",
+    "deck-desktop-dark.png",
+    "deck-phone-light.png",
+    "deck-phone-dark.png",
+    "workspace-configured-view.png",
+    "workspace-print-preview.png",
+    "workspace-downloaded-view.png"
+  ],
+  "errors": [],
+  "external": [],
+  "downloaded_hidden_titles_present": []
+}

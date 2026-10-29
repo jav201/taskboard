@@ -1,0 +1,8 @@
+# 2026-10-29, HEAD e8ec477 (increment 004), shoot.ps1 runs: -Scenes report-modal, then -Scenes report-modal-p,report-toast; 118x30 only
+# status scene size title; (window px, colours sampled in the grab) via method, try N; PNG colours, bytes; path - window close
+ok   report-modal 118x30 title hx-report-modal-118x30-36932; (1095 x 627, 14 colours sampled) via PrintWindow, try 1; PNG 18 colours, 29396 bytes; C:\Users\jjgh8\Github\taskboard-wt\report-proto\.dev-flow\2026-10-29-batch-01\evidence\captures\terminal\png\report-modal_118x30.png - window closed
+ok   report-modal-p 118x30 title hx-report-modal-p-118x30-19687; (1095 x 627, 14 colours sampled) via PrintWindow, try 1; PNG 19 colours, 29241 bytes; C:\Users\jjgh8\Github\taskboard-wt\report-proto\.dev-flow\2026-10-29-batch-01\evidence\captures\terminal\png\report-modal-p_118x30.png - window closed
+ok   report-toast 118x30 title hx-report-toast-118x30-29839; (1095 x 627, 36 colours sampled) via PrintWindow, try 1; PNG 40 colours, 54848 bytes; C:\Users\jjgh8\Github\taskboard-wt\report-proto\.dev-flow\2026-10-29-batch-01\evidence\captures\terminal\png\report-toast_118x30.png - window closed
+# READY end states: all OK (report-modal / report-modal-p: ReportExport on top, content check passed; report-toast: main Screen, 1 Report toast, file written, text painted)
+# final assertion, printed by each run: no hx-* window left open
+# TEMP after the runs: no hx-cap-* home, no hx-*.ready, no hx-*.cmd
