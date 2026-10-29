@@ -231,3 +231,13 @@ _P1, 2026-10-29: the live contract is born at v1 (US-3101, HLR-3101..HLR-3107, 1
 - **Parent HLR re-read:** HLR-3101, HLR-3102, HLR-3103, HLR-3104, HLR-3107 re-read — no change required (each states the outcome; the LLRs bind the mechanism).
 - **Body edit landed:** LLR-3101.1 (`01-requirements.md:299`), LLR-3101.3 (`01-requirements.md:319`), LLR-3102.1 (`01-requirements.md:329`), LLR-3103.1 (`01-requirements.md:370`), LLR-3103.2 (`01-requirements.md:380`), LLR-3103.3 (`01-requirements.md:390`), LLR-3104.1 (`01-requirements.md:400`), LLR-3107.2 (`01-requirements.md:460`), LLR-3107.4 (`01-requirements.md:480`); `docs/ARCHITECTURE.md` §3 and §4; `design/design-proposal.md` §3.1, §3.2, §4.
 - **Owning increment:** 001 (C1, C4, C5, C10–C12 and the LLR-3101.3 arms), 002 (C2 verification, C6, C7, C13, C14), 003 (the deck reads the admitted facts), 004 (C8, C9).
+
+### LED-2026-10-29-batch-01.23 — the active count's wording is correct English (CR1)
+- **Requirement:** LLR-3102.1
+- **Date:** 2026-10-29
+- **What changed:** before — LLR-3102.1 (via LED .22, C10) pinned the label as "N filters active" ("0 filters active" at default), which reads "1 filters active" for one active filter kind. After — the count reads `0 filters active`, `1 filter active`, `N filters active` (N ≥ 2): the singular for exactly one. Deleted: the single pinned form "N filters active". New: the three-form label. The count's unit (filter kinds) and the exclusion of sections and zoom stand unchanged. Increment 001 implemented the singular and its tests assert all three forms.
+- **Why:** increment 001's code-review finding CR1 (MEDIUM, `taskboard/report_workspace.py:382`): the implementation wrote correct English and the contract's one-form wording did not; the orchestrator's disposition is to keep the singular and amend the wording rather than ship "1 filters active".
+- **Evidence:** `.scratch/p3/cr-001.md` CR1; `tests/test_report_workspace.py` (the count asserted at lines 127, 244, 320, 331, 336, 363); `evidence/suite-001.txt`.
+- **Parent HLR re-read:** HLR-3102 re-read — no change required (it states the outcome, controls with a counted, visible state; the LLR binds the label). TC-3105, TC-3108 and AT-3102 re-derived: each asserts the three-form label through the shipped page; no new node.
+- **Body edit landed:** LLR-3102.1 `Statement` and `Numeric pass threshold` (`01-requirements.md:332`, `:335`) and its `Ledger:` field (`01-requirements.md:331`).
+- **Owning increment:** 001.

@@ -135,6 +135,10 @@ recorded full-suite run).
   increment-002's packet; the operator's visual re-verdict on the amended frames + the new chrome
   is PENDING in the Open section above.
 
+## Open — after `2026-10-29-batch-01` (the HTML reports: workspace and deck)
+
+- **CR5 — the Inbox key can collide with a hand-edited project id `inbox`** (code-reviewer, increment 001, LOW, `taskboard/report_html.py:109`): the Inbox lane's key is `<board index>:inbox`; a project whose id was hand-edited to `inbox` gets the same key, so in the report ONLY the two merge into one project row. The board file and the app are unaffected (the report is read-only). Declared risk of increment 001; fix: give the Inbox a key no project id can take (for example a reserved prefix) and pin it with a fixture project whose id is `inbox`. Open.
+
 ## Open — after `2026-10-25-batch-01` (the board shows behind the start-up modals)
 
 - ✓ done in `2026-10-25-batch-01` — **the blank screen behind the start-up modals** (D-12): see the done line in the 2026-10-20-batch-03 section below, written in place.
