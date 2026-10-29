@@ -241,8 +241,8 @@ the `H` action makes; AT-3101, AT-3105 and AT-3107 drive the app by keys.
 
 ### HLR-3105 — the deck is concise and pages by keys
 - **Traceability:** US-3101
-- **Ledger:** LED-2026-10-29-batch-01.12, LED-2026-10-29-batch-01.15, LED-2026-10-29-batch-01.17
-- **Statement:** When the deck is written, the system shall render a cover, an overview and one slide per non-archived project in the chosen scope, in board then project order; the arrow keys, PageUp/PageDown and Home/End shall page through it while focus is not in a text field; printing shall put one slide on each page.
+- **Ledger:** LED-2026-10-29-batch-01.12, LED-2026-10-29-batch-01.15, LED-2026-10-29-batch-01.17, LED-2026-10-29-batch-01.21
+- **Statement:** When the deck is written, the system shall render a cover, an overview and one slide for every non-archived project in the chosen scope — the Inbox included — that holds at least one task of any status (a slide whose tasks are all archived reads `0 tasks · k archived`), in board then project order; the arrow keys, PageUp/PageDown and Home/End shall page through it while focus is not in a text field; printing shall put one slide on each page.
 - **Rationale (informative):** HR-5 — «quisiera tener disponible la variante C que es más concisa». The scope chosen in the `H` modal is the deck's project filter.
 - **Validation:** `test`
 - **Executed verification:** `env -u NO_COLOR python -m pytest -q tests/test_report_export_app.py -k AT_3105` (node `tests/test_report_export_app.py::test_AT_3105_H_c_writes_the_deck_with_one_slide_per_chosen_project`, increment 004) plus TC-3113, TC-3114; run with `TASKBOARD_REQUIRE_BROWSER=1`, so a missing Playwright fails instead of skipping (§5.1).
@@ -318,12 +318,12 @@ the `H` action makes; AT-3101, AT-3105 and AT-3107 drive the app by keys.
 
 ### LLR-3101.3 — the scope filters the extraction, and the renderers read the dict alone
 - **Traceability:** HLR-3101, HLR-3105
-- **Ledger:** none
-- **Statement:** With `project=None` the dict shall hold every project and task of the given boards; with `project=<key>` only that project and its tasks (dependencies naming a task outside it removed). `report_workspace` and `report_deck` shall take only the dict: they shall import nothing from `taskboard.models`, `taskboard.boards`, `taskboard.views`, `taskboard.people`, `taskboard.marks`, `taskboard.app`, `taskboard.modals` or `taskboard.keymap`, and rendering the same dict twice shall give identical bytes. Source: `taskboard/report_html.py`, `taskboard/report_workspace.py`, `taskboard/report_deck.py` (all NEW). Touched symbols: `report_html.extract` (its `project` argument).
+- **Ledger:** LED-2026-10-29-batch-01.21
+- **Statement:** With `project=None` the dict shall hold every project and task of the given boards; with `project=<key>` only that project and its tasks (dependencies naming a task outside it removed). `report_workspace` and `report_deck` shall take only the dict: their only package import shall be `taskboard.report_html` (the standard library aside) — nothing from `models`, `boards`, `views`, `people`, `marks`, `team_sync`, `report`, `app`, `modals` or `keymap` — and rendering the same dict twice shall give identical bytes; `report_html` shall import nothing from `app`, `modals`, `keymap`, `boards` or `team_sync`, and from `report` only `_e` and `_due_word` (the slug rule is copied into `report_html.slug`, never imported). Source: `taskboard/report_html.py`, `taskboard/report_workspace.py`, `taskboard/report_deck.py` (all NEW). Touched symbols: `report_html.extract` (its `project` argument).
 - **Validation:** `test (unit)` + `inspection`
-- **Executed verification:** `tests/test_report_html.py::test_TC_3103_project_scope_keeps_one_project` (TC-3103, increment 001); `tests/test_report_deck.py::test_TC_3104_renderers_read_the_dict_only` (TC-3104, increment 003: the import probe `rg -n "^\s*(from|import) .*taskboard\.(models|boards|views|people|marks|app|modals|keymap)|^\s*from \.(models|boards|views|people|marks|app|modals|keymap)" taskboard/report_workspace.py taskboard/report_deck.py` → 0 hits, and the determinism arm).
-- **Numeric pass threshold:** scope `p`: 1 project, its task count, 0 foreign keys in any `deps`; import probe 0 hits; `render(d) == render(d)` (byte equality).
-- **Negative control:** a renderer importing `views.HEX` makes the import probe report 1 hit (red); scope ignoring `project` keeps all projects and the 1-project arm goes red.
+- **Executed verification:** `tests/test_report_html.py::test_TC_3103_project_scope_keeps_one_project` (TC-3103, increment 001); `tests/test_report_html.py::test_TC_3104_renderers_read_the_dict_only` (TC-3104, increment 001 over `report_html.py` and `report_workspace.py`; increment 003 re-runs it with `report_deck.py` added): an AST walk (`ast.Import`/`ast.ImportFrom`, relative imports resolved against the `taskboard` package) of each file, compared with the allow/ban lists above, and the determinism arm.
+- **Numeric pass threshold:** scope `p`: 1 project, its task count, 0 foreign keys in any `deps`; the AST walk finds 0 banned imports in each walked file (and, from `report`, only `_e` and `_due_word`); `render(d) == render(d)` (byte equality).
+- **Negative control:** a renderer importing `views.HEX` (or a function-local `from .report import _e`) makes the AST walk report 1 banned import (red); scope ignoring `project` keeps all projects and the 1-project arm goes red.
 - **Boundary catalog:** ☑ boundary (a cross-project dependency cut by the scope) ☑ empty (a project with no tasks in scope) ☐ invalid (N/A) ☐ error (N/A)
 
 ### LLR-3102.1 — the control bar: every control native, visible, counted, keyboard-reachable; Reset
@@ -338,7 +338,7 @@ the `H` action makes; AT-3101, AT-3105 and AT-3107 drive the app by keys.
 
 ### LLR-3102.2 — the filters' truth table
 - **Traceability:** HLR-3102
-- **Ledger:** LED-2026-10-29-batch-01.17, LED-2026-10-29-batch-01.19
+- **Ledger:** LED-2026-10-29-batch-01.17, LED-2026-10-29-batch-01.19, LED-2026-10-29-batch-01.21
 - **Statement:** A task shall be shown when it passes every active filter, per this table (today = `meta.today`):
 
   | Filter | Off / default | Keeps a task when |
@@ -354,7 +354,7 @@ the `H` action makes; AT-3101, AT-3105 and AT-3107 drive the app by keys.
 - **Validation:** `test (e2e)`
 - **Executed verification:** `tests/test_report_workspace.py::test_TC_3106_filters_follow_the_truth_table` (TC-3106, increment 001): a parametrized arm per table row; each arm's expected set is computed in Python from the fixture by the table's rule, never read from the page.
 - **Numeric pass threshold:** per arm, shown ids == expected ids (0 extra, 0 missing); 6 arms resolved (the arm count asserted before any verdict).
-- **Negative control:** the mutation `late → open` (status ignores the due date) reddens the Status arm; `ANY → ALL` for people reddens the People arm.
+- **Negative control:** the mutation of the page's status-chip mapping `late` → `open` (a late task answers to the `open` chip) reddens the Status arm; `ANY → ALL` for people reddens the People arm.
 - **Boundary catalog:** ☑ boundary (span touching `to`; `from` == due and `to` == start: shown; due == today is `open`) ☑ empty (undated task with a range set; every status chip off → 0 tasks) ☑ invalid (`from` > `to`: 0 tasks, the count shows the filter) ☐ error (N/A)
 
 ### LLR-3102.3 — the hash grammar is parsed against whitelists; nothing from it is injected
@@ -369,8 +369,8 @@ the `H` action makes; AT-3101, AT-3105 and AT-3107 drive the app by keys.
 
 ### LLR-3103.1 — the download reduces the data to the kept tasks
 - **Traceability:** HLR-3103
-- **Ledger:** LED-2026-10-29-batch-01.2, LED-2026-10-29-batch-01.3, LED-2026-10-29-batch-01.6, LED-2026-10-29-batch-01.18
-- **Statement:** "Download this view" shall build its embedded JSON from the kept tasks only (the LLR-3102.2 result set): `projects` (Inbox reduced like any project), `boards`, `people` and `marks` reduced to those the kept tasks use; every `deps`/`chain` key naming a dropped task removed; every `notes_html` stripped when the notes section is off; `meta.view` and the view summary naming only kept items; the JSON escaped as LLR-3106.1 requires before it enters the file. Source: `taskboard/report_workspace.py` (JS). Touched symbols: `report_workspace.render` (`downloadView` JS function, NEW).
+- **Ledger:** LED-2026-10-29-batch-01.2, LED-2026-10-29-batch-01.3, LED-2026-10-29-batch-01.6, LED-2026-10-29-batch-01.18, LED-2026-10-29-batch-01.21
+- **Statement:** "Download this view" shall build its embedded JSON from the kept tasks only (the LLR-3102.2 result set): `projects` (Inbox reduced like any project), `boards`, `people` and `marks` reduced to those the kept tasks use; every `deps`/`chain` key naming a dropped task removed; every `notes_html` stripped when the notes section is off; `meta.view`, the view summary, `meta`'s scope board names and the header's board count and names naming only kept items and kept boards; the JSON escaped as LLR-3106.1 requires before it enters the file. Source: `taskboard/report_workspace.py` (JS). Touched symbols: `report_workspace.render` (`downloadView` JS function, NEW).
 - **Validation:** `test (e2e)`
 - **Executed verification:** `tests/test_report_workspace.py::test_TC_3109_the_download_keeps_only_used_entries` (TC-3109) and `::test_TC_3110_notes_off_strips_the_notes` (TC-3110), increment 002, headless with `expect_download`.
 - **Numeric pass threshold:** in the downloaded JSON: task ids == shown ids; every project/board/person/class present is used by a kept task (0 unused); 0 dangling dependency keys; notes off → 0 non-empty `notes_html`; 0 raw `<` in the embedded JSON text; with a fixture title holding `$&` and `$'`, the file's data is still exactly the kept set (count and ids).
@@ -389,11 +389,11 @@ the `H` action makes; AT-3101, AT-3105 and AT-3107 drive the app by keys.
 
 ### LLR-3103.3 — the CSV and JSON downloads export the visible rows only
 - **Traceability:** HLR-3103
-- **Ledger:** LED-2026-10-29-batch-01.7
-- **Statement:** The workspace shall keep the round's "Download CSV" and "Download JSON" controls, each exporting ONLY the visible rows, reduced as LLR-3103.1 requires (dependency titles only of kept tasks; notes only while the notes section is on); every CSV cell beginning with `=`, `+`, `-`, `@`, TAB or CR shall be prefixed with `'`; each label shall say "visible rows only". Source: `taskboard/report_workspace.py` (JS). Touched symbols: `report_workspace.render` (the CSV/JSON download JS, NEW).
+- **Ledger:** LED-2026-10-29-batch-01.7, LED-2026-10-29-batch-01.21
+- **Statement:** The workspace shall keep the round's "Download CSV" and "Download JSON" controls, each exporting ONLY the visible rows, reduced as LLR-3103.1 requires (dependency titles only of kept tasks; notes only while the notes section is on); every CSV cell beginning with `=`, `+`, `-`, `@`, TAB or CR shall be prefixed with `'` — a due word such as `-3d` included, on purpose: one rule, no exception; each label shall say "visible rows only". Source: `taskboard/report_workspace.py` (JS). Touched symbols: `report_workspace.render` (the CSV/JSON download JS, NEW).
 - **Validation:** `test (e2e)`
 - **Executed verification:** `tests/test_report_workspace.py::test_TC_3122_csv_and_json_hold_the_visible_rows_only` (TC-3122, increment 002), headless with `expect_download`.
-- **Numeric pass threshold:** with project X unchecked: the CSV's data rows == the shown rows (count and ids), the JSON's records == the shown rows; X's unique tokens occur 0 times in either file; a fixture title `=1+1` reaches the CSV as `'=1+1`; notes off → 0 notes in either file; both labels contain `visible rows only`.
+- **Numeric pass threshold:** with project X unchecked: the CSV's data rows == the shown rows (count and ids), the JSON's records == the shown rows; X's unique tokens occur 0 times in either file; a fixture title `=1+1` reaches the CSV as `'=1+1` and a `-3d` due-word cell as `'-3d` (asserted on purpose); notes off → 0 notes in either file; both labels contain `visible rows only`.
 - **Negative control:** a mutation exporting the full data leaves X's token in the CSV — red; dropping the `'` prefix leaves `=1+1` live — red.
 - **Boundary catalog:** ☑ empty (0 visible rows: header row only) ☑ invalid (formula-leading cells) ☑ boundary (a kept task depending on a dropped one: no dropped title) ☐ error (N/A)
 
@@ -409,13 +409,13 @@ the `H` action makes; AT-3101, AT-3105 and AT-3107 drive the app by keys.
 
 ### LLR-3105.1 — the deck's slides come from the dict in scope
 - **Traceability:** HLR-3105, HLR-3101
-- **Ledger:** LED-2026-10-29-batch-01.8, LED-2026-10-29-batch-01.12, LED-2026-10-29-batch-01.17, LED-2026-10-29-batch-01.18, LED-2026-10-29-batch-01.19
-- **Statement:** `report_deck.render(d) -> str` shall emit a cover (the scope line — `All loaded boards (N): <names>` or `Project <name> on <board>` — totals per board, the class legend), an overview (every project in scope on one timeline) and one slide per non-archived project of the dict that has a task (the Inbox only when it has a non-archived task), in the dict's board-then-project order, each a vector gantt with real `<text>` labels, today's rule, dependency arrows, the project's notes, the printed count `<n> tasks` (its non-archived tasks, open and done) and, when k > 0, `<k> archived` in its footer — reading every task's `status` and `due_word` from the dict, never re-deriving them. Source: `taskboard/report_deck.py` (NEW). Touched symbols: `report_deck.render` NEW.
+- **Ledger:** LED-2026-10-29-batch-01.8, LED-2026-10-29-batch-01.12, LED-2026-10-29-batch-01.17, LED-2026-10-29-batch-01.18, LED-2026-10-29-batch-01.19, LED-2026-10-29-batch-01.21
+- **Statement:** `report_deck.render(d) -> str` shall emit a cover (the scope line — `All loaded boards (N): <names>` or `Project <name> on <board>` — totals per board, the class legend), an overview (every project in scope on one timeline) and one slide for every non-archived project of the dict — the Inbox included — that holds at least one task of any status, in the dict's board-then-project order, each a vector gantt with real `<text>` labels, today's rule, dependency arrows, the project's notes, the printed count `<n> tasks` (its non-archived tasks, open and done) and, when k > 0, `<k> archived` in its footer — reading every task's `status` and `due_word` from the dict, never re-deriving them. Source: `taskboard/report_deck.py` (NEW). Touched symbols: `report_deck.render` NEW.
 - **Validation:** `test (unit)`
 - **Executed verification:** `tests/test_report_deck.py::test_TC_3113_one_slide_per_project` (TC-3113, increment 003).
-- **Numeric pass threshold:** slide count == 2 + the fixture's literal count of slide-bearing projects; slide titles in order == those literal names; each slide's `<n> tasks` and `<k> archived` == the fixture's literals; scope-`p` dict → 3 slides; a scope-`p` dict on a project whose tasks are all archived → 3 slides, its slide reading `0 tasks · k archived`.
+- **Numeric pass threshold:** slide count == 2 + the fixture's literal count of slide-bearing projects; slide titles in order == those literal names; each slide's `<n> tasks` and `<k> archived` == the fixture's literals; the fixture's all-archived Inbox has its slide (`0 tasks · k archived`) and its task-less project has none; scope-`p` dict → 3 slides; a scope-`p` dict on a project whose tasks are all archived → 3 slides, its slide reading `0 tasks · k archived`.
 - **Negative control:** a mutation iterating every project (archived included) adds one slide — the count arm goes red.
-- **Boundary catalog:** ☑ empty (no project → cover and overview only; an all-archived project's slide → `0 tasks · k archived`) ☑ boundary (one project; an Inbox with only archived tasks → no slide) ☐ invalid (N/A) ☐ error (N/A)
+- **Boundary catalog:** ☑ empty (no project → cover and overview only; a project with no task → no slide; a project or an Inbox whose tasks are all archived → its slide reads `0 tasks · k archived`) ☑ boundary (one project) ☐ invalid (N/A) ☐ error (N/A)
 
 ### LLR-3105.2 — paging keys and one slide per printed page
 - **Traceability:** HLR-3105
@@ -677,7 +677,7 @@ requirement, not an open risk.
 - **C4 — the filtered download exists to keep hidden data from a recipient.** Control: LLR-3103.1 — the downloaded JSON rebuilt from the kept tasks only, every directory reduced, dangling dependencies removed, notes stripped when the notes section is off; the UI states that only the download leaves hidden data out and that the print does not (LLR-3103.2, HLR-3104). Assertion on the bytes, both raw and JSON-escaped forms: AT-3103, TC-3109. Residual: the print path deliberately keeps all data in the file — stated on the control, not a defect.
 - **Opening a file from the app.** The safety of `o` rests on the path being one this export wrote under `<board dir>/reports/`, named from fixed words, the date and slugs (alphanumerics and `-`, §2.7 row 12) — not on the image opener's gates, which do not apply here; no user-supplied path reaches `os.startfile` (LLR-3107.4); TC-3120 asserts the opened path is inside `reports/`.
 - **Accepted risk — the `o` scope writes every loaded board's data beside the open board.** The default stays `o` (the round's default, HR-2) and the files land in `<board dir>/reports/`, which may be a client's folder. Two controls: (a) the modal prints the destination folder and the scope's board count before any key writes (LLR-3107.2); (b) both reports' header states the scope — `All loaded boards (N): <names>` or `Project <name> on <board>` (LLR-3102.1, LLR-3105.1). The operator may revisit the default on the review page.
-- **Not fired, with reason:** no authentication, secret, external integration, database or network service is touched; the reports make 0 requests (LLR-3106.2); task URLs are inert links.
+- **Not fired, with reason:** no authentication, secret, external integration, database or network service is touched; the reports make 0 requests (LLR-3106.2); task URLs are filtered to http/https (the C8 bullet above).
 - **Test-harness risk:** Playwright is not a declared dependency; CI skips the browser nodes, so CI cannot see AT-3102..AT-3104, AT-3106 and the browser arms of AT-3101/AT-3105. On this machine `TASKBOARD_REQUIRE_BROWSER=1` turns a missing browser into a failure (§5.1); their evidence is this machine's transcripts (P3, P4).
 - **Scan flags** (`evidence/scan-p1.txt`: `security_required: true`, flags `token`, `role`, `hash`, `user input`, `form`, `escape`), each traced to its match: `hash` → the URL hash, the genuine C6 input surface, answered by LLR-3102.3 (bullet C6 above); `escape` → the genuine C8 control, LLR-3106.1 (bullet C8); `user input` → HLR-3101's boundary catalog ("not parsed from user input") — the dict has no parsed input; the untrusted inputs are board text (C8) and the hash (C6), both answered; `token` → the template preamble's "reserved token" and §3's "the token `V2` resolves" (an id-matching word, no credential exists); `role` → §2.3 "No other role" (no authorization surface exists or changes); `form` → prose ("the prototype's … form", "Information Flow"), no HTML form posts anything — the reports submit nothing anywhere.
 

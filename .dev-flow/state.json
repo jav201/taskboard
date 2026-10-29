@@ -232,7 +232,7 @@
     }
   ],
   "guided": false,
-  "current_station": "P2",
+  "current_station": "PDR",
   "phase_status": "in-progress",
   "stations_active": [
     "P0",
@@ -329,6 +329,11 @@
       "station": "P1",
       "date": "2026-10-29",
       "decision": "P1 amendment approved under the batch's standing authorization — D1–D20 folded as LED-2026-10-29-batch-01.1 … .20 (D1 http(s)-only URLs for S1 HIGH, D2/D3/D5/D13 the download's leak surface, D4 one innerHTML exception, D6 keys between tasks and the full fact list, D7 new LLR-3103.3 CSV/JSON visible rows only, D8 default o as an accepted risk with two controls, D9 the opener's ground, D10 AT-3107 black-box, D11 Tab oracle, D12 deck counts, D14 print arm, D15 no browser skip, D16 clock seam, D17 boundary arms, D18 Inbox, D19 one status rule, D20 board-slugged names); new TC-3122..TC-3125; scan re-run (evidence/scan-p1-iter2.txt), gate 0 block (evidence/gate-p1-iter2.txt); P2 round 2 is next."
+    },
+    {
+      "station": "P2",
+      "date": "2026-10-29",
+      "decision": "P2 approved under the batch's standing authorization — round 2: architect, qa-reviewer, security-reviewer approve; S1 HIGH discharged at contract level; LED .21 folds the round-2 minors; PDR is next."
     }
   ],
   "obsidian_synced": false,

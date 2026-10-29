@@ -9,14 +9,14 @@
 
 ## ✅ Verdict (read first)
 
-- **Gate:** `iterate-to-refine` → Phase 1 (round 1: a blocker — S1, HIGH — and requirement-defect majors from all three lenses; dispositions D1–D20 fold into the contract by amendment, ledger entries `LED-2026-10-29-batch-01.1` … `.20`; round 2 re-reads the folds)
+- **Gate:** `approve` → Phase 3, through PDR (round 2: architect, qa-reviewer and security-reviewer approve the amended contract; round 1 was `iterate-to-refine` — S1 HIGH and requirement-defect majors — folded by D1–D20, `LED-2026-10-29-batch-01.1` … `.20`; the round-2 residue minors folded by R1–R7, `LED-2026-10-29-batch-01.21`)
 - **Out-of-scope findings:** `none` — every finding is folded into the contract or carried, named, into its owning increment below
 
-- **Findings:** `1` blocker · `15` major · `18` minor (round 1)
+- **Findings:** `1` blocker · `15` major · `26` minor (rounds 1+2 cumulative: round 1 1/15/18; round 2 0/0/8)
 - **shall/should check:** ✓ clean
-- **Two-layer (blockers):** ✗ AT-3107 was not genuinely black-box at round 1 (Q2: the law checks painted keys only for Button modals) — folded by D10 (LED-2026-10-29-batch-01.10); every other limb ✓
+- **Two-layer (blockers):** ✓ every story has an `AT` · output reqs name deliverable+observation · both trace chains complete · ATs are genuinely black-box (round 1's ✗ on AT-3107, Q2, folded by D10 and closed at round 2)
 - **Census (change-first):** done — best-effort + gate-confirmed
-- **Security:** ⚠ `9` findings (S1 HIGH blocker, S2–S3 major, S4–S9 minor) — S1 stays OPEN until the security lens re-reads the fold at round 2
+- **Security:** ⚠ `11` findings, all closed or folded — S1 (HIGH) discharged at contract level at round 2, its mitigation `planned` and re-verified at the increment 001 and 003 gates; S2–S9 closed (S8 as an accepted risk); round-2 minors SN1, SN2 folded
 - **Evidence checklists (architect / qa / security):** ✓ all complete (summaries below; the raw lens reports are the orchestrator's working notes)
 
 > If gate = `approve` and every line is ✓, the Detail below is reference. Any blocker/⚠ → read the matching part.
@@ -73,6 +73,32 @@
 
 Round-1 dispositions summary: the blocker S1 and every requirement-defect major are folded by the P1 amendment (D1–D20, one ledger entry each). Q9, Q10, Q11, Q12, Q16 and A8 are implementation carries, each named here with its owning increment; the increment gates close them. The test sides of D2, D3, D5, D9, D10, D12, D13 and D16 are carried into increments 002 and 004 the same way.
 
+### Findings (round 2 — the three lenses re-read the amended contract)
+
+Round-2 verdicts: architect `approve` (ledger pairs 53/53 both directions; A1–A7, A9 closed; A8 carried); qa-reviewer `approve` (Q1–Q8, Q14, Q15 closed; Q11–Q13, Q16 no objection); security-reviewer `approve` (S1–S9 closed; S1 HIGH discharged at contract level; S8 closed as an accepted risk). Each lens spawned again as an independent generic sub-agent carrying its `agents/<role>.md`. The residue minors below are ruled by the orchestrator's R1–R7 and folded as ONE ledger entry, `LED-2026-10-29-batch-01.21`; the PDR lenses review that fold with the design proposal.
+
+| ID | Lens | Severity | Requirement | file:line | Finding (one line) | Disposition |
+|----|------|----------|-------------|-----------|--------------------|-------------|
+| qN1 | qa-reviewer | minor | LLR-3105.1 | `01-requirements.md:413` | Contradiction: a slide for "a project that has a task" versus an all-archived project's `0 tasks · k archived` slide — settle one rule. | folded-in-LED-2026-10-29-batch-01.21 (R1) |
+| qN2 | qa-reviewer | minor | LLR-3103.3 (TC-3122) | `01-requirements.md:393` | The CSV's `'` prefix also hits `-3d` due words — assert it intentionally. | folded-in-LED-2026-10-29-batch-01.21 (R2) |
+| SN1 | security-reviewer | minor | LLR-3103.1 | `01-requirements.md:373` | The download must also reduce `meta`'s scope board names and the header's N/names to the kept boards (a wording gap; AT-3103's byte search would catch it). | folded-in-LED-2026-10-29-batch-01.21 (R3); arm carried — increment 002 |
+| SN2 | security-reviewer | minor | §6.3 | `01-requirements.md:680` | The "Not fired" bullet still says task URLs are inert links — they are filtered to http/https (the C8 bullet). | folded-in-LED-2026-10-29-batch-01.21 (R4) |
+| AN1 | architect | minor | HLR-3105, LLR-3105.1 | `01-requirements.md:245`, `:413` | "One slide per non-archived project" (HLR) versus "that has a task" plus the Inbox rule (LLR). | folded-in-LED-2026-10-29-batch-01.21 (R1) |
+| AN2 | architect | minor | LLR-3102.2 | `01-requirements.md:357` | The negative control "(status ignores the due date)" is stale now that status is emitted server-side — restate it as the JS chip mapping `late` → `open`. | folded-in-LED-2026-10-29-batch-01.21 (R5) |
+| AN3 | architect | minor | ARCHITECTURE §3 | `docs/ARCHITECTURE.md:99` | The `report_html` dependency row lacks `views.valid_url`. | folded-in-LED-2026-10-29-batch-01.21 (R6) |
+| AN4 | architect | minor | LLR-3105.1 | `01-requirements.md:413` | An all-archived project gets a slide and an all-archived Inbox does not — rationale unstated. | folded-in-LED-2026-10-29-batch-01.21 (R1) |
+
+**Round-1 items still carried after round 2 (implementation, no contract change):**
+
+| ID | Lens | Disposition |
+|----|------|-------------|
+| Q9 | qa-reviewer | carried — increment 001 (literal id sets for boundary arms; no case folding beyond JS `toLowerCase`, ASCII-only search fixtures) |
+| Q10 | qa-reviewer | carried — increment 001 (the mutation: drop the whitelist and echo into the summary via `innerHTML`) |
+| print width | qa-reviewer | carried — increment 002 (the page width is the viewport width under `emulate_media`) |
+| A8, Q12 | architect, qa-reviewer | folded-in-LED-2026-10-29-batch-01.21 (R7: the AST import walk and its precise allow/ban lists); its execution carried — increment 001, re-run at increment 003 |
+| Q11, Q16 | qa-reviewer | carried — increments 003 and 001, unchanged |
+
+
 ### shall / should check
 
 ✓ clean — every HLR/LLR statement reads `shall`; no modal `should` inside a statement (probe: `grep -n "Statement:.*\bshould\b" 01-requirements.md` → 0 hits).
@@ -96,7 +122,7 @@ Best-effort + gate-confirmed; the increment gate running the real suite is the c
 
 ### Security review summary
 
-Family C fired (C4 the filtered download, C6 the URL hash, C8 HTML rendering of file-derived board text), so the security lens ran. Verdict `iterate-to-refine`. **S1 (HIGH, blocker):** task URLs reach `href` unrestricted, so a hostile board file carries stored XSS into both reports. Fold D1: `extract` keeps only `views.valid_url` results (http/https, `taskboard/views.py:273`), the page re-checks `^https?://` before any `href`, links carry `rel="noopener noreferrer"`, and AT-3106 gains `javascript:` and `data:` URL arms asserting 0 non-http(s) anchors in both reports. **S1 stays OPEN until the security lens re-reads the fold at round 2.** S2–S3 (major) and S4–S9 (minor) fold by D2–D9; S8 is closed as an accepted risk with two controls (D8, `01-requirements.md` §6.3). The scan's flags are answered in §6.3; the scan is re-run over the amended contract (`evidence/scan-p1-iter2.txt`).
+Family C fired (C4 the filtered download, C6 the URL hash, C8 HTML rendering of file-derived board text), so the security lens ran. Verdict `iterate-to-refine`. **S1 (HIGH, blocker):** task URLs reach `href` unrestricted, so a hostile board file carries stored XSS into both reports. Fold D1: `extract` keeps only `views.valid_url` results (http/https, `taskboard/views.py:273`), the page re-checks `^https?://` before any `href`, links carry `rel="noopener noreferrer"`, and AT-3106 gains `javascript:` and `data:` URL arms asserting 0 non-http(s) anchors in both reports. **Round 2: the security lens re-read the fold and approves — S1 HIGH is discharged at contract level; its mitigation is `planned` (no code exists yet) and is re-verified at the increment 001 gate (`extract`'s filter, the workspace's `^https?://` check, TC-3124) and the increment 003 gate (the deck's links, AT-3106's `javascript:`/`data:` arms).** S2–S3 (major) and S4–S9 (minor) closed by D2–D9; S8 closed as an accepted risk with two controls (D8, `01-requirements.md` §6.3). Round-2 minors SN1 (the download reduces `meta`'s scope names) and SN2 (§6.3 wording) are folded by R3/R4 (`{L}`). The scan's flags are answered in §6.3 (`evidence/scan-p1-iter2.txt`).
 
 ### Evidence checklists (full) — architect · qa-reviewer · security-reviewer
 
@@ -106,4 +132,4 @@ Family C fired (C4 the filtered download, C6 the URL hash, C8 HTML rendering of 
 
 ### Verdict
 
-`iterate-to-refine` (round 1) — the gate tokens' home is `templates/review-template.md`. The P1 amendment folds D1–D20 (`LED-2026-10-29-batch-01.1` … `.20`); round 2 re-reads the folds, the security lens first on S1.
+`approve` (round 2) — the gate tokens' home is `templates/review-template.md`. Round 1 was `iterate-to-refine`, folded by the P1 amendment D1–D20 (`LED-2026-10-29-batch-01.1` … `.20`); round 2's three lenses approve, and their residue minors are folded by R1–R7 (`LED-2026-10-29-batch-01.21`). PDR is next: the design proposal, reviewed by architect, qa-reviewer and ux-reviewer.
