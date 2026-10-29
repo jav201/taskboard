@@ -1,0 +1,174 @@
+M01 keymap.py:146 [LLR-3107.1 negative control: the `H` row dropped]
+    run: tests/test_report_export_app.py -k "TC_3117" -> exit 1; 1 failed, 6 deselected in 0.61s
+    RED nodes: ['test_TC_3117_H_is_seated_once_off_the_bar']
+    verdict: KILLED (named node test_TC_3117_H_is_seated_once_off_the_bar)
+    sha256 before c4598df3ffaef0a9f55d76af55bfb10801d1f45b0a1b0ed914b7dd87d121aada
+    sha256 after  c4598df3ffaef0a9f55d76af55bfb10801d1f45b0a1b0ed914b7dd87d121aada (restored, identical)
+M02 keymap.py:146 [the `H` seat drawn on the bar (not off it like R/A/S)]
+    run: tests/test_report_export_app.py -k "TC_3117" -> exit 1; 1 failed, 6 deselected in 0.58s
+    RED nodes: ['test_TC_3117_H_is_seated_once_off_the_bar']
+    verdict: KILLED (named node test_TC_3117_H_is_seated_once_off_the_bar)
+    sha256 before c4598df3ffaef0a9f55d76af55bfb10801d1f45b0a1b0ed914b7dd87d121aada
+    sha256 after  c4598df3ffaef0a9f55d76af55bfb10801d1f45b0a1b0ed914b7dd87d121aada (restored, identical)
+M03 modals.py:3314 [AT-3107 negative control: the key line drops `esc close`]
+    run: tests/test_modal_keys.py -k "AT_3107" -> exit 1; 1 failed, 34 deselected in 1.25s
+    RED nodes: ['test_AT_3107_the_report_modal_obeys_the_modal_key_law']
+    verdict: KILLED (named node test_AT_3107_the_report_modal_obeys_the_modal_key_law)
+    sha256 before 828c234b87346f3b49a69c11e254e451b92e025abe3dce6d3ef38c3a02f2f28c
+    sha256 after  828c234b87346f3b49a69c11e254e451b92e025abe3dce6d3ef38c3a02f2f28c (restored, identical)
+M04 modals.py:3310 [LLR-3107.2: the destination folder never printed]
+    run: tests/test_modal_keys.py -k "AT_3107" -> exit 1; 1 failed, 34 deselected in 1.21s
+    RED nodes: ['test_AT_3107_the_report_modal_obeys_the_modal_key_law']
+    verdict: KILLED (named node test_AT_3107_the_report_modal_obeys_the_modal_key_law)
+    sha256 before 828c234b87346f3b49a69c11e254e451b92e025abe3dce6d3ef38c3a02f2f28c
+    sha256 after  828c234b87346f3b49a69c11e254e451b92e025abe3dce6d3ef38c3a02f2f28c (restored, identical)
+M05 modals.py:3297 [PDR C9: the board names the file will contain never printed]
+    run: tests/test_modal_keys.py -k "AT_3107" -> exit 1; 1 failed, 34 deselected in 1.32s
+    RED nodes: ['test_AT_3107_the_report_modal_obeys_the_modal_key_law']
+    verdict: KILLED (named node test_AT_3107_the_report_modal_obeys_the_modal_key_law)
+    sha256 before 828c234b87346f3b49a69c11e254e451b92e025abe3dce6d3ef38c3a02f2f28c
+    sha256 after  828c234b87346f3b49a69c11e254e451b92e025abe3dce6d3ef38c3a02f2f28c (restored, identical)
+M06 modals.py:3319 [LLR-3107.2: `p` with no current project moves the mark anyway]
+    run: tests/test_report_export_app.py -k "TC_3118" -> exit 1; 1 failed, 6 deselected in 1.63s
+    RED nodes: ['test_TC_3118_scope_keys_and_no_project']
+    verdict: KILLED (named node test_TC_3118_scope_keys_and_no_project)
+    sha256 before 828c234b87346f3b49a69c11e254e451b92e025abe3dce6d3ef38c3a02f2f28c
+    sha256 after  828c234b87346f3b49a69c11e254e451b92e025abe3dce6d3ef38c3a02f2f28c (restored, identical)
+M07 modals.py:3283 [HR-2: the scope starts at `p`, not `o`]
+    run: tests/test_report_export_app.py -k "TC_3118" -> exit 1; 1 failed, 6 deselected in 0.99s
+    RED nodes: ['test_TC_3118_scope_keys_and_no_project']
+    verdict: KILLED (named node test_TC_3118_scope_keys_and_no_project)
+    sha256 before 828c234b87346f3b49a69c11e254e451b92e025abe3dce6d3ef38c3a02f2f28c
+    sha256 after  828c234b87346f3b49a69c11e254e451b92e025abe3dce6d3ef38c3a02f2f28c (restored, identical)
+M08 modals.py:3270 [`p` writes and closes instead of moving the scope mark]
+    run: tests/test_modal_keys.py -k "AT_3107" -> exit 1; 1 failed, 34 deselected in 1.97s
+    RED nodes: ['test_AT_3107_the_report_modal_obeys_the_modal_key_law']
+    verdict: KILLED (named node test_AT_3107_the_report_modal_obeys_the_modal_key_law)
+    sha256 before 828c234b87346f3b49a69c11e254e451b92e025abe3dce6d3ef38c3a02f2f28c
+    sha256 after  828c234b87346f3b49a69c11e254e451b92e025abe3dce6d3ef38c3a02f2f28c (restored, identical)
+M09 app.py:1933 [LLR-3107.2 negative control: the current project from present_project_id's first-project fallback]
+    run: tests/test_report_export_app.py -k "TC_3118" -> exit 1; 1 failed, 6 deselected in 1.45s
+    RED nodes: ['test_TC_3118_scope_keys_and_no_project']
+    verdict: KILLED (named node test_TC_3118_scope_keys_and_no_project)
+    sha256 before 95cf151f1fb536563fe61217398a71c5d4e160895e9a90e7d66a1b1bf04cdbc5
+    sha256 after  95cf151f1fb536563fe61217398a71c5d4e160895e9a90e7d66a1b1bf04cdbc5 (restored, identical)
+M10 app.py:1941 [LLR-3107.3 negative control: the files written beside the CWD]
+    run: tests/test_report_export_app.py -k "TC_3119" -> exit 1; 1 failed, 6 deselected in 1.04s
+    RED nodes: ['test_TC_3119_files_land_beside_the_open_board']
+    verdict: KILLED (named node test_TC_3119_files_land_beside_the_open_board)
+    sha256 before 95cf151f1fb536563fe61217398a71c5d4e160895e9a90e7d66a1b1bf04cdbc5
+    sha256 after  95cf151f1fb536563fe61217398a71c5d4e160895e9a90e7d66a1b1bf04cdbc5 (restored, identical)
+M11 app.py:1952 [HR-5: the app's `p` scope ignored (the deck holds every project)]
+    run: tests/test_report_export_app.py -k "AT_3105" -> exit 1; 1 failed, 6 deselected in 1.39s
+    RED nodes: ['test_AT_3105_H_c_writes_the_deck_with_one_slide_per_chosen_project']
+    verdict: KILLED (named node test_AT_3105_H_c_writes_the_deck_with_one_slide_per_chosen_project)
+    sha256 before 95cf151f1fb536563fe61217398a71c5d4e160895e9a90e7d66a1b1bf04cdbc5
+    sha256 after  95cf151f1fb536563fe61217398a71c5d4e160895e9a90e7d66a1b1bf04cdbc5 (restored, identical)
+M12 app.py:1939 [PDR C5: the bare project id passed to extract instead of the key]
+    run: tests/test_report_export_app.py -k "AT_3105" -> exit 1; 1 failed, 6 deselected in 1.83s
+    RED nodes: ['test_AT_3105_H_c_writes_the_deck_with_one_slide_per_chosen_project']
+    verdict: KILLED (named node test_AT_3105_H_c_writes_the_deck_with_one_slide_per_chosen_project)
+    sha256 before 95cf151f1fb536563fe61217398a71c5d4e160895e9a90e7d66a1b1bf04cdbc5
+    sha256 after  95cf151f1fb536563fe61217398a71c5d4e160895e9a90e7d66a1b1bf04cdbc5 (restored, identical)
+M13 app.py:1960 [HLR-3107 negative control: the toast drops the file name]
+    run: tests/test_report_export_app.py -k "AT_3101" -> exit 1; 1 failed, 6 deselected in 1.11s
+    RED nodes: ['test_AT_3101_H_b_writes_the_workspace_and_the_toast_names_it']
+    verdict: KILLED (named node test_AT_3101_H_b_writes_the_workspace_and_the_toast_names_it)
+    sha256 before 95cf151f1fb536563fe61217398a71c5d4e160895e9a90e7d66a1b1bf04cdbc5
+    sha256 after  95cf151f1fb536563fe61217398a71c5d4e160895e9a90e7d66a1b1bf04cdbc5 (restored, identical)
+M14 app.py:1962 [LLR-3107.4: the skipped board never counted in the toast]
+    run: tests/test_report_export_app.py -k "TC_3119" -> exit 1; 1 failed, 6 deselected in 1.02s
+    RED nodes: ['test_TC_3119_files_land_beside_the_open_board']
+    verdict: KILLED (named node test_TC_3119_files_land_beside_the_open_board)
+    sha256 before 95cf151f1fb536563fe61217398a71c5d4e160895e9a90e7d66a1b1bf04cdbc5
+    sha256 after  95cf151f1fb536563fe61217398a71c5d4e160895e9a90e7d66a1b1bf04cdbc5 (restored, identical)
+M15 report_deck.py:273 [AT-3105's named control: the deck keeps archived projects (a divergent slide set)]
+    run: tests/test_report_export_app.py -k "AT_3105" -> exit 1; 1 failed, 6 deselected in 1.14s
+    RED nodes: ['test_AT_3105_H_c_writes_the_deck_with_one_slide_per_chosen_project']
+    verdict: KILLED (named node test_AT_3105_H_c_writes_the_deck_with_one_slide_per_chosen_project)
+    sha256 before 5f8d062cd25c1c1be01a744e53a9e603311740cb6996eb6b2155cd5de7ccd34d
+    sha256 after  5f8d062cd25c1c1be01a744e53a9e603311740cb6996eb6b2155cd5de7ccd34d (restored, identical)
+M16 app.py:3598 [HLR-3107 negative control: `o` keeps `open_url` (no offer branch)]
+    run: tests/test_report_export_app.py -k "AT_3101" -> exit 1; 1 failed, 6 deselected in 1.28s
+    RED nodes: ['test_AT_3101_H_b_writes_the_workspace_and_the_toast_names_it']
+    verdict: KILLED (named node test_AT_3101_H_b_writes_the_workspace_and_the_toast_names_it)
+    sha256 before 95cf151f1fb536563fe61217398a71c5d4e160895e9a90e7d66a1b1bf04cdbc5
+    sha256 after  95cf151f1fb536563fe61217398a71c5d4e160895e9a90e7d66a1b1bf04cdbc5 (restored, identical)
+M17 app.py:3600 [LLR-3107.4 negative control: the offer never expires]
+    run: tests/test_report_export_app.py -k "TC_3120" -> exit 1; 1 failed, 1 passed, 5 deselected in 2.11s
+    RED nodes: ['test_TC_3120_o_opens_the_report_while_the_toast_lives']
+    verdict: KILLED (named node test_TC_3120_o_opens_the_report_while_the_toast_lives)
+    sha256 before 95cf151f1fb536563fe61217398a71c5d4e160895e9a90e7d66a1b1bf04cdbc5
+    sha256 after  95cf151f1fb536563fe61217398a71c5d4e160895e9a90e7d66a1b1bf04cdbc5 (restored, identical)
+M18 app.py:3599 [PDR C8: the offer is not single-use]
+    run: tests/test_report_export_app.py -k "TC_3120" -> exit 1; 1 failed, 1 passed, 5 deselected in 1.94s
+    RED nodes: ['test_TC_3120_o_opens_the_report_while_the_toast_lives']
+    verdict: KILLED (named node test_TC_3120_o_opens_the_report_while_the_toast_lives)
+    sha256 before 95cf151f1fb536563fe61217398a71c5d4e160895e9a90e7d66a1b1bf04cdbc5
+    sha256 after  95cf151f1fb536563fe61217398a71c5d4e160895e9a90e7d66a1b1bf04cdbc5 (restored, identical)
+M20 app.py:1965 [LLR-3107.4: after `a`, `o` opens the deck instead of the workspace]
+    run: tests/test_report_export_app.py -k "TC_3120" -> exit 1; 1 failed, 1 passed, 5 deselected in 2.84s
+    RED nodes: ['test_TC_3120_o_opens_the_report_while_the_toast_lives']
+    verdict: KILLED (named node test_TC_3120_o_opens_the_report_while_the_toast_lives)
+    sha256 before 95cf151f1fb536563fe61217398a71c5d4e160895e9a90e7d66a1b1bf04cdbc5
+    sha256 after  95cf151f1fb536563fe61217398a71c5d4e160895e9a90e7d66a1b1bf04cdbc5 (restored, identical)
+M21 app.py:1975 [D9: off Windows the opener gets a bare path, not the file URI]
+    run: tests/test_report_export_app.py -k "TC_3120" -> exit 1; 1 failed, 1 passed, 5 deselected in 3.39s
+    RED nodes: ['test_TC_3120_o_opens_the_report_while_the_toast_lives']
+    verdict: KILLED (named node test_TC_3120_o_opens_the_report_while_the_toast_lives)
+    sha256 before 95cf151f1fb536563fe61217398a71c5d4e160895e9a90e7d66a1b1bf04cdbc5
+    sha256 after  95cf151f1fb536563fe61217398a71c5d4e160895e9a90e7d66a1b1bf04cdbc5 (restored, identical)
+M22 app.py:1964 [LLR-3107.4: the toast lives 5 s, not the offer's 10]
+    run: tests/test_report_export_app.py -k "AT_3101" -> exit 1; 1 failed, 6 deselected in 1.13s
+    RED nodes: ['test_AT_3101_H_b_writes_the_workspace_and_the_toast_names_it']
+    verdict: KILLED (named node test_AT_3101_H_b_writes_the_workspace_and_the_toast_names_it)
+    sha256 before 95cf151f1fb536563fe61217398a71c5d4e160895e9a90e7d66a1b1bf04cdbc5
+    sha256 after  95cf151f1fb536563fe61217398a71c5d4e160895e9a90e7d66a1b1bf04cdbc5 (restored, identical)
+M23 modals.py:3324 [LLR-3107.2 / TC-2407: the modal grows a Button its INVENTORY row `{}` does not name]
+    run: tests/test_modal_keys.py -k "TC_2407_every_modal_is_in_the_inventory" -> exit 1; 1 failed, 34 deselected in 1.80s
+    RED nodes: ['test_TC_2407_every_modal_is_in_the_inventory']
+    verdict: KILLED (named node test_TC_2407_every_modal_is_in_the_inventory)
+    sha256 before 828c234b87346f3b49a69c11e254e451b92e025abe3dce6d3ef38c3a02f2f28c
+    sha256 after  828c234b87346f3b49a69c11e254e451b92e025abe3dce6d3ef38c3a02f2f28c (restored, identical)
+M24 app.py:1954 [`a` writes only the workspace]
+    run: tests/test_modal_keys.py -k "AT_3107" -> exit 1; 1 failed, 34 deselected in 3.05s
+    RED nodes: ['test_AT_3107_the_report_modal_obeys_the_modal_key_law']
+    verdict: KILLED (named node test_AT_3107_the_report_modal_obeys_the_modal_key_law)
+    sha256 before 95cf151f1fb536563fe61217398a71c5d4e160895e9a90e7d66a1b1bf04cdbc5
+    sha256 after  95cf151f1fb536563fe61217398a71c5d4e160895e9a90e7d66a1b1bf04cdbc5 (restored, identical)
+M25 modals.py:3325 [CR4-1: the `both` token maps to the workspace alone]
+    run: tests/test_modal_keys.py -k "AT_3107" -> exit 1; 1 failed, 34 deselected in 2.97s
+    RED nodes: ['test_AT_3107_the_report_modal_obeys_the_modal_key_law']
+    verdict: KILLED (named node test_AT_3107_the_report_modal_obeys_the_modal_key_law)
+    sha256 before 828c234b87346f3b49a69c11e254e451b92e025abe3dce6d3ef38c3a02f2f28c
+    sha256 after  828c234b87346f3b49a69c11e254e451b92e025abe3dce6d3ef38c3a02f2f28c (restored, identical)
+M26 app.py:1953 [CR4-2: the write unguarded (an OSError reaches the app)]
+    run: tests/test_report_export_app.py -k "failed_write" -> exit 1; 1 failed, 6 deselected in 1.64s
+    RED nodes: ['test_TC_3120_a_failed_write_toasts_and_offers_nothing']
+    verdict: KILLED (named node test_TC_3120_a_failed_write_toasts_and_offers_nothing)
+    sha256 before 95cf151f1fb536563fe61217398a71c5d4e160895e9a90e7d66a1b1bf04cdbc5
+    sha256 after  95cf151f1fb536563fe61217398a71c5d4e160895e9a90e7d66a1b1bf04cdbc5 (restored, identical)
+M27 app.py:1955 [CR4-2: the earlier offer left set when a write fails]
+    run: tests/test_report_export_app.py -k "failed_write" -> exit 1; 1 failed, 6 deselected in 1.29s
+    RED nodes: ['test_TC_3120_a_failed_write_toasts_and_offers_nothing']
+    verdict: KILLED (named node test_TC_3120_a_failed_write_toasts_and_offers_nothing)
+    sha256 before 95cf151f1fb536563fe61217398a71c5d4e160895e9a90e7d66a1b1bf04cdbc5
+    sha256 after  95cf151f1fb536563fe61217398a71c5d4e160895e9a90e7d66a1b1bf04cdbc5 (restored, identical)
+M28 app.py:1978 [CR4-3: a failed opener says nothing]
+    run: tests/test_report_export_app.py -k "TC_3120" -> exit 1; 1 failed, 1 passed, 5 deselected in 3.83s
+    RED nodes: ['test_TC_3120_o_opens_the_report_while_the_toast_lives']
+    verdict: KILLED (named node test_TC_3120_o_opens_the_report_while_the_toast_lives)
+    sha256 before 95cf151f1fb536563fe61217398a71c5d4e160895e9a90e7d66a1b1bf04cdbc5
+    sha256 after  95cf151f1fb536563fe61217398a71c5d4e160895e9a90e7d66a1b1bf04cdbc5 (restored, identical)
+
+27/27 mutants killed
+exit 0
+
+# --- run 1 (before the fix), the one survivor kept as found ---
+M19 app.py:3592 [PDR C8: the offer consumed by an `o` over another screen]
+    run: tests/test_report_export_app.py -k "TC_3120" -> exit 0; 1 passed, 5 deselected in 2.45s
+    RED nodes: []
+    verdict: SURVIVED (named node test_TC_3120_o_opens_the_report_while_the_toast_lives)
+    sha256 before e960a80f9bcd6f6f9c788ddda44f5426450308ac741b18e8bbc1283ccd80804b
+    sha256 after  e960a80f9bcd6f6f9c788ddda44f5426450308ac741b18e8bbc1283ccd80804b (restored, identical)
+M20 app.py:1964 [LLR-3107.4: after `a`, `o` opens the deck instead of the workspace]

@@ -3252,3 +3252,78 @@ class MoveConfirm(ModalScreen[bool]):
 
     def action_no(self) -> None:
         self.dismiss(False)
+
+
+class ReportExport(ModalScreen[tuple[tuple[str, ...], str] | None]):
+    """`H` — export an HTML report (batch 2026-10-29-batch-01, HLR-3107, LLR-3107.2).
+    Keys only, every one on the key line: `b` workspace, `c` deck, `a` both, `p` the
+    current project, `o` all loaded boards, `esc` close. The scope starts at `o` and
+    the chosen one is marked; `p`/`o` move the mark and keep the modal open; `b`/`c`/`a`
+    dismiss `(kinds, scope)`, `esc` dismisses None. Before any key writes, it prints
+    the folder the files land in and the board names they will hold (PDR C9).
+    `project` is `(project name, board name)` or None; names are plain `Text` pieces."""
+
+    BINDINGS = [Binding("escape", "cancel", "", priority=True),
+                Binding("b", "write('workspace')", "", priority=True, show=False),
+                Binding("c", "write('deck')", "", priority=True, show=False),
+                Binding("a", "write('both')", "", priority=True, show=False),
+                Binding("p", "scope('project')", "", priority=True, show=False),
+                Binding("o", "scope('all')", "", priority=True, show=False)]
+
+    DEFAULT_CSS = """
+    ReportExport { align: center middle; background: #0007; }
+    #rx-box { width: 100; max-width: 100%; height: auto; max-height: 100%;
+              padding: 1 2; background: #0d1219; border: round #334154; }
+    #rx-keys { margin-top: 1; }
+    """
+
+    def __init__(self, folder: Path, boards: list[str], project: tuple[str, str] | None):
+        super().__init__()
+        self.folder, self.boards, self.project = folder, boards, project
+        self.scope = "all"
+
+    def compose(self) -> ComposeResult:
+        with Vertical(id="rx-box"):
+            yield Static(id="rx-body")
+            yield Static(id="rx-keys")
+
+    def on_mount(self) -> None:
+        self._paint()
+
+    def _paint(self) -> None:
+        inner = min(100, self.app.size.width) - 6        # the box's border and padding
+        body = Text()
+        body.append("Export an HTML report\n\n", style=f"bold {HEX['bright']}")
+        rows = [("all", f"all boards ({len(self.boards)})", "   " + " · ".join(self.boards)),
+                ("project", f"{self.project[0]} on {self.project[1]}" if self.project
+                 else "no project selected", "")]
+        for i, (scope, label, extra) in enumerate(rows):
+            body.append("Scope   " if i == 0 else "\n        ", style=HEX["mut"])
+            on = scope == self.scope
+            body.append("● " if on else "○ ", style=HEX["accent"] if on else HEX["dim"])
+            body.append(label, style=f"bold {HEX['bright']}" if on else HEX["ink"])
+            body.append(extra, style=HEX["mut"])
+        where = f"{self.folder}{os.sep}"
+        room = inner - 11
+        if cell_len(where) > room:                       # keep the tail: the board's folder
+            where = "…" + where[-(room - 1):]
+        body.append("\n\nWrites to  ", style=HEX["mut"])
+        body.append(where, style=HEX["ink"])
+        self.query_one("#rx-body", Static).update(body)
+        name = clip(self.project[0], 30) if self.project else "no project selected"
+        keys = [("b", "workspace"), ("c", "deck"), ("a", "both"), ("p", name),
+                ("o", "all boards"), ("esc", "close")]
+        self.query_one("#rx-keys", Static).update(key_line(keys, inner))
+
+    def action_scope(self, scope: str) -> None:
+        if scope == "project" and self.project is None:  # nothing to scope to: `o` stays
+            return
+        self.scope = scope
+        self._paint()
+
+    def action_write(self, kind: str) -> None:
+        kinds = {"workspace": ("workspace",), "deck": ("deck",), "both": ("workspace", "deck")}
+        self.dismiss((kinds[kind], self.scope))
+
+    def action_cancel(self) -> None:
+        self.dismiss(None)

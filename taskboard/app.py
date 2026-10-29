@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import os
+import time
 import webbrowser
 from datetime import date, datetime
 from pathlib import Path
@@ -16,7 +17,7 @@ from textual.keys import format_key
 from textual.screen import ModalScreen, Screen
 from textual.widgets import Static
 
-from . import history
+from . import history, report_html
 from .boards import Registry, announce, name_for, open_elsewhere, peek_board, renew, withdraw
 from .people import PEOPLE_NAME, Directory
 from .marks import MARKS_NAME, Directory as MarksDirectory
@@ -32,7 +33,8 @@ from .models import (AUTO_ARCHIVE_DAYS, IMAGE_EXTS, LINKS_MIGRATION, MILESTONES_
                      snapshot)
 from .modals import (BoardForm, PersonForm, SearchPrompt, ClockModal, GanttLinkMode, LinkPicker, CommandPalette, ConfirmModal,
                      HelpModal, ImageViewer, MarkForm, MilestoneOffer, PhaseEditor, ProjectModal,
-                     PresentHiddenPicker, PresentKeys, ProjectPicker, StandupModal, TaskDetails, TaskModal,
+                     PresentHiddenPicker, PresentKeys, ProjectPicker, ReportExport, StandupModal,
+                     TaskDetails, TaskModal,
                      TeamIdentityPicker,
                      TemplateEditor, TemplatePicker, TextPrompt)
 from .keymap import KEYMAP, KeyBar, app_bindings, key_line, palette_commands, present_bindings
@@ -1207,6 +1209,9 @@ class TaskboardApp(App):
     # `check_action` hands them all back to modals; see below.)
     BINDINGS = app_bindings()
 
+    # the `H` export's one clock (D16): the `o` offer's 10 s are read here; tests replace it
+    _report_clock = time.monotonic
+
     def __init__(self, board_path: str | Path | None = None, *,
                  team_sync_interval: float = 1800.0, registry: Registry | None = None):
         super().__init__()
@@ -1243,6 +1248,8 @@ class TaskboardApp(App):
         self.show_archived = False
         self.search_query: str | None = None   # session-level filter (LLR-003.2)
         self.selected_task_id: str | None = None
+        # the report `H` just wrote and when `o` stops opening it: (path, deadline)
+        self._report_offer: tuple[Path, float] | None = None
         # the gantt group the selection is in, and the one before it: the
         # previous group stays open while it fits (answer UXV-2, HLR-207)
         self._gantt_group: str | None = None
@@ -1911,6 +1918,66 @@ class TaskboardApp(App):
         self.push_screen(PresentScreen(self.board, project_id,
                                        proj.name if proj else None,
                                        self.selected_task_id))
+
+    def action_report_export(self) -> None:
+        """`H` — export an HTML report (batch 2026-10-29-batch-01, HLR-3107): every
+        loaded board (`board_lanes`; a missing or unreadable one skipped and counted),
+        or the current project — the selected task's, else the focused one, never
+        `present_project_id`'s first-project fallback. The files land in the open
+        board's `reports/` folder."""
+        lanes, ids = board_lanes(self)
+        boards = [(bid, name, colour, board)
+                  for (name, colour, board, _state), bid in zip(lanes, ids) if board is not None]
+        skipped = len(lanes) - len(boards)
+        task = self.selected_task
+        pid = task.project_id if task is not None else self.focused_project_id
+        proj = self.board.project_by_id(pid)
+        pos = next((i for i, b in enumerate(boards) if b[3] is self.board), None)
+        key = project = None
+        if proj is not None and pos is not None:
+            bid, bname = boards[pos][0], boards[pos][1]
+            key = f"{bid if bid is not None else f'#{pos}'}:{proj.id}"   # extract's project key (C5)
+            project = (proj.name, bname)
+        folder = Path(self.board.path).parent / "reports"
+        self.push_screen(ReportExport(folder, [b[1] for b in boards], project),
+                         lambda res: self._on_report_chosen(res, boards, skipped, key, folder))
+
+    def _on_report_chosen(self, res, boards: list, skipped: int, key: str | None,
+                          folder: Path) -> None:
+        if res is None:
+            return
+        kinds, scope = res
+        today = date.today()
+        d = report_html.extract(boards, self.people.people, self.marks.marks, today,
+                                project=key if scope == "project" else None)
+        try:
+            paths = report_html.write_reports(d, kinds, folder, today)
+        except OSError as e:                      # a part may be written: no offer
+            self._report_offer = None
+            self.notify(f"Report not (fully) written: {e}", title="Report", severity="error",
+                        timeout=10, markup=False)
+            return
+        text = (f"Report written: {' and '.join(p.name for p in paths)} to {folder}"
+                " — o opens it (10 s)")
+        if skipped:
+            text += f" · {skipped} board{'s' if skipped > 1 else ''} skipped"
+        self.notify(text, title="Report", severity="information", timeout=10, markup=False)
+        self._report_offer = (paths[0], self._report_clock() + 10)
+
+    def _open_report(self, path: Path) -> None:
+        """Open a report this app just wrote in `<board dir>/reports/` (its name built
+        from fixed words, the date and slugs) with the OS default handler (D9)."""
+        try:
+            if hasattr(os, "startfile"):
+                os.startfile(path)                  # Windows
+                opened = True
+            else:
+                opened = webbrowser.open(path.as_uri())
+        except OSError:
+            opened = False
+        if not opened:
+            self.notify(f"Could not open the report {path.name}.", title="Report",
+                        severity="error", timeout=10, markup=False)
 
     def action_templates(self) -> None:
         """`I` — insert a process template (HLR-1301): the picker lists a
@@ -3524,6 +3591,15 @@ class TaskboardApp(App):
         self.refresh_view()
 
     def action_open_url(self) -> None:
+        # the `H` export's offer first (PDR C8): single-use, live for the toast's 10 s;
+        # after that `o` is the task's links again. Main screen only by construction:
+        # a modal holds its own keys and the home's screens release only `quit`
+        offer = self._report_offer
+        if offer is not None:
+            self._report_offer = None
+            if self._report_clock() < offer[1]:
+                self._open_report(offer[0])
+                return
         task = self.selected_task
         if not task:
             return

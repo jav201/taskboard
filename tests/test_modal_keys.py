@@ -13,6 +13,7 @@ from __future__ import annotations
 import html
 import inspect
 import json
+import os
 import re
 from datetime import date
 from pathlib import Path
@@ -283,6 +284,7 @@ INVENTORY: dict[str, dict[str, str]] = {
     "HelpModal": {}, "StandupModal": {}, "CommandPalette": {}, "BoardForm": {},
     "MoveTarget": {}, "MoveConfirm": {}, "HelpScreen": {}, "PresentScreen": {},
     "PresentKeys": {},
+    "ReportExport": {},    # the `H` export (batch 2026-10-29-batch-01, LLR-3107.2): keys only
 }
 
 
@@ -458,3 +460,59 @@ async def test_AT_2604_the_marks_manager_and_its_form_obey_the_modal_key_law(hom
         await _press(pilot, "n", "escape")
         assert type(app.screen).__name__ == "MarksManager"
         assert len(app.marks.marks) == n_marks
+
+
+# --------------------------------------------------------------------------- #
+# AT-3107 — the report modal obeys the modal-key law (US-3101)
+# --------------------------------------------------------------------------- #
+REPORT_KEYS = [r"\bb workspace\b", r"\bc deck\b", r"\ba both\b",
+               r"\bp (Ingest & index|no project selected)\b", r"\bo all boards\b",
+               r"\besc close\b"]
+
+
+async def test_AT_3107_the_report_modal_obeys_the_modal_key_law(home):
+    """AT-3107 (US-3101, HLR-3107, LLR-3107.2, D10), black-box at 118x30: `H` paints a
+    modal whose key line matches the six patterns (`b workspace`, `c deck`, `a both`,
+    `p <project>`, `o all boards`, `esc close`) and which shows, before any key writes,
+    the destination `<board dir>/reports/`, the board count and the board names. `p` and
+    `o` move the scope mark and keep the modal; `esc` closes it and writes nothing; each
+    of `b`, `c`, `a` (a fresh modal each) writes the files it names and closes it.
+    RED: the key line drops `esc close`."""
+    app = _round_app(home)
+    folder = home / "boards" / "client-a" / "reports"
+    async with app.run_test(size=(118, 30)) as pilot:
+        await pilot.pause()
+        await pilot.press("escape")                     # off the home of boards
+        app.selected_task_id = "tc1"                     # Parse catalog PDFs, Ingest & index
+        await _press(pilot, "H")
+        assert type(app.screen).__name__ == "ReportExport"
+        rows = (await _screen(pilot, 118, 30)).splitlines()
+        line = next(r for r in rows if "b workspace" in r)
+        for pattern in REPORT_KEYS:
+            assert re.search(pattern, line), (pattern, line)
+        text = "\n".join(rows)
+        assert f"client-a{os.sep}reports{os.sep}" in text and "Writes to" in text, text
+        assert "● all boards (3)" in text and "Personal · Client A · Course" in text, text
+        assert "○ Ingest & index on Client A" in text, text
+        await _press(pilot, "p")
+        text = await _screen(pilot, 118, 30)
+        assert type(app.screen).__name__ == "ReportExport"
+        assert "● Ingest & index on Client A" in text and "○ all boards (3)" in text, text
+        await _press(pilot, "o")
+        text = await _screen(pilot, 118, 30)
+        assert "● all boards (3)" in text and "○ Ingest & index on Client A" in text, text
+        await _press(pilot, "escape")
+        assert type(app.screen).__name__ != "ReportExport"
+        assert not folder.exists()                       # esc: nothing written
+        day = fx.TODAY.isoformat()
+        for key, want in (("b", {f"workspace-{day}.html"}), ("c", {f"deck-{day}.html"}),
+                          ("a", {f"workspace-{day}.html", f"deck-{day}.html"})):
+            for p in folder.glob("*.html"):              # a fresh folder per key (this test's own)
+                p.unlink()
+            await _press(pilot, "H", key)
+            assert type(app.screen).__name__ != "ReportExport", key
+            assert {p.name for p in folder.iterdir()} == want, key
+            named = _notes(app)[-1]
+            written = {"b": ["workspace"], "c": ["deck"], "a": ["workspace", "deck"]}[key]
+            assert named.startswith("Report written: " + " and ".join(
+                f"{k}-{day}.html" for k in written) + " to "), named

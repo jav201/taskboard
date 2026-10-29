@@ -136,6 +136,7 @@ between the short and the full layer. Every key below is also in the command pal
 | `@` | People directory | Who you owe what: the people of `~/.taskboard/people.json` (most late first) beside the chosen person's open tasks of every board, each with the note line that mentions them and a `late · today · open` box; `enter` opens a task on its board, `n`/`e` add and edit a person, `/` finds a name. Not view `9` (the team's `People`) |
 | `#` | Milestone classes | The classes of `~/.taskboard/marks.json`: `n`/`e` add and edit a class, `space` hides or shows it, `esc` closes |
 | `R` / `S` | Present / Standup | Present the selected task's project, or every project (`3`), with gantt + brief, export SVG+PNG / show the week's standup |
+| `H` | Report | Export an HTML report into the open board's `reports/` folder: `b` the workspace (filters, print, "download this view"), `c` the deck, `a` both; scope `o` all loaded boards (the default) or `p` the current project (the selected task's, else the focused one); the toast names the file, and `o` opens it while the toast is up (10 s). The file lands beside the open board, and scope `o` writes every loaded board into it: do not export into a folder shared with people who should not see all your boards |
 | `I` | Templates | Insert a process template (a named chain of tasks) into the selected task's project |
 | `comma` | Save chain | Save the selected chain as a template (chain map) |
 | `c` | Clocks | Choose the ribbon's two city clocks |
