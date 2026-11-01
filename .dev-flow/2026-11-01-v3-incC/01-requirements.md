@@ -132,8 +132,8 @@ Each line: **id — form — statement.** Threshold. *NC:* negative control.
   Threshold: `notes_html("::b:: <x> ::", {})` == `'<span class="hl-blue">&lt;x&gt;</span>'`. *NC:* unescaped: RED.
 - **LLR-4202.6 — Ubiquitous.** The HTML deck's style sheet shall define `.hl-orange`, `.hl-blue` and `.hl-violet` with a colour variable set in both its light and dark themes.
   Threshold: 3/3 classes present; each var defined in both theme blocks (6/6). *NC:* delete one class: RED.
-- **LLR-4202.7 — Ubiquitous.** The HTML workspace's style sheet shall define `.hl-orange`, `.hl-blue` and `.hl-violet` the way it defines `.hl-soon`, with their variables in both themes.
-  Threshold: 3/3 classes, 6/6 var definitions. *NC:* delete one: RED.
+- **LLR-4202.7 — Ubiquitous.** The HTML workspace's style sheet shall define `.hl-orange`, `.hl-blue` and `.hl-violet` the way it defines `.hl-soon` (a 22 % `color-mix` background of one `:root` variable each).
+  Threshold: 3/3 classes, 3/3 `:root` variables. *NC:* delete one: RED.
 - **LLR-4202.8 — Ubiquitous.** The focus view's legend shall list the colour syntax with each of the six codes in its tone.
   Threshold: the legend rows hold one row whose markup has 6/6 tone colours and the text `::`. *NC:* legend unchanged: RED.
 - **LLR-4202.9 — Ubiquitous.** The details screen's Notes label shall list the six codes, each in its tone.

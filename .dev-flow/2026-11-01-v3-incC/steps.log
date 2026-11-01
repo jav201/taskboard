@@ -4,3 +4,5 @@
 2026-11-01T06:28:30Z E1 requirements start model=opus (approx)
 2026-11-01T06:28:30Z E2a baseline-graph start model=opus (background agent, parallel with E1)
 2026-11-01T06:32:35Z E1 requirements end model=opus hlr=6 llr=55 at=4
+2026-11-01T06:35:56Z E2a baseline-graph end model=opus nodes=12 entities=28 edges=27 lint=0 extract=0
+2026-11-01T06:35:56Z E2b prototype start model=opus (3 agents: V, M1, M2)

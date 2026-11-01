@@ -1,0 +1,55 @@
+# Extractor output — baseline graph at 0a8dfaa (marks tree taskboard-wt/incC-marks, 12 generated marks)
+# command: python code-wire/tools/codewire_marks.py --repo incC-marks --graph capture-proto/.dev-flow/2026-11-01-v3-incC/graph-baseline.cw.md   (12 marks written, 0 nodes without code, exit 0)
+# command: python code-wire/tools/codewire_extract.py --repo incC-marks --graph capture-proto/.dev-flow/2026-11-01-v3-incC/graph-baseline.cw.md --path taskboard/views.py --path taskboard/report_html.py --path taskboard/modals.py --out <tmp>
+# exit code: 0
+# NOTE: line numbers below are in the MARKED tree (each mark adds one line above its def); baseline-notes.md gives the 0a8dfaa lines.
+# NOTE: top-level sites are name-based: the prototypes/ hits for TaskModal.check_action / on_text_area_changed are other classes' methods of the same name, not calls of TaskModal's.
+
+## stdout
+marks=12 graph_nodes=12 calls=8 findings=0 parse_failures=0
+
+## diff-report.md
+# Code-Wire extractor report
+
+- Marks found: 12
+- Graph nodes parsed: 12
+- Real calls between marked nodes: 8
+- Findings: 0 (0 drift, 0 info)
+- Ambiguous call resolutions (a name matched several defs): 874
+- Files that failed to parse: 0
+
+Type normalisation: spaces and quotes dropped; `List/Dict/Tuple/Set` -> builtins; `X | None` and graph `X?` -> `Optional[X]`; graph `(Callable) A->B` -> `Callable[[A], B]`; graph `tuple(A a, B b)` -> `tuple[A, B]`. A bare graph container (`dict`) against a parameterised code type (`dict[str, Any]`) is info (loose match), not drift.
+
+Call resolution is name-based (`f()`, `Class()` -> `__init__`, `self.m()`, `x.m()` -> top-level `m` or a marked method `m`); dynamic calls and callables passed as values are not seen. Tests excluded.
+
+## Counts
+
+| Kind | Count |
+|---|---|
+
+## Real calls between marked nodes
+
+| Caller | Callee | Sites |
+|---|---|---|
+| `TaskModal.on_text_area_changed` | `notes_preview` | taskboard/modals.py:620 |
+| `_focus_note_snippet` | `_highlight_markup` | taskboard/views.py:3604 |
+| `_highlight_markup` | `highlight_segments` | taskboard/views.py:3589 |
+| `_notes_text` | `highlight_segments` | taskboard/report_html.py:63 |
+| `notes_html` | `highlight_segments` | taskboard/report_html.py:51 |
+| `notes_preview` | `notes_text` | taskboard/modals.py:369 |
+| `notes_text` | `highlight_segments` | taskboard/views.py:3571 |
+| `present_note_lines` | `highlight_segments` | taskboard/views.py:6724 |
+
+Top-level sites (no marked node above them):
+
+- `TaskModal.check_action`: prototypes/backlog_round/proto.py:735, prototypes/capture_round/proto.py:1479, prototypes/edit_modal/proto.py:445, prototypes/kanban_priority/proto.py:184, prototypes/milestone_marks/proto.py:1010, prototypes/multi_board/mb_proto.py:1007, prototypes/people_round/proto.py:1010, prototypes/people_round/proto.py:1121, prototypes/people_round/proto.py:692, prototypes/people_round/proto.py:948
+- `TaskModal.on_text_area_changed`: prototypes/capture_round/proto.py:1316, prototypes/people_round/proto.py:695, prototypes/people_round/proto.py:882
+- `_focus_note_snippet`: prototypes/kanban_priority/proto.py:144, taskboard/views.py:3694
+- `_highlight_markup`: prototypes/edit_modal/proto.py:214, prototypes/edit_modal/proto.py:216, prototypes/edit_modal/proto.py:221, prototypes/next_level/proto.py:460, taskboard/views.py:3647, taskboard/views.py:3804, taskboard/views.py:3975
+- `_notes_text`: taskboard/report_html.py:154
+- `highlight_segments`: prototypes/html_report/variant_a/build.py:171, prototypes/html_report/variant_b/build.py:44, prototypes/html_report/variant_c/build.py:96, prototypes/people_round/proto.py:160
+- `legend_entries`: taskboard/modals.py:2834
+- `notes_html`: prototypes/capture_round/proto.py:1418, taskboard/report_html.py:153
+- `notes_preview`: taskboard/modals.py:2549, taskboard/modals.py:578
+- `notes_text`: prototypes/capture_round/proto.py:1067, prototypes/capture_round/proto.py:1119, prototypes/capture_round/proto.py:1175, taskboard/views.py:9055
+- `present_note_lines`: taskboard/views.py:7029, taskboard/views.py:7251
