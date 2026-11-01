@@ -18,3 +18,26 @@
 - **What changed:** LLR-4202.7 no longer asks for light-theme variables in the workspace; it asks for three `:root` variables used as `.hl-soon` uses `--soon`.
 - **Why:** the baseline graph (E2) shows the workspace's light block does not redefine `--soon`, `--over` or `--green`; its highlights are 22 % background tints under the ink, so one variable each is the convention (rule 11: match the codebase).
 - **Evidence:** `baseline-notes.md` "Design facts"; `taskboard/report_workspace.py:18-21, 84-86`.
+
+### LED-2026-11-01-incC.3 — the E2 prototype's findings, ruled
+- **Requirement:** HLR-4206
+- **Requirement:** LLR-4201.7
+- **Requirement:** LLR-4203.2
+- **Requirement:** LLR-4203.7
+- **Requirement:** LLR-4203.12
+- **Requirement:** LLR-4203.13
+- **Requirement:** LLR-4203.14
+- **Requirement:** LLR-4203.15
+- **Requirement:** LLR-4204.1
+- **Requirement:** LLR-4204.2
+- **Requirement:** LLR-4205.7
+- **Requirement:** LLR-4205.8
+- **Requirement:** LLR-4205.11
+- **Requirement:** LLR-4205.12
+- **Requirement:** LLR-4205.13
+- **Requirement:** LLR-4205.15
+- **Requirement:** LLR-4205.16
+- **Date:** 2026-11-01
+- **What changed:** reworded HLR-4206, LLR-4201.7, LLR-4203.2, LLR-4203.7, LLR-4204.1, LLR-4204.2, LLR-4205.7, LLR-4205.8, LLR-4205.11, LLR-4205.12, LLR-4205.13; added LLR-4203.12, LLR-4203.13, LLR-4203.14, LLR-4203.15, LLR-4205.15, LLR-4205.16 (55 → 61 LLRs).
+- **Why:** the prototype groups' findings P-V-2, P-V-3, P-M1-1..5, P-M1-8, P-M2-1..4, P-M2-6, P-M2-9 — each ruling in `03-pdr-rulings.md` round 0.
+- **Evidence:** `graph-proto-V.cw.md`, `graph-proto-M1.cw.md`, `graph-proto-M2.cw.md` (`## Findings`).

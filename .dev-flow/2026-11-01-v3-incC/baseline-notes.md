@@ -9,28 +9,18 @@
 - modals.py:568: TaskModal `.task-sec` label `Notes  [dim]==…== yellow · !!…!! red · ++…++ green[/dim]`. No test pins this text.
 - modals.py:2543: `TaskDetails` label `[b]Notes[/b]  [dim]highlight: ==…== yellow, !!…!! red, ++…++ green[/dim]`.
 - views.py:8734-8736: `legend_entries` in mode `focus` gives `==text==` "highlight: yellow / warning", `!!text!!` "red / attention", `++text++` "green / resolved". It lists them whenever any task is pinned, even when no note holds a highlight (probe P-2).
-- README.md:247 and REQUIREMENTS.md:8 (HLR-002) describe the syntax in the docs. Docstrings views.py:3506 and :3583 are not user-facing.
-- A related vocabulary: views.py:353-356 `PRIORITY_BADGE` reuses `!!` (over) and `==` (soon) as priority badges.
+- Docs: README.md:247, REQUIREMENTS.md:8 (HLR-002). Related: views.py:353-356 `PRIORITY_BADGE` reuses `!!` (over) / `==` (soon) as priority badges.
 
 **Textual private API on TextArea:** none. `_highlights`, `_build_highlight_map` and `.theme` / `_theme` have zero hits in taskboard/ and tests/. `#f-notes` is a plain `TextArea(text, id="f-notes")` with no language and no theme. The raw markers stay visible while typing; only `#task-preview` shows colour.
 
 **alt keys:**
-- alt+0 … alt+9 are FREE everywhere: not in TaskModal.BINDINGS, not in keymap.KEYMAP / app_bindings, not in any modal.
-- Plain 0-9 are app view keys (keymap.py:65-74, not priority). In `#f-notes` they type digits.
-- alt+c is FREE in TaskModal and globally. It is bound only in `MarkForm` (modals.py:2101, `focus_row('mf-colour')`).
-- TaskModal holds:
-  - esc;
-  - ctrl+v, ctrl+e (priority);
-  - alt+s, alt+t, alt+d, alt+m, alt+i (priority);
-  - up, down, enter, tab (priority, show=False).
+- alt+0 … alt+9 are FREE everywhere (not in TaskModal.BINDINGS, keymap.KEYMAP / app_bindings, or any modal); plain 0-9 are app view keys (keymap.py:65-74, not priority) and type digits in `#f-notes`. alt+c is FREE in TaskModal and globally; bound only in `MarkForm` (modals.py:2101, `focus_row('mf-colour')`).
+- TaskModal holds esc; ctrl+v, ctrl+e, alt+s, alt+t, alt+d, alt+m, alt+i (priority); up, down, enter, tab (priority, show=False).
 - `check_action` gates three of them. `mark` acts only when `#f-mark` is composed. `drop_move` / `drop_pick` act only while `_mention` is "list" with options, or "add" with the focus in `#mdrop`. Every other action returns True. App.check_action releases the app's priority cursor/hmove/tab while a modal is open (app.py:1309).
 
 **Design facts for the prototype:**
-- A new tone needs a `HEX[tone]` entry: `notes_text` indexes `HEX[tone]` and raises KeyError without one.
-- A new tone also needs `.hl-<tone>` CSS in BOTH report_deck.py:439 and report_workspace.py:84-86. `notes_html` writes `class="hl-<tone>"` straight from the tone name.
-- Neither CSS has a `.hl-mut` rule.
-- report_workspace's light block (:18-21) does not redefine `--soon`, `--over` or `--green`. report_deck's `LIGHT` (:379-382) does.
-- `present_note_lines` maps `mut` to `ink`.
+- A new tone needs a `HEX[tone]` entry (`notes_text` indexes `HEX[tone]`; KeyError without one) and `.hl-<tone>` CSS in BOTH report_deck.py:439 and report_workspace.py:84-86 (`notes_html` writes `class="hl-<tone>"` from the tone name). Neither CSS has `.hl-mut`.
+- report_workspace's light block (:18-21) does not redefine `--soon`/`--over`/`--green`; report_deck's `LIGHT` (:379-382) does. `present_note_lines` maps `mut` to `ink`.
 
 **Guards (tests that pin highlight behaviour):**
 - tests/test_highlight_segments.py::test_TC_417_the_board_markup_is_unchanged (frozen oracle; imports `_HIGHLIGHT_RE`), ::test_TC_417_segments_drop_markers_and_keep_text
@@ -43,11 +33,7 @@
 - Key guards: tests/test_people_picker.py::test_TC_2503_closed_the_arrows_move_the_cursor, ::test_TC_2503_with_no_one_listed_enter_is_a_new_line; tests/test_marks_manager.py::test_TC_2605_an_empty_directory_composes_no_select; tests/test_modal_keys.py::test_TC_2407_every_modal_is_in_the_inventory, ::test_AT_2407_alt_s_saves_and_letters_type, ::test_AT_2604_the_marks_manager_and_its_form_obey_the_modal_key_law (pins `alt+c` in MarkForm)
 
 **Probes (run on incC-marks, `taskboard.__file__` = incC-marks):**
-- P-1:
-  - `_highlight_markup("")` → `[#8b98a5][/]`
-  - `_focus_note_snippet("==a== b\nsecond", 40)` → `[#fbbf24]a[/][#8b98a5] b …[/]`
-  - `present_note_lines("- ==alpha== bravo", 40)` → `[("• ", [("alpha","soon"),(" bravo","ink")])]`
-  - `_notes_text("==a== !!b!!\n++c++")` → `"a b\nc"`
+- P-1: `_highlight_markup("")` → `[#8b98a5][/]`; `_focus_note_snippet("==a== b\nsecond", 40)` → `[#fbbf24]a[/][#8b98a5] b …[/]`; `present_note_lines("- ==alpha== bravo", 40)` → `[("• ", [("alpha","soon"),(" bravo","ink")])]`; `_notes_text("==a== !!b!!\n++c++")` → `"a b\nc"`.
 - P-2: `legend_entries("focus", board)` with one pinned task → the spine and the three highlight lines. With no pinned task → `[]`.
 
 The `# node:` marks remain uncommitted in incC-marks (12 lines in views.py, report_html.py, modals.py).

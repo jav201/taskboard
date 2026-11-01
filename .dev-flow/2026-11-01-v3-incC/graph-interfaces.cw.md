@@ -28,14 +28,34 @@ examples: (TC-4202) text "a ::b:: x :: c" → segments ("a ", "mut"), ("x", "blu
 examples: (TC-4203) text "==y== !!r!!" → segments ("y", "soon"), (" ", "mut"), ("r", "over") as at base
 
 TaskModal._lift_pen
-req: LLR-4203.3, LLR-4203.4, LLR-4203.6, LLR-4205.14, LLR-4203.11
+req: LLR-4203.3, LLR-4203.4, LLR-4203.6, LLR-4203.11, LLR-4203.14, LLR-4205.14
 in: TaskModal self
 out: None
-func: if a pen is on: find the span (colour_spans of the cursor row) holding the cursor whose code is the pen's; if its inner text is empty remove the whole span and put the cursor at its start, else put the cursor at its end; set pen to None; refresh the Notes label. No pen: does nothing. Owned by M1; called by M1 (action_pen, save) and M2 (action_colour).
+func: if a pen is on: s = _pen_span(); if s is None only set pen to None; else if s's inner text is empty remove text[s.start:s.end] and put the cursor at s.start, else put the cursor at s.end; then set pen to None and refresh the Notes label. No pen: does nothing. Owned by M1; called by M1 (action_pen, _save, the leave handler) and M2 (action_colour). (P-M1-10)
 module: taskboard/modals.py
 modify: [Data: TaskModal.pen] (replace); [Data: TextArea #f-notes] (replace)
-examples: (TC-4213) notes "::b:: abc ::", cursor (0, 9), pen `4` → notes "::b:: abc ::", cursor (0, 12), pen `None`
-examples: (TC-4215) notes "x::y::  ::", cursor (0, 7), pen `2` → notes "x", cursor (0, 1), pen `None`
+examples: (TC-4258) notes "::b:: abc ::", cursor (0, 9), pen `4` → notes "::b:: abc ::", cursor (0, 12), pen `None`
+examples: (TC-4259) notes "x::y::  ::", cursor (0, 7), pen `2` → notes "x", cursor (0, 1), pen `None`
+
+TaskModal._pen_span
+req: LLR-4203.7, LLR-4203.8
+in:
+out: Span? span
+func: the pen's span holding the cursor: None when no pen is on, when the selection of #f-notes is not empty, or when no Span of colour_spans(cursor row) has code PEN_CODES[pen][0] with inner_start <= col <= inner_end; else the first such span. Owned by M1, used by _lift_pen and M2.
+module: taskboard/modals.py
+examples: (TC-4258) notes "::b:: abc ::", cursor (0, 9), pen `4` → span start `0`, inner_start `6`, inner_end `9`, end `12`
+examples: (TC-4245) notes "::b:: abc ::", cursor (0, 12), pen `4` → span `None`
+
+TaskModal.check_action
+req: LLR-4203.10, LLR-4203.7, LLR-4205.16, HLR-4203, HLR-4205
+in: str action; tuple[object, ...] parameters
+out: bool? allowed
+func: base arms unchanged (`mark`, `drop_move`, `drop_pick`). ONE notes-focus gate (P-M2-6): `pen`, `pen_enter` and `colour` are allowed only while #f-notes has the focus; `pen_enter` additionally only while a pen is on and the `drop_pick` arm is False (P-M1-2). In BINDINGS `drop_pick` precedes `pen_enter` on `enter`, so the picker wins, then the pen, then the TextArea's newline. Every other action → True.
+module: taskboard/modals.py
+examples: (TC-4240) action "pen", parameters (4,), App.focused `#f-title` → allowed `False`
+examples: (TC-4230) action "pen", parameters (4,), App.focused `#f-notes` → allowed `True`
+examples: (TC-4237) action "pen_enter", pen `None` → allowed `False`; the notes get a plain new line as in test_TC_2503_with_no_one_listed_enter_is_a_new_line
+examples: (TC-4284) action "colour", App.focused `#f-title` → allowed `False`
 
 ## Entities
 
@@ -56,4 +76,7 @@ desc: the index 0..5 into PEN_CODES of the pen that is on, or None. Written by a
 [Data: PEN_CODES] ──▶ colour_spans
 [Data: PEN_CODES] ──▶ TaskModal._lift_pen
 [Data: TaskModal.pen] ──▶ TaskModal._lift_pen
+[Data: TaskModal.pen] ──▶ TaskModal._pen_span
+[Data: TaskModal.pen] ──▶ TaskModal.check_action
+TaskModal._pen_span ──▶ TaskModal._lift_pen
 TaskModal._lift_pen ──▶ [Data: TaskModal.pen]

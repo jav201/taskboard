@@ -88,7 +88,7 @@ multicolour structure I use on paper. (Operator verdict 3: B + C; D4 objection: 
 - **Traceability:** US-4201 · C-4
 - **Ledger:** none
 - **Statement:** The system shall use six tones that stay distinct hues and readable on every background they are drawn on.
-- **Validation:** `test` + `analysis` (tui-design PALETTE.md: s ≥ 0.15, AA 4.5:1, 256-colour downgrade)
+- **Validation:** `test` + `analysis` (tui-design PALETTE.md: the saturation cliff is s < 0.15, so the gate is s ≥ 0.20; AA 4.5:1; 256-colour downgrade)
 - **Numeric pass threshold:** LLR-4206.n all met; the guards `tests/test_colour_budget.py`, `tests/test_colour_budget_app.py`, `tests/test_palette_ration.py` pass with 0 edits.
 - **Acceptance test(s):** none (analysis + layer 0)
 - **Negative control:** a tone of `#5b6675` (dim) fails LLR-4206.1 and LLR-4206.2.
@@ -111,7 +111,7 @@ Each line: **id — form — statement.** Threshold. *NC:* negative control.
   Threshold: `"std::vector"`, `"a :: b"`, `"::x:: t ::"`, `"::B:: t ::"`, `"::bb:: t ::"` each → one `mut` segment equal to the input; 5/5. *NC:* accept any letter: arms 3–4 RED.
 - **LLR-4201.6 — State.** While a colour span is open, the tokeniser shall end it where the next opener starts, without dropping a space.
   Threshold: `"::b:: x ::r:: y ::"` → `[("x ","blue"),("y","over")]`. *NC:* lazy closer only: gives `("r:: y ::","mut")`.
-- **LLR-4201.7 — Ubiquitous.** The tokeniser shall start the span whose start comes first in the line and keep every marker inside a span as literal text of that span.
+- **LLR-4201.7 — Ubiquitous.** The tokeniser shall start the span whose start comes first in the line, and keep every marker inside a legacy span, and every legacy marker inside a colour span, as literal text of that span.
   Threshold: `"::b:: ==a== ::"` → `[("==a==","blue")]`; `"==a ::b:: c=="` → `[("a ::b:: c","soon")]`; 2/2. *NC:* nested tokenising: arm 1 RED.
 - **LLR-4201.8 — Unwanted.** If a colour span has no inner text, then the tokeniser shall emit no visible character for it.
   Threshold: `"a::b::::c"` → joined segment text `"ac"`, and no segment holds `:`. *NC:* treat `::::` as literal: `":"` appears.
@@ -145,7 +145,7 @@ Each line: **id — form — statement.** Threshold. *NC:* negative control.
 
 - **LLR-4203.1 — Event.** When `alt+<n>` (n = 1..6) is pressed while the notes field has the focus and no pen is on, the editor shall insert `::<code n>::` + two spaces + `::` at the cursor and place the cursor between the two spaces.
   Threshold: empty notes, `alt+5` → text `"::b::  ::"`, cursor `(0, 6)`. *NC:* insert without spaces: RED.
-- **LLR-4203.2 — State.** While a pen is on, the editor shall keep each typed character inside that pen's span.
+- **LLR-4203.2 — State.** While a pen is on, the editor shall keep each typed character inside that pen's span (exception, by design: a typed `::` is a closer — P-M1-5).
   Threshold: `alt+5`, type `abc` → `"::b:: abc ::"` and `highlight_segments` gives `[("abc","blue")]`. *NC:* cursor placed after the closer: RED.
 - **LLR-4203.3 — Event.** When `alt+0` is pressed while a pen is on, the editor shall move the cursor to just after that span's closer.
   Threshold: `alt+5 abc alt+0 d` → `"::b:: abc ::d"`. *NC:* `alt+0` ignored: `d` lands inside.
@@ -155,7 +155,7 @@ Each line: **id — form — statement.** Threshold. *NC:* negative control.
   Threshold: `alt+1 ab alt+5 x` → `"::r:: ab ::::b:: x ::"`; segments `[("ab","over"),("x","blue")]`; rendered text `"abx"` = typed text. *NC:* m opened inside n: RED.
 - **LLR-4203.6 — Unwanted.** If the pen is lifted while its span holds no inner text, then the editor shall remove that empty span.
   Threshold: `x` + `alt+2 alt+0` → `"x"`; `alt+2 alt+5 y` → `"::b:: y ::"`; 2/2. *NC:* keep the empty span: RED.
-- **LLR-4203.7 — Event.** When `enter` is pressed while a pen is on and the mention picker is closed, the editor shall end the span before the line break and open the same pen's span after it.
+- **LLR-4203.7 — Event.** When `enter` is pressed while a pen is on and the mention picker offers no pick, the editor shall end the span before the line break and open the same pen's span after it.
   Threshold: `alt+5 ab enter cd` → `"::b:: ab ::\n::b:: cd ::"`; both lines tokenise `blue`. *NC:* plain newline: line 2 renders `cd ::` literal → RED.
 - **LLR-4203.8 — Unwanted.** If the cursor leaves the pen's span (arrow keys, home/end, click, or a selection), then the editor shall turn the pen off.
   Threshold: `alt+5 ab`, then `right right right` (past the closer) → pen `None`; `left` inside the span → pen still on; 2/2. *NC:* pen survives leaving: RED.
@@ -163,14 +163,22 @@ Each line: **id — form — statement.** Threshold. *NC:* negative control.
   Threshold: at 118x30 and 80x24 the label's visible cells contain `1`..`6`, `0`, `alt+c` and the state, with 0 clipped key glyphs; at 118x30 the chip also names the pen (`blue`); 7 pen states × 2 sizes. *NC:* base label: RED.
 - **LLR-4203.10 — Unwanted.** If `alt+<n>` or `alt+0` is pressed while the notes field does not have the focus, then the editor shall change no field.
   Threshold: focus on title, `alt+5` → title and notes byte-equal to before. *NC:* insert into the focused Input: RED.
+- **LLR-4203.12 — Unwanted.** If `alt+<n>` is pressed while no pen is on and the cursor is inside a span (start < col < end), then the editor shall insert nothing and show the notice `Pens write new text — use alt+c to recolour.`
+  Threshold: `"::r:: ab ::"`, cursor (0, 7), `alt+5` → text byte-equal, pen `None`, 1 notify. *NC:* insert the pair inside: RED.
+- **LLR-4203.13 — Unwanted.** If `alt+<n>` is pressed while the notes' selection is not empty, then the editor shall insert nothing and show the same notice.
+  Threshold: select `plan`, `alt+5` → byte-equal, 1 notify. *NC:* replace the selection: RED.
+- **LLR-4203.14 — Unwanted.** If the cursor leaves the pen's span while it holds no inner text, then the editor shall remove that span.
+  Threshold: `x` + `alt+3`, `home` → text `"x"`, pen `None`. *NC:* `"x::y::  ::"` left: RED.
+- **LLR-4203.15 — Event.** When `alt+<n>` is pressed while pen n is already on, the editor shall change nothing.
+  Threshold: `alt+5 ab alt+5` → `"::b:: ab ::"`, cursor (0, 8), pen `4`. *NC:* a second pair: RED.
 - **LLR-4203.11 — Unwanted.** If the editor saves while a pen's span holds no inner text, then the editor shall save the notes without that empty span.
   Threshold: notes `x`, `alt+3`, `alt+s` → saved notes `"x"`. *NC:* saved `"x::y::  ::"` (strip keeps it): RED.
 
 ### 4.4 Live ink — HLR-4204
 
-- **LLR-4204.1 — State.** While the notes field holds a colour span, the TextArea shall paint the span's inner text in `HEX[tone]`.
+- **LLR-4204.1 — State.** While the notes field holds a span (colour or legacy), the TextArea shall paint the span's inner text in `HEX[tone]`.
   Threshold: notes `"a ::b:: x :: c"`: the rendered cell of `x` has fg `#60a5fa`. *NC:* no highlight map: RED.
-- **LLR-4204.2 — State.** While the notes field holds a colour span, the TextArea shall paint its opener and closer in `HEX["dim"]`.
+- **LLR-4204.2 — State.** While the notes field holds a span (colour or legacy), the TextArea shall paint its markers in `HEX["dim"]`.
   Threshold: cells of `::b::` and the closing `::` have fg `#5b6675`; 7/7 marker cells. *NC:* markers in tone: RED.
 - **LLR-4204.3 — Event.** When the notes text changes, the TextArea shall rebuild its colours from the new text before the next paint.
   Threshold: type `y` into an open span → its cell is the tone after one `pilot.pause()`. *NC:* build only on mount: RED.
@@ -195,20 +203,24 @@ Each line: **id — form — statement.** Threshold. *NC:* negative control.
   Threshold: `"==late=="` cursor inside, `5` → `"::b:: late ::"`; `"::r:: a b ::"` cursor on `a`, `3` → `"::y:: a b ::"`; 2/2. *NC:* wrap again (nested): RED.
 - **LLR-4205.6 — Event.** When `0` is pressed in the palette for a target inside one span, the editor shall remove that span's markers, keeping its inner text.
   Threshold: `"x ::b:: y :: z"` → `"x y z"`; `"==y=="` → `"y"`; 2/2. *NC:* remove only the opener: RED.
-- **LLR-4205.7 — Unwanted.** If `0` is pressed in the palette for an uncoloured target, then the editor shall leave the notes unchanged.
-  Threshold: byte-equal. *NC:* strip the word: RED.
-- **LLR-4205.8 — Event.** When `esc` is pressed in the palette, the editor shall close it and leave the notes unchanged.
-  Threshold: byte-equal; palette gone. *NC:* `esc` applies `0`: RED.
+- **LLR-4205.7 — Unwanted.** If `0` is pressed in the palette for an uncoloured target, then the editor shall leave the notes as they were when the palette opened.
+  Threshold: byte-equal to the notes at palette open. *NC:* strip the word: RED.
+- **LLR-4205.8 — Event.** When `esc` is pressed in the palette, the editor shall close it and leave the notes as they were when the palette opened.
+  Threshold: byte-equal to the notes at palette open; palette gone. *NC:* `esc` applies `0`: RED.
 - **LLR-4205.9 — Ubiquitous.** The palette's rewrite shall change no character of the notes outside the target's span or the target itself.
   Threshold: over 12 cases (6 codes × {plain, inside span}), the text before and after the rewritten range is byte-equal. *NC:* rewrite the whole line: RED.
 - **LLR-4205.10 — Unwanted.** If `alt+c` is pressed with a selection that covers more than one line, then the editor shall not open the palette and shall show a notice.
   Threshold: no palette; 1 notify. *NC:* open anyway: RED.
-- **LLR-4205.11 — Unwanted.** If `alt+c` is pressed with a target that only partly overlaps a span, then the editor shall not open the palette and shall show a notice.
+- **LLR-4205.11 — Unwanted.** If `alt+c` is pressed with a target that overlaps a span without lying inside it, then the editor shall not open the palette and shall show a notice.
   Threshold: `"::b:: ab :: cd"`, select `b :: c` → no palette, 1 notify. *NC:* open: RED.
-- **LLR-4205.12 — Unwanted.** If `alt+c` is pressed with no selection and no word at the cursor, then the editor shall not open the palette and shall show a notice.
-  Threshold: empty notes → no palette, 1 notify. *NC:* open on empty: RED.
+- **LLR-4205.12 — Unwanted.** If `alt+c` is pressed with no word at the cursor and a selection that is empty or whitespace only, then the editor shall not open the palette and shall show a notice.
+  Threshold: empty notes → no palette, 1 notify; selection `"   "` → no palette, 1 notify; 2/2. *NC:* open on empty: RED.
 - **LLR-4205.13 — Ubiquitous.** The palette box shall lie wholly on screen, next to the target.
-  Threshold: at 80x24 and 118x30, for a target in the first and the last row of the notes field, box region ⊂ screen region (4/4). *NC:* no clamping: RED at 80x24 last row.
+  Threshold: at 80x24 and 118x30, for a target in the first and the last row of the notes field, box region ⊂ screen region, and the box's top row = anchor row + 1 or its bottom row = anchor row − 1 (4/4). *NC:* no clamping: RED at 80x24 last row.
+- **LLR-4205.15 — Unwanted.** If a palette rewrite would change the line's visible text (the joined segments of `highlight_segments`), then the editor shall leave the notes unchanged and show a notice.
+  Threshold: `"std::vector"` target whole word, `5` → byte-equal, 1 notify; `"==a::b=="`, `5` → byte-equal, 1 notify; 2/2. *NC:* rewrite anyway: visible text changes, RED.
+- **LLR-4205.16 — Unwanted.** If `alt+c` is pressed while the notes field does not have the focus, then the editor shall open no palette and change no field.
+  Threshold: focus on title, `alt+c` → no palette, fields byte-equal. *NC:* palette opens: RED.
 - **LLR-4205.14 — Event.** When `alt+c` is pressed while a pen is on, the editor shall turn the pen off (LLR-4203.6 applies) before it computes the target.
   Threshold: `alt+5 ab alt+c 3` → `"::y:: ab ::"` (target = the pen's span), pen `None`. *NC:* pen kept: RED.
 
@@ -260,4 +272,4 @@ the 4-source-file budget. Unchanged readers (verified at E2): `notes_text`, `not
 
 ## 7. Counts
 
-US 1 · HLR 6 · LLR 55 (4201: 9, 4202: 10, 4203: 11, 4204: 6, 4205: 14, 4206: 5) · AT 4.
+US 1 · HLR 6 · LLR 61 (4201: 9, 4202: 10, 4203: 15, 4204: 6, 4205: 16, 4206: 5) · AT 4.

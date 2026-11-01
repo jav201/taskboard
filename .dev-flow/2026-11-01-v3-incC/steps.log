@@ -6,3 +6,4 @@
 2026-11-01T06:32:35Z E1 requirements end model=opus hlr=6 llr=55 at=4
 2026-11-01T06:35:56Z E2a baseline-graph end model=opus nodes=12 entities=28 edges=27 lint=0 extract=0
 2026-11-01T06:35:56Z E2b prototype start model=opus (3 agents: V, M1, M2)
+2026-11-01T06:49:44Z E2b prototype groups returned (V 9 nodes, M1 15, M2 11; 26 findings); round-0 rulings start model=opus
