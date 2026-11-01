@@ -118,6 +118,9 @@ Each line: **id — form — statement.** Threshold. *NC:* negative control.
 - **LLR-4201.9 — Ubiquitous.** The tokeniser shall return segments whose texts, joined, equal the input with the matched markers removed.
   Threshold: over a derived set of ≥ 1 000 inputs from pieces {`ab`,` `,`::b::`,`::r::`,`::`,`==y==`,`!!`,`::z::`,`é`,`\n`} × up to 4: 0 exceptions; joined text equals an independent oracle (the reference scanner in the test) for 100 %. *NC:* drop the text between two spans: RED.
 
+- **LLR-4201.10 — Ubiquitous.** The tokeniser shall scan a line in time linear in its length.
+  Threshold: a 100 000-char line of repeated `::b:: x :: ::` and one of repeated `std::` each tokenise in ≤ 250 ms, and t(100 000)/t(10 000) ≤ 20 (median of 3). *NC:* the re-search-every-loop scanner (SEC-1: 918 ms, ratio ≈ 100): RED.
+
 ### 4.2 Surfaces and legends — HLR-4202
 
 - **LLR-4202.1 — Ubiquitous.** The board's markup (`_highlight_markup`) shall paint each colour span's text in `HEX[tone]`.
@@ -174,6 +177,11 @@ Each line: **id — form — statement.** Threshold. *NC:* negative control.
 - **LLR-4203.11 — Unwanted.** If the editor saves while a pen's span holds no inner text, then the editor shall save the notes without that empty span.
   Threshold: notes `x`, `alt+3`, `alt+s` → saved notes `"x"`. *NC:* saved `"x::y::  ::"` (strip keeps it): RED.
 
+- **LLR-4203.16 — Ubiquitous.** The app shall receive `ESC` followed by a digit 0–6 from the terminal as the key `alt+<digit>`.
+  Threshold: `XTermParser` fed `"\x1b5"` and `"\x1b0"` (after `taskboard.modals` is imported) yields keys `alt+5` and `alt+0`; 2/2. *NC:* base Textual table gives `∞`/`º`: RED.
+- **LLR-4203.17 — Unwanted.** If a pen's inserted markers would change the line's visible text, then the editor shall insert nothing and show notice N4.
+  Threshold: `"b:: x"` cursor (0,0) `alt+1` → byte-equal, 1 notify; `"C::b"` cursor (0,4) `alt+1` → byte-equal, 1 notify; 2/2. *NC:* insert anyway: RED.
+
 ### 4.4 Live ink — HLR-4204
 
 - **LLR-4204.1 — State.** While the notes field holds a span (colour or legacy), the TextArea shall paint the span's inner text in `HEX[tone]`.
@@ -188,6 +196,13 @@ Each line: **id — form — statement.** Threshold. *NC:* negative control.
   Threshold: `"é ::b:: café ☕ ::"`: cells of `café ☕` blue, cell of `é` (col 0) not blue. *NC:* str offsets used as byte offsets: RED.
 - **LLR-4204.6 — Unwanted.** If any other TextArea exists (the URLs and Images fields, any other screen), then the live ink shall leave its styles unchanged.
   Threshold: after the editor mounts, the `#f-urls` TextArea's theme `syntax_styles` has 0 `pen.`/colour keys, and the built-in theme object is unchanged (`is not` the editor's). *NC:* mutate the shared theme: RED.
+
+- **LLR-4204.7 — Ubiquitous.** The TextArea shall rebuild its colours in time linear in the text length.
+  Threshold: a 100 000-char single line with 10 000 spans builds in ≤ 250 ms; t(100k)/t(10k) ≤ 20. *NC:* per-offset prefix re-encode: RED.
+- **LLR-4204.8 — Unwanted.** If building the colours raises any exception, then the TextArea shall show the text without ink and keep working.
+  Threshold: with `colour_spans` monkeypatched to raise, the editor opens, accepts typing and saves; 0 uncaught exceptions. *NC:* no fallback: the app crashes, RED.
+- **LLR-4204.9 — Unwanted.** If the notes hold a lone surrogate code point, then the TextArea shall still open and colour the other spans.
+  Threshold: notes `"\ud800 ::b:: x ::"` → editor opens, cell of `x` blue. *NC:* strict `encode("utf-8")` raises UnicodeEncodeError: RED.
 
 ### 4.5 Palette — HLR-4205
 
@@ -239,8 +254,8 @@ Each line: **id — form — statement.** Threshold. *NC:* negative control.
 
 ## 5. Acceptance tests (black-box, keys and dialogs)
 
-- **AT-4201** — editor, pens: open a task (`e`), focus notes, `alt+5`, type `ask`, `alt+0`, type ` now`, `alt+s`. Then the details (`enter`/`v` as the app binds) show `ask` in `#60a5fa` and ` now` not blue; the saved board holds `::b:: ask :: now`.
-- **AT-4202** — editor, palette: notes `the plan works`, `shift+left`×5 from (0,8)… select `plan`, `alt+c`, the palette shows 8 rows, press `3`; save; the board holds `the ::y:: plan :: works`.
+- **AT-4201** — editor, pens: open a task (`e`), focus notes, `alt+5`, type `ask`, `alt+0`, type ` now`, `alt+s`. Then the details screen (opened with the key the app binds to `TaskDetails`, named in the test) show `ask` in `#60a5fa` and ` now` not blue; the saved board holds `::b:: ask :: now`.
+- **AT-4202** — editor, palette: notes `the plan works`, cursor (0,8), `shift+left`×4 selects `plan`, `alt+c`, the palette shows 8 rows, press `3`; save; the board holds `the ::y:: plan :: works`.
 - **AT-4203** — HTML export: a board whose note is `::v:: idea :: and ::o:: risk ::`, export via the `H` path: the workspace and deck files hold `hl-violet` and `hl-orange` spans and the CSS rules for both.
 - **AT-4204** — legacy: a board whose notes hold `==a== !!b!! ++c++ std::vector` renders on the board, details and presentation byte-identically to base (snapshot of the rendered Text/markup).
 
@@ -272,4 +287,4 @@ the 4-source-file budget. Unchanged readers (verified at E2): `notes_text`, `not
 
 ## 7. Counts
 
-US 1 · HLR 6 · LLR 61 (4201: 9, 4202: 10, 4203: 15, 4204: 6, 4205: 16, 4206: 5) · AT 4.
+US 1 · HLR 6 · LLR 67 (4201: 10, 4202: 10, 4203: 17, 4204: 9, 4205: 16, 4206: 5) · AT 4.

@@ -45,3 +45,37 @@
 | C-1 | at leave time `_pen_span()` is None, so `_lift_pen` cannot remove the empty span (LLR-4203.14) | **Accept the correction agent's seam:** `_pen_follow` removes the empty span itself from `[Data: TaskModal._pen_at]` (where the pen's span was before the move), with the cursor shift it describes (TC-4256, TC-4257). LLR-4203.14 leaves `_lift_pen`'s req. |
 | C-2 | details label reduced to `Notes  r o y g b v` | **Partly undo:** keep the syntax hint — `Notes  ::c:: … ::  r o y g b v`, each code letter in its tone (≈ 30 cells, fits the 56-cell box). Legacy listing stays dropped. E4 addendum. |
 | C-3 | notice N4 generalised to "That colour would change the text you see: nothing changed." | **Accept.** |
+
+## Round 1 — PDR (architect FAIL: 1 MAJOR, 2 HIGH, 4 MEDIUM, 6 MINOR; security PASS-WITH-NOTES: 3 MEDIUM, 6 LOW)
+
+**Orchestrator probe for ARCH-1 (executed):** in Windows Terminal 1.24.12741.0 a script wrote `CSI ? u` (kitty
+flags query) then `CSI c`; the terminal answered only the DA (`evidence/wt-kitty-query.log`:
+`'\x1b[?61;4;6;7;14;21;22;23;24;28;32;42;52c'`). No kitty protocol, so `alt+5` arrives as `ESC 5`, which
+Textual 8.2.8's table (`_ansi_sequences.py:384-394`) turns into `∞`. ARCH-1 is real. Key injection into the
+window (SendKeys/keybd_event) delivered nothing on this desktop, so the end-to-end key path is proven at the
+parser level only.
+
+| Id | Ruling |
+|---|---|
+| ARCH-1 MAJOR | **Accept; keep the operator's keys.** At import, modals.py removes the seven entries `"\x1b0"`..`"\x1b6"` from `textual._ansi_sequences.ANSI_SEQUENCES_KEYS` (they exist only for WezTerm-on-macOS Option-digit glyphs), so `ESC <digit>` takes the parser's generic alt path → `Key("alt+5", "5")`, as `alt+s` does today. Alternatives rejected: glyph aliases (`¡`, `º` are typed on Spanish keyboards), alt+letter pens (`alt+b` = `ESC b` = ctrl+left; breaks the r-o-y-g-b-v mnemonic and the operator's verdict). Trade-off recorded: a macOS WezTerm user's Option+digit no longer types `∞`. New LLR-4203.16 (parser level). |
+| ARCH-2 HIGH | **Accept.** `check_action` allows `pen` and `colour` always; the actions return early (consuming the key) when `#f-notes` lacks the focus. Only `pen_enter` stays gated. Tests post `events.Key("alt+c", "c")` / `Key("alt+5", "5")`. |
+| ARCH-3 HIGH | **Accept.** `action_colour` reads `_pen_span()` BEFORE `_lift_pen()`; a non-empty pen span is the target (its inner range); an empty one is removed by the lift and the call ends with the "nothing to colour" notice. Example `::b:: go ::now` added. |
+| ARCH-4 | **Accept** the architect's fix (word = non-whitespace run inside the gap or span-inner region holding the cursor; a cursor on markers targets that span). |
+| ARCH-5 | **Accept** (= C-2). |
+| ARCH-6 | **Accept.** AT-4202 uses `shift+left`×4; AT-4201 names the details key. |
+| ARCH-7 | **Accept: remove the wide label form** (one form ≤ 38 cells; no `_notes_w`, no resize hook). |
+| ARCH-8 | **Accept** the 3-line fix (`_pen_at` set by `action_pen` and `action_pen_enter`; `pen_enter` arm requires `_pen_span()`). |
+| ARCH-9 | **Accept:** interface example TC-4245 → TC-4253. |
+| ARCH-10 | **Accept:** `_lift_pen` on a span with no closer (`end == inner_end`) inserts ` ::` before moving past it. |
+| ARCH-11 | **Accept the consistent reading:** inside an open span, at `:::<c>::` the opener at j+1 wins (span text keeps the `:`), matching TC-4229 outside spans. Example `::r:: a :::b:: c ::` → `("a :","over"),("c","blue")`. |
+| ARCH-12 | **Accept:** the count is 1 112. |
+| ARCH-13 | **Accept:** pin the ` ::` result in TC-4250 and the README sentence; no code. |
+| SEC-1 | **Accept:** linear scanner (cache each kind's next match) and one-pass byte offsets. New LLR-4201.10, LLR-4204.7. |
+| SEC-2 | **Accept:** the pen insert gets the visible-text check and notice N4. New LLR-4203.17. |
+| SEC-3 | **Keep HLR-4204** — the commission (C-2) asks for live colour IN the TextArea; the preview does not meet it. Make it fail-safe: the override catches any exception and falls back to the base map (no ink, no crash). New LLR-4204.8. Pinning Textual in pyproject → BACKLOG. |
+| SEC-4 | **Accept with ARCH-8:** `_pen_at` is reset whenever a pen is set or lifted; `_pen_follow` deletes only if the text at `_pen_at` is still an empty span of the pen's code. |
+| SEC-5 | **Accept (E4 addendum):** the palette callback re-validates the target; if the line changed it does nothing and notifies. |
+| SEC-6 | **Accept:** byte offsets via `encode("utf-8", "surrogatepass")`. New LLR-4204.9. |
+| SEC-7 | Covered by the ARCH-1/ARCH-2 parser-level tests. |
+| SEC-8 | Pre-existing rich escape bug → BACKLOG. |
+| SEC-9 | **Accept (E4 addendum):** TC-4209 also asserts every emitted tone ∈ {mut, soon, over, green, orange, blue, violet}. |

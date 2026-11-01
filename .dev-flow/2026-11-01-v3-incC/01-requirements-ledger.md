@@ -41,3 +41,15 @@
 - **What changed:** reworded HLR-4206, LLR-4201.7, LLR-4203.2, LLR-4203.7, LLR-4204.1, LLR-4204.2, LLR-4205.7, LLR-4205.8, LLR-4205.11, LLR-4205.12, LLR-4205.13; added LLR-4203.12, LLR-4203.13, LLR-4203.14, LLR-4203.15, LLR-4205.15, LLR-4205.16 (55 → 61 LLRs).
 - **Why:** the prototype groups' findings P-V-2, P-V-3, P-M1-1..5, P-M1-8, P-M2-1..4, P-M2-6, P-M2-9 — each ruling in `03-pdr-rulings.md` round 0.
 - **Evidence:** `graph-proto-V.cw.md`, `graph-proto-M1.cw.md`, `graph-proto-M2.cw.md` (`## Findings`).
+
+### LED-2026-11-01-incC.4 — the PDR round 1, ruled
+- **Requirement:** LLR-4201.10
+- **Requirement:** LLR-4203.16
+- **Requirement:** LLR-4203.17
+- **Requirement:** LLR-4204.7
+- **Requirement:** LLR-4204.8
+- **Requirement:** LLR-4204.9
+- **Date:** 2026-11-01
+- **What changed:** added LLR-4201.10, LLR-4203.16, LLR-4203.17, LLR-4204.7, LLR-4204.8, LLR-4204.9 (61 → 67); the AT-4201 and AT-4202 key scripts corrected (ARCH-6).
+- **Why:** ARCH-1 (alt+digit arrives as Option glyphs under Windows Terminal 1.24 without the kitty protocol), SEC-1 (quadratic scan), SEC-2 (a pen insert fusing with neighbours), SEC-3 (private-API fail-safe), SEC-6 (lone surrogate).
+- **Evidence:** `03-pdr-architect.md`, `03-pdr-security.md`, `evidence/wt-kitty-query.log`; rulings in `03-pdr-rulings.md` round 1.
