@@ -53,3 +53,10 @@
 - **What changed:** added LLR-4201.10, LLR-4203.16, LLR-4203.17, LLR-4204.7, LLR-4204.8, LLR-4204.9 (61 → 67); the AT-4201 and AT-4202 key scripts corrected (ARCH-6).
 - **Why:** ARCH-1 (alt+digit arrives as Option glyphs under Windows Terminal 1.24 without the kitty protocol), SEC-1 (quadratic scan), SEC-2 (a pen insert fusing with neighbours), SEC-3 (private-API fail-safe), SEC-6 (lone surrogate).
 - **Evidence:** `03-pdr-architect.md`, `03-pdr-security.md`, `evidence/wt-kitty-query.log`; rulings in `03-pdr-rulings.md` round 1.
+
+### LED-2026-11-01-incC.5 — a lone surrogate: no ink rather than one more private override
+- **Requirement:** LLR-4204.9
+- **Date:** 2026-11-01
+- **What changed:** the threshold no longer asks for `x` in blue; the editor opens and accepts typing with no ink.
+- **Why:** Textual 8.2.8 `TextArea._render_line` encodes each visible line strictly whenever any highlight exists (the correction agent ran it: UnicodeEncodeError). Painting would need an override of `_render_line`, a fourth private name; prefer removing the feature over guarding it.
+- **Evidence:** correction pass round 1 report; `03-pdr-rulings.md` round 1 addendum R1-1.

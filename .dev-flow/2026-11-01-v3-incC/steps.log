@@ -10,3 +10,4 @@
 2026-11-01T06:58:05Z E2 end (correction pass applied; 61/61 LLR traced) model=opus
 2026-11-01T06:58:05Z E3 PDR round 1 start model=opus (architect, security)
 2026-11-01T07:17:08Z E3 PDR round 1 done (arch FAIL 1M/2H, sec PwN 3 MED); rulings written; correction start model=opus
+2026-11-01T07:31:02Z E3 round-1 corrections done; round 2 (blocking-only re-review) start model=opus

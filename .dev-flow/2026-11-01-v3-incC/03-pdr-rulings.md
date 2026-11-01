@@ -79,3 +79,9 @@ parser level only.
 | SEC-7 | Covered by the ARCH-1/ARCH-2 parser-level tests. |
 | SEC-8 | Pre-existing rich escape bug → BACKLOG. |
 | SEC-9 | **Accept (E4 addendum):** TC-4209 also asserts every emitted tone ∈ {mut, soon, over, green, orange, blue, violet}. |
+
+### Round 1 addendum
+| Id | Point | Ruling |
+|---|---|---|
+| R1-1 | SEC-6: LLR-4204.9's "x blue" cannot hold on Textual 8.2.8 (`_render_line` encodes strictly) | **Amend LLR-4204.9** to "opens and accepts typing without ink" (LED.5). No `_render_line` override. |
+| R1-2 | 31 TC ids shared by a caller and its callee within one owner | **Accept** (a TC groups the test functions of one thread, the TC-2503 convention). |
