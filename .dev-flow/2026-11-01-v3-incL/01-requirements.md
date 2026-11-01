@@ -28,7 +28,7 @@ stamps; LLR-4301.5 is the seam). No change to `history.jsonl`'s format or to whi
 | valid created | a `created` value that is a `str` and that `datetime.fromisoformat` parses |
 | birth record | a `history.read` record whose `task` is the task's id and whose `from` is `None` (written by `Board.add_task`) |
 | added moment | a row's place in time: its valid created (source `c`), else the `at` of its first birth record in file order (source `h`, shown `≈`), else unknown (source `?`) |
-| first created date | the earliest valid created among all tasks the list read (archived included), as `%b %-d` (e.g. `Oct 31`) |
+| first created date | the earliest valid created among all tasks the list read (archived included), as `%b ` + `str(day)` (e.g. `Oct 31`, `Nov 1`; no `%-d`, P-V-4) |
 | old board | a board file whose tasks hold no `created` key |
 | list view | the screen `N` opens (working name `AddedList`) |
 | row | one task line in the list (a day header is not a row) |
@@ -134,11 +134,11 @@ never rewritten.)
 - **LLR-4302.2 — Ubiquitous.** The system shall read a task's `created` from a board entry whose `created` value is a `str`.
   Threshold: `Task.from_dict({"title":"a","created":"2026-10-30T08:10:00"}).created == "2026-10-30T08:10:00"`; and `"not a date"` is read as the same string (validity is the list's concern, LLR-4304.8); 2/2. *NC:* parse-or-drop on read: arm 2 RED.
 - **LLR-4302.3 — Unwanted.** If a board entry's `created` value is not a `str`, then the system shall write that value back unchanged when the board is saved.
-  Threshold: entries with `"created": 5` and `"created": null` round-trip load→save to the same values; 2/2. *NC:* drop non-string values: RED.
-- **LLR-4302.4 — Event.** When an old board is loaded and saved with no change, the system shall write the exact bytes it read.
-  Threshold: 3 synthetic old boards (plain; legacy `status`/`url` keys; an unknown task key) — byte-equal after `Board.load` + `save()`; 3/3. *NC:* `_to_dict` writes `"created": null`: RED.
+  Threshold: entries with `"created": 5` and `"created": null` round-trip load→save to the same values (values, not key position: the key moves to the front of its record, P-D-3); 2/2. *NC:* drop non-string values: RED.
+- **LLR-4302.4 — Event.** When an old board is loaded and saved with no change, the system shall write the exact bytes that `eb411e1` writes for that board.
+  Threshold: 3 synthetic old boards (plain; legacy `status`/`url` keys; an unknown task key placed first in its record) — after `Board.load` + `save()`, byte-equal to the base oracle held in the test (for the plain and unknown-key boards that oracle is the input itself); 3/3. *NC:* `_to_dict` writes `"created": null`: RED.
 - **LLR-4302.5 — Event.** When a task is added to an old board, the system shall write every other task's entry exactly as it was.
-  Threshold: each old task's JSON entry (the `json.dumps(entry, indent=2)` slice) equal before and after the add; n/n. *NC:* back-fill inferred `created` on save: RED.
+  Threshold: on the plain old board, each old task's JSON entry (the `json.dumps(entry, indent=2)` slice) equal before and after the add; n/n. *NC:* back-fill inferred `created` on save: RED.
 - **LLR-4302.6 — State.** While the list view is open, the system shall write no board file and no `history.jsonl`.
   Threshold: sha256 of 2 board files and their 2 `history.jsonl` equal before `N` and after `↓ ↓ o v v esc`; 4/4. *NC:* a `save()` in the screen's compose: RED.
 
@@ -164,7 +164,7 @@ never rewritten.)
   Threshold: the fixture yields headers `TODAY`, `YESTERDAY`, `WED OCT 28 ≈`, `BEFORE OCT 31 · ?` in that order (newest first, today 2026-11-01); 4/4. *NC:* no ≈ suffix: RED.
 - **LLR-4303.10 — Ubiquitous.** The detail pane shall show, from its top line: the cursor task's title in bold; the project name and board name; the meta line; the source line (LLR-4304.10); a rule of `─`.
   Threshold: pane lines 1–5 match the graph example at 118x30; 1/1. *NC:* source line missing: RED.
-- **LLR-4303.11 — Ubiquitous.** The detail pane's meta line shall hold the task's phase, its priority, its start→due dates when set, its milestone mark when set, its `@people` when any, its link count when any and its image count when any.
+- **LLR-4303.11 — Ubiquitous.** The detail pane's meta line (wrapping inside the pane when it is longer, P-V-3) shall hold the task's phase, its priority, its start→due dates when set, its milestone mark when set, its `@people` when any, its link count when any and its image count when any.
   Threshold: a task with all seven facts shows 7/7 pieces; a bare task shows phase and priority only; 2/2. *NC:* drop the dates: RED.
 - **LLR-4303.12 — Ubiquitous.** The detail pane shall render the task's notes below the rule through `views.notes_text`, wrapped to the pane width.
   Threshold: notes `::b:: ask the vendor ::` → pane cells for `ask the vendor` carry `HEX["blue"]` and no `::` is drawn; 1/1. *NC:* plain `Text(notes)`: markers drawn: RED.
@@ -186,11 +186,13 @@ never rewritten.)
   Threshold: the literal `[red]x[/red]` appears in the list row and in the pane; 2/2. *NC:* `Text.from_markup(title)`: RED.
 
 - **LLR-4303.21 — Unwanted.** If a modal screen is on the screen stack, then the system shall refuse the `added_list` action.
-  Threshold: with the task editor open, `N` (as `alt`-less `N` reaching the app) → no list view on the stack; 1/1. *NC:* `added_list` not gated: RED.
+  Threshold: `app.check_action("added_list", ())` is False with a `ModalScreen` on the stack and True with none; `N` typed in the task editor opens no list view; 3/3 (P-S-1: Textual stops non-priority bindings at a modal, so only the direct call can fail). *NC:* `added_list` not gated: arm 1 RED.
 - **LLR-4303.22 — State.** While a list view is on the screen stack, the system shall refuse every action of the key seat except `quit`, `agenda_all`, `people_directory`, `marks_manager` and `added_list`.
   Threshold: in the list view, `a` → no TaskModal; `d` → the board's task count unchanged; `A` → the agenda opens; 3/3. *NC:* the list view missing from `check_action`'s holding tuple: arm 1 RED.
 - **LLR-4303.23 — Ubiquitous.** The README key table pinned to the seat shall carry a row for `N`.
   Threshold: `tests/test_keymap.py::test_the_readme_keybinding_table_matches_the_seat` GREEN with the `N` entry; 1/1. *NC:* no README row: that test RED.
+- **LLR-4303.24 — Unwanted.** If `enter` is pressed on an archived task while the main screen hides archived tasks, then the system shall show the notice `<title> is archived — v shows it` and select no task.
+  Threshold: the notice text 1/1 and `app.selected_task_id` unchanged 1/1; 2/2. *NC:* select the archived task: RED.
 
 ### 4.4 Order and inference (HLR-4304)
 
@@ -216,12 +218,14 @@ never rewritten.)
   Threshold: 3/3 exact strings in the fixture. *NC:* omit `#n`: RED.
 - **LLR-4304.11 — Unwanted.** If no listed task has a valid created, then the list shall head the unknown rows with `BEFORE ANY RECORD · ?`.
   Threshold: a board of 2 unknown tasks → the header string exact; 1/1. *NC:* `BEFORE NONE · ?`: RED.
-- **LLR-4304.12 — Unwanted.** If reading a board's `history.jsonl` raises `OSError`, then the system shall infer that board's tasks with no birth records.
-  Threshold: `history.read` monkeypatched to raise `PermissionError` → the view opens, those tasks are source `?` or `c`; 0 exceptions; 1/1. *NC:* unguarded read: RED.
+- **LLR-4304.12 — Unwanted.** If reading a board's `history.jsonl` raises `OSError` or `ValueError`, then the system shall infer that board's tasks with no birth records.
+  Threshold: `history.read` monkeypatched to raise `PermissionError` → the view opens, those tasks are source `?` or `c`; a history file holding the byte `ÿ` (UnicodeDecodeError) → the same; 0 exceptions; 2/2. *NC:* unguarded read: RED.
 - **LLR-4304.13 — Unwanted.** If an added moment carries a UTC offset, then the system shall compare it as the local naive time it denotes.
   Threshold: `created="2026-10-31T18:20:00+00:00"` sorted with naive moments: 0 exceptions, position equals that of its local-time equivalent; 1/1. *NC:* compare aware with naive: TypeError: RED.
 - **LLR-4304.15 — Unwanted.** If no listed task has a valid created, then the detail pane's source line for source `?` shall read `added: unknown · #<file position + 1> in <board name>'s board file`.
   Threshold: 1/1 exact string. *NC:* `before None`: RED.
+- **LLR-4304.16 — Unwanted.** If converting an offset-aware moment to local time raises (`OSError`, `OverflowError` or `ValueError`), then the system shall treat that moment as not valid.
+  Threshold: `created="1900-01-01T00:00:00+00:00"` → no valid created, 0 exceptions; 1/1. *NC:* unguarded `astimezone()`: OSError on Windows: RED.
 - **LLR-4304.14 — Ubiquitous.** The list view's head row shall name the order (`newest first` or `oldest first`), the row count and the legend `time = created  ≈ = history  ? = unknown`, clipped to the width.
   Threshold: at 118x30 the head holds `newest first` and the legend; after `o`, `oldest first`; 2/2. *NC:* fixed text: RED.
 
@@ -284,4 +288,4 @@ already move), the undo re-insert, `_rescue_task`, `history.*`.
 
 ## 7. Counts
 
-US 1 · HLR 6 · LLR 66 (4301: 11, 4302: 6, 4303: 23, 4304: 15, 4305: 4, 4306: 7) · AT 5.
+US 1 · HLR 6 · LLR 68 (4301: 11, 4302: 6, 4303: 24, 4304: 16, 4305: 4, 4306: 7) · AT 5.

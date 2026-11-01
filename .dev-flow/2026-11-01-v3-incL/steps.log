@@ -5,3 +5,7 @@
 2026-11-01T08:46:16Z E2a baseline-graph start model=opus (background agent, parallel with E1)
 2026-11-01T08:49:57Z E1 requirements end model=opus hlr=6 llr=63 at=5 slice=9 units/4 files
 2026-11-01T08:59:03Z E2a baseline-graph end model=opus nodes=26 entities=23 edges=37 lint=0 extract=1 (8 untyped-input findings, no drift); E1 amended +3 LLR (LED.2) → 66
+2026-11-01T08:59:14Z E2b prototype start model=opus (3 agents: D models+keymap, V views, S app)
+2026-11-01T09:15:50Z E2b prototype groups returned (D 11 nodes, V 16, S 19; 28 findings, 5 MAJOR); round-0 rulings written; correction pass start model=opus
+2026-11-01T09:21:16Z E2 end (correction pass applied; 68/68 LLR traced; lint 0 on 4 files) model=opus
+2026-11-01T09:21:16Z E3 PDR round 1 start model=opus (architect, security)

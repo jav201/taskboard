@@ -22,3 +22,16 @@
 - **What changed:** three LLRs added after E2a. `added_list` is gated under a modal like `A`/`@`/`#` (LLR-4303.21); the list view joins the screens that hold the key seat (LLR-4303.22); the README key table carries `N` (LLR-4303.23).
 - **Why:** `TaskboardApp.check_action` names the global actions and the holding screens by hand; a new global screen is in neither list until added, so without LLR-4303.22 `a`, `d`, `x` would act on the hidden board behind the list. The README table is pinned to the seat by a test.
 - **Evidence:** `baseline-notes.md` "Global views and keys"; `taskboard/app.py:1286-1312`; `tests/test_keymap.py::test_the_readme_keybinding_table_matches_the_seat`.
+
+### LED-2026-11-01-incL.3 — the E2b prototype's findings, ruled (round 0)
+- **Requirement:** LLR-4302.3
+- **Requirement:** LLR-4302.4
+- **Requirement:** LLR-4302.5
+- **Requirement:** LLR-4303.21
+- **Requirement:** LLR-4303.24
+- **Requirement:** LLR-4304.12
+- **Requirement:** LLR-4304.16
+- **Date:** 2026-11-01
+- **What changed:** LLR-4302.4 compares against the bytes base writes (P-D-1: the legacy migration rewrites at base too); LLR-4302.5 runs on the plain board; LLR-4302.3 checks values, not key position (P-D-3); LLR-4303.21's threshold calls `check_action` directly (P-S-1); new LLR-4303.24 for `enter` on an archived task (P-S-3); LLR-4304.12 also covers `ValueError` (P-V-1); new LLR-4304.16 for a failed time-zone conversion (P-V-2).
+- **Why:** each was found by a probe on the worktree during E2b: two thresholds could not pass at base or could not fail at all, and two failure paths crashed `N`.
+- **Evidence:** `03-pdr-rulings.md` round 0; `graph-proto-D.cw.md` P-D-1, P-D-3; `graph-proto-S.cw.md` P-S-1, P-S-3; `graph-proto-V.cw.md` P-V-1, P-V-2.
