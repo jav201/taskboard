@@ -204,6 +204,9 @@ Each line: **id — form — statement.** Threshold. *NC:* negative control.
 - **LLR-4204.9 — Unwanted.** If the notes hold a lone surrogate code point, then the TextArea shall open and accept typing without ink.
   Threshold: notes `"\ud800 ::b:: x ::"` → editor opens, typing `y` changes the text, 0 uncaught exceptions; the highlight map is empty. *NC:* strict `encode("utf-8")` in the ink path raises UnicodeEncodeError: RED.
 
+- **LLR-4204.10 — Unwanted.** If a notes line is longer than 2 000 characters, then the TextArea shall paint that line without ink.
+  Threshold: a 100 000-char line of spans → its highlight list is empty and one keystroke on it takes ≤ 0.8 s in the pilot (security measured 0.5 s without ink, 2.6 s with); a 2 000-char line still has ink; 2/2. *NC:* no length cap: the line is inked, RED.
+
 ### 4.5 Palette — HLR-4205
 
 - **LLR-4205.1 — Event.** When `alt+c` is pressed in the notes field with a non-empty selection inside one line, the editor shall open the colour palette for that selection.
@@ -287,4 +290,4 @@ the 4-source-file budget. Unchanged readers (verified at E2): `notes_text`, `not
 
 ## 7. Counts
 
-US 1 · HLR 6 · LLR 67 (4201: 10, 4202: 10, 4203: 17, 4204: 9, 4205: 16, 4206: 5) · AT 4.
+US 1 · HLR 6 · LLR 68 (4201: 10, 4202: 10, 4203: 17, 4204: 10, 4205: 16, 4206: 5) · AT 4.

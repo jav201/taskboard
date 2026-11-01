@@ -1,0 +1,8 @@
+﻿ok   ed-pen 118x30 (1708 x 928, 35 colours sampled) via PrintWindow, try 1, state OK [Screen(id='_default'), TaskModal()] - window closed
+ok   ed-pen 80x24 (1176 x 760, 39 colours sampled) via PrintWindow, try 1, state OK [Screen(id='_default'), TaskModal()] - window closed
+ok   palette 118x30 (1708 x 928, 10 colours sampled) via PrintWindow, try 1, state OK [Screen(id='_default'), TaskModal(), ColourPalette()] - window closed
+ok   palette 80x24 (1176 x 760, 11 colours sampled) via PrintWindow, try 1, state OK [Screen(id='_default'), TaskModal(), ColourPalette()] - window closed
+ok   details 118x30 (1708 x 928, 31 colours sampled) via PrintWindow, try 1, state OK [Screen(id='_default'), TaskDetails()] - window closed
+ok   details 80x24 (1176 x 760, 22 colours sampled) via PrintWindow, try 1, state OK [Screen(id='_default'), TaskDetails()] - window closed
+ok   present 118x30 (1708 x 928, 19 colours sampled) via PrintWindow, try 1, state OK [Screen(id='_default'), PresentScreen()] - window closed
+ok   present 80x24 (1176 x 760, 23 colours sampled) via PrintWindow, try 1, state OK [Screen(id='_default'), PresentScreen()] - window closed

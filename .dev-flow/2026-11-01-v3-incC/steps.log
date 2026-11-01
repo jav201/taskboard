@@ -16,3 +16,4 @@
 2026-11-01T07:45:46Z E4 build V done (deepseek-v4-pro, EXIT 0, deviations none)
 2026-11-01T07:54:59Z E4 build M done (deepseek-v4-pro, EXIT 0, deviations none)
 2026-11-01T08:01:51Z E4 tests done (opus tester): 218 tests, RED on base 212 failed/6 guards; GREEN on tree 252 passed (incl. test_modal_keys) — no integration fix needed
+2026-11-01T08:02:36Z E5 start: mutants (deepseek-v4-pro, copy incC-mut) ∥ guards ∥ code review + security review (opus)

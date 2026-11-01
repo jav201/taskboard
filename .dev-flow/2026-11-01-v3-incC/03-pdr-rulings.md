@@ -95,3 +95,23 @@ E3 is DONE (no open MAJOR/HIGH). The notes go to E4 as addenda (`e4-addenda.md`)
 | ARCH-14 MINOR | **Accept:** E5 attempts one real Windows Terminal check (alt+5, type x, x blue). Key injection failed on this desktop at E3; if it fails again the check is recorded `not-run` and handed to the operator. Fix the TC-4249 double naming (addendum A-3). The `_ansi_sequences` change joins the Textual-pin backlog item. |
 | SEC-R2-1 MEDIUM | **Accept (addendum A-1):** `_unshadow_alt_digits` pops a key only while it still maps to its 8.2.8 glyph, inside `try/except Exception` (a read-only table leaves the app starting, alt+digit then degrades to glyphs). TC-4249 gains the immutable-table arm. |
 | SEC-R2-2 LOW | **Reject the version gate** (a gate is a guard; the build-time try/except already covers the override). Paint-time risk → BACKLOG with the Textual pin. |
+
+## E5 — review of the code (code review PASS-WITH-NOTES: 1 MEDIUM, 7 MINOR; security PASS-WITH-NOTES: 1 MEDIUM, 2 LOW; E13 captures: 1 finding)
+
+| Id | Tag | Ruling |
+|---|---|---|
+| E13-1 MEDIUM | impl | **Fix.** The palette screen is opaque: the app's `Screen { background: #0d1117 }` outranks `ColourPalette`'s DEFAULT_CSS `background: #0000`, so the editor disappears behind the palette (`evidence/captures/palette_118x30.png`). C-3 asks for "a small palette over the selection". Set the screen background inline on mount (`Color(13, 17, 23, 0.2)`, the proto's `see_through`). Regression test: a cell outside the box shows the editor's text. |
+| CR-1 MEDIUM | design-gap | **Accept as designed (like P-M1-5):** a legacy marker typed under a pen can pair with an earlier one in the line; the notes are the user's own syntax. README sentence + a pinning test. No code. |
+| CR-2 MINOR | design-gap | **Fix (smallest):** `ctrl+v` while a pen is on lifts the pen first, so the paste lands as plain text after the span (never a broken line 2). Regression test. |
+| CR-3 MINOR + SR-2 LOW | design-gap | **Fix together:** `_pen_at` records (row, col, the row's text); `_pen_follow` and `_lift_pen` remove a remembered empty span only while that row still equals the recorded text; `_lift_pen` falls back to `_pen_at` when `_pen_span()` is None. Regression tests: save after leaving an empty span saves `x`; `alt+5` then `ctrl+z` never deletes the user's text. |
+| CR-4 MINOR | impl | **Fix:** `recolour` raises `ValueError` on a code outside `r o y g b v` and `None`, as its contract says. |
+| CR-5 MINOR | impl | **Fix:** one helper for the visible-text check and one constant per notice text. |
+| CR-6 MINOR | impl | **Fix:** rename the loop variable `re` in `_word_at`; refresh the stale docstring. |
+| CR-7 MINOR | design-gap | **Accept:** LLR-4204.6/.9 name the Textual fields; the tests read them by design (P-M1-7). |
+| CR-8 MINOR | design-gap | **Accept:** the fallback is proven through LLR-4204.8 (a raising `colour_spans`); renamed internals are the P-M1-7 guard's job. |
+| SR-1 MEDIUM | design-gap | **Fix:** no ink on a line longer than 2 000 characters (the preview still colours it). New LLR-4204.10 with a latency threshold. |
+| SR-3 LOW | design-gap | **Accept, no code:** with ESC 0–6 unshadowed, `alt+0`..`alt+6` in another text field types the digit instead of a glyph (`∞`, `º`); neither was a meaningful input. Recorded here and in the README. |
+
+Corrective pass: the independent tester writes the regression tests first and proves them RED on the current tree;
+then the orchestrator (Opus) makes the code changes; GREEN on the tree; a re-review checks only the blocking
+items (none are MAJOR/HIGH, so the re-review is the orchestrator's check of the two MEDIUM fixes).

@@ -60,3 +60,10 @@
 - **What changed:** the threshold no longer asks for `x` in blue; the editor opens and accepts typing with no ink.
 - **Why:** Textual 8.2.8 `TextArea._render_line` encodes each visible line strictly whenever any highlight exists (the correction agent ran it: UnicodeEncodeError). Painting would need an override of `_render_line`, a fourth private name; prefer removing the feature over guarding it.
 - **Evidence:** correction pass round 1 report; `03-pdr-rulings.md` round 1 addendum R1-1.
+
+### LED-2026-11-01-incC.6 — the ink stops at long lines
+- **Requirement:** LLR-4204.10
+- **Date:** 2026-11-01
+- **What changed:** new LLR-4204.10: no ink on a notes line longer than 2 000 characters (68 LLRs).
+- **Why:** E5 security review SR-1: Textual's `_render_line` re-applies every highlight of a line on each wrapped row, so a 100 000-char line of spans costs 2.6 s per keystroke with ink (0.5 s without).
+- **Evidence:** `05-review-security.md` SR-1; ruling in `03-pdr-rulings.md` §E5.
