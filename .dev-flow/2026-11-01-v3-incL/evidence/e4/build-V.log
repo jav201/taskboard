@@ -1,0 +1,35 @@
+Task complete. I implemented group V's design exactly as specified in `graph-proto-V.cw.md` / `graph-interfaces.cw.md`, touching only `taskboard/views.py`.
+
+## Self-checks
+
+1. `state_boxes(["Backlog","Doing","Review","Done"], "Doing")` → `■■□□`; `added_moment("2026-10-31T18:20:00+00:00")` → `None` ✓
+2. `env -u NO_COLOR C:/Users/jjgh8/anaconda3/python.exe -m pytest -q -p no:cacheprovider tests/test_all_agenda.py tests/test_highlight_segments.py tests/test_colour_notes.py` → **67 passed in 6.77s** ✓
+
+I also verified the F-V fixture renders byte-for-byte against the graph's expected body at 118x30 and 80x24 (all lines exactly 116/78 cells, `│` at index 47/35), plus the head-row degrade (P-V-6), the meta/source wrap at 80x24 (P-V-3), the note cut (A-3/SEC-4) and the `… k more lines` count (P-V-7), the non-str-id guard (SEC-3/TC-4377), and the shuffled-input order (ARCH-1/TC-4364).
+
+## Added in `taskboard/views.py` (lines 9274–9698)
+
+| Line | Unit | Notes |
+|---|---|---|
+| 9274 | `ADDED_LEGEND` | constant (45 cells) |
+| 9277 | `AddedRow` | `NamedTuple(Task, lane, bname, bcolour, board, source, at, pos)` |
+| 9293 | `added_moment` | aware → `None` (ARCH-3, no conversion); never raises |
+| 9310 | `state_boxes` | n≤8 inclusive fill; n>8 → `ceil` 8-box run |
+| 9324 | `added_rows` | reads `history.read` guarded `(OSError, ValueError, RecursionError)`; str-id-only birth lookup (SEC-2/SEC-3) |
+| 9362 | `added_order` | archived filter; `(lane,pos)` + `(at,lane,pos)` keys (ARCH-1) |
+| 9378 | `first_created` | min over source `"c"`, archived included (ARCH-8) |
+| 9389 | `_one_line` | flattens `\r\n\t` (P-V-9) |
+| 9397 | `_added_day_label` | TODAY/YESTERDAY/`%a %b %d` upper |
+| 9408 | `_added_plan` | per-day headers, ` ≈` only when all-`h` (P-V-5), `BEFORE … · ?` |
+| 9437 | `added_time_label` | `HH:MM` / `≈HH:MM` / `?` |
+| 9447 | `_added_row` | cursor mark, 7-cell label, state column (ink/dim), `▍`, clipped title |
+| 9474 | `_added_head` | tail-always-kept degrade order (P-V-6) |
+| 9509 | `added_source_line` | created/history/unknown with `#pos+1` |
+| 9521 | `_added_meta` | greedy 2-space packing, never splits a piece (P-V-3) |
+| 9568 | `_added_pane` | title/chip/meta/source/rule/notes/urls/images/`after:`; note cut before wrap (A-3/SEC-4); returns `(lines, cut)` |
+| 9613 | `_added_top` | stateless scroll window (P-V-8) |
+| 9623 | `render_added_list` | interface node; head + blank + `room` list|pane lines; `no tasks to list` empty case |
+
+Everything is built from plain `Text.append(str, style)` pieces — no markup parser, no new dependency, no writes, synthetic data only.
+
+**Deviations:** none.

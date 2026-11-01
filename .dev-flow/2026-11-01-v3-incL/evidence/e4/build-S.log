@@ -1,0 +1,37 @@
+Task E4 (group S) is implemented in `taskboard/app.py`. Summary below.
+
+## What I changed (all in `taskboard/app.py`)
+
+**Imports**
+- L33 — added `stamp` to the `.models` import (group D's seam, already landed).
+- L44–45 — added `added_order`, `added_rows`, `first_created`, `render_added_list` to the `.views` import (group V's seams).
+
+**New constant**
+- L843–844 — `ADDED_KEYS` beside `AGENDA_KEYS`: `[("↑↓","move"),("↵","open on board"),("o","newest/oldest"),("v","archived"),("esc / N","back")]`.
+
+**New class `AddedList(Screen[None])`** — L965–1065, after `AllBoardsAgenda`:
+- `__init__` (L981) — view state `sel=0`, `newest=True`, `show_archived=False`; snapshot slots `lanes/ids/rows/first/today`.
+- `compose` (L996) — `board_lanes`, `date.today()`, `added_rows`, `first_created`; yields `#al-body` + `#al-keys`; `DEFAULT_CSS` with the agenda's values.
+- `on_mount`, `on_screen_resume` (A-1), `on_resize` → `_paint`.
+- `_ordered` (L1016) — `added_order(self.rows, self.newest, self.show_archived)`.
+- `_paint` (L1019) — passes `w-2, h-1` and `hidden`/`unread`/`self.app.people.people` to `render_added_list`; key row with the read-only tail dropped-first rule (A-2).
+- `action_move`, `action_order`, `action_archived` (cursor keyed by `(lane, pos)`, P-S-8), `action_jump` (`open_on_board(self.app, self.ids[r.lane], r.task.id)`), `action_back` — all priority `BINDINGS` exactly as the interface lists.
+
+**Changed methods**
+- `check_action` (L1388) — modal gate now includes `"added_list"`; holding tuple now includes `AddedList`; docstring names the list and `N`.
+- `action_added_list` (L1543) — `self._bring(AddedList, AddedList)`.
+- `_on_template_picked` (L2124–2129) — one `when = stamp()` before the loop; each inserted task built with `created=when`.
+
+## Deviations
+None.
+
+## Self-check
+The import check fails at group V's seam — they have **not landed yet**:
+
+```
+ImportError: cannot import name 'added_order' from 'taskboard.views'
+```
+
+`added_order`, `added_rows`, `first_created`, `render_added_list` (and `AddedRow`) are all still absent from `taskboard/views.py` (grep count 0). Group D's seams **are** present and match the contracts: `models.stamp(now=None)` (L648), `Task.created` field after `show_in_present`/before `extra` (L913), and the `N → added_list` KEYMAP entry (keymap.py L147).
+
+I stopped the check there per the task instructions (`python -m py_compile taskboard/app.py` → `SYNTAX OK`, so my file is syntactically valid). The pytest command can't run until group V lands `views.py`.

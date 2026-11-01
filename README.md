@@ -133,6 +133,7 @@ between the short and the full layer. Every key below is also in the command pal
 | `F` / `/` / `esc` | Focus, filter | Kanban and gantt: focus one project / filter tasks / clear |
 | `Tab` | Layout | Cycle the layouts of kanban, focus and lanes |
 | `A` | All boards | The agenda of every board: a lane per board with a dot per due day, the chosen day's tasks below; `enter` opens a task on its board (also on the home) |
+| `N` | Added list | Every task of every board in the order you added it, newest first (`o` flips it): when it was added (`≈` from history, `?` unknown), a box per phase, and the cursor's task in full beside the list; `v` shows archived tasks, `enter` opens a task on its board, `esc` or `N` closes. Nothing here edits a task |
 | `@` | People directory | Who you owe what: the people of `~/.taskboard/people.json` (most late first) beside the chosen person's open tasks of every board, each with the note line that mentions them and a `late · today · open` box; `enter` opens a task on its board, `n`/`e` add and edit a person, `/` finds a name. Not view `9` (the team's `People`) |
 | `#` | Milestone classes | The classes of `~/.taskboard/marks.json`: `n`/`e` add and edit a class, `space` hides or shows it, `esc` closes |
 | `R` / `S` | Present / Standup | Present the selected task's project, or every project (`3`), with gantt + brief, export SVG+PNG / show the week's standup |
@@ -327,6 +328,7 @@ On the home:
 | `e` | Rename or recolour the board under the cursor |
 | `x` | Archive the board under the cursor (it asks first; `y` confirms, `n` or `esc` cancels). It leaves the home; its folder is not touched. `taskboard --board PATH` brings it back. The open board cannot be archived |
 | `A` | The agenda of every board (see `A` above) |
+| `N` | Every task of every board in the order you added it (see `N` above) |
 
 **Moving a project to another board.** In the projects manager (`P`), `m` moves the project under
 the cursor, with all its tasks — done and archived ones too — to another board. You pick the

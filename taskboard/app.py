@@ -30,7 +30,7 @@ from .models import (AUTO_ARCHIVE_DAYS, IMAGE_EXTS, LINKS_MIGRATION, MILESTONES_
                      ready_messages, run_link_migration, run_milestone_offer,
                      set_milestone, strip_controls, templates, waiting_ids,
                      CASCADE_MODES, apply_plan, plan_move, resolve_mode, restore,
-                     snapshot)
+                     snapshot, stamp)
 from .modals import (BoardForm, PersonForm, SearchPrompt, ClockModal, GanttLinkMode, LinkPicker, CommandPalette, ConfirmModal,
                      HelpModal, ImageViewer, MarkForm, MilestoneOffer, PhaseEditor, ProjectModal,
                      PresentHiddenPicker, PresentKeys, ProjectPicker, ReportExport, StandupModal,
@@ -41,7 +41,8 @@ from .keymap import KEYMAP, KeyBar, app_bindings, key_line, palette_commands, pr
 from .ribbon import Ribbon
 from .team_sync import (TEAM_FILENAME, TeamState, _read_json, clean_roster,
                         probe_setup_health)
-from .views import (HEX, ago, agenda_buckets, all_agenda, board_chip_text, board_hex,
+from .views import (HEX, ago, added_order, added_rows, agenda_buckets, all_agenda,
+                    board_chip_text, board_hex, first_created, render_added_list,
                     board_summary, home_card, home_keys, render_all_agenda,
                     people_by_urgency, person_items, render_people_directory,
                     home_missing, home_title, present_all_export,
@@ -839,6 +840,9 @@ class BoardsHome(Screen[None]):
 
 AGENDA_KEYS = [("←→", "day"), ("↑↓", "task"), ("↵", "open on its board"), ("esc", "back")]
 
+ADDED_KEYS = [("↑↓", "move"), ("↵", "open on board"), ("o", "newest/oldest"),
+              ("v", "archived"), ("esc / N", "back")]
+
 
 def board_lanes(app) -> tuple[list, list]:
     """Every active board as a plain lane `(name, colour, board | None, state)` and
@@ -953,6 +957,104 @@ class AllBoardsAgenda(Screen[None]):
             return
         it = chosen[min(self.row, len(chosen) - 1)]
         open_on_board(self.app, self.ids[it.lane], it.task.id)   # the home beneath it too
+
+    def action_back(self) -> None:
+        self.app.pop_screen()
+
+
+class AddedList(Screen[None]):
+    """`N` — every board's tasks in the order they were added (Inc L): a narrow
+    list beside a detail pane for the cursor's task. Every board is read once,
+    when it opens; `enter` opens a task on its board; `o` flips newest/oldest;
+    `v` toggles archived. Read-only: nothing here edits a task (LLR-4302.6)."""
+
+    BINDINGS = [Binding("escape,N", "back", "", priority=True),
+                Binding("up,k", "move(-1)", "", priority=True),
+                Binding("down,j", "move(1)", "", priority=True),
+                Binding("o", "order", "", priority=True),
+                Binding("v", "archived", "", priority=True),
+                Binding("enter", "jump", "", priority=True)]
+    DEFAULT_CSS = """
+    AddedList { background: #0d1117; overflow-y: hidden; }
+    #al-body { padding: 0 1; height: 1fr; }
+    #al-keys { dock: bottom; height: 1; padding: 0 1; background: #0b0f17; }
+    """
+
+    def __init__(self) -> None:
+        super().__init__()
+        self.sel = 0                       # the cursor indexes _ordered() (LLR-4304.6)
+        self.newest = True                 # opens newest first (LLR-4304.6)
+        self.show_archived = False         # a constant start, never app.show_archived (LLR-4306.2)
+        self.lanes: list = []              # the snapshot, filled once by compose
+        self.ids: list = []                # each lane's registry id (None: the unlisted board)
+        self.rows: list = []               # added_rows(lanes): archived rows included
+        self.first = None                  # first_created(self.rows)
+        self.today = None
+
+    def compose(self) -> ComposeResult:
+        self.lanes, self.ids = board_lanes(self.app)
+        self.today = date.today()          # a snapshot: read once, as the boards are
+        self.rows = added_rows(self.lanes)
+        self.first = first_created(self.rows)   # the unfiltered rows, archived included
+        yield Static(id="al-body")
+        yield Static(id="al-keys")
+
+    def on_mount(self) -> None:
+        self._paint()
+
+    def on_screen_resume(self) -> None:
+        # back on top (esc from the agenda/directory/marks manager, or N through
+        # _bring): repaint at once, so a person or mark renamed under @/# shows
+        # without waiting for the next key (addendum A-1, ARCH-5). The snapshot
+        # is NOT re-read (LLR-4303.5).
+        self._paint()
+
+    def on_resize(self, _event) -> None:
+        self._paint()
+
+    def _ordered(self) -> list:
+        return added_order(self.rows, self.newest, self.show_archived)
+
+    def _paint(self) -> None:
+        w, h = self.app.size
+        rows = self._ordered()
+        hidden = 0 if self.show_archived else sum(1 for r in self.rows if r.task.archived)
+        unread = sum(1 for lane in self.lanes if lane[2] is None)
+        self.query_one("#al-body", Static).update(
+            render_added_list(rows, self.sel, self.newest, self.show_archived, hidden,
+                              unread, self.first, self.today, self.app.people.people,
+                              w - 2, h - 1))
+        keys = key_line(ADDED_KEYS + [("·", "read-only: nothing here edits a task")])
+        if keys.cell_len > w - 2:                     # the tail goes first, never a key (A-2)
+            keys = key_line(ADDED_KEYS, w - 2)
+        self.query_one("#al-keys", Static).update(keys)
+
+    def action_move(self, delta: int) -> None:
+        n = len(self._ordered())
+        if n == 0:                        # nothing to move; sel stays 0 (LLR-4303.18)
+            return
+        self.sel = max(0, min(n - 1, self.sel + delta))
+        self._paint()
+
+    def action_order(self) -> None:
+        self.newest = not self.newest
+        self.sel = 0
+        self._paint()
+
+    def action_archived(self) -> None:
+        rows = self._ordered()
+        key = (rows[self.sel].lane, rows[self.sel].pos) if rows else None
+        self.show_archived = not self.show_archived
+        new = self._ordered()
+        self.sel = next((i for i, r in enumerate(new) if (r.lane, r.pos) == key), 0)
+        self._paint()
+
+    def action_jump(self) -> None:
+        rows = self._ordered()
+        if not rows:
+            return
+        r = rows[self.sel]
+        open_on_board(self.app, self.ids[r.lane], r.task.id)
 
     def action_back(self) -> None:
         self.app.pop_screen()
@@ -1288,18 +1390,19 @@ class TaskboardApp(App):
         so the modal's own widgets (e.g. the ProjectPicker list, Select dropdowns)
         receive them instead of moving the hidden board selection; `B` (`boards`)
         too, so the home never opens over another screen. While the home or the
-        agenda of every board or the people directory or the marks manager is on
-        the stack, it holds the keys: no action of the key seat but `quit` acts.
-        `agenda_all`, `people_directory` and `marks_manager` are always allowed
-        here: a pushed modal holds its own keys, so `A`, `@` and `#` act only on
-        a non-modal screen."""
-        if action in ("agenda_all", "people_directory", "marks_manager"):
+        agenda of every board or the people directory or the marks manager or the
+        added list is on the stack, it holds the keys: no action of the key seat
+        but `quit` acts. `agenda_all`, `people_directory`, `marks_manager` and
+        `added_list` are always allowed here: a pushed modal holds its own keys,
+        so `A`, `@`, `#` and `N` act only on a non-modal screen."""
+        if action in ("agenda_all", "people_directory", "marks_manager", "added_list"):
             # the main screen and the home (batch 2026-10-20-batch-03, 2026-10-21-batch-01,
             # 2026-10-24-batch-01): a pushed modal (the presentation among them) holds
             # its own keys, so `A`, `@` and `#` never reach past one
             return not any(isinstance(sc, ModalScreen) for sc in self.screen_stack)
         if action in SEAT_ACTIONS and any(isinstance(sc, (BoardsHome, AllBoardsAgenda,
-                                                          PeopleDirectory, MarksManager))
+                                                          PeopleDirectory, MarksManager,
+                                                          AddedList))
                                           for sc in self.screen_stack):
             # the home holds the keys — and the modals over it (its form, its
             # confirmation, a board's start-up modal) keep their own: no key of
@@ -1436,6 +1539,10 @@ class TaskboardApp(App):
     def action_agenda_all(self) -> None:
         """`A`: the agenda of every board (batch 2026-10-20-batch-03)."""
         self._bring(AllBoardsAgenda, AllBoardsAgenda)
+
+    def action_added_list(self) -> None:
+        """`N`: the added-order list of every board (Inc L, LLR-4303.2)."""
+        self._bring(AddedList, AddedList)
 
     def _mount_board(self, at_mount: bool = False) -> None:
         """The read-only half of a board's start: first selection, the view, the clock.
@@ -2014,9 +2121,12 @@ class TaskboardApp(App):
         project = self.board.project_by_id(project_id)
         pname = project.name if project else "Inbox"
         created: list[Task] = []
+        when = stamp()          # ONE stamp for the whole insert (LLR-4301.3): every
+        # inserted task shares this created value; a stamp per task would drift
+        # across a second boundary
         for one in tpl.tasks:
             new = Task(title=one.title, project_id=project_id,
-                       phase=self.board.phases[0], notes=one.notes)
+                       phase=self.board.phases[0], notes=one.notes, created=when)
             self.board.tasks.append(new)
             created.append(new)
             if one.wait is not None:

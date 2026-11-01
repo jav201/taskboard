@@ -9255,3 +9255,424 @@ def render_people_directory(people: list, items: dict, sel: int, pane: str, row:
             text.append("\n")
         text.append_text(t)
     return text
+
+
+# ---------------------------------------------------------------------------
+# Added list (Inc L, the added-order list view — `N`)
+# ---------------------------------------------------------------------------
+# Group V owns the rows, the inference, the order and the whole body of the
+# list view. The seven interface nodes (`added_rows`, `added_moment`,
+# `added_order`, `first_created`, `state_boxes`, `render_added_list`) carry the
+# contracts of graph-interfaces.cw.md; the `_added_*` helpers and
+# `added_time_label` / `added_source_line` / `_one_line` are this group's
+# internals. Everything shown to the user is built from plain `Text` pieces
+# (`Text.append(str, style)`), never a markup parser, because titles and names
+# read from hand-edited files may hold Rich markup (LLR-4303.20), and a tab or
+# newline inside a single-line piece would split the body row and shift the
+# whole layout (P-V-9).
+
+ADDED_LEGEND = "  ·  time = created  ≈ = history  ? = unknown"
+
+
+class AddedRow(NamedTuple):
+    """One listed task with everything the list needs to place and draw it
+    (graph-interfaces.cw.md `[Data: AddedRow]`): `lane` indexes the lanes and
+    the screen's `ids` (open_on_board needs `ids[lane]`), `source` is one of
+    `"c"` (created), `"h"` (history birth) and `"?"` (unknown), `pos` is the
+    task's file position, and `at` is its added moment (`None` when unknown)."""
+    task: Task
+    lane: int
+    bname: str
+    bcolour: str
+    board: Board
+    source: str
+    at: datetime | None
+    pos: int
+
+
+def added_moment(value: object) -> datetime | None:
+    """A `created`/birth-`at` value as its added moment, or `None` when it is
+    not valid (Inc L, LLR-4304.8, LLR-4304.13). A string `datetime.fromisoformat`
+    parses to a NAIVE datetime is the moment; an offset-aware result is not
+    valid (ARCH-3: no conversion, the app writes only naive local stamps — a
+    `astimezone()` here would fail on Windows for years before 1970 and at the
+    bounds, P-V-2), and anything else — `None`, a non-string, an unparseable
+    string — is `None`. Never raises."""
+    if not isinstance(value, str):
+        return None
+    try:
+        m = datetime.fromisoformat(value)
+    except ValueError:
+        return None
+    return m if m.tzinfo is None else None
+
+
+def state_boxes(phases: list[str], phase: str) -> str:
+    """The state column for one row (HLR-4305, LLR-4305.1, LLR-4305.2): one box
+    per phase of the task's board, `■` up to and including the task's phase and
+    `□` for each later phase; a board with more than 8 phases is drawn as 8
+    boxes with `ceil(8 × (index + 1) / phases)` filled. `phases` is never empty
+    (`Board.__init__` falls back to `DEFAULT_PHASES`), so `n >= 1`."""
+    n = len(phases)
+    i = phases.index(phase) if phase in phases else 0
+    if n <= 8:
+        return "■" * (i + 1) + "□" * (n - i - 1)
+    f = math.ceil(8 * (i + 1) / n)
+    return "■" * f + "□" * (8 - f)
+
+
+def added_rows(lanes: list[tuple[str, str, Board | None, str]]) -> list[AddedRow]:
+    """One `AddedRow` per task of every lane whose board is not None, archived
+    tasks included, in lane order then file position (LLR-4303.5, LLR-4304.1,
+    LLR-4304.2, LLR-4304.3). Per board, births map each task id to its FIRST
+    birth `at` — the first `history.read` record with `from` None whose `task`
+    is a str (LLR-4304.12 widened: the read is guarded for `OSError`,
+    `ValueError` — a non-UTF-8 byte, P-V-1 — and `RecursionError` — a deeply
+    nested line, SEC-2 — so one stray history file never crashes `N`). Per task
+    the added moment is its valid `created` (source `c`), else its first birth
+    (source `h`), else unknown (source `?`); the birth lookup runs only for a
+    str id, so a list/dict id is unhashable and never reaches a dict lookup
+    (SEC-3, LLR-4304.17). Never writes; never sets `task.created`."""
+    out: list[AddedRow] = []
+    for li, (name, colour, board, _state) in enumerate(lanes):
+        if board is None:
+            continue
+        try:
+            recs, _skip = history.read(board.path)
+        except (OSError, ValueError, RecursionError):
+            recs = []
+        births: dict = {}
+        for r in recs:
+            if r.get("from") is None and isinstance(r.get("task"), str):
+                births.setdefault(r["task"], r["at"])
+        for pos, t in enumerate(board.tasks):
+            m = added_moment(t.created)
+            if m is not None:
+                out.append(AddedRow(t, li, name, colour, board, "c", m, pos))
+                continue
+            birth = births.get(t.id) if isinstance(t.id, str) else None
+            m = added_moment(birth)
+            if m is not None:
+                out.append(AddedRow(t, li, name, colour, board, "h", m, pos))
+            else:
+                out.append(AddedRow(t, li, name, colour, board, "?", None, pos))
+    return out
+
+
+def added_order(rows: list[AddedRow], newest: bool, show_archived: bool) -> list[AddedRow]:
+    """The listed rows in display order (LLR-4304.4, LLR-4304.5, LLR-4304.6):
+    archived rows dropped unless `show_archived` (LLR-4306.1); oldest-first is
+    every unknown row — sorted by `(lane, pos)`, board order then file position
+    — before every dated row — sorted by `(at, lane, pos)`; `newest` is the
+    exact reverse. The explicit `(lane, pos)` tie-breaks stay even though
+    `added_rows` emits lane-major order: they make the order independent of that
+    contract, and the hand-shuffled inputs of TC-4364/TC-4365 pin them
+    (ARCH-1)."""
+    rows = [r for r in rows if show_archived or not r.task.archived]
+    unk = sorted((r for r in rows if r.at is None), key=lambda r: (r.lane, r.pos))
+    dat = sorted((r for r in rows if r.at is not None), key=lambda r: (r.at, r.lane, r.pos))
+    old = unk + dat
+    return old[::-1] if newest else old
+
+
+def first_created(rows: list[AddedRow]) -> datetime | None:
+    """The earliest `at` among rows whose source is `c`, else `None`
+    (LLR-4304.10, LLR-4304.11). The input is every task the list read —
+    archived included, so a stamp that only lives on an archived task still
+    heads the unknown rows `BEFORE <its date> · ?` rather than `BEFORE ANY
+    RECORD · ?` (ARCH-8)."""
+    return min((r.at for r in rows if r.source == "c"), default=None)
+
+
+# ---- group V internals ----------------------------------------------------
+
+def _one_line(s: object) -> str:
+    """`str(s)` with every `\\r`, `\\n` and `\\t` drawn as one space
+    (LLR-4303.8, LLR-4303.20): a title or name from a hand-edited file keeps
+    tab/newline through `strip_controls`, and one inside a body line would
+    split it and shift the whole layout (P-V-9)."""
+    return str(s).replace("\r", " ").replace("\n", " ").replace("\t", " ")
+
+
+def _added_day_label(day: date, today: date) -> str:
+    """A day header: `TODAY`, `YESTERDAY`, else the date as `%a %b %d` upper
+    case (zero-padded day, as LLR-4303.9 writes); a day after today (a created
+    stamped ahead of the clock) keeps its date."""
+    if day == today:
+        return "TODAY"
+    if day == today - timedelta(days=1):
+        return "YESTERDAY"
+    return f"{day:%a %b %d}".upper()
+
+
+def _added_plan(rows: list[AddedRow], today: date, first: datetime | None) -> list[tuple[int, str]]:
+    """The list area's line plan, O(len(rows)) and no `Text` built
+    (LLR-4303.9, LLR-4304.11). One pass marks, per calendar date of a dated
+    row, whether EVERY row of that date is source `h` (`hist_only`); a second
+    pass emits `(-1, label)` whenever the row's day key differs from the
+    previous row's, then `(i, "")`. A date known only from history ends ` ≈`;
+    unknown rows sit under `BEFORE <first created date> · ?` (never `%-d`,
+    P-V-4), or `BEFORE ANY RECORD · ?` when no created is known."""
+    hist_only: dict = {}
+    for r in rows:
+        if r.at is not None:
+            k = r.at.date()
+            hist_only[k] = hist_only.get(k, True) and r.source == "h"
+    unk = ("BEFORE " + _md(first).upper() + " · ?") if first else "BEFORE ANY RECORD · ?"
+    plan: list[tuple[int, str]] = []
+    last: object = object()
+    for i, r in enumerate(rows):
+        key = r.at.date() if r.at is not None else None
+        if key != last:
+            if key is None:
+                lab = unk
+            else:
+                lab = _added_day_label(key, today) + (" ≈" if hist_only[key] else "")
+            plan.append((-1, lab))
+            last = key
+        plan.append((i, ""))
+    return plan
+
+
+def added_time_label(row: AddedRow) -> tuple[str, str]:
+    """A row's time label and its style (LLR-4304.9): the moment's `HH:MM` for
+    source `c`, `≈HH:MM` for `h`, `?` for `?`; the row pads it to 7 cells."""
+    if row.source == "c":
+        return f"{row.at:%H:%M}", HEX["ink"]
+    if row.source == "h":
+        return f"≈{row.at:%H:%M}", HEX["mut"]
+    return "?", HEX["dim"]
+
+
+def _added_row(row: AddedRow, on: bool, sw: int, lw: int) -> Text:
+    """One list row, exactly `lw` cells (LLR-4303.8, LLR-4305.3, LLR-4305.4):
+    the cursor mark `▶`/space, the time label in 7 cells, the state column
+    (`■` run in ink, `□` run in dim — no other style, LLR-4305.4) padded to the
+    widest `sw`, a space, `▍` in the task's project hue, then the title clipped
+    to the cells left; an archived title dims (LLR-4306.5)."""
+    t = Text(no_wrap=True)
+    t.append("▶" if on else " ", HEX["accent"])
+    lab, st = added_time_label(row)
+    t.append(fit(lab, 7), st)
+    boxes = state_boxes(row.board.phases, row.task.phase)
+    k = boxes.count("■")
+    t.append(boxes[:k], HEX["ink"])
+    t.append(boxes[k:], HEX["dim"])
+    t.append(" " * (sw - len(boxes)) + " ")
+    t.append("▍", HEX[project_color(row.board, row.task)])
+    tw = max(0, lw - 10 - sw)
+    if row.task.archived:
+        st = f"b {HEX['dim']}" if on else HEX["dim"]
+    else:
+        st = f"b {HEX['ink']}" if on else HEX["hd"]
+    t.append(clip(_one_line(row.task.title), tw), st)
+    t.truncate(lw)
+    t.pad_right(lw - t.cell_len)
+    return t
+
+
+def _added_head(n: int, newest: bool, show_archived: bool, hidden: int,
+                unread: int, width: int) -> Text:
+    """The head row (LLR-4304.14, LLR-4303.6, LLR-4306.6): `ADDED`, the row
+    count and `every board`, the order word, the legend, then the tail — the
+    not-read boards and the archived count/shown piece, which the row always
+    ENDS with. When it does not fit (below ~70 cells), `every board · ` drops
+    first, then the legend is clipped or omitted, so the order word and the
+    counts survive (P-V-6)."""
+    tail: list[tuple[str, str]] = []
+    if unread:
+        tail.append((f" · {unread} board{'s' if unread != 1 else ''} not read", HEX["soon"]))
+    if show_archived:
+        tail.append((" · archived shown", HEX["mut"]))
+    elif hidden > 0:
+        tail.append((f" · {hidden} archived hidden", HEX["mut"]))
+    a = ("ADDED", f"b {HEX['accent']}")
+    b = f"  {n} task{'s' if n != 1 else ''} · every board · "
+    c = ("newest first" if newest else "oldest first", f"b {HEX['ink']}")
+    tl = sum(vis(x) for x, _s in tail)
+    if vis(a[0]) + vis(b) + vis(c[0]) + vis(ADDED_LEGEND) + tl > width:
+        b = f"  {n} task{'s' if n != 1 else ''} · "
+    room = width - vis(a[0]) - vis(b) - vis(c[0]) - tl
+    leg = ADDED_LEGEND if room >= vis(ADDED_LEGEND) else (clip(ADDED_LEGEND, room) if room >= 20 else "")
+    t = Text(no_wrap=True)
+    t.append(*a)
+    t.append(b, HEX["mut"])
+    t.append(*c)
+    t.append(leg, HEX["dim"])
+    for x, s in tail:
+        t.append(x, s)
+    t.truncate(width, overflow="ellipsis")
+    t.pad_right(width - t.cell_len)
+    return t
+
+
+def added_source_line(row: AddedRow, first: datetime | None) -> str:
+    """The pane's source line (LLR-4304.10, LLR-4304.15): where the added
+    moment is known from — the created field, the first history birth, or
+    unknown (named by file position and board when the list read no created)."""
+    if row.source == "c":
+        return f"added {row.at:%a %b %d · %H:%M} · the created field"
+    if row.source == "h":
+        return f"added ≈ {row.at:%a %b %d · %H:%M} · from history.jsonl"
+    where = f"#{row.pos + 1} in {_one_line(row.bname)}'s board file"
+    return f"added: unknown, before {_md(first)} · {where}" if first else f"added: unknown · {where}"
+
+
+def _added_meta(row: AddedRow, people: dict, today: date, rw: int) -> list[Text]:
+    """The pane's meta line(s) (LLR-4303.11, LLR-4306.7): the phase (done /
+    first-phase / otherwise), `archived`, the priority, the start→due dates when
+    set (overdue and due-today coloured only while open), the milestone mark,
+    the `@people`, and the link/image counts. Pieces are packed greedily into
+    lines of at most `rw` cells with two spaces between them, a piece never
+    split (one wider than `rw` is clipped) — one line at 118x30, two at 80x24
+    (P-V-3)."""
+    t, b = row.task, row.board
+    done = b.is_done(t)
+    ps = [(t.phase, HEX["done"] if done else HEX["mut"] if b.phase_index(t) == 0 else HEX["sky"])]
+    if t.archived:
+        ps.append(("archived", HEX["dim"]))
+    ps.append({"high": ("▲ high", HEX["rose"]),
+               "low": ("▽ low", HEX["dim"])}.get(t.priority, ("· normal", HEX["dim"])))
+    s, d = parse_iso(t.start_date), parse_iso(t.due_date)
+    if s or d:
+        txt = f"{_md(s)}→{_md(d)}" if s and d else (f"due {_md(d)}" if d else f"from {_md(s)}")
+        st = HEX["mut"]
+        if d and not done:
+            st = HEX["over"] if d < today else HEX["soon"] if d == today else HEX["mut"]
+        ps.append((txt, st))
+    if t.milestone:
+        glyph, style, _chip = milestone_mark(t, b, today)
+        cls = (getattr(b, "marks", None) or {}).get(t.mark or "")
+        ps.append((f"{glyph} {_one_line(cls.name) if cls is not None else 'milestone'}", HEX[style]))
+    names = mention_names(t, people or {})
+    if names:
+        ps.append((" ".join("@" + _one_line(n) for n in names), f"b {HEX['pink']}"))
+    if t.urls:
+        ps.append((f"↗ {len(t.urls)}", HEX["mut"]))
+    if t.images:
+        ps.append((f"▤ {len(t.images)}", HEX["mut"]))
+    lines: list[Text] = []
+    cur: Text | None = None
+    for x, st in ps:
+        x = clip(x, rw)
+        if cur is not None and cur.cell_len + 2 + vis(x) <= rw:
+            cur.append("  ")
+            cur.append(x, st)
+            continue
+        cur = Text(no_wrap=True)
+        cur.append(x, st)
+        lines.append(cur)
+    return lines
+
+
+def _added_pane(row: AddedRow, first: datetime | None, people: dict, today: date,
+                rw: int, room: int) -> tuple[list[Text], bool]:
+    """The detail pane for the cursor's ONE task (LLR-4303.10, LLR-4303.12,
+    LLR-4303.13, LLR-4303.20, LLR-4304.17): the title, the project · board chip,
+    the meta line(s), the source line (wrapped, never clipped), a rule, then
+    the notes through `notes_text` wrapped to `rw`, then each URL, each image
+    file name and `after:` with the titles of the tasks it waits on (a non-str
+    id resolves no link, SEC-3). The note is cut BEFORE any markup or wrap: at
+    most `room × (rw + 1)` characters reach `notes_text`, so a multi-megabyte
+    note costs a slice, not a wrap on every paint (SEC-4 / A-3); `cut` reports
+    whether it was cut. `([], False)` when `rw <= 0`."""
+    if rw <= 0:
+        return [], False
+    t, b = row.task, row.board
+    out = [Text(clip(_one_line(t.title), rw), f"b {HEX['ink']}")]
+    p = b.project_by_id(t.project_id)
+    bpart = clip(_one_line(row.bname), max(1, rw // 2))
+    ppart = clip(_one_line(p.name if p else "Inbox"), max(1, rw - 3 - vis(bpart)))
+    chip = Text(no_wrap=True)
+    chip.append(ppart, HEX[project_color(b, t)])
+    chip.append(" · ", HEX["dim"])
+    chip.append(bpart, board_hex(row.bcolour))
+    out.append(chip)
+    out.extend(_added_meta(row, people, today, rw))
+    src = Text(added_source_line(row, first), HEX["dim"] if row.source == "?" else HEX["mut"])
+    out.extend(src.wrap(_SEARCH_CONSOLE, rw, overflow="fold"))
+    out.append(Text("─" * rw, HEX["frame"]))
+    n = (t.notes or "").strip("\n")
+    nroom = max(0, room - len(out))
+    cap = nroom * (rw + 1)
+    cut = len(n) > cap
+    n = n[:cap]
+    nt = notes_text(n, people) if n.strip() else Text("no notes", HEX["dim"])
+    out.extend(nt.wrap(_SEARCH_CONSOLE, rw, overflow="fold"))
+    for u in t.urls:
+        out.append(Text(clip("↗ " + _one_line(u), rw), HEX["cyan"]))
+    for im in t.images:
+        out.append(Text(clip("▤ " + _one_line(Path(im).name), rw), HEX["mut"]))
+    if t.depends_on:
+        titles = {x.id: x.title for x in b.tasks if isinstance(x.id, str)}
+        out.append(Text(clip("after: " + ", ".join(_one_line(titles.get(d, d)) for d in t.depends_on), rw),
+                        HEX["mut"]))
+    return out, cut
+
+
+def _added_top(plan: list[tuple[int, str]], sel: int, room: int) -> int:
+    """The scroll window, a pure function of the cursor (LLR-4303.15): `si` is
+    the plan index of the cursor's row, and `top = max(0, min(si - room + 1,
+    len(plan) - room))` — the cursor's line is the last visible one once it
+    passes the first page, and the window never runs past the plan's end (the
+    formula of `render_all_agenda`, P-V-8)."""
+    si = next((k for k, (i, _l) in enumerate(plan) if i == sel), 0)
+    return max(0, min(si - room + 1, len(plan) - room))
+
+
+def render_added_list(rows: list[AddedRow], sel: int, newest: bool,
+                      show_archived: bool, hidden: int, unread: int,
+                      first: datetime | None, today: date, people: dict,
+                      width: int, height: int) -> Text:
+    """The whole body above the key row (HLR-4303, LLR-4303.7, LLR-4303.8,
+    LLR-4303.9, LLR-4303.10, LLR-4303.15, LLR-4303.17, LLR-4305.3,
+    LLR-4304.14, LLR-4306.6): `height` lines of at most `width` cells — line 0
+    the head, line 1 blank, then `height - 2` lines of list (left `lw` cells) +
+    ` │ ` + detail pane. `rows` arrive ordered and filtered (`added_order`);
+    `sel` indexes them. Pure: reads its inputs, writes nothing."""
+    width = max(1, width)
+    lw = 46 if width >= 100 else 34
+    rw = max(0, width - lw - 3)
+    room = max(0, height - 2)
+    lines = [_added_head(len(rows), newest, show_archived, hidden, unread, width), Text(" " * width)]
+    left: list[Text] = []
+    right: list[Text] = []
+    if rows:
+        sel = max(0, min(sel, len(rows) - 1))
+        sw = max(min(8, len(r.board.phases)) for r in rows)
+        plan = _added_plan(rows, today, first)
+        top = _added_top(plan, sel, room)
+        for i, lab in plan[top:top + room]:
+            if i < 0:
+                st = f"b {HEX['dim']}" if lab.startswith("BEFORE ") else f"b {HEX['hd']}"
+                left.append(Text(fit(lab, lw), st))
+            else:
+                left.append(_added_row(rows[i], i == sel, sw, lw))
+        right, cut = _added_pane(rows[sel], first, people, today, rw, room)
+        if cut:
+            # A-3 / SEC-4: the note was cut before the wrap, so its real length
+            # is unknown — no count, just the dim tail.
+            right = right[:min(len(right), max(0, room - 1))]
+            right.append(Text(clip("… more lines", rw), HEX["dim"]))
+        elif len(right) > room:
+            more = len(right) - room + 1
+            right = right[:room - 1] + [Text(clip(f"… {more} more lines", rw), HEX["dim"])]
+    else:
+        left.append(Text(fit("no tasks to list", lw), HEX["dim"]))
+    for k in range(room):
+        ln = left[k].copy() if k < len(left) else Text(" " * lw)
+        ln.append(" │ ", HEX["frame"])
+        if k < len(right):
+            rr = right[k].copy()
+            rr.no_wrap = True
+            rr.truncate(rw, overflow="ellipsis")
+            ln.append_text(rr)
+        ln.truncate(width)
+        ln.pad_right(width - ln.cell_len)
+        lines.append(ln)
+    out = Text()
+    for k, ln in enumerate(lines[:max(1, height)]):
+        if k:
+            out.append("\n")
+        out.append_text(ln)
+    return out

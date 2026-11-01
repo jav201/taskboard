@@ -141,6 +141,10 @@ KEYMAP: tuple[Key, ...] = (
     # `A` — the agenda of every board (batch 2026-10-20-batch-03, the round's item 1 C):
     # global, off the bar, like `R`; the home's key row names it too
     Key("A", "A", "agenda_all", "All boards", group="misc", bar=False),
+    # `N` — the added-order list of every task of every board (Inc L, LLR-4303.1):
+    # global, off the bar, like `A`; it sits right after `A` so the `?` help's
+    # global line and the palette read "… A All boards  N Added list  H Report …"
+    Key("N", "N", "added_list", "Added list", group="misc", bar=False),
     # `H` — export an HTML report, the workspace and/or the deck (batch 2026-10-29-batch-01,
     # HLR-3107): global, off the bar, like `R`/`A`; its modal names its own keys
     Key("H", "H", "report_export", "Report", group="misc", bar=False),

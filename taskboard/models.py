@@ -16,7 +16,7 @@ import stat
 import tempfile
 import unicodedata
 from dataclasses import asdict, dataclass, field
-from datetime import date, timedelta
+from datetime import date, datetime, timedelta
 from pathlib import Path
 from uuid import uuid4
 
@@ -645,6 +645,14 @@ def _new_id() -> str:
     return uuid4().hex[:8]
 
 
+def stamp(now: datetime | None = None) -> str:
+    """The ONE created format (Inc L, LLR-4301.2..4301.6): local time to the
+    second, `YYYY-MM-DDTHH:MM:SS`, the format of `history.append`'s `at`. Every
+    creation path calls it (directly or through `Board.add_task`); no other code
+    formats a created value."""
+    return (now or datetime.now()).isoformat(timespec="seconds")
+
+
 def parse_iso(value: str | None) -> date | None:
     """Lenient ISO date parse. Blank / bad input -> None (never raises)."""
     if not value:
@@ -706,6 +714,7 @@ _PROJECT_KEYS = {"id", "name", "color", "status", "archived", "pinned", "start_d
 _TASK_KEYS = {"id", "title", "project_id", "phase", "blocked", "priority", "start_date",
               "due_date", "notes", "urls", "images", "archived", "pinned", "extra",
               "phase_changed", "depends_on", "milestone", "mark", "show_in_present",
+              "created",               # when first added; read by `Task.from_dict`
               "status", "url"}          # last two: legacy, consumed by the migration
 
 
@@ -898,6 +907,10 @@ class Task:
     # is written only then (`Board._to_dict`), so a board with nothing hidden
     # keeps its bytes (batch 2026-10-16-batch-01, LLR-1602.1)
     show_in_present: bool = True
+    # when the task was first added (`stamp()`, local time to the second); None on
+    # every task older than the field and on rescued entries — unknown, never
+    # back-filled; written only when set (`Board._to_dict`) (Inc L, LLR-4301.1)
+    created: str | None = None
     extra: dict = field(default_factory=dict)
     id: str = field(default_factory=_new_id)
 
@@ -925,13 +938,20 @@ class Task:
             blocked = bool(d["blocked"]) if "blocked" in d else legacy_blocked
             raw_title = d.get("title", "Untitled")
             title = raw_title if isinstance(raw_title, str) else _coerce_title(raw_title)
+            extra = _extra_keys(d, _TASK_KEYS)
+            # a non-str `created` is NOT the field's shape: keep the raw value
+            # (None included) in `extra` verbatim so it round-trips to the same
+            # value on the next save (LLR-4302.3); a str is taken as is, no
+            # strip and no parse — validity is the list's concern (LLR-4304.8).
+            if "created" in d and not isinstance(d["created"], str):
+                extra["created"] = d["created"]
             return cls(
                 id=d.get("id") or _new_id(),
                 title=title,
                 project_id=d.get("project_id"),
                 phase=phase,
                 blocked=blocked,
-                extra=_extra_keys(d, _TASK_KEYS),
+                extra=extra,
                 priority=d.get("priority") if d.get("priority") in TASK_PRIORITIES else "normal",
                 start_date=d.get("start_date"),
                 due_date=d.get("due_date"),
@@ -948,6 +968,7 @@ class Task:
                 milestone=d.get("milestone") is True,
                 mark=d.get("mark") if isinstance(d.get("mark"), str) else None,
                 show_in_present=d.get("show_in_present") is not False,
+                created=d["created"] if isinstance(d.get("created"), str) else None,
             )
         except Exception as exc:                    # never let one bad task raise
             return _rescue_task(d, type(exc).__name__)
@@ -1006,7 +1027,11 @@ class Board:
         if not path.exists():
             # a board this version seeds is new-model data: neither migration has
             # anything to read on it (D-617; B1's links, this batch's milestones)
-            board = cls(*seed_data(), path=path,
+            projects, tasks = seed_data()
+            at = stamp()                 # ONE clock read (Inc L, LLR-4301.6): every
+            for t in tasks:              # seeded task shares one add moment
+                t.created = at
+            board = cls(projects, tasks, path=path,
                         settings={"migrations": {"links": LINKS_MIGRATION,
                                                  "milestones": MILESTONES_MIGRATION}})
             board.save()
@@ -1053,9 +1078,15 @@ class Board:
         return board
 
     @staticmethod
-    def _to_dict(item) -> dict:
+    def _to_dict(item, with_created: bool = False) -> dict:
         """Serialize a Project/Task, merging its preserved unknown keys back in
-        (known fields win, so our model is always the source of truth)."""
+        (known fields win, so our model is always the source of truth).
+
+        `with_created` defaults to False for the team push: `TeamState.push`
+        keeps calling `_to_dict(t)` unchanged, so no push record carries
+        `created` — neither the field nor a raw non-str value in `extra`
+        (Inc L, LLR-4302.7, SEC-1). Every save path must pass True, and
+        `_serialized` does (LLR-4302.1)."""
         d = asdict(item)
         if d.get("show_in_present") is True:
             del d["show_in_present"]
@@ -1063,13 +1094,18 @@ class Board:
             del d["mark"]       # written only when set, like show_in_present
         if "present_rank" in d and d["present_rank"] is None:
             del d["present_rank"]
-        return {**d.pop("extra", {}), **d}
+        if "created" in d and (d["created"] is None or not with_created):
+            del d["created"]    # written only when set, and only when asked
+        extra = d.pop("extra", {})
+        if not with_created:
+            extra.pop("created", None)   # the raw non-str value stays out of the push too
+        return {**extra, **d}
 
     def _serialized(self) -> str:
         return json.dumps({
             "phases": self.phases,
-            "projects": [self._to_dict(p) for p in self.projects],
-            "tasks": [self._to_dict(t) for t in self.tasks],
+            "projects": [self._to_dict(p, with_created=True) for p in self.projects],
+            "tasks": [self._to_dict(t, with_created=True) for t in self.tasks],
             "settings": self.settings,
         }, indent=2)
 
@@ -1263,8 +1299,14 @@ class Board:
         return True
 
     def add_task(self, task: Task) -> None:
+        """Append `task` and record its birth, stamping its `created` when it has
+        none (Inc L, LLR-4301.5/4301.7). ONE clock read: the stamp and the birth
+        line's `at` agree to the second (P-D-4)."""
+        now = datetime.now()
+        if task.created is None:
+            task.created = stamp(now)
         self.tasks.append(task)
-        history.append(self.path, {"task": task.id, "from": None, "to": task.phase})
+        history.append(self.path, {"task": task.id, "from": None, "to": task.phase}, at=now)
         self.save()
 
     def add_project(self, project: Project) -> None:

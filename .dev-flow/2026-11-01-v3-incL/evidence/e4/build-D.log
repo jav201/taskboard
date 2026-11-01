@@ -1,0 +1,35 @@
+The task is complete. Here's the summary.
+
+## Summary — E4 group D build (models.py, keymap.py, README.md)
+
+**Self-check 1 (import/probe):** ✅ `None False 2026-11-01T03:44:36` — `Task("x").created is None`, `"created"` absent from `Board._to_dict(t)` (default `with_created=False`), `stamp()` works. `taskboard.__file__` points at the worktree.
+
+**Self-check 2 (pytest):** **96 passed, 1 failed.** The single failure is `tests/test_keymap.py::test_every_shown_key_has_a_real_action_on_the_app` — `N (Added list) shows a dead action: added_list` — which is **the expected failure** stated in the brief: group S owns `TaskboardApp.action_added_list` and hasn't added it yet.
+
+### Functions/classes changed (with line numbers)
+
+`taskboard/models.py`:
+- L19 — `from datetime import date, datetime, timedelta` (adds `datetime`, P-D-4).
+- L648 — `stamp(now=None) -> str`: the one created format `(now or datetime.now()).isoformat(timespec="seconds")`.
+- L714 — `_TASK_KEYS` gains `"created"`, so `_extra_keys` no longer copies it.
+- L913 — `Task.created: str | None = None` declared after `show_in_present`, before `extra` (positional constructors unaffected).
+- L941–971 — `Task.from_dict`: reads `created`; a non-`str` value (incl. `None`) is kept verbatim in `extra` and the field set to `None`; a `str` is taken as-is (no strip/parse).
+- L1025–1037 — `Board.load` seed branch: one `stamp()` read applied to all 16 seeded tasks (not in `seed_data`, which stays pure).
+- L1081 — `Board._to_dict(item, with_created=False)`: drops `created` when `None` or `not with_created`; pops `extra["created"]` on the default (push) path.
+- L1104 — `Board._serialized`: both list comprehensions pass `with_created=True`.
+- L1301 — `Board.add_task`: one `now = datetime.now()`; stamps `task.created = stamp(now)` when `None`, then `history.append(..., at=now)`; save after the stamp.
+
+`taskboard/keymap.py`:
+- L147 — `Key("N", "N", "added_list", "Added list", group="misc", bar=False)` declared right after the `A` entry.
+
+`README.md`:
+- L136 — key-table row `| `N` | Added list | …` (after the `A` row).
+- L331 — home-table row `| `N` | Every task of every board … (see `N` above) |`.
+
+### Deviations
+None — the graph was followed exactly.
+
+### Extra verification (beyond the required suite)
+The three old-board fixtures behave exactly as the graph pins: plain board byte-stable at 1126 bytes with no `created` key; legacy board → 761 bytes with the expected sha256 `fa38dbd0…`; unknown-key board byte-stable at 741 bytes. `Task("x")`, positional `Task("Design","pid","Doing","high")`, `from_dict` non-str round-trip, and `_to_dict` key order all match the TC examples.
+
+(Note: I also probed `test_boards_move.py`/`test_cascade.py`/`test_team_sync.py`/`test_milestones.py` — they fail to *collect* right now only because `taskboard/app.py` already imports `added_order`/`added_rows` from `views.py`, which group V hasn't landed yet. That's the concurrent-build state, outside my files.)
