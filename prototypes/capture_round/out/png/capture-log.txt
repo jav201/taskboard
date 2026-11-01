@@ -1,0 +1,80 @@
+﻿ok   cap-A 118x30 (1095 x 627, 31 colours sampled) via PrintWindow, try 1 - window closed
+ok   ls-A 118x30 (1095 x 627, 24 colours sampled) via PrintWindow, try 1 - window closed
+ok   cap-now 118x30 (1095 x 627, 20 colours sampled) via PrintWindow, try 1 - window closed
+ok   cap-now 80x24 (753 x 513, 15 colours sampled) via PrintWindow, try 1 - window closed
+ok   cap-A 118x30 (1095 x 627, 31 colours sampled) via PrintWindow, try 1 - window closed
+ok   cap-A 80x24 (753 x 513, 16 colours sampled) via PrintWindow, try 1 - window closed
+ok   cap-A-dump 118x30 (1095 x 627, 35 colours sampled) via PrintWindow, try 1 - window closed
+ok   cap-A-dump 80x24 (753 x 513, 20 colours sampled) via PrintWindow, try 1 - window closed
+ok   cap-A-new 118x30 (1095 x 627, 25 colours sampled) via PrintWindow, try 1 - window closed
+ok   cap-A-new 80x24 (753 x 513, 15 colours sampled) via PrintWindow, try 1 - window closed
+ok   cap-B 118x30 (1095 x 627, 16 colours sampled) via PrintWindow, try 1 - window closed
+try  cap-B 80x24 : rejected: 7 colours sampled via CopyFromScreen (PrintWindow gave 7 colours) (black / colourless) - window closed
+try  cap-B 80x24 : rejected: 7 colours sampled via CopyFromScreen (PrintWindow gave 7 colours) (black / colourless) - window closed
+try  cap-B 80x24 : rejected: 7 colours sampled via CopyFromScreen (PrintWindow gave 7 colours) (black / colourless) - window closed
+FAIL cap-B 80x24 : 3 tries
+ok   cap-B-tab 118x30 (1095 x 627, 15 colours sampled) via PrintWindow, try 1 - window closed
+try  cap-B-tab 80x24 : rejected: 7 colours sampled via CopyFromScreen (PrintWindow gave 7 colours) (black / colourless) - window closed
+try  cap-B-tab 80x24 : rejected: 7 colours sampled via CopyFromScreen (PrintWindow gave 7 colours) (black / colourless) - window closed
+try  cap-B-tab 80x24 : rejected: 7 colours sampled via CopyFromScreen (PrintWindow gave 7 colours) (black / colourless) - window closed
+FAIL cap-B-tab 80x24 : 3 tries
+ok   cap-C 118x30 (1095 x 627, 24 colours sampled) via PrintWindow, try 1 - window closed
+ok   cap-C 80x24 (753 x 513, 11 colours sampled) via PrintWindow, try 1 - window closed
+try  cap-C-rev 118x30 : rejected: 6 colours sampled via CopyFromScreen (PrintWindow gave 6 colours) (black / colourless) - window closed
+try  cap-C-rev 118x30 : rejected: 6 colours sampled via CopyFromScreen (PrintWindow gave 6 colours) (black / colourless) - window closed
+try  cap-C-rev 118x30 : rejected: 6 colours sampled via CopyFromScreen (PrintWindow gave 6 colours) (black / colourless) - window closed
+FAIL cap-C-rev 118x30 : 3 tries
+try  cap-C-rev 80x24 : rejected: 6 colours sampled via CopyFromScreen (PrintWindow gave 6 colours) (black / colourless) - window closed
+try  cap-C-rev 80x24 : rejected: 6 colours sampled via CopyFromScreen (PrintWindow gave 6 colours) (black / colourless) - window closed
+try  cap-C-rev 80x24 : rejected: 6 colours sampled via CopyFromScreen (PrintWindow gave 6 colours) (black / colourless) - window closed
+FAIL cap-C-rev 80x24 : 3 tries
+ok   ls-now 118x30 (1095 x 627, 27 colours sampled) via PrintWindow, try 1 - window closed
+ok   ls-now 80x24 (753 x 513, 18 colours sampled) via PrintWindow, try 1 - window closed
+ok   ls-A 118x30 (1095 x 627, 24 colours sampled) via PrintWindow, try 1 - window closed
+ok   ls-A 80x24 (753 x 513, 20 colours sampled) via PrintWindow, try 1 - window closed
+ok   ls-A-open 118x30 (1095 x 627, 24 colours sampled) via PrintWindow, try 1 - window closed
+ok   ls-A-open 80x24 (753 x 513, 18 colours sampled) via PrintWindow, try 1 - window closed
+ok   ls-A-old 118x30 (1095 x 627, 25 colours sampled) via PrintWindow, try 1 - window closed
+ok   ls-A-old 80x24 (753 x 513, 17 colours sampled) via PrintWindow, try 1 - window closed
+ok   ls-B 118x30 (1095 x 627, 24 colours sampled) via PrintWindow, try 1 - window closed
+ok   ls-B 80x24 (753 x 513, 17 colours sampled) via PrintWindow, try 1 - window closed
+ok   ls-C 118x30 (1095 x 627, 21 colours sampled) via PrintWindow, try 1 - window closed
+ok   ls-C 80x24 (753 x 513, 14 colours sampled) via PrintWindow, try 1 - window closed
+ok   col-now-ed 118x30 (1095 x 627, 24 colours sampled) via PrintWindow, try 1 - window closed
+ok   col-now-ed 80x24 (753 x 513, 16 colours sampled) via PrintWindow, try 1 - window closed
+ok   col-now-det 118x30 (1095 x 627, 24 colours sampled) via PrintWindow, try 1 - window closed
+ok   col-now-det 80x24 (753 x 513, 12 colours sampled) via PrintWindow, try 1 - window closed
+ok   col-A-ed 118x30 (1095 x 627, 25 colours sampled) via PrintWindow, try 1 - window closed
+ok   col-A-ed 80x24 (753 x 513, 17 colours sampled) via PrintWindow, try 1 - window closed
+ok   col-B-ed 118x30 (1095 x 627, 25 colours sampled) via PrintWindow, try 1 - window closed
+ok   col-B-ed 80x24 (753 x 513, 20 colours sampled) via PrintWindow, try 1 - window closed
+ok   col-C-ed 118x30 (1095 x 627, 8 colours sampled) via PrintWindow, try 1 - window closed
+ok   col-C-ed 80x24 (753 x 513, 8 colours sampled) via PrintWindow, try 1 - window closed
+ok   col-C-done 118x30 (1095 x 627, 26 colours sampled) via PrintWindow, try 1 - window closed
+ok   col-C-done 80x24 (753 x 513, 18 colours sampled) via PrintWindow, try 1 - window closed
+ok   col-all-det 118x30 (1095 x 627, 24 colours sampled) via PrintWindow, try 1 - window closed
+ok   col-all-det 80x24 (753 x 513, 12 colours sampled) via PrintWindow, try 1 - window closed
+ok   col-all-pr 118x30 (1095 x 627, 21 colours sampled) via PrintWindow, try 1 - window closed
+ok   col-all-pr 80x24 (753 x 513, 15 colours sampled) via PrintWindow, try 1 - window closed
+ok   cap-B 118x30 (1095 x 627, 25 colours sampled) via PrintWindow, try 1 - window closed
+ok   cap-B 80x24 (753 x 513, 17 colours sampled) via PrintWindow, try 1 - window closed
+ok   cap-B-tab 118x30 (1095 x 627, 24 colours sampled) via PrintWindow, try 1 - window closed
+ok   cap-B-tab 80x24 (753 x 513, 16 colours sampled) via PrintWindow, try 1 - window closed
+ok   cap-C-rev 118x30 (1095 x 627, 27 colours sampled) via PrintWindow, try 1 - window closed
+ok   cap-C-rev 80x24 (753 x 513, 14 colours sampled) via PrintWindow, try 1 - window closed
+ok   col-C-ed 118x30 (1095 x 627, 31 colours sampled) via PrintWindow, try 1 - window closed
+ok   col-C-ed 80x24 (753 x 513, 22 colours sampled) via PrintWindow, try 1 - window closed
+ok   cap-A-dump 118x30 (1095 x 627, 35 colours sampled) via PrintWindow, try 1 - window closed
+ok   cap-A-dump 80x24 (753 x 513, 20 colours sampled) via PrintWindow, try 1 - window closed
+ok   cap-A-new 118x30 (1095 x 627, 25 colours sampled) via PrintWindow, try 1 - window closed
+ok   cap-A-new 80x24 (753 x 513, 15 colours sampled) via PrintWindow, try 1 - window closed
+ok   cap-B 118x30 (1095 x 627, 24 colours sampled) via PrintWindow, try 1 - window closed
+ok   cap-B 80x24 (753 x 513, 16 colours sampled) via PrintWindow, try 1 - window closed
+ok   cap-B-tab 118x30 (1095 x 627, 25 colours sampled) via PrintWindow, try 1 - window closed
+ok   cap-B-tab 80x24 (753 x 513, 16 colours sampled) via PrintWindow, try 1 - window closed
+ok   col-A-ed 118x30 (1095 x 627, 25 colours sampled) via PrintWindow, try 1 - window closed
+ok   col-A-ed 80x24 (753 x 513, 17 colours sampled) via PrintWindow, try 1 - window closed
+ok   col-B-ed 118x30 (1095 x 627, 25 colours sampled) via PrintWindow, try 1 - window closed
+ok   col-B-ed 80x24 (753 x 513, 20 colours sampled) via PrintWindow, try 1 - window closed
+ok   ls-C 118x30 (1095 x 627, 21 colours sampled) via PrintWindow, try 1 - window closed
+ok   ls-C 80x24 (753 x 513, 14 colours sampled) via PrintWindow, try 1 - window closed
