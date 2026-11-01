@@ -33,3 +33,5 @@
 2026-11-01T13:53:52Z E5 captures end: 16 PNG, 223-487 colours, 0 retries, no cpi- window left (opus agent); orchestrator viewed k-rail_118x30: matches design
 2026-11-01T13:53:52Z E5 corrective pass start model=opus (agent; RED first)
 2026-11-01T14:14:51Z E5 corrective pass end model=opus: 9/9 FIX items fixed RED-first (05-corrections.md, red-e5.txt), LED.6; GREEN-3 478 passed / 0 failed (301.8 s); re-review: no MAJOR/HIGH was open, orchestrator re-read the CR-1 fix diff (mark_notice holds dumped only when unchanged) - closed
+2026-11-01T14:17:58Z E5 ATs 8/8 (9 cases) GREEN black-box via keys (evidence/at-run.txt); guards-2 255 passed; worktrees incK-base, incK-marks, incK-mut removed
+2026-11-01T14:17:58Z E5 end: records closed (04-validation.md, BACKLOG K-BL-1..15) model=opus

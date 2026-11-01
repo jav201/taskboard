@@ -1,0 +1,7 @@
+# GUARDS-2 (after E5 corrective pass) 2026-11-01T14:15:40Z, tree 473ac1d
+$ env -u NO_COLOR C:/Users/jjgh8/anaconda3/python.exe -m pytest -q -p no:cacheprovider tests/test_people_directory.py tests/test_marks_directory.py tests/test_history.py tests/test_task_created.py tests/test_templates_app.py tests/test_link_picker.py tests/test_all_agenda.py tests/test_boards_home.py tests/test_colour_pens.py tests/test_present_views_app.py
+taskboard.__file__ = C:\Users\jjgh8\Github\taskboard-wt\capture-proto\taskboard\__init__.py
+........................................................................ [ 84%]
+.......................................                                  [100%]
+255 passed in 109.78s (0:01:49)
+# end 2026-11-01T14:17:31Z

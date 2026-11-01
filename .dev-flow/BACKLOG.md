@@ -1670,3 +1670,21 @@ and found the records layer lagging the code. All proposed fixes are written in 
 - **L-BL-7 — `enter` on a task with a non-str id crashes the board switch** (SR-3, base `_migrate_links`); the list itself survives such ids (LLR-4304.17).
 - **L-BL-8 — bidi and zero-width characters survive `strip_controls`** (SR-4) in every view.
 - **L-BL-9 — `Board._to_dict(with_created=False)` is fail-unsafe for a future save path** (ARCH-R2-2, N-1): a new caller that forgets `with_created=True` drops `created` silently; consider an explicit push-only serialiser.
+
+## Open — from Inc K, the capture view (`.dev-flow/2026-11-01-v3-incK/`, 2026-11-01)
+
+- **K-BL-1 — exit before a pending retry** (RISK-ARCH-4): a dump whose board save succeeded and whose store write failed lives only in memory; an exit/crash before a successful retry leaves the note in the on-disk pad, and a re-dump makes a second task.
+- **K-BL-2 — `Board.save` truncates before it encodes** (RISK-SEC-2, pre-existing `models.py`): a board holding a lone surrogate is left at 0 bytes by its next save. Move the open board to `save_atomic`.
+- **K-BL-3 — large images under another board's lock** (RISK-SEC-9): no heartbeat while `_dump_other` copies images; `attach_images` has no size cap.
+- **K-BL-4 — pasted control bytes live until the 1.0 s write** (RISK-SEC-10, existing behaviour, as the editor's notes field).
+- **K-BL-5 — the rail scores every note** (RISK-SEC-11, perf; measured cheap after ARCH-6).
+- **K-BL-6 — residual link races on the attach paths** (RISK-P-S-11): `shutil.copy2` follows a link created after `_free_name`'s check; `save_pil_image` checks `exists()` (False for a dangling link).
+- **K-BL-7 — silent image leftovers** (RISK-P-S-12, K-SEC-1 residue): a pad copy not removed after the save, a file not moved back on undo, a "gone" undo leave files without a notice — an UndoOutcome `left` list.
+- **K-BL-8 — a missing board blocks older undos** (RISK-P-S-17): `alt+u` always takes the newest entry; an offline board answers "could not be changed" for up to 7 days.
+- **K-BL-9 — the `_hits` cache grows per keystroke** (CR-4): keep only the current notes' texts.
+- **K-BL-10 — duplicated pending-op loop and write-result handling; unused `KEEP_DAYS`** (CR-6): one helper each.
+- **K-BL-11 — a failed open-board dump leaves an orphan birth record** (CR-8): `Board.add_task` writes history before it saves (Inc L order).
+- **K-BL-12 — undo removes a dump-created project even after a rename/recolour** (K-SEC-4): compare the project record too.
+- **K-BL-13 — retention** (I-1, ARCH-11): dumped text stays 7 days after its task is deleted (commission-mandated); future-dated entries never expire; orphan images in `inbox-images/` stay; one `.corrupt` copy per launch.
+- **K-BL-14 — the one-time divider notice covers the `alt+n` field for 15 s on first use** (E13 captures run 1).
+- **K-BL-15 — operator flags (deviations from the commission text):** the divider key is `alt+l`, not `alt+enter` (R1-1: Textual 8.2.8 reads ESC CR as `enter` from Windows Terminal); the new-project field cycles boards with `tab`, not `alt+b` (P-V-1: `alt+b` parses as `ctrl+left`).

@@ -1,0 +1,15 @@
+# AT run (black-box, keys and dialogs, Textual pilot) 2026-11-01T14:15:07Z, tree 473ac1d
+$ env -u NO_COLOR C:/Users/jjgh8/anaconda3/python.exe -m pytest -v -p no:cacheprovider tests/test_capture_view.py tests/test_inbox_store.py -k AT_44
+taskboard.__file__ = C:\Users\jjgh8\Github\taskboard-wt\capture-proto\taskboard\__init__.py
+tests/test_capture_view.py::test_AT_4401_type_divide_and_close_a_pad[size0] PASSED [ 11%]
+tests/test_capture_view.py::test_AT_4401_type_divide_and_close_a_pad[size1] PASSED [ 22%]
+tests/test_capture_view.py::test_AT_4402_a_note_with_an_image_becomes_a_task_on_another_board PASSED [ 33%]
+tests/test_capture_view.py::test_AT_4403_a_weak_note_goes_to_a_new_project_on_another_board PASSED [ 44%]
+tests/test_capture_view.py::test_AT_4404_undo_the_dumps_newest_first PASSED [ 55%]
+tests/test_capture_view.py::test_AT_4407_colour_mentions_and_an_image_carry_over_and_markup_stays_text PASSED [ 66%]
+tests/test_capture_view.py::test_AT_4405_review_four_notes_refuse_one_switch_one_dump_three PASSED [ 77%]
+tests/test_capture_view.py::test_AT_4406_the_store_survives_corruption_a_busy_lock_and_a_failed_write PASSED [ 88%]
+tests/test_capture_view.py::test_AT_4408_two_windows_on_one_store_lose_no_note_and_dump_none_twice PASSED [100%]
+===================== 9 passed, 300 deselected in 31.26s ======================
+exit=0
+# end 2026-11-01T14:15:40Z

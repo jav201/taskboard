@@ -1,0 +1,16 @@
+steps.log
+  E0:    1.6 min
+  E1:    0.0 min
+  E2:   61.4 min
+  E3:   45.8 min
+  E4:   64.6 min
+  E5:   44.2 min
+  wall:  217.6 min
+../2026-11-01-v3-incL/steps.log
+  E0:    2.5 min
+  E1:    0.0 min
+  E2:   35.0 min
+  E3:   21.4 min
+  E4:   31.5 min
+  E5:   23.7 min
+  wall:  114.1 min
