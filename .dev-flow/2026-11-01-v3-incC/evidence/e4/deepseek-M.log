@@ -1,0 +1,25 @@
+All changes are in `taskboard/modals.py` only. Here's the summary.
+
+## Summary
+
+Implemented the full group-M brief (pens, live ink, colour palette, details label) in `taskboard/modals.py` (+475/−9 lines). No deviations from the graph — every self-check matches.
+
+### Functions/classes added (module level)
+- `_ALT_DIGIT_GLYPHS` + `_unshadow_alt_digits()` (L74), called once at import (L84) — pops `ESC 0..6` from `ANSI_SEQUENCES_KEYS` only while each still holds its 8.2.8 glyph, inside try/except (addendum A-1). Verified: `\x1b0..\x1b6` → `alt+0..alt+6`; `\x1b7` stays `pilcrow_sign`; second call idempotent.
+- `pen_label()` (L497), `_byte_offsets()` (L519), `ink_highlights()` (L530), `InkArea` (L552), `colour_target()` (L578), `_word_at()` (L603), `recolour()` (L638), `palette_offset()` (L654), `_palette_rows()` (L661), `DETAILS_NOTES_LABEL` (L682), `ColourPalette` (L690).
+
+### TaskModal changes
+- `BINDINGS` (L733): added `*PEN_BINDINGS`, `alt+c → colour`, and `enter → pen_enter` after `drop_pick`.
+- `__init__` (L768): `self.pen = None`, `self._pen_at = None`.
+- `compose` (L866): `Label(pen_label(...), id="notes-label")` and `InkArea(..., id="f-notes")`.
+- New methods: `_pen_span` (L911), `_lift_pen` (L926), `_pen_label` (L951), `action_pen` (L955), `action_pen_enter` (L992), `_pen_follow` (L1001), `action_colour` (L1035), `_apply_colour` (L1062).
+- `check_action` (L1084) rewritten to the graph-interfaces contract, with `_drop_gate()` (L1106).
+- `on_text_area_selection_changed` (L903): appended `_pen_follow()`; `_save` (L1292): first step `_lift_pen()`.
+- `TaskDetails.compose` (L3029): Notes label → `DETAILS_NOTES_LABEL`.
+
+### Self-check results
+- `recolour('the plan works', 4, 8, 'b')` → `('the ::b:: plan :: works', 17)` ✓ (plus the full 16-case recolour table, colour_target, palette_offset, pen_label, ink_highlights incl. the `é/☕` byte-offset and lone-surrogate cases — all match the graph).
+- `pytest test_edit_window.py test_people_picker.py test_modal_keys.py test_people_look.py` → **109 passed, 1 failed**. The single failure is `test_TC_2407_every_modal_is_in_the_inventory`, and it fails only because **`ColourPalette` is not in the test's `INVENTORY`** (assertion message: `{'ColourPalette'}` extra) — that file is the tester's to update, exactly as the brief anticipated.
+
+Deviations: **none**.
+EXIT 0

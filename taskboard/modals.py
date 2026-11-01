@@ -15,12 +15,14 @@ import calendar
 import os
 import re
 from datetime import date, timedelta
+from functools import partial
 from pathlib import Path
 
 from unicodedata import east_asian_width
 
 from rich._emoji_codes import EMOJI as _RICH_EMOJI
 from rich.cells import cell_len, set_cell_size
+from rich.style import Style
 from rich.text import Text
 
 from textual import events
@@ -33,6 +35,7 @@ from textual.suggester import SuggestFromList
 from textual.widgets import (Button, Checkbox, Input, Label, OptionList, Select, Static,
                              TextArea)
 from textual.widgets.option_list import Option
+from textual.widgets.text_area import TextAreaTheme
 
 from .models import (IMAGE_EXTS, PROJECT_COLORS, PROJECT_STATUSES, TASK_PRIORITIES,
                      Board, Project, Task, _new_id, city_names, dependents_chain,
@@ -44,8 +47,9 @@ from .boards import clean_name, move_plan, move_project, peek_board, slug
 from .people import Directory, mention_ids
 from .marks import COLOURS, SHAPES
 from .keymap import KEY_STYLE, PRESENT_KEYS, key_line, palette_commands
-from .views import (HEX, HOLLOW, board_chip_text, clip, fit, gantt_group_key, gantt_link_frame,
-                    gantt_link_order, notes_text, valid_url)
+from .views import (HEX, HOLLOW, PEN_CODES, Span, board_chip_text, clip, colour_spans, fit,
+                    gantt_group_key, gantt_link_frame, gantt_link_order, highlight_segments,
+                    notes_text, valid_url)
 
 # Imported at MODULE load (before the app starts) on purpose: textual-image
 # detects the terminal's graphics support by QUERYING the terminal, which only
@@ -55,6 +59,29 @@ try:
     from textual_image.widget import Image as AutoImage
 except Exception:          # pragma: no cover - dependency present in prod
     AutoImage = None
+
+# The pens arrive from Windows Terminal as `ESC <digit>` (no kitty protocol:
+# the orchestrator's probe, evidence/wt-kitty-query.log). Textual 8.2.8 maps
+# `ESC <digit>` to WezTerm-on-macOS Option+digit GLYPHS (º ¡ ™ £ ¢ ∞ §); removing
+# those entries at import lets the parser's generic alt path give `Key("alt+5",
+# "5")`, as `alt+s` already does (ARCH-1, LLR-4203.16). Popped only while the
+# entry still holds its 8.2.8 glyph, inside try/except, so a future/patched table
+# leaves the app starting and alt+digit degrades to glyphs (addendum A-1, SEC-R2-1).
+_ALT_DIGIT_GLYPHS = {"\x1b0": "º", "\x1b1": "¡", "\x1b2": "™", "\x1b3": "£",
+                     "\x1b4": "¢", "\x1b5": "∞", "\x1b6": "§"}
+
+
+def _unshadow_alt_digits() -> None:
+    try:
+        from textual._ansi_sequences import ANSI_SEQUENCES_KEYS
+        for key, glyph in _ALT_DIGIT_GLYPHS.items():
+            if ANSI_SEQUENCES_KEYS.get(key) == glyph:
+                ANSI_SEQUENCES_KEYS.pop(key, None)
+    except Exception:
+        pass
+
+
+_unshadow_alt_digits()
 
 NONE_VALUE = "__none__"
 
@@ -454,6 +481,249 @@ class MentionDrop(Vertical):
         yield Static(id="md-keys")
 
 
+# ---- the pens, the live ink and the palette (Inc C) -------------------------
+# Pen order 1..6 is PEN_CODES (r o y g b v). A pen's pair is "::<code>::  ::":
+# opener, the two inner spaces (empty until the operator types), closer; the
+# optional spaces beside the markers belong to them (graph-interfaces Span).
+PALETTE_W = 15
+PALETTE_H = 10
+
+# the editor's pen bindings: alt+1..alt+6 open pens 0..5, alt+0 lifts (i = -1).
+PEN_BINDINGS = [Binding(f"alt+{i + 1}", f"pen({i})", "", priority=True, show=False)
+                for i in range(6)] + \
+               [Binding("alt+0", "pen(-1)", "", priority=True, show=False)]
+
+
+def pen_label(pen: int | None) -> Text:
+    """The editor's Notes label, one form ≤ 38 cells (ARCH-7, LLR-4203.9):
+    `Notes <state> alt+123456 0 off alt+c`. Never markup (C-17)."""
+    label = Text(no_wrap=True)
+    label.append("Notes", HEX["mut"])
+    label.append(" ")
+    if pen is None:
+        label.append("pen: none", HEX["mut"])
+    else:
+        _code, tone, name = PEN_CODES[pen]
+        label.append(f" {name} ", f"b #0d1117 on {HEX[tone]}")
+    label.append(" ")
+    label.append("alt+", HEX["mut"])
+    for i, (_code, tone, _name) in enumerate(PEN_CODES):
+        label.append(str(i + 1), f"b {HEX[tone]}")
+    label.append(" ")
+    label.append("0 off", HEX["mut"])
+    label.append(" ")
+    label.append("alt+c", f"b {HEX['bright']}")
+    return label
+
+
+def _byte_offsets(line: str) -> list[int]:
+    """UTF-8 byte offset of each str index, one pass (SEC-1, LLR-4204.7): the
+    identity when ASCII, else a prefix table — never a per-offset encode."""
+    if line.isascii():
+        return list(range(len(line) + 1))
+    cum = [0] * (len(line) + 1)
+    for k, ch in enumerate(line):
+        cum[k + 1] = cum[k] + len(ch.encode("utf-8", "surrogatepass"))
+    return cum
+
+
+def ink_highlights(lines: list[str]) -> dict[int, list[tuple[int, int, str]]]:
+    """The live ink as Textual's byte-offset highlight map (LLR-4204.1/.2/.4/.5)."""
+    out: dict[int, list[tuple[int, int, str]]] = {}
+    for row, line in enumerate(lines):
+        spans = colour_spans(line)
+        if not spans:
+            continue
+        off = _byte_offsets(line)
+        row_hl: list[tuple[int, int, str]] = []
+        for s in spans:
+            tone = s.tone
+            for a, b, name in ((s.start, s.inner_start, "pen.mark"),
+                               (s.inner_start, s.inner_end, f"pen.{tone}"),
+                               (s.inner_end, s.end, "pen.mark")):
+                ba, bb = off[a], off[b]
+                if ba != bb:
+                    row_hl.append((ba, bb, name))
+        if row_hl:
+            out[row] = row_hl
+    return out
+
+
+class InkArea(TextArea):
+    """`#f-notes` with its own registered theme and a private highlight map, so
+    the live ink never leaks into any other TextArea (LLR-4204.6)."""
+
+    def __init__(self, text: str = "", id: str | None = None):
+        super().__init__(text, id=id)
+        styles = {f"pen.{tone}": Style(color=HEX[tone]) for _c, tone, _n in PEN_CODES}
+        styles["pen.mark"] = Style(color=HEX["dim"])
+        self.register_theme(TextAreaTheme(name="taskboard-ink", syntax_styles=styles))
+        self.theme = "taskboard-ink"
+
+    def _build_highlight_map(self) -> None:
+        try:
+            text = self.document.text
+            new = ink_highlights(self.document.lines)
+            if not text.isascii():
+                try:
+                    text.encode("utf-8")
+                except UnicodeEncodeError:
+                    new = {}       # a lone surrogate: Textual's strict paint would raise (SEC-6)
+            super()._build_highlight_map()
+            self._highlights.update(new)
+        except Exception:
+            super()._build_highlight_map()   # no ink, the field keeps working (SEC-3)
+
+
+def colour_target(lines: list[str], start: tuple[int, int], end: tuple[int, int]):
+    """The palette's target (row, a, b) or a notice, exactly one None
+    (LLR-4205.1/.2/.10/.11/.12)."""
+    n1 = "Colour one line at a time."
+    n2 = "The selection crosses a colour edge: select inside one colour, or plain text."
+    n3 = "Nothing to colour: select text or put the cursor on a word."
+    if start[0] != end[0]:
+        return None, n1
+    row = start[0]
+    line = lines[row]
+    if start[1] != end[1]:
+        a, b = sorted((start[1], end[1]))
+        if not line[a:b].strip():
+            return None, n3
+    else:
+        word = _word_at(line, start[1])
+        if word is None:
+            return None, n3
+        a, b = word
+    for s in colour_spans(line):
+        if a < s.end and b > s.start and not (s.start <= a and b <= s.end):
+            return None, n2
+    return (row, a, b), None
+
+
+def _word_at(line: str, col: int) -> tuple[int, int] | None:
+    """The maximal non-whitespace run inside one colour region, holding `col`
+    or ending at it (ARCH-4, LLR-4205.2)."""
+    n = len(line)
+    spans = colour_spans(line)
+    regions: list[tuple[int, int]] = []
+    pos = 0
+    for s in spans:
+        if s.start > pos:
+            regions.append((pos, s.start))
+        regions.append((s.start, s.inner_start))
+        regions.append((s.inner_start, s.inner_end))
+        regions.append((s.inner_end, s.end))
+        pos = s.end
+    if pos < n:
+        regions.append((pos, n))
+    for rs, re in regions:
+        if rs <= col < re and not line[col].isspace():
+            ws = col
+            while ws > rs and not line[ws - 1].isspace():
+                ws -= 1
+            we = col + 1
+            while we < re and not line[we].isspace():
+                we += 1
+            return ws, we
+    if 0 < col <= n and not line[col - 1].isspace():
+        for rs, re in regions:
+            if rs <= col - 1 < re and col <= re:
+                ws = col - 1
+                while ws > rs and not line[ws - 1].isspace():
+                    ws -= 1
+                return ws, col
+    return None
+
+
+def recolour(line: str, a: int, b: int, code: str) -> tuple[str, int | None]:
+    """The palette's rewrite of one line (LLR-4205.4/.5/.6/.9). Raises ValueError
+    only on a target that partly overlaps a span — `colour_target` never hands one."""
+    s = next((sp for sp in colour_spans(line) if sp.start <= a and b <= sp.end), None)
+    if s is not None:
+        inner = line[s.inner_start:s.inner_end]
+        if code == "0":
+            return line[:s.start] + inner + line[s.end:], s.start + len(inner)
+        new_line = line[:s.start] + f"::{code}:: " + inner + " ::" + line[s.end:]
+        return new_line, s.start + len(inner) + 9
+    if code == "0":
+        return line, None
+    new_line = line[:a] + f"::{code}:: " + line[a:b] + " ::" + line[b:]
+    return new_line, b + 9
+
+
+def palette_offset(x: int, y: int, screen_w: int, screen_h: int) -> tuple[int, int]:
+    """The palette box's top-left, below the anchor or above it (LLR-4205.13)."""
+    box_x = max(0, min(x - 1, screen_w - PALETTE_W))
+    box_y = y + 1 if y + 1 + PALETTE_H <= screen_h else max(0, y - PALETTE_H)
+    return box_x, box_y
+
+
+def _palette_rows() -> Text:
+    """The palette's 8 rows as Text pieces (LLR-4205.3)."""
+    rows = Text()
+    for i, (_code, tone, name) in enumerate(PEN_CODES):
+        rows.append(str(i + 1), KEY_STYLE)
+        rows.append(" ", HEX[tone])
+        rows.append("██", HEX[tone])
+        rows.append(" ", HEX[tone])
+        rows.append(name, HEX[tone])
+        rows.append("\n")
+    rows.append("0", KEY_STYLE)
+    rows.append(" ", HEX["mut"])
+    rows.append("none", HEX["mut"])
+    rows.append("\n")
+    rows.append("esc", KEY_STYLE)
+    rows.append(" ", HEX["mut"])
+    rows.append("cancel", HEX["mut"])
+    return rows
+
+
+# the details screen's Notes label (ruling C-2, ARCH-5, LLR-4202.9)
+DETAILS_NOTES_LABEL = (
+    "[b]Notes[/b]  "
+    + f"[{HEX['mut']}]::c:: … ::[/]"
+    + "  "
+    + " ".join(f"[{HEX[tone]}]{code}[/]" for code, tone, _name in PEN_CODES)
+)
+
+
+class ColourPalette(ModalScreen[str | None]):
+    """The colour palette (HLR-4205): keys only, no Button (the modal-key law)."""
+
+    BINDINGS = ([Binding(str(i + 1), f"pick('{PEN_CODES[i][0]}')", "", priority=True)
+                 for i in range(6)]
+                + [Binding("0", "pick('0')", "", priority=True),
+                   Binding("escape", "cancel", "", priority=True)])
+
+    DEFAULT_CSS = f"""
+    ColourPalette {{ align: left top; background: #0000; }}
+    #cp-box {{ width: {PALETTE_W}; height: auto; border: round {HEX['accent']};
+              border-title-color: {HEX['accent']}; border-title-style: bold;
+              padding: 0 1; background: #0d1219; }}
+    """
+
+    def __init__(self, at):
+        super().__init__()
+        self._at = at
+
+    def compose(self) -> ComposeResult:
+        box = Vertical(id="cp-box")
+        box.border_title = "colour"
+        with box:
+            yield Static(_palette_rows(), id="cp-rows")
+
+    def on_mount(self) -> None:
+        box = self.query_one("#cp-box")
+        box.styles.offset = palette_offset(self._at.x, self._at.y,
+                                           self.app.size.width, self.app.size.height)
+
+    def action_pick(self, code: str) -> None:
+        self.dismiss(code)
+
+    def action_cancel(self) -> None:
+        self.dismiss(None)
+
+
 class TaskModal(ClipboardPasteMixin, EmojiPickerMixin, DatePickerMixin, ButtonKeysMixin,
                 ModalScreen[dict | None]):
     """Returns a dict of task fields on save, or None on cancel. With the people
@@ -467,10 +737,14 @@ class TaskModal(ClipboardPasteMixin, EmojiPickerMixin, DatePickerMixin, ButtonKe
                 *FORM_KEYS, *DATE_KEYS,
                 Binding("alt+m", "mark", "Class", priority=True),
                 Binding("alt+i", "press_button('paste-img')", "Paste image", priority=True),
+                *PEN_BINDINGS,
+                Binding("alt+c", "colour", "Colour", priority=True),
                 # the picker's own keys: they act only while it is open (check_action)
                 Binding("up", "drop_move(-1)", "", priority=True, show=False),
                 Binding("down", "drop_move(1)", "", priority=True, show=False),
                 Binding("enter", "drop_pick", "", priority=True, show=False),
+                # enter with a pen on ends the span and reopens it below (after drop_pick)
+                Binding("enter", "pen_enter", "", priority=True, show=False),
                 Binding("tab", "drop_field", "", priority=True, show=False)]
 
     def __init__(self, board: Board, task: Task | None = None,
@@ -494,6 +768,10 @@ class TaskModal(ClipboardPasteMixin, EmojiPickerMixin, DatePickerMixin, ButtonKe
         # stable folder key for pasted images; a NEW task adopts it as its id on
         # save, so images live at images/<task-id>/.
         self._img_key = task.id if task else _new_id()
+        # the pen (Inc C): None until alt+1..alt+6 opens one; `_pen_at` is the
+        # (row, start) of the pen's current span, reset wherever the pen is
+        self.pen = None
+        self._pen_at = None
 
     def compose(self) -> ComposeResult:
         # Full screen (owner verdict 2026-09-30, variant C of the edit round):
@@ -565,9 +843,8 @@ class TaskModal(ClipboardPasteMixin, EmojiPickerMixin, DatePickerMixin, ButtonKe
                                    id="f-pinned")
             with Horizontal(id="task-split"):
                 with Vertical(id="task-edit"):
-                    yield Label("Notes  [dim]==…== yellow · !!…!! red · ++…++ green[/dim]",
-                                classes="task-sec")
-                    yield TextArea(t.notes if t else "", id="f-notes")
+                    yield Label(pen_label(self.pen), id="notes-label", classes="task-sec")
+                    yield InkArea(t.notes if t else "", id="f-notes")
                 with Vertical(id="task-prev"):
                     yield Label("Preview  [dim]ctrl+v paste · esc cancel[/dim]",
                                 classes="task-sec")
@@ -628,6 +905,180 @@ class TaskModal(ClipboardPasteMixin, EmojiPickerMixin, DatePickerMixin, ButtonKe
             self._follow_cursor()
             if self._mention == "list":
                 self._scan()
+            self._pen_follow()
+
+    # ---- the pens, the live ink and the palette (Inc C) ----------------------
+    def _pen_span(self) -> Span | None:
+        """The pen's span holding the cursor (LLR-4203.7/.8): the first span of
+        the cursor's row with the pen's code and inner_start <= col <= inner_end."""
+        if self.pen is None:
+            return None
+        notes = self.query_one("#f-notes", TextArea)
+        if not notes.selection.is_empty:
+            return None
+        row, col = notes.cursor_location
+        code = PEN_CODES[self.pen][0]
+        for s in colour_spans(notes.document.get_line(row)):
+            if s.code == code and s.inner_start <= col <= s.inner_end:
+                return s
+        return None
+
+    def _lift_pen(self) -> None:
+        """Lift the pen (LLR-4203.3/.4/.6, LLR-4205.14): past the closer, or an
+        empty span removed, or a missing closer written first (ARCH-10)."""
+        if self.pen is None:
+            return
+        s = self._pen_span()
+        notes = self.query_one("#f-notes", TextArea)
+        if s is None:
+            self.pen = None
+            self._pen_at = None
+            self._pen_label()
+            return
+        row, _col = notes.cursor_location
+        if s.inner_start == s.inner_end:
+            notes.replace("", (row, s.start), (row, s.end))
+            notes.move_cursor((row, s.start))
+        elif s.end == s.inner_end:
+            notes.insert(" ::", (row, s.inner_end))
+            notes.move_cursor((row, s.inner_end + 3))
+        else:
+            notes.move_cursor((row, s.end))
+        self.pen = None
+        self._pen_at = None
+        self._pen_label()
+
+    def _pen_label(self) -> None:
+        """Rewrite the Notes label from the pen state (LLR-4203.9)."""
+        self.query_one("#notes-label", Label).update(pen_label(self.pen))
+
+    def action_pen(self, i: int) -> None:
+        """`alt+<n>` (i = n-1) opens pen i, `alt+0` (i = -1) lifts (LLR-4203)."""
+        notes = self.query_one("#f-notes", TextArea)
+        if not notes.has_focus:
+            return                       # consume the key; no field changes (LLR-4203.10)
+        if i == self.pen:
+            return                       # the same pen: nothing changes (LLR-4203.15)
+        if self.pen is None and i >= 0:
+            if not notes.selection.is_empty:
+                self.notify("Pens write new text — use alt+c to recolour.",
+                            severity="warning", markup=False)
+                return
+            row, col = notes.cursor_location
+            for s in colour_spans(notes.document.get_line(row)):
+                if s.start < col < s.end:
+                    self.notify("Pens write new text — use alt+c to recolour.",
+                                severity="warning", markup=False)
+                    return
+        if self.pen is not None:
+            self._lift_pen()
+        if i >= 0:
+            row, col = notes.cursor_location
+            line = notes.document.get_line(row)
+            code = PEN_CODES[i][0]
+            pair = f"::{code}::  ::"
+            new_line = line[:col] + pair + line[col:]
+            if ("".join(seg for seg, _ in highlight_segments(new_line))
+                    != "".join(seg for seg, _ in highlight_segments(line))):
+                self.notify("That colour would change the text you see: nothing changed.",
+                            severity="warning", markup=False)
+                return
+            notes.insert(pair, (row, col))
+            notes.move_cursor((row, col + 6))
+            self.pen = i
+            self._pen_at = (row, col)
+        self._pen_label()
+
+    def action_pen_enter(self) -> None:
+        """`enter` with a pen on: end the span and reopen it below (LLR-4203.7)."""
+        notes = self.query_one("#f-notes", TextArea)
+        row, col = notes.cursor_location
+        code = PEN_CODES[self.pen][0]
+        notes.insert(f" ::\n::{code}:: ", (row, col))
+        notes.move_cursor((row + 1, 6))
+        self._pen_at = (row + 1, 0)
+
+    def _pen_follow(self) -> None:
+        """The cursor-leave check (LLR-4203.8/.14): an empty span left by the
+        cursor is removed from `_pen_at`, the pen turned off."""
+        if self.pen is None:
+            return
+        notes = self.query_one("#f-notes", TextArea)
+        s = self._pen_span()
+        if s is not None:
+            row, _col = notes.cursor_location
+            self._pen_at = (row, s.start)
+            return
+        if self._pen_at is not None:
+            row0, start0 = self._pen_at
+            code = PEN_CODES[self.pen][0]
+            target = None
+            for sp in colour_spans(notes.document.get_line(row0)):
+                if sp.start == start0 and sp.code == code and sp.inner_start == sp.inner_end:
+                    target = sp
+                    break
+            if target is not None:
+                row, col = notes.cursor_location
+                notes.replace("", (row0, target.start), (row0, target.end))
+                if row == row0:
+                    if col < start0:
+                        new_col = col
+                    elif col <= target.end:
+                        new_col = start0
+                    else:
+                        new_col = col - (target.end - target.start)
+                    notes.move_cursor((row0, new_col))
+        self.pen = None
+        self._pen_at = None
+        self._pen_label()
+
+    def action_colour(self) -> None:
+        """`alt+c`: open the palette for the pen's span, or the word/selection at
+        the cursor (HLR-4205, LLR-4205.1/.2/.14/.16)."""
+        notes = self.query_one("#f-notes", TextArea)
+        if not notes.has_focus:
+            return                       # consume the key (LLR-4205.16)
+        row = notes.cursor_location[0]
+        s = self._pen_span()             # read BEFORE the lift (ARCH-3)
+        self._lift_pen()
+        if s is not None:
+            if s.inner_start < s.inner_end:
+                target = (row, s.inner_start, s.inner_end)
+            else:
+                self.notify("Nothing to colour: select text or put the cursor on a word.",
+                            severity="warning", markup=False)
+                return
+        else:
+            target, notice = colour_target(notes.document.lines,
+                                           notes.selection.start, notes.selection.end)
+            if notice is not None:
+                self.notify(notice, severity="warning", markup=False)
+                return
+        trow, a, b = target
+        line_at_open = notes.document.get_line(trow)
+        self.app.push_screen(ColourPalette(notes.cursor_screen_offset),
+                             partial(self._apply_colour, trow, a, b, line_at_open))
+
+    def _apply_colour(self, row: int, a: int, b: int, line_at_open: str,
+                      code: str | None) -> None:
+        """The palette's write-back (LLR-4205.4/.5/.6/.7/.8/.15, SEC-5)."""
+        if code is None:
+            return
+        notes = self.query_one("#f-notes", TextArea)
+        if row >= notes.document.line_count or notes.document.get_line(row) != line_at_open:
+            self.notify("The notes changed while the palette was open: nothing changed.",
+                        severity="warning", markup=False)
+            return
+        new_line, col = recolour(line_at_open, a, b, code)
+        if col is None:
+            return
+        if ("".join(seg for seg, _ in highlight_segments(new_line))
+                != "".join(seg for seg, _ in highlight_segments(line_at_open))):
+            self.notify("That colour would change the text you see: nothing changed.",
+                        severity="warning", markup=False)
+            return
+        notes.replace(new_line, (row, 0), (row, len(line_at_open)))
+        notes.move_cursor((row, col))
 
     # ---- the `@` picker (batch 2026-10-21-batch-01) ---------------------------
     def check_action(self, action: str, parameters: tuple[object, ...]) -> bool | None:
@@ -639,10 +1090,24 @@ class TaskModal(ClipboardPasteMixin, EmojiPickerMixin, DatePickerMixin, ButtonKe
             # the form acts only while it holds the focus, the list only while the notes
             # do and it lists something — otherwise the key is the field's (architect
             # A-5; code review CR-1, CR-4)
-            if self._mention == "add":
-                return self.query_one("#mdrop", MentionDrop).has_focus_within
-            return self._mention == "list" and bool(self._opts)
+            return self._drop_gate()
+        if action == "pen_enter":
+            # gated (ARCH-8, P-M1-2): drop_pick wins first, then the pen (a pen on,
+            # the cursor inside its span, the notes focused) — otherwise the key
+            # falls through to the TextArea's own newline
+            if self._drop_gate():
+                return False
+            notes = self.query_one("#f-notes", TextArea)
+            return notes.has_focus and self.pen is not None and self._pen_span() is not None
+        # `pen` and `colour` are always allowed (ARCH-2): the actions return at once,
+        # consuming the key, when `#f-notes` lacks the focus
         return True
+
+    def _drop_gate(self) -> bool:
+        """Whether the notes' `@` picker takes the key (the base drop_move/drop_pick arm)."""
+        if self._mention == "add":
+            return self.query_one("#mdrop", MentionDrop).has_focus_within
+        return self._mention == "list" and bool(self._opts)
 
     def on_descendant_focus(self, event: events.DescendantFocus) -> None:
         """The focus leaving the picker — the list's notes, or the new person's form —
@@ -825,6 +1290,7 @@ class TaskModal(ClipboardPasteMixin, EmojiPickerMixin, DatePickerMixin, ButtonKe
         return [ln.strip() for ln in text.splitlines() if ln.strip()]
 
     def _save(self) -> None:
+        self._lift_pen()   # an empty pen span is removed before the text is read (LLR-4203.11)
         title = self._val("f-title") or "Untitled"
         proj = self._val("f-project")
         urls = [v for v in (valid_url(ln) for ln in self._lines("f-urls")) if v]
@@ -2540,7 +3006,7 @@ class TaskDetails(ModalScreen[None]):
                 yield Label("Due")
                 yield Label(Text(t.due_date or "—"))
             yield from self._links()
-            yield Label("[b]Notes[/b]  [dim]highlight: ==…== yellow, !!…!! red, ++…++ green[/dim]")
+            yield Label(DETAILS_NOTES_LABEL)
             if t.notes:
                 yield Static(notes_preview(t.notes, self._board.people))
             else:
