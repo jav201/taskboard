@@ -1,0 +1,16 @@
+2026-11-01-v3-incC/steps.log
+  E0:    0.9 min
+  E1:    0.0 min
+  E2:   29.6 min
+  E3:   37.4 min
+  E4:   27.1 min
+  E5:   39.0 min
+  wall:  134.0 min
+2026-11-01-v3-incL/steps.log
+  E0:    2.5 min
+  E1:    0.0 min
+  E2:   35.0 min
+  E3:   21.4 min
+  E4:   31.5 min
+  E5:   23.7 min
+  wall:  114.1 min
