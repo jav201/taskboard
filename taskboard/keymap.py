@@ -145,6 +145,8 @@ KEYMAP: tuple[Key, ...] = (
     # global, off the bar, like `A`; it sits right after `A` so the `?` help's
     # global line and the palette read "… A All boards  N Added list  H Report …"
     Key("N", "N", "added_list", "Added list", group="misc", bar=False),
+    # `n` — the capture view (Inc K, LLR-4401.1): global, off the bar, like `N`
+    Key("n", "n", "capture", "Capture", group="misc", bar=False),
     # `H` — export an HTML report, the workspace and/or the deck (batch 2026-10-29-batch-01,
     # HLR-3107): global, off the bar, like `R`/`A`; its modal names its own keys
     Key("H", "H", "report_export", "Report", group="misc", bar=False),

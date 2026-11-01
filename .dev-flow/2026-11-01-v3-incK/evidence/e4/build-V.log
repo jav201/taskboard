@@ -1,0 +1,30 @@
+Implementation complete. Here's the summary.
+
+## Summary — group V (capture view)
+
+### Functions/classes added or changed (in `taskboard/app.py`)
+
+- **Imports** (lines 1–55): added `NamedTuple`, `Color`, `Horizontal`, `Input`, `InkArea`, `KEY_STYLE`, `grab_clipboard_image`, and the `taskboard.inbox` / `taskboard.suggest` contracts.
+- **Constants** — `GHOST` (1311), `CAPTURE_KEYS` (1316), `NEW_KEY` (1322).
+- **Entities** — `RailNote` (1325), `ReviewRow` (1334).
+- **Pure painters** (`-> Text`, markup-census-safe): `hit_text` (1341), `capture_head` (1358), `capture_hint` (1370), `rail_rows` (1381), `review_rows` (1458).
+- **`PadArea(InkArea)`** (1504): `get_line` renders a divider as a `─` rule (span-styled, `max(w, len)`) except on the cursor row; ghost placeholder.
+- **`CaptureView(Screen[None])`** (1530): compose/mount/resize/resume, `_rebuild_docs`, `options_for`/`_key`/`chosen` (ARCH-2 identity), `_paint`, `_notice_divider`, debounce `_idle`/`_flush`, `on_unmount`, and actions `close/divider/dump/other/new/board/review/image/undo` + `dump_part`/`_dump`/`_where`/`on_input_submitted`.
+- **`ReviewList(ModalScreen[None])`** (2099): move/toggle/other/dump/undo/back.
+- **`TaskboardApp`**: `__init__` loads `self.inbox` + `_inbox_said`/`_divider_said` (2247); `check_action` gates `capture` under the home and adds `capture`/`CaptureView` to the two tuples (2305); `action_capture` (2471), `_retry_pending_once` (2475), `async action_quit` (2485).
+
+### Other files
+- `taskboard/keymap.py:149` — `Key("n", "n", "capture", "Capture", group="misc", bar=False)` after `N`.
+- `README.md:137` — the `| \`n\` | Capture | …` row after the `N` row.
+
+### Deviations
+None from the graph. **Applied addenda A-1 (ARCH-12)**: LLR-4403.30/31 are withdrawn, so the rail scores on every paint (cached corpus + per-text hit cache) — no `_drawn`/`score`/`_idle` scoring pause. Applied A-3 (R2-1) to `action_quit`.
+
+### Self-check results
+- Import check passes: prints `['n']` for `action == 'capture'`.
+- `pytest test_keymap/test_help_keys/test_modal_keys/test_added_list`: **139 passed, 2 failed**:
+  1. `test_modal_keys.py::test_TC_2407_every_modal_is_in_the_inventory` — **expected**: `ReviewList` must be added to `INVENTORY` (the tester does this, per P-V-5).
+  2. `test_added_list.py::test_TC_4321_N_is_one_global_key_of_the_seat` — the test hard-codes the `global_keys("gantt")` list; LLR-4401.1 mandates `n` as a global key placed after `N`, so the list must gain `"n"` after `"N"`. This is a required test-expectation update, not a code defect (the `n` key is correct and `test_keymap.py` is fully GREEN, 24/24).
+
+### Verified against graph examples (plain text)
+`capture_head` (TC-4409/4480), `capture_hint` (TC-4441), `hit_text`/`bars` (TC-4476), `rail_rows` wide/narrow/empty/dumped/weak/or (TC-4475/4408/4416/4417/4553/4479), and `review_rows` (TC-4562/4573, option column at col 74) all match. The markup census flags **zero** new sites (its 3 failures are pre-existing on base, none in my code).

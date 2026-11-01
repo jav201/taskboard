@@ -1,0 +1,37 @@
+He implementado `taskboard/suggest.py` (nuevo, 256 líneas) siguiendo exactamente el grafo Code-Wire de G-T. Resumen:
+
+## Archivos
+- **`taskboard/suggest.py`** (nuevo) — módulo puro de sugerencias TF-IDF.
+
+## Funciones/clases y datos añadidos (con líneas)
+| Línea | Nombre | Notas |
+|---|---|---|
+| 22 | `STOP` | lista del prototipo verbatim (LLR-4403.1) |
+| 32 | `WORD_RE` | handle `@…` o run `[a-z0-9]+` |
+| 35 | `W_NAME/W_TITLE/W_PEOPLE/W_MARK/W_NOTES` | pesos enteros 3/2/2/1/1 (R0-7) |
+| 38 | `HIGH/MID/LOW` | 0.30/0.16/0.08 |
+| 42, 46, 49, 52 | `NOTE_CHARS`, `DOC_CHARS`, `MAX_HITS`, `NEW_PROJECT` | 10 000, 100 000, 3, `None` |
+| 55 | `fold(s)` | NFKD + quita combining + lower |
+| 64 | `stem(w)` | ies→y / s→'' / corte a 6; handle intacto |
+| 78 | `words(text)` | (stem, surface) con filtros STOP/dígitos/longitud |
+| 93 | `Doc` | 11 campos en el orden del grafo (lane…norm) |
+| 108 | `Corpus` | (docs, idf) |
+| 114 | `Hit` | (doc, score, why) |
+| 121 | `corpus(lanes, marks)` | 1 Doc por proyecto no archivado; cap `DOC_CHARS`; vec/norm/idf una vez por build (ARCH-6) |
+| 174 | `_idf(docs)` | ln((N+1)/(df+1))+1 |
+| 187 | `suggest(note, corpus)` | cap `NOTE_CHARS`, cosine tf·idf, halved en 1 stem, orden (−score, lane, casefold, name, position) |
+| 230 | `level(score)` | 3/2/1/0 |
+| 241 | `bars(score)` | cue 3 glifos |
+| 247 | `options(hits)` | top fuerte → hits; si no `[None]+hits[:2]` |
+
+## Verificación (intérprete `C:/Users/jjgh8/anaconda3/python.exe`)
+- Import OK: `taskboard.__file__` = `…\capture-proto\taskboard\__init__.py`.
+- Reproduje fixture F con `Board`/`Project`/`Task`/`Mark` reales. Todo coincide con el grafo:
+  - **N1** → `Eval harness` score **0.4018**, why `questions · @username_subject · key`.
+  - **AT-4402** (texto puntuado) → `Module 4 · Volumes · Course` **0.668**, why `volume · oracle · script`.
+  - tf de los 3 documentos idénticos a los valores F; idf `questi` 1.693147…, `@username_subject`/`releas` 1.287682…; `|d|` Eval harness 13.533743….
+  - TC-4461/4462 (fold/stem/words), TC-4464/4463/4465/4483/4485 (corpus), TC-4470/4471/4472/4474/4475/4479, AT-4407, TC-4482 (cap 10 000: `0.3128`/`0.7077`), TC-4484 (`rotation` 0.1179), TC-4487 (cap 100 000: `audit` 16665, sin `zebra`), TC-4466/4469 (idf y orden de empates), options/bars/level — todos correctos.
+- Determinismo: digest idéntico bajo `PYTHONHASHSEED` 0/1/2 (sin iterar `set` para orden ni sumas).
+
+## Desviaciones
+**Ninguna** — seguí el grafo exactamente, sin improvisar.

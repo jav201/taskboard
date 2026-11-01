@@ -1,0 +1,28 @@
+I've implemented `taskboard/inbox.py` (group S) per the approved Code-Wire graph. Summary:
+
+## Files written
+- `taskboard/inbox.py` — new file (~1165 lines), the full G-S module.
+- `.dev-flow/2026-11-01-v3-incK/e4-deviations.md` — 2 deviations (below).
+
+## Self-check (passes)
+```
+C:\Users\jjgh8\Github\taskboard-wt\capture-proto\taskboard\__init__.py
+2 True False
+```
+
+## Entities & public functions added
+- NamedTuples: `Part` (72), `NoteTask` (79), `DumpTarget` (85), `DumpOutcome` (91), `UndoOutcome` (102), `WriteResult` (108), `AttachResult` (114).
+- Parsing: `image_name` (145), `is_divider` (156), `note_parts` (173), `note_count` (190), `note_at` (203), `note_task` (275), `without_note` (284), `with_note` (299), `union_pads` (313), `prune_dumped` (330), `entry_for` (348).
+- `Inbox` class (382): `__init__`, `_hold`, `_stamped`, `_entry`, `_read`, `_too_big`, `load` (480), `refresh` (512), `_set_aside`, `_shape`, `_commit`, `write_pad` (602), `pad_now` (655), `last_dump` (672), `mark_notice` (692).
+- Images/dump/undo: `_free_name` (714), `_file_stamp` (727), `_links_ok` (737), `_new_colour` (752), `_name_refusal` (762), `_copy_images` (770), `_drop_pad_copies` (804), `dump_note` (825), `_dump_open` (857), `_dump_other` (905), `_unchanged` (973), `_needed` (988), `undo_dump` (993), `_undo_open` (1016), `_undo_other` (1047), `_images_back` (1087), `_renamed` (1114), `attach_images` (1129).
+
+## Examples run by hand (scratch under `%TEMP%`, `Path.home` redirected)
+1. Note parsing: `note_parts` TC-4432/4434, `note_count` TC-4438, `note_at` TC-4530/4528, `note_task` TC-4502/4529, `without_note`/`with_note` TC-4506/4543 — all match.
+2. Store: `union_pads` TC-4599 (both arms), `Inbox.load`/`write_pad` union, case-D (TC-4688), case-U (TC-4689), pending retry (ARCH-4/TC-4681), `pad_now` (TC-4682), the surrogate door probe (TC-4683) — all match.
+3. `dump_note`/`undo_dump` (TC-4501) into a synthetic Course board + `entry_for` key order + undo → "undone" → re-undo → "gone"; image-name rule arms (TC-4628) and `attach_images` PIL (TC-4611) — all match.
+
+## Deviations (`.dev-flow/.../e4-deviations.md`)
+- **DEV-S-1**: `_dump_open`/`_dump_other` — the graph's `in:` omits `note`, but `func:` computes `_task_fields(note, moved)`; I added `note` as the 3rd parameter (a missing-image note would otherwise lose its `img:` line).
+- **DEV-S-2**: `_undo_other` lock label — followed `func:` (`Path(path).parent.name`), which yields `c is busy` for fixture S's folder `c`, not the TC-4551 string `Course is busy` (`_undo_other` has no board display name in its inputs).
+
+No test files were written or edited; nothing was committed.

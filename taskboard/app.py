@@ -8,22 +8,29 @@ import webbrowser
 from datetime import date, datetime
 from pathlib import Path
 
+from typing import NamedTuple
+
+from rich.color import Color
 from rich.text import Text
 from textual import events
 from textual.app import App, ComposeResult
 from textual.binding import Binding
-from textual.containers import Grid, Vertical, VerticalScroll
+from textual.containers import Grid, Horizontal, Vertical, VerticalScroll
 from textual.keys import format_key
 from textual.screen import ModalScreen, Screen
-from textual.widgets import Static
+from textual.widgets import Input, Static
 
 from . import history, report_html
 from .boards import Registry, announce, name_for, open_elsewhere, peek_board, renew, withdraw
 from .people import PEOPLE_NAME, Directory
 from .marks import MARKS_NAME, Directory as MarksDirectory
+from .inbox import (INBOX_NAME, DumpTarget, Inbox, attach_images, dump_note, entry_for,
+                    is_divider, note_at, note_count, note_parts, note_task, prune_dumped,
+                    undo_dump, with_note, without_note)
+from .suggest import bars, corpus, options, suggest
 from .models import (AUTO_ARCHIVE_DAYS, IMAGE_EXTS, LINKS_MIGRATION, MILESTONES_MIGRATION,
                      Board, Project, Task,
-                     archive_refusal, chain_template, default_board_path, is_open,
+                     archive_refusal, chain_template, default_board_path, grab_clipboard_image, is_open,
                      link_refusal,
                      milestone_candidates, milestones_marked, next_priority, parse_iso,
                      present_order, set_present_order,
@@ -31,13 +38,13 @@ from .models import (AUTO_ARCHIVE_DAYS, IMAGE_EXTS, LINKS_MIGRATION, MILESTONES_
                      set_milestone, strip_controls, templates, waiting_ids,
                      CASCADE_MODES, apply_plan, plan_move, resolve_mode, restore,
                      snapshot, stamp)
-from .modals import (BoardForm, PersonForm, SearchPrompt, ClockModal, GanttLinkMode, LinkPicker, CommandPalette, ConfirmModal,
+from .modals import (BoardForm, PersonForm, SearchPrompt, ClockModal, GanttLinkMode, InkArea, LinkPicker, CommandPalette, ConfirmModal,
                      HelpModal, ImageViewer, MarkForm, MilestoneOffer, PhaseEditor, ProjectModal,
                      PresentHiddenPicker, PresentKeys, ProjectPicker, ReportExport, StandupModal,
                      TaskDetails, TaskModal,
                      TeamIdentityPicker,
                      TemplateEditor, TemplatePicker, TextPrompt)
-from .keymap import KEYMAP, KeyBar, app_bindings, key_line, palette_commands, present_bindings
+from .keymap import KEYMAP, KEY_STYLE, KeyBar, app_bindings, key_line, palette_commands, present_bindings
 from .ribbon import Ribbon
 from .team_sync import (TEAM_FILENAME, TeamState, _read_json, clean_roster,
                         probe_setup_health)
@@ -1297,6 +1304,911 @@ class MarksManager(Screen[None]):
         self.app.pop_screen()
 
 
+# ---- the capture view (Inc K) ----------------------------------------------
+
+# The ghost example shown while the pad is empty (Inc K, LLR-4402.12): four
+# placeholder lines, drawn by Textual only while the pad's text is "".
+GHOST = ("first line → the task's title\nnext lines → its notes\n"
+         + "─" * 24 + "\n____ ↵ starts the next note")
+
+# The pad's key row (Inc K, LLR-4401.10): every key works, and its word goes
+# before a key does when the row is tight (keymap law).
+CAPTURE_KEYS = [("alt+d", "dump"), ("alt+o", "other"), ("alt+n", "new project"),
+                ("alt+a", "review"), ("alt+i", "image"), ("alt+u", "undo"),
+                ("esc", "close")]
+
+# The `+ new project` option's identity (Inc K, ARCH-2): the choice dict holds
+# this string where the chosen option is None, never a list index.
+NEW_KEY = "+ new project"
+
+
+class RailNote(NamedTuple):
+    """One note as the rail paints it (Inc K): no flag field (ARCH-4)."""
+    title: str
+    images: int
+    options: list | None
+    chosen: object | None
+    hits: list
+
+
+class ReviewRow(NamedTuple):
+    """One review-list row (Inc K): no flag field (ARCH-4)."""
+    title: str
+    option: object | None
+    checked: bool
+
+
+def hit_text(hit, width=None) -> Text:
+    """A project option as Rich `Text` pieces — never markup (Inc K,
+    LLR-4403.16, LLR-4409.4): the project name in its hue, the board name in
+    the board's hue, then the confidence cue. `None` is `+ new project`."""
+    t = Text(no_wrap=True)
+    if hit is None:
+        t.append("+ new project", f"b {HEX['amber']}")
+    else:
+        t.append(hit.doc.project_name, f"b {HEX.get(hit.doc.project_colour, HEX['sky'])}")
+        t.append(" · ", HEX["dim"])
+        t.append(hit.doc.board_name, board_hex(hit.doc.board_colour))
+        t.append(" " + bars(hit.score), HEX["accent"] if hit.score >= 0.16 else HEX["amber"])
+    if width is not None:
+        t.truncate(width, overflow="ellipsis")
+    return t
+
+
+def capture_head(count: int, unread: int, width: int) -> Text:
+    """The capture view's head row (Inc K, LLR-4401.9, LLR-4403.20)."""
+    t = Text(no_wrap=True)
+    t.append("CAPTURE", f"b {HEX['accent']}")
+    t.append(f"  {count} note{'' if count == 1 else 's'} · suggestions read every board",
+             HEX["mut"])
+    if unread > 0:
+        t.append(f" · {unread} board{'' if unread == 1 else 's'} not read", HEX["amber"])
+    t.truncate(width, overflow="ellipsis")
+    return t
+
+
+def capture_hint() -> Text:
+    """The hint row under the pad, shown in every state (Inc K, LLR-4402.11, R1-1)."""
+    t = Text(no_wrap=True)
+    t.append("____ ↵", KEY_STYLE)
+    t.append(" new note", HEX["mut"])
+    t.append(" · ", HEX["dim"])
+    t.append("alt+l", KEY_STYLE)
+    t.append(" divider", HEX["mut"])
+    return t
+
+
+def rail_rows(notes, cur, width, wide, dumped) -> Text:
+    """The suggestion rail as Rich `Text` rows (Inc K, LLR-4401.8, LLR-4403.15,
+    LLR-4405.13, LLR-4408.9, LLR-4409.4): one title / `→` / reason block per
+    note (only the cursor's note when narrow), the `or` line on the cursor's
+    note, a spacer per note when wide, and the `✓ dumped` line last."""
+    out = Text()
+    if not notes:
+        out.append("no notes yet", HEX["dim"])
+        if wide and dumped > 0:
+            out.append("\n")
+            out.append(f"✓ dumped {dumped}", f"b {HEX['done']}")
+            out.append("  ·  alt+u undo  ·  kept 7 days", HEX["dim"])
+        return out
+    if not wide and cur is None:
+        out.append("no note under the cursor", HEX["dim"])
+        return out
+
+    def emit(k, note, is_cur):
+        p = "▌" if is_cur else " "
+        r = Text(no_wrap=True)
+        r.append(p, HEX["accent"] if is_cur else None)
+        r.append(f"{k} ", f"b {HEX['accent']}" if is_cur else HEX["dim"])
+        r.append(note.title, f"b {HEX['ink']}" if is_cur else HEX["hd"])
+        if note.images:
+            r.append(f"  ▣ {note.images}", HEX["amber"])
+        r.truncate(width, overflow="ellipsis")
+        out.append_text(r)
+        out.append("\n")
+        if note.options is None:
+            return
+        r = Text(no_wrap=True)
+        r.append(p, HEX["accent"] if is_cur else None)
+        r.append("  → ", HEX["accent"])
+        r.append_text(hit_text(note.chosen))
+        r.truncate(width, overflow="ellipsis")
+        out.append_text(r)
+        out.append("\n")
+        r = Text(no_wrap=True)
+        r.append(p, HEX["accent"] if is_cur else None)
+        if note.chosen is not None:
+            r.append("    why ", HEX["dim"])
+            r.append(" · ".join(note.chosen.why[:3]), HEX["mut"])
+        elif note.hits:
+            r.append("    weak: ", HEX["dim"])
+            r.append(" · ".join(note.hits[0].why[:2]), HEX["mut"])
+            r.append(f" ({note.hits[0].doc.project_name})", HEX["mut"])
+        else:
+            r.append("    no project shares a word", HEX["mut"])
+        r.truncate(width, overflow="ellipsis")
+        out.append_text(r)
+        out.append("\n")
+        others = [o for o in note.options if o is not note.chosen]
+        if is_cur and others:
+            r = Text(no_wrap=True)
+            r.append(p, HEX["accent"])
+            r.append("    or ", HEX["dim"])
+            for j, o in enumerate(others):
+                if j:
+                    r.append("  ·  ", HEX["dim"])
+                r.append_text(hit_text(o))
+            r.truncate(width, overflow="ellipsis")
+            out.append_text(r)
+            out.append("\n")
+        if wide:
+            out.append("\n")
+
+    if wide:
+        for k, note in enumerate(notes, 1):
+            emit(k, note, (k - 1) == cur)
+    else:
+        emit(cur + 1, notes[cur], True)
+    if wide and dumped > 0:
+        out.append(f"✓ dumped {dumped}", f"b {HEX['done']}")
+        out.append("  ·  alt+u undo  ·  kept 7 days", HEX["dim"])
+    return out
+
+
+def review_rows(rows, sel, width) -> Text:
+    """The review list's rows as Rich `Text` (Inc K, LLR-4406.2, LLR-4406.13,
+    LLR-4409.4): one title line (padded to the column) and one reason line per
+    note, then the key row carrying the checked count."""
+    out = Text()
+    tw = width - 42 if width >= 90 else width - 6
+    k = sum(1 for r in rows if r.checked)
+    for i, row in enumerate(rows):
+        title_txt = Text(no_wrap=True)
+        if row.title:
+            title_txt.append(row.title, f"b {HEX['ink']}" if i == sel else HEX["hd"])
+        else:
+            title_txt.append("(no title line)", HEX["dim"])
+        title_txt.truncate(tw, overflow="ellipsis", pad=True)
+        r1 = Text(no_wrap=True)
+        r1.append("▶ " if i == sel else "  ", HEX["accent"])
+        if row.checked:
+            r1.append("[x] ", f"b {HEX['accent']}")
+        else:
+            r1.append("[ ] ", HEX["dim"])
+        r1.append_text(title_txt)
+        if width >= 90:
+            r1.append("  ")
+            r1.append_text(hit_text(row.option, 34))
+        out.append_text(r1)
+        out.append("\n")
+        r2 = Text(no_wrap=True)
+        r2.append("      ")
+        if width < 90:
+            r2.append_text(hit_text(row.option, 34))
+            r2.append("  ")
+        if row.option is None:
+            r2.append("needs a name: alt+n in the pad", HEX["amber"])
+        else:
+            r2.append("why ", HEX["dim"])
+            r2.append(" · ".join(row.option.why[:3]), HEX["mut"])
+        r2.truncate(width, overflow="ellipsis")
+        out.append_text(r2)
+        out.append("\n")
+    out.append("\n")
+    out.append_text(key_line([("↑↓", "move"), ("␣", "include"), ("o", "other"),
+                              ("d", f"dump {k} checked"), ("u", "undo"),
+                              ("esc", "back")], width))
+    return out
+
+
+class PadArea(InkArea):
+    """The capture pad (Inc K, LLR-4402.6, LLR-4409.1): `InkArea`'s live colour
+    stays; a divider line the cursor is not on renders as a full-width `─` rule
+    by the line render (never the highlight map, R1-5)."""
+
+    DEFAULT_CSS = """
+    PadArea { height: 1fr; border: tall #2dd4bf 40%; background: #0b0f17; }
+    PadArea > .text-area--placeholder { color: #5b6675; }
+    """
+
+    def __init__(self, text: str = "", id: str | None = None):
+        super().__init__(text, id=id)
+        self.placeholder = GHOST
+
+    def get_line(self, line_index: int) -> Text:
+        """Draw a divider line the cursor is not on as a full-width rule
+        (Inc K, LLR-4402.6/7/18): the stored text keeps its underscores."""
+        line = super().get_line(line_index)
+        if line_index != self.selection.end[0] and is_divider(line.plain):
+            w = self.scrollable_content_region.width
+            t = Text("─" * max(w, len(line.plain)), end="", no_wrap=True)
+            t.stylize(HEX["dim"])       # a span: a Text-level style is lost (P-V-1b)
+            return t
+        return line
+
+
+class CaptureView(Screen[None]):
+    """The `n` capture view (Inc K, HLR-4401): a full-screen notes pad beside a
+    suggestion rail. Every pad key is a PRIORITY binding (P-V-2, LLR-4401.18),
+    so the terminal form of `alt+<letter>` inserts nothing into the pad.
+    `alt+enter` is not bound (R1-1); the divider key is `alt+l`."""
+
+    BINDINGS = [Binding("escape", "close", "", priority=True),
+                Binding("alt+d", "dump", "", priority=True),
+                Binding("alt+o", "other", "", priority=True),
+                Binding("alt+n", "new", "", priority=True),
+                Binding("tab", "board", "", priority=True),
+                Binding("alt+a", "review", "", priority=True),
+                Binding("alt+i", "image", "", priority=True),
+                Binding("alt+u", "undo", "", priority=True),
+                Binding("alt+l", "divider", "", priority=True)]
+
+    DEFAULT_CSS = """
+    CaptureView { background: #0d1117; }
+    #cap-head { height: 1; padding: 0 1; }
+    #cap-main { height: 1fr; }
+    #cap-left { width: 1fr; }
+    #cap-hint { height: 1; padding: 0 1; }
+    #cap-rail-box { width: 50; }
+    #cap-rail { height: 1fr; padding: 0 1; }
+    #cap-new { display: none; }
+    #cap-new.on { display: block; }
+    #cap-keys { dock: bottom; height: 1; padding: 0 1; background: #0b0f17; }
+    CaptureView.-narrow #cap-main { layout: vertical; }
+    CaptureView.-narrow #cap-rail-box { width: 1fr; height: 7; }
+    """
+
+    def compose(self) -> ComposeResult:
+        # Re-read the store only when its stamp changed; never writes (LLR-4407.13).
+        self._refreshed = self.app.inbox.refresh()
+        self._rebuild_docs()
+        # `_saved` is the store's pad; with a pending record the shown pad
+        # differs, so the view is unsaved and its close writes (LLR-4407.42).
+        self._saved = self.app.inbox.pad
+        self._text = self.app.inbox.pad_now()
+        self.choice = {}          # note text → option identity (ARCH-2)
+        self._field = None
+        self._field_lane = 0
+        self._timer = None
+        self._esc_armed = False
+        self._quit_armed = False  # (SEC-5)
+        yield Static(id="cap-head")
+        with Horizontal(id="cap-main"):
+            with Vertical(id="cap-left"):
+                yield PadArea(self.app.inbox.pad_now(), id="cap-pad")
+                yield Static(capture_hint(), id="cap-hint")
+            with Vertical(id="cap-rail-box"):
+                yield Static(id="cap-rail")
+                yield Input(placeholder="project name", id="cap-new")
+        yield Static(id="cap-keys")
+
+    def on_mount(self) -> None:
+        pad = self._pad()
+        pad.focus()
+        pad.move_cursor(pad.document.end)
+        self.set_class(self.app.size.width < 100, "-narrow")
+        app = self.app
+        if app.inbox.load_report.get("unreadable") and not app._inbox_said:
+            app._inbox_said = True
+            backup = app.inbox.load_report["backup"]
+            if backup:
+                self.notify(f"inbox.json could not be read; it was copied to {Path(backup).name} "
+                            f"and the pad starts empty.",
+                            title="Capture", severity="warning", timeout=15, markup=False)
+            else:
+                self.notify("inbox.json could not be read and no copy could be kept; "
+                            "the pad starts empty.",
+                            title="Capture", severity="warning", timeout=15, markup=False)
+        if self._refreshed is False:
+            self.notify("inbox.json could not be read; the pad as loaded is kept.",
+                        title="Capture", severity="warning", timeout=15, markup=False)
+        self._paint()
+
+    def on_resize(self, event) -> None:
+        self.set_class(self.app.size.width < 100, "-narrow")
+        self._paint()
+
+    def on_screen_resume(self) -> None:
+        # back on top after the review list: repaint at once.
+        self._paint()
+
+    def _pad(self) -> PadArea:
+        return self.query_one("#cap-pad", PadArea)
+
+    def _rebuild_docs(self) -> None:
+        """One corpus over every board `board_lanes` returns (Inc K, ARCH-6,
+        LLR-4403.23/24): idf, vectors and norms built once; the hit cache is
+        valid only for these documents."""
+        self.lanes, self.ids = board_lanes(self.app)
+        self.docs = corpus(self.lanes, self.app.marks.marks)
+        self.unread = sum(1 for lane in self.lanes if lane[2] is None)
+        self._hits = {}
+
+    def _key(self, opt):
+        """An option's identity (Inc K, ARCH-2): (board path, project id), or
+        the new-project sentinel for None — never an index."""
+        if opt is None:
+            return NEW_KEY
+        return (str(opt.doc.board_path), opt.doc.project_id)
+
+    def options_for(self, text):
+        """A note's options, its hits computed at most once per distinct text
+        while the documents are unchanged (LLR-4403.21); scored on the note's
+        title + notes, image lines left out (P-T-4, LLR-4403.28)."""
+        hits = self._hits.get(text)
+        if hits is None:
+            nt = note_task(text)
+            hits = suggest(nt.title + "\n" + nt.notes, self.docs)
+            self._hits[text] = hits
+        return options(hits)
+
+    def chosen(self, text):
+        """The chosen option for a note's text: the option whose identity equals
+        the stored one, else the top choice (ARCH-2 — an identity no longer
+        among the options falls back to the top, never a stale index)."""
+        opts = self.options_for(text)
+        want = self.choice.get(text)
+        for o in opts:
+            if self._key(o) == want:
+                return o
+        return opts[0]
+
+    def _unsaved(self) -> bool:
+        return strip_controls(self._text) != self._saved or bool(self.app.inbox.pending)
+
+    def _replace_pad(self, pad, text, row=None, col=0):
+        """Set the pad text and keep or clamp the cursor (P-S-8)."""
+        if row is None:
+            row, col = pad.cursor_location
+        lines = text.split("\n")
+        new_row = min(row, len(lines) - 1)
+        new_col = min(col, len(lines[new_row]))
+        pad.text = text
+        pad.move_cursor((new_row, new_col))
+        self._text = text
+
+    def _paint(self) -> None:
+        pad = self._pad()
+        parts = note_parts(pad.text)
+        notes = [p for p in parts if p.is_note]
+        at = note_at(pad.text, pad.cursor_location[0])
+        cur = notes.index(at) if at is not None else None
+        w = self.app.size.width
+        wide = w >= 100
+        rail_notes = []
+        for p in notes:
+            opts = self.options_for(p.text)
+            nt = note_task(p.text)
+            rail_notes.append(RailNote(nt.title, len(nt.images), opts,
+                                       self.chosen(p.text), self._hits[p.text]))
+        dumped = len(prune_dumped(self.app.inbox.dumped, datetime.now()))
+        self.query_one("#cap-head", Static).update(
+            capture_head(note_count(pad.text), self.unread, w - 2))
+        self.query_one("#cap-rail", Static).update(
+            rail_rows(rail_notes, cur, 48 if wide else 78, wide, dumped))
+        keys = self.query_one("#cap-keys", Static)
+        if self._field is None:
+            keys.update(key_line(CAPTURE_KEYS, w - 2))
+        else:
+            keys.update(key_line([("↵", f"create on {self.lanes[self._field_lane][0]} + dump"),
+                                  ("⇥", "board"), ("esc", "back")], w - 2))
+        self._notice_divider()
+
+    def _notice_divider(self) -> None:
+        """The one-time divider notice (Inc K, LLR-4402.13/14/15): shown when a
+        divider line is first drawn as a rule (the cursor not on it), persisted
+        in the store; a failed flag write is said, and the session flag keeps it
+        to once."""
+        if self.app.inbox.divider_notice or self.app._divider_said:
+            return
+        pad = self._pad()
+        cursor_row = pad.cursor_location[0]
+        for i, line in enumerate(pad.text.split("\n")):
+            if is_divider(line) and i != cursor_row:
+                self.app._divider_said = True
+                self.notify("That ____ line divides notes: the text above and below it "
+                            "dump as two tasks. alt+l inserts one.",
+                            title="Capture", severity="information", timeout=15, markup=False)
+                try:
+                    self.app.inbox.mark_notice()
+                except OSError as e:
+                    self.notify(f"inbox.json could not be saved: {e}", title="Capture",
+                                severity="warning", timeout=15, markup=False)
+                return
+
+    def _idle(self) -> None:
+        """The store-write debounce (F-7): 1.0 s after the last change."""
+        self._timer = None
+        self._flush()
+        self._paint()
+
+    def on_text_area_changed(self, event) -> None:
+        self._text = self._pad().text
+        self._esc_armed = False
+        self._quit_armed = False
+        if self._timer is not None:
+            self._timer.stop()
+        self._timer = self.set_timer(1.0, self._idle)
+        self._paint()
+
+    def on_text_area_selection_changed(self, event) -> None:
+        self._esc_armed = False
+        self._quit_armed = False
+        self._paint()
+
+    def _flush(self) -> bool:
+        """The one pad write (Inc K, LLR-4407.15/18/21/22/23/37). G-S applies the
+        Inbox's pending records and drops first (ARCH-4)."""
+        if not self._unsaved():
+            return True
+        pad = self._pad()
+        text = strip_controls(pad.text)
+        try:
+            res = self.app.inbox.write_pad(text)
+        except OSError as e:
+            self.notify(f"inbox.json could not be saved: {e}", title="Capture",
+                        severity="warning", timeout=15, markup=False)
+            return False
+        self._saved = res.pad
+        if res.written and res.pad != pad.text:
+            self._replace_pad(pad, res.pad)
+        if res.union:
+            self.notify("inbox.json changed in another window: its notes were merged "
+                        "into the pad.", title="Capture", severity="warning",
+                        timeout=15, markup=False)
+        return True
+
+    def on_unmount(self) -> None:
+        """A last write on close/exit (LLR-4407.17): reads `self._text`, never the
+        PadArea (P-V-4 — its children are already gone)."""
+        if self._timer is not None:
+            self._timer.stop()
+            self._timer = None
+        if self._unsaved():
+            try:
+                self.app.inbox.write_pad(strip_controls(self._text))
+            except (OSError, ValueError):
+                pass
+
+    def _lane_of_open_board(self) -> int:
+        for i, lane in enumerate(self.lanes):
+            if lane[2] is not None and lane[2] is self.app.board:
+                return i
+        return 0
+
+    def _open_field(self, part) -> None:
+        self._field = part.text
+        self._field_lane = self._lane_of_open_board()
+        notes = [p for p in note_parts(self._pad().text) if p.is_note]
+        k = notes.index(part) + 1
+        field = self.query_one("#cap-new", Input)
+        field.border_title = Text(f"New project for note {k}")
+        field.value = ""
+        field.add_class("on")
+        field.focus()
+        self._paint()
+
+    def _close_field(self) -> None:
+        field = self.query_one("#cap-new", Input)
+        field.remove_class("on")
+        field.value = ""
+        self._field = None
+
+    def action_close(self) -> None:
+        """`esc` (LLR-4401.4, LLR-4404.27, LLR-4407.24/25): close the name field
+        first, else write then close; a failed write warns and arms esc."""
+        if self._field is not None:
+            self._close_field()
+            self._pad().focus()
+            self._paint()
+            return
+        if self._unsaved():
+            if self._esc_armed:
+                if self._timer is not None:
+                    self._timer.stop()
+                    self._timer = None
+                self.app.pop_screen()
+                return
+            if self._flush():
+                self.app.pop_screen()
+                return
+            self._esc_armed = True
+            self.notify("inbox.json could not be saved — esc again closes without saving.",
+                        title="Capture", severity="warning", timeout=15, markup=False)
+            return
+        self.app.pop_screen()
+
+    def action_divider(self) -> None:
+        """`alt+l` (Inc K, LLR-4402.9/10/17): a `____` line after the cursor's
+        line, the cursor at the start of the new empty line after it."""
+        if self._field is not None:
+            return
+        pad = self._pad()
+        row = pad.cursor_location[0]
+        line = pad.document.get_line(row)
+        if line.strip() == "":
+            pad.replace("____\n", (row, 0), (row, len(line)))
+            pad.move_cursor((row + 1, 0))
+        else:
+            pad.insert("\n____\n", (row, len(line)))
+            pad.move_cursor((row + 2, 0))
+
+    def action_dump(self) -> None:
+        """`alt+d` (Inc K, LLR-4404.18/28/30): dump the cursor's note."""
+        if self._field is not None:
+            return
+        pad = self._pad()
+        part = note_at(pad.text, pad.cursor_location[0])
+        if part is None:
+            self.notify("No note under the cursor.", title="Capture", severity="warning",
+                        timeout=10, markup=False)
+            return
+        self.dump_part(part, quiet=False)
+
+    def dump_part(self, part, quiet=False, target=None, rebuild=True) -> bool:
+        """The one dump path of `alt+d` and the review list's `d` (Inc K,
+        LLR-4404.29, LLR-4406.17): `target` is the review list's fixed option."""
+        if note_task(part.text).title == "":
+            self.notify("This note has no text line for a title.", title="Capture",
+                        severity="warning", timeout=10, markup=False)
+            return False
+        ch = target if target is not None else self.chosen(part.text)
+        if ch is None:
+            if quiet:
+                return False
+            self._open_field(part)
+            return False
+        return self._dump(part, ch.doc.board_path, ch.doc.board_name, ch.doc.project_id,
+                          None, quiet, ch.doc.project_name, rebuild)
+
+    def _dump(self, part, path, board, project_id, new_name, quiet, project_name="",
+              rebuild=True) -> bool:
+        """One note into one task (Inc K, HLR-4404): G-S does the board write; a
+        successful board save whose store write fails keeps a pending record and
+        the pad still loses the note (ARCH-4, LLR-4407.40)."""
+        app = self.app
+        target = DumpTarget(path, board,
+                            live=(app.board if Path(path).resolve() == Path(app.board.path).resolve()
+                                  else None))
+        if self._timer is not None:
+            self._timer.stop()
+            self._timer = None
+        out = dump_note(target, project_id, new_name, part.text, app.inbox.images_dir,
+                        project_name)
+        if not out.ok:
+            self.notify(out.notice, title="Capture", severity="warning", timeout=15,
+                        markup=False)      # G-S's refusal text, shown verbatim (P-V-13)
+            return False
+        pad = self._pad()
+        new, row = without_note(pad.text, part)
+        entry = entry_for(out, part.text, path, datetime.now())
+        wrote_store = True
+        try:
+            res = app.inbox.write_pad(strip_controls(new), record=entry)
+        except OSError as e:
+            wrote_store = False
+            self._replace_pad(pad, new, row=row, col=0)
+            if self._timer is not None:
+                self._timer.stop()
+            self._timer = self.set_timer(1.0, self._idle)
+            self.notify(f"{out.project_name} · {board} got the task, but inbox.json could not "
+                        f"be saved: {e} — it is retried at the next save.",
+                        title="Capture", severity="warning", timeout=30, markup=False)
+        else:
+            self._saved = res.pad
+            if res.pad != pad.text:
+                self._replace_pad(pad, res.pad, row=row, col=0)
+            if res.union:
+                self.notify("inbox.json changed in another window: its notes were merged "
+                            "into the pad.", title="Capture", severity="warning",
+                            timeout=15, markup=False)
+        if not quiet and wrote_store:
+            self.notify(f"Dumped → {out.project_name} · {board}   ·   alt+u undo",
+                        title="Capture", severity="information", timeout=10, markup=False)
+        if out.missing:
+            self.notify(f"{len(out.missing)} image(s) not found: {', '.join(out.missing)}",
+                        title="Capture", severity="warning", timeout=15, markup=False)
+        if target.live is not None:
+            app.refresh_view()
+        if rebuild:
+            self._rebuild_docs()
+        self._paint()
+        return True
+
+    def _where(self, board_path, project_id):
+        """Names for an undo notice (LLR-4405.9/15): the lane's name for the
+        stored board path (a string test, SEC-8), else `name_for`; the project's
+        name on that board when readable, else its id (P-V-8: ids only)."""
+        norm = os.path.normcase(os.path.abspath(board_path))
+        for lane in self.lanes:
+            if lane[2] is not None and os.path.normcase(os.path.abspath(str(lane[2].path))) == norm:
+                for project in lane[2].projects:
+                    if project.id == project_id:
+                        return project.name, lane[0]
+                return project_id, lane[0]
+        return project_id, name_for(board_path)
+
+    def action_other(self) -> None:
+        """`alt+o` (Inc K, LLR-4404.16/17): the next option's identity, wrapping
+        after the last (ARCH-2)."""
+        if self._field is not None:
+            return
+        pad = self._pad()
+        part = note_at(pad.text, pad.cursor_location[0])
+        if part is None:
+            self.notify("No note under the cursor.", title="Capture", severity="warning",
+                        timeout=10, markup=False)
+            return
+        opts = self.options_for(part.text)
+        i = opts.index(self.chosen(part.text))
+        self.choice[part.text] = self._key(opts[(i + 1) % len(opts)])
+        self._paint()
+
+    def action_new(self) -> None:
+        """`alt+n` (Inc K, LLR-4404.19/20/28): open the name field for the note."""
+        if self._field is not None:
+            return
+        pad = self._pad()
+        part = note_at(pad.text, pad.cursor_location[0])
+        if part is None:
+            self.notify("No note under the cursor.", title="Capture", severity="warning",
+                        timeout=10, markup=False)
+            return
+        if note_task(part.text).title == "":
+            self.notify("This note has no text line for a title.", title="Capture",
+                        severity="warning", timeout=10, markup=False)
+            return
+        self._open_field(part)
+
+    def action_board(self) -> None:
+        """`tab` while the name field is open (P-V-1, LLR-4404.21): the next
+        readable board, wrapping; closed → nothing."""
+        if self._field is None:
+            return
+        n = len(self.lanes)
+        for step in range(1, n + 1):
+            i = (self._field_lane + step) % n
+            if self.lanes[i][2] is not None:
+                self._field_lane = i
+                break
+        self._paint()
+
+    def on_input_submitted(self, event) -> None:
+        """`enter` in the name field (Inc K, LLR-4404.23/25/26): create the
+        project and dump the note in one board write; a refusal keeps the field
+        open (G-S's text, verbatim)."""
+        pad = self._pad()
+        part = next((p for p in note_parts(pad.text) if p.is_note and p.text == self._field),
+                    None)
+        if part is None:
+            self._close_field()
+            self.notify("No note under the cursor.", title="Capture", severity="warning",
+                        timeout=10, markup=False)
+            return
+        lane = self.lanes[self._field_lane]
+        ok = self._dump(part, lane[2].path, lane[0], None, event.value, quiet=False,
+                        project_name="")
+        if ok:
+            self._close_field()
+            pad.focus()
+
+    def action_review(self) -> None:
+        """`alt+a` (Inc K, LLR-4406.1/14): the batch review list over the pad's
+        notes as they are now."""
+        if self._field is not None:
+            return
+        pad = self._pad()
+        notes = [p.text for p in note_parts(pad.text) if p.is_note]
+        if not notes:
+            self.notify("No notes to review.", title="Capture", severity="warning",
+                        timeout=10, markup=False)
+            return
+        self.app.push_screen(ReviewList(self, notes))
+
+    def action_image(self) -> None:
+        """`alt+i` (Inc K, LLR-4408.4/5/6/7/8): attach the clipboard's image as
+        `img: ` lines after the note's last line, then write the store at once."""
+        if self._field is not None:
+            return
+        pad = self._pad()
+        part = note_at(pad.text, pad.cursor_location[0])
+        if part is None:
+            self.notify("No note under the cursor.", title="Capture", severity="warning",
+                        timeout=10, markup=False)
+            return
+        res = attach_images(self.app.inbox.images_dir, grab_clipboard_image())
+        if res.notice:
+            self.notify(res.notice, title="Capture", severity="warning", timeout=15,
+                        markup=False)
+            return
+        if not res.names:
+            return
+        j = part.end
+        while j >= part.start and pad.document.get_line(j).strip() == "":
+            j -= 1
+        if j < part.start:
+            j = part.end
+        line = pad.document.get_line(j)
+        pad.insert("".join("\nimg: " + n for n in res.names), (j, len(line)))
+        self._flush()
+
+    def action_undo(self) -> None:
+        """`alt+u` (Inc K, HLR-4405): undo the newest dumped entry (at most 7
+        days old); the restored note returns at the pad's end."""
+        if self._field is not None:
+            return
+        entry = self.app.inbox.last_dump(datetime.now())
+        if entry is None:
+            self.notify("Nothing to undo.", title="Capture", severity="warning",
+                        timeout=10, markup=False)
+            return
+        norm = os.path.normcase(os.path.abspath(entry["board"]))
+        lane = next((ln for ln in self.lanes if ln[2] is not None
+                     and os.path.normcase(os.path.abspath(str(ln[2].path))) == norm), None)
+        if lane is None:
+            self.notify(f"{entry['board']} is not a known board — nothing undone.",
+                        title="Capture", severity="warning", timeout=15, markup=False)
+            return
+        live = self.app.board if lane[2] is self.app.board else None
+        out = undo_dump(entry, live, self.app.inbox.images_dir)
+        board = self._where(entry["board"], entry["project"])[1]
+        if out.state == "changed":
+            self.notify(f"{entry['title']} changed since the dump — undo left it.",
+                        title="Capture", severity="warning", timeout=15, markup=False)
+            return
+        if out.state == "needed":
+            self.notify(f"Another task depends on {entry['title']} — undo left it.",
+                        title="Capture", severity="warning", timeout=15, markup=False)
+            return
+        if out.state == "failed":
+            self.notify(f"{board} could not be changed: {out.notice} — nothing undone.",
+                        title="Capture", severity="warning", timeout=15, markup=False)
+            return
+        pad = self._pad()
+        new = with_note(pad.text, out.note_text)
+        saved = False
+        try:
+            res = self.app.inbox.write_pad(strip_controls(new),
+                                           drop=dict(entry, text=out.note_text))
+            saved = True
+        except OSError as e:
+            self._replace_pad(pad, new)
+            self.notify(f"inbox.json could not be saved: {e}", title="Capture",
+                        severity="warning", timeout=15, markup=False)
+        if saved:
+            self._saved = res.pad
+            if res.pad != pad.text:
+                self._replace_pad(pad, res.pad)
+            if res.union:
+                self.notify("inbox.json changed in another window: its notes were merged "
+                            "into the pad.", title="Capture", severity="warning",
+                            timeout=15, markup=False)
+        if out.state == "gone":
+            self.notify(f"{entry['title']} is no longer on {board}: the note is back in "
+                        f"the pad.", title="Capture", severity="warning", timeout=15,
+                        markup=False)
+        else:
+            self.notify(f"Undone: {entry['title']} left {board}; the note is back in the pad.",
+                        title="Capture", severity="information", timeout=10, markup=False)
+        if live is not None:
+            self.app.refresh_view()
+        self._rebuild_docs()
+        self._paint()
+
+
+class ReviewList(ModalScreen[None]):
+    """`alt+a`'s batch review (Inc K, HLR-4406, variant C): one row per note;
+    `d` dumps every checked row in pad order with its option fixed before the
+    first dump (ARCH-2, LLR-4406.17), then rebuilds the corpus once."""
+
+    BINDINGS = [Binding("escape", "back", "", priority=True),
+                Binding("up", "move(-1)", "", priority=True),
+                Binding("down", "move(1)", "", priority=True),
+                Binding("space", "toggle", "", priority=True),
+                Binding("o", "other", "", priority=True),
+                Binding("d", "dump", "", priority=True),
+                Binding("u", "undo", "", priority=True)]
+
+    DEFAULT_CSS = """
+    ReviewList { align: center middle; }
+    #rv-box { width: 96%; max-width: 112; height: auto; max-height: 90%;
+              background: #0b0f17; border: round #2dd4bf; border-title-color: #2dd4bf;
+              padding: 0 1; }
+    #rv-body { height: auto; }
+    """
+
+    def __init__(self, view, texts):
+        super().__init__()
+        self.view = view
+        self.texts = texts
+        self.sel = 0
+        self.on = []
+
+    def compose(self) -> ComposeResult:
+        box = Vertical(id="rv-box")
+        box.border_title = "Review · dump checked"
+        with box:
+            yield Static(id="rv-body")
+
+    def on_mount(self) -> None:
+        self.styles.background = Color(13, 17, 23, 0.6)   # P-V-9
+        self.sel = 0
+        self.on = [self.view.chosen(t) is not None for t in self.texts]
+        self._paint()
+
+    def _paint(self) -> None:
+        body = self.query_one("#rv-body", Static)
+        width = body.content_size.width or (self.app.size.width - 10)
+        rows = [ReviewRow(note_task(t).title, self.view.chosen(t), self.on[i])
+                for i, t in enumerate(self.texts)]
+        body.update(review_rows(rows, self.sel, width))
+
+    def action_move(self, delta: int) -> None:
+        self.sel = max(0, min(len(self.texts) - 1, self.sel + delta))
+        self._paint()
+
+    def action_toggle(self) -> None:
+        t = self.texts[self.sel]
+        if self.view.chosen(t) is None:
+            self.notify("Needs a name: alt+n in the pad.", title="Capture",
+                        severity="warning", timeout=10, markup=False)
+            return
+        self.on[self.sel] = not self.on[self.sel]
+        self._paint()
+
+    def action_other(self) -> None:
+        """`o`: the next option's identity, stored in the shared dict exactly as
+        CaptureView.action_other does (ARCH-2)."""
+        t = self.texts[self.sel]
+        opts = self.view.options_for(t)
+        i = opts.index(self.view.chosen(t))
+        self.view.choice[t] = self.view._key(opts[(i + 1) % len(opts)])
+        if self.view.chosen(t) is None:
+            self.on[self.sel] = False
+        self._paint()
+
+    def action_dump(self) -> None:
+        """`d`: dump every checked row in pad order; the targets are fixed before
+        the first dump, and the corpus rebuilds once after the batch
+        (ARCH-2, LLR-4406.17, LLR-4403.24)."""
+        checked = [t for t, on in zip(self.texts, self.on) if on]
+        targets = {t: self.view.chosen(t) for t in checked}
+        k = 0
+        pad = self.view._pad()
+        for t in checked:
+            part = next((p for p in note_parts(pad.text) if p.is_note and p.text == t),
+                        None)
+            if part is None:
+                continue
+            if self.view.dump_part(part, quiet=True, target=targets[t], rebuild=False):
+                k += 1
+        if k > 0:
+            self.view._rebuild_docs()
+        self.notify(f"Dumped {k} of {len(checked)} checked", title="Capture",
+                    severity="information", timeout=10, markup=False)
+        self.dismiss(None)
+
+    def action_undo(self) -> None:
+        """`u`: undo the newest dump (as `alt+u`) and rebuild the rows."""
+        self.view.action_undo()
+        pad = self.view._pad()
+        new_texts = [p.text for p in note_parts(pad.text) if p.is_note]
+        old_texts = self.texts
+        old_on = self.on
+        self.on = []
+        for t in new_texts:
+            if t in old_texts:
+                self.on.append(old_on[old_texts.index(t)])
+            else:
+                self.on.append(self.view.chosen(t) is not None)
+        self.texts = new_texts
+        self.sel = max(0, min(len(self.texts) - 1, self.sel))
+        self._paint()
+
+    def action_back(self) -> None:
+        self.dismiss(None)
+
+
 class TaskboardApp(App):
     """Frameless kanban desktop widget."""
 
@@ -1330,6 +2242,11 @@ class TaskboardApp(App):
         # one milestone-class directory for every board, beside the registry:
         # the home's `~/.taskboard/marks.json` (batch 2026-10-24-batch-01)
         self.marks = MarksDirectory.load(self.registry.path.parent / MARKS_NAME)
+        # one inbox store for every board, beside the registry (Inc K, LLR-4407.1);
+        # it lives on the app so a pending record survives closing the view
+        self.inbox = Inbox.load(self.registry.path.parent / INBOX_NAME)
+        self._inbox_said = False    # the load notice of LLR-4407.8, once per app
+        self._divider_said = False  # the divider notice, once per session
         self._team_timer = None
         self.view_mode = "swimlanes"
         self.kanban_presentation = "grouped"
@@ -1395,19 +2312,26 @@ class TaskboardApp(App):
         but `quit` acts. `agenda_all`, `people_directory`, `marks_manager` and
         `added_list` are always allowed here: a pushed modal holds its own keys,
         so `A`, `@`, `#` and `N` act only on a non-modal screen."""
-        if action in ("agenda_all", "people_directory", "marks_manager", "added_list"):
+        if action == "capture" and any(isinstance(sc, BoardsHome) for sc in self.screen_stack):
+            # Inc K, ARCH-3 / LLR-4401.19: under the home the open board is mounted
+            # but not started, and a dump would save it before `_open_board`'s backup;
+            # the home's own `n` is "new board" and answers first.
+            return False
+        if action in ("agenda_all", "people_directory", "marks_manager", "added_list",
+                      "capture"):
             # the main screen and the home (batch 2026-10-20-batch-03, 2026-10-21-batch-01,
-            # 2026-10-24-batch-01, Inc L): a pushed modal (the presentation among them)
-            # holds its own keys, so `A`, `@`, `#` and `N` never reach past one
+            # 2026-10-24-batch-01, Inc L, Inc K): a pushed modal (the presentation among
+            # them) holds its own keys, so `A`, `@`, `#`, `N` and `n` never reach past one
             return not any(isinstance(sc, ModalScreen) for sc in self.screen_stack)
         if action in SEAT_ACTIONS and any(isinstance(sc, (BoardsHome, AllBoardsAgenda,
                                                           PeopleDirectory, MarksManager,
-                                                          AddedList))
+                                                          AddedList, CaptureView))
                                           for sc in self.screen_stack):
             # the home holds the keys — and the modals over it (its form, its
             # confirmation, a board's start-up modal) keep their own: no key of
             # the main screen acts behind it (architect A-9); Textual's own
-            # actions (focus_next for tab in a modal) are not the seat's
+            # actions (focus_next for tab in a modal) are not the seat's. The
+            # capture view holds the seat too (Inc K, LLR-4401.12).
             return action == "quit"
         if (action in ("cursor", "hmove", "toggle_presentation", "boards")
                 and len(self.screen_stack) > 1):
@@ -1543,6 +2467,39 @@ class TaskboardApp(App):
     def action_added_list(self) -> None:
         """`N`: the added-order list of every board (Inc L, LLR-4303.2)."""
         self._bring(AddedList, AddedList)
+
+    def action_capture(self) -> None:
+        """`n`: the capture view (Inc K, LLR-4401.2)."""
+        self._bring(CaptureView, CaptureView)
+
+    def _retry_pending_once(self) -> None:
+        """A-3 (SEC R2-1): one retry of a held pending store write, before a quit
+        that has no capture view to guard; on failure the note stays recoverable
+        with `alt+u` for 7 days."""
+        if self.inbox.pending:
+            try:
+                self.inbox.write_pad(strip_controls(self.inbox.pad_now()))
+            except OSError:
+                pass
+
+    async def action_quit(self) -> None:
+        """`q` / `ctrl+q` (Inc K, SEC-5, LLR-4407.46/47): with the capture view
+        holding an unsaved pad, write first; a failed write warns and arms, and
+        a second quit exits without saving."""
+        view = next((sc for sc in self.screen_stack if isinstance(sc, CaptureView)), None)
+        if view is not None and view._unsaved():
+            if view._quit_armed:
+                self.exit()
+                return
+            if view._flush():
+                self.exit()
+                return
+            view._quit_armed = True
+            self.notify("inbox.json could not be saved — quit again exits without saving.",
+                        title="Capture", severity="warning", timeout=15, markup=False)
+            return
+        self._retry_pending_once()
+        self.exit()
 
     def _mount_board(self, at_mount: bool = False) -> None:
         """The read-only half of a board's start: first selection, the view, the clock.
