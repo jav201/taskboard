@@ -1,0 +1,1931 @@
+taskboard.__file__ proof of copy import:
+C:\Users\jjgh8\Github\taskboard-wt\incL-mut\taskboard\__init__.py
+
+===== M01 (KILLED) =====
+F
+================================== FAILURES ===================================
+_______ test_TC_4301_created_is_an_optional_field_that_defaults_to_none _______
+
+    def test_TC_4301_created_is_an_optional_field_that_defaults_to_none():
+        """TC-4301 (LLR-4301.1): `Task("x").created is None` (a transient Task is not
+        stamped: NC a `default_factory` stamp); a given value is kept; positional fields keep
+        their meaning (the field follows them)."""
+        need_created_field()
+>       assert Task("x").created is None
+E       AssertionError: assert '2026-11-01T04:23:15' is None
+E        +  where '2026-11-01T04:23:15' = Task(title='x', project_id=None, phase='Backlog', priority='normal', start_date=None, due_date=None, notes='', urls=[]...changed=None, milestone=False, mark=None, show_in_present=True, created='2026-11-01T04:23:15', extra={}, id='db6a2c49').created
+E        +    where Task(title='x', project_id=None, phase='Backlog', priority='normal', start_date=None, due_date=None, notes='', urls=[]...changed=None, milestone=False, mark=None, show_in_present=True, created='2026-11-01T04:23:15', extra={}, id='db6a2c49') = Task('x')
+
+tests\test_task_created.py:100: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_task_created.py::test_TC_4301_created_is_an_optional_field_that_defaults_to_none
+!!!!!!!!!!!!!!!!!!!!!!!!!! stopping after 1 failures !!!!!!!!!!!!!!!!!!!!!!!!!!
+1 failed in 0.42s
+C:\Users\jjgh8\anaconda3\Lib\site-packages\pytest_asyncio\plugin.py:207: PytestDeprecationWarning: The configuration option "asyncio_default_fixture_loop_scope" is unset.
+The event loop scope for asynchronous fixtures will default to the fixture caching scope. Future versions of pytest-asyncio will default the loop scope for asynchronous fixtures to function scope. Set the default fixture loop scope explicitly in order to avoid unexpected behavior in the future. Valid fixture loop scopes are: "function", "class", "module", "package", "session"
+
+  warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCOPE_UNSET))
+
+===== M02 (KILLED) =====
+..F
+================================== FAILURES ===================================
+_____________ test_TC_4302_a_task_added_in_the_editor_is_stamped ______________
+
+tmp_path = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-31629/test_TC_4302_a_task_added_in_t0')
+
+    async def test_TC_4302_a_task_added_in_the_editor_is_stamped(tmp_path):
+        """TC-4302 (LLR-4301.2): `a`, a title, `alt+s` (real clock) → the saved task's
+        `created` is `YYYY-MM-DDTHH:MM:SS` within [t0, t1] of the test's clock reads, and the
+        board file holds the same value. NC: no stamp on the add path → None."""
+        path = _single_board(tmp_path)
+        app = _app(path)
+        async with app.run_test(size=(118, 30)) as pilot:
+            await pilot.pause()
+            t0 = datetime.now().replace(microsecond=0)
+            await press(pilot, "a")
+            assert type(app.screen).__name__ == "TaskModal"
+            await pilot.press(*"Call the bank")
+            await press(pilot, "alt+s")
+            t1 = datetime.now()
+            assert type(app.screen).__name__ != "TaskModal"
+        new = next(t for t in app.board.tasks if t.title == "Call the bank")
+        c = _records(path)[new.id].get("created")
+>       assert isinstance(c, str) and re.match(fx.STAMP_RE, c), f"the file holds created={c!r}"
+E       AssertionError: the file holds created=None
+E       assert (False)
+E        +  where False = isinstance(None, str)
+
+tests\test_task_created.py:134: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_task_created.py::test_TC_4302_a_task_added_in_the_editor_is_stamped
+!!!!!!!!!!!!!!!!!!!!!!!!!! stopping after 1 failures !!!!!!!!!!!!!!!!!!!!!!!!!!
+1 failed, 2 passed in 1.47s
+C:\Users\jjgh8\anaconda3\Lib\site-packages\pytest_asyncio\plugin.py:207: PytestDeprecationWarning: The configuration option "asyncio_default_fixture_loop_scope" is unset.
+The event loop scope for asynchronous fixtures will default to the fixture caching scope. Future versions of pytest-asyncio will default the loop scope for asynchronous fixtures to function scope. Set the default fixture loop scope explicitly in order to avoid unexpected behavior in the future. Valid fixture loop scopes are: "function", "class", "module", "package", "session"
+
+  warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCOPE_UNSET))
+
+===== M03 (KILLED) =====
+.......F
+================================== FAILURES ===================================
+__________ test_TC_4307_add_task_keeps_a_created_that_is_already_set __________
+
+tmp_path = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-31630/test_TC_4307_add_task_keeps_a_0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x0000026F68E349B0>
+
+    def test_TC_4307_add_task_keeps_a_created_that_is_already_set(tmp_path, monkeypatch):
+        """TC-4307 (LLR-4301.7): a task arriving with `created="2026-10-01T09:00:00"` keeps
+        it through `add_task` (NC: always overwrite → 08:10:00)."""
+        need_created_field()
+        monkeypatch.setattr(models, "datetime", fx.FixedNow, raising=False)
+        path = tmp_path / "b" / "board.json"
+        b = Board([], [], path, {})
+        b.add_task(Task("b", id="tp", created="2026-10-01T09:00:00"))
+>       assert b.task_by_id("tp").created == "2026-10-01T09:00:00"
+E       AssertionError: assert '2026-11-01T08:10:00' == '2026-10-01T09:00:00'
+E         
+E         - 2026-10-01T09:00:00
+E         ?       ^     ^ ^
+E         + 2026-11-01T08:10:00
+E         ?       ^     ^ ^
+
+tests\test_task_created.py:231: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_task_created.py::test_TC_4307_add_task_keeps_a_created_that_is_already_set
+!!!!!!!!!!!!!!!!!!!!!!!!!! stopping after 1 failures !!!!!!!!!!!!!!!!!!!!!!!!!!
+1 failed, 7 passed in 1.78s
+C:\Users\jjgh8\anaconda3\Lib\site-packages\pytest_asyncio\plugin.py:207: PytestDeprecationWarning: The configuration option "asyncio_default_fixture_loop_scope" is unset.
+The event loop scope for asynchronous fixtures will default to the fixture caching scope. Future versions of pytest-asyncio will default the loop scope for asynchronous fixtures to function scope. Set the default fixture loop scope explicitly in order to avoid unexpected behavior in the future. Valid fixture loop scopes are: "function", "class", "module", "package", "session"
+
+  warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCOPE_UNSET))
+
+===== M04 (KILLED) =====
+..F
+================================== FAILURES ===================================
+_____________ test_TC_4302_a_task_added_in_the_editor_is_stamped ______________
+
+tmp_path = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-31631/test_TC_4302_a_task_added_in_t0')
+
+    async def test_TC_4302_a_task_added_in_the_editor_is_stamped(tmp_path):
+        """TC-4302 (LLR-4301.2): `a`, a title, `alt+s` (real clock) → the saved task's
+        `created` is `YYYY-MM-DDTHH:MM:SS` within [t0, t1] of the test's clock reads, and the
+        board file holds the same value. NC: no stamp on the add path → None."""
+        path = _single_board(tmp_path)
+        app = _app(path)
+        async with app.run_test(size=(118, 30)) as pilot:
+            await pilot.pause()
+            t0 = datetime.now().replace(microsecond=0)
+            await press(pilot, "a")
+            assert type(app.screen).__name__ == "TaskModal"
+            await pilot.press(*"Call the bank")
+            await press(pilot, "alt+s")
+            t1 = datetime.now()
+            assert type(app.screen).__name__ != "TaskModal"
+        new = next(t for t in app.board.tasks if t.title == "Call the bank")
+        c = _records(path)[new.id].get("created")
+>       assert isinstance(c, str) and re.match(fx.STAMP_RE, c), f"the file holds created={c!r}"
+E       AssertionError: the file holds created=None
+E       assert (False)
+E        +  where False = isinstance(None, str)
+
+tests\test_task_created.py:134: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_task_created.py::test_TC_4302_a_task_added_in_the_editor_is_stamped
+!!!!!!!!!!!!!!!!!!!!!!!!!! stopping after 1 failures !!!!!!!!!!!!!!!!!!!!!!!!!!
+1 failed, 2 passed in 1.56s
+C:\Users\jjgh8\anaconda3\Lib\site-packages\pytest_asyncio\plugin.py:207: PytestDeprecationWarning: The configuration option "asyncio_default_fixture_loop_scope" is unset.
+The event loop scope for asynchronous fixtures will default to the fixture caching scope. Future versions of pytest-asyncio will default the loop scope for asynchronous fixtures to function scope. Set the default fixture loop scope explicitly in order to avoid unexpected behavior in the future. Valid fixture loop scopes are: "function", "class", "module", "package", "session"
+
+  warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCOPE_UNSET))
+
+===== M05 (KILLED) =====
+.....F
+================================== FAILURES ===================================
+__ test_TC_4305_add_task_stamps_before_the_save_and_the_birth_record_agrees ___
+
+tmp_path = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-31632/test_TC_4305_add_task_stamps_b0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x00000264A7C98D70>
+
+    def test_TC_4305_add_task_stamps_before_the_save_and_the_birth_record_agrees(tmp_path,
+                                                                                monkeypatch):
+        """TC-4305 (LLR-4301.5): `Board.add_task(Task("a"))` → the file read back holds
+        `"created": "2026-11-01T08:10:00"` (NC stamp after `save()`: the key missing); the
+        birth record's `at` is the same second — one clock read (P-D-4), checked under a
+        clock that moves 1 s per call."""
+        monkeypatch.setattr(models, "datetime", fx.FixedNow, raising=False)
+        path = tmp_path / "b" / "board.json"
+        b = Board([], [Task("old", id="to")], path, {})
+        b.save()
+        b.add_task(Task("a", id="tn"))
+        assert _records(path)["tn"].get("created") == ADD_AT
+>       assert [r for r in history.read(path)[0] if r["task"] == "tn"] == [
+            {"task": "tn", "from": None, "to": "Backlog", "at": ADD_AT}]
+E       AssertionError: assert [{'at': '2026...': 'Backlog'}] == [{'at': '2026...': 'Backlog'}]
+E         
+E         At index 0 diff: {'task': 'tn', 'from': None, 'to': 'Backlog', 'at': '2026-11-01T04:23:25'} != {'task': 'tn', 'from': None, 'to': 'Backlog', 'at': '2026-11-01T08:10:00'}
+E         Use -v to get more diff
+
+tests\test_task_created.py:195: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_task_created.py::test_TC_4305_add_task_stamps_before_the_save_and_the_birth_record_agrees
+!!!!!!!!!!!!!!!!!!!!!!!!!! stopping after 1 failures !!!!!!!!!!!!!!!!!!!!!!!!!!
+1 failed, 5 passed in 1.87s
+C:\Users\jjgh8\anaconda3\Lib\site-packages\pytest_asyncio\plugin.py:207: PytestDeprecationWarning: The configuration option "asyncio_default_fixture_loop_scope" is unset.
+The event loop scope for asynchronous fixtures will default to the fixture caching scope. Future versions of pytest-asyncio will default the loop scope for asynchronous fixtures to function scope. Set the default fixture loop scope explicitly in order to avoid unexpected behavior in the future. Valid fixture loop scopes are: "function", "class", "module", "package", "session"
+
+  warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCOPE_UNSET))
+
+===== M06 (KILLED) =====
+......F
+================================== FAILURES ===================================
+________ test_TC_4306_a_seeded_board_stamps_every_task_with_one_moment ________
+
+tmp_path = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-31633/test_TC_4306_a_seeded_board_st0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x0000018E11095F10>
+
+    def test_TC_4306_a_seeded_board_stamps_every_task_with_one_moment(tmp_path, monkeypatch):
+        """TC-4306 (LLR-4301.6): `Board.load` on a missing file → the 16 seeded tasks share
+        ONE stamp under a clock that moves 1 s per call (NC a stamp per task: 16 values); the
+        file holds 16 `"created":` keys; no history is written for the seed."""
+        monkeypatch.setattr(models, "datetime", fx.advancing_clock(), raising=False)
+        path = tmp_path / "new" / "board.json"
+        board = Board.load(path)
+        assert len(board.tasks) == 16
+>       assert _text(path).count('"created":') == 16
+E       assert 0 == 16
+E        +  where 0 = <built-in method count of str object at 0x0000018E0F617C90>('"created":')
+E        +    where <built-in method count of str object at 0x0000018E0F617C90> = '{\n  "phases": [\n    "Backlog",\n    "Doing",\n    "Done"\n  ],\n  "projects": [\n    {\n      "name": "Website Rede..."9d6e98e1"\n    }\n  ],\n  "settings": {\n    "migrations": {\n      "links": 1,\n      "milestones": 1\n    }\n  }\n}'.count
+E        +      where '{\n  "phases": [\n    "Backlog",\n    "Doing",\n    "Done"\n  ],\n  "projects": [\n    {\n      "name": "Website Rede..."9d6e98e1"\n    }\n  ],\n  "settings": {\n    "migrations": {\n      "links": 1,\n      "milestones": 1\n    }\n  }\n}' = _text(WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-31633/test_TC_4306_a_seeded_board_st0/new/board.json'))
+
+tests\test_task_created.py:215: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_task_created.py::test_TC_4306_a_seeded_board_stamps_every_task_with_one_moment
+!!!!!!!!!!!!!!!!!!!!!!!!!! stopping after 1 failures !!!!!!!!!!!!!!!!!!!!!!!!!!
+1 failed, 6 passed in 2.00s
+C:\Users\jjgh8\anaconda3\Lib\site-packages\pytest_asyncio\plugin.py:207: PytestDeprecationWarning: The configuration option "asyncio_default_fixture_loop_scope" is unset.
+The event loop scope for asynchronous fixtures will default to the fixture caching scope. Future versions of pytest-asyncio will default the loop scope for asynchronous fixtures to function scope. Set the default fixture loop scope explicitly in order to avoid unexpected behavior in the future. Valid fixture loop scopes are: "function", "class", "module", "package", "session"
+
+  warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCOPE_UNSET))
+
+===== M07 (KILLED) =====
+......F
+================================== FAILURES ===================================
+________ test_TC_4306_a_seeded_board_stamps_every_task_with_one_moment ________
+
+tmp_path = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-31634/test_TC_4306_a_seeded_board_st0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x0000021452278F20>
+
+    def test_TC_4306_a_seeded_board_stamps_every_task_with_one_moment(tmp_path, monkeypatch):
+        """TC-4306 (LLR-4301.6): `Board.load` on a missing file → the 16 seeded tasks share
+        ONE stamp under a clock that moves 1 s per call (NC a stamp per task: 16 values); the
+        file holds 16 `"created":` keys; no history is written for the seed."""
+        monkeypatch.setattr(models, "datetime", fx.advancing_clock(), raising=False)
+        path = tmp_path / "new" / "board.json"
+        board = Board.load(path)
+        assert len(board.tasks) == 16
+        assert _text(path).count('"created":') == 16
+        values = [created_of(t) for t in board.tasks]
+        assert all(isinstance(v, str) and re.match(fx.STAMP_RE, v) for v in values), values
+>       assert len(set(values)) == 1, f"one seed, one stamp: {sorted(set(values))}"
+E       AssertionError: one seed, one stamp: ['2026-11-01T08:10:00', '2026-11-01T08:10:01', '2026-11-01T08:10:02', '2026-11-01T08:10:03', '2026-11-01T08:10:04', '2026-11-01T08:10:05', '2026-11-01T08:10:06', '2026-11-01T08:10:07', '2026-11-01T08:10:08', '2026-11-01T08:10:09', '2026-11-01T08:10:10', '2026-11-01T08:10:11', '2026-11-01T08:10:12', '2026-11-01T08:10:13', '2026-11-01T08:10:14', '2026-11-01T08:10:15']
+E       assert 16 == 1
+E        +  where 16 = len({'2026-11-01T08:10:00', '2026-11-01T08:10:01', '2026-11-01T08:10:02', '2026-11-01T08:10:03', '2026-11-01T08:10:04', '2026-11-01T08:10:05', ...})
+E        +    where {'2026-11-01T08:10:00', '2026-11-01T08:10:01', '2026-11-01T08:10:02', '2026-11-01T08:10:03', '2026-11-01T08:10:04', '2026-11-01T08:10:05', ...} = set(['2026-11-01T08:10:00', '2026-11-01T08:10:01', '2026-11-01T08:10:02', '2026-11-01T08:10:03', '2026-11-01T08:10:04', '2026-11-01T08:10:05', ...])
+
+tests\test_task_created.py:218: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_task_created.py::test_TC_4306_a_seeded_board_stamps_every_task_with_one_moment
+!!!!!!!!!!!!!!!!!!!!!!!!!! stopping after 1 failures !!!!!!!!!!!!!!!!!!!!!!!!!!
+1 failed, 6 passed in 1.92s
+C:\Users\jjgh8\anaconda3\Lib\site-packages\pytest_asyncio\plugin.py:207: PytestDeprecationWarning: The configuration option "asyncio_default_fixture_loop_scope" is unset.
+The event loop scope for asynchronous fixtures will default to the fixture caching scope. Future versions of pytest-asyncio will default the loop scope for asynchronous fixtures to function scope. Set the default fixture loop scope explicitly in order to avoid unexpected behavior in the future. Valid fixture loop scopes are: "function", "class", "module", "package", "session"
+
+  warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCOPE_UNSET))
+
+===== M08 (KILLED) =====
+........F
+================================== FAILURES ===================================
+________________ test_TC_4308_an_edit_keeps_created_as_it_was _________________
+
+tmp_path = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-31635/test_TC_4308_an_edit_keeps_cre0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x000001D9411398E0>
+
+    async def test_TC_4308_an_edit_keeps_created_as_it_was(tmp_path, monkeypatch):
+        """TC-4308 (LLR-4301.8): `e`, a new title, `alt+s` on a stamped task and on an
+        unstamped one → `"2026-10-31T18:20:00"` and None unchanged, the unstamped entry still
+        holds no `created` key (NC stamp on edit: arm 2 gets 08:10:00)."""
+        path = _single_board(tmp_path)
+        monkeypatch.setattr(models, "datetime", fx.FixedNow, raising=False)
+        app = _app(path)
+        async with app.run_test(size=(118, 30)) as pilot:
+            await pilot.pause()
+            for tid, title in (("ta1", "Sync notes v2"), ("ta2", "Pilot store list v2")):
+                app.selected_task_id = tid
+                await press(pilot, "e")
+                assert type(app.screen).__name__ == "TaskModal"
+                app.screen.query_one("#f-title", Input).value = title
+                await press(pilot, "alt+s")
+                assert app.board.task_by_id(tid).title == title
+        recs = _records(path)
+        assert created_of(app.board.task_by_id("ta1")) == "2026-10-31T18:20:00"
+        assert created_of(app.board.task_by_id("ta2")) is None
+        assert recs["ta1"].get("created") == "2026-10-31T18:20:00"
+>       assert "created" not in recs["ta2"]
+E       AssertionError: assert 'created' not in {'archived': False, 'blocked': False, 'created': None, 'depends_on': [], ...}
+
+tests\test_task_created.py:255: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_task_created.py::test_TC_4308_an_edit_keeps_created_as_it_was
+!!!!!!!!!!!!!!!!!!!!!!!!!! stopping after 1 failures !!!!!!!!!!!!!!!!!!!!!!!!!!
+1 failed, 8 passed in 2.56s
+C:\Users\jjgh8\anaconda3\Lib\site-packages\pytest_asyncio\plugin.py:207: PytestDeprecationWarning: The configuration option "asyncio_default_fixture_loop_scope" is unset.
+The event loop scope for asynchronous fixtures will default to the fixture caching scope. Future versions of pytest-asyncio will default the loop scope for asynchronous fixtures to function scope. Set the default fixture loop scope explicitly in order to avoid unexpected behavior in the future. Valid fixture loop scopes are: "function", "class", "module", "package", "session"
+
+  warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCOPE_UNSET))
+
+===== M09 (KILLED) =====
+...................F
+================================== FAILURES ===================================
+________________ test_TC_4318_the_team_push_carries_no_created ________________
+
+tmp_path = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-31636/test_TC_4318_the_team_push_car0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x0000020C5DE62510>
+
+    def test_TC_4318_the_team_push_carries_no_created(tmp_path, monkeypatch):
+        """TC-4318 (LLR-4302.7, SEC-1): `Board._to_dict(task)` — the push's own call — holds
+        no `created` for a stamped task nor for one whose raw `created` sits in `extra` (and
+        leaves that `extra` as it was); `Board._serialized()` holds both; the pushed
+        `board.<user>.json` records hold no `created` key. NC: the push record keeps it."""
+        need_created_field()
+        monkeypatch.setattr(models, "datetime", fx.FixedNow, raising=False)
+        t1 = Task("x", project_id="plat", id="t1", created=ADD_AT)
+        t5 = Task.from_dict({"title": "a", "project_id": "plat", "created": 5, "id": "t5"})
+>       assert "created" not in Board._to_dict(t1)
+E       AssertionError: assert 'created' not in {'archived': False, 'blocked': False, 'created': '2026-11-01T08:10:00', 'depends_on': [], ...}
+E        +  where {'archived': False, 'blocked': False, 'created': '2026-11-01T08:10:00', 'depends_on': [], ...} = <function Board._to_dict at 0x0000020C5BDCB6A0>(Task(title='x', project_id='plat', phase='Backlog', priority='normal', start_date=None, due_date=None, notes='', urls=...phase_changed=None, milestone=False, mark=None, show_in_present=True, created='2026-11-01T08:10:00', extra={}, id='t1'))
+E        +    where <function Board._to_dict at 0x0000020C5BDCB6A0> = Board._to_dict
+
+tests\test_task_created.py:495: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_task_created.py::test_TC_4318_the_team_push_carries_no_created
+!!!!!!!!!!!!!!!!!!!!!!!!!! stopping after 1 failures !!!!!!!!!!!!!!!!!!!!!!!!!!
+1 failed, 19 passed in 3.28s
+C:\Users\jjgh8\anaconda3\Lib\site-packages\pytest_asyncio\plugin.py:207: PytestDeprecationWarning: The configuration option "asyncio_default_fixture_loop_scope" is unset.
+The event loop scope for asynchronous fixtures will default to the fixture caching scope. Future versions of pytest-asyncio will default the loop scope for asynchronous fixtures to function scope. Set the default fixture loop scope explicitly in order to avoid unexpected behavior in the future. Valid fixture loop scopes are: "function", "class", "module", "package", "session"
+
+  warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCOPE_UNSET))
+
+===== M10 (KILLED) =====
+...................F
+================================== FAILURES ===================================
+________________ test_TC_4318_the_team_push_carries_no_created ________________
+
+tmp_path = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-31637/test_TC_4318_the_team_push_car0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x0000013177BD5CA0>
+
+    def test_TC_4318_the_team_push_carries_no_created(tmp_path, monkeypatch):
+        """TC-4318 (LLR-4302.7, SEC-1): `Board._to_dict(task)` — the push's own call — holds
+        no `created` for a stamped task nor for one whose raw `created` sits in `extra` (and
+        leaves that `extra` as it was); `Board._serialized()` holds both; the pushed
+        `board.<user>.json` records hold no `created` key. NC: the push record keeps it."""
+        need_created_field()
+        monkeypatch.setattr(models, "datetime", fx.FixedNow, raising=False)
+        t1 = Task("x", project_id="plat", id="t1", created=ADD_AT)
+        t5 = Task.from_dict({"title": "a", "project_id": "plat", "created": 5, "id": "t5"})
+        assert "created" not in Board._to_dict(t1)
+>       assert "created" not in Board._to_dict(t5)
+E       AssertionError: assert 'created' not in {'archived': False, 'blocked': False, 'created': 5, 'depends_on': [], ...}
+E        +  where {'archived': False, 'blocked': False, 'created': 5, 'depends_on': [], ...} = <function Board._to_dict at 0x0000013175ECB6A0>(Task(title='a', project_id='plat', phase='Backlog', priority='normal', start_date=None, due_date=None, notes='', urls=...=[], phase_changed=None, milestone=False, mark=None, show_in_present=True, created=None, extra={'created': 5}, id='t5'))
+E        +    where <function Board._to_dict at 0x0000013175ECB6A0> = Board._to_dict
+
+tests\test_task_created.py:496: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_task_created.py::test_TC_4318_the_team_push_carries_no_created
+!!!!!!!!!!!!!!!!!!!!!!!!!! stopping after 1 failures !!!!!!!!!!!!!!!!!!!!!!!!!!
+1 failed, 19 passed in 3.21s
+C:\Users\jjgh8\anaconda3\Lib\site-packages\pytest_asyncio\plugin.py:207: PytestDeprecationWarning: The configuration option "asyncio_default_fixture_loop_scope" is unset.
+The event loop scope for asynchronous fixtures will default to the fixture caching scope. Future versions of pytest-asyncio will default the loop scope for asynchronous fixtures to function scope. Set the default fixture loop scope explicitly in order to avoid unexpected behavior in the future. Valid fixture loop scopes are: "function", "class", "module", "package", "session"
+
+  warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCOPE_UNSET))
+
+===== M11 (KILLED) =====
+..F
+================================== FAILURES ===================================
+_____________ test_TC_4302_a_task_added_in_the_editor_is_stamped ______________
+
+tmp_path = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-31638/test_TC_4302_a_task_added_in_t0')
+
+    async def test_TC_4302_a_task_added_in_the_editor_is_stamped(tmp_path):
+        """TC-4302 (LLR-4301.2): `a`, a title, `alt+s` (real clock) → the saved task's
+        `created` is `YYYY-MM-DDTHH:MM:SS` within [t0, t1] of the test's clock reads, and the
+        board file holds the same value. NC: no stamp on the add path → None."""
+        path = _single_board(tmp_path)
+        app = _app(path)
+        async with app.run_test(size=(118, 30)) as pilot:
+            await pilot.pause()
+            t0 = datetime.now().replace(microsecond=0)
+            await press(pilot, "a")
+            assert type(app.screen).__name__ == "TaskModal"
+            await pilot.press(*"Call the bank")
+            await press(pilot, "alt+s")
+            t1 = datetime.now()
+            assert type(app.screen).__name__ != "TaskModal"
+        new = next(t for t in app.board.tasks if t.title == "Call the bank")
+        c = _records(path)[new.id].get("created")
+>       assert isinstance(c, str) and re.match(fx.STAMP_RE, c), f"the file holds created={c!r}"
+E       AssertionError: the file holds created=None
+E       assert (False)
+E        +  where False = isinstance(None, str)
+
+tests\test_task_created.py:134: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_task_created.py::test_TC_4302_a_task_added_in_the_editor_is_stamped
+!!!!!!!!!!!!!!!!!!!!!!!!!! stopping after 1 failures !!!!!!!!!!!!!!!!!!!!!!!!!!
+1 failed, 2 passed in 1.58s
+C:\Users\jjgh8\anaconda3\Lib\site-packages\pytest_asyncio\plugin.py:207: PytestDeprecationWarning: The configuration option "asyncio_default_fixture_loop_scope" is unset.
+The event loop scope for asynchronous fixtures will default to the fixture caching scope. Future versions of pytest-asyncio will default the loop scope for asynchronous fixtures to function scope. Set the default fixture loop scope explicitly in order to avoid unexpected behavior in the future. Valid fixture loop scopes are: "function", "class", "module", "package", "session"
+
+  warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCOPE_UNSET))
+
+===== M12 (KILLED) =====
+..............F
+================================== FAILURES ===================================
+_________ test_TC_4314_a_non_string_created_is_written_back_unchanged _________
+
+tmp_path = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-31639/test_TC_4314_a_non_string_crea0')
+
+    def test_TC_4314_a_non_string_created_is_written_back_unchanged(tmp_path):
+        """TC-4314 (LLR-4302.3): entries with `"created": 5`, `null` and `true` round-trip
+        load → save with the same VALUES (the key may move to the front, P-D-3), the field
+        None and the raw value in `extra`; a second save is a fixed point. An entry with no
+        key gains none. NC: drop non-string values."""
+        path = tmp_path / "b" / "board.json"
+        raw = {"phases": ["Backlog", "Done"], "projects": [], "settings": {},
+               "tasks": [{"title": "a", "created": 5, "id": "t5"},
+                         {"title": "b", "created": None, "id": "t6"},
+                         {"title": "c", "created": True, "id": "t7"},
+                         {"title": "d", "id": "t8"}]}
+        path.parent.mkdir(parents=True)
+        path.write_text(json.dumps(raw, indent=2), encoding="utf-8")
+        board = Board.load(path)
+        for tid, value in (("t5", 5), ("t6", None), ("t7", True)):
+            t = board.task_by_id(tid)
+>           assert created_of(t) is None and "created" in t.extra and t.extra["created"] == value
+E           AssertionError: assert (None is None and 'created' in {})
+E            +  where None = created_of(Task(title='a', project_id=None, phase='Backlog', priority='normal', start_date=None, due_date=None, notes='', urls=[]..., depends_on=[], phase_changed=None, milestone=False, mark=None, show_in_present=True, created=None, extra={}, id='t5'))
+E            +  and   {} = Task(title='a', project_id=None, phase='Backlog', priority='normal', start_date=None, due_date=None, notes='', urls=[]..., depends_on=[], phase_changed=None, milestone=False, mark=None, show_in_present=True, created=None, extra={}, id='t5').extra
+
+tests\test_task_created.py:369: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_task_created.py::test_TC_4314_a_non_string_created_is_written_back_unchanged
+!!!!!!!!!!!!!!!!!!!!!!!!!! stopping after 1 failures !!!!!!!!!!!!!!!!!!!!!!!!!!
+1 failed, 14 passed in 3.26s
+C:\Users\jjgh8\anaconda3\Lib\site-packages\pytest_asyncio\plugin.py:207: PytestDeprecationWarning: The configuration option "asyncio_default_fixture_loop_scope" is unset.
+The event loop scope for asynchronous fixtures will default to the fixture caching scope. Future versions of pytest-asyncio will default the loop scope for asynchronous fixtures to function scope. Set the default fixture loop scope explicitly in order to avoid unexpected behavior in the future. Valid fixture loop scopes are: "function", "class", "module", "package", "session"
+
+  warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCOPE_UNSET))
+
+===== M13 (KILLED) =====
+...........F
+================================== FAILURES ===================================
+_________________ test_TC_4311_a_rescued_entry_is_not_stamped _________________
+
+    def test_TC_4311_a_rescued_entry_is_not_stamped():
+        """TC-4311 (LLR-4301.11): an unreadable entry rescued (`Task.from_dict(["x"])`, or
+        `_rescue_task` on a dict that tripped the parser) has `created` None — even when the
+        entry held a `created` string (it survives only in the rescued notes)."""
+        t = Task.from_dict(["x"])
+        assert t.title == "(recovered task)" and t.extra.get("_rescued") is True
+>       assert created_of(t) is None
+E       AssertionError: assert '2026-11-01T04:23:53' is None
+E        +  where '2026-11-01T04:23:53' = created_of(Task(title='(recovered task)', project_id=None, phase='Backlog', priority='normal', start_date=None, due_date=None, no...nt=True, created='2026-11-01T04:23:53', extra={'_rescued': True, '_rescue_reason': 'not a JSON object'}, id='9268d794'))
+
+tests\test_task_created.py:311: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_task_created.py::test_TC_4311_a_rescued_entry_is_not_stamped
+!!!!!!!!!!!!!!!!!!!!!!!!!! stopping after 1 failures !!!!!!!!!!!!!!!!!!!!!!!!!!
+1 failed, 11 passed in 3.22s
+C:\Users\jjgh8\anaconda3\Lib\site-packages\pytest_asyncio\plugin.py:207: PytestDeprecationWarning: The configuration option "asyncio_default_fixture_loop_scope" is unset.
+The event loop scope for asynchronous fixtures will default to the fixture caching scope. Future versions of pytest-asyncio will default the loop scope for asynchronous fixtures to function scope. Set the default fixture loop scope explicitly in order to avoid unexpected behavior in the future. Valid fixture loop scopes are: "function", "class", "module", "package", "session"
+
+  warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCOPE_UNSET))
+
+===== M14 (KILLED) =====
+...F
+================================== FAILURES ===================================
+______ test_TC_4303_a_template_insert_stamps_every_task_with_one_moment _______
+
+tmp_path = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-31641/test_TC_4303_a_template_insert0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x000002617B6AAA80>
+
+    async def test_TC_4303_a_template_insert_stamps_every_task_with_one_moment(tmp_path,
+                                                                              monkeypatch):
+        """TC-4303 (LLR-4301.3): `I`, `Simple chain` → Plan, Build, Ship each stamped, ONE
+        distinct value under a clock that moves 1 s per call (NC a stamp per task: 3 values);
+        the file holds it in the 3 new entries; the insert still writes no history line."""
+        path = _single_board(tmp_path)
+        monkeypatch.setattr(models, "datetime", fx.advancing_clock(), raising=False)
+        hist_before = (path.parent / "history.jsonl").read_text(encoding="utf-8")
+        app = _app(path)
+        async with app.run_test(size=(118, 30)) as pilot:
+            await pilot.pause()
+            app.selected_task_id = "ta1"
+            await press(pilot, "I")
+            await press(pilot, "down", "enter")
+        new = app.board.tasks[3:]
+        assert [t.title for t in new] == ["Plan", "Build", "Ship"]
+        recs = _records(path)
+        values = [recs[t.id].get("created") for t in new]
+>       assert all(isinstance(v, str) and re.match(fx.STAMP_RE, v) for v in values), values
+E       AssertionError: [None, None, None]
+E       assert False
+E        +  where False = all(<generator object test_TC_4303_a_template_insert_stamps_every_task_with_one_moment.<locals>.<genexpr> at 0x000002617B7992A0>)
+
+tests\test_task_created.py:157: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_task_created.py::test_TC_4303_a_template_insert_stamps_every_task_with_one_moment
+!!!!!!!!!!!!!!!!!!!!!!!!!! stopping after 1 failures !!!!!!!!!!!!!!!!!!!!!!!!!!
+1 failed, 3 passed in 1.73s
+C:\Users\jjgh8\anaconda3\Lib\site-packages\pytest_asyncio\plugin.py:207: PytestDeprecationWarning: The configuration option "asyncio_default_fixture_loop_scope" is unset.
+The event loop scope for asynchronous fixtures will default to the fixture caching scope. Future versions of pytest-asyncio will default the loop scope for asynchronous fixtures to function scope. Set the default fixture loop scope explicitly in order to avoid unexpected behavior in the future. Valid fixture loop scopes are: "function", "class", "module", "package", "session"
+
+  warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCOPE_UNSET))
+
+===== M15 (KILLED) =====
+...F
+================================== FAILURES ===================================
+______ test_TC_4303_a_template_insert_stamps_every_task_with_one_moment _______
+
+tmp_path = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-31642/test_TC_4303_a_template_insert0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x000002E8DE1BE8A0>
+
+    async def test_TC_4303_a_template_insert_stamps_every_task_with_one_moment(tmp_path,
+                                                                              monkeypatch):
+        """TC-4303 (LLR-4301.3): `I`, `Simple chain` → Plan, Build, Ship each stamped, ONE
+        distinct value under a clock that moves 1 s per call (NC a stamp per task: 3 values);
+        the file holds it in the 3 new entries; the insert still writes no history line."""
+        path = _single_board(tmp_path)
+        monkeypatch.setattr(models, "datetime", fx.advancing_clock(), raising=False)
+        hist_before = (path.parent / "history.jsonl").read_text(encoding="utf-8")
+        app = _app(path)
+        async with app.run_test(size=(118, 30)) as pilot:
+            await pilot.pause()
+            app.selected_task_id = "ta1"
+            await press(pilot, "I")
+            await press(pilot, "down", "enter")
+        new = app.board.tasks[3:]
+        assert [t.title for t in new] == ["Plan", "Build", "Ship"]
+        recs = _records(path)
+        values = [recs[t.id].get("created") for t in new]
+        assert all(isinstance(v, str) and re.match(fx.STAMP_RE, v) for v in values), values
+>       assert len(set(values)) == 1, f"one insert, one stamp: {values}"
+E       AssertionError: one insert, one stamp: ['2026-11-01T08:10:00', '2026-11-01T08:10:01', '2026-11-01T08:10:02']
+E       assert 3 == 1
+E        +  where 3 = len({'2026-11-01T08:10:00', '2026-11-01T08:10:01', '2026-11-01T08:10:02'})
+E        +    where {'2026-11-01T08:10:00', '2026-11-01T08:10:01', '2026-11-01T08:10:02'} = set(['2026-11-01T08:10:00', '2026-11-01T08:10:01', '2026-11-01T08:10:02'])
+
+tests\test_task_created.py:158: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_task_created.py::test_TC_4303_a_template_insert_stamps_every_task_with_one_moment
+!!!!!!!!!!!!!!!!!!!!!!!!!! stopping after 1 failures !!!!!!!!!!!!!!!!!!!!!!!!!!
+1 failed, 3 passed in 1.88s
+C:\Users\jjgh8\anaconda3\Lib\site-packages\pytest_asyncio\plugin.py:207: PytestDeprecationWarning: The configuration option "asyncio_default_fixture_loop_scope" is unset.
+The event loop scope for asynchronous fixtures will default to the fixture caching scope. Future versions of pytest-asyncio will default the loop scope for asynchronous fixtures to function scope. Set the default fixture loop scope explicitly in order to avoid unexpected behavior in the future. Valid fixture loop scopes are: "function", "class", "module", "package", "session"
+
+  warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCOPE_UNSET))
+
+===== M16 (KILLED) =====
+...................................................................F
+================================== FAILURES ===================================
+________ test_TC_4323_N_brings_the_open_list_back_without_a_second_one ________
+
+home = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-31643/test_TC_4323_N_brings_the_open0/.taskboard')
+
+    async def test_TC_4323_N_brings_the_open_list_back_without_a_second_one(home):
+        """TC-4323 (LLR-4303.3, LLR-4303.5): `N`, `A`, `N` → exactly one list view, the
+        SAME one (read once), on top (NC always push: 2); `A` on the agenda and `escape`
+        unwind to the board."""
+        fx.build(home)
+        app = open_s_app()
+        async with app.run_test(size=W118) as pilot:
+            await _leave_home(pilot, app)
+            await open_list(pilot, app)
+            first = app.screen
+            await press(pilot, "A")
+            assert names(app) == ["Screen", "AddedList", "AllBoardsAgenda"]
+            await press(pilot, "N")
+>           assert lists_on_stack(app) == 1 and app.screen is first
+E           AssertionError: assert (1 == 1 and AllBoardsAgenda() is AddedList())
+E            +  where 1 = lists_on_stack(TaskboardApp(title='taskboard', classes={'-dark-mode'}, pseudo_classes={'focus', 'dark'}))
+E            +  and   AllBoardsAgenda() = TaskboardApp(title='taskboard', classes={'-dark-mode'}, pseudo_classes={'focus', 'dark'}).screen
+
+tests\test_added_list.py:899: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_added_list.py::test_TC_4323_N_brings_the_open_list_back_without_a_second_one
+!!!!!!!!!!!!!!!!!!!!!!!!!! stopping after 1 failures !!!!!!!!!!!!!!!!!!!!!!!!!!
+1 failed, 67 passed in 7.38s
+C:\Users\jjgh8\anaconda3\Lib\site-packages\pytest_asyncio\plugin.py:207: PytestDeprecationWarning: The configuration option "asyncio_default_fixture_loop_scope" is unset.
+The event loop scope for asynchronous fixtures will default to the fixture caching scope. Future versions of pytest-asyncio will default the loop scope for asynchronous fixtures to function scope. Set the default fixture loop scope explicitly in order to avoid unexpected behavior in the future. Valid fixture loop scopes are: "function", "class", "module", "package", "session"
+
+  warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCOPE_UNSET))
+
+===== M17 (KILLED) =====
+........................................................................ [ 61%]
+.........F
+================================== FAILURES ===================================
+____________________ test_TC_4342_the_list_holds_the_seat _____________________
+
+home = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-31644/test_TC_4342_the_list_holds_th0/.taskboard')
+
+    async def test_TC_4342_the_list_holds_the_seat(home):
+        """TC-4342 (LLR-4303.22): with the list open `a` opens no editor, `d` deletes
+        nothing, `A` and `@` open over it and `N` comes back to it; the seat answers quit
+        yes, templates no, agenda_all yes (NC the list missing from the holding tuple)."""
+        fx.build(home)
+        app = open_s_app()
+        async with app.run_test(size=W118) as pilot:
+            await _leave_home(pilot, app)
+            await open_list(pilot, app)
+            await press(pilot, "a")
+>           assert names(app) == ["Screen", "AddedList"]
+E           AssertionError: assert ['Screen', 'A..., 'TaskModal'] == ['Screen', 'AddedList']
+E             
+E             Left contains one more item: 'TaskModal'
+E             Use -v to get more diff
+
+tests\test_added_list.py:1123: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_added_list.py::test_TC_4342_the_list_holds_the_seat - Asser...
+!!!!!!!!!!!!!!!!!!!!!!!!!! stopping after 1 failures !!!!!!!!!!!!!!!!!!!!!!!!!!
+1 failed, 81 passed in 17.80s
+C:\Users\jjgh8\anaconda3\Lib\site-packages\pytest_asyncio\plugin.py:207: PytestDeprecationWarning: The configuration option "asyncio_default_fixture_loop_scope" is unset.
+The event loop scope for asynchronous fixtures will default to the fixture caching scope. Future versions of pytest-asyncio will default the loop scope for asynchronous fixtures to function scope. Set the default fixture loop scope explicitly in order to avoid unexpected behavior in the future. Valid fixture loop scopes are: "function", "class", "module", "package", "session"
+
+  warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCOPE_UNSET))
+
+===== M18 (KILLED) =====
+........................................................................ [ 61%]
+.....F
+================================== FAILURES ===================================
+___________ test_TC_4338_an_empty_list_ignores_enter_and_the_arrows ___________
+
+home = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-31645/test_TC_4338_an_empty_list_ign0/.taskboard')
+
+    async def test_TC_4338_an_empty_list_ignores_enter_and_the_arrows(home):
+        """TC-4338 (LLR-4303.17, LLR-4303.18): every task archived → `no tasks to list`;
+        `up`, `down`, `enter` change nothing: still the list, the selection unchanged, 0
+        exceptions (NC index the empty list)."""
+        fx.build(home, only_alpha=True, all_archived=True)
+        app = open_s_app()
+        async with app.run_test(size=W118) as pilot:
+            await _leave_home(pilot, app)
+            before = app.selected_task_id
+            await open_list(pilot, app)
+            lines = fx.body_lines(app)
+>           assert lines[2].startswith("no tasks to list")
+E           AssertionError: assert False
+E            +  where False = <built-in method startswith of str object at 0x000001B87E33AAF0>('no tasks to list')
+E            +    where <built-in method startswith of str object at 0x000001B87E33AAF0> = 'YESTERDAY                                      │ Sync notes                                                         '.startswith
+
+tests\test_added_list.py:1061: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_added_list.py::test_TC_4338_an_empty_list_ignores_enter_and_the_arrows
+!!!!!!!!!!!!!!!!!!!!!!!!!! stopping after 1 failures !!!!!!!!!!!!!!!!!!!!!!!!!!
+1 failed, 77 passed in 15.26s
+C:\Users\jjgh8\anaconda3\Lib\site-packages\pytest_asyncio\plugin.py:207: PytestDeprecationWarning: The configuration option "asyncio_default_fixture_loop_scope" is unset.
+The event loop scope for asynchronous fixtures will default to the fixture caching scope. Future versions of pytest-asyncio will default the loop scope for asynchronous fixtures to function scope. Set the default fixture loop scope explicitly in order to avoid unexpected behavior in the future. Valid fixture loop scopes are: "function", "class", "module", "package", "session"
+
+  warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCOPE_UNSET))
+
+===== M19 (KILLED) =====
+........................................................................ [ 61%]
+.............F
+================================== FAILURES ===================================
+________ test_TC_4367_o_reverses_the_order_and_puts_the_cursor_on_top _________
+
+home = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-31646/test_TC_4367_o_reverses_the_or0/.taskboard')
+
+    async def test_TC_4367_o_reverses_the_order_and_puts_the_cursor_on_top(home):
+        """TC-4367 (LLR-4304.7): the cursor on row 3, `o` → oldest first, row 0 `Old
+        invoice`, the cursor 0 (NC keep the index); `o` → newest first, `Pay the rent`, 0."""
+        fx.build(home)
+        app = open_s_app()
+        async with app.run_test(size=W118) as pilot:
+            await _leave_home(pilot, app)
+            await open_list(pilot, app)
+            await press(pilot, "down", "down", "down")
+            assert cursor(seen(app, 118)[0]) == 3
+            await press(pilot, "o")
+            rows, _h, _p, head = seen(app, 118)
+>           assert "oldest first" in head and rows[0]["title"] == "Old invoice" and cursor(rows) == 0
+E           AssertionError: assert ('oldest first' in 'ADDED  5 tasks · every board · oldest first  ·  time = created  ≈ = history  ? = unknown                            ' and 'Old invoice' == 'Old invoice'
+E             
+E               Old invoice and 3 == 0)
+E            +  where 3 = cursor([{'boxes': '■■■□', 'cursor': False, 'day': 'BEFORE OCT 31 · ?', 'label': '?', ...}, {'boxes': '■■■', 'cursor': False, ..., 'day': 'YESTERDAY', 'label': '18:20', ...}, {'boxes': '■□□', 'cursor': False, 'day': 'TODAY', 'label': '07:55', ...}])
+
+tests\test_added_list.py:1200: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_added_list.py::test_TC_4367_o_reverses_the_order_and_puts_the_cursor_on_top
+!!!!!!!!!!!!!!!!!!!!!!!!!! stopping after 1 failures !!!!!!!!!!!!!!!!!!!!!!!!!!
+1 failed, 85 passed in 21.66s
+C:\Users\jjgh8\anaconda3\Lib\site-packages\pytest_asyncio\plugin.py:207: PytestDeprecationWarning: The configuration option "asyncio_default_fixture_loop_scope" is unset.
+The event loop scope for asynchronous fixtures will default to the fixture caching scope. Future versions of pytest-asyncio will default the loop scope for asynchronous fixtures to function scope. Set the default fixture loop scope explicitly in order to avoid unexpected behavior in the future. Valid fixture loop scopes are: "function", "class", "module", "package", "session"
+
+  warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCOPE_UNSET))
+
+===== M20 (KILLED) =====
+........................................................................ [ 61%]
+................F
+================================== FAILURES ===================================
+____________ test_TC_4394_the_toggle_keeps_the_cursor_on_its_task _____________
+
+home = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-31647/test_TC_4394_the_toggle_keeps_0/.taskboard')
+
+    async def test_TC_4394_the_toggle_keeps_the_cursor_on_its_task(home):
+        """TC-4394 (LLR-4306.4, P-S-8): the cursor on `Pilot store list` (row 2), `v` → still
+        on it (row 3), `v` → row 2 (NC reset to 0); the cursor on the archived `Old receipts`,
+        `v` → row 0."""
+        fx.build(home, with_archived=True)
+        app = open_s_app()
+        async with app.run_test(size=W118) as pilot:
+            await _leave_home(pilot, app)
+            await open_list(pilot, app)
+            await press(pilot, "down", "down")
+    
+            def on():
+                rows = seen(app, 118)[0]
+                k = cursor(rows)
+                return k, rows[k]["title"]
+    
+            assert on() == (2, "Pilot store list")
+            await press(pilot, "v")
+>           assert on() == (3, "Pilot store list")
+E           AssertionError: assert (0, 'Pay the rent') == (3, 'Pilot store list')
+E             
+E             At index 0 diff: 0 != 3
+E             Use -v to get more diff
+
+tests\test_added_list.py:1261: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_added_list.py::test_TC_4394_the_toggle_keeps_the_cursor_on_its_task
+!!!!!!!!!!!!!!!!!!!!!!!!!! stopping after 1 failures !!!!!!!!!!!!!!!!!!!!!!!!!!
+1 failed, 88 passed in 24.05s
+C:\Users\jjgh8\anaconda3\Lib\site-packages\pytest_asyncio\plugin.py:207: PytestDeprecationWarning: The configuration option "asyncio_default_fixture_loop_scope" is unset.
+The event loop scope for asynchronous fixtures will default to the fixture caching scope. Future versions of pytest-asyncio will default the loop scope for asynchronous fixtures to function scope. Set the default fixture loop scope explicitly in order to avoid unexpected behavior in the future. Valid fixture loop scopes are: "function", "class", "module", "package", "session"
+
+  warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCOPE_UNSET))
+
+===== M21 (KILLED) =====
+....................................................................F
+================================== FAILURES ===================================
+__________________ test_TC_4324_escape_or_N_closes_the_list ___________________
+
+home = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-31648/test_TC_4324_escape_or_N_close0/.taskboard')
+
+    async def test_TC_4324_escape_or_N_closes_the_list(home):
+        """TC-4324 (LLR-4303.4): `escape` closes the list; `N` in the list closes it too (NC
+        `N` not bound in the screen: the list stays)."""
+        fx.build(home)
+        app = open_s_app()
+        async with app.run_test(size=W118) as pilot:
+            await _leave_home(pilot, app)
+            await open_list(pilot, app)
+            await press(pilot, "escape")
+            assert names(app) == ["Screen"]
+            await open_list(pilot, app)
+            await press(pilot, "N")
+>           assert names(app) == ["Screen"] and lists_on_stack(app) == 0
+E           AssertionError: assert (['Screen', 'AddedList'] == ['Screen']
+E             
+E             Left contains one more item: 'AddedList'
+E             Use -v to get more diff)
+
+tests\test_added_list.py:920: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_added_list.py::test_TC_4324_escape_or_N_closes_the_list - A...
+!!!!!!!!!!!!!!!!!!!!!!!!!! stopping after 1 failures !!!!!!!!!!!!!!!!!!!!!!!!!!
+1 failed, 68 passed in 8.59s
+C:\Users\jjgh8\anaconda3\Lib\site-packages\pytest_asyncio\plugin.py:207: PytestDeprecationWarning: The configuration option "asyncio_default_fixture_loop_scope" is unset.
+The event loop scope for asynchronous fixtures will default to the fixture caching scope. Future versions of pytest-asyncio will default the loop scope for asynchronous fixtures to function scope. Set the default fixture loop scope explicitly in order to avoid unexpected behavior in the future. Valid fixture loop scopes are: "function", "class", "module", "package", "session"
+
+  warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCOPE_UNSET))
+
+===== M22 (KILLED) =====
+........................................................................ [ 61%]
+.....F
+================================== FAILURES ===================================
+___________ test_TC_4338_an_empty_list_ignores_enter_and_the_arrows ___________
+
+home = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-31649/test_TC_4338_an_empty_list_ign0/.taskboard')
+
+    async def test_TC_4338_an_empty_list_ignores_enter_and_the_arrows(home):
+        """TC-4338 (LLR-4303.17, LLR-4303.18): every task archived → `no tasks to list`;
+        `up`, `down`, `enter` change nothing: still the list, the selection unchanged, 0
+        exceptions (NC index the empty list)."""
+        fx.build(home, only_alpha=True, all_archived=True)
+        app = open_s_app()
+>       async with app.run_test(size=W118) as pilot:
+
+tests\test_added_list.py:1056: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+..\..\..\anaconda3\Lib\contextlib.py:217: in __aexit__
+    await anext(self.gen)
+..\..\..\anaconda3\Lib\site-packages\textual\app.py:2218: in run_test
+    raise self._exception
+..\..\..\anaconda3\Lib\site-packages\textual\message_pump.py:663: in _process_messages_loop
+    await self._dispatch_message(message)
+..\..\..\anaconda3\Lib\site-packages\textual\message_pump.py:727: in _dispatch_message
+    await self.on_event(message)
+..\..\..\anaconda3\Lib\site-packages\textual\app.py:4136: in on_event
+    if not await self._check_bindings(event.key, priority=True):
+..\..\..\anaconda3\Lib\site-packages\textual\app.py:3986: in _check_bindings
+    if await self.run_action(binding.action, namespace):
+..\..\..\anaconda3\Lib\site-packages\textual\app.py:4246: in run_action
+    return await self._dispatch_action(action_target, action_name, params)
+..\..\..\anaconda3\Lib\site-packages\textual\app.py:4279: in _dispatch_action
+    await invoke(public_method, *params)
+..\..\..\anaconda3\Lib\site-packages\textual\_callback.py:96: in invoke
+    return await _invoke(callback, *params)
+..\..\..\anaconda3\Lib\site-packages\textual\_callback.py:56: in _invoke
+    result = callback(*params[:parameter_count])
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = AddedList()
+
+    def action_jump(self) -> None:
+        rows = self._ordered()
+>       r = rows[self.sel]
+E       IndexError: list index out of range
+
+taskboard\app.py:1054: IndexError
+---------------------------- Captured stderr call -----------------------------
+╭───────────────────── Traceback (most recent call last) ──────────────────────
+│ C:\Users\jjgh8\Github\taskboard-wt\incL-mut\taskboard\app.py:1054 in         
+│ action_jump                                                                  
+│                                                                              
+│   1051 │                                                                     
+│   1052 │   def action_jump(self) -> None:                                    
+│   1053 │   │   rows = self._ordered()                                        
+│ ❱ 1054 │   │   r = rows[self.sel]                                            
+│   1055 │   │   open_on_board(self.app, self.ids[r.lane], r.task.id)          
+│   1056 │                                                                     
+│   1057 │   def action_back(self) -> None:                                    
+│                                                                              
+│ ╭────── locals ──────╮                                                       
+│ │ rows = []          │                                                       
+│ │ self = AddedList() │                                                       
+│ ╰────────────────────╯                                                       
+╰──────────────────────────────────────────────────────────────────────────────
+IndexError: list index out of range
+=========================== short test summary info ===========================
+FAILED tests/test_added_list.py::test_TC_4338_an_empty_list_ignores_enter_and_the_arrows
+!!!!!!!!!!!!!!!!!!!!!!!!!! stopping after 1 failures !!!!!!!!!!!!!!!!!!!!!!!!!!
+1 failed, 77 passed in 16.19s
+C:\Users\jjgh8\anaconda3\Lib\site-packages\pytest_asyncio\plugin.py:207: PytestDeprecationWarning: The configuration option "asyncio_default_fixture_loop_scope" is unset.
+The event loop scope for asynchronous fixtures will default to the fixture caching scope. Future versions of pytest-asyncio will default the loop scope for asynchronous fixtures to function scope. Set the default fixture loop scope explicitly in order to avoid unexpected behavior in the future. Valid fixture loop scopes are: "function", "class", "module", "package", "session"
+
+  warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCOPE_UNSET))
+
+===== M23 (KILLED) =====
+........................................................................ [ 61%]
+..................F
+================================== FAILURES ===================================
+______ test_TC_4331b_a_name_renamed_under_the_list_shows_when_it_returns ______
+
+home = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-31650/test_TC_4331b_a_name_renamed_u0/.taskboard')
+
+    async def test_TC_4331b_a_name_renamed_under_the_list_shows_when_it_returns(home):
+        """TC-4331b (LLR-4303.11, ARCH-5 / A-1): the pane meta of `Sync notes` holds
+        `@Ana Ruiz`; `@`, the directory renames `ana` to `Ana Ortiz`, `escape` → with no
+        further key the pane holds `@Ana Ortiz` (NC no repaint on resume)."""
+        fx.build(home, people={"ana": "Ana Ruiz"}, notes={"ta1": "ping @ana"})
+        app = open_s_app()
+        async with app.run_test(size=W118) as pilot:
+            await _leave_home(pilot, app)
+            await open_list(pilot, app)
+            await press(pilot, "down")
+            assert "@Ana Ruiz" in seen(app, 118)[2][2]
+            await press(pilot, "at")
+            assert names(app) == ["Screen", "AddedList", "PeopleDirectory"]
+            app.people.edit("ana", "Ana Ortiz", "", "")
+            await press(pilot, "escape")
+            await pilot.pause(0.3)
+            assert names(app) == ["Screen", "AddedList"]
+>           assert "@Ana Ortiz" in seen(app, 118)[2][2]
+E           AssertionError: assert '@Ana Ortiz' in 'Doing  · normal  @Ana Ruiz'
+
+tests\test_added_list.py:1302: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_added_list.py::test_TC_4331b_a_name_renamed_under_the_list_shows_when_it_returns
+!!!!!!!!!!!!!!!!!!!!!!!!!! stopping after 1 failures !!!!!!!!!!!!!!!!!!!!!!!!!!
+1 failed, 90 passed in 26.91s
+C:\Users\jjgh8\anaconda3\Lib\site-packages\pytest_asyncio\plugin.py:207: PytestDeprecationWarning: The configuration option "asyncio_default_fixture_loop_scope" is unset.
+The event loop scope for asynchronous fixtures will default to the fixture caching scope. Future versions of pytest-asyncio will default the loop scope for asynchronous fixtures to function scope. Set the default fixture loop scope explicitly in order to avoid unexpected behavior in the future. Valid fixture loop scopes are: "function", "class", "module", "package", "session"
+
+  warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCOPE_UNSET))
+
+===== M24 (KILLED) =====
+..........................F
+================================== FAILURES ===================================
+______________ test_TC_4373_an_offset_aware_moment_is_not_valid _______________
+
+tmp_path = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-31651/test_TC_4373_an_offset_aware_m0')
+
+    def test_TC_4373_an_offset_aware_moment_is_not_valid(tmp_path):
+        """TC-4373 (LLR-4304.13, ARCH-3): `added_moment` of "…+00:00" is None (no conversion,
+        the same on every machine); such a created with no birth → `?`, with a birth → `h`;
+        a birth `at` with an offset is no birth; 0 exceptions (NC convert/strip the offset →
+        source `c`)."""
+>       assert _v("added_moment")("2026-10-31T18:20:00+00:00") is None
+E       AssertionError: assert datetime.datetime(2026, 10, 31, 18, 20) is None
+E        +  where datetime.datetime(2026, 10, 31, 18, 20) = <function added_moment at 0x0000016F94CBBE20>('2026-10-31T18:20:00+00:00')
+E        +    where <function added_moment at 0x0000016F94CBBE20> = _v('added_moment')
+
+tests\test_added_list.py:219: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_added_list.py::test_TC_4373_an_offset_aware_moment_is_not_valid
+!!!!!!!!!!!!!!!!!!!!!!!!!! stopping after 1 failures !!!!!!!!!!!!!!!!!!!!!!!!!!
+1 failed, 26 passed in 5.81s
+C:\Users\jjgh8\anaconda3\Lib\site-packages\pytest_asyncio\plugin.py:207: PytestDeprecationWarning: The configuration option "asyncio_default_fixture_loop_scope" is unset.
+The event loop scope for asynchronous fixtures will default to the fixture caching scope. Future versions of pytest-asyncio will default the loop scope for asynchronous fixtures to function scope. Set the default fixture loop scope explicitly in order to avoid unexpected behavior in the future. Valid fixture loop scopes are: "function", "class", "module", "package", "session"
+
+  warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCOPE_UNSET))
+
+===== M25 (KILLED) =====
+.........................F
+================================== FAILURES ===================================
+___________ test_TC_4368_a_created_that_is_not_a_date_is_no_created ___________
+
+tmp_path = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-31652/test_TC_4368_a_created_that_is0')
+
+    def test_TC_4368_a_created_that_is_not_a_date_is_no_created(tmp_path):
+        """TC-4368 (LLR-4304.8): `added_moment` gives None for "not a date" and for 5, a
+        naive datetime for "2026-10-31"; a task whose created is "not a date" is `h` with a
+        birth, `?` without; 0 exceptions (NC crash on parse)."""
+        added_moment = _v("added_moment")
+>       assert added_moment("not a date") is None
+
+tests\test_added_list.py:202: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+value = 'not a date'
+
+    def added_moment(value: object) -> datetime | None:
+        """A `created`/birth-`at` value as its added moment, or `None` when it is
+        not valid (Inc L, LLR-4304.8, LLR-4304.13). A string `datetime.fromisoformat`
+        parses to a NAIVE datetime is the moment; an offset-aware result is not
+        valid (ARCH-3: no conversion, the app writes only naive local stamps — a
+        `astimezone()` here would fail on Windows for years before 1970 and at the
+        bounds, P-V-2), and anything else — `None`, a non-string, an unparseable
+        string — is `None`. Never raises."""
+        if not isinstance(value, str):
+            return None
+>       m = datetime.fromisoformat(value)
+E       ValueError: Invalid isoformat string: 'not a date'
+
+taskboard\views.py:9303: ValueError
+=========================== short test summary info ===========================
+FAILED tests/test_added_list.py::test_TC_4368_a_created_that_is_not_a_date_is_no_created
+!!!!!!!!!!!!!!!!!!!!!!!!!! stopping after 1 failures !!!!!!!!!!!!!!!!!!!!!!!!!!
+1 failed, 25 passed in 6.12s
+C:\Users\jjgh8\anaconda3\Lib\site-packages\pytest_asyncio\plugin.py:207: PytestDeprecationWarning: The configuration option "asyncio_default_fixture_loop_scope" is unset.
+The event loop scope for asynchronous fixtures will default to the fixture caching scope. Future versions of pytest-asyncio will default the loop scope for asynchronous fixtures to function scope. Set the default fixture loop scope explicitly in order to avoid unexpected behavior in the future. Valid fixture loop scopes are: "function", "class", "module", "package", "session"
+
+  warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCOPE_UNSET))
+
+===== M26 (KILLED) =====
+.......................F
+================================== FAILURES ===================================
+____________ test_TC_4362_no_created_takes_the_first_birth_record _____________
+
+tmp_path = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-31653/test_TC_4362_no_created_takes_0')
+
+    def test_TC_4362_no_created_takes_the_first_birth_record(tmp_path):
+        """TC-4362 (LLR-4304.2): w3 has births at 10-28 10:30 then 10-29 11:00 → source `h`
+        at the FIRST (NC last record → 10-29)."""
+        w3 = _by_id(_rows(fx.fv_lanes(tmp_path)))["w3"]
+>       assert (w3.source, w3.at) == ("h", datetime(2026, 10, 28, 10, 30))
+E       AssertionError: assert ('h', datetim...0, 29, 11, 0)) == ('h', datetim..., 28, 10, 30))
+E         
+E         At index 1 diff: datetime.datetime(2026, 10, 29, 11, 0) != datetime.datetime(2026, 10, 28, 10, 30)
+E         Use -v to get more diff
+
+tests\test_added_list.py:181: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_added_list.py::test_TC_4362_no_created_takes_the_first_birth_record
+!!!!!!!!!!!!!!!!!!!!!!!!!! stopping after 1 failures !!!!!!!!!!!!!!!!!!!!!!!!!!
+1 failed, 23 passed in 5.74s
+C:\Users\jjgh8\anaconda3\Lib\site-packages\pytest_asyncio\plugin.py:207: PytestDeprecationWarning: The configuration option "asyncio_default_fixture_loop_scope" is unset.
+The event loop scope for asynchronous fixtures will default to the fixture caching scope. Future versions of pytest-asyncio will default the loop scope for asynchronous fixtures to function scope. Set the default fixture loop scope explicitly in order to avoid unexpected behavior in the future. Valid fixture loop scopes are: "function", "class", "module", "package", "session"
+
+  warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCOPE_UNSET))
+
+===== M27 (KILLED) =====
+.............................F
+================================== FAILURES ===================================
+________ test_TC_4372b_a_history_file_that_is_not_utf8_gives_no_births ________
+
+tmp_path = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-31654/test_TC_4372b_a_history_file_t0')
+
+    def test_TC_4372b_a_history_file_that_is_not_utf8_gives_no_births(tmp_path):
+        """TC-4372b (LLR-4304.12, P-V-1): a history.jsonl holding the bytes 0xff 0xfe
+        (UnicodeDecodeError, a ValueError) → rows built, no exception."""
+>       _assert_unread_history(_rows(_unreadable_history_lanes(tmp_path, b"\xff\xfe\n")))
+
+tests\test_added_list.py:285: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+tests\test_added_list.py:62: in _rows
+    return _v("added_rows")(lanes)
+taskboard\views.py:9341: in added_rows
+    recs, _skip = history.read(board.path)
+taskboard\history.py:61: in read
+    for raw in f:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <encodings.utf_8.IncrementalDecoder object at 0x00000299316A9C70>
+input = b'\xff\xfe\n', final = False
+
+>   ???
+E   UnicodeDecodeError: 'utf-8' codec can't decode byte 0xff in position 0: invalid start byte
+
+<frozen codecs>:322: UnicodeDecodeError
+=========================== short test summary info ===========================
+FAILED tests/test_added_list.py::test_TC_4372b_a_history_file_that_is_not_utf8_gives_no_births
+!!!!!!!!!!!!!!!!!!!!!!!!!! stopping after 1 failures !!!!!!!!!!!!!!!!!!!!!!!!!!
+1 failed, 29 passed in 6.04s
+C:\Users\jjgh8\anaconda3\Lib\site-packages\pytest_asyncio\plugin.py:207: PytestDeprecationWarning: The configuration option "asyncio_default_fixture_loop_scope" is unset.
+The event loop scope for asynchronous fixtures will default to the fixture caching scope. Future versions of pytest-asyncio will default the loop scope for asynchronous fixtures to function scope. Set the default fixture loop scope explicitly in order to avoid unexpected behavior in the future. Valid fixture loop scopes are: "function", "class", "module", "package", "session"
+
+  warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCOPE_UNSET))
+
+===== M28 (KILLED) =====
+...............................F
+================================== FAILURES ===================================
+________ test_TC_4377_a_task_id_that_is_not_a_string_is_listed_unknown ________
+
+tmp_path = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-31655/test_TC_4377_a_task_id_that_is0')
+
+    def test_TC_4377_a_task_id_that_is_not_a_string_is_listed_unknown(tmp_path):
+        """TC-4377 (LLR-4304.17, SEC-3): a peeked board holding tasks of id ["x"] and
+        {"a": 1}, and a birth record for "x" → both listed `?`; the cursor on each paints the
+        pane; a task waiting on "x" shows `after: x` (the list id resolves no title); 0
+        exceptions (NC `births.get(task.id)` → TypeError)."""
+        folder = tmp_path / "odd"
+        folder.mkdir()
+        (folder / "board.json").write_text(json.dumps({
+            "phases": ["Todo", "Doing", "Done"], "projects": [], "settings": {},
+            "tasks": [{"title": "Odd", "id": ["x"]}, {"title": "Odder", "id": {"a": 1}},
+                      {"title": "Waits", "id": "w", "depends_on": ["x"],
+                       "created": "2026-10-31T18:20:00"}]}), encoding="utf-8")
+        fx.write_history(folder, [fx.birth("x", "2026-10-28T10:30:00", "Todo")])
+        board = Board.load(folder / "board.json")
+        assert [t.id for t in board.tasks][:2] == [["x"], {"a": 1}]
+        lanes = [("Odd", "pink", board, "")]
+>       rows = _rows(lanes)
+
+tests\test_added_list.py:311: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+tests\test_added_list.py:62: in _rows
+    return _v("added_rows")(lanes)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+lanes = [('Odd', 'pink', <taskboard.models.Board object at 0x00000162D4C21640>, '')]
+
+    def added_rows(lanes: list[tuple[str, str, Board | None, str]]) -> list[AddedRow]:
+        """One `AddedRow` per task of every lane whose board is not None, archived
+        tasks included, in lane order then file position (LLR-4303.5, LLR-4304.1,
+        LLR-4304.2, LLR-4304.3). Per board, births map each task id to its FIRST
+        birth `at` — the first `history.read` record with `from` None whose `task`
+        is a str (LLR-4304.12 widened: the read is guarded for `OSError`,
+        `ValueError` — a non-UTF-8 byte, P-V-1 — and `RecursionError` — a deeply
+        nested line, SEC-2 — so one stray history file never crashes `N`). Per task
+        the added moment is its valid `created` (source `c`), else its first birth
+        (source `h`), else unknown (source `?`); the birth lookup runs only for a
+        str id, so a list/dict id is unhashable and never reaches a dict lookup
+        (SEC-3, LLR-4304.17). Never writes; never sets `task.created`."""
+        out: list[AddedRow] = []
+        for li, (name, colour, board, _state) in enumerate(lanes):
+            if board is None:
+                continue
+            try:
+                recs, _skip = history.read(board.path)
+            except (OSError, ValueError, RecursionError):
+                recs = []
+            births: dict = {}
+            for r in recs:
+                if r.get("from") is None and isinstance(r.get("task"), str):
+                    births.setdefault(r["task"], r["at"])
+            for pos, t in enumerate(board.tasks):
+                m = added_moment(t.created)
+                if m is not None:
+                    out.append(AddedRow(t, li, name, colour, board, "c", m, pos))
+                    continue
+>               birth = births.get(t.id)
+E               TypeError: unhashable type: 'list'
+
+taskboard\views.py:9353: TypeError
+=========================== short test summary info ===========================
+FAILED tests/test_added_list.py::test_TC_4377_a_task_id_that_is_not_a_string_is_listed_unknown
+!!!!!!!!!!!!!!!!!!!!!!!!!! stopping after 1 failures !!!!!!!!!!!!!!!!!!!!!!!!!!
+1 failed, 31 passed in 6.49s
+C:\Users\jjgh8\anaconda3\Lib\site-packages\pytest_asyncio\plugin.py:207: PytestDeprecationWarning: The configuration option "asyncio_default_fixture_loop_scope" is unset.
+The event loop scope for asynchronous fixtures will default to the fixture caching scope. Future versions of pytest-asyncio will default the loop scope for asynchronous fixtures to function scope. Set the default fixture loop scope explicitly in order to avoid unexpected behavior in the future. Valid fixture loop scopes are: "function", "class", "module", "package", "session"
+
+  warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCOPE_UNSET))
+
+===== M29 (KILLED) =====
+....................F
+================================== FAILURES ===================================
+_______ test_AT_4302_a_task_added_on_an_old_board_is_first_in_the_list ________
+
+home = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-31656/test_AT_4302_a_task_added_on_a0/.taskboard')
+
+    async def test_AT_4302_a_task_added_on_an_old_board_is_first_in_the_list(home):
+        """AT-4302 (HLR-4301, HLR-4302, HLR-4304): on the registry's boards, `a`, `Call the
+        bank`, `alt+s` → Alpha's file holds its `created` 2026-11-01T08:10:00 and every old
+        entry's slice is byte-identical; `N` → `Call the bank` is row 0 with `08:10` under
+        TODAY, the cursor on it, the pane's source line `the created field`; row 1 `Pay the
+        rent`."""
+        fx.build(home)
+        alpha = fx.board_path(home, "alpha")
+        app = open_s_app()
+        async with app.run_test(size=(118, 30)) as pilot:
+            await pilot.pause()
+            await press(pilot, "escape")
+            old = _file(alpha)["tasks"]
+            await press(pilot, "a")
+            await pilot.press(*"Call the bank")
+            await press(pilot, "alt+s")
+            new = next(t for t in app.board.tasks if t.title == "Call the bank")
+            assert _records(alpha)[new.id].get("created") == ADD_AT
+            after = _text(alpha)
+            for rec in old:
+                assert _slice(rec) in after, f"entry {rec['id']} rewritten by the add"
+            await open_list(pilot, app)
+            rows, headers, pane, _head = seen(app, 118)
+>           assert rows[0]["title"] == "Call the bank" and rows[0]["label"] == "08:10"
+E           AssertionError: assert ('Call the bank' == 'Call the bank'
+E             
+E               Call the bank and '≈08:10' == '08:10'
+E             
+E             - 08:10
+E             + ≈08:10
+E             ? +)
+
+tests\test_task_created.py:539: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_task_created.py::test_AT_4302_a_task_added_on_an_old_board_is_first_in_the_list
+!!!!!!!!!!!!!!!!!!!!!!!!!! stopping after 1 failures !!!!!!!!!!!!!!!!!!!!!!!!!!
+1 failed, 20 passed in 4.73s
+C:\Users\jjgh8\anaconda3\Lib\site-packages\pytest_asyncio\plugin.py:207: PytestDeprecationWarning: The configuration option "asyncio_default_fixture_loop_scope" is unset.
+The event loop scope for asynchronous fixtures will default to the fixture caching scope. Future versions of pytest-asyncio will default the loop scope for asynchronous fixtures to function scope. Set the default fixture loop scope explicitly in order to avoid unexpected behavior in the future. Valid fixture loop scopes are: "function", "class", "module", "package", "session"
+
+  warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCOPE_UNSET))
+
+===== M30 (KILLED) =====
+................................F
+================================== FAILURES ===================================
+__________ test_TC_4364_ties_break_by_board_order_then_file_position __________
+
+    def test_TC_4364_ties_break_by_board_order_then_file_position():
+        """TC-4364 (LLR-4304.4): the shuffled input D(1,1,10:00) E(0,2,09:00) B(1,0,?)
+        C(0,1,10:00) A(0,0,?), oldest first → A, B, E, C, D; two rows of one moment on two
+        boards follow the registry order whichever comes first in the input (NC sort by
+        moment alone: input order kept)."""
+>       assert _ids(_order(_five(), newest=False)) == ["A", "B", "E", "C", "D"]
+E       AssertionError: assert ['A', 'B', 'E', 'D', 'C'] == ['A', 'B', 'E', 'C', 'D']
+E         
+E         At index 3 diff: 'D' != 'C'
+E         Use -v to get more diff
+
+tests\test_added_list.py:337: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_added_list.py::test_TC_4364_ties_break_by_board_order_then_file_position
+!!!!!!!!!!!!!!!!!!!!!!!!!! stopping after 1 failures !!!!!!!!!!!!!!!!!!!!!!!!!!
+1 failed, 32 passed in 5.66s
+C:\Users\jjgh8\anaconda3\Lib\site-packages\pytest_asyncio\plugin.py:207: PytestDeprecationWarning: The configuration option "asyncio_default_fixture_loop_scope" is unset.
+The event loop scope for asynchronous fixtures will default to the fixture caching scope. Future versions of pytest-asyncio will default the loop scope for asynchronous fixtures to function scope. Set the default fixture loop scope explicitly in order to avoid unexpected behavior in the future. Valid fixture loop scopes are: "function", "class", "module", "package", "session"
+
+  warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCOPE_UNSET))
+
+===== M31 (KILLED) =====
+....................F
+================================== FAILURES ===================================
+_______ test_AT_4302_a_task_added_on_an_old_board_is_first_in_the_list ________
+
+home = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-31658/test_AT_4302_a_task_added_on_a0/.taskboard')
+
+    async def test_AT_4302_a_task_added_on_an_old_board_is_first_in_the_list(home):
+        """AT-4302 (HLR-4301, HLR-4302, HLR-4304): on the registry's boards, `a`, `Call the
+        bank`, `alt+s` → Alpha's file holds its `created` 2026-11-01T08:10:00 and every old
+        entry's slice is byte-identical; `N` → `Call the bank` is row 0 with `08:10` under
+        TODAY, the cursor on it, the pane's source line `the created field`; row 1 `Pay the
+        rent`."""
+        fx.build(home)
+        alpha = fx.board_path(home, "alpha")
+        app = open_s_app()
+        async with app.run_test(size=(118, 30)) as pilot:
+            await pilot.pause()
+            await press(pilot, "escape")
+            old = _file(alpha)["tasks"]
+            await press(pilot, "a")
+            await pilot.press(*"Call the bank")
+            await press(pilot, "alt+s")
+            new = next(t for t in app.board.tasks if t.title == "Call the bank")
+            assert _records(alpha)[new.id].get("created") == ADD_AT
+            after = _text(alpha)
+            for rec in old:
+                assert _slice(rec) in after, f"entry {rec['id']} rewritten by the add"
+            await open_list(pilot, app)
+            rows, headers, pane, _head = seen(app, 118)
+>           assert rows[0]["title"] == "Call the bank" and rows[0]["label"] == "08:10"
+E           AssertionError: assert ('Archive scans' == 'Call the bank'
+E             
+E             - Call the bank
+E             + Archive scans)
+
+tests\test_task_created.py:539: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_task_created.py::test_AT_4302_a_task_added_on_an_old_board_is_first_in_the_list
+!!!!!!!!!!!!!!!!!!!!!!!!!! stopping after 1 failures !!!!!!!!!!!!!!!!!!!!!!!!!!
+1 failed, 20 passed in 4.92s
+C:\Users\jjgh8\anaconda3\Lib\site-packages\pytest_asyncio\plugin.py:207: PytestDeprecationWarning: The configuration option "asyncio_default_fixture_loop_scope" is unset.
+The event loop scope for asynchronous fixtures will default to the fixture caching scope. Future versions of pytest-asyncio will default the loop scope for asynchronous fixtures to function scope. Set the default fixture loop scope explicitly in order to avoid unexpected behavior in the future. Valid fixture loop scopes are: "function", "class", "module", "package", "session"
+
+  warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCOPE_UNSET))
+
+===== M32 (KILLED) =====
+..................................F
+================================== FAILURES ===================================
+________ test_TC_4365_unknown_rows_come_first_in_board_then_file_order ________
+
+tmp_path = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-31659/test_TC_4365_unknown_rows_come0')
+
+    def test_TC_4365_unknown_rows_come_first_in_board_then_file_order(tmp_path):
+        """TC-4365 (LLR-4304.5): F-V rows given in REVERSE (lane, pos) order, oldest first →
+        w1, h1, w3, w2, h2, w4: the 2 unknown rows are rows 0–1 in file order (NC unknowns in
+        input order: h1, w1 …; NC unknowns last)."""
+        rows = list(reversed(_rows(fx.fv_lanes(tmp_path))))
+        assert _ids(rows) == ["h2", "h1", "w5", "w4", "w3", "w2", "w1"]
+>       assert _ids(_order(rows, False, False)) == ["w1", "h1", "w3", "w2", "h2", "w4"]
+E       AssertionError: assert ['w1', 'w5', ...2', 'h2', ...] == ['w1', 'h1', ...', 'h2', 'w4']
+E         
+E         At index 1 diff: 'w5' != 'h1'
+E         Left contains one more item: 'w4'
+E         Use -v to get more diff
+
+tests\test_added_list.py:360: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_added_list.py::test_TC_4365_unknown_rows_come_first_in_board_then_file_order
+!!!!!!!!!!!!!!!!!!!!!!!!!! stopping after 1 failures !!!!!!!!!!!!!!!!!!!!!!!!!!
+1 failed, 34 passed in 5.82s
+C:\Users\jjgh8\anaconda3\Lib\site-packages\pytest_asyncio\plugin.py:207: PytestDeprecationWarning: The configuration option "asyncio_default_fixture_loop_scope" is unset.
+The event loop scope for asynchronous fixtures will default to the fixture caching scope. Future versions of pytest-asyncio will default the loop scope for asynchronous fixtures to function scope. Set the default fixture loop scope explicitly in order to avoid unexpected behavior in the future. Valid fixture loop scopes are: "function", "class", "module", "package", "session"
+
+  warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCOPE_UNSET))
+
+===== M33 (KILLED) =====
+.....................................F
+================================== FAILURES ===================================
+__________ test_TC_4370_first_created_is_the_earliest_valid_created ___________
+
+tmp_path = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-31660/test_TC_4370_first_created_is_0')
+
+    def test_TC_4370_first_created_is_the_earliest_valid_created(tmp_path):
+        """TC-4370 (LLR-4304.10's first created date): over every F-V row (archived
+        included) the earliest valid created is 2026-10-31 18:20."""
+        rows = _rows(fx.fv_lanes(tmp_path))
+>       assert _v("first_created")(rows) == datetime(2026, 10, 31, 18, 20)
+E       AssertionError: assert datetime.datetime(2026, 10, 28, 10, 30) == datetime.datetime(2026, 10, 31, 18, 20)
+E        +  where datetime.datetime(2026, 10, 28, 10, 30) = <function first_created at 0x0000023F99F08040>([AddedRow(task=Task(title='Volume oracle script', project_id='p1', phase='Backlog', priority='normal', start_date=None...='Home', bcolour='lime', board=<taskboard.models.Board object at 0x0000023F988DB0E0>, source='?', at=None, pos=0), ...])
+E        +    where <function first_created at 0x0000023F99F08040> = _v('first_created')
+E        +  and   datetime.datetime(2026, 10, 31, 18, 20) = datetime(2026, 10, 31, 18, 20)
+
+tests\test_added_list.py:382: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_added_list.py::test_TC_4370_first_created_is_the_earliest_valid_created
+!!!!!!!!!!!!!!!!!!!!!!!!!! stopping after 1 failures !!!!!!!!!!!!!!!!!!!!!!!!!!
+1 failed, 37 passed in 5.63s
+C:\Users\jjgh8\anaconda3\Lib\site-packages\pytest_asyncio\plugin.py:207: PytestDeprecationWarning: The configuration option "asyncio_default_fixture_loop_scope" is unset.
+The event loop scope for asynchronous fixtures will default to the fixture caching scope. Future versions of pytest-asyncio will default the loop scope for asynchronous fixtures to function scope. Set the default fixture loop scope explicitly in order to avoid unexpected behavior in the future. Valid fixture loop scopes are: "function", "class", "module", "package", "session"
+
+  warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCOPE_UNSET))
+
+===== M34 (KILLED) =====
+.........................................F
+================================== FAILURES ===================================
+___________ test_TC_4327_the_body_at_118x30_is_the_designed_capture ___________
+
+tmp_path = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-31661/test_TC_4327_the_body_at_118x30')
+
+    def test_TC_4327_the_body_at_118x30_is_the_designed_capture(tmp_path):
+        """TC-4327 / TC-4328 / TC-4329 / TC-4330 (LLR-4303.7..4303.10): F-V, newest first,
+        the cursor on w2, render 116x29 → the 29 lines of graph-proto-V's capture exactly:
+        every line 116 cells, `│` at cell 47 (lw 46 + 1) on lines 2–28 and nowhere else."""
+        body, _ = _fv_body(tmp_path)
+        lines = _plain_lines(body)
+        assert len(lines) == 29 and all(len(ln) == 116 for ln in lines)
+        for i, (got, want) in enumerate(zip(lines, FV_116)):
+>           assert got == want, f"line {i}:\n got {got.rstrip()!r}\nwant {want.rstrip()!r}"
+E           AssertionError: line 3:
+E              got ' 08:10  □□□□ ▍Pay the rent                     │ Eval harness · Work'
+E             want ' 08:10  ■□□□ ▍Pay the rent                     │ Eval harness · Work'
+E           assert ' 08:10  □□□□...             ' == ' 08:10  ■□□□...             '
+E             
+E             Skipping 98 identical trailing characters in diff, use -v to show
+E             -  08:10  ■□□□ ▍Pay 
+E             ?         -
+E             +  08:10  □□□□ ▍Pay 
+E             ?            +
+
+tests\test_added_list.py:443: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_added_list.py::test_TC_4327_the_body_at_118x30_is_the_designed_capture
+!!!!!!!!!!!!!!!!!!!!!!!!!! stopping after 1 failures !!!!!!!!!!!!!!!!!!!!!!!!!!
+1 failed, 41 passed in 5.91s
+C:\Users\jjgh8\anaconda3\Lib\site-packages\pytest_asyncio\plugin.py:207: PytestDeprecationWarning: The configuration option "asyncio_default_fixture_loop_scope" is unset.
+The event loop scope for asynchronous fixtures will default to the fixture caching scope. Future versions of pytest-asyncio will default the loop scope for asynchronous fixtures to function scope. Set the default fixture loop scope explicitly in order to avoid unexpected behavior in the future. Valid fixture loop scopes are: "function", "class", "module", "package", "session"
+
+  warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCOPE_UNSET))
+
+===== M35 (KILLED) =====
+...........................................................F
+================================== FAILURES ===================================
+____________ test_TC_4382_more_than_eight_phases_draw_eight_boxes _____________
+
+    def test_TC_4382_more_than_eight_phases_draw_eight_boxes():
+        """TC-4382 (LLR-4305.2): 10 phases → 8 boxes, ceil(8 × (i + 1) / 10) filled: index 0
+        → 1, 4 → 4, 9 → 8 (NC 10 boxes)."""
+        state_boxes = _v("state_boxes")
+        phases = [f"P{i}" for i in range(10)]
+>       assert state_boxes(phases, "P0") == "■□□□□□□□"
+E       AssertionError: assert '■□□□□□□□□□' == '■□□□□□□□'
+E         
+E         - ■□□□□□□□
+E         + ■□□□□□□□□□
+E         ?         ++
+
+tests\test_added_list.py:746: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_added_list.py::test_TC_4382_more_than_eight_phases_draw_eight_boxes
+!!!!!!!!!!!!!!!!!!!!!!!!!! stopping after 1 failures !!!!!!!!!!!!!!!!!!!!!!!!!!
+1 failed, 59 passed in 5.90s
+C:\Users\jjgh8\anaconda3\Lib\site-packages\pytest_asyncio\plugin.py:207: PytestDeprecationWarning: The configuration option "asyncio_default_fixture_loop_scope" is unset.
+The event loop scope for asynchronous fixtures will default to the fixture caching scope. Future versions of pytest-asyncio will default the loop scope for asynchronous fixtures to function scope. Set the default fixture loop scope explicitly in order to avoid unexpected behavior in the future. Valid fixture loop scopes are: "function", "class", "module", "package", "session"
+
+  warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCOPE_UNSET))
+
+===== M36 (KILLED) =====
+.........................................F
+================================== FAILURES ===================================
+___________ test_TC_4327_the_body_at_118x30_is_the_designed_capture ___________
+
+tmp_path = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-31663/test_TC_4327_the_body_at_118x30')
+
+    def test_TC_4327_the_body_at_118x30_is_the_designed_capture(tmp_path):
+        """TC-4327 / TC-4328 / TC-4329 / TC-4330 (LLR-4303.7..4303.10): F-V, newest first,
+        the cursor on w2, render 116x29 → the 29 lines of graph-proto-V's capture exactly:
+        every line 116 cells, `│` at cell 47 (lw 46 + 1) on lines 2–28 and nowhere else."""
+        body, _ = _fv_body(tmp_path)
+        lines = _plain_lines(body)
+        assert len(lines) == 29 and all(len(ln) == 116 for ln in lines)
+        for i, (got, want) in enumerate(zip(lines, FV_116)):
+>           assert got == want, f"line {i}:\n got {got.rstrip()!r}\nwant {want.rstrip()!r}"
+E           AssertionError: line 5:
+E              got ' 21:47  ■■■ ▍Compose file anatomy              │ added Sat Oct 31 · 18:20 · the created field'
+E             want ' 21:47  ■■■  ▍Compose file anatomy             │ added Sat Oct 31 · 18:20 · the created field'
+E           assert ' 21:47  ■■■ ...             ' == ' 21:47  ■■■ ...             '
+E             
+E             Skipping 73 identical trailing characters in diff, use -v to show
+E             -  21:47  ■■■  ▍Compose file anatomy         
+E             ?            -
+E             +  21:47  ■■■ ▍Compose file anatomy          
+E             ?                                           +
+
+tests\test_added_list.py:443: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_added_list.py::test_TC_4327_the_body_at_118x30_is_the_designed_capture
+!!!!!!!!!!!!!!!!!!!!!!!!!! stopping after 1 failures !!!!!!!!!!!!!!!!!!!!!!!!!!
+1 failed, 41 passed in 5.88s
+C:\Users\jjgh8\anaconda3\Lib\site-packages\pytest_asyncio\plugin.py:207: PytestDeprecationWarning: The configuration option "asyncio_default_fixture_loop_scope" is unset.
+The event loop scope for asynchronous fixtures will default to the fixture caching scope. Future versions of pytest-asyncio will default the loop scope for asynchronous fixtures to function scope. Set the default fixture loop scope explicitly in order to avoid unexpected behavior in the future. Valid fixture loop scopes are: "function", "class", "module", "package", "session"
+
+  warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCOPE_UNSET))
+
+===== M37 (KILLED) =====
+...........................................F
+================================== FAILURES ===================================
+____________ test_TC_4328_a_row_reads_cursor_time_boxes_hue_title _____________
+
+tmp_path = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-31664/test_TC_4328_a_row_reads_curso0')
+
+    def test_TC_4328_a_row_reads_cursor_time_boxes_hue_title(tmp_path):
+        """TC-4328 (LLR-4303.8): the cursor's row `▶18:20  ■■□□ ▍Sync notes` — `▶` accent,
+        the label ink, `■■` ink, `□□` dim, `▍` the project's hue (blue), the title bold ink
+        (NC boxes after the title); no row exceeds lw; a tab or newline in a title is drawn
+        as one space (P-V-9)."""
+        body, _ = _fv_body(tmp_path)
+        line = fx.text_lines(body)[6]
+        assert line.plain.startswith("▶18:20  ■■□□ ▍Sync notes")
+        assert fx.colour_at(line, 0) == fx.ACCENT
+        assert all(fx.colour_at(line, i) == fx.INK for i in range(1, 6))
+>       assert [fx.colour_at(line, i) for i in range(8, 12)] == [fx.INK, fx.INK, fx.DIM, fx.DIM]
+E       AssertionError: assert ['#38bdf8', '...5', '#5b6675'] == ['#e6edf3', '...5', '#5b6675']
+E         
+E         At index 0 diff: '#38bdf8' != '#e6edf3'
+E         Use -v to get more diff
+
+tests\test_added_list.py:471: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_added_list.py::test_TC_4328_a_row_reads_cursor_time_boxes_hue_title
+!!!!!!!!!!!!!!!!!!!!!!!!!! stopping after 1 failures !!!!!!!!!!!!!!!!!!!!!!!!!!
+1 failed, 43 passed in 5.48s
+C:\Users\jjgh8\anaconda3\Lib\site-packages\pytest_asyncio\plugin.py:207: PytestDeprecationWarning: The configuration option "asyncio_default_fixture_loop_scope" is unset.
+The event loop scope for asynchronous fixtures will default to the fixture caching scope. Future versions of pytest-asyncio will default the loop scope for asynchronous fixtures to function scope. Set the default fixture loop scope explicitly in order to avoid unexpected behavior in the future. Valid fixture loop scopes are: "function", "class", "module", "package", "session"
+
+  warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCOPE_UNSET))
+
+===== M38 (KILLED) =====
+..............................................................F
+================================== FAILURES ===================================
+______________ test_TC_4395_archived_rows_are_dimmed_while_shown ______________
+
+tmp_path = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-31665/test_TC_4395_archived_rows_are0')
+
+    def test_TC_4395_archived_rows_are_dimmed_while_shown(tmp_path):
+        """TC-4395 (LLR-4306.5): archived shown → w5's row ` ?      ■■■■ ▍Old archived` with
+        its title in dim; under the cursor, bold dim (NC no dimming)."""
+        body, listed = _fv_body(tmp_path, sel=0, show=True)
+        k = _ids(listed).index("w5")
+        rows, _ = _list(body, 116)
+        row = rows[k]
+        line = fx.text_lines(body)[row["y"]]
+        assert line.plain[:46].rstrip() == " ?      ■■■■ ▍Old archived"
+>       assert fx.colour_at(line, 14) == fx.DIM and not fx.bold_at(line, 14)
+E       AssertionError: assert ('#c9d4e0' == '#5b6675'
+E         
+E         - #5b6675
+E         + #c9d4e0)
+
+tests\test_added_list.py:806: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_added_list.py::test_TC_4395_archived_rows_are_dimmed_while_shown
+!!!!!!!!!!!!!!!!!!!!!!!!!! stopping after 1 failures !!!!!!!!!!!!!!!!!!!!!!!!!!
+1 failed, 62 passed in 5.98s
+C:\Users\jjgh8\anaconda3\Lib\site-packages\pytest_asyncio\plugin.py:207: PytestDeprecationWarning: The configuration option "asyncio_default_fixture_loop_scope" is unset.
+The event loop scope for asynchronous fixtures will default to the fixture caching scope. Future versions of pytest-asyncio will default the loop scope for asynchronous fixtures to function scope. Set the default fixture loop scope explicitly in order to avoid unexpected behavior in the future. Valid fixture loop scopes are: "function", "class", "module", "package", "session"
+
+  warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCOPE_UNSET))
+
+===== M39 (KILLED) =====
+.........................................F
+================================== FAILURES ===================================
+___________ test_TC_4327_the_body_at_118x30_is_the_designed_capture ___________
+
+tmp_path = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-31666/test_TC_4327_the_body_at_118x30')
+
+    def test_TC_4327_the_body_at_118x30_is_the_designed_capture(tmp_path):
+        """TC-4327 / TC-4328 / TC-4329 / TC-4330 (LLR-4303.7..4303.10): F-V, newest first,
+        the cursor on w2, render 116x29 → the 29 lines of graph-proto-V's capture exactly:
+        every line 116 cells, `│` at cell 47 (lw 46 + 1) on lines 2–28 and nowhere else."""
+        body, _ = _fv_body(tmp_path)
+        lines = _plain_lines(body)
+        assert len(lines) == 29 and all(len(ln) == 116 for ln in lines)
+        for i, (got, want) in enumerate(zip(lines, FV_116)):
+>           assert got == want, f"line {i}:\n got {got.rstrip()!r}\nwant {want.rstrip()!r}"
+E           AssertionError: line 8:
+E              got ' 10:30  ■■■□ ▍Pilot store list                 │ ping @Ana Ruiz before Friday'
+E             want ' ≈10:30 ■■■□ ▍Pilot store list                 │ ping @Ana Ruiz before Friday'
+E           assert ' 10:30  ■■■□...             ' == ' ≈10:30 ■■■□...             '
+E             
+E             Skipping 100 identical trailing characters in diff, use -v to show
+E             -  ≈10:30 ■■■□ ▍Pi
+E             ?  -
+E             +  10:30  ■■■□ ▍Pi
+E             ?        +
+
+tests\test_added_list.py:443: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_added_list.py::test_TC_4327_the_body_at_118x30_is_the_designed_capture
+!!!!!!!!!!!!!!!!!!!!!!!!!! stopping after 1 failures !!!!!!!!!!!!!!!!!!!!!!!!!!
+1 failed, 41 passed in 5.71s
+C:\Users\jjgh8\anaconda3\Lib\site-packages\pytest_asyncio\plugin.py:207: PytestDeprecationWarning: The configuration option "asyncio_default_fixture_loop_scope" is unset.
+The event loop scope for asynchronous fixtures will default to the fixture caching scope. Future versions of pytest-asyncio will default the loop scope for asynchronous fixtures to function scope. Set the default fixture loop scope explicitly in order to avoid unexpected behavior in the future. Valid fixture loop scopes are: "function", "class", "module", "package", "session"
+
+  warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCOPE_UNSET))
+
+===== M40 (KILLED) =====
+......................................F
+================================== FAILURES ===================================
+_________ test_TC_4370_the_source_line_names_how_the_moment_is_known __________
+
+tmp_path = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-31667/test_TC_4370_the_source_line_n0')
+
+    def test_TC_4370_the_source_line_names_how_the_moment_is_known(tmp_path):
+        """TC-4370 (LLR-4304.10): the pane's source line for w2 (`c`), w3 (`h`) and h1 (`?`)
+        at 118x30; at 80x24 it wraps inside the pane, never clipped (P-V-3). NC omit `#n`."""
+        want = {2: "added Sat Oct 31 · 18:20 · the created field",
+                3: "added ≈ Wed Oct 28 · 10:30 · from history.jsonl",
+                4: "added: unknown, before Oct 31 · #1 in Home's board file"}
+        for sel, line in want.items():
+            body, listed = _fv_body(tmp_path / str(sel), sel=sel)
+>           assert _pane(body, 116)[3] == line, (listed[sel].task.id, _pane(body, 116)[:5])
+E           AssertionError: ('h1', ['Hybrid search index', 'Inbox · Home', 'Todo  · normal', 'added: unknown, before Oct 31', '───────────────────────────────────────────────────────────────────'])
+E           assert 'added: unkno...before Oct 31' == "added: unkno...'s board file"
+E             
+E             - added: unknown, before Oct 31 · #1 in Home's board file
+E             + added: unknown, before Oct 31
+
+tests\test_added_list.py:393: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_added_list.py::test_TC_4370_the_source_line_names_how_the_moment_is_known
+!!!!!!!!!!!!!!!!!!!!!!!!!! stopping after 1 failures !!!!!!!!!!!!!!!!!!!!!!!!!!
+1 failed, 38 passed in 5.86s
+C:\Users\jjgh8\anaconda3\Lib\site-packages\pytest_asyncio\plugin.py:207: PytestDeprecationWarning: The configuration option "asyncio_default_fixture_loop_scope" is unset.
+The event loop scope for asynchronous fixtures will default to the fixture caching scope. Future versions of pytest-asyncio will default the loop scope for asynchronous fixtures to function scope. Set the default fixture loop scope explicitly in order to avoid unexpected behavior in the future. Valid fixture loop scopes are: "function", "class", "module", "package", "session"
+
+  warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCOPE_UNSET))
+
+===== M41 (KILLED) =====
+.........................................F
+================================== FAILURES ===================================
+___________ test_TC_4327_the_body_at_118x30_is_the_designed_capture ___________
+
+tmp_path = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-31668/test_TC_4327_the_body_at_118x30')
+
+    def test_TC_4327_the_body_at_118x30_is_the_designed_capture(tmp_path):
+        """TC-4327 / TC-4328 / TC-4329 / TC-4330 (LLR-4303.7..4303.10): F-V, newest first,
+        the cursor on w2, render 116x29 → the 29 lines of graph-proto-V's capture exactly:
+        every line 116 cells, `│` at cell 47 (lw 46 + 1) on lines 2–28 and nowhere else."""
+        body, _ = _fv_body(tmp_path)
+        lines = _plain_lines(body)
+        assert len(lines) == 29 and all(len(ln) == 116 for ln in lines)
+        for i, (got, want) in enumerate(zip(lines, FV_116)):
+>           assert got == want, f"line {i}:\n got {got.rstrip()!r}\nwant {want.rstrip()!r}"
+E           AssertionError: line 7:
+E              got 'WED OCT 28                                     │ ask the vendor'
+E             want 'WED OCT 28 ≈                                   │ ask the vendor'
+E           assert 'WED OCT 28  ...             ' == 'WED OCT 28 ≈...             '
+E             
+E             Skipping 95 identical trailing characters in diff, use -v to show
+E             - WED OCT 28 ≈         
+E             + WED OCT 28
+
+tests\test_added_list.py:443: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_added_list.py::test_TC_4327_the_body_at_118x30_is_the_designed_capture
+!!!!!!!!!!!!!!!!!!!!!!!!!! stopping after 1 failures !!!!!!!!!!!!!!!!!!!!!!!!!!
+1 failed, 41 passed in 5.94s
+C:\Users\jjgh8\anaconda3\Lib\site-packages\pytest_asyncio\plugin.py:207: PytestDeprecationWarning: The configuration option "asyncio_default_fixture_loop_scope" is unset.
+The event loop scope for asynchronous fixtures will default to the fixture caching scope. Future versions of pytest-asyncio will default the loop scope for asynchronous fixtures to function scope. Set the default fixture loop scope explicitly in order to avoid unexpected behavior in the future. Valid fixture loop scopes are: "function", "class", "module", "package", "session"
+
+  warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCOPE_UNSET))
+
+===== M42 (KILLED) =====
+.........................................F
+================================== FAILURES ===================================
+___________ test_TC_4327_the_body_at_118x30_is_the_designed_capture ___________
+
+tmp_path = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-31669/test_TC_4327_the_body_at_118x30')
+
+    def test_TC_4327_the_body_at_118x30_is_the_designed_capture(tmp_path):
+        """TC-4327 / TC-4328 / TC-4329 / TC-4330 (LLR-4303.7..4303.10): F-V, newest first,
+        the cursor on w2, render 116x29 → the 29 lines of graph-proto-V's capture exactly:
+        every line 116 cells, `│` at cell 47 (lw 46 + 1) on lines 2–28 and nowhere else."""
+        body, _ = _fv_body(tmp_path)
+        lines = _plain_lines(body)
+        assert len(lines) == 29 and all(len(ln) == 116 for ln in lines)
+        for i, (got, want) in enumerate(zip(lines, FV_116)):
+>           assert got == want, f"line {i}:\n got {got.rstrip()!r}\nwant {want.rstrip()!r}"
+E           AssertionError: line 0:
+E              got 'ADDED  6 tasks · every board · newest first  ·  time = created  ≈ = history  ? = unknown'
+E             want 'ADDED  6 tasks · every board · newest first  ·  time = created  ≈ = history  ? = unknown · 1 archived hidden'
+E           assert 'ADDED  6 tas...             ' == 'ADDED  6 tas...idden        '
+E             
+E             Skipping 79 identical leading characters in diff, use -v to show
+E             - = unknown · 1 archived hidden        
+E             + = unknown
+
+tests\test_added_list.py:443: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_added_list.py::test_TC_4327_the_body_at_118x30_is_the_designed_capture
+!!!!!!!!!!!!!!!!!!!!!!!!!! stopping after 1 failures !!!!!!!!!!!!!!!!!!!!!!!!!!
+1 failed, 41 passed in 5.64s
+C:\Users\jjgh8\anaconda3\Lib\site-packages\pytest_asyncio\plugin.py:207: PytestDeprecationWarning: The configuration option "asyncio_default_fixture_loop_scope" is unset.
+The event loop scope for asynchronous fixtures will default to the fixture caching scope. Future versions of pytest-asyncio will default the loop scope for asynchronous fixtures to function scope. Set the default fixture loop scope explicitly in order to avoid unexpected behavior in the future. Valid fixture loop scopes are: "function", "class", "module", "package", "session"
+
+  warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCOPE_UNSET))
+
+===== M43 (KILLED) =====
+.........................................F
+================================== FAILURES ===================================
+___________ test_TC_4327_the_body_at_118x30_is_the_designed_capture ___________
+
+tmp_path = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-31670/test_TC_4327_the_body_at_118x30')
+
+    def test_TC_4327_the_body_at_118x30_is_the_designed_capture(tmp_path):
+        """TC-4327 / TC-4328 / TC-4329 / TC-4330 (LLR-4303.7..4303.10): F-V, newest first,
+        the cursor on w2, render 116x29 → the 29 lines of graph-proto-V's capture exactly:
+        every line 116 cells, `│` at cell 47 (lw 46 + 1) on lines 2–28 and nowhere else."""
+        body, _ = _fv_body(tmp_path)
+        lines = _plain_lines(body)
+        assert len(lines) == 29 and all(len(ln) == 116 for ln in lines)
+        for i, (got, want) in enumerate(zip(lines, FV_116)):
+>           assert got == want, f"line {i}:\n got {got.rstrip()!r}\nwant {want.rstrip()!r}"
+E           AssertionError: line 7:
+E              got 'WED OCT 28 ≈                                   │ ::b:: ask the vendor ::'
+E             want 'WED OCT 28 ≈                                   │ ask the vendor'
+E           assert 'WED OCT 28 ≈...             ' == 'WED OCT 28 ≈...             '
+E             
+E             Skipping 39 identical leading characters in diff, use -v to show
+E             Skipping 35 identical trailing characters in diff, use -v to show
+E             -         │ ask the vendor                  
+E             +         │ ::b:: ask the vendor ::
+
+tests\test_added_list.py:443: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_added_list.py::test_TC_4327_the_body_at_118x30_is_the_designed_capture
+!!!!!!!!!!!!!!!!!!!!!!!!!! stopping after 1 failures !!!!!!!!!!!!!!!!!!!!!!!!!!
+1 failed, 41 passed in 6.09s
+C:\Users\jjgh8\anaconda3\Lib\site-packages\pytest_asyncio\plugin.py:207: PytestDeprecationWarning: The configuration option "asyncio_default_fixture_loop_scope" is unset.
+The event loop scope for asynchronous fixtures will default to the fixture caching scope. Future versions of pytest-asyncio will default the loop scope for asynchronous fixtures to function scope. Set the default fixture loop scope explicitly in order to avoid unexpected behavior in the future. Valid fixture loop scopes are: "function", "class", "module", "package", "session"
+
+  warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCOPE_UNSET))
+
+===== M44 (KILLED) =====
+...............................F
+================================== FAILURES ===================================
+________ test_TC_4377_a_task_id_that_is_not_a_string_is_listed_unknown ________
+
+tmp_path = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-31671/test_TC_4377_a_task_id_that_is0')
+
+    def test_TC_4377_a_task_id_that_is_not_a_string_is_listed_unknown(tmp_path):
+        """TC-4377 (LLR-4304.17, SEC-3): a peeked board holding tasks of id ["x"] and
+        {"a": 1}, and a birth record for "x" → both listed `?`; the cursor on each paints the
+        pane; a task waiting on "x" shows `after: x` (the list id resolves no title); 0
+        exceptions (NC `births.get(task.id)` → TypeError)."""
+        folder = tmp_path / "odd"
+        folder.mkdir()
+        (folder / "board.json").write_text(json.dumps({
+            "phases": ["Todo", "Doing", "Done"], "projects": [], "settings": {},
+            "tasks": [{"title": "Odd", "id": ["x"]}, {"title": "Odder", "id": {"a": 1}},
+                      {"title": "Waits", "id": "w", "depends_on": ["x"],
+                       "created": "2026-10-31T18:20:00"}]}), encoding="utf-8")
+        fx.write_history(folder, [fx.birth("x", "2026-10-28T10:30:00", "Todo")])
+        board = Board.load(folder / "board.json")
+        assert [t.id for t in board.tasks][:2] == [["x"], {"a": 1}]
+        lanes = [("Odd", "pink", board, "")]
+        rows = _rows(lanes)
+        assert [r.source for r in rows] == ["?", "?", "c"] and rows[0].at is None
+        for sel in range(3):
+            body, listed = _listed_body(lanes, sel=sel)
+            assert _pane(body, 116)[0] == listed[sel].task.title
+        body, listed = _listed_body(lanes, sel=0)                 # newest first: "Waits"
+        assert listed[0].task.id == "w"
+>       assert [ln for ln in _pane(body, 116) if ln.startswith("after:")] == ["after: x"]
+E       AssertionError: assert [] == ['after: x']
+E         
+E         Right contains one more item: 'after: x'
+E         Use -v to get more diff
+
+tests\test_added_list.py:318: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_added_list.py::test_TC_4377_a_task_id_that_is_not_a_string_is_listed_unknown
+!!!!!!!!!!!!!!!!!!!!!!!!!! stopping after 1 failures !!!!!!!!!!!!!!!!!!!!!!!!!!
+1 failed, 31 passed in 5.75s
+C:\Users\jjgh8\anaconda3\Lib\site-packages\pytest_asyncio\plugin.py:207: PytestDeprecationWarning: The configuration option "asyncio_default_fixture_loop_scope" is unset.
+The event loop scope for asynchronous fixtures will default to the fixture caching scope. Future versions of pytest-asyncio will default the loop scope for asynchronous fixtures to function scope. Set the default fixture loop scope explicitly in order to avoid unexpected behavior in the future. Valid fixture loop scopes are: "function", "class", "module", "package", "session"
+
+  warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCOPE_UNSET))
+
+===== M45 (KILLED) =====
+...............................F
+================================== FAILURES ===================================
+________ test_TC_4377_a_task_id_that_is_not_a_string_is_listed_unknown ________
+
+tmp_path = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-31672/test_TC_4377_a_task_id_that_is0')
+
+    def test_TC_4377_a_task_id_that_is_not_a_string_is_listed_unknown(tmp_path):
+        """TC-4377 (LLR-4304.17, SEC-3): a peeked board holding tasks of id ["x"] and
+        {"a": 1}, and a birth record for "x" → both listed `?`; the cursor on each paints the
+        pane; a task waiting on "x" shows `after: x` (the list id resolves no title); 0
+        exceptions (NC `births.get(task.id)` → TypeError)."""
+        folder = tmp_path / "odd"
+        folder.mkdir()
+        (folder / "board.json").write_text(json.dumps({
+            "phases": ["Todo", "Doing", "Done"], "projects": [], "settings": {},
+            "tasks": [{"title": "Odd", "id": ["x"]}, {"title": "Odder", "id": {"a": 1}},
+                      {"title": "Waits", "id": "w", "depends_on": ["x"],
+                       "created": "2026-10-31T18:20:00"}]}), encoding="utf-8")
+        fx.write_history(folder, [fx.birth("x", "2026-10-28T10:30:00", "Todo")])
+        board = Board.load(folder / "board.json")
+        assert [t.id for t in board.tasks][:2] == [["x"], {"a": 1}]
+        lanes = [("Odd", "pink", board, "")]
+        rows = _rows(lanes)
+        assert [r.source for r in rows] == ["?", "?", "c"] and rows[0].at is None
+        for sel in range(3):
+>           body, listed = _listed_body(lanes, sel=sel)
+
+tests\test_added_list.py:314: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+tests\test_added_list.py:100: in _listed_body
+    body = _render(listed, sel, newest, show, hidden, unread, first, fx.TODAY, people,
+tests\test_added_list.py:71: in _render
+    return _v("render_added_list")(rows, sel, newest, show, hidden, unread, first, today,
+taskboard\views.py:9653: in render_added_list
+    right, cut = _added_pane(rows[sel], first, people, today, rw, room)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+row = AddedRow(task=Task(title='Waits', project_id=None, phase='Todo', priority='normal', start_date=None, due_date=None, no...d=<taskboard.models.Board object at 0x000001B384FBEE10>, source='c', at=datetime.datetime(2026, 10, 31, 18, 20), pos=2)
+first = datetime.datetime(2026, 10, 31, 18, 20), people = {}
+today = datetime.date(2026, 11, 1), rw = 67, room = 27
+
+    def _added_pane(row: AddedRow, first: datetime | None, people: dict, today: date,
+                    rw: int, room: int) -> tuple[list[Text], bool]:
+        """The detail pane for the cursor's ONE task (LLR-4303.10, LLR-4303.12,
+        LLR-4303.13, LLR-4303.20, LLR-4304.17): the title, the project · board chip,
+        the meta line(s), the source line (wrapped, never clipped), a rule, then
+        the notes through `notes_text` wrapped to `rw`, then each URL, each image
+        file name and `after:` with the titles of the tasks it waits on (a non-str
+        id resolves no link, SEC-3). The note is cut BEFORE any markup or wrap: at
+        most `room × (rw + 1)` characters reach `notes_text`, so a multi-megabyte
+        note costs a slice, not a wrap on every paint (SEC-4 / A-3); `cut` reports
+        whether it was cut. `([], False)` when `rw <= 0`."""
+        if rw <= 0:
+            return [], False
+        t, b = row.task, row.board
+        out = [Text(clip(_one_line(t.title), rw), f"b {HEX['ink']}")]
+        p = b.project_by_id(t.project_id)
+        bpart = clip(_one_line(row.bname), max(1, rw // 2))
+        ppart = clip(_one_line(p.name if p else "Inbox"), max(1, rw - 3 - vis(bpart)))
+        chip = Text(no_wrap=True)
+        chip.append(ppart, HEX[project_color(b, t)])
+        chip.append(" · ", HEX["dim"])
+        chip.append(bpart, board_hex(row.bcolour))
+        out.append(chip)
+        out.extend(_added_meta(row, people, today, rw))
+        src = Text(added_source_line(row, first), HEX["dim"] if row.source == "?" else HEX["mut"])
+        out.extend(src.wrap(_SEARCH_CONSOLE, rw, overflow="fold"))
+        out.append(Text("─" * rw, HEX["frame"]))
+        n = (t.notes or "").strip("\n")
+        nroom = max(0, room - len(out))
+        cap = nroom * (rw + 1)
+        cut = len(n) > cap
+        n = n[:cap]
+        nt = notes_text(n, people) if n.strip() else Text("no notes", HEX["dim"])
+        out.extend(nt.wrap(_SEARCH_CONSOLE, rw, overflow="fold"))
+        for u in t.urls:
+            out.append(Text(clip("↗ " + _one_line(u), rw), HEX["cyan"]))
+        for im in t.images:
+            out.append(Text(clip("▤ " + _one_line(Path(im).name), rw), HEX["mut"]))
+        if t.depends_on:
+>           titles = {x.id: x.title for x in b.tasks}
+E           TypeError: unhashable type: 'list'
+
+taskboard\views.py:9607: TypeError
+=========================== short test summary info ===========================
+FAILED tests/test_added_list.py::test_TC_4377_a_task_id_that_is_not_a_string_is_listed_unknown
+!!!!!!!!!!!!!!!!!!!!!!!!!! stopping after 1 failures !!!!!!!!!!!!!!!!!!!!!!!!!!
+1 failed, 31 passed in 6.03s
+C:\Users\jjgh8\anaconda3\Lib\site-packages\pytest_asyncio\plugin.py:207: PytestDeprecationWarning: The configuration option "asyncio_default_fixture_loop_scope" is unset.
+The event loop scope for asynchronous fixtures will default to the fixture caching scope. Future versions of pytest-asyncio will default the loop scope for asynchronous fixtures to function scope. Set the default fixture loop scope explicitly in order to avoid unexpected behavior in the future. Valid fixture loop scopes are: "function", "class", "module", "package", "session"
+
+  warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCOPE_UNSET))
+
+===== M46 (KILLED) =====
+................................................F
+================================== FAILURES ===================================
+____________ test_TC_4332b_a_huge_note_is_cut_before_it_is_wrapped ____________
+
+tmp_path = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-31673/test_TC_4332b_a_huge_note_is_c0')
+
+    def test_TC_4332b_a_huge_note_is_cut_before_it_is_wrapped(tmp_path):
+        """TC-4332b (SEC-4, addendum A-3): a 5 000 000-character note → the pane ends
+        `… more lines` (no count) and one paint at 118x30 takes under 50 ms (best of 3; the
+        uncut wrap measured 0.92 s)."""
+        note = "lorem " * (5_000_000 // 6)
+        lanes = fx.solo_lanes(tmp_path, [fx.make_task("Huge", created="2026-11-01T08:00:00",
+                                                      notes=note, id="hg")])
+        rows = _rows(lanes)
+        first = _v("first_created")(rows)
+        best = 9.9
+        for _ in range(3):
+            t0 = time.perf_counter()
+            body = _render(rows, 0, True, False, 0, 0, first, fx.TODAY, {}, 116, 29)
+            best = min(best, time.perf_counter() - t0)
+>       assert _pane(body, 116)[-1] == "… more lines"
+E       AssertionError: assert '… 75737 more lines' == '… more lines'
+E         
+E         - … more lines
+E         + … 75737 more lines
+E         ?  ++++++
+
+tests\test_added_list.py:591: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_added_list.py::test_TC_4332b_a_huge_note_is_cut_before_it_is_wrapped
+!!!!!!!!!!!!!!!!!!!!!!!!!! stopping after 1 failures !!!!!!!!!!!!!!!!!!!!!!!!!!
+1 failed, 48 passed in 8.52s
+C:\Users\jjgh8\anaconda3\Lib\site-packages\pytest_asyncio\plugin.py:207: PytestDeprecationWarning: The configuration option "asyncio_default_fixture_loop_scope" is unset.
+The event loop scope for asynchronous fixtures will default to the fixture caching scope. Future versions of pytest-asyncio will default the loop scope for asynchronous fixtures to function scope. Set the default fixture loop scope explicitly in order to avoid unexpected behavior in the future. Valid fixture loop scopes are: "function", "class", "module", "package", "session"
+
+  warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCOPE_UNSET))
+
+===== M47 (KILLED) =====
+......................................F
+================================== FAILURES ===================================
+_________ test_TC_4370_the_source_line_names_how_the_moment_is_known __________
+
+tmp_path = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-31674/test_TC_4370_the_source_line_n0')
+
+    def test_TC_4370_the_source_line_names_how_the_moment_is_known(tmp_path):
+        """TC-4370 (LLR-4304.10): the pane's source line for w2 (`c`), w3 (`h`) and h1 (`?`)
+        at 118x30; at 80x24 it wraps inside the pane, never clipped (P-V-3). NC omit `#n`."""
+        want = {2: "added Sat Oct 31 · 18:20 · the created field",
+                3: "added ≈ Wed Oct 28 · 10:30 · from history.jsonl",
+                4: "added: unknown, before Oct 31 · #1 in Home's board file"}
+        for sel, line in want.items():
+            body, listed = _fv_body(tmp_path / str(sel), sel=sel)
+            assert _pane(body, 116)[3] == line, (listed[sel].task.id, _pane(body, 116)[:5])
+        body, _ = _fv_body(tmp_path / "n", sel=2, width=78, height=23)
+>       assert _pane(body, 78)[4:6] == ["added Sat Oct 31 · 18:20 · the created", "field"]
+E       AssertionError: assert ['          │...31 · 18:20 ·'] == ['added Sat O...ted', 'field']
+E         
+E         At index 0 diff: '          │ ▤ 1' != 'added Sat Oct 31 · 18:20 · the created'
+E         Use -v to get more diff
+
+tests\test_added_list.py:395: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_added_list.py::test_TC_4370_the_source_line_names_how_the_moment_is_known
+!!!!!!!!!!!!!!!!!!!!!!!!!! stopping after 1 failures !!!!!!!!!!!!!!!!!!!!!!!!!!
+1 failed, 38 passed in 5.73s
+C:\Users\jjgh8\anaconda3\Lib\site-packages\pytest_asyncio\plugin.py:207: PytestDeprecationWarning: The configuration option "asyncio_default_fixture_loop_scope" is unset.
+The event loop scope for asynchronous fixtures will default to the fixture caching scope. Future versions of pytest-asyncio will default the loop scope for asynchronous fixtures to function scope. Set the default fixture loop scope explicitly in order to avoid unexpected behavior in the future. Valid fixture loop scopes are: "function", "class", "module", "package", "session"
+
+  warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCOPE_UNSET))
+
+===== M48 (KILLED) =====
+..................................................F
+================================== FAILURES ===================================
+_________ test_TC_4335_the_list_scrolls_to_keep_the_cursor_on_screen __________
+
+tmp_path = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-31675/test_TC_4335_the_list_scrolls_0')
+
+    def test_TC_4335_the_list_scrolls_to_keep_the_cursor_on_screen(tmp_path):
+        """TC-4335 (LLR-4303.15): 40 tasks at 80x24, the cursor on the last (oldest) row →
+        its row `▶09:00  ■□□ ▍Task 00` is the last body line under `THU OCT 01` (NC no
+        scroll window: not drawn); with the cursor on row 0 the list starts at the top."""
+        body, listed = _listed_body(_big(tmp_path), sel=39, width=78, height=23)
+        assert listed[39].task.title == "Task 00"
+        lines = _plain_lines(body)
+>       assert lines[22][:34].rstrip() == "▶09:00  ■□□ ▍Task 00"
+E       AssertionError: assert 'SUN OCT 18' == '▶09:00  ■□□ ▍Task 00'
+E         
+E         - ▶09:00  ■□□ ▍Task 00
+E         + SUN OCT 18
+
+tests\test_added_list.py:619: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_added_list.py::test_TC_4335_the_list_scrolls_to_keep_the_cursor_on_screen
+!!!!!!!!!!!!!!!!!!!!!!!!!! stopping after 1 failures !!!!!!!!!!!!!!!!!!!!!!!!!!
+1 failed, 50 passed in 6.15s
+C:\Users\jjgh8\anaconda3\Lib\site-packages\pytest_asyncio\plugin.py:207: PytestDeprecationWarning: The configuration option "asyncio_default_fixture_loop_scope" is unset.
+The event loop scope for asynchronous fixtures will default to the fixture caching scope. Future versions of pytest-asyncio will default the loop scope for asynchronous fixtures to function scope. Set the default fixture loop scope explicitly in order to avoid unexpected behavior in the future. Valid fixture loop scopes are: "function", "class", "module", "package", "session"
+
+  warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCOPE_UNSET))
+
+===== M49 (KILLED) =====
+...........................................F
+================================== FAILURES ===================================
+____________ test_TC_4328_a_row_reads_cursor_time_boxes_hue_title _____________
+
+tmp_path = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-31676/test_TC_4328_a_row_reads_curso0')
+
+    def test_TC_4328_a_row_reads_cursor_time_boxes_hue_title(tmp_path):
+        """TC-4328 (LLR-4303.8): the cursor's row `▶18:20  ■■□□ ▍Sync notes` — `▶` accent,
+        the label ink, `■■` ink, `□□` dim, `▍` the project's hue (blue), the title bold ink
+        (NC boxes after the title); no row exceeds lw; a tab or newline in a title is drawn
+        as one space (P-V-9)."""
+        body, _ = _fv_body(tmp_path)
+        line = fx.text_lines(body)[6]
+        assert line.plain.startswith("▶18:20  ■■□□ ▍Sync notes")
+        assert fx.colour_at(line, 0) == fx.ACCENT
+        assert all(fx.colour_at(line, i) == fx.INK for i in range(1, 6))
+        assert [fx.colour_at(line, i) for i in range(8, 12)] == [fx.INK, fx.INK, fx.DIM, fx.DIM]
+        assert fx.colour_at(line, 13) == fx.BLUE
+        assert all(fx.colour_at(line, i) == fx.INK and fx.bold_at(line, i) for i in range(14, 24))
+        for ln in _plain_lines(body)[2:]:
+            assert len(ln[:46].rstrip()) <= 46 and ln[46:49] == " │ "
+        lanes = fx.solo_lanes(tmp_path / "t", [fx.make_task("a\nb\tc", created="2026-11-01T08:00:00",
+                                                            id="q")])
+        body, _ = _listed_body(lanes)
+        rows, _ = _list(body, 116)
+>       assert rows[0]["title"] == "a b c" and len(_plain_lines(body)) == 29
+E       AssertionError: assert ('a' == 'a b c'
+E         
+E         - a b c
+E         + a)
+
+tests\test_added_list.py:480: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_added_list.py::test_TC_4328_a_row_reads_cursor_time_boxes_hue_title
+!!!!!!!!!!!!!!!!!!!!!!!!!! stopping after 1 failures !!!!!!!!!!!!!!!!!!!!!!!!!!
+1 failed, 43 passed in 5.97s
+C:\Users\jjgh8\anaconda3\Lib\site-packages\pytest_asyncio\plugin.py:207: PytestDeprecationWarning: The configuration option "asyncio_default_fixture_loop_scope" is unset.
+The event loop scope for asynchronous fixtures will default to the fixture caching scope. Future versions of pytest-asyncio will default the loop scope for asynchronous fixtures to function scope. Set the default fixture loop scope explicitly in order to avoid unexpected behavior in the future. Valid fixture loop scopes are: "function", "class", "module", "package", "session"
+
+  warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCOPE_UNSET))
+
+===== M50 (KILLED) =====
+....................F
+================================== FAILURES ===================================
+_______ test_AT_4302_a_task_added_on_an_old_board_is_first_in_the_list ________
+
+home = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-31677/test_AT_4302_a_task_added_on_a0/.taskboard')
+
+    async def test_AT_4302_a_task_added_on_an_old_board_is_first_in_the_list(home):
+        """AT-4302 (HLR-4301, HLR-4302, HLR-4304): on the registry's boards, `a`, `Call the
+        bank`, `alt+s` → Alpha's file holds its `created` 2026-11-01T08:10:00 and every old
+        entry's slice is byte-identical; `N` → `Call the bank` is row 0 with `08:10` under
+        TODAY, the cursor on it, the pane's source line `the created field`; row 1 `Pay the
+        rent`."""
+        fx.build(home)
+        alpha = fx.board_path(home, "alpha")
+        app = open_s_app()
+        async with app.run_test(size=(118, 30)) as pilot:
+            await pilot.pause()
+            await press(pilot, "escape")
+            old = _file(alpha)["tasks"]
+            await press(pilot, "a")
+            await pilot.press(*"Call the bank")
+            await press(pilot, "alt+s")
+            new = next(t for t in app.board.tasks if t.title == "Call the bank")
+            assert _records(alpha)[new.id].get("created") == ADD_AT
+            after = _text(alpha)
+            for rec in old:
+                assert _slice(rec) in after, f"entry {rec['id']} rewritten by the add"
+>           await open_list(pilot, app)
+
+tests\test_task_created.py:537: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+pilot = <Pilot app=TaskboardApp(title='taskboard', classes={'-dark-mode'}, pseudo_classes={'focus', 'dark'})>
+app = TaskboardApp(title='taskboard', classes={'-dark-mode'}, pseudo_classes={'focus', 'dark'})
+before = ()
+
+    async def open_list(pilot, app, *before):
+        """`escape` (leave the home: the board starts, P-S-4), any `before` keys, then `N`;
+        fails here, with a message, when `N` opens no list view (the base revision)."""
+        await press(pilot, *before, "N")
+        await pilot.pause(0.3)
+>       assert on_list(app), f"`N` opened no list view: screen stack {names(app)}"
+E       AssertionError: `N` opened no list view: screen stack ['Screen']
+
+tests\added_list_fixture.py:313: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_task_created.py::test_AT_4302_a_task_added_on_an_old_board_is_first_in_the_list
+!!!!!!!!!!!!!!!!!!!!!!!!!! stopping after 1 failures !!!!!!!!!!!!!!!!!!!!!!!!!!
+1 failed, 20 passed in 5.04s
+C:\Users\jjgh8\anaconda3\Lib\site-packages\pytest_asyncio\plugin.py:207: PytestDeprecationWarning: The configuration option "asyncio_default_fixture_loop_scope" is unset.
+The event loop scope for asynchronous fixtures will default to the fixture caching scope. Future versions of pytest-asyncio will default the loop scope for asynchronous fixtures to function scope. Set the default fixture loop scope explicitly in order to avoid unexpected behavior in the future. Valid fixture loop scopes are: "function", "class", "module", "package", "session"
+
+  warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCOPE_UNSET))

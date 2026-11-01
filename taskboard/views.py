@@ -9261,7 +9261,7 @@ def render_people_directory(people: list, items: dict, sel: int, pane: str, row:
 # Added list (Inc L, the added-order list view — `N`)
 # ---------------------------------------------------------------------------
 # Group V owns the rows, the inference, the order and the whole body of the
-# list view. The seven interface nodes (`added_rows`, `added_moment`,
+# list view. The six interface nodes (`added_rows`, `added_moment`,
 # `added_order`, `first_created`, `state_boxes`, `render_added_list`) carry the
 # contracts of graph-interfaces.cw.md; the `_added_*` helpers and
 # `added_time_label` / `added_source_line` / `_one_line` are this group's
@@ -9343,8 +9343,11 @@ def added_rows(lanes: list[tuple[str, str, Board | None, str]]) -> list[AddedRow
             recs = []
         births: dict = {}
         for r in recs:
-            if r.get("from") is None and isinstance(r.get("task"), str):
-                births.setdefault(r["task"], r["at"])
+            # the first VALID birth record per id (LLR-4304.2, CR-1): an
+            # offset-aware or garbage `at` must not hide a later valid one
+            if (r.get("from") is None and isinstance(r.get("task"), str)
+                    and r["task"] not in births and added_moment(r.get("at")) is not None):
+                births[r["task"]] = r["at"]
         for pos, t in enumerate(board.tasks):
             m = added_moment(t.created)
             if m is not None:

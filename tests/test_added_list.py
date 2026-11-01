@@ -181,6 +181,30 @@ def test_TC_4362_no_created_takes_the_first_birth_record(tmp_path):
     assert (w3.source, w3.at) == ("h", datetime(2026, 10, 28, 10, 30))
 
 
+def test_TC_4362b_an_invalid_first_birth_record_does_not_hide_a_later_valid_one(tmp_path):
+    """TC-4362b (LLR-4304.2 as amended at E5, CR-1; LLR-4304.13): the moment of an
+    unstamped task is its FIRST VALID birth record. A hand-edited history whose first birth
+    `at` is offset-aware ("…+00:00", not a valid moment, ARCH-3) or garbage ("yesterday")
+    must not turn a task with a later valid birth into `?`: the owner would lose a moment
+    the file does hold. Arms: aware-then-valid and garbage-then-valid → source `h` at
+    2026-10-28 10:30; a later valid birth (10-29) never wins over the first valid one.
+    NC `first record, then validate` (the E4 code): `('?', None)`; NC `last valid`: 10-29."""
+    lanes = fx.solo_lanes(tmp_path, [fx.make_task("Aware first", id="ba"),
+                                     fx.make_task("Garbage first", id="bg")],
+                          history=[fx.birth("ba", "2026-10-27T09:00:00+00:00", "Todo"),
+                                   fx.birth("bg", "yesterday", "Todo"),
+                                   fx.birth("ba", "2026-10-28T10:30:00", "Todo"),
+                                   fx.birth("bg", "2026-10-28T10:30:00", "Todo"),
+                                   fx.birth("ba", "2026-10-29T11:00:00", "Todo"),
+                                   fx.birth("bg", "2026-10-29T11:00:00", "Todo")])
+    by = _by_id(_rows(lanes))
+    first_valid = ("h", datetime(2026, 10, 28, 10, 30))
+    # both arms in one compare, so a failure shows each of them
+    assert {tid: (by[tid].source, by[tid].at) for tid in ("ba", "bg")} == {
+        "ba": first_valid,                          # offset-aware first
+        "bg": first_valid}                          # garbage first
+
+
 def test_TC_4363_neither_created_nor_birth_is_unknown(tmp_path):
     """TC-4363 (LLR-4304.3): w1, w5 (archived) and h1 → source `?`, moment None (NC a
     file-time guess); every task of every lane is a row, archived included, lane then file
@@ -574,15 +598,36 @@ def test_TC_4332_notes_are_drawn_through_notes_text_never_as_markers(tmp_path):
     assert fx.colour_at(tl[3 + i], 37 + len("pilot review on friday ")) == fx.MUT
 
 
-def test_TC_4332b_a_huge_note_is_cut_before_it_is_wrapped(tmp_path):
-    """TC-4332b (SEC-4, addendum A-3): a 5 000 000-character note → the pane ends
-    `… more lines` (no count) and one paint at 118x30 takes under 50 ms (best of 3; the
-    uncut wrap measured 0.92 s)."""
+def test_TC_4332b_a_huge_note_is_cut_before_it_is_wrapped(tmp_path, monkeypatch):
+    """TC-4332b (SEC-4, addendum A-3): a 5 000 000-character note → at most
+    `room × (rw + 1)` characters reach `notes_text` (the spy arm, CR-5: deterministic, so a
+    mutant that wraps the whole note and still reports `cut` fails without a timing
+    threshold); the pane ends `… more lines` (no count) and one paint at 118x30 takes under
+    50 ms (best of 3; the uncut wrap measured 0.92 s)."""
     note = "lorem " * (5_000_000 // 6)
     lanes = fx.solo_lanes(tmp_path, [fx.make_task("Huge", created="2026-11-01T08:00:00",
                                                   notes=note, id="hg")])
     rows = _rows(lanes)
     first = _v("first_created")(rows)
+    # the spy arm: render_added_list's module looks `notes_text` up by name at call time
+    width, height = 116, 29                         # the body of 118x30
+    rw = max(0, width - _lw(width) - 3)             # graph-proto-V render_added_list
+    room = max(0, height - 2)
+    assert (rw, room) == (67, 27)
+    seen_lens: list[int] = []
+    real_notes_text = views.notes_text
+
+    def spy(text, people=None):
+        seen_lens.append(len(text))
+        return real_notes_text(text, people)
+
+    monkeypatch.setattr(views, "notes_text", spy)
+    body = _render(rows, 0, True, False, 0, 0, first, fx.TODAY, {}, width, height)
+    monkeypatch.setattr(views, "notes_text", real_notes_text)
+    assert seen_lens, "the cursor's note never reached notes_text"
+    assert max(seen_lens) <= room * (rw + 1), \
+        f"{max(seen_lens)} characters reached notes_text (cap {room * (rw + 1)})"
+    assert _pane(body, 116)[-1] == "… more lines"
     best = 9.9
     for _ in range(3):
         t0 = time.perf_counter()

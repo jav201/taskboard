@@ -1,0 +1,8 @@
+# spot-check M30 replayed by the orchestrator (opus) in incL-mut
+taskboard.__file__ = C:\Users\jjgh8\Github\taskboard-wt\incL-mut\taskboard\__init__.py
+
+tests\test_added_list.py:349: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_added_list.py::test_TC_4364_ties_break_by_board_order_then_file_position
+FAILED tests/test_added_list.py::test_TC_4366b_newest_first_is_the_exact_reverse
+2 failed, 3 passed, 67 deselected in 1.11s

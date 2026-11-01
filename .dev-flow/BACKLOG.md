@@ -1658,3 +1658,15 @@ and found the records layer lagging the code. All proposed fixes are written in 
 - **C-BL-3 — focus legend shows the colour syntax whenever a task is pinned** (P-V-6, base behaviour).
 - **C-BL-4 — the focus snippet clips the raw line, so markers eat visible width** (P-V-7).
 - **C-BL-5 — `rich.markup.escape` and three or more trailing backslashes** (SEC-8, pre-existing).
+
+## Open — from Inc L, the added-order list (`.dev-flow/2026-11-01-v3-incL/`, 2026-11-01)
+
+- **L-BL-1 — superseded.** P-D-6 (document `created` in the team push) was reversed at PDR by SEC-1: the push never carries `created`. Kept as a record only.
+- **L-BL-2 — `history.read` crashes on a deeply nested line** (SEC-2). `RecursionError` escapes `history.read`; Inc L guards it in `views.added_rows`, but the Flow view (`render_flow`) and the flow legend still crash on such a file today. Fix at the source.
+- **L-BL-3 — inherited `peek_board` race** (SEC-5): between its readability check and `Board.load`, a file that turns unreadable gets a `.corrupt` copy written into another board's folder.
+- **L-BL-4 — `mention_names` scans the whole note on every repaint** (SEC-R2-1, SR-2): ~0.2 s on a 5 MB mention-heavy note under the list's cursor. Compute once per cursor change, or cut like the note.
+- **L-BL-5 — the home key row does not name `N`** (CR-6). `HOME_KEYS` names `A` but not `N` (nor `@`/`#`); the 80-column row is pinned by `tests/test_all_agenda.py:222`. Needs a capture decision.
+- **L-BL-6 — `peek_board` lets a ~1 000-deep board through** (SR-1); `Board.load` then quarantines it and `N`/`A` write `board.json.corrupt` beside it (true for `A` at base).
+- **L-BL-7 — `enter` on a task with a non-str id crashes the board switch** (SR-3, base `_migrate_links`); the list itself survives such ids (LLR-4304.17).
+- **L-BL-8 — bidi and zero-width characters survive `strip_controls`** (SR-4) in every view.
+- **L-BL-9 — `Board._to_dict(with_created=False)` is fail-unsafe for a future save path** (ARCH-R2-2, N-1): a new caller that forgets `with_created=True` drops `created` silently; consider an explicit push-only serialiser.

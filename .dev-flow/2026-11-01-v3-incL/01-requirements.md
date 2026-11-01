@@ -200,8 +200,8 @@ never rewritten.)
 
 - **LLR-4304.1 — Ubiquitous.** The system shall take a task's added moment from its valid created when it has one.
   Threshold: a task with `created` and a birth record of another time → moment = `created`, source `c`; 1/1. *NC:* prefer history: RED.
-- **LLR-4304.2 — Unwanted.** If a task has no valid created, then the system shall take its added moment from the `at` of its first birth record in its board's `history.jsonl`, with source `h`.
-  Threshold: 2 birth records for one id → the first one's `at`; 1/1. *NC:* last record: RED.
+- **LLR-4304.2 — Unwanted.** If a task has no valid created, then the system shall take its added moment from the `at` of its first birth record whose `at` is a valid moment in its board's `history.jsonl`, with source `h`.
+  Threshold: 2 valid birth records for one id → the first one's `at` (TC-4362); an offset-aware or garbage first record then a valid one → the valid one (TC-4362b); 2/2. *NC:* last record: RED.
 - **LLR-4304.3 — Unwanted.** If a task has neither a valid created nor a birth record, then the system shall mark its added moment unknown, with source `?`.
   Threshold: 1/1. *NC:* use file mtime: RED.
 - **LLR-4304.4 — Ubiquitous.** The system shall order dated rows by added moment, ties broken by board order and then file position.

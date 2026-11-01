@@ -1,0 +1,12 @@
+﻿ok   ls-newest 118x30 (1708 x 928, 25 colours sampled) via PrintWindow, try 1, state OK 'Pay the rent' - window closed
+ok   ls-newest 80x24 (1176 x 760, 22 colours sampled) via PrintWindow, try 1, state OK 'Pay the rent' - window closed
+ok   ls-oldest 118x30 (1708 x 928, 30 colours sampled) via PrintWindow, try 1, state OK 'Volume oracle script' - window closed
+ok   ls-oldest 80x24 (1176 x 760, 25 colours sampled) via PrintWindow, try 1, state OK 'Volume oracle script' - window closed
+ok   ls-archived 118x30 (1708 x 928, 28 colours sampled) via PrintWindow, try 1, state OK 'Archived memo' - window closed
+ok   ls-archived 80x24 (1176 x 760, 24 colours sampled) via PrintWindow, try 1, state OK 'Archived memo' - window closed
+ok   ls-pane 118x30 (1708 x 928, 35 colours sampled) via PrintWindow, try 1, state OK 'Sync notes' - window closed
+ok   ls-pane 80x24 (1176 x 760, 27 colours sampled) via PrintWindow, try 1, state OK 'Sync notes' - window closed
+ok   ls-inferred 118x30 (1708 x 928, 28 colours sampled) via PrintWindow, try 1, state OK 'Pilot store list' - window closed
+ok   ls-inferred 80x24 (1176 x 760, 21 colours sampled) via PrintWindow, try 1, state OK 'Pilot store list' - window closed
+ok   ls-unknown 118x30 (1708 x 928, 28 colours sampled) via PrintWindow, try 1, state OK 'Volume oracle script' - window closed
+ok   ls-unknown 80x24 (1176 x 760, 21 colours sampled) via PrintWindow, try 1, state OK 'Volume oracle script' - window closed

@@ -1397,8 +1397,8 @@ class TaskboardApp(App):
         so `A`, `@`, `#` and `N` act only on a non-modal screen."""
         if action in ("agenda_all", "people_directory", "marks_manager", "added_list"):
             # the main screen and the home (batch 2026-10-20-batch-03, 2026-10-21-batch-01,
-            # 2026-10-24-batch-01): a pushed modal (the presentation among them) holds
-            # its own keys, so `A`, `@` and `#` never reach past one
+            # 2026-10-24-batch-01, Inc L): a pushed modal (the presentation among them)
+            # holds its own keys, so `A`, `@`, `#` and `N` never reach past one
             return not any(isinstance(sc, ModalScreen) for sc in self.screen_stack)
         if action in SEAT_ACTIONS and any(isinstance(sc, (BoardsHome, AllBoardsAgenda,
                                                           PeopleDirectory, MarksManager,

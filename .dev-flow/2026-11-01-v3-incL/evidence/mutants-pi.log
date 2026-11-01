@@ -1,0 +1,7 @@
+Task complete.
+
+**killed 50 / 50**
+
+SURVIVED: none.
+
+Results table → `.dev-flow/2026-11-01-v3-incL/05-mutants.md`; full transcript → `.dev-flow/2026-11-01-v3-incL/evidence/mutants-run.txt` (opens with `taskboard.__file__` = `…incL-mut\taskboard\__init__.py`). The `incL-mut` copy is clean (`git status --short` empty); the main worktree got only the two new files.

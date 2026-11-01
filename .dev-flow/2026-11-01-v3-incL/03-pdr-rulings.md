@@ -60,3 +60,20 @@ Round 2 (blocking-only re-review): architect re-checks ARCH-1..3; security re-ch
 - Architect: **PASS-WITH-NOTES** (ARCH-1 closed, executed by probe; ARCH-R2-1 MINOR → addendum A-4, applied; ARCH-R2-2 INFO → A-5).
 - Security: **PASS-WITH-NOTES** (SEC-1..4 closed in design; SEC-R2-1 LOW → A-6, BACKLOG L-BL-4).
 E3 is done: no open MAJOR/HIGH on the design.
+
+## E5 — rulings on the code reviews (code PASS-WITH-NOTES 6 MINOR; security PASS-WITH-NOTES 5 LOW)
+
+| Id | Sev | Tag | Ruling |
+|---|---|---|---|
+| CR-1 | MINOR | design-gap | **Fix.** A birth record whose `at` is not a valid moment (e.g. offset-aware, garbage) must not hide a later valid one: `added_rows` keeps the first birth record per id whose `added_moment(at)` is not None. LLR-4304.2 reads "first valid birth record" (LED.5). Regression TC-4362b (tester, RED first). |
+| CR-2 | MINOR | impl | Fix: the `check_action` comment names `N` and the list view. |
+| CR-3 | MINOR | impl | Fix: the views.py section comment counts its nodes correctly. |
+| CR-4 | MINOR | impl | Fix (tester): TC-4306's duplicated assert becomes the advancing-clock arm it was meant to be. |
+| CR-5 | MINOR | impl | Fix (tester): TC-4332b gains a `notes_text` length-spy arm (the wrapped input ≤ room × (rw + 1)), so the cut is caught without a timing threshold. |
+| CR-6 | MINOR | design-gap | **Defer.** `HOME_KEYS` does not name `N`; the home key row is pinned at 80 columns by `tests/test_all_agenda.py:222` (round C capture) and names neither `@` nor `#`. Changing it needs a capture decision: BACKLOG L-BL-5. The README home table stays true (`N` acts on the home). |
+| SR-1 | LOW | design-gap (inherited) | BACKLOG L-BL-6 (`peek_board` lets a ~1 000-deep board through; `Board.load` then quarantines and writes `.corrupt` — true for `A` at base). |
+| SR-2 | LOW | design-gap | Already L-BL-4. |
+| SR-3 | LOW | design-gap (inherited) | BACKLOG L-BL-7 (`enter` on a non-str-id task crashes the board switch in base `_migrate_links`). |
+| SR-4 | LOW | design-gap (inherited) | BACKLOG L-BL-8 (bidi / zero-width characters survive `strip_controls` in every view). |
+| SR-5 | LOW | impl (process) | Fix: L-BL-1..8 written to `.dev-flow/BACKLOG.md`. |
+| E13 | — | — | Orchestrator review of the 12 captures: matches the design (head degrade at 80 per TC-4396; `before Oct 30` counts the archived task, ARCH-8). No finding. |

@@ -216,7 +216,13 @@ def test_TC_4306_a_seeded_board_stamps_every_task_with_one_moment(tmp_path, monk
     values = [created_of(t) for t in board.tasks]
     assert all(isinstance(v, str) and re.match(fx.STAMP_RE, v) for v in values), values
     assert len(set(values)) == 1, f"one seed, one stamp: {sorted(set(values))}"
-    assert _text(path).count('"created":') == 16
+    # The advancing-clock arm (P-D-10, graph-proto-D Board.load example 1; CR-4): the one
+    # stamp is the clock's FIRST read, 08:10:00, and the file holds that same value in all
+    # 16 keys. NC a later read (an extra clock read first, or the objects re-stamped after
+    # the save): every value 08:10:01 and the file and the board disagree — one distinct
+    # value still, so only this arm sees it.
+    assert values == [ADD_AT] * 16, f"the seed stamp is not the first clock read: {values[:1]}"
+    assert re.findall(r'"created": "([^"]*)"', _text(path)) == [ADD_AT] * 16
     assert not (path.parent / "history.jsonl").exists()
 
 

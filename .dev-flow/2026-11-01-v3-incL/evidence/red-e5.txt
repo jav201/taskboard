@@ -1,0 +1,259 @@
+# red-e5.txt — E5 corrective-pass tests (tester), Inc L
+# worktree: /c/Users/jjgh8/Github/taskboard-wt/capture-proto   HEAD: 79cf2b2 (E4 code; CR-1 fix NOT applied)
+# git status of taskboard/: [] (empty = product code unchanged)
+# date: 2026-11-01T04:33:31-06:00
+
+## Part 1 — current tree. Expect: TC-4362b FAILED on its assertion (both arms '?'); TC-4306, TC-4332b PASSED (guards of behaviour already there)
+$ env -u NO_COLOR python -c "import taskboard; print(taskboard.__file__)"
+C:\Users\jjgh8\Github\taskboard-wt\capture-proto\taskboard\__init__.py
+$ env -u NO_COLOR python -m pytest -p no:cacheprovider -vv tests/test_added_list.py::test_TC_4362b_an_invalid_first_birth_record_does_not_hide_a_later_valid_one tests/test_task_created.py::test_TC_4306_a_seeded_board_stamps_every_task_with_one_moment tests/test_added_list.py::test_TC_4332b_a_huge_note_is_cut_before_it_is_wrapped
+C:\Users\jjgh8\anaconda3\Lib\site-packages\pytest_asyncio\plugin.py:207: PytestDeprecationWarning: The configuration option "asyncio_default_fixture_loop_scope" is unset.
+The event loop scope for asynchronous fixtures will default to the fixture caching scope. Future versions of pytest-asyncio will default the loop scope for asynchronous fixtures to function scope. Set the default fixture loop scope explicitly in order to avoid unexpected behavior in the future. Valid fixture loop scopes are: "function", "class", "module", "package", "session"
+
+  warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCOPE_UNSET))
+============================= test session starts =============================
+platform win32 -- Python 3.12.7, pytest-8.3.4, pluggy-1.6.0 -- C:\Users\jjgh8\anaconda3\python.exe
+rootdir: C:\Users\jjgh8\Github\taskboard-wt\capture-proto
+configfile: pyproject.toml
+plugins: anyio-4.2.0, asyncio-0.25.0, cov-7.1.0, textual-snapshot-1.1.0, timeout-2.3.1, syrupy-4.8.0
+asyncio: mode=Mode.AUTO, asyncio_default_fixture_loop_scope=None
+collecting ... collected 3 items
+
+tests/test_added_list.py::test_TC_4362b_an_invalid_first_birth_record_does_not_hide_a_later_valid_one FAILED [ 33%]
+tests/test_task_created.py::test_TC_4306_a_seeded_board_stamps_every_task_with_one_moment PASSED [ 66%]
+tests/test_added_list.py::test_TC_4332b_a_huge_note_is_cut_before_it_is_wrapped PASSED [100%]
+
+================================== FAILURES ===================================
+_ test_TC_4362b_an_invalid_first_birth_record_does_not_hide_a_later_valid_one _
+
+tmp_path = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-31680/test_TC_4362b_an_invalid_first0')
+
+    def test_TC_4362b_an_invalid_first_birth_record_does_not_hide_a_later_valid_one(tmp_path):
+        """TC-4362b (LLR-4304.2 as amended at E5, CR-1; LLR-4304.13): the moment of an
+        unstamped task is its FIRST VALID birth record. A hand-edited history whose first birth
+        `at` is offset-aware ("�+00:00", not a valid moment, ARCH-3) or garbage ("yesterday")
+        must not turn a task with a later valid birth into `?`: the owner would lose a moment
+        the file does hold. Arms: aware-then-valid and garbage-then-valid \u2192 source `h` at
+        2026-10-28 10:30; a later valid birth (10-29) never wins over the first valid one.
+        NC `first record, then validate` (the E4 code): `('?', None)`; NC `last valid`: 10-29."""
+        lanes = fx.solo_lanes(tmp_path, [fx.make_task("Aware first", id="ba"),
+                                         fx.make_task("Garbage first", id="bg")],
+                              history=[fx.birth("ba", "2026-10-27T09:00:00+00:00", "Todo"),
+                                       fx.birth("bg", "yesterday", "Todo"),
+                                       fx.birth("ba", "2026-10-28T10:30:00", "Todo"),
+                                       fx.birth("bg", "2026-10-28T10:30:00", "Todo"),
+                                       fx.birth("ba", "2026-10-29T11:00:00", "Todo"),
+                                       fx.birth("bg", "2026-10-29T11:00:00", "Todo")])
+        by = _by_id(_rows(lanes))
+        first_valid = ("h", datetime(2026, 10, 28, 10, 30))
+        # both arms in one compare, so a failure shows each of them
+>       assert {tid: (by[tid].source, by[tid].at) for tid in ("ba", "bg")} == {
+            "ba": first_valid,                          # offset-aware first
+            "bg": first_valid}                          # garbage first
+E       AssertionError: assert {'ba': ('?', None), 'bg': ('?', None)} == {'ba': ('h', datetime.datetime(2026, 10, 28, 10, 30)), 'bg': ('h', datetime.datetime(2026, 10, 28, 10, 30))}
+E         
+E         Differing items:
+E         {'bg': ('?', None)} != {'bg': ('h', datetime.datetime(2026, 10, 28, 10, 30))}
+E         {'ba': ('?', None)} != {'ba': ('h', datetime.datetime(2026, 10, 28, 10, 30))}
+E         
+E         Full diff:
+E           {
+E               'ba': (
+E         -         'h',
+E         ?          ^
+E         +         '?',
+E         ?          ^
+E         -         datetime.datetime(2026, 10, 28, 10, 30),
+E         +         None,
+E               ),
+E               'bg': (
+E         -         'h',
+E         ?          ^
+E         +         '?',
+E         ?          ^
+E         -         datetime.datetime(2026, 10, 28, 10, 30),
+E         +         None,
+E               ),
+E           }
+
+tests\test_added_list.py:203: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_added_list.py::test_TC_4362b_an_invalid_first_birth_record_does_not_hide_a_later_valid_one - AssertionError: assert {'ba': ('?', None), 'bg': ('?', None)} == {'ba': ('h', datetime.datetime(2026, 10, 28, 10, 30)), 'bg': ('h', datetime.datetime(2026, 10, 28, 10, 30))}
+  
+  Differing items:
+  {'bg': ('?', None)} != {'bg': ('h', datetime.datetime(2026, 10, 28, 10, 30))}
+  {'ba': ('?', None)} != {'ba': ('h', datetime.datetime(2026, 10, 28, 10, 30))}
+  
+  Full diff:
+    {
+        'ba': (
+  -         'h',
+  ?          ^
+  +         '?',
+  ?          ^
+  -         datetime.datetime(2026, 10, 28, 10, 30),
+  +         None,
+        ),
+        'bg': (
+  -         'h',
+  ?          ^
+  +         '?',
+  ?          ^
+  -         datetime.datetime(2026, 10, 28, 10, 30),
+  +         None,
+        ),
+    }
+========================= 1 failed, 2 passed in 0.53s =========================
+exit=1
+
+## Part 2 — scratch-mutant RED for the CR-4 / CR-5 arms
+# scratch: git worktree add --detach C:/Users/jjgh8/AppData/Local/Temp/incL-e5-scratch HEAD  (HEAD 79cf2b2); mutants applied/reverted by mut.py, never in C:/Users/jjgh8/Github/taskboard-wt/capture-proto
+
+### 2a. OLD tests (HEAD versions, before this E5 edit) under the CR-4 mutants: expected PASS (the mutants SURVIVE the old TC-4306)
+--- M-CR4a
+M-CR4a applyed in taskboard/models.py
+-            at = stamp()                 # ONE clock read (Inc L, LLR-4301.6): every
++            stamp(); at = stamp()        # MUTANT M-CR4a ONE clock read (Inc L, LLR-4301.6): every
+$ (cwd C:/Users/jjgh8/AppData/Local/Temp/incL-e5-scratch) env -u NO_COLOR python -c 'import taskboard; print(taskboard.__file__)'
+C:\Users\jjgh8\AppData\Local\Temp\incL-e5-scratch\taskboard\__init__.py
+$ (cwd C:/Users/jjgh8/AppData/Local/Temp/incL-e5-scratch) env -u NO_COLOR python -m pytest -p no:cacheprovider -q --tb=short tests/test_task_created.py::test_TC_4306_a_seeded_board_stamps_every_task_with_one_moment
+.                                                                        [100%]
+1 passed in 0.65s
+exit=0  (grep's; see the pytest summary line above)
+M-CR4a reverted in taskboard/models.py
+revert check: git diff --quiet -- taskboard/ -> clean
+--- M-CR4b
+M-CR4b applyed in taskboard/models.py
++            at2 = stamp()  # MUTANT M-CR4b
++            for t in tasks:
++                t.created = at2
+$ (cwd C:/Users/jjgh8/AppData/Local/Temp/incL-e5-scratch) env -u NO_COLOR python -c 'import taskboard; print(taskboard.__file__)'
+C:\Users\jjgh8\AppData\Local\Temp\incL-e5-scratch\taskboard\__init__.py
+$ (cwd C:/Users/jjgh8/AppData/Local/Temp/incL-e5-scratch) env -u NO_COLOR python -m pytest -p no:cacheprovider -q --tb=short tests/test_task_created.py::test_TC_4306_a_seeded_board_stamps_every_task_with_one_moment
+.                                                                        [100%]
+1 passed in 0.29s
+exit=0  (grep's; see the pytest summary line above)
+M-CR4b reverted in taskboard/models.py
+revert check: git diff --quiet -- taskboard/ -> clean
+
+### 2b. copy the E5 test files into the scratch
+cp tests/test_added_list.py  sha256 9541af590e558ac5
+cp tests/test_task_created.py  sha256 8a32c9d9147c264b
+cp tests/added_list_fixture.py  sha256 ef7fc579f6ff5d06
+
+### 2c. unmutated scratch with the E5 tests: expected TC-4306 PASS, TC-4332b PASS, TC-4362b FAIL
+$ (cwd C:/Users/jjgh8/AppData/Local/Temp/incL-e5-scratch) env -u NO_COLOR python -c 'import taskboard; print(taskboard.__file__)'
+C:\Users\jjgh8\AppData\Local\Temp\incL-e5-scratch\taskboard\__init__.py
+$ (cwd C:/Users/jjgh8/AppData/Local/Temp/incL-e5-scratch) env -u NO_COLOR python -m pytest -p no:cacheprovider -q --tb=short tests/test_task_created.py::test_TC_4306_a_seeded_board_stamps_every_task_with_one_moment tests/test_added_list.py::test_TC_4332b_a_huge_note_is_cut_before_it_is_wrapped tests/test_added_list.py::test_TC_4362b_an_invalid_first_birth_record_does_not_hide_a_later_valid_one
+..F                                                                      [100%]
+================================== FAILURES ===================================
+_ test_TC_4362b_an_invalid_first_birth_record_does_not_hide_a_later_valid_one _
+tests\test_added_list.py:203: in test_TC_4362b_an_invalid_first_birth_record_does_not_hide_a_later_valid_one
+    assert {tid: (by[tid].source, by[tid].at) for tid in ("ba", "bg")} == {
+E   AssertionError: assert {'ba': ('?', ...: ('?', None)} == {'ba': ('h', ... 28, 10, 30))}
+E     
+E     Differing items:
+E     {'ba': ('?', None)} != {'ba': ('h', datetime.datetime(2026, 10, 28, 10, 30))}
+E     {'bg': ('?', None)} != {'bg': ('h', datetime.datetime(2026, 10, 28, 10, 30))}
+E     Use -v to get more diff
+=========================== short test summary info ===========================
+FAILED tests/test_added_list.py::test_TC_4362b_an_invalid_first_birth_record_does_not_hide_a_later_valid_one
+1 failed, 2 passed in 0.63s
+exit=0  (grep's; see the pytest summary line above)
+
+### 2d. NEW tests under each mutant: expected FAIL on the new arm's assertion
+--- M-CR4a
+M-CR4a applyed in taskboard/models.py
+-            at = stamp()                 # ONE clock read (Inc L, LLR-4301.6): every
++            stamp(); at = stamp()        # MUTANT M-CR4a ONE clock read (Inc L, LLR-4301.6): every
+$ (cwd C:/Users/jjgh8/AppData/Local/Temp/incL-e5-scratch) env -u NO_COLOR python -c 'import taskboard; print(taskboard.__file__)'
+C:\Users\jjgh8\AppData\Local\Temp\incL-e5-scratch\taskboard\__init__.py
+$ (cwd C:/Users/jjgh8/AppData/Local/Temp/incL-e5-scratch) env -u NO_COLOR python -m pytest -p no:cacheprovider -q --tb=short tests/test_task_created.py::test_TC_4306_a_seeded_board_stamps_every_task_with_one_moment
+F                                                                        [100%]
+================================== FAILURES ===================================
+________ test_TC_4306_a_seeded_board_stamps_every_task_with_one_moment ________
+tests\test_task_created.py:224: in test_TC_4306_a_seeded_board_stamps_every_task_with_one_moment
+    assert values == [ADD_AT] * 16, f"the seed stamp is not the first clock read: {values[:1]}"
+E   AssertionError: the seed stamp is not the first clock read: ['2026-11-01T08:10:01']
+E   assert ['2026-11-01T...8:10:01', ...] == ['2026-11-01T...8:10:00', ...]
+E     
+E     At index 0 diff: '2026-11-01T08:10:01' != '2026-11-01T08:10:00'
+E     Use -v to get more diff
+=========================== short test summary info ===========================
+FAILED tests/test_task_created.py::test_TC_4306_a_seeded_board_stamps_every_task_with_one_moment
+1 failed in 0.36s
+exit=0  (grep's; see the pytest summary line above)
+M-CR4a reverted in taskboard/models.py
+revert check: git diff --quiet -- taskboard/ -> clean
+--- M-CR4b
+M-CR4b applyed in taskboard/models.py
++            at2 = stamp()  # MUTANT M-CR4b
++            for t in tasks:
++                t.created = at2
+$ (cwd C:/Users/jjgh8/AppData/Local/Temp/incL-e5-scratch) env -u NO_COLOR python -c 'import taskboard; print(taskboard.__file__)'
+C:\Users\jjgh8\AppData\Local\Temp\incL-e5-scratch\taskboard\__init__.py
+$ (cwd C:/Users/jjgh8/AppData/Local/Temp/incL-e5-scratch) env -u NO_COLOR python -m pytest -p no:cacheprovider -q --tb=short tests/test_task_created.py::test_TC_4306_a_seeded_board_stamps_every_task_with_one_moment
+F                                                                        [100%]
+================================== FAILURES ===================================
+________ test_TC_4306_a_seeded_board_stamps_every_task_with_one_moment ________
+tests\test_task_created.py:224: in test_TC_4306_a_seeded_board_stamps_every_task_with_one_moment
+    assert values == [ADD_AT] * 16, f"the seed stamp is not the first clock read: {values[:1]}"
+E   AssertionError: the seed stamp is not the first clock read: ['2026-11-01T08:10:01']
+E   assert ['2026-11-01T...8:10:01', ...] == ['2026-11-01T...8:10:00', ...]
+E     
+E     At index 0 diff: '2026-11-01T08:10:01' != '2026-11-01T08:10:00'
+E     Use -v to get more diff
+=========================== short test summary info ===========================
+FAILED tests/test_task_created.py::test_TC_4306_a_seeded_board_stamps_every_task_with_one_moment
+1 failed in 0.37s
+exit=0  (grep's; see the pytest summary line above)
+M-CR4b reverted in taskboard/models.py
+revert check: git diff --quiet -- taskboard/ -> clean
+--- M-CR5 (wrap everything, then cut; cut still True)
+M-CR5 applyed in taskboard/views.py
+-    n = n[:cap]
++    pass  # MUTANT M-CR5: n = n[:cap] dropped
+$ (cwd C:/Users/jjgh8/AppData/Local/Temp/incL-e5-scratch) env -u NO_COLOR python -c 'import taskboard; print(taskboard.__file__)'
+C:\Users\jjgh8\AppData\Local\Temp\incL-e5-scratch\taskboard\__init__.py
+$ (cwd C:/Users/jjgh8/AppData/Local/Temp/incL-e5-scratch) env -u NO_COLOR python -m pytest -p no:cacheprovider -q --tb=short tests/test_added_list.py::test_TC_4332b_a_huge_note_is_cut_before_it_is_wrapped
+F                                                                        [100%]
+================================== FAILURES ===================================
+____________ test_TC_4332b_a_huge_note_is_cut_before_it_is_wrapped ____________
+tests\test_added_list.py:628: in test_TC_4332b_a_huge_note_is_cut_before_it_is_wrapped
+    assert max(seen_lens) <= room * (rw + 1), \
+E   AssertionError: 4999998 characters reached notes_text (cap 1836)
+E   assert 4999998 <= (27 * (67 + 1))
+E    +  where 4999998 = max([4999998])
+=========================== short test summary info ===========================
+FAILED tests/test_added_list.py::test_TC_4332b_a_huge_note_is_cut_before_it_is_wrapped
+1 failed in 1.40s
+exit=0  (grep's; see the pytest summary line above)
+M-CR5 reverted in taskboard/views.py
+revert check: git diff --quiet -- taskboard/ -> clean
+
+### 2e. CR-1 fix PREVIEW (option a of 05-review-code.md; scratch only, NOT the fix, software-dev owns it): expected TC-4362b PASS with the neighbours TC-4362, TC-4373, TC-4373b, TC-4368
+FIX-CR1 applyed in taskboard/views.py
+-            if r.get("from") is None and isinstance(r.get("task"), str):
++            if (r.get("from") is None and isinstance(r.get("task"), str)
++                    and added_moment(r["at"]) is not None):  # SCRATCH FIX-CR1
+$ (cwd C:/Users/jjgh8/AppData/Local/Temp/incL-e5-scratch) env -u NO_COLOR python -c 'import taskboard; print(taskboard.__file__)'
+C:\Users\jjgh8\AppData\Local\Temp\incL-e5-scratch\taskboard\__init__.py
+$ (cwd C:/Users/jjgh8/AppData/Local/Temp/incL-e5-scratch) env -u NO_COLOR python -m pytest -p no:cacheprovider -q --tb=short tests/test_added_list.py::test_TC_4362b_an_invalid_first_birth_record_does_not_hide_a_later_valid_one tests/test_added_list.py::test_TC_4362_no_created_takes_the_first_birth_record tests/test_added_list.py::test_TC_4373_an_offset_aware_moment_is_not_valid tests/test_added_list.py::test_TC_4373b_a_zulu_or_pre_1970_offset_moment_is_none_without_raising tests/test_added_list.py::test_TC_4368_a_created_that_is_not_a_date_is_no_created
+.....                                                                    [100%]
+5 passed in 0.49s
+exit=0  (grep's; see the pytest summary line above)
+FIX-CR1 reverted in taskboard/views.py
+revert check: git diff --quiet -- taskboard/ -> clean
+
+## Part 3 — the two edited test modules (added_list_fixture.py unchanged) in full on the current tree (cwd /c/Users/jjgh8/Github/taskboard-wt/capture-proto). Expect: exactly 1 failed (TC-4362b), the rest passed
+$ env -u NO_COLOR python -c "import taskboard; print(taskboard.__file__)"
+C:\Users\jjgh8\Github\taskboard-wt\capture-proto\taskboard\__init__.py
+$ env -u NO_COLOR python -m pytest -p no:cacheprovider -q --tb=line tests/test_task_created.py tests/test_added_list.py
+
+........................F............................................... [ 75%]
+.......................                                                  [100%]
+================================== FAILURES ===================================
+C:\Users\jjgh8\Github\taskboard-wt\capture-proto\tests\test_added_list.py:203: AssertionError: assert {'ba': ('?', ...: ('?', None)} == {'ba': ('h', ... 28, 10, 30))}
+=========================== short test summary info ===========================
+FAILED tests/test_added_list.py::test_TC_4362b_an_invalid_first_birth_record_does_not_hide_a_later_valid_one
+1 failed, 94 passed in 29.28s

@@ -54,3 +54,10 @@
 - **What changed:** the tie-break and unknown-first controls get a shuffled input (ARCH-1); HLR-4302's control names TC-4316, whose board gains a birth record (ARCH-2); offset-aware moments are not valid, LLR-4304.13 rewritten and LLR-4304.16 withdrawn (ARCH-3); LLR-4302.6's subject is the list view (ARCH-6); LLR-4304.11/.15 count every task read (ARCH-8); new LLR-4302.7 keeps `created` out of the team push (SEC-1, reversing P-D-6); LLR-4304.12 also covers RecursionError (SEC-2); new LLR-4304.17 for non-str ids (SEC-3); LLR-4302.1's threshold names the saved record (`with_created=True`).
 - **Why:** two negative controls could not fire; a conversion was removable instead of guardable; a new class of personal data (when someone worked, to the second) left the machine for no reader; two crafted-file crashes of `N` were confirmed by probe.
 - **Evidence:** `03-pdr-architect.md`, `03-pdr-security.md`, `03-pdr-rulings.md` round 1.
+
+### LED-2026-11-01-incL.5 — E5: the first VALID birth record
+- **Requirement:** LLR-4304.2
+- **Date:** 2026-11-01
+- **What changed:** LLR-4304.2 takes the first birth record whose `at` is a valid moment, not the first birth record (CR-1, design-gap). Threshold gains TC-4362b (an offset-aware or garbage first record, then a valid one → source `h` at the valid one).
+- **Why:** since ARCH-3 made offset-aware moments not valid, a hand-edited or foreign first record hid a later valid one and the task fell to `?`.
+- **Evidence:** `05-review-code.md` CR-1 (probe); `03-pdr-rulings.md` E5.
