@@ -1,0 +1,84 @@
+# Requirements ledger — taskboard — Inc K, the capture view
+
+> Append-only. Every entry names the requirements it amends one by one (V26: no ranges).
+
+### LED-2026-11-01-incK.1 — the commission's K-1..K-6 made strict, with the failure paths it left open
+- **Requirement:** HLR-4401
+- **Requirement:** HLR-4402
+- **Requirement:** HLR-4403
+- **Requirement:** HLR-4404
+- **Requirement:** HLR-4405
+- **Requirement:** HLR-4406
+- **Requirement:** HLR-4407
+- **Requirement:** HLR-4408
+- **Requirement:** HLR-4409
+- **Requirement:** LLR-4402.8
+- **Requirement:** LLR-4402.9
+- **Requirement:** LLR-4402.10
+- **Requirement:** LLR-4402.11
+- **Requirement:** LLR-4402.13
+- **Requirement:** LLR-4402.17
+- **Requirement:** LLR-4402.18
+- **Requirement:** LLR-4403.3
+- **Requirement:** LLR-4403.5
+- **Requirement:** LLR-4403.13
+- **Requirement:** LLR-4403.21
+- **Requirement:** LLR-4403.22
+- **Requirement:** LLR-4404.2
+- **Requirement:** LLR-4404.4
+- **Requirement:** LLR-4404.5
+- **Requirement:** LLR-4404.8
+- **Requirement:** LLR-4404.9
+- **Requirement:** LLR-4404.14
+- **Requirement:** LLR-4404.15
+- **Requirement:** LLR-4404.29
+- **Requirement:** LLR-4404.32
+- **Requirement:** LLR-4404.33
+- **Requirement:** LLR-4405.2
+- **Requirement:** LLR-4405.8
+- **Requirement:** LLR-4405.9
+- **Requirement:** LLR-4405.10
+- **Requirement:** LLR-4405.14
+- **Requirement:** LLR-4406.2
+- **Requirement:** LLR-4406.9
+- **Requirement:** LLR-4406.16
+- **Requirement:** LLR-4407.15
+- **Requirement:** LLR-4407.16
+- **Requirement:** LLR-4407.17
+- **Requirement:** LLR-4407.18
+- **Requirement:** LLR-4407.19
+- **Requirement:** LLR-4407.20
+- **Requirement:** LLR-4407.21
+- **Requirement:** LLR-4407.22
+- **Requirement:** LLR-4407.24
+- **Requirement:** LLR-4407.25
+- **Requirement:** LLR-4407.26
+- **Requirement:** LLR-4408.3
+- **Requirement:** LLR-4408.11
+- **Requirement:** LLR-4408.18
+- **Requirement:** LLR-4409.3
+- **Date:** 2026-11-01
+- **What changed:** the commission text (K-1..K-6), rulings R0-1..R0-11 and the E2a amendments R1-1..R1-6 were split into 9 HLRs and 174 single-`shall` LLRs (US-4401, AT-4401..AT-4408). Added beyond the commission's words, each as its own requirement: the note count counts the empty part after a new divider, so `enter` updates it (LLR-4402.8); the divider key is `alt+l` and `alt+enter` stays unbound (LLR-4402.9, LLR-4402.10, LLR-4402.11, LLR-4402.13, LLR-4402.17 — R1-1); the rule is drawn by line rendering, not the highlight map (LLR-4402.18 — R1-5); archived projects, archived tasks and project-less tasks stay out of the documents (LLR-4403.3, LLR-4403.5); at most 3 options (LLR-4403.13); the hit cache and the 10 000-character cap (LLR-4403.21, LLR-4403.22); the title is the visible text of the first non-image line (LLR-4404.2, LLR-4404.29); the target board's first phase (LLR-4404.5); the open board through `app.board.add_task`, another board through a fresh `peek_board` under `file_lock`, a direct `models.stamp`, `save_atomic`, the birth record after the save and a stamp check (LLR-4404.4, LLR-4404.8, LLR-4404.9, LLR-4404.32, LLR-4404.33, LLR-4405.2 — R1-3); the open board rolled back on a failed save (LLR-4404.15); undo refuses an edited task and gives the note back for a gone one, from its own store entry only (LLR-4405.8, LLR-4405.10, LLR-4405.14 — R1-4); the pad's write timing (LLR-4407.15, LLR-4407.16, LLR-4407.17, LLR-4407.18); the note-level three-way merge for a stale pad (LLR-4407.19, LLR-4407.20, LLR-4407.21, LLR-4407.22); the guarded close after a failed write (LLR-4407.24, LLR-4407.25); a dump kept in memory when the store write fails after the board save (LLR-4407.26); clipboard files copied, never moved (LLR-4408.3); images copied before the save and removed after (LLR-4408.11); bare image names only (LLR-4408.18). Defects fixed in place by the 29148 self-check (a script over the file: one `shall` per LLR, the EARS opening of its form, the TC id of the numbering rule — 0 defects left): the compound "close the review list and show the count" split into LLR-4406.9 and LLR-4406.16; the compound undo of a gone task split into LLR-4405.8 and LLR-4405.9; the merge's replace-and-notify split into LLR-4407.21 and LLR-4407.22; the failed save's notice and roll-back split into LLR-4404.14 and LLR-4404.15; LLR-4406.2 reworded to open with its subject ("The review list shall"); LLR-4409.3's threshold rewritten to a checkable byte rule (it had a hand note). LLR-4404.4 and LLR-4404.9 were rewritten and LLR-4402.17, LLR-4402.18, LLR-4404.32, LLR-4404.33, LLR-4405.14 added when R1-1..R1-6 arrived during E1.
+- **Why:** each addition closes a path where the commission's literal text would duplicate a task (a stale pad resurrecting a note dumped elsewhere, a re-dump after a failed store write), move or lose the user's data (an Explorer file moved out of its folder, a failed write at close, a concurrent board write lost), put a task in a phase its board does not have, show colour markers in a title, show a key the terminal cannot deliver, or leave a key with undefined behaviour (no note under the cursor, no title line, no project, nothing to undo).
+- **Evidence:** `prototypes/capture_round/proto.py` `PadScreen`/`dump`/`undo_dump`/`ReviewScreen` (the proto split notes at blank lines, wrote `inbox.json` without a lock, appended `+ new project` as a 4th option, and stamped `created` into `extra`); `taskboard/models.py` `Board.add_task` (plain `save()`), `stamp`, `Board.image_dir`; `taskboard/boards.py` `move_project`, `peek_board`, `file_lock`, `keep_aside`; `taskboard/people.py` `Directory._commit`/`refresh`; `taskboard/modals.py` `_paste_image` (Explorer files referenced in place), `InkArea`; `00-orchestrator-rulings.md` R1-1..R1-6.
+
+### LED-2026-11-01-incK.2 — the orchestrator's R2 rulings on the E1 findings
+- **Requirement:** LLR-4402.8
+- **Requirement:** LLR-4407.2
+- **Requirement:** LLR-4407.7
+- **Requirement:** LLR-4407.10
+- **Requirement:** LLR-4407.19
+- **Requirement:** LLR-4407.20
+- **Requirement:** LLR-4407.21
+- **Requirement:** LLR-4407.22
+- **Requirement:** LLR-4407.26
+- **Requirement:** LLR-4407.29
+- **Requirement:** LLR-4407.30
+- **Requirement:** LLR-4407.31
+- **Requirement:** LLR-4407.32
+- **Requirement:** LLR-4407.33
+- **Requirement:** LLR-4407.34
+- **Date:** 2026-11-01
+- **What changed:** F-4 accepted with its wording: LLR-4402.8 counts the pad's last empty part after a final divider (not the cursor's part). F-7 accepted plus an immediate write on dump, undo and attach: new LLR-4407.29. F-8 amended: the 3-way merge is withdrawn; LLR-4407.19 is now the note-level union (fresh pad's notes, then this window's notes that are neither in the fresh pad nor the `text` of a fresh `dumped` entry); LLR-4407.20 now keys on the store stamp instead of a base pad; LLR-4407.21 and LLR-4407.22 say "union". F-12 accepted with the flagged note: LLR-4407.26 rewritten (the note stays in the pad, flagged, instead of leaving it); new LLR-4407.30 (the notice), LLR-4407.31 (the rail's flag line), LLR-4407.32 (a flagged note is never dumped again), LLR-4407.33 (the `flagged` entry schema), LLR-4407.34 (a flag drops when its note is gone); LLR-4407.2, LLR-4407.7 and LLR-4407.10 extended for the `flagged` key. No requirement withdrawn. The definition `base pad` was replaced by `store stamp`, and `flagged note` was added; the TC rule gained the overflow LLR-4407.n (n ≥ 30) → TC-(4640+n); AT-4406 and AT-4408 follow the rulings; §8 findings each carry their ruling. F-1, F-2, F-3, F-5, F-6, F-9, F-10, F-11 and F-13 were accepted as written (no requirement change). Self-check rerun: 180 LLRs, 180 unique TC ids, 0 defects.
+- **Why:** R2 prefers the simpler union (no note text is dropped silently, at the cost of a deleted note sometimes coming back) and keeps a note whose dump could not be recorded visible and blocked, instead of hiding it in memory where a crash loses it.
+- **Evidence:** `00-orchestrator-rulings.md` §R2; `01-requirements.md` §8.

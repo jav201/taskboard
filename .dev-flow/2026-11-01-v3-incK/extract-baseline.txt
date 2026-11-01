@@ -1,0 +1,100 @@
+# Extractor output — baseline graph at 545c18a (marks tree taskboard-wt/incK-marks, 31 generated marks)
+# command: python code-wire/tools/codewire_lint.py capture-proto/.dev-flow/2026-11-01-v3-incK/graph-baseline.cw.md   (nodes=31 entities=23 edges=40 findings=0 not read=0, exit 0)
+# command: python code-wire/tools/codewire_marks.py --repo incK-marks --graph capture-proto/.dev-flow/2026-11-01-v3-incK/graph-baseline.cw.md   (31 marks written, 0 nodes without code, exit 0)
+# command: python code-wire/tools/codewire_extract.py --repo incK-marks --graph capture-proto/.dev-flow/2026-11-01-v3-incK/graph-baseline.cw.md --path taskboard/models.py --path taskboard/app.py --path taskboard/boards.py --path taskboard/people.py --path taskboard/modals.py --path taskboard/views.py --path taskboard/keymap.py --out <tmp>
+# exit code: 1 — 8 findings: 7 input_untyped_in_code + 1 return_untyped_in_code (the code has no annotation there; the graph names the type it is called with). No type mismatch, no missing node, no mark drift.
+# NOTE: line numbers below are in the MARKED tree (each mark adds one line above its def); baseline-notes.md gives the 545c18a lines.
+# NOTE: `Directory.add` collides with every `set.add` (`seen.add`, `drawn.add`); `Board.save` with PIL's `Image.save`; `Directory.load` with `Board.load` (both classmethods named `load`). The calls table is copied from diff-report.md with a classification column added.
+# NOTE: top-level sites are listed for taskboard/ only; sites in prototypes/ and .fast-dev-flow/probes/ are counted, not listed. prototypes/capture_round/proto.py (a prototype of this very increment, not product code) already calls Board.add_task (:169), Board.add_project (:156), Board.image_dir (:165), Board.save, Directory.refresh (:1253), InkArea._build_highlight_map (:1318) and TaskboardApp.check_action (:1479).
+
+## stdout
+marks=31 graph_nodes=31 calls=35 findings=8 parse_failures=0
+
+## diff-report.md (head and findings, verbatim)
+# Code-Wire extractor report
+
+- Marks found: 31
+- Graph nodes parsed: 31
+- Real calls between marked nodes: 35
+- Findings: 8 (8 drift, 0 info)
+- Ambiguous call resolutions (a name matched several defs): 943
+- Files that failed to parse: 0
+
+## Counts
+
+| Kind | Count |
+|---|---|
+| Parameter unannotated in code (cannot compare) | 7 |
+| Return unannotated in code (cannot compare) | 1 |
+
+## Parameter unannotated in code (cannot compare)
+
+- `taskboard/app.py:1513` — `make` has no annotation (graph: `Callable`)
+- `taskboard/app.py:847` — `app` has no annotation (graph: `TaskboardApp`)
+- `taskboard/models.py:631` — `image` has no annotation (graph: `object`)
+- `taskboard/people.py:127` — `path` has no annotation (graph: `object`)
+- `taskboard/people.py:219` — `change` has no annotation (graph: `Callable[[dict], object]`)
+- `taskboard/boards.py:102` — `path` has no annotation (graph: `object`)
+- `taskboard/boards.py:616` — `path` has no annotation (graph: `object`)
+
+## Return unannotated in code (cannot compare)
+
+- `taskboard/boards.py:102` — graph `Iterator`, no return annotation (file_lock is a @contextmanager generator)
+
+## Calls between marked nodes (from diff-report.md, classified)
+
+| Caller | Callee | n | Class | Sites |
+|---|---|---|---|---|
+| `AddedList.compose` | `board_lanes` | 1 | REAL | taskboard/app.py:997 |
+| `Board.add_project` | `Board.save` | 1 | REAL | taskboard/models.py:1321 |
+| `Board.add_task` | `Board.save` | 1 | REAL (history.append at :1315 is not a node) | taskboard/models.py:1316 |
+| `Board.load` | `Board.save` | 1 | REAL: the seed path (missing file) | taskboard/models.py:1041 |
+| `Directory._commit` | `Directory._read` | 1 | REAL: the fresh read under the lock | taskboard/people.py:229 |
+| `Directory._commit` | `Directory._set_aside` | 1 | REAL | taskboard/people.py:230 |
+| `Directory._commit` | `file_lock` | 1 | REAL | taskboard/people.py:226 |
+| `Directory._commit` | `write_atomic` | 1 | REAL | taskboard/people.py:237 |
+| `Directory._read` | `Directory.add` | 1 | COLLISION: `seen.add(pid)` (set.add) | taskboard/people.py:193 |
+| `Directory._set_aside` | `keep_aside` | 1 | REAL | taskboard/people.py:256 |
+| `Directory.add` | `Directory._commit` | 1 | REAL | taskboard/people.py:272 |
+| `Directory.load` | `Directory._read` | 1 | REAL | taskboard/people.py:138 |
+| `Directory.load` | `keep_aside` | 1 | REAL | taskboard/people.py:142 |
+| `Directory.refresh` | `Directory._read` | 1 | REAL | taskboard/people.py:163 |
+| `TaskModal._paste_image` | `Board.image_dir` | 1 | REAL | taskboard/modals.py:1303 |
+| `TaskModal._paste_image` | `save_pil_image` | 1 | REAL | taskboard/modals.py:1303 |
+| `TaskModal.action_pen` | `highlight_segments` | 1 | LIFTED through `visible_text` (modals.py:597, unmarked): the "a pen never changes the visible text" check | taskboard/modals.py:600 |
+| `TaskboardApp._on_project_added` | `Board.add_project` | 1 | REAL | taskboard/app.py:3776 |
+| `TaskboardApp._on_project_added` | `Board.image_dir` | 1 | LIFTED through refresh_view → `_focus_tiles` (views.py:3824) | taskboard/views.py:3920 |
+| `TaskboardApp._on_project_added` | `Directory.add` | 7 | COLLISION: set.add in `_gantt_frame` (lifted through refresh_view) | taskboard/views.py:3317, :3356, :3377, :3379, :3389, :3392, :3407 |
+| `TaskboardApp._on_project_added` | `highlight_segments` | 1 | LIFTED through refresh_view → `_highlight_markup` (views.py:3671) | taskboard/views.py:3675 |
+| `TaskboardApp._on_task_added` | `Board.add_task` | 1 | REAL | taskboard/app.py:3521 |
+| `TaskboardApp._on_task_added` | `Board.image_dir` | 1 | LIFTED (refresh_view, as above) | taskboard/views.py:3920 |
+| `TaskboardApp._on_task_added` | `Directory.add` | 7 | COLLISION (set.add, as above) | taskboard/views.py:3317 … :3407 |
+| `TaskboardApp._on_task_added` | `highlight_segments` | 1 | LIFTED (refresh_view, as above) | taskboard/views.py:3675 |
+| `TaskboardApp._refresh_directories` | `Directory.refresh` | 1 | REAL (people; the marks.Directory.refresh call beside it is the same name, not a node) | taskboard/app.py:1529 |
+| `TaskboardApp.action_added_list` | `TaskboardApp._bring` | 1 | REAL | taskboard/app.py:1551 |
+| `TaskboardApp.action_undo` | `Board.image_dir` | 1 | LIFTED (refresh_view, as above) | taskboard/views.py:3920 |
+| `TaskboardApp.action_undo` | `Board.save` | 5 | REAL: one save per entry shape | taskboard/app.py:2927, :2940, :2956, :2966, :2985 |
+| `TaskboardApp.action_undo` | `Directory.add` | 7 | COLLISION (set.add, as above) | taskboard/views.py:3317 … :3407 |
+| `TaskboardApp.action_undo` | `highlight_segments` | 1 | LIFTED (refresh_view, as above) | taskboard/views.py:3675 |
+| `board_lanes` | `peek_board` | 1 | REAL | taskboard/app.py:858 |
+| `peek_board` | `Board.load` | 2 | REAL at boards.py:633; the prototypes/ site is a collision | prototypes/kanban_ideas/proto.py:35, taskboard/boards.py:633 |
+| `peek_board` | `Directory.load` | 2 | COLLISION: `Board.load(p)` also resolves to the other classmethod `load` | prototypes/kanban_ideas/proto.py:35, taskboard/boards.py:633 |
+| `save_pil_image` | `Board.save` | 1 | COLLISION: PIL `to_save.save(dest, "PNG")` | taskboard/models.py:641 |
+
+Summary: 35 rows: 22 REAL, 7 LIFTED, 6 COLLISION. Not seen by the extractor (not nodes, or dynamic): Board.add_task → history.append; TaskboardApp.check_action calls no marked node (it reads `SEAT_ACTIONS` and the stack); `_bring(kind, make)` calls `make()` (a callable passed as a value).
+
+## Top-level sites (no marked node above them), taskboard/ only
+
+- `Board.add_task`: taskboard/app.py:2682 (`_create_and_link`); +1 in prototypes/capture_round
+- `Board.image_dir`: taskboard/boards.py:713, :797, :798, :799, :802, :825 (move_project / its refusal); +4 in prototypes/
+- `Board.load`: taskboard/__main__.py:28, taskboard/app.py:1204, :1322 (`__init__`), :1331, :1334, :1633 (`switch_board`); +23 outside taskboard/ (lines :1331/:1334 resolve `Directory.load(...)`/`MarksDirectory.load(...)` by name)
+- `Board.save`: 34 taskboard/ sites (every app mutation saves the open board); +31 outside taskboard/
+- `Directory._commit`: taskboard/marks.py:214, :235, :251, taskboard/people.py:287 (edit)
+- `Directory._read`: taskboard/__main__.py:66, :75, taskboard/marks.py:86, :110, :169 (marks' own `_read`, same name)
+- `Directory._set_aside`: taskboard/marks.py:170
+- `Directory.add`: 18 taskboard/ sites, all set.add or other `.add` collisions except app.py:1182 (the people view's add); +15 outside taskboard/
+- `TaskModal._paste_image`: taskboard/modals.py:1279 (on_button_pressed "paste-img")
+- `TaskboardApp._bring`: taskboard/app.py:1537 (@), :1542 (#), :1546 (A)
+- `TaskboardApp._refresh_directories`: taskboard/app.py:1536, :1541, :3510 (`a`), :3540 (`e`)
+- `TaskboardApp.check_action`: (none in taskboard/; Textual calls it); +10 in prototypes/
+- `app_bindings`: (none in taskboard/ besides `BINDINGS = app_bindings()` at class level); +1 in prototypes/

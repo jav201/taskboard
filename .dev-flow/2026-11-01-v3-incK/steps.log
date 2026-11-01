@@ -1,0 +1,10 @@
+# stage start/end (UTC) model notes
+2026-11-01T10:40:20Z E0 setup start model=opus
+2026-11-01T10:40:24Z E0 setup end (base incK-base + marks incK-marks worktrees at 545c18a)
+2026-11-01T10:41:59Z E1 requirements start model=opus (agent)
+2026-11-01T10:41:59Z E2a baseline-graph start model=opus (background agent, parallel with E1)
+2026-11-01T10:52:37Z E2a baseline-graph end model=opus nodes=31 entities=23 edges=40 lint=0 extract=1 (8 untyped findings, no drift; 22 REAL/7 LIFTED/6 COLLISION)
+2026-11-01T10:58:25Z E1 requirements end (HLR 9, LLR 174, AT 8; R1-1..R1-6 applied)
+2026-11-01T11:01:11Z E1 R2 rulings applied (LLR 180, LED.2) model=opus
+2026-11-01T11:03:34Z E2 graph-interfaces drafted (29 nodes, 19 entities, 47 edges, lint exit 0) model=opus
+2026-11-01T11:04:09Z E1 amended (R2 rulings on F-1..F-13 applied: LLR 174→180, LED.2); interfaces drafted 29 nodes, lint 0; seam rulings round 0a
