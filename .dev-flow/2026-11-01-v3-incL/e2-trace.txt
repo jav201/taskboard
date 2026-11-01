@@ -44,7 +44,7 @@ LLR-4304.1 (TC TC-4361): interfaces:added_rows TC-4361; proto-V:added_rows TC-43
 LLR-4304.2 (TC TC-4362): interfaces:added_rows TC-4362; proto-V:added_rows TC-4362
 LLR-4304.3 (TC TC-4363): interfaces:added_rows TC-4363; proto-V:added_rows TC-4363
 LLR-4304.4 (TC TC-4364): interfaces:added_order TC-4364; proto-V:added_order TC-4364
-LLR-4304.5 (TC TC-4365): proto-V:added_order TC-4365
+LLR-4304.5 (TC TC-4365): proto-V:added_order TC-4365,TC-4365b
 LLR-4304.6 (TC TC-4366): interfaces:added_order TC-4366b; proto-S:AddedList.__init__ TC-4366; proto-S:AddedList._paint TC-4366
 LLR-4304.7 (TC TC-4367): proto-S:AddedList._ordered TC-4367; proto-S:AddedList.action_order TC-4367
 LLR-4304.8 (TC TC-4368): interfaces:added_moment TC-4368; proto-V:added_rows TC-4368; proto-V:added_moment TC-4368

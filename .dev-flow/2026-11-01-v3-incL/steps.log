@@ -11,3 +11,4 @@
 2026-11-01T09:21:16Z E3 PDR round 1 start model=opus (architect, security)
 2026-11-01T09:31:02Z E3 PDR round 1 done (arch FAIL 1H/2M/6m, sec PwN 3M/2L); rulings written; correction start model=opus
 2026-11-01T09:39:20Z E3 round-1 corrections done; round 2 (blocking-only re-review) start model=opus
+2026-11-01T09:42:31Z E3 end: PDR round 2 PASS-WITH-NOTES (arch 1 MINOR 1 INFO, sec 1 LOW → addenda A-4..A-6) model=opus

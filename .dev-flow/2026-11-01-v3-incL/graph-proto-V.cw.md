@@ -205,7 +205,7 @@ module: taskboard/views.py
 examples: (TC-4391) F-V, newest `True`, show_archived `False` → ids "w4", "h2", "w2", "w3", "h1", "w1" (`6` rows, w5 absent); show_archived `True` → "w4", "h2", "w2", "w3", "h1", "w5", "w1" (`7` rows)
 examples: (TC-4365) F-V rows given in REVERSE (lane, pos) order (h2, h1, w5, w4, w3, w2, w1; ARCH-1 hand-shuffled input), newest `False`, show_archived `False` → "w1", "h1", "w3", "w2", "h2", "w4": the 2 unknown rows are rows 0–1 in (lane, pos) order (NC unknowns kept in input order: "h1", "w1", … RED; NC unknowns last: "w3", "w2", "h2", "w4", "w1", "h1", RED)
 examples: (TC-4364) a Work row (lane 0, pos 3) and a Home row (lane 1, pos 0), both at 2026-10-31 10:00, given Home first, newest `False` → the Work row first; with the registry order swapped (Home lane 0, Work lane 1), given Work first → the Home row first (NC sort by moment alone: input order kept in both arms, RED)
-examples: (TC-4364) the same reversed F-V input (h2 … w1), newest `False`, show_archived `True` → "w1", "w5", "h1", "w3", "w2", "h2", "w4" (unknown by lane then file position: w1 pos 0, w5 pos 4, then lane 1; NC moment-only with unknowns unsorted: "h1", "w5", "w1", … RED)
+examples: (TC-4365b) the same reversed F-V input (h2 … w1), newest `False`, show_archived `True` → "w1", "w5", "h1", "w3", "w2", "h2", "w4" (unknown by lane then file position: w1 pos 0, w5 pos 4, then lane 1; NC moment-only with unknowns unsorted: "h1", "w5", "w1", … RED)
 
 first_created
 req: LLR-4304.11, LLR-4304.15

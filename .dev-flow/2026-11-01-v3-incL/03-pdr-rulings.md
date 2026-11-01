@@ -55,3 +55,8 @@ Rulings override every older text in the requirements, the interfaces and the gr
 | SEC-5 | LOW | Backlog L-BL-3 (inherited `peek_board` race). | BACKLOG |
 
 Round 2 (blocking-only re-review): architect re-checks ARCH-1..3; security re-checks SEC-1..3.
+
+## Round 2 — blocking-only re-review
+- Architect: **PASS-WITH-NOTES** (ARCH-1 closed, executed by probe; ARCH-R2-1 MINOR → addendum A-4, applied; ARCH-R2-2 INFO → A-5).
+- Security: **PASS-WITH-NOTES** (SEC-1..4 closed in design; SEC-R2-1 LOW → A-6, BACKLOG L-BL-4).
+E3 is done: no open MAJOR/HIGH on the design.
