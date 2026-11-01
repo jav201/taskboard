@@ -4,14 +4,23 @@
 > `Inbox` store, image files, and every write to a board file (the open board through the live `Board`
 > object G-V hands it, another board by `move_project`'s pattern). **G-T** owns `taskboard/suggest.py`:
 > pure functions over the lanes `board_lanes` returns. **G-V** owns `taskboard/app.py` + `taskboard/keymap.py`
-> + `README.md`: the screens, the keys, every notice text, the debounce, the hit cache, the choice of the
-> target (`live` is `app.board` exactly when the target path is the open board's), `refresh_view`.
+> + `README.md`: the screens, the keys, every notice text except the refusals G-S words (P-V-13: the
+> `notice` of DumpOutcome and AttachResult is G-S's full text, which G-V shows verbatim with `markup=False`),
+> the debounce, the hit cache, the choice of the target (`live` is `app.board` exactly when the target path
+> is the open board's), `refresh_view`.
+> E2 correction pass (round 0b, `03-pdr-rulings.md`): P-S-1, P-S-2, P-S-3, P-S-4, P-S-6, P-S-8, P-S-15, P-V-1,
+> P-V-13, P-T-1, P-T-3, P-T-4 and P-T-5 applied to the nodes below.
 > Placement rule: no group reads another group's private state. G-S never imports `app`; G-T never imports
 > `app` or `inbox`; G-V reads only the public names below. A refusal is a value (`notice`), never an
 > exception, except `Inbox.write_pad` / `Inbox.mark_notice`, which raise `OSError` like `Directory._commit`.
 > Times are local naive `datetime`. Fixture clock: now 2026-11-01T10:02:00. Fixture boards (synthetic):
 > `Client A` (projects `Eval harness`, `Pilot rollout`) at lane 0, the open board; `Course` (project
 > `Module 4 · Volumes`) at lane 1. Store folder `S` = the registry's folder.
+> E2c: the suggestion and view examples share ONE fixture, G-T's executed fixture F (graph-proto-T §Fixture F:
+> files `S/boards/client-a/board.json`, `S/boards/course/board.json`; project ids `pe`, `pr`, `pv`; project
+> colours blue, indigo, violet; board colours sky, violet; its tasks and marks), plus the phases Client A
+> ["Backlog", "Doing", "Done"] and Course ["Todo", "Doing", "Done"]; G-T's executed scores win. G-S's
+> layer-0 examples use their own fixture S (graph-proto-S head), with the same boards, phases and project names.
 
 ## Nodes
 
@@ -55,7 +64,7 @@ image_name
 req: LLR-4408.18
 in: str line
 out: str? name
-func: for a line that, stripped, is `img: <name>` with a name holding no `/`, `\`, `:` or control character, not `.` or `..`, and a lower-case suffix in `models.IMAGE_EXTS` → the name; otherwise None.
+func: for a line that, stripped, is `img: <name>` with a name that passes the image-name rule (requirements §1, P-S-10: 1..128 characters, no surrounding whitespace, no `/`, `\`, `:` or control character, not `.` or `..`, a lower-case suffix in `models.IMAGE_EXTS`, no Windows device stem) → the name; otherwise None.
 module: taskboard/inbox.py
 examples: (TC-4628) line "img: a.png" → name "a.png"
 examples: (TC-4628) line "img: ../a.png" → name `None`
@@ -103,14 +112,15 @@ module: taskboard/inbox.py
 examples: (TC-4552) entries at "2026-10-25T10:03:00" and "2026-10-25T10:01:00" and "garbage", now 2026-11-01T10:02:00 → kept the first only
 
 Inbox.load
-req: LLR-4407.1, LLR-4407.6, LLR-4407.7, LLR-4407.8, LLR-4407.10, LLR-4407.11, LLR-4407.12
+req: LLR-4407.1, LLR-4407.6, LLR-4407.7, LLR-4407.8, LLR-4407.10, LLR-4407.11, LLR-4407.12, LLR-4407.35, LLR-4407.36
 in: Path path
 out: Inbox inbox
-func: `people.Directory.load`'s shape: never raises; missing or blank → empty (pad "", no entries, nothing written); unparseable (not JSON, not an object, `pad` not a str, `dumped` or `flagged` not a list) → `keep_aside` + empty + `load_report {"unreadable": True, "backup": <str or None>}`; strings through `clean_strings`; bad entries skipped; `divider_notice` only the boolean true; the store stamp (mtime_ns, size) kept. G-V words the notice from `load_report`.
+func: `people.Directory.load`'s shape: never raises; missing or blank → empty (pad "", no entries, nothing written); unparseable (not JSON, not an object, `pad` not a str, `dumped` or `flagged` not a list) → `keep_aside` + empty + `load_report {"unreadable": True, "backup": <str or None>}`; larger than `STORE_MAX_BYTES` (8 388 608) → read up to the cap + 1 byte only, unreadable, NOT copied aside (backup None) and never written over (P-S-3); strings through `clean_strings`; bad entries skipped, an entry's shape checked (`task` fullmatches `[A-Za-z0-9_-]{1,64}`, every `images` item passes the image-name rule, `text` non-blank, `new_project` a bool: P-S-4); `divider_notice` only the boolean true; the store stamp (mtime_ns, size) kept. G-V words the notice from `load_report` (backup None → the LLR-4407.38 text, P-V-6).
 module: taskboard/inbox.py
 modify: [Data: Inbox state] (replace)
 examples: (TC-4587) a store holding `{"pad": 5}` → pad "", load_report "unreadable" `True`, `inbox.json.corrupt` written
 examples: (TC-4586) no file → pad "", no file created
+examples: (TC-4676) a store of 8 388 609 bytes → load_report "unreadable" `True`, backup `None`, no `inbox.json.corrupt`
 
 Inbox.refresh
 req: LLR-4407.13, LLR-4407.14
@@ -123,15 +133,16 @@ examples: (TC-4593) a second Inbox wrote pad "x" → changed `True`, pad "x"
 examples: (TC-4594) the file made "{not json" → changed `False`, pad as loaded
 
 Inbox.write_pad
-req: LLR-4407.2, LLR-4407.3, LLR-4407.4, LLR-4407.5, LLR-4407.9, LLR-4407.18, LLR-4407.19, LLR-4407.20, LLR-4407.26, LLR-4407.33, LLR-4407.34, LLR-4405.4, LLR-4405.12
+req: LLR-4407.2, LLR-4407.3, LLR-4407.4, LLR-4407.5, LLR-4407.9, LLR-4407.18, LLR-4407.19, LLR-4407.20, LLR-4407.26, LLR-4407.33, LLR-4407.34, LLR-4407.37, LLR-4405.4, LLR-4405.12
 in: Inbox self; str pad; DumpedEntry? record = None; DumpedEntry? drop = None
 out: WriteResult result
-func: `Directory._commit`'s shape under `file_lock(path)`: re-read NOW (unparseable and not set aside → OSError, nothing written); pad written = `pad` verbatim when the file's stamp equals the store stamp, else union_pads(fresh pad, fresh dumped texts, pad); dumped = prune_dumped(fresh dumped + [record] − [drop by task id], now); flagged = in-memory flagged ∪ fresh flagged, minus entries whose text is no longer a note of the written pad; `write_atomic(json.dumps({version, pad, dumped[, flagged][, divider_notice]}, indent=2, ensure_ascii=False))`; then state held and stamp taken. Skips the write (returns written False) when pad, record, drop and the flags change nothing. A failed write raises OSError and changes nothing in memory.
+func: `Directory._commit`'s shape under `file_lock(path)`: re-read NOW (unparseable and not set aside → OSError, nothing written); pad written = `pad` verbatim when the file's stamp equals the store stamp, else union_pads(fresh pad, fresh dumped texts, pad); dumped = prune_dumped(fresh dumped + [record] − [drop by task id], now); flagged = in-memory flagged ∪ fresh flagged, minus entries whose text is no longer a note of the written pad; `write_atomic(json.dumps({version, pad, dumped[, flagged][, divider_notice]}, indent=2, ensure_ascii=False))`; then state held and stamp taken. Skips the write (returns written False) when pad, record, drop and the flags change nothing. A text over `STORE_MAX_BYTES` raises OSError "inbox.json would hold <n> bytes, over the 8388608-byte limit, so it was not written" (P-S-3). A failed write raises OSError and changes nothing in memory.
 module: taskboard/inbox.py
 modify: [Data: inbox.json] (replace); [Data: Inbox state] (replace)
 examples: (TC-4600) pad "a\n________\n\nb  " on an unchanged file → result pad "a\n________\n\nb  ", union `False`
 examples: (TC-4599) the file changed by a second Inbox → result union `True`, pad "a\n____\nc\n____\nd"
 examples: (TC-4598) pad equal to the stored pad, no record → result written `False`
+examples: (TC-4677) pad "a" × 8 400 000 on a store with no entries and no flag → OSError "inbox.json would hold 8400047 bytes, over the 8388608-byte limit, so it was not written", file and memory unchanged
 
 Inbox.flag
 req: LLR-4407.26
@@ -151,12 +162,13 @@ module: taskboard/inbox.py
 examples: (TC-4672) text "Volume lab fails on WSL" after Inbox.flag → entry board holds "board.json" of Course
 
 Inbox.last_dump
-req: LLR-4405.1, LLR-4405.7
+req: LLR-4405.1, LLR-4405.7, LLR-4405.17
 in: Inbox self; datetime now
 out: DumpedEntry? entry
-func: the newest entry of prune_dumped(dumped, now), else None.
+func: the newest (last by position) entry of prune_dumped(entries, now), else None, where entries = the store FILE's `dumped` read fresh at the call (`_read`, no lock; no state and no stamp change), or the in-memory `dumped` when the file is missing or cannot be parsed (P-S-6).
 module: taskboard/inbox.py
 examples: (TC-4547) one entry 8 days old → entry `None`
+examples: (TC-4557) memory [e1, e2], a second Inbox dropped e2 from the file → entry e1
 
 Inbox.mark_notice
 req: LLR-4402.14
@@ -176,11 +188,19 @@ module: taskboard/inbox.py
 modify: [I/O: inbox-images] (append)
 examples: (TC-4613) grabbed a list holding "C:/u/shot.png" with "shot.png" already in folder → names "shot-2.png", the source still present
 
+entry_for
+req: LLR-4407.3, LLR-4407.33
+in: DumpOutcome outcome; str note; Path board_path; datetime now
+out: DumpedEntry entry
+func: public builder of the store record of an ok dump (P-S-15): {"at": stamp(now), "text": note (the Part text, verbatim), "task": outcome.task.id, "title": outcome.task.title, "board": str(board_path), "project": outcome.project_id, "new_project": outcome.new_project, "images": list(outcome.images)} in the LLR-4407.3 key order. G-V passes it to `Inbox.write_pad(record=…)`, and to `Inbox.flag` when that write raises (flag keeps its FLAGGED projection). G-V never builds an entry itself.
+module: taskboard/inbox.py
+examples: (TC-4583) the AT-4402 dump into Course, now 2026-11-01T10:02:00 → keys ["at", "text", "task", "title", "board", "project", "new_project", "images"], at "2026-11-01T10:02:00", images ["board-0938.png"], new_project `False`
+
 dump_note
 req: HLR-4404, LLR-4404.1, LLR-4404.4, LLR-4404.5, LLR-4404.8, LLR-4404.9, LLR-4404.10, LLR-4404.11, LLR-4404.12, LLR-4404.13, LLR-4404.14, LLR-4404.15, LLR-4404.23, LLR-4404.24, LLR-4404.25, LLR-4404.26, LLR-4404.29, LLR-4404.31, LLR-4404.32, LLR-4404.33, LLR-4408.10, LLR-4408.11, LLR-4408.12, LLR-4408.13, LLR-4408.14, LLR-4408.15
-in: DumpTarget target; str? project_id; str? new_name; str note; Path folder
+in: DumpTarget target; str? project_id; str? new_name; str note; Path folder; str project_name = ""
 out: DumpOutcome outcome
-func: note_task(note) (title "" → refusal). Exactly one of project_id / new_name. Open board (`target.live` set): checks on the live object, images copied, `live.add_task(task)` (stamps created, writes the birth record, saves); an OSError → task and new project removed from `live`, copies removed, refusal. Other board: `file_lock(target.path, target.name)` held; missing → refusal; `peek_board` fresh, unreadable → refusal; project gone / name blank / name taken → refusal; stamp (mtime, size) taken; task built with `created = models.stamp(now)`, phase = phases[0], new project (colour rule) appended in memory; images copied to `image_dir(task.id)` (a new id while that folder exists); stamp re-checked → refusal on change; `save_atomic`; then `history.append(path, birth, at=now)`; then pad copies removed. Never writes the store and never touches the pad.
+func: `project_name` (P-S-1) is the chosen hit's `doc.project_name` ("" for a new project), used only for the LLR-4404.12 refusal "<project_name> is no longer on <board> — nothing dumped.". note_task(note) (title "" → refusal). Exactly one of project_id / new_name. Open board (`target.live` set): checks on the live object, images copied, `live.add_task(task)` (stamps created, writes the birth record, saves); an OSError → task and new project removed from `live`, copies removed, refusal. Other board: `file_lock(target.path, target.name)` held; missing → refusal; `peek_board` fresh, unreadable → refusal; project gone / name blank / name taken → refusal; stamp (mtime, size) taken; task built with `created = models.stamp(now)`, phase = phases[0], new project (colour rule) appended in memory; images copied to `image_dir(task.id)` (a new id while that folder exists); stamp re-checked → refusal on change; `save_atomic`; then `history.append(path, birth, at=now)`; then pad copies removed. Never writes the store and never touches the pad.
 module: taskboard/inbox.py
 modify: [Data: board file] (replace); [Data: history.jsonl] (append); [I/O: inbox-images] (clear); [I/O: task images] (append)
 examples: (TC-4509) target `Course` (live `None`), project "Module 4 · Volumes", note "Volume lab fails on WSL\nthe oracle script expects /mnt/c" → outcome ok `True`, title "Volume lab fails on WSL", the board file holds the task
@@ -191,7 +211,7 @@ undo_dump
 req: HLR-4405, LLR-4405.2, LLR-4405.5, LLR-4405.6, LLR-4405.8, LLR-4405.10, LLR-4405.11, LLR-4408.16, LLR-4408.17
 in: DumpedEntry entry; Board? live; Path folder
 out: UndoOutcome outcome
-func: `live` is the open board when `entry.board` is its file (G-V decides), else None and the board is read fresh under `file_lock` with the stamp check and `save_atomic`. Task id absent → state "gone" (no board change). Title or notes differ from note_task(entry.text) → state "changed" (nothing changes). Else the task removed (and the project when `new_project` and no other task holds it), saved, its image files moved back to `folder` (renamed `<stem>-<k>` when taken), the emptied `image_dir` removed → state "undone". A read, lock or save failure → state "failed" with the error text. note_text = entry.text with each moved image line naming the file as it now is.
+func: G-V calls it only when `entry.board` is the file (samefile) of a lane `board_lanes` returns; otherwise G-V shows "<board path> is not a known board — nothing undone." and keeps the entry (P-S-4, LLR-4405.16). `live` is the open board when `entry.board` is its file (G-V decides), else None and the board is read fresh under `file_lock` with the stamp check and `save_atomic`. Task id absent → state "gone" (no board change). Title or notes differ from `_task_fields(entry.text, moved=set(entry.images))` — the title and notes the dump wrote, a missing image's line kept as text (P-S-2) — → state "changed" (nothing changes). Else the task removed (and the project when `new_project` and no other task holds it), saved, its image files moved back to `folder` (renamed `<stem>-<k>` when taken), the emptied `image_dir` removed → state "undone". A read, lock or save failure → state "failed" with the error text. note_text = entry.text with each moved image line naming the file as it now is.
 module: taskboard/inbox.py
 modify: [Data: board file] (replace); [I/O: inbox-images] (append); [I/O: task images] (clear)
 examples: (TC-4548) the task deleted after the dump → outcome state "gone", note_text holds "Volume lab fails on WSL"
@@ -207,19 +227,19 @@ module: taskboard/suggest.py
 examples: (TC-4461) text "Golden SET: 12 Questions @username_subject de la Café" → pairs ("questi", "questions") and ("@username_subject", "@username_subject"), no "12"
 
 corpus
-req: LLR-4403.3, LLR-4403.4, LLR-4403.5, LLR-4403.23, LLR-4403.24
+req: LLR-4403.3, LLR-4403.4, LLR-4403.5, LLR-4403.23, LLR-4403.24, LLR-4403.27
 in: list[tuple[str, str, Board?, str]] lanes; dict marks
 out: list[Doc] docs
-func: one Doc per non-archived project of each lane whose board is not None, lane order then project position; tf weights name ×3, titles of its non-archived tasks ×2, `@handle` in their notes ×2, the `marks[t.mark].name` of each milestone with a known mark ×1, other note words ×1; tasks with no project are skipped. `lanes` is `board_lanes(app)[0]`, `marks` is `app.marks.marks`. Pure; reads no file.
+func: one Doc per non-archived project of each lane whose board is not None, lane order then project position; tf weights name ×3, titles of its non-archived tasks ×2, `@handle` in their notes ×2, the `marks[t.mark].name` of each milestone with a known mark ×1, other note words ×1; tasks with no project are skipped. Each document's text is cut at `DOC_CHARS` (100 000) characters before tokenising: the fields are consumed in the order name, then per task title, notes, mark name, each sliced to the characters left (P-T-5). `lanes` is `board_lanes(app)[0]`, `marks` is `app.marks.marks`. Pure; reads no file.
 module: taskboard/suggest.py
 examples: (TC-4464) project "Eval harness", task "Answer key", notes "ask @username_subject key", milestone mark "payment" named "Payment" → tf "eval" `3`, "key" `3`, "@username_subject" `2`, "paymen" `1`
 examples: (TC-4463) 3 live projects and 1 archived over 2 lanes → docs `3`
 
 suggest
-req: LLR-4403.6, LLR-4403.7, LLR-4403.8, LLR-4403.9, LLR-4403.10, LLR-4403.14, LLR-4403.22, LLR-4403.26
+req: LLR-4403.6, LLR-4403.7, LLR-4403.8, LLR-4403.9, LLR-4403.10, LLR-4403.14, LLR-4403.22, LLR-4403.26, LLR-4403.28
 in: str note; list[Doc] docs
 out: list[Hit] hits
-func: the first 10 000 characters of note; idf = ln((N+1)/(df+1)) + 1; score = cosine of tf·idf, halved on exactly one shared stem, rounded to 4 decimals; hits with score ≥ LOW (0.08), ordered by (−score, lane, project name, position), at most 3; why = the note's surface words of the shared stems, largest contribution first, ties by stem. Deterministic; [] for no docs.
+func: `note` is the note's scored text: G-V passes `nt.title + "\n" + nt.notes` of `inbox.note_task(part.text)` (image lines left out, P-T-4); suggest.py imports no inbox. The first `NOTE_CHARS` (10 000, a suggest.py constant, P-T-1) characters of note; idf = ln((N+1)/(df+1)) + 1, a note stem no document holds weighs 0; score = cosine of tf·idf, halved on exactly one shared stem, rounded to 4 decimals; hits with score ≥ LOW (0.08), ordered by (−score, lane, project name casefolded, project name, position) (P-T-3), at most 3; why = the note's surface words of the shared stems, largest contribution first, ties by stem. Deterministic; [] for no docs.
 module: taskboard/suggest.py
 examples: (TC-4474) note "Golden set: 12 questions still have no answer key ask @username_subject" → hit "Eval harness" first, why "questions", "@username_subject", "key"
 examples: (TC-4485) docs `[]` → hits `[]`
@@ -253,7 +273,7 @@ CaptureView
 req: HLR-4401, LLR-4401.4, LLR-4401.5, LLR-4401.6, LLR-4401.7, LLR-4401.8, LLR-4401.9, LLR-4401.10, LLR-4403.15, LLR-4403.21, LLR-4407.15, LLR-4407.16, LLR-4407.17, LLR-4407.29
 in:
 out: Screen screen
-func: app.py Screen[None]: on open `app.inbox.refresh()`, lanes/ids = board_lanes(app), docs = corpus(lanes, app.marks.marks), a hit cache `dict[str, list[Hit]]` cleared with every new docs; pad = PadArea(inbox.pad). Dump: target = DumpTarget(path, name, live=app.board when the path is the open board's file, else None) → dump_note → on ok: without_note, inbox.write_pad(pad, record=entry) (OSError → inbox.flag + the flagged notice), refresh_view, docs rebuilt. Undo: inbox.last_dump(now) → undo_dump → with_note + write_pad(drop=entry). Every notice is G-V's text with `markup=False`.
+func: app.py Screen[None]: on open `app.inbox.refresh()`, lanes/ids = board_lanes(app), docs = corpus(lanes, app.marks.marks), a hit cache `dict[str, list[Hit]]` keyed by the Part text, filled by `suggest(nt.title + "\n" + nt.notes, docs)` (P-T-4), cleared with every new docs; pad = PadArea(inbox.pad). Dump: target = DumpTarget(path, name, live=app.board when the path is the open board's file, else None) → dump_note(…, project_name=hit.doc.project_name) → on ok: without_note, entry = entry_for(out, part.text, path, now), inbox.write_pad(pad, record=entry) (OSError → inbox.flag(entry) + the flagged notice), refresh_view, docs rebuilt. After any write G-V replaces its pad text whenever `result.written and result.pad != text`, and shows the merge notice only when `result.union` (P-S-8). Undo: inbox.last_dump(now) → (entry.board a lane's file, else the P-S-4 refusal) → undo_dump → with_note + write_pad(drop=entry). Every notice is shown with `markup=False`; G-S's refusal texts verbatim (P-V-13).
 module: taskboard/app.py
 examples: (TC-4402) app with 2 registry boards, press n → app.screen is a CaptureView
 
@@ -289,7 +309,7 @@ desc: inbox.py; built by G-V. `live` is `app.board` exactly when `path` is the o
 
 [Data: DumpOutcome]
 in: NamedTuple(bool ok, Task? task, str project_id, str project_name, bool new_project, list[str] images, list[str] missing, str? notice)
-desc: inbox.py; ok False → `notice` holds the refusal text and nothing was written; ok True → `missing` lists image names not found (their lines stay in the notes; G-V words "<k> image(s) not found: <names>").
+desc: inbox.py; ok False → `notice` holds G-S's full refusal text (G-V shows it verbatim, P-V-13) and nothing was written; ok True → `images` lists the FILE NAMES moved, in line order (what `entry_for` records; the resolved paths are `task.images`, P-V-13), `missing` lists image names not found (their lines stay in the notes; G-V words "<k> image(s) not found: <names>").
 
 [Data: UndoOutcome]
 in: NamedTuple(str state, str note_text, str? notice)
@@ -297,7 +317,7 @@ desc: inbox.py; state ∈ {"undone", "gone", "changed", "failed"}; G-V restores 
 
 [Data: WriteResult]
 in: NamedTuple(bool written, str pad, bool union)
-desc: inbox.py; `pad` is what the file now holds; union True → G-V replaces the pad text and shows the merge notice.
+desc: inbox.py; `pad` is what the file now holds; G-V replaces its pad text whenever `written and pad != the text it passed` (a union, or stripped control characters), and shows the merge notice only when `union` is True (P-S-8).
 
 [Data: AttachResult]
 in: NamedTuple(list[str] names, str? notice)
@@ -342,7 +362,7 @@ desc: the pad images folder beside inbox.json; written by attach_images and undo
 desc: `Board.image_dir(task_id)` on the target board.
 
 [Interface: capture keys]
-desc: CaptureView bindings (priority): alt+d dump, alt+o other, alt+n new project, alt+a review, alt+i image, alt+u undo, alt+l divider, escape close; name field: enter, alt+b, escape. No alt+enter (R1-1).
+desc: CaptureView bindings (priority): alt+d dump, alt+o other, alt+n new project, alt+a review, alt+i image, alt+u undo, alt+l divider, escape close; name field: enter, tab (board cycle, shown `⇥ board`; `alt+b` arrives as `ctrl+left` from a terminal, P-V-1), escape. No alt+enter (R1-1).
 offers: (TC-4402) "n" → TaskboardApp.action_capture
 offers: (TC-4501) "alt+d" → dump_note
 offers: (TC-4541) "alt+u" → undo_dump
@@ -360,6 +380,11 @@ note_parts ──▶ note_at
 image_name ──▶ note_task
 note_task ──▶ dump_note
 note_task ──▶ undo_dump
+note_task ──▶ CaptureView
+[Data: DumpOutcome] ──▶ entry_for
+entry_for ──▶ [Data: DumpedEntry]
+entry_for ──▶ Inbox.write_pad
+entry_for ──▶ Inbox.flag
 union_pads ──▶ Inbox.write_pad
 prune_dumped ──▶ Inbox.write_pad
 prune_dumped ──▶ Inbox.last_dump

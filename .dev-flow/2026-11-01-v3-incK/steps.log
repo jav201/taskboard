@@ -8,3 +8,6 @@
 2026-11-01T11:01:11Z E1 R2 rulings applied (LLR 180, LED.2) model=opus
 2026-11-01T11:03:34Z E2 graph-interfaces drafted (29 nodes, 19 entities, 47 edges, lint exit 0) model=opus
 2026-11-01T11:04:09Z E1 amended (R2 rulings on F-1..F-13 applied: LLR 174→180, LED.2); interfaces drafted 29 nodes, lint 0; seam rulings round 0a
+2026-11-01T11:04:14Z E2b prototype start model=opus (3 agents: S inbox.py, T suggest.py, V app.py+keymap+README)
+2026-11-01T11:26:17Z E2b prototype groups returned (S 46 nodes, T 9, V 40; findings S18 T5 V14, MAJOR S5 V1); round-0b rulings written; correction pass start model=opus
+2026-11-01T11:43:20Z E2 end (correction pass: LLR 180→192, LED.3; trace 192/192 LLR + 8/8 AT; lint 0 on 4 files; E2c 6 score mismatches fixed, G-T won) model=opus

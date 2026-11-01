@@ -6,7 +6,8 @@
 > AT-4401..4408.
 > Base: `545c18a` (branch `feat/capture-list-colour`, Inc C and Inc L done). Commission:
 > `.dev-flow/COMMISSION-capture-list-colour.md` §Inc K (K-1..K-6). Rulings: `00-orchestrator-rulings.md`
-> (R0-1..R0-11) and the E2a amendments R1-1..R1-6, followed; where E1 proposes a change, see §8 Findings. Design source: the round's
+> (R0-1..R0-11) and the E2a amendments R1-1..R1-6, followed; where E1 proposes a change, see §8 Findings.
+> E2 correction pass: the round-0a/0b rulings of `03-pdr-rulings.md` (P-T-*, P-S-*, P-V-*) applied (LED-2026-11-01-incK.3). Design source: the round's
 > variant A (`prototypes/capture_round/proto.py` `PadScreen`, `Inbox`, `dump`, `undo_dump`, `hit_text`,
 > `options`; `out/png/cap-A*_118x30.png`), variant C's review (`ReviewScreen`, `cap-C-rev_118x30.png`)
 > and `prototypes/capture_round/suggest.py`.
@@ -43,7 +44,8 @@ new dependency.
 | part | the lines between two divider lines, or between a divider line and the pad's start or end |
 | note | a part holding at least one non-whitespace character; its text is the part's lines with leading and trailing blank lines removed |
 | cursor's note | the note holding the cursor's line; on a divider line, the note above it; none when the cursor's part is not a note |
-| image line | a note line that, stripped, is `img: ` followed by a name with no `/`, `\`, `:` or control character, not `.` or `..`, whose lower-case suffix is in `models.IMAGE_EXTS` |
+| image line | a note line that, stripped, is `img: ` followed by a name that passes the image-name rule |
+| image-name rule | 1 to 128 characters; no surrounding whitespace; no `/`, `\`, `:`, no character below U+0020, no U+007F, none in U+0080..U+009F; not `.` or `..`; a lower-case suffix (`os.path.splitext`) in `models.IMAGE_EXTS`; the part before the first `.`, lower-cased, not a Windows device stem (`con`, `prn`, `aux`, `nul`, `com1`..`com9`, `lpt1`..`lpt9`) (P-S-10) |
 | title line | the note's first line that is not an image line and whose visible text (`modals.visible_text`) is not blank |
 | store | `inbox.json` beside the boards registry: `app.registry.path.parent / "inbox.json"` (the home's `~/.taskboard/inbox.json`) |
 | pad images folder | `inbox-images/` beside the store (R0-9) |
@@ -54,6 +56,8 @@ new dependency.
 | document | one non-archived project of a readable board, as a bag of weighted stems (K-3) |
 | hit | (document, score, why) for one note; score is the cosine, halved on a single shared stem, rounded to 4 decimals |
 | cuts | HIGH 0.30, MID 0.16, LOW 0.08 (suggest.py) |
+| scored text | a note's title line and notes as `inbox.note_task` gives them (image lines left out), joined by `\n` (P-T-4) |
+| document text | a project's name, then, for each of its non-archived tasks in board order, the task's title, notes and milestone mark name; the cap `suggest.DOC_CHARS` (100 000) counts these fields' characters in that order (P-T-5) |
 | options | a note's top choice followed by its alternatives (at most 3 entries); `+ new project` is the option None |
 | chosen option | the option `alt+o` / `o` currently selects for a note (starts at the top choice) |
 | dump | turning one note into one task on its chosen option's project and board |
@@ -183,13 +187,17 @@ focused view, plus the `____` divider; D1 one global inbox; D2 TF-IDF explained.
 - **LLR-4401.12 — State.** While a capture view is on the screen stack, the system shall refuse every action of the key seat except `quit`, `agenda_all`, `people_directory`, `marks_manager`, `added_list` and `capture`.
   Threshold: with the capture view open, `check_action` is False for `add_task`, `delete`, `cursor`; 3/3. *NC:* `CaptureView` missing from the holding tuple: RED. **TC-4412**
 - **LLR-4401.13 — Ubiquitous.** The README key table pinned to the seat shall carry a row for `n`.
-  Threshold: `tests/test_keymap.py::test_the_readme_keybinding_table_matches_the_seat` GREEN with the `n` entry; 1/1. *NC:* no README row: that test RED. **TC-4413**
+  Threshold: `tests/test_keymap.py::test_the_readme_keybinding_table_matches_the_seat` GREEN with the `n` entry, and the README's main key table holds a line starting `` | `n` | Capture | `` (P-V-4: the home table's `n` row already satisfies the seat test); 2/2. *NC:* no README row: arm 2 RED. **TC-4413**
 - **LLR-4401.14 — Event.** When `n` is pressed on the list view (`N`) or on the agenda of every board (`A`), the system shall bring the capture view to the top.
   Threshold: from each, `n` → `app.screen` is a capture view and exactly 1 capture view is on the stack (twice `N`,`n`); 3/3. *NC:* `capture` not in `check_action`'s always-allowed tuple: RED. **TC-4414**
 - **LLR-4401.15 — Ubiquitous.** The system shall leave the `n` bindings of the boards home, the people directory and the marks manager acting as they act at `545c18a`.
   Threshold: `n` in each opens its own new-board / add-person / add-class form, and no capture view; 3/3. *NC:* the app's `n` made a priority binding: RED. **TC-4415**
 - **LLR-4401.16 — Unwanted.** If the pad holds no note, then the rail shall read `no notes yet`.
   Threshold: empty pad → rail plain text `no notes yet`; 1/1. *NC:* blank rail: RED. **TC-4416**
+- **LLR-4401.17 — Unwanted.** If the screen is narrower than 100 cells and the cursor is in no note while the pad holds a note, then the rail shall read `no note under the cursor` (P-V-7).
+  Threshold: at 80x24, pad `"a\n____\n"` with the cursor on row 2 → rail plain text `no note under the cursor`; 1/1. *NC:* show the first note: RED. **TC-4417**
+- **LLR-4401.18 — Ubiquitous.** The capture view shall bind every pad key (`alt+d`, `alt+o`, `alt+n`, `alt+a`, `alt+i`, `alt+u`, `alt+l`, `esc`, and `tab` of the name field) as a priority binding, so that the terminal form of an `alt+<letter>` key inserts no character (P-V-2).
+  Threshold: pad `"abc"` with the cursor in that note, `events.Key("alt+o", "o")` posted through the driver → pad text `"abc"`; `events.Key("alt+u", "u")` on an empty `dumped` → pad text `"abc"` and the notice `Nothing to undo.`; every `CaptureView` binding has `priority=True`; 3/3. *NC:* `alt+o` non-priority: pad `"abco"`: arm 1 RED. **TC-4418**
 
 ### 4.2 The divider and its hints (HLR-4402)
 
@@ -243,13 +251,13 @@ focused view, plus the `____` divider; D1 one global inbox; D2 TF-IDF explained.
 - **LLR-4403.5 — Ubiquitous.** The system shall leave tasks with no project out of every document.
   Threshold: a project-less task titled `zebra` → no document holds `zebra`; 1/1. *NC:* a `None` project document: RED. **TC-4465**
 - **LLR-4403.6 — Ubiquitous.** The system shall weight each stem by `idf = ln((N + 1) / (df + 1)) + 1`, N the document count and df the documents holding the stem.
-  Threshold: a 3-document fixture → every idf equal to the hand value within 1e-9; 1/1. *NC:* `ln(N / df)`: RED. **TC-4466**
+  Threshold: a 3-document fixture → every idf equal to the hand value within 1e-9; a note stem no document holds weighs 0 in the note vector (P-T-2: fixture F's N1 → `Eval harness` 0.4018, not 0.2208); 2/2. *NC:* `ln(N / df)`: arm 1 RED; a df-0 stem weighted `ln(N + 1) + 1`: arm 2 RED. **TC-4466**
 - **LLR-4403.7 — Ubiquitous.** The system shall score a note against a document as the cosine of their tf·idf vectors.
   Threshold: the fixture note against `Eval harness` → the hand value within 1e-4; 1/1. *NC:* dot product without norms: RED. **TC-4467**
 - **LLR-4403.8 — Unwanted.** If a note and a document share exactly one stem, then the system shall halve that score.
   Threshold: a one-shared-stem pair → score = 0.5 × cosine (within 1e-4); a two-stem pair → not halved; 2/2. *NC:* no halving: arm 1 RED. **TC-4468**
-- **LLR-4403.9 — Ubiquitous.** The system shall order a note's hits by score rounded to 4 decimals, highest first, then by board order, then by project name, then by the project's position on its board.
-  Threshold: equal scores on boards 0 and 1 → board 0 first (even when board 1's name sorts first); equal scores on one board, `Alpha` at position 1 and `Beta` at position 0 → `Alpha` first; 2/2. *NC:* project position before name: arm 2 RED. **TC-4469**
+- **LLR-4403.9 — Ubiquitous.** The system shall order a note's hits by score rounded to 4 decimals, highest first, then by board order, then by project name case-folded (`str.casefold`), then by project name as stored, then by the project's position on its board (P-T-3).
+  Threshold: equal scores on boards 0 and 1 → board 0 first (even when board 1's name sorts first); equal scores on one board, `Alpha` at position 1 and `Beta` at position 0 → `Alpha` first; `alpha` at position 0 and `Beta` at position 1 → `alpha` first; `beta` at position 0 and `Beta` at position 1 → `Beta` first; 4/4. *NC:* project position before name: arm 2 RED; plain `str` order of the name: arm 3 RED. **TC-4469**
 - **LLR-4403.10 — Ubiquitous.** The system shall keep at most 3 hits per note, each scoring at least LOW (0.08).
   Threshold: 5 scoring documents → 3 hits; a 0.07 document absent; 2/2. *NC:* `k = 4`: RED. **TC-4470**
 - **LLR-4403.11 — Ubiquitous.** The system shall make a note's top choice its best hit when that hit scores at least MID (0.16).
@@ -274,7 +282,7 @@ focused view, plus the `____` divider; D1 one global inbox; D2 TF-IDF explained.
   Threshold: 1 missing → `· 1 board not read`; 2 → `· 2 boards not read`; the suggestions skip those boards; 3/3. *NC:* silent skip: RED. **TC-4480**
 - **LLR-4403.21 — Ubiquitous.** The system shall compute a note's hits at most once per distinct note text while the documents are unchanged.
   Threshold: 3 notes painted, then 5 characters typed in note 2 → 0 further computations for notes 1 and 3 (a spy on the scorer); 1/1. *NC:* no cache: RED. **TC-4481**
-- **LLR-4403.22 — Unwanted.** If a note is longer than 10 000 characters, then the system shall score only its first 10 000 characters.
+- **LLR-4403.22 — Unwanted.** If a note's scored text is longer than `suggest.NOTE_CHARS` (10 000) characters, then the system shall score only its first 10 000 characters (P-T-1: the cap lives in suggest.py).
   Threshold: `eval harness` + 2 000 000 × `z ` → the same hits as the first 10 000 characters, computed in < 1.0 s; 2/2. *NC:* score the whole note: the time arm RED. **TC-4482**
 - **LLR-4403.23 — Ubiquitous.** The capture view shall build the documents from every board `board_lanes` returns when it opens.
   Threshold: 2 readable boards → documents from both; 1/1. *NC:* `app.board` only: RED. **TC-4483**
@@ -284,6 +292,10 @@ focused view, plus the `____` divider; D1 one global inbox; D2 TF-IDF explained.
   Threshold: one board with 0 projects → rail `→ + new project` and `no project shares a word`; 0 exceptions; 2/2. *NC:* index the empty document list: RED. **TC-4485**
 - **LLR-4403.26 — Ubiquitous.** The system shall give the same hits for the same note and the same boards on every run.
   Threshold: 3 runs over the fixture → identical hit lists (ids, scores, reasons); 1/1. *NC:* iterate a `set` for the tie order: RED (under `PYTHONHASHSEED` 0 vs 1). **TC-4486**
+- **LLR-4403.27 — Unwanted.** If a project's document text is longer than `suggest.DOC_CHARS` (100 000) characters, then the system shall tokenise only its first 100 000 characters (P-T-5).
+  Threshold: a project `Ledger alpha` whose one task `Audit log` has notes `"audit " × 20 000 + "zebra"` (120 005 characters) → its document holds no `zebra` and `tf["audit"]` = 16 665 (2 from the title + the 16 663 whole words in the 99 979 characters left after the name's 12 and the title's 9); corpus over it in < 1.0 s; fixture F (under the cap) → the same tf as uncapped; 3/3. *NC:* no cap: `zebra` present: arm 1 RED. **TC-4487**
+- **LLR-4403.28 — Ubiquitous.** The system shall score each note on its scored text (title line and notes from `inbox.note_task`, image lines left out) (P-T-4).
+  Threshold: fixture F plus a lane `Shots` holding a project `Png board` with no task, note `"Shot\nimg: board-1.png"` → hits `[]`; the AT-4402 note → the same hits (`Module 4 · Volumes` 0.668) with or without its image line; 2/2. *NC:* score the raw part text: `Png board` a hit at 1.0: arm 1 RED. **TC-4488**
 
 ### 4.4 Dump, alternatives, new project (HLR-4404)
 
@@ -327,9 +339,9 @@ focused view, plus the `____` divider; D1 one global inbox; D2 TF-IDF explained.
   Threshold: title exact for k = 3; 1/1. *NC:* unbound: RED. **TC-4519**
 - **LLR-4404.20 — Ubiquitous.** The name field's target board shall start as the open board.
   Threshold: the key row reads `↵ create on <open board name> + dump`; 1/1. *NC:* the first registry board: RED (open board = board 2). **TC-4520**
-- **LLR-4404.21 — Event.** When `alt+b` is pressed in the name field, the system shall set its target board to the next readable board in board order, wrapping after the last.
-  Threshold: 3 readable boards: `alt+b` ×3 → back to the open board; an unreadable board is skipped; 2/2. *NC:* include unreadable boards: RED. **TC-4521**
-- **LLR-4404.22 — State.** While the name field is open, the key row shall show `↵ create on <board> + dump`, `alt+b board` and `esc back`.
+- **LLR-4404.21 — Event.** When `tab` is pressed in the name field, the system shall set its target board to the next readable board in board order, wrapping after the last (P-V-1: a terminal sends `alt+b` as `ESC b`, which Textual 8.2.8 reads as `ctrl+left`).
+  Threshold: 3 readable boards: `tab` ×3, posted as `events.Key("tab", "\t")` through the driver → back to the open board, and the name field keeps its value and focus; an unreadable board is skipped; 3/3. *NC:* include unreadable boards: arm 2 RED; `tab` non-priority (focus moves out of the field): arm 1 RED. **TC-4521**
+- **LLR-4404.22 — State.** While the name field is open, the key row shall show `↵ create on <board> + dump`, `⇥ board` and `esc back`.
   Threshold: plain text exact at 118x30; 1/1. *NC:* the pad's key row kept: RED. **TC-4522**
 - **LLR-4404.23 — Event.** When `enter` is pressed in the name field holding a name, the system shall create a project of that name on the target board and dump the note into it in one board write.
   Threshold: the file holds the project and the task (project id = task's `project_id`); `Board.save`/`save_atomic` called once (spy); 3/3. *NC:* `add_project` then `add_task`: 2 saves: RED. **TC-4523**
@@ -384,6 +396,12 @@ focused view, plus the `____` divider; D1 one global inbox; D2 TF-IDF explained.
   Threshold: `len(app._undo_stack)` equal before and after a dump and after `alt+u`; `u` on the board after an open-board dump leaves the dumped task; 3/3. *NC:* push a snapshot on dump: RED. **TC-4554**
 - **LLR-4405.13 — State.** While the store keeps at least one dumped entry at most 7 days old, the wide rail shall end with `✓ dumped <n>  ·  alt+u undo  ·  kept 7 days`.
   Threshold: 2 entries → that line with `2`; 0 entries → no such line; 2/2. *NC:* line missing: RED. **TC-4553**
+- **LLR-4405.15 — Event.** When a dump is undone and its task removed from its board, the system shall show `Undone: <title> left <board>; the note is back in the pad.` (P-V-12).
+  Threshold: the undo of the AT-4402 dump → exactly 1 notification `Undone: Volume lab fails on WSL left Course; the note is back in the pad.`, title `Capture`, `markup=False`; 1/1. *NC:* silent success: RED. **TC-4555**
+- **LLR-4405.16 — Unwanted.** If a dumped entry's `board` is not the file of a lane `board_lanes` returns (same file), then the system shall undo nothing, keep the entry and show `<board path> is not a known board — nothing undone.` (P-S-4).
+  Threshold: the newest entry's `board` edited in `inbox.json` to a board-shaped file outside the registry → that notice; the entry still in `dumped`; that file's bytes and every board file unchanged; 3/3. *NC:* undo any `board` path: the outside file rewritten: RED. **TC-4556**
+- **LLR-4405.17 — Ubiquitous.** The system shall take the entry `alt+u` undoes from the store file's `dumped` as read at that key press, or from the in-memory store when the file cannot be read (P-S-6).
+  Threshold: a second `Inbox` drops the newest entry e after this view opened; `alt+u` here → the entry before e is undone and e's note is not restored a second time; with the file made unparseable → the in-memory newest entry is undone; 2/2. *NC:* read memory only: e's note restored twice: arm 1 RED. **TC-4557**
 
 ### 4.6 The review list (HLR-4406)
 
@@ -436,12 +454,12 @@ focused view, plus the `____` divider; D1 one global inbox; D2 TF-IDF explained.
   Threshold: no file → pad `""`, `dumped == []`; 0 exceptions; 2/2. *NC:* raise FileNotFoundError: RED. **TC-4586**
 - **LLR-4407.7 — Unwanted.** If the store file is unreadable (not JSON, not an object, a `pad` that is not a str, a `dumped` or `flagged` that is not a list), then the system shall copy it aside with `boards.keep_aside` when it first loads it.
   Threshold: 5 corrupt variants → `inbox.json.corrupt` byte-equal to each (fresh folder per variant); 5/5. *NC:* no copy: RED. **TC-4587**
-- **LLR-4407.8 — Unwanted.** If the store file is unreadable when first loaded, then the system shall start with an empty pad and show `inbox.json could not be read; it was copied to <backup name> and the pad starts empty.`
+- **LLR-4407.8 — Unwanted.** If the store file is unreadable when first loaded and was copied aside, then the system shall start with an empty pad and show `inbox.json could not be read; it was copied to <backup name> and the pad starts empty.`
   Threshold: notice exact, `markup=False`, severity `warning`; pad empty; 3/3. *NC:* silent: RED. **TC-4588**
 - **LLR-4407.9 — Unwanted.** If an unreadable store cannot be copied aside, then the system shall not write over it.
   Threshold: `keep_aside` patched to return None → after a pad change, file bytes unchanged; the save notice holds `was not written`; 2/2. *NC:* overwrite: RED. **TC-4589**
-- **LLR-4407.10 — Unwanted.** If a dumped or flagged entry is not an object or lacks a field of its type, then the system shall skip that entry.
-  Threshold: 3 bad entries (a list, `task` an int, no `at`) + 1 good → 1 entry read; 1/1. *NC:* treat the file as unreadable: RED. **TC-4590**
+- **LLR-4407.10 — Unwanted.** If a dumped or flagged entry is not an object, lacks a field of its type, has a `task` that does not fullmatch `[A-Za-z0-9_-]{1,64}`, an `images` item that fails the image-name rule, a blank `text` or a `new_project` that is not a bool, then the system shall skip that entry (P-S-4: `task` and `images` form file paths).
+  Threshold: 3 bad entries (a list, `task` an int, no `at`) + 1 good → 1 entry read; entries with `task` `"../x"`, `images` `["../../a.png"]`, `text` `"  "`, `new_project` `1` → each skipped; 2/2. *NC:* treat the file as unreadable: arm 1 RED; type check only: the `"../x"` entry read: arm 2 RED. **TC-4590**
 - **LLR-4407.11 — Ubiquitous.** The system shall remove control characters (`models.clean_strings`) from every string it reads from the store.
   Threshold: `pad` holding `\x1b[31m` and `\x07` → pad without either; 2/2. *NC:* raw read: RED. **TC-4591**
 - **LLR-4407.12 — Unwanted.** If `divider_notice` is anything but the boolean true, then the system shall treat the divider notice as not shown.
@@ -476,20 +494,28 @@ focused view, plus the `____` divider; D1 one global inbox; D2 TF-IDF explained.
   Threshold: `write_atomic` failing once → the board holds the task; the pad still holds the note; the in-memory `flagged` holds `{text, task, board}` of it; the next successful write → the file's `flagged` holds it and `dumped` does not; 4/4. *NC:* remove the note from the pad with no store record: the note is lost on a crash: RED. **TC-4606**
 - **LLR-4407.27 — Ubiquitous.** The system shall leave every board file, every `history.jsonl`, `people.json` and `marks.json` byte-identical while the capture view opens, takes typing, writes the pad and closes.
   Threshold: sha256 of 2 board files, their 2 histories, `people.json` and `marks.json` equal before `n` and after typing + 1.3 s + `esc`; 6/6. *NC:* `app.board.save()` on open: RED. **TC-4607**
-- **LLR-4407.28 — Event.** When a note is dumped onto an old board, the system shall write every other task's entry of that board exactly as it was.
-  Threshold: each old task's `json.dumps(entry, indent=2)` slice equal before and after; n/n. *NC:* back-fill `created` on the other tasks: RED. **TC-4608**
+- **LLR-4407.28 — Event.** When a note is dumped onto a board saved by this version, the system shall write every other task's entry of that board exactly as it was (P-S-19: a load normalisation such as a phase snap is existing behaviour of every save).
+  Threshold: a board built with `Board.save` holding tasks without `created` → each old task's `json.dumps(entry, indent=2)` slice equal before and after; n/n. *NC:* back-fill `created` on the other tasks: RED. **TC-4608**
 - **LLR-4407.29 — Event.** When a dump, an undo or an image attach changes the pad, the system shall write the store at once (R2 F-7).
   Threshold: after `alt+d`, `alt+u` and `alt+i` each, the stored `pad` equals the pad text with no wait (0 s); 3/3. *NC:* leave it to the 1.0 s debounce: RED. **TC-4609**
 - **LLR-4407.30 — Unwanted.** If the store write fails after a dump saved its board, then the system shall show `<project> · <board> got the task, but inbox.json could not be saved: <error> — the note stays in the pad, flagged ⚑.`
   Threshold: notice prefix exact, `markup=False`, severity `warning`; 1/1. *NC:* the generic save notice only: RED. **TC-4670**
-- **LLR-4407.31 — State.** While a note is flagged, the rail shall show, in place of that note's suggestion and reason lines, `⚑ already dumped → <project> · <board> — delete it here`.
-  Threshold: 1 flagged note of 3 → that line under its title; no `→` option line for it; 2/2. *NC:* the normal suggestion lines: RED. **TC-4671**
-- **LLR-4407.32 — Unwanted.** If `alt+d` is pressed, or the review list's `d` reaches a flagged note, then the system shall dump nothing for it and show `This note is already on <board>; delete it from the pad.`
-  Threshold: `alt+d` on a flagged note → 0 tasks added, notice exact; in the review list its row opens unchecked and a batch counts it as not dumped; 3/3. *NC:* dump it again: a duplicate task: RED. **TC-4672**
+- **LLR-4407.31 — State.** While a note is flagged, the rail shall show, in place of that note's suggestion and reason lines, `⚑ on <board> — delete it here` (P-V-8: fits the 48-cell wide rail; the LLR-4407.30 notice keeps the full sentence).
+  Threshold: 1 flagged note of 3 → `⚑ on Course — delete it here` under its title, uncut at 118x30; no `→` option line for it; 2/2. *NC:* the normal suggestion lines: RED. **TC-4671**
+- **LLR-4407.32 — Unwanted.** If `alt+d` or `alt+n` is pressed on a flagged note, or the review list's `d` reaches one, then the system shall dump nothing for it and show `This note is already on <board>; delete it from the pad.` (P-V-10: `alt+n` + `enter` would dump it again).
+  Threshold: `alt+d` on a flagged note → 0 tasks added, notice exact; `alt+n` on it → no name field, the same notice; in the review list its row opens unchecked and a batch counts it as not dumped; 4/4. *NC:* dump it again: a duplicate task: RED. **TC-4672**
 - **LLR-4407.33 — Ubiquitous.** The system shall write each flagged entry as an object with `at` (stamp), `text` (the note's text verbatim), `task` (id), `title`, `board` (the board file's path as str) and `project` (id), in that key order.
   Threshold: one flagged note written → the entry's keys and types exactly; 1/1. *NC:* `text` omitted (the flag cannot find its note): RED. **TC-4673**
 - **LLR-4407.34 — Event.** When a flagged entry's `text` is no longer a note of the pad at a store write, the system shall drop that entry.
   Threshold: the flagged note deleted by hand → the next write holds no `flagged` key; a flagged note still present → kept; 2/2. *NC:* flags never cleared: arm 1 RED. **TC-4674**
+- **LLR-4407.35 — Unwanted.** If the store file is larger than `STORE_MAX_BYTES` (8 388 608 bytes), then the system shall treat it as unreadable after reading at most 8 388 609 bytes of it (P-S-3).
+  Threshold: a store of 8 388 609 bytes → `load_report["unreadable"]` True, the pad empty, at most 8 388 609 bytes read (spy on the read); a store of 8 388 608 valid bytes → read normally; 2/2. *NC:* `read_bytes()` of the whole file: the byte-count arm RED. **TC-4675**
+- **LLR-4407.36 — Unwanted.** If an unreadable store file is larger than `STORE_MAX_BYTES`, then the system shall not copy it aside.
+  Threshold: a store of 8 388 609 bytes → no `inbox.json.corrupt`; `load_report["backup"]` None; after a pad change the file's bytes unchanged (LLR-4407.9); 3/3. *NC:* `keep_aside` on it: a `.corrupt` copy: RED. **TC-4676**
+- **LLR-4407.37 — Unwanted.** If a store write would hold more than `STORE_MAX_BYTES`, then the system shall leave the file and the in-memory store unchanged and show `inbox.json could not be saved: inbox.json would hold <n> bytes, over the 8388608-byte limit, so it was not written`.
+  Threshold: a pad of 8 400 000 characters, wait 1.3 s → notice exact (n the would-be byte count); file bytes and `app.inbox.pad` unchanged; 3/3. *NC:* no write cap: a 8.4 MB store written: RED. **TC-4677**
+- **LLR-4407.38 — Unwanted.** If the store file is unreadable when first loaded and no copy could be kept, then the system shall start with an empty pad and show `inbox.json could not be read and no copy could be kept; the pad starts empty.` (P-V-6).
+  Threshold: `keep_aside` patched to return None on `{"pad": 5}`, and a store of 8 388 609 bytes → that notice, `markup=False`, severity `warning`; pad empty; 2/2. *NC:* the LLR-4407.8 text with `None` as the backup name: RED. **TC-4678**
 
 ### 4.8 Images (HLR-4408)
 
@@ -527,8 +553,10 @@ focused view, plus the `____` divider; D1 one global inbox; D2 TF-IDF explained.
   Threshold: files back (bytes equal); a taken name → restored line `img: paste-001-2.png`; 3/3. *NC:* leave the files in the board: the restored lines name missing files: RED. **TC-4626**
 - **LLR-4408.17 — Event.** When a dump with images is undone, the system shall remove the emptied `images/<task id>/` folder.
   Threshold: the folder is gone; 1/1. *NC:* folder left: RED. **TC-4627**
-- **LLR-4408.18 — Ubiquitous.** The system shall read an image line only when its name has no `/`, `\` or `:`, is not `.` or `..`, and has a lower-case suffix in `IMAGE_EXTS`.
-  Threshold: `img: a.png` yes; `img: ../a.png`, `img: C:\a.png`, `img: sub/a.png`, `img: a.svg`, `img: a` no; 6/6. *NC:* allow `/`: the traversal arm RED. **TC-4628**
+- **LLR-4408.18 — Ubiquitous.** The system shall read an image line only when its name passes the image-name rule (§1: 1 to 128 characters, no surrounding whitespace, no `/`, `\`, `:` or control character, not `.` or `..`, a lower-case suffix in `IMAGE_EXTS`, no Windows device stem; P-S-10).
+  Threshold: `img: a.png` yes; `img: ../a.png`, `img: C:\a.png`, `img: sub/a.png`, `img: a.svg`, `img: a` no; `img: con.png`, `img: a\x07.png`, a 129 × `a` + `.png` name, `img:  a.png` (a leading space in the name) no; 10/10. *NC:* allow `/`: the traversal arm RED; no device-stem check: the `con.png` arm RED. **TC-4628**
+- **LLR-4408.19 — Unwanted.** If a clipboard file's own name fails the image-name rule, then the system shall copy it into the pad images folder as `image<suffix>` (its lower-case suffix; `image-<k><suffix>` when taken) (P-S-10).
+  Threshold: a clipboard file `con.png` → the line `img: image.png`, the copy's bytes equal the source's, the source unchanged; with `image.png` present → `img: image-2.png`; 2/2. *NC:* copy under the own name: a line the dump can never read: RED. **TC-4629**
 
 ### 4.9 Colour, mentions and untrusted text (HLR-4409)
 
@@ -539,7 +567,7 @@ focused view, plus the `____` divider; D1 one global inbox; D2 TF-IDF explained.
 - **LLR-4409.3 — Unwanted.** If a dumped title or notes contain control characters, then the system shall remove them (`models.strip_controls`) before the task is added.
   Threshold: a note titled `"\x1b[2J T"` with notes `"a\x07b"` → title `"[2J T"` (the ESC byte removed), notes `"ab"`; no character below 0x20 other than `\t`/`\n`, no DEL and no C1 byte remains; 2/2. *NC:* raw text: RED. **TC-4633**
 - **LLR-4409.4 — Unwanted.** If a note, a project name or a board name holds Rich markup, then the capture view shall draw it as literal text in the rail, the review list, the head row and every notice.
-  Threshold: note title `[red]x[/red] [@click=app.quit]q` → literal in the rail row, the review row and the dump notice; the app still runs; 4/4. *NC:* `Text.from_markup(title)`: RED. **TC-4634**
+  Threshold: note title `[red]x[/red] [@click=app.quit]q` → literal in the rail row and the review row; a project named `[b]P[/b]` → literal in its rail option, and, created with `alt+n`, in the dump notice (P-V-9: the notice holds no note title); the app still runs; 4/4. *NC:* `Text.from_markup(title)`: RED. **TC-4634**
 - **LLR-4409.5 — Ubiquitous.** The system shall write the pad to the store with control characters removed.
   Threshold: a pasted `\x1b` and `\x9b` → absent from the stored `pad`; 2/2. *NC:* raw write: RED. **TC-4635**
 
@@ -547,18 +575,18 @@ focused view, plus the `____` divider; D1 one global inbox; D2 TF-IDF explained.
 
 - **AT-4401** (K-1, K-2) — registry of 2 synthetic boards; `n` → the capture view at 118x30 with an empty pad: the ghost example, the hint row `____ ↵ new note · alt+l divider`, head `CAPTURE  0 notes …`. Type `Golden set answer key`, `enter`, `____`, `enter` → the divider row draws as a rule, the one-time notice shows, head `2 notes`; type `Pilot stores`; `alt+l` (a divider and a new line); `esc`. Store holds the pad verbatim and `divider_notice: true`; board, history, `people.json`, `marks.json` bytes unchanged. Repeat at 80x24: the rail sits below the pad.
 - **AT-4402** (K-3, K-4, K-6) — boards `Client A` (projects `Eval harness`, `Pilot rollout`) and `Course` (`Module 4 · Volumes`). Pad `Volume lab fails on WSL\nthe oracle script expects /mnt/c\nimg: board-0938.png` (the image in `inbox-images/`): the rail names `Module 4 · Volumes · Course` with `why volume · oracle · script`; `alt+d` → `Course`'s file holds the task titled `Volume lab fails on WSL`, notes `the oracle script expects /mnt/c`, `created` stamped, the image in `images/<id>/`; the note is gone from the pad; the notice `Dumped → Module 4 · Volumes · Course   ·   alt+u undo`.
-- **AT-4403** (K-4) — a note whose best hit is weak: the rail shows `+ new project`; `alt+o` cycles to the weak hit and back; `alt+n`, `alt+b` → `Course`, type `Contracts pilot`, `enter` → `Course` holds the project and the task in one write; a duplicate name is refused with its notice.
+- **AT-4403** (K-4) — a note whose best hit is weak: the rail shows `+ new project`; `alt+o` cycles to the weak hit and back; `alt+n`, `tab` → `Course` (P-V-1), type `Contracts pilot`, `enter` → `Course` holds the project and the task in one write; a duplicate name is refused with its notice.
 - **AT-4404** (K-4) — two dumps; `alt+u` → the second task leaves its board and the note returns at the pad's end after a divider; `alt+a`, `u` → the first undone too; a third `alt+u` → `Nothing to undo.`; an entry dated 8 days ago is dropped from `dumped` at the next write.
 - **AT-4405** (K-1 C) — 4 notes (one new-project); `alt+a` → 4 rows, 3 checked; `space` on the new-project row → refused; `o` on row 1; `d` → 3 tasks on their boards, `Dumped 3 of 3 checked`, the pad holds the 4th note.
 - **AT-4406** (K-5) — `inbox.json` holding `{"pad": 5}` → `n` shows the empty pad and the set-aside notice, `inbox.json.corrupt` equals the bad bytes; a held `inbox.json.lock` → typing then waiting gives the save notice and the pad keeps the text; `esc` warns once, `esc` again closes. A store write failing right after a dump → the task is on its board, the note stays in the pad flagged `⚑`, and `alt+d` on it is refused.
-- **AT-4407** (HLR-4409, K-6) — note `::b:: ask the vendor :: @username_subject` with a clipboard image (patched `grab_clipboard_image`) via `alt+i`; the pad shows `ask the vendor` in blue; dump → the task notes keep the span and mention verbatim; a note titled `[red]x[/red]` shows literally in the rail and the notice.
+- **AT-4407** (HLR-4409, K-6) — note `Vendor call\n::b:: ask the vendor :: @username_subject` (P-V-11: the span line is a notes line, not the title) with a clipboard image (patched `grab_clipboard_image`) via `alt+i`; the pad shows `ask the vendor` in blue; dump → the task notes keep the span and mention verbatim; a note titled `[red]x[/red]` shows literally in the rail, and a project named `[b]P[/b]` (made with `alt+n`) literally in the dump notice (P-V-9).
 - **AT-4408** (K-5, D1) — a second window (a second `Inbox` instance) dumps note `b` and adds note `c` while this pad (holding `a`, `b`) adds `d`: the next write writes the union `a`, `c`, `d` (`b` is in the fresh `dumped`), shows the merge notice, and no task is created twice.
 
 ## 6. Slice of functions to change (named and counted)
 
 | # | File | Unit | Change |
 |---|---|---|---|
-| 1 | inbox.py | constants `INBOX_NAME`, `IMAGES_NAME`, `KEEP_DAYS`, `SUGGEST_CHARS`; divider and image-line regexes | new |
+| 1 | inbox.py | constants `INBOX_NAME`, `IMAGES_NAME`, `KEEP_DAYS`, `STORE_MAX_BYTES` (P-S-3), `IMAGE_NAME_MAX`; divider, stamp and task-id regexes (no `SUGGEST_CHARS`: P-T-1 / P-S-13) | new |
 | 2 | inbox.py | `is_divider(line)` | new |
 | 3 | inbox.py | `parts(text)` → line ranges; `notes(text)`; `note_at(text, row)`; `note_count(text, row)` | new |
 | 4 | inbox.py | `note_task(text)` → (title, notes, image names) | new |
@@ -567,11 +595,11 @@ focused view, plus the `____` divider; D1 one global inbox; D2 TF-IDF explained.
 | 7 | inbox.py | `Inbox` class: `__init__`, `_hold`, `_stamped`, `load`, `refresh`, `_read`, `_commit`, `_set_aside`, `_prune` | new |
 | 8 | inbox.py | `Inbox.write_pad`, `Inbox.record_dump`, `Inbox.drop_dump`, `Inbox.flag`, `Inbox.mark_notice` | new |
 | 9 | inbox.py | `attach_images(folder, grabbed)` → names or a notice | new |
-| 10 | inbox.py | `dump_note(target, project_or_new, text, folder)` — open board: `app.board.add_task`; other board: fresh `peek_board` under `file_lock`, stamp check, `models.stamp`, `save_atomic`, birth record; images copy; roll-back | new |
+| 10 | inbox.py | `dump_note(target, project_id, new_name, text, folder, project_name="")` (P-S-1) and `entry_for(outcome, note, board_path, now)` (P-S-15) — open board: `app.board.add_task`; other board: fresh `peek_board` under `file_lock`, stamp check, `models.stamp`, `save_atomic`, birth record; images copy; roll-back | new |
 | 11 | inbox.py | `undo_dump(entry, open_board, folder)` — task/project removal (same two board paths), images back | new |
-| 12 | suggest.py | `STOP`, `WORD_RE`, weights, cuts; `fold`, `stem`, `words` | new |
-| 13 | suggest.py | `Doc`, `Hit`, `corpus(lanes, marks)` | new |
-| 14 | suggest.py | `_idf`, `suggest(note, docs)` (with the 10 000-char cap) | new |
+| 12 | suggest.py | `STOP`, `WORD_RE`, weights, cuts, `NOTE_CHARS` (P-T-1), `DOC_CHARS` (P-T-5); `fold`, `stem`, `words` | new |
+| 13 | suggest.py | `Doc`, `Hit`, `corpus(lanes, marks)` (with the 100 000-char document cap) | new |
+| 14 | suggest.py | `_idf`, `suggest(note, docs)` (with the 10 000-char cap; ties by name case-folded, P-T-3) | new |
 | 15 | suggest.py | `level`, `bars`, `options(hits)` | new |
 | 16 | app.py | `PadArea(InkArea)`: divider rule in `render_line`, ghost placeholder | new |
 | 17 | app.py | `CaptureView(Screen)`: compose, mount, paint (head, rail, hint, keys), debounce write, close/unmount write, actions dump/other/new/board/review/image/undo/divider, name field | new |
@@ -597,7 +625,8 @@ Unchanged on purpose (to verify at E2): `Board.add_task` (stamps and writes the 
 
 ## 7. Counts
 
-US 1 · HLR 9 · LLR 180 (4401: 16, 4402: 18, 4403: 26, 4404: 33, 4405: 14, 4406: 16, 4407: 34, 4408: 18, 4409: 5) · AT 8.
+US 1 · HLR 9 · LLR 192 (4401: 18, 4402: 18, 4403: 28, 4404: 33, 4405: 17, 4406: 16, 4407: 38, 4408: 19, 4409: 5) · AT 8.
+(E2 correction pass, LED-2026-11-01-incK.3: 12 LLRs added — LLR-4401.17, LLR-4401.18, LLR-4403.27, LLR-4403.28, LLR-4405.15, LLR-4405.16, LLR-4405.17, LLR-4407.35, LLR-4407.36, LLR-4407.37, LLR-4407.38, LLR-4408.19; none withdrawn.)
 
 Convention (as Inc L's LLR-4303.24): an `If … then` refusal that "leaves X unchanged and shows the notice N" is
 one response — the refusal and its message — and is not split further; any other compound is split (LLR-4406.9 /

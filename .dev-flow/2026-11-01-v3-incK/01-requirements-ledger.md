@@ -82,3 +82,36 @@
 - **What changed:** F-4 accepted with its wording: LLR-4402.8 counts the pad's last empty part after a final divider (not the cursor's part). F-7 accepted plus an immediate write on dump, undo and attach: new LLR-4407.29. F-8 amended: the 3-way merge is withdrawn; LLR-4407.19 is now the note-level union (fresh pad's notes, then this window's notes that are neither in the fresh pad nor the `text` of a fresh `dumped` entry); LLR-4407.20 now keys on the store stamp instead of a base pad; LLR-4407.21 and LLR-4407.22 say "union". F-12 accepted with the flagged note: LLR-4407.26 rewritten (the note stays in the pad, flagged, instead of leaving it); new LLR-4407.30 (the notice), LLR-4407.31 (the rail's flag line), LLR-4407.32 (a flagged note is never dumped again), LLR-4407.33 (the `flagged` entry schema), LLR-4407.34 (a flag drops when its note is gone); LLR-4407.2, LLR-4407.7 and LLR-4407.10 extended for the `flagged` key. No requirement withdrawn. The definition `base pad` was replaced by `store stamp`, and `flagged note` was added; the TC rule gained the overflow LLR-4407.n (n ≥ 30) → TC-(4640+n); AT-4406 and AT-4408 follow the rulings; §8 findings each carry their ruling. F-1, F-2, F-3, F-5, F-6, F-9, F-10, F-11 and F-13 were accepted as written (no requirement change). Self-check rerun: 180 LLRs, 180 unique TC ids, 0 defects.
 - **Why:** R2 prefers the simpler union (no note text is dropped silently, at the cost of a deleted note sometimes coming back) and keeps a note whose dump could not be recorded visible and blocked, instead of hiding it in memory where a crash loses it.
 - **Evidence:** `00-orchestrator-rulings.md` §R2; `01-requirements.md` §8.
+
+### LED-2026-11-01-incK.3 — the E2 correction pass: round-0b rulings on the group prototypes (`03-pdr-rulings.md`)
+- **Requirement:** LLR-4401.13
+- **Requirement:** LLR-4401.17
+- **Requirement:** LLR-4401.18
+- **Requirement:** LLR-4403.6
+- **Requirement:** LLR-4403.9
+- **Requirement:** LLR-4403.22
+- **Requirement:** LLR-4403.27
+- **Requirement:** LLR-4403.28
+- **Requirement:** LLR-4404.21
+- **Requirement:** LLR-4404.22
+- **Requirement:** LLR-4405.15
+- **Requirement:** LLR-4405.16
+- **Requirement:** LLR-4405.17
+- **Requirement:** LLR-4407.8
+- **Requirement:** LLR-4407.10
+- **Requirement:** LLR-4407.28
+- **Requirement:** LLR-4407.31
+- **Requirement:** LLR-4407.32
+- **Requirement:** LLR-4407.35
+- **Requirement:** LLR-4407.36
+- **Requirement:** LLR-4407.37
+- **Requirement:** LLR-4407.38
+- **Requirement:** LLR-4408.18
+- **Requirement:** LLR-4408.19
+- **Requirement:** LLR-4409.4
+- **Requirement:** AT-4403
+- **Requirement:** AT-4407
+- **Date:** 2026-11-01
+- **What changed:** 12 LLRs added, 13 LLRs and 2 ATs reworded, none withdrawn (LLR 180 → 192). Added: LLR-4401.17 (narrow rail with the cursor in no note reads `no note under the cursor`, P-V-7); LLR-4401.18 (every pad key a priority binding, tested with the terminal form `events.Key("alt+o", "o")`, P-V-2); LLR-4403.27 (each project document cut at `suggest.DOC_CHARS` = 100 000 characters before tokenising, P-T-5); LLR-4403.28 (a note is scored on its title line and notes from `note_task`, image lines left out, P-T-4); LLR-4405.15 (a successful undo shows `Undone: <title> left <board>; the note is back in the pad.`, P-V-12); LLR-4405.16 (undo only into a lane board, else `<board path> is not a known board — nothing undone.` and the entry kept, P-S-4); LLR-4405.17 (`alt+u` takes its entry from the store file's `dumped` read fresh, memory when unparseable, P-S-6); LLR-4407.35, LLR-4407.36, LLR-4407.37 (the store cap `STORE_MAX_BYTES` = 8 388 608: an over-cap file is read up to the cap only, treated as unreadable and not copied aside; an over-cap write changes nothing and shows its worded notice, P-S-3); LLR-4407.38 (the unreadable-store notice when no copy could be kept, P-V-6 wording); LLR-4408.19 (a clipboard file whose name fails the image-name rule is copied as `image<suffix>`, P-S-10). Reworded: LLR-4401.13 (TC-4413 also asserts the `` | `n` | Capture | `` row, P-V-4); LLR-4403.6 (threshold gains the df-0 weight 0 arm, P-T-2); LLR-4403.9 (name ties by `casefold`, then the stored name, P-T-3); LLR-4403.22 (the cap named `suggest.NOTE_CHARS`, P-T-1); LLR-4404.21 and LLR-4404.22 (the name field's board cycle is `tab`, shown `⇥ board`, P-V-1); LLR-4407.8 (only when the store was copied aside); LLR-4407.10 (entry shape: `task` id pattern, image names, non-blank `text`, bool `new_project`, P-S-4); LLR-4407.28 ("a board saved by this version", P-S-19); LLR-4407.31 (the rail's flag line `⚑ on <board> — delete it here`, P-V-8); LLR-4407.32 (`alt+n` on a flagged note refused too, P-V-10); LLR-4408.18 (the widened image-name rule, P-S-10; §1 gains the rule as a definition); LLR-4409.4 (the notice arm uses a markup project name, P-V-9); AT-4403 (`tab` for the board cycle); AT-4407 (note `Vendor call\n::b:: ask the vendor :: @username_subject`, P-V-11; the notice arm as LLR-4409.4). §1 gains the definitions `image-name rule`, `scored text` and `document text`; §6 moves the note cap to suggest.py (`NOTE_CHARS`, `DOC_CHARS`; no `SUGGEST_CHARS` in inbox.py, P-T-1 / P-S-13) and names `entry_for` and `dump_note`'s `project_name` (P-S-15, P-S-1). P-S-21 ruled "no archived check": LLR-4404.12 is unchanged. P-S-1, P-S-2, P-S-5, P-S-7, P-S-8, P-S-9, P-S-14, P-S-15, P-V-3, P-V-5, P-V-13, P-V-14 change the graphs or tests only; P-S-11, P-S-12 and P-S-17 are recorded risks / BACKLOG. Self-check rerun (a script over the file): 192 LLRs, 192 unique TC ids by the numbering rule (overflow LLR-4407.35..38 → TC-4675..TC-4678), one `shall` each, EARS openings, every LLR with an NC — 0 defects.
+- **Why:** each ruling closes a defect the group prototypes found before code: a key the terminal cannot deliver (`alt+b`), a check that could not fail (TC-4413), unbounded reads of an untrusted store, store entries that form file paths, a duplicate note restored by a stale undo, a silent success, and score/order rules left implicit (df-0 weight, case of a tie, image words, document size).
+- **Evidence:** `03-pdr-rulings.md` rounds 0a and 0b; `graph-proto-S.cw.md`, `graph-proto-T.cw.md`, `graph-proto-V.cw.md` §Findings; the E2c probe (`%TEMP%\incK-E2-probe\e2c.py`, `cap.py`, outside the repo; G-T's reference `%TEMP%\incK-T-probe\ref_suggest.py` with the P-T-3 tie order) for the LLR-4403.27 and LLR-4403.28 thresholds.
