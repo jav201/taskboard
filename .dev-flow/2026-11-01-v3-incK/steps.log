@@ -14,3 +14,4 @@
 2026-11-01T11:43:21Z E3 PDR round 1 start model=opus (architect, security)
 2026-11-01T11:56:31Z E3 PDR round 1 done (arch FAIL 1H/4M/1MED/3m/2I, sec FAIL 3M/2MED/6L); rulings written; correction start model=opus
 2026-11-01T12:26:03Z E3 round-1 corrections done (LLR 212 ids: 205 active, 7 withdrawn; LED.4; trace 205/205 + 8/8; lint 0 x4); round 2 (blocking-only re-review) start model=opus
+2026-11-01T12:28:57Z E3 end: PDR round 2 PASS-WITH-NOTES (arch ARCH-12 MED → LLR-4403.30/.31 withdrawn, ARCH-13 MINOR; sec R2-1 LOW + 1 INFO → addenda A-1..A-4); LED.5; trace 203/203 + 8/8 model=opus

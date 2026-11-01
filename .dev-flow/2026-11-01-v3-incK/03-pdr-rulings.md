@@ -100,3 +100,15 @@
 |---|---|
 | A dump/undo store write also carries the window's unsaved typing (typing union applied after the op) | ACCEPT — otherwise unsaved typing is lost when a dump meets a changed file. |
 | LLR-4403.30/.31 (no scoring inside the 1 s debounce; the rail keeps the last drawn lines meanwhile) | ACCEPT — they are the visible face of ARCH-6; the E5 captures show them. |
+
+## Round 2 — blocking-only re-review
+
+| Finding | Ruling |
+|---|---|
+| ARCH-1..ARCH-5 | CLOSED (03-pdr-architect-r2.md, PASS-WITH-NOTES). |
+| ARCH-12 (MEDIUM, new) | ACCEPT — WITHDRAW LLR-4403.30 and LLR-4403.31 (prefer removing): with the cached corpus (2.7 ms per call, LLR-4403.29) the rail scores on every change, so the rail never shows an option `alt+d` would not use. E4 addendum A-1. |
+| ARCH-13 (MINOR) | ACCEPT as designed: an edited note is a new note, so an `alt+o` pick resets; recorded in addenda A-2 (no change). |
+| SEC-1..SEC-5 | CLOSED in the design (03-pdr-security-r2.md, PASS-WITH-NOTES); mitigations re-checked in code at E5. |
+| R2-1 (LOW, new) | ACCEPT the fix: `action_quit` (from any screen) retries a held pending store write once before exiting; on failure it exits anyway and the note stays recoverable with `alt+u` (recorded risk). E4 addendum A-3. |
+
+**E3 verdict: PASS-WITH-NOTES** (architect and security, round 2). Addenda A-1..A-3 go to E4.

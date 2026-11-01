@@ -64,8 +64,6 @@ LLR-4403.26 (TC TC-4486): proto-T:suggest TC-4486
 LLR-4403.27 (TC TC-4487): proto-T:corpus TC-4487
 LLR-4403.28 (TC TC-4488): proto-T:suggest TC-4488; proto-V:CaptureView.options_for TC-4488
 LLR-4403.29 (TC TC-4489): interfaces:corpus TC-4489; interfaces:suggest TC-4489; proto-T:corpus TC-4489; proto-T:suggest TC-4489
-LLR-4403.30 (TC TC-4490): proto-V:CaptureView._paint TC-4490
-LLR-4403.31 (TC TC-4491): proto-V:rail_rows TC-4491; proto-V:CaptureView._paint TC-4491
 LLR-4404.1 (TC TC-4501): proto-S:dump_note TC-4501; proto-V:CaptureView._dump TC-4501
 LLR-4404.2 (TC TC-4502): interfaces:note_task TC-4502; proto-S:_title_row TC-4502; proto-S:note_task TC-4502
 LLR-4404.3 (TC TC-4503): proto-S:_task_fields TC-4503
@@ -211,7 +209,7 @@ AT-4405: proto-V:ReviewList.action_dump
 AT-4406: proto-V:CaptureView.on_mount; proto-V:CaptureView.action_close
 AT-4407: proto-T:suggest; proto-V:CaptureView.action_image
 AT-4408: proto-V:CaptureView._flush
-withdrawn (not traced): LLR-4407.26, LLR-4407.30, LLR-4407.31, LLR-4407.32, LLR-4407.33, LLR-4407.34, LLR-4408.14
-traced 205/205 active LLRs (212 ids)
+withdrawn (not traced): LLR-4403.30, LLR-4403.31, LLR-4407.26, LLR-4407.30, LLR-4407.31, LLR-4407.32, LLR-4407.33, LLR-4407.34, LLR-4408.14
+traced 203/203 active LLRs (212 ids)
 traced 8/8 ATs
 untraced: none

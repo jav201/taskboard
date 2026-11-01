@@ -7,7 +7,7 @@ never edit product code (`taskboard/`, `README.md`).
 Role file: `C:\Users\jjgh8\.claude\skills\dev-flow\agents\tester.md` (read it first).
 
 ## Inputs (folder `.dev-flow/2026-11-01-v3-incK/` in the worktree `C:/Users/jjgh8/Github/taskboard-wt/capture-proto`)
-- `01-requirements.md` — 9 HLRs, 205 active LLRs (7 withdrawn: no test), 8 ATs; each LLR has a numeric threshold, a negative control
+- `01-requirements.md` — 9 HLRs, 203 active LLRs (9 withdrawn: no test), 8 ATs; each LLR has a numeric threshold, a negative control
   and its TC id (numbering rule in the header, incl. its overflow rules).
 - `graph-interfaces.cw.md`, `graph-proto-S.cw.md`, `graph-proto-T.cw.md`, `graph-proto-V.cw.md` — every
   `examples:` line is an exact expected value with its TC id; `[Interface: …] offers:` lines are key contracts.
