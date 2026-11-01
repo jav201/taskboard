@@ -1,0 +1,6 @@
+# stage start/end (UTC) model notes
+2026-11-01T08:43:49Z E0 setup start model=opus
+2026-11-01T08:46:16Z E0 setup end (base incL-base + marks incL-marks worktrees at eb411e1)
+2026-11-01T08:46:16Z E1 requirements start model=opus
+2026-11-01T08:46:16Z E2a baseline-graph start model=opus (background agent, parallel with E1)
+2026-11-01T08:49:57Z E1 requirements end model=opus hlr=6 llr=63 at=5 slice=9 units/4 files
