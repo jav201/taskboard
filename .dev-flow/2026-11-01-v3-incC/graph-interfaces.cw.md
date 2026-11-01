@@ -28,10 +28,10 @@ examples: (TC-4202) text "a ::b:: x :: c" → segments ("a ", "mut"), ("x", "blu
 examples: (TC-4203) text "==y== !!r!!" → segments ("y", "soon"), (" ", "mut"), ("r", "over") as at base
 
 TaskModal._lift_pen
-req: LLR-4203.3, LLR-4203.4, LLR-4203.6, LLR-4203.11, LLR-4203.14, LLR-4205.14
+req: LLR-4203.3, LLR-4203.4, LLR-4203.6, LLR-4203.11, LLR-4205.14
 in: TaskModal self
 out: None
-func: if a pen is on: s = _pen_span(); if s is None only set pen to None; else if s's inner text is empty remove text[s.start:s.end] and put the cursor at s.start, else put the cursor at s.end; then set pen to None and refresh the Notes label. No pen: does nothing. Owned by M1; called by M1 (action_pen, _save, the leave handler) and M2 (action_colour). (P-M1-10)
+func: if a pen is on: s = _pen_span(); if s is None only set pen to None; else if s's inner text is empty remove text[s.start:s.end] and put the cursor at s.start, else put the cursor at s.end; then set pen to None and refresh the Notes label. No pen: does nothing. Owned by M1; called by M1 (action_pen, _save) and M2 (action_colour). (P-M1-10)
 module: taskboard/modals.py
 modify: [Data: TaskModal.pen] (replace); [Data: TextArea #f-notes] (replace)
 examples: (TC-4258) notes "::b:: abc ::", cursor (0, 9), pen `4` → notes "::b:: abc ::", cursor (0, 12), pen `None`

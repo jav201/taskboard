@@ -7,3 +7,5 @@
 2026-11-01T06:35:56Z E2a baseline-graph end model=opus nodes=12 entities=28 edges=27 lint=0 extract=0
 2026-11-01T06:35:56Z E2b prototype start model=opus (3 agents: V, M1, M2)
 2026-11-01T06:49:44Z E2b prototype groups returned (V 9 nodes, M1 15, M2 11; 26 findings); round-0 rulings start model=opus
+2026-11-01T06:58:05Z E2 end (correction pass applied; 61/61 LLR traced) model=opus
+2026-11-01T06:58:05Z E3 PDR round 1 start model=opus (architect, security)

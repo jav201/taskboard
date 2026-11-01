@@ -1,0 +1,61 @@
+LLR-4201.1 -> interfaces:colour_spans; interfaces:highlight_segments; proto-V:colour_spans; proto-V:highlight_segments -> AT-4204, TC-4201, TC-4202, TC-4203, TC-4204, TC-4205, TC-4206, TC-4207, TC-4208, TC-4209, TC-4227, TC-4228, TC-4229
+LLR-4201.2 -> interfaces:colour_spans; proto-V:colour_spans; proto-V:highlight_segments -> AT-4204, TC-4201, TC-4202, TC-4203, TC-4204, TC-4205, TC-4206, TC-4207, TC-4208, TC-4209, TC-4227, TC-4228, TC-4229
+LLR-4201.3 -> interfaces:highlight_segments; proto-V:highlight_segments -> AT-4204, TC-4201, TC-4202, TC-4203, TC-4204, TC-4205, TC-4206, TC-4207, TC-4208, TC-4209, TC-4227
+LLR-4201.4 -> interfaces:colour_spans; proto-V:colour_spans; proto-V:highlight_segments -> AT-4204, TC-4201, TC-4202, TC-4203, TC-4204, TC-4205, TC-4206, TC-4207, TC-4208, TC-4209, TC-4227, TC-4228, TC-4229
+LLR-4201.5 -> interfaces:colour_spans; proto-V:colour_spans; proto-V:highlight_segments -> AT-4204, TC-4201, TC-4202, TC-4203, TC-4204, TC-4205, TC-4206, TC-4207, TC-4208, TC-4209, TC-4227, TC-4228, TC-4229
+LLR-4201.6 -> interfaces:colour_spans; proto-V:colour_spans; proto-V:highlight_segments -> AT-4204, TC-4201, TC-4202, TC-4203, TC-4204, TC-4205, TC-4206, TC-4207, TC-4208, TC-4209, TC-4227, TC-4228, TC-4229
+LLR-4201.7 -> interfaces:colour_spans; proto-V:colour_spans; proto-V:highlight_segments -> AT-4204, TC-4201, TC-4202, TC-4203, TC-4204, TC-4205, TC-4206, TC-4207, TC-4208, TC-4209, TC-4227, TC-4228, TC-4229
+LLR-4201.8 -> interfaces:colour_spans; proto-V:colour_spans; proto-V:highlight_segments -> AT-4204, TC-4201, TC-4202, TC-4203, TC-4204, TC-4205, TC-4206, TC-4207, TC-4208, TC-4209, TC-4227, TC-4228, TC-4229
+LLR-4201.9 -> interfaces:highlight_segments; proto-V:colour_spans; proto-V:highlight_segments -> AT-4204, TC-4201, TC-4202, TC-4203, TC-4204, TC-4205, TC-4206, TC-4207, TC-4208, TC-4209, TC-4227, TC-4228, TC-4229
+LLR-4202.1 -> proto-V:_highlight_markup -> TC-4203, TC-4210
+LLR-4202.2 -> proto-V:notes_text -> TC-4211, TC-4212, TC-4220, TC-4221, TC-4222, TC-4223
+LLR-4202.3 -> proto-V:notes_text -> TC-4211, TC-4212, TC-4220, TC-4221, TC-4222, TC-4223
+LLR-4202.4 -> proto-V:present_note_lines -> TC-4214
+LLR-4202.5 -> proto-V:notes_html -> AT-4203, TC-4212, TC-4216
+LLR-4202.6 -> proto-V:report_deck.render -> AT-4203, TC-4217, TC-4224
+LLR-4202.7 -> proto-V:report_workspace.render -> TC-4218
+LLR-4202.8 -> proto-V:legend_entries -> TC-4219
+LLR-4202.9 -> proto-M2:TaskDetails.compose -> TC-4276
+LLR-4202.10 -> proto-M1:TaskModal._fit_width; proto-M1:pen_label -> TC-4233, TC-4239
+LLR-4203.1 -> proto-M1:TaskModal.action_pen -> TC-4230, TC-4232, TC-4233, TC-4234, TC-4235, TC-4248, TC-4252, TC-4254, TC-4255
+LLR-4203.2 -> proto-M1:TaskModal._pen_follow -> TC-4230, TC-4231, TC-4238, TC-4250, TC-4256, TC-4257
+LLR-4203.3 -> interfaces:TaskModal._lift_pen; proto-M1:TaskModal.action_pen -> TC-4230, TC-4232, TC-4233, TC-4234, TC-4235, TC-4248, TC-4252, TC-4254, TC-4255, TC-4258, TC-4259
+LLR-4203.4 -> interfaces:TaskModal._lift_pen; proto-M1:TaskModal.__init__; proto-M1:pen_label; proto-M1:TaskModal._pen_label; proto-M1:TaskModal.action_pen -> TC-4230, TC-4232, TC-4233, TC-4234, TC-4235, TC-4239, TC-4248, TC-4252, TC-4254, TC-4255, TC-4258, TC-4259
+LLR-4203.5 -> proto-M1:TaskModal.action_pen -> TC-4230, TC-4232, TC-4233, TC-4234, TC-4235, TC-4248, TC-4252, TC-4254, TC-4255
+LLR-4203.6 -> interfaces:TaskModal._lift_pen; proto-M1:TaskModal.action_pen -> TC-4230, TC-4232, TC-4233, TC-4234, TC-4235, TC-4248, TC-4252, TC-4254, TC-4255, TC-4258, TC-4259
+LLR-4203.7 -> interfaces:TaskModal._pen_span; interfaces:TaskModal.check_action; proto-M1:TaskModal.action_pen_enter -> TC-4230, TC-4236, TC-4237, TC-4240, TC-4245, TC-4258, TC-4284
+LLR-4203.8 -> interfaces:TaskModal._pen_span; proto-M1:TaskModal._pen_follow; proto-M1:TaskModal.on_text_area_selection_changed -> TC-4230, TC-4231, TC-4238, TC-4245, TC-4250, TC-4256, TC-4257, TC-4258
+LLR-4203.9 -> proto-M1:TaskModal.compose; proto-M1:TaskModal._fit_width; proto-M1:pen_label; proto-M1:TaskModal._pen_label -> TC-4233, TC-4239, TC-4247
+LLR-4203.10 -> interfaces:TaskModal.check_action -> TC-4230, TC-4237, TC-4240, TC-4284
+LLR-4203.11 -> interfaces:TaskModal._lift_pen; proto-M1:TaskModal._save -> AT-4201, TC-4241, TC-4258, TC-4259
+LLR-4203.12 -> proto-M1:TaskModal.action_pen -> TC-4230, TC-4232, TC-4233, TC-4234, TC-4235, TC-4248, TC-4252, TC-4254, TC-4255
+LLR-4203.13 -> proto-M1:TaskModal.action_pen -> TC-4230, TC-4232, TC-4233, TC-4234, TC-4235, TC-4248, TC-4252, TC-4254, TC-4255
+LLR-4203.14 -> interfaces:TaskModal._lift_pen; proto-M1:TaskModal._pen_follow -> TC-4230, TC-4231, TC-4238, TC-4250, TC-4256, TC-4257, TC-4258, TC-4259
+LLR-4203.15 -> proto-M1:TaskModal.action_pen -> TC-4230, TC-4232, TC-4233, TC-4234, TC-4235, TC-4248, TC-4252, TC-4254, TC-4255
+LLR-4204.1 -> proto-M1:TaskModal.compose; proto-M1:ink_highlights; proto-M1:InkArea.__init__; proto-M1:InkArea._build_highlight_map -> TC-4242, TC-4243, TC-4244, TC-4245, TC-4246, TC-4247
+LLR-4204.2 -> proto-M1:ink_highlights; proto-M1:InkArea.__init__; proto-M1:InkArea._build_highlight_map -> TC-4242, TC-4243, TC-4244, TC-4245, TC-4246, TC-4247
+LLR-4204.3 -> proto-M1:InkArea._build_highlight_map -> TC-4242, TC-4243, TC-4244, TC-4246
+LLR-4204.4 -> interfaces:colour_spans; proto-V:colour_spans; proto-M1:ink_highlights -> TC-4201, TC-4202, TC-4203, TC-4204, TC-4205, TC-4206, TC-4207, TC-4208, TC-4209, TC-4227, TC-4228, TC-4229, TC-4242, TC-4245, TC-4246
+LLR-4204.5 -> proto-M1:ink_highlights -> TC-4242, TC-4245, TC-4246
+LLR-4204.6 -> proto-M1:TaskModal.compose; proto-M1:InkArea.__init__ -> TC-4247
+LLR-4205.1 -> proto-M2:TaskModal.action_colour; proto-M2:colour_target -> TC-4260, TC-4261, TC-4270, TC-4271, TC-4272, TC-4274, TC-4280, TC-4281
+LLR-4205.2 -> proto-M2:TaskModal.action_colour; proto-M2:colour_target -> TC-4260, TC-4261, TC-4270, TC-4271, TC-4272, TC-4274, TC-4280, TC-4281
+LLR-4205.3 -> proto-M2:ColourPalette.compose -> TC-4262, TC-4278
+LLR-4205.4 -> proto-M2:recolour; proto-M2:ColourPalette.action_pick; proto-M2:TaskModal._apply_colour -> TC-4263, TC-4264, TC-4265, TC-4266, TC-4267, TC-4269, TC-4275, TC-4282, TC-4283, TC-4285, TC-4286, TC-4287
+LLR-4205.5 -> proto-M2:recolour; proto-M2:ColourPalette.action_pick; proto-M2:TaskModal._apply_colour -> TC-4263, TC-4264, TC-4265, TC-4266, TC-4267, TC-4269, TC-4275, TC-4282, TC-4283, TC-4285, TC-4286, TC-4287
+LLR-4205.6 -> proto-M2:recolour; proto-M2:ColourPalette.action_pick; proto-M2:TaskModal._apply_colour -> TC-4263, TC-4264, TC-4265, TC-4266, TC-4267, TC-4269, TC-4275, TC-4282, TC-4283, TC-4285, TC-4286, TC-4287
+LLR-4205.7 -> proto-M2:recolour; proto-M2:ColourPalette.action_pick; proto-M2:TaskModal._apply_colour -> TC-4263, TC-4264, TC-4265, TC-4266, TC-4267, TC-4269, TC-4275, TC-4282, TC-4283, TC-4285, TC-4286, TC-4287
+LLR-4205.8 -> proto-M2:ColourPalette.action_cancel; proto-M2:TaskModal._apply_colour -> TC-4267, TC-4268, TC-4275, TC-4285, TC-4286
+LLR-4205.9 -> proto-M2:recolour -> TC-4263, TC-4264, TC-4265, TC-4266, TC-4267, TC-4269, TC-4282, TC-4285, TC-4286, TC-4287
+LLR-4205.10 -> proto-M2:TaskModal.action_colour; proto-M2:colour_target -> TC-4260, TC-4261, TC-4270, TC-4271, TC-4272, TC-4274, TC-4280, TC-4281
+LLR-4205.11 -> proto-M2:TaskModal.action_colour; proto-M2:colour_target -> TC-4260, TC-4261, TC-4270, TC-4271, TC-4272, TC-4274, TC-4280, TC-4281
+LLR-4205.12 -> proto-M2:TaskModal.action_colour; proto-M2:colour_target -> TC-4260, TC-4261, TC-4270, TC-4271, TC-4272, TC-4274, TC-4280, TC-4281
+LLR-4205.13 -> proto-M2:palette_offset; proto-M2:ColourPalette.on_mount -> TC-4273
+LLR-4205.14 -> interfaces:TaskModal._lift_pen; proto-M2:TaskModal.action_colour -> TC-4258, TC-4259, TC-4260, TC-4261, TC-4270, TC-4271, TC-4272, TC-4274
+LLR-4205.15 -> proto-M2:TaskModal._apply_colour -> TC-4267, TC-4275, TC-4285, TC-4286
+LLR-4205.16 -> interfaces:TaskModal.check_action -> TC-4230, TC-4237, TC-4240, TC-4284
+LLR-4206.1 -> proto-V:notes_text -> TC-4211, TC-4212, TC-4220, TC-4221, TC-4222, TC-4223
+LLR-4206.2 -> proto-V:notes_text -> TC-4211, TC-4212, TC-4220, TC-4221, TC-4222, TC-4223
+LLR-4206.3 -> proto-V:notes_text -> TC-4211, TC-4212, TC-4220, TC-4221, TC-4222, TC-4223
+LLR-4206.4 -> proto-V:notes_text -> TC-4211, TC-4212, TC-4220, TC-4221, TC-4222, TC-4223
+LLR-4206.5 -> proto-V:report_deck.render -> AT-4203, TC-4217, TC-4224

@@ -37,3 +37,11 @@
 **Seams fixed by the orchestrator (graph-interfaces.cw.md):** `colour_spans`, `Span`, `PEN_CODES` (V → M1, M2);
 `_lift_pen` and `_pen_span` (M1 → M2); `TaskModal.check_action` (shared, one gate); the Notes label carries
 `alt+c` (M1 renders, M2's key).
+
+### Round 0 addendum — after the correction pass
+
+| Id | Point | Ruling |
+|---|---|---|
+| C-1 | at leave time `_pen_span()` is None, so `_lift_pen` cannot remove the empty span (LLR-4203.14) | **Accept the correction agent's seam:** `_pen_follow` removes the empty span itself from `[Data: TaskModal._pen_at]` (where the pen's span was before the move), with the cursor shift it describes (TC-4256, TC-4257). LLR-4203.14 leaves `_lift_pen`'s req. |
+| C-2 | details label reduced to `Notes  r o y g b v` | **Partly undo:** keep the syntax hint — `Notes  ::c:: … ::  r o y g b v`, each code letter in its tone (≈ 30 cells, fits the 56-cell box). Legacy listing stays dropped. E4 addendum. |
+| C-3 | notice N4 generalised to "That colour would change the text you see: nothing changed." | **Accept.** |

@@ -36,6 +36,7 @@ examples: (TC-4207) text "==a ::b:: c==" → one span start `0`, inner_start `2`
 examples: (TC-4208) text "a::b::::c" → one span start `1`, inner_start `6`, inner_end `6`, end `8`, tone "blue"
 examples: (TC-4208) text "::b::  ::" (the fresh pen of LLR-4203.1) → one span inner_start `6`, inner_end `6`, end `9` (empty inner text)
 examples: (TC-4227) text "::b:: std::vector ::" → one span inner_start `6`, inner_end `9`, end `11` (the first `::` inside an open span closes it; see P-V-4)
+examples: (TC-4229) text "a:::b:: plan ::" → one span start `2`, inner_start `8`, inner_end `12`, end `15`, tone "blue", code "b" (OPENER.search skips the `::` at 1, which is no opener, and finds `::b::` at 2; the visible text "a:plan" is kept, P-M2-7)
 examples: (TC-4228) text "é ::b:: café ☕ ::" → one span start `2`, inner_start `8`, inner_end `14`, end `17` (str offsets, not bytes)
 examples: (TC-4228) over the derived set of TC-4209 (11 110 inputs) → every span has start <= inner_start <= inner_end <= end, no `\n` inside text[start:end], spans non-overlapping: 0 exceptions
 
@@ -161,12 +162,12 @@ examples: (TC-4218) ink on the 22 % tint (analysis): dark ink #e6edf3 on over 12
 ### README (doc, line ~247)
 
 > Proposed replacement of "- In notes, `==text==`, `!!text!!` and `++text++` are highlighted yellow, red and green.":
-> "- In notes, `::b:: text ::` colours text: `r` red, `o` orange, `y` yellow, `g` green, `b` blue, `v` violet. A span with no closing `::` ends at the line end, and a new `::<code>::` ends the open one. Inside a colour span the first `::` closes it. `==text==`, `!!text!!` and `++text++` still highlight yellow, red and green. In the task editor, `alt+1`..`alt+6` pick a pen, `alt+0` lifts it, `alt+c` recolours the selection or the word." (The editor sentence is M1/M2 behaviour; V only writes the line.)
+> "- In notes, `::b:: text ::` colours text: `r` red, `o` orange, `y` yellow, `g` green, `b` blue, `v` violet. A span with no closing `::` ends at the line end, and a new `::<code>::` ends the open one. Inside a colour span the first `::` closes it, so `::b:: std::vector ::` shows `std` in blue and `vector ::` plain. `==text==`, `!!text!!` and `++text++` still highlight yellow, red and green; markers inside a span of the other kind stay literal. In the task editor, `alt+1`..`alt+6` pick a pen, `alt+0` lifts it, `alt+c` recolours the selection or the word. A `::` typed under a pen closes the pen's span, and the pen turns off." (The editor sentences are M1/M2 behaviour; V only writes the line. P-V-4 ruling: the `std::vector` sentence; P-M1-5 ruling: the typed `::` sentence; the legacy-marker clause follows the reworded LLR-4201.7.)
 
 ### Seams (what M1 and M2 consume from V)
 
 > - `[Data: PEN_CODES]`: (code, tone, name) in pen order 1..6. M1: pen label keys and chip, `alt+<n>` → code, live-ink tones. M2: the palette's 8 rows, digit → code.
-> - `colour_spans(line)` → `[Span]` with str offsets: M1 `_lift_pen` (find the pen's span at the cursor; empty = inner_start == inner_end), enter handling and the cursor-leave check (cursor outside [inner_start, inner_end]), live ink (inner range in HEX[tone], marker ranges text[start:inner_start] and text[inner_end:end] in HEX["dim"]; str → byte conversion is M1's job, see TC-4228). M2: the span holding the target, partial-overlap refusal (a target that crosses start..end of a span without being inside inner_start..inner_end), recolour = replace the markers, uncolour = delete them.
+> - `colour_spans(line)` → `[Span]` with str offsets: M1 `_lift_pen` (find the pen's span at the cursor; empty = inner_start == inner_end), enter handling and the cursor-leave check (cursor outside [inner_start, inner_end]), live ink (inner range in HEX[tone], marker ranges text[start:inner_start] and text[inner_end:end] in HEX["dim"]; str → byte conversion is M1's job, see TC-4228). M2: the span holding the target, overlap refusal (a target that overlaps start..end of a span without lying inside it, LLR-4205.11), recolour = replace the markers, uncolour = delete them.
 > - The spaced written form `::<code>:: ` + text + ` ::` round-trips: "::b:: plan ::" → inner "plan"; the fresh pen "::b::  ::" is one empty span (TC-4208); "::r:: ab ::::b:: x ::" and "::b:: ab ::\n::b:: cd ::" tokenise as M1 expects (TC-4206, LLR-4203.7 shape).
 > - `highlight_segments(text)` keeps its signature; every reader is unchanged.
 
@@ -228,46 +229,46 @@ anchor: notes_text
 seen: (TC-4222) every C-4 threshold passes, but models.DROPPED_PROJECT_COLORS retires `orange` because it measured inside soon's 70 band (rgb distance orange–soon 51, hue 27 vs 43); tests/test_palette_ration.py::test_no_view_paints_an_identity_in_a_retired_hue says orange is "gone from the screen entirely" and passes only because its board has no `::o::` note; `blue` and `violet` are PROJECT_COLORS, and violet is the default project hue, so a violet note line can stand beside a violet spine in Focus (base already does this with `++` green)
 cause: the commission maps the six pens to existing HEX keys; the ration law was written for identity and judgement marks, not user ink
 effect: a note in orange can read as "due today" at a glance; the guard cannot see it
-decision: keep the operator's six tones (verdict 3) and add a ledger entry that exempts note ink by provenance (text inside a note span), as the kanban badge exemption does; if the operator wants the band kept, use #f97316 for the pen (orange–soon 77, orange–over 89, 6.75:1, 8-bit 208, s 0.95) as a new HEX key, which needs approval because "tone = a key of HEX" changes
+decision: ruling (03-pdr-rulings round 0): "Keep `HEX["orange"]`, `blue`, `violet` for note text. The palette-ration bands govern project hues on the board; a note tone is read with its name in the legend/pen chip, and the 256-colour numbers stay distinct (209 vs 214). No new HEX key." No graph change
 
 finding P-V-2 proposal: LLR-4201.7's wording contradicts LLR-4201.6
 anchor: colour_spans
 seen: (TC-4206, TC-4207) LLR-4201.7 says every marker inside a span stays literal; LLR-4201.6 makes an opener inside an open colour span end it, and a `::` closes it
 cause: the statement was written for the legacy markers only
 effect: an implementer who follows .7 literally fails TC-4206
-decision: reword LLR-4201.7 to "keep every legacy marker inside a colour span, and every marker inside a legacy span, as literal text of that span" (ledger entry); thresholds unchanged
+decision: ruling (03-pdr-rulings round 0): "Accept. LLR-4201.7 reworded: markers inside a legacy span, and legacy markers inside a colour span, stay literal." The graph already followed it (scanning note, TC-4207); nothing here relies on the old wording
 
 finding P-V-3 proposal: HLR-4206 cites saturation 0.15, LLR-4206.1 sets 0.20
 anchor: notes_text
 seen: (TC-4220) HLR-4206 validation "(tui-design PALETTE.md: s ≥ 0.15 …)" and LLR-4206.1 "≥ 0.20"; the six tones' minimum is 0.692, so both pass
 cause: the LLR tightened the PALETTE.md floor without saying so
 effect: two thresholds for one property
-decision: the LLR rules (stricter, more recent); edit the HLR text to say "s ≥ 0.20 (stricter than PALETTE.md 0.15)"
+decision: ruling (03-pdr-rulings round 0): "Accept. HLR text: 0.15 is the cliff, 0.20 the gate." Applied in 01-requirements; TC-4220 gates at 0.20
 
 finding P-V-4 proposal: inside an open colour span the first `::` always closes it
 anchor: colour_spans
 seen: (TC-4227) "::b:: std::vector ::" gives ("std","blue"), ("vector ::","mut")
 cause: the closer definition (`::` with ≤1 space) has no context; LLR-4201.5 covers `::` only while no span is open
 effect: code-like text with `::` cannot sit inside a colour span; not covered by any LLR threshold
-decision: accept (no escape syntax in this increment); pin with TC-4227 and say it in the README line; backlog an escape if the operator asks
+decision: ruling (03-pdr-rulings round 0): "Accept as designed; pinned by TC-4227; README sentence." TC-4227 pins "::b:: std::vector ::" in colour_spans and highlight_segments; the README note carries the sentence
 
 finding P-V-5 proposal: TC-4213 and TC-4215 of V's range are used in graph-interfaces.cw.md for M1's _lift_pen
 anchor: colour_spans
 seen: graph-interfaces.cw.md TaskModal._lift_pen examples cite (TC-4213) and (TC-4215); V was given TC-4201..TC-4229
 cause: the range split and the interface examples were written apart
 effect: two tests could take one id
-decision: V skips TC-4213 and TC-4215 (V uses TC-4201..4212, 4214, 4216..4228); the orchestrator confirms the split for M1/M2
+decision: ruling (03-pdr-rulings round 0): "Rename the interface's `_lift_pen` examples to TC-4258, TC-4259 (M1 range, free)." Done in graph-interfaces; TC-4213 and TC-4215 are free again for V (still unused here)
 
 finding P-V-6 proposal: the focus legend lists the syntax for any pinned task, whatever the notes hold
 anchor: legend_entries
 seen: (TC-4219) base P-2: the highlight rows show with one pinned task even when no note holds a highlight; the new colour row follows the same condition; LLR-4202.8 states no condition
 cause: base behaviour; the ghost-mark law in tests/test_legend.py is weak for these swatches (any glyph passes)
 effect: the legend can name marks the view does not draw
-decision: keep the base condition in this increment (surgical); backlog "show highlight rows only when a pinned note holds a span"
+decision: ruling (03-pdr-rulings round 0): "Backlog (base behaviour, not this increment)." legend_entries keeps the base condition
 
 finding P-V-7 proposal: the Focus snippet clips the raw line, markers included
 anchor: _highlight_markup
 seen: `_focus_note_snippet("::b:: a long blue note ::\nsecond", 14)` → "[#60a5fa]a long …[/]": 14 raw cells, 8 visible; a colour span costs up to 9 marker cells, a legacy span 4
 cause: base clips before tokenising (pre-existing)
 effect: shorter snippets for coloured notes; the tone stays right because a cut closer leaves the span open to the line end (LLR-4201.4)
-decision: accept, reader unchanged per §6 of the requirements; backlog "clip after tokenising"
+decision: ruling (03-pdr-rulings round 0): "Backlog." _focus_note_snippet unchanged
