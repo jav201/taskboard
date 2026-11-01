@@ -18,3 +18,5 @@
 2026-11-01T08:01:51Z E4 tests done (opus tester): 218 tests, RED on base 212 failed/6 guards; GREEN on tree 252 passed (incl. test_modal_keys) — no integration fix needed
 2026-11-01T08:02:36Z E5 start: mutants (deepseek-v4-pro, copy incC-mut) ∥ guards ∥ code review + security review (opus)
 2026-11-01T08:26:06Z E5 reviews done (code PwN 1 MED/7 MIN; sec PwN 1 MED/2 LOW); captures 9 PNG (sonnet); guards 230+119 passed; corrective pass start (tester RED first, then opus fix)
+2026-11-01T08:40:35Z E5 corrective pass done (opus): 8 regression tests RED→GREEN; mutants 40/40 killed (deepseek, spot-check M14 replayed by opus); final GREEN 611 (610 + TC-4296 after LED.7)
+2026-11-01T08:41:36Z E5 end: records closed (04-validation.md, BACKLOG C-BL-1..5); palette re-shot after E13-1 (sonnet harness, run by opus)

@@ -6,3 +6,5 @@ ok   details 118x30 (1708 x 928, 31 colours sampled) via PrintWindow, try 1, sta
 ok   details 80x24 (1176 x 760, 22 colours sampled) via PrintWindow, try 1, state OK [Screen(id='_default'), TaskDetails()] - window closed
 ok   present 118x30 (1708 x 928, 19 colours sampled) via PrintWindow, try 1, state OK [Screen(id='_default'), PresentScreen()] - window closed
 ok   present 80x24 (1176 x 760, 23 colours sampled) via PrintWindow, try 1, state OK [Screen(id='_default'), PresentScreen()] - window closed
+ok   palette 118x30 (1708 x 928, 42 colours sampled) via PrintWindow, try 1, state OK [Screen(id='_default'), TaskModal(), ColourPalette()] - window closed
+ok   palette 80x24 (1176 x 760, 46 colours sampled) via PrintWindow, try 1, state OK [Screen(id='_default'), TaskModal(), ColourPalette()] - window closed

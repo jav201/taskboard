@@ -1650,3 +1650,11 @@ and found the records layer lagging the code. All proposed fixes are written in 
   - `tests/test_present_all.py::test_AT_2102_the_order_and_hidden_projects_survive_a_restart`, since 2026-10-25, frame mismatch.
 
   To fix: diagnose each test on Linux and fix the cause, in the test or in the code. Likely causes are dates or timezone, file times or permissions, and path handling. Then add a macOS job to the CI matrix and fix whatever it shows. Done means CI is green on Linux and macOS, not green locally.
+
+## Open — from Inc C, multicolour notes (`.dev-flow/2026-11-01-v3-incC/`, 2026-11-01)
+
+- **C-BL-1 — pin Textual.** `pyproject.toml` leaves `textual` unpinned (only `requirements.txt` pins 8.2.8). Inc C relies on four Textual internals: `TextArea._build_highlight_map`, `_highlights`, `_line_cache` (live ink, guarded by `tests/test_colour_pens.py::test_P_M1_7_…`) and `textual._ansi_sequences.ANSI_SEQUENCES_KEYS` (alt+0..6 unshadowed, guarded). A paint-time crash after an upgrade (the `_render_line` tuple shape, SEC-R2-2) is not caught. Pin `>=8.2.8,<8.3` in its own change.
+- **C-BL-2 — real-terminal check of alt+digit (ARCH-14).** Proven at the parser level only (TC-4249) and by the terminal query (`evidence/wt-kitty-query.log`); key injection into Windows Terminal delivered nothing on the build desktop. Owner check: in WT press `alt+5`, type `x`, see `x` blue.
+- **C-BL-3 — focus legend shows the colour syntax whenever a task is pinned** (P-V-6, base behaviour).
+- **C-BL-4 — the focus snippet clips the raw line, so markers eat visible width** (P-V-7).
+- **C-BL-5 — `rich.markup.escape` and three or more trailing backslashes** (SEC-8, pre-existing).
