@@ -244,7 +244,7 @@ the board (free space or write access in its folder, or run `taskboard --board` 
 
 ## Notes, links and images
 
-- In notes, `==text==`, `!!text!!` and `++text++` are highlighted yellow, red and green.
+- In notes, `::b:: text ::` colours text: `r` red, `o` orange, `y` yellow, `g` green, `b` blue, `v` violet. A span with no closing `::` ends at the line end, and a new `::<code>::` ends the open one. Inside a colour span the first `::` closes it, so `::b:: std::vector ::` shows `std` in blue and `vector ::` plain. `==text==`, `!!text!!` and `++text++` still highlight yellow, red and green; markers inside a span of the other kind stay literal. In the task editor, `alt+1`..`alt+6` pick a pen, `alt+0` lifts it, `alt+c` recolours the selection or the word. A `::` typed under a pen closes the pen's span, and the pen turns off; typed first thing in a fresh pen, it closes the still-empty span, which is then removed, so the line keeps only ` ::`.
 - In notes, `@` at the start of a word mentions a person: a list under the cursor narrows as
   you type, `enter` writes the person's handle (`@ana.ruiz`) and `+ add` creates a new person
   (name and role, `enter` to add) for every board. A mention reads as `@Ana Ruiz` in pink in the

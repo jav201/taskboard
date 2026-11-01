@@ -1,0 +1,27 @@
+The task is complete. All changes implemented exactly per the Code-Wire graph, with no deviations.
+
+## Summary
+
+**`taskboard/views.py`**
+- `PEN_CODES` (line 3507) — new: the six pen tones `(code, tone, name)` in pen order 1..6.
+- `_TONE_BY_CODE` (3516) — helper derived from `PEN_CODES`.
+- `_OPENER_RE` (3521) — new: `::([roygbv])::( ?)`, the code class built from `PEN_CODES`; group 2 is the opener's optional space.
+- `Span` (3525) — new `NamedTuple` (`start, inner_start, inner_end, end, tone, code`).
+- `colour_spans` (3538) — new: the one linear scanner. Cached per-kind next matches (re-searched only once the scan passes their start), `str.find`-bounded inner end, `:::<c>::` opener-at-j+1 rule (ARCH-11), closer with one preceding space, newline/end termination. Emits legacy spans with `code=None`.
+- `highlight_segments` (3596) — rewritten as derived from `colour_spans` (no regex of its own), signature and docstring role unchanged. Byte-identical to base for all `::`-free inputs.
+- `legend_entries` focus mode (8823) — added the colour row `::r o y g b v::` (swatch `c("::","mut")` + six `c(code, tone)` + `c("::","mut")`, meaning "colour: ::code:: text ::") after the project spine; the three legacy rows unchanged.
+
+**`taskboard/report_deck.py`** — `LIGHT` gained `--orange:#bc4c00;--blue:#0969da;--violet:#8250df;` (382); dark `:root` gained `--orange:#fb923c;--blue:#60a5fa;--violet:#a78bfa;` (389); added `.hl-orange/.hl-blue/.hl-violet` colour rules beside `.hl-green` (440).
+
+**`taskboard/report_workspace.py`** — dark `:root` gained the three `--orange/--blue/--violet` variables (17); added `.hl-orange/.hl-blue/.hl-violet` in the `.hl-soon` 22 % `color-mix` form after `.hl-green` (87–89).
+
+**`README.md`** (line 247) — replaced the highlight sentence with the proposed colour-syntax text.
+
+**Verification**
+- Self-check one-liners print the graph's exact values (the four `highlight_segments`/`colour_spans` cases).
+- `pytest -q tests/test_highlight_segments.py tests/test_report_html.py` → **21 passed**.
+- Broader smoke (legend, report deck/workspace, present-note, colour-budget ×2, palette-ration, report) → **153 passed**.
+- Perf sanity: linear (13 ms on a 140 k-char span line, 0.3 ms on 100 k `std::`), and all CSS substrings (deck 9/9, workspace 6/6) present.
+
+**Deviations:** none.
+EXIT 0

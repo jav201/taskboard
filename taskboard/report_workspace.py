@@ -14,7 +14,7 @@ from .report_html import embed_json
 CSS = """
 :root{color-scheme:light dark;
   --bg:#0d1117;--panel:#161b22;--line:#30363d;--ink:#e6edf3;--mut:#8b98a5;
-  --accent:#2dd4bf;--over:#f43f5e;--soon:#fbbf24;--green:#4ade80;--chip:#1c2330;--on-ink:#06281f;}
+  --accent:#2dd4bf;--over:#f43f5e;--soon:#fbbf24;--green:#4ade80;--orange:#fb923c;--blue:#60a5fa;--violet:#a78bfa;--chip:#1c2330;--on-ink:#06281f;}
 @media (prefers-color-scheme:light){
   :root{--bg:#ffffff;--panel:#f6f8fa;--line:#d0d7de;--ink:#1f2328;--mut:#59636e;--chip:#eaeef2;
     --accent:#0f766e;--on-ink:#ffffff;}
@@ -84,6 +84,9 @@ a{color:var(--accent)}
 .hl-soon{background:color-mix(in srgb,var(--soon) 22%,transparent);border-radius:3px;padding:0 .15em}
 .hl-over{background:color-mix(in srgb,var(--over) 22%,transparent);border-radius:3px;padding:0 .15em}
 .hl-green{background:color-mix(in srgb,var(--green) 22%,transparent);border-radius:3px;padding:0 .15em}
+.hl-orange{background:color-mix(in srgb,var(--orange) 22%,transparent);border-radius:3px;padding:0 .15em}
+.hl-blue{background:color-mix(in srgb,var(--blue) 22%,transparent);border-radius:3px;padding:0 .15em}
+.hl-violet{background:color-mix(in srgb,var(--violet) 22%,transparent);border-radius:3px;padding:0 .15em}
 .mention{color:var(--accent);font-weight:600}
 .notes-list,.ms-list{display:grid;gap:.6rem;padding:0;margin:0;list-style:none}
 .note,.ms{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:.6rem .8rem}

@@ -379,14 +379,14 @@ def _project_slide(p: dict, tasks: list, boards: dict, marks: dict, today: date,
 LIGHT = """--bg:#ffffff;--panel:#f6f8fa;--ink:#1f2328;--mut:#59636e;--line:#d8dee4;
   --frame:#c8d0da;--weekend:#edf1f5;--done:#2f8f5b;--accent:#0f766e;--over:#c81e4f;
   --ph0:#94a3b8;--ph1:#1f6feb;--ph2:#8250df;--ph3:#bf6106;--ph4:#2f8f5b;--msr:#8a919b;
-  --soon:#8a5a00;--green:#1a7f37;"""
+  --soon:#8a5a00;--green:#1a7f37;--orange:#bc4c00;--blue:#0969da;--violet:#8250df;"""
 
 CSS = """
 :root{color-scheme:light dark;
   --bg:#0d1117;--panel:#161b22;--ink:#e6edf3;--mut:#8b98a5;--line:#21262d;--frame:#334154;
   --accent:#2dd4bf;--over:#f43f5e;--weekend:#151a22;--done:#3f9c6d;
   --ph0:#64748b;--ph1:#60a5fa;--ph2:#a78bfa;--ph3:#fb923c;--ph4:#3f9c6d;--msr:#7a828c;
-  --soon:#fbbf24;--green:#4ade80;}
+  --soon:#fbbf24;--green:#4ade80;--orange:#fb923c;--blue:#60a5fa;--violet:#a78bfa;}
 @media (prefers-color-scheme:light){ :root{%(light)s} }
 *{box-sizing:border-box}
 body{margin:0;padding:1.2rem .9rem 6rem;background:var(--bg);color:var(--ink);
@@ -437,6 +437,7 @@ svg text{font-family:inherit}
 .nl{margin:.12rem 0;font-size:.86rem}
 .mention{color:var(--accent);font-weight:600}
 .hl-soon{color:var(--soon)} .hl-over{color:var(--over)} .hl-green{color:var(--green)}
+.hl-orange{color:var(--orange)} .hl-blue{color:var(--blue)} .hl-violet{color:var(--violet)}
 .url{color:var(--accent);font-size:.82rem;word-break:break-all}
 .foot{color:var(--mut);font-size:.85rem;margin:1.2rem 0 0;padding-top:.4rem;
   border-top:1px solid var(--line)}

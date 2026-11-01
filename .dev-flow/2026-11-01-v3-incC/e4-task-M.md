@@ -39,3 +39,6 @@ not run git commands that change state). Interpreter: `C:/Users/jjgh8/anaconda3/
 - `env -u NO_COLOR C:/Users/jjgh8/anaconda3/python.exe -m pytest -q -p no:cacheprovider tests/test_edit_window.py tests/test_people_picker.py tests/test_modal_keys.py tests/test_people_look.py` — report the result; if `test_modal_keys` fails only because `ColourPalette` is not in its inventory, say so (the tester owns that file).
 
 Finish with a short summary: functions/classes added/changed with line numbers, deviations (or "none").
+
+## Addenda
+Also apply `.dev-flow/2026-11-01-v3-incC/e4-addenda.md` (the items that touch your files).

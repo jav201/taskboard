@@ -3501,25 +3501,113 @@ def _gantt_frame(board, show_archived, selected_id, today=None, width=68, height
 # to be easy to type and unlikely to collide with ordinary markdown/URLs.
 _HIGHLIGHT_RE = re.compile(r"==(.*?)==|!!(.*?)!!|\+\+(.*?)\+\+")
 
+# The six pen tones of the notes' colour syntax, in pen order 1..6: the code,
+# its tone (a key of HEX) and its name. Read by colour_spans, the legends, the
+# pen label, the palette and the live ink (LLR-4201.1, LLR-4201.9, TC-4226).
+PEN_CODES: tuple[tuple[str, str, str], ...] = (
+    ("r", "over", "red"),
+    ("o", "orange", "orange"),
+    ("y", "soon", "yellow"),
+    ("g", "green", "green"),
+    ("b", "blue", "blue"),
+    ("v", "violet", "violet"),
+)
+
+_TONE_BY_CODE = {code: tone for code, tone, _name in PEN_CODES}
+
+# A colour span's opener: `::<code>::` plus at most one following space. The code
+# class is built from PEN_CODES (lower case only, LLR-4201.5); group 2 is the one
+# optional space that belongs to the opener.
+_OPENER_RE = re.compile(
+    r"::([" + "".join(code for code, _tone, _name in PEN_CODES) + r"])::( ?)")
+
+
+class Span(NamedTuple):
+    """One span of one line: str offsets start <= inner_start <= inner_end <= end.
+
+    `text[start:inner_start]` and `text[inner_end:end]` are the markers (the
+    optional spaces belong to the markers); `code` is None for a legacy span."""
+    start: int
+    inner_start: int
+    inner_end: int
+    end: int
+    tone: str
+    code: str | None
+
+
+def colour_spans(text: str) -> list[Span]:
+    """The one scanner behind the notes' colour and legacy syntax (LLR-4201).
+
+    Repeatedly the leftmost of the next legacy match and the next opener; an open
+    colour span ends at the next opener (no space dropped; at `:::<c>::` the
+    opener at j + 1 wins, ARCH-11), at a closer `::` (one preceding space taken
+    as marker, never the opener's), or at `\n` / the text end. Spans come out in
+    order, non-overlapping, never holding `\n`. Linear in len(text)
+    (LLR-4201.10): each kind's next match is cached and searched again only once
+    the scan has passed its start (SEC-1), and the inner end is found with
+    `str.find`, never a per-character loop."""
+    spans: list[Span] = []
+    pos = 0
+    lm = _HIGHLIGHT_RE.search(text, 0)
+    om = _OPENER_RE.search(text, 0)
+    while True:
+        # SEC-1 / LLR-4201.10: a cached match is re-searched only when the scan
+        # has passed its start; a kind that returned None is never searched again.
+        if lm is not None and lm.start() < pos:
+            lm = _HIGHLIGHT_RE.search(text, pos)
+        if om is not None and om.start() < pos:
+            om = _OPENER_RE.search(text, pos)
+        if lm is None and om is None:
+            break
+        if om is not None and (lm is None or om.start() < lm.start()):
+            code = om.group(1)
+            start = om.start()
+            inner_start = om.end()          # the opener's optional space is a marker
+            j = text.find("::", inner_start)
+            # bounded by j, so each character is looked at once per span and the
+            # spans stay disjoint (linear).
+            nl = text.find("\n", inner_start, j if j >= 0 else len(text))
+            if nl >= 0 or j < 0:
+                inner_end = end = nl if nl >= 0 else len(text)   # `\n` not consumed
+            elif _OPENER_RE.match(text, j):
+                inner_end = end = j            # the next opener ends it, no space dropped
+            elif text[j:j + 3] == ":::" and _OPENER_RE.match(text, j + 1):
+                inner_end = end = j + 1        # `:::<c>::`: the opener at j + 1 wins
+            else:
+                # a closer: one preceding space taken as marker, never the opener's
+                inner_end = j - 1 if j - 1 >= inner_start and text[j - 1] == " " else j
+                end = j + 2
+            spans.append(Span(start, inner_start, inner_end, end,
+                              _TONE_BY_CODE[code], code))
+            pos = end
+        else:
+            # the legacy span wins: its markers stay literal (LLR-4201.7)
+            if lm.group(1) is not None:
+                tone, g = "soon", 1
+            elif lm.group(2) is not None:
+                tone, g = "over", 2
+            else:
+                tone, g = "green", 3
+            spans.append(Span(lm.start(), lm.start(g), lm.end(g), lm.end(), tone, None))
+            pos = lm.end()
+    return spans
+
 
 def highlight_segments(text: str) -> list[tuple[str, str]]:
     """The one tokeniser of the notes' highlight syntax: ==text== `soon`,
-    !!text!! `over`, ++text++ `green`, everything else `mut` — as (segment,
-    tone) pairs, markers dropped. The board's markup (`_highlight_markup`) and
-    the details / editor preview's Text pieces (`modals.notes_preview`) both read
-    it, so the two seats cannot disagree on what a note highlights (D-411)."""
+    !!text!! `over`, ++text++ `green`, `::<code>:: text ::` in the code's tone,
+    everything else `mut` — as (segment, tone) pairs, markers dropped
+    (LLR-4201). Derived from `colour_spans` (no regex of its own); the board's
+    markup (`_highlight_markup`) and the details / editor preview's Text pieces
+    (`modals.notes_preview`) both read it, so the two seats cannot disagree on
+    what a note highlights (D-411)."""
     out: list[tuple[str, str]] = []
     last = 0
-    for m in _HIGHLIGHT_RE.finditer(text):
-        if m.start() > last:
-            out.append((text[last:m.start()], "mut"))
-        if m.group(1) is not None:
-            out.append((m.group(1), "soon"))
-        elif m.group(2) is not None:
-            out.append((m.group(2), "over"))
-        else:
-            out.append((m.group(3), "green"))
-        last = m.end()
+    for sp in colour_spans(text):
+        if sp.start > last:
+            out.append((text[last:sp.start], "mut"))
+        out.append((text[sp.inner_start:sp.inner_end], sp.tone))
+        last = sp.end
     if last < len(text):
         out.append((text[last:], "mut"))
     return out
@@ -8731,6 +8819,9 @@ def legend_entries(mode: str, board: Board, today: date | None = None,
         pinned = focus_tasks(board, show_archived)
         if pinned:
             out.append((c("▎", hue), "project spine (colour = project)"))
+            out.append((c("::", "mut")
+                        + " ".join(c(code, tone) for code, tone, _name in PEN_CODES)
+                        + c("::", "mut"), "colour: ::code:: text ::"))
             out.append((c("==text==", "soon"), "highlight: yellow / warning"))
             out.append((c("!!text!!", "over"), "highlight: red / attention"))
             out.append((c("++text++", "green"), "highlight: green / resolved"))

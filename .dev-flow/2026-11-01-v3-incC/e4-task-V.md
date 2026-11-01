@@ -34,3 +34,6 @@ not run git commands that change state). Interpreter: `C:/Users/jjgh8/anaconda3/
 must print exactly the graph's values. Then `env -u NO_COLOR C:/Users/jjgh8/anaconda3/python.exe -m pytest -q tests/test_highlight_segments.py tests/test_report_html.py -p no:cacheprovider` must pass.
 
 Finish with a short summary: functions added/changed with line numbers, deviations (or "none").
+
+## Addenda
+Also apply `.dev-flow/2026-11-01-v3-incC/e4-addenda.md` (the items that touch your files).
