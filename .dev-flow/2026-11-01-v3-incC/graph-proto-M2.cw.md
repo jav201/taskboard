@@ -6,45 +6,50 @@ Notice texts (one per refusal, `notify(..., severity="warning", markup=False)`):
 - N1 (LLR-4205.10): "Colour one line at a time."
 - N2 (LLR-4205.11, P-M2-1): "The selection crosses a colour edge: select inside one colour, or plain text."
 - N3 (LLR-4205.12, P-M2-3): "Nothing to colour: select text or put the cursor on a word."
-- N4 (LLR-4205.15, P-M2-2): "That colour would change the text you see: nothing changed." (the one visible-text check in `_apply_colour`; it is not limited to `::`)
+- N4 (LLR-4205.15, P-M2-2): "That colour would change the text you see: nothing changed." (the one visible-text check in `_apply_colour`; it is not limited to `::`; M1's action_pen reuses it, LLR-4203.17)
+- N5 (SEC-5): "The notes changed while the palette was open: nothing changed." (the callback's re-validation in `_apply_colour`)
 
 ## Nodes
 
 TaskModal.action_colour
-req: HLR-4205, LLR-4205.1, LLR-4205.2, LLR-4205.10, LLR-4205.11, LLR-4205.12, LLR-4205.14
+req: HLR-4205, LLR-4205.1, LLR-4205.2, LLR-4205.10, LLR-4205.11, LLR-4205.12, LLR-4205.14, LLR-4205.16
 in:
 out: None
-func: NEW. alt+c (priority binding `Binding("alt+c", "colour", "Colour", priority=True)`, gated by check_action): first `_lift_pen()` (M1), then `colour_target(notes.document.lines, notes.selection.start, notes.selection.end)`; a notice → `notify` it and stop (no palette); a target (row, a, b) → `push_screen(ColourPalette(notes.cursor_screen_offset), partial(self._apply_colour, row, a, b))`. Reads the lines AFTER the lift, so the target is computed on the text the lift left. The notes at that moment (after the lift, when the palette opens) are the reference of LLR-4205.7 and LLR-4205.8: `0` on an uncoloured target and `esc` leave the notes byte-equal to them, not to the notes before alt+c (P-M2-4)
+func: NEW. alt+c (priority binding `Binding("alt+c", "colour", "Colour", priority=True)`; check_action always allows it, ARCH-2). Steps, in order: (0) If `#f-notes` does not have the focus: return at once; the key is consumed, no palette opens and no field changes (LLR-4205.16; a denied binding would let the terminal's `Key("alt+c", "c")` type "c" into the focused Input). (1) s = `_pen_span()` BEFORE the lift (ARCH-3). (2) `_lift_pen()` (M1). (3) If s is not None and s.inner_start < s.inner_end: the target is (row, s.inner_start, s.inner_end), the pen's span (LLR-4205.14); the lift moved only the cursor, or (no closer, ARCH-10) inserted " ::" after inner_end, so these offsets still hold. If s is not None and its inner text is empty: the lift removed it; notify N3 and stop (no palette). If s is None: `colour_target(notes.document.lines, notes.selection.start, notes.selection.end)` on the lines AFTER the lift; a notice → `notify` it and stop (no palette). (4) A target (row, a, b) → line_at_open = `notes.document.get_line(row)`; `push_screen(ColourPalette(notes.cursor_screen_offset), partial(self._apply_colour, row, a, b, line_at_open))`. The notes at that moment (after the lift, when the palette opens) are the reference of LLR-4205.7 and LLR-4205.8: `0` on an uncoloured target and `esc` leave the notes byte-equal to them, not to the notes before alt+c (P-M2-4)
 module: taskboard/modals.py
 modify: [Data: App.screen_stack] (append); [I/O: notifications] (append)
+examples: (TC-4284, root action_colour) focus on `#f-title`, title "T", notes "n"; post `events.Key("alt+c", "c")` (the terminal's event, not pilot.press) → no palette, title "T" and notes "n" byte-equal, `0` notify (ARCH-2, LLR-4205.16; NC a denied check_action: the title becomes "Tc", RED)
 examples: (TC-4260, root action_colour) notes "the plan works", selection (0, 8)→(0, 4) → the screen is ColourPalette; target row `0`, a `4`, b `8`
 examples: (TC-4261, root action_colour) notes "the plan works", cursor (0, 6), no selection → ColourPalette for a `4`, b `8` ("plan")
 examples: (TC-4270, root action_colour) notes "ab\ncd", selection (0, 1)→(1, 1) → no palette; 1 notify "Colour one line at a time."
 examples: (TC-4271, root action_colour) notes "::b:: ab :: cd", selection (0, 7)→(0, 13) (`b :: c`) → no palette; 1 notify "The selection crosses a colour edge: select inside one colour, or plain text."
 examples: (TC-4272, root action_colour) notes "", cursor (0, 0) → no palette; 1 notify "Nothing to colour: select text or put the cursor on a word."
-examples: (TC-4274, root action_colour) keys alt+5, "ab" → notes "::b:: ab ::", cursor (0, 8), pen `4`; alt+c → `_lift_pen` puts the cursor at (0, 11), pen `None`; ColourPalette for a `9`, b `11` (the closer `::`, inside the pen's span 0..11)
-examples: (TC-4274, root action_colour) notes "x ", cursor (0, 2), keys alt+5 → "x ::b::  ::"; alt+c → the lift removes the empty span: notes "x ", cursor (0, 2); no word at (0, 2) → no palette; 1 notify "Nothing to colour: select text or put the cursor on a word."
-examples: (TC-4274, root action_colour) notes "plan", cursor (0, 4), keys alt+5 → "plan::b::  ::"; alt+c → notes "plan", cursor (0, 4) → ColourPalette for a `0`, b `4`
+examples: (TC-4274, root action_colour) keys alt+5, "ab" → notes "::b:: ab ::", cursor (0, 8), pen `4`; alt+c → s = the pen's span (inner 6..8) read before the lift; `_lift_pen` puts the cursor at (0, 11), pen `None`; ColourPalette for a `6`, b `8` (the pen's inner text, ARCH-3); then "3" → "::y:: ab ::" (LLR-4205.14)
+examples: (TC-4274, root action_colour) notes "now", cursor (0, 0), keys alt+5, "go" → "::b:: go ::now", cursor (0, 8), pen `4`; alt+c → ColourPalette for a `6`, b `8`, no notice (ARCH-3; NC the word ending at the lifted cursor is "::now" 9..14, which overlaps the span 0..11 → N2: RED)
+examples: (TC-4274, root action_colour) notes "x ", cursor (0, 2), keys alt+5 → "x ::b::  ::"; alt+c → the lift removes the empty span: notes "x ", cursor (0, 2); no palette; 1 notify "Nothing to colour: select text or put the cursor on a word."
+examples: (TC-4274, root action_colour) notes "plan", cursor (0, 4), keys alt+5 → "plan::b::  ::"; alt+c → the lift removes the empty pen span: notes "plan", cursor (0, 4); no palette; 1 notify N3 (ARCH-3 ruling: an empty pen span ends the call with the "nothing to colour" notice, it does not fall back to the word before it)
 
 colour_target
 req: LLR-4205.1, LLR-4205.2, LLR-4205.10, LLR-4205.11, LLR-4205.12
 in: list[str] lines; tuple[int, int] start; tuple[int, int] end
 out: tuple(tuple[int, int, int]? target, str? notice)
-func: NEW, pure. The palette's target as (row, a, b) with a < b, or a notice (exactly one of the two is None). start and end are the TextArea selection's two ends in any order. Rules in this order: (1) the ends on two rows → N1; (2) a selection → its columns sorted; no selection → the word (maximal run of non-whitespace) holding col, else the word ending at col, else none; (3) no target (no selection and no word at the cursor), or a selection of whitespace only → N3 (LLR-4205.12 as amended, P-M2-3); (4) the target overlaps a span of `colour_spans(line)` (a < s.end and b > s.start) without lying inside it (s.start <= a and b <= s.end) → N2 (LLR-4205.11 as amended, P-M2-1); this includes a selection that holds a whole span plus other text. A target that touches a span's edge does not overlap it
+func: NEW, pure. The palette's target as (row, a, b) with a < b, or a notice (exactly one of the two is None). start and end are the TextArea selection's two ends in any order. Rules in this order: (1) the ends on two rows → N1; (2) a selection → its columns sorted; no selection → a word (ARCH-4): cut the line into regions by `colour_spans(line)`: for each span its opener [start, inner_start), its inner [inner_start, inner_end) and its closer [inner_end, end), and the gaps between spans; a word is a maximal run of non-whitespace inside ONE region. The target is the word w with w.start <= col < w.end (holding col), else the word with w.end == col (ending at col), else none. So a word never takes span markers with it, and a cursor on a span's markers targets a marker word, which lies inside that span (recolour then rewrites the whole span); (3) no target (no selection and no word at the cursor), or a selection of whitespace only → N3 (LLR-4205.12 as amended, P-M2-3); (4) the target overlaps a span of `colour_spans(line)` (a < s.end and b > s.start) without lying inside it (s.start <= a and b <= s.end) → N2 (LLR-4205.11 as amended, P-M2-1); this includes a selection that holds a whole span plus other text. A target that touches a span's edge does not overlap it
 module: taskboard/modals.py
 examples: (TC-4261) lines ["the plan works"], start (0, 6), end (0, 6) → target (0, 4, 8)
 examples: (TC-4261) lines ["the plan works"], start (0, 8), end (0, 8) (just after the word) → target (0, 4, 8)
 examples: (TC-4261) lines ["the plan works"], start (0, 4), end (0, 4) (on the word's first letter) → target (0, 4, 8)
 examples: (TC-4260) lines ["the plan works"], start (0, 8), end (0, 4) → target (0, 4, 8)
 examples: (TC-4261) lines ["::r:: a b ::"], start (0, 6), end (0, 6) → target (0, 6, 7); it lies inside the span 0..12
-examples: (TC-4261) lines ["::b:: ab ::"], start (0, 11), end (0, 11) → target (0, 9, 11) (the closer, inside the span 0..11)
-examples: (TC-4261) lines ["==late=="], start (0, 3), end (0, 3) → target (0, 0, 8) (the whole legacy span)
+examples: (TC-4261) lines ["::b:: ab ::"], start (0, 11), end (0, 11) → target (0, 9, 11) (the closer word, ending at col, inside the span 0..11)
+examples: (TC-4261) lines ["::b:: abc ::d"], start (0, 12), end (0, 12) → target (0, 12, 13) ("d", in the gap after the span; ARCH-4; NC the old rule took "::d" 10..13, which overlaps the span 0..12 → N2: RED); recolour with "g" then gives "::b:: abc ::::g:: d ::", visible "abcd" unchanged
+examples: (TC-4261) lines ["==late=="], start (0, 3), end (0, 3) → target (0, 2, 6) ("late", the legacy span's inner region; it lies inside the span 0..8, so recolour rewrites the whole span)
 examples: (TC-4261) lines ["x ::b:: y :: z"], start (0, 1), end (0, 1) → target (0, 0, 1): "x" touches no span (the span starts at `2`)
 examples: (TC-4270) lines ["ab", "cd"], start (0, 1), end (1, 1) → notice "Colour one line at a time."
 examples: (TC-4270) lines ["ab", "cd"], start (0, 0), end (1, 0) (a whole line taken with shift+down) → notice "Colour one line at a time."
 examples: (TC-4271) lines ["::b:: ab :: cd"], start (0, 7), end (0, 13) → notice "The selection crosses a colour edge: select inside one colour, or plain text."
 examples: (TC-4280) lines ["x ::b:: y :: z"], start (0, 0), end (0, 14) (a whole span and plain text) → notice "The selection crosses a colour edge: select inside one colour, or plain text."
-examples: (TC-4280) lines ["x::b::y::"], start (0, 0), end (0, 0) → the word is the whole line 0..9, it overlaps the span 1..9 → notice "The selection crosses a colour edge: select inside one colour, or plain text."
+examples: (TC-4280) lines ["x::b::y::"], start (0, 0), end (0, 0) → target (0, 0, 1) ("x": the word stops at the span's start 1; ARCH-4 — under the old rule the word was the whole line and gave N2)
+examples: (TC-4280) lines ["x::b::y::"], start (0, 0), end (0, 9) (a selection of the whole line) → notice "The selection crosses a colour edge: select inside one colour, or plain text." (N2 now comes from selections only)
 examples: (TC-4272) lines [""], start (0, 0), end (0, 0) → notice "Nothing to colour: select text or put the cursor on a word."
 examples: (TC-4272) lines ["the  plan"], start (0, 4), end (0, 4) (two spaces around the cursor) → notice "Nothing to colour: select text or put the cursor on a word."
 examples: (TC-4281) lines ["a   b"], start (0, 1), end (0, 4) (three spaces selected) → notice "Nothing to colour: select text or put the cursor on a word."
@@ -167,13 +172,13 @@ func: NEW. esc (priority binding): `dismiss(None)`
 module: taskboard/modals.py
 modify: [Data: App.screen_stack] (replace)
 examples: (TC-4268, root action_cancel) notes "the plan works", selection (0, 8)→(0, 4), alt+c, esc → the palette gone, notes "the plan works" byte-equal, the selection still (0, 8)→(0, 4), focus `#f-notes`
-examples: (TC-4268, root action_cancel) notes "plan", cursor (0, 4), alt+5 → "plan::b::  ::"; alt+c → the lift leaves "plan" and the palette opens; esc → notes "plan", byte-equal to the notes at palette open, not to "plan::b::  ::" (P-M2-4)
+examples: (TC-4268, root action_cancel) notes "::b:: ab", cursor (0, 8), pen `4` (a pen span with no closer); alt+c → the target is (0, 6, 8), the lift writes "::b:: ab ::" and the palette opens; esc → notes "::b:: ab ::", byte-equal to the notes at palette open, not to "::b:: ab" (P-M2-4, ARCH-10; the old "plan" + empty pen case now opens no palette, ARCH-3)
 
 TaskModal._apply_colour
 req: LLR-4205.4, LLR-4205.5, LLR-4205.6, LLR-4205.7, LLR-4205.8, LLR-4205.15
-in: int row; int a; int b; str? code
+in: int row; int a; int b; str line_at_open; str? code
 out: None
-func: NEW, the palette's callback. code None (esc) → nothing. Else `recolour(line, a, b, code)` on line = `notes.document.get_line(row)`: col None → nothing changed (cursor and selection as they were). Then the one visible-text check (LLR-4205.15, P-M2-2): if `"".join(seg for seg, _ in highlight_segments(new_line)) != "".join(seg for seg, _ in highlight_segments(line))` → notify N4 once and change nothing (text, cursor and selection as they were at palette open); else `notes.replace(new_line, (row, 0), (row, len(line)))` (one undo step) and `notes.move_cursor((row, col))`: the cursor ends just after the new span's closer, or for `0` just after the uncoloured text, with no selection. The pen stays None; the TextArea posts Changed, so the preview and the live ink follow (baseline on_text_area_changed, M1)
+func: NEW, the palette's callback. code None (esc) → nothing. Re-validation first (SEC-5): if row >= `notes.document.line_count` or `notes.document.get_line(row) != line_at_open` (the line the target was computed on), notify N5 once and change nothing (no recolour call, so `recolour`'s ValueError on a partly overlapping target can never be raised inside the callback). Else `recolour(line, a, b, code)` on line = line_at_open: col None → nothing changed (cursor and selection as they were). Then the one visible-text check (LLR-4205.15, P-M2-2): if `"".join(seg for seg, _ in highlight_segments(new_line)) != "".join(seg for seg, _ in highlight_segments(line))` → notify N4 once and change nothing (text, cursor and selection as they were at palette open); else `notes.replace(new_line, (row, 0), (row, len(line)))` (one undo step) and `notes.move_cursor((row, col))`: the cursor ends just after the new span's closer, or for `0` just after the uncoloured text, with no selection. The pen stays None; the TextArea posts Changed, so the preview and the live ink follow (baseline on_text_area_changed, M1)
 module: taskboard/modals.py
 modify: [I/O: TextArea #f-notes] (replace); [I/O: notifications] (append)
 examples: (TC-4275, root action_pick) notes "the plan works", target (0, 4, 8), code "y" → notes "the ::y:: plan :: works", cursor (0, 17), selection empty; typing "!" then gives "the ::y:: plan ::! works" (the "!" is not yellow)
@@ -181,23 +186,25 @@ examples: (TC-4275, root action_pick) notes "x ::b:: y :: z", target (0, 8, 9), 
 examples: (TC-4275, root action_pick) notes "line one\n==late== two", target (1, 0, 8), code "b" → notes "line one\n::b:: late :: two", cursor (1, 13); row 0 byte-equal
 examples: (TC-4267, root action_pick) notes "the plan works", selection (0, 8)→(0, 4), code "0" → notes byte-equal, the selection still (0, 8)→(0, 4)
 examples: (TC-4285, root action_pick) notes "std::vector", cursor (0, 2), alt+c, "5" → target (0, 0, 11); notes "std::vector" byte-equal; 1 notify "That colour would change the text you see: nothing changed."
-examples: (TC-4286, root action_pick) notes "==a::b==", cursor (0, 3), alt+c, "5" → target (0, 0, 8) (the legacy span); notes "==a::b==" byte-equal; 1 notify N4
+examples: (TC-4286, root action_pick) notes "==a::b==", cursor (0, 3), alt+c, "5" → target (0, 2, 6) (inside the legacy span 0..8, ARCH-4); notes "==a::b==" byte-equal; 1 notify N4
+examples: (TC-4288, root action_pick) notes "the plan works", cursor (0, 6), alt+c → palette for (0, 4, 8), line_at_open "the plan works"; while the palette is on top the test replaces row 0 with "the plan" (`notes.replace`); "5" → notes "the plan" byte-equal, 1 notify "The notes changed while the palette was open: nothing changed." (SEC-5)
+examples: (TC-4288, root action_pick) notes "a\nthe plan works", target (1, 4, 8); row 1 deleted while the palette is on top (notes "a"); "5" → notes "a" byte-equal, 1 notify N5, no exception
 examples: (TC-4286, root action_pick) notes "==a::b==", cursor (0, 3), alt+c, "0" → notes "a::b", cursor (0, `4`) (visible text unchanged, allowed)
 
 TaskDetails.compose
 req: LLR-4202.9
 in:
 out: ComposeResult widgets
-func: CHANGED, one line: the Notes label above the notes becomes `Label(DETAILS_NOTES_LABEL)`, a markup constant built once from PEN_CODES and HEX: "[b]Notes[/b]  " + the six codes in pen order, each "[<HEX[tone]>]<code>[/]", one space apart. The label lists the six codes only (P-M2-5): no legacy listing (`==…==`, `!!…!!`, `++…++`) and no syntax hint; legacy notes still render as at base. The rest of compose is unchanged
+func: CHANGED, one line: the Notes label above the notes becomes `Label(DETAILS_NOTES_LABEL)`, a markup constant built once from PEN_CODES and HEX: "[b]Notes[/b]  " + the syntax hint "[<HEX mut>]::c:: … ::[/]" + "  " + the six codes in pen order, each "[<HEX[tone]>]<code>[/]", one space apart (ruling C-2, ARCH-5). No legacy listing (`==…==`, `!!…!!`, `++…++`, P-M2-5); legacy notes still render as at base. The rest of compose is unchanged
 module: taskboard/modals.py
-examples: (TC-4276) the label's plain text "Notes  r o y g b v" (18 cells, inside the 56-cell box); it holds no "==", "!!", "++" or "::"
-examples: (TC-4276) the label's markup holds `#f43f5e`, `#fb923c`, `#fbbf24`, `#4ade80`, `#60a5fa`, `#a78bfa` (6/6), each wrapping its own code
-examples: (TC-4276) a task with notes "::b:: ask ::" opened in TaskDetails at 80x24 → the label row shows "r o y g b v" whole, and "ask" in `#60a5fa` below it
+examples: (TC-4276) the label's plain text "Notes  ::c:: … ::  r o y g b v" (`30` cells, inside the 56-cell box); it holds no "==", "!!" or "++"
+examples: (TC-4276) the label's markup holds `#f43f5e`, `#fb923c`, `#fbbf24`, `#4ade80`, `#60a5fa`, `#a78bfa` (6/6), each wrapping its own code letter; the hint "::c:: … ::" in `#8b98a5`
+examples: (TC-4276) a task with notes "::b:: ask ::" opened in TaskDetails at 80x24 → the label row shows "::c:: … ::  r o y g b v" whole, and "ask" in `#60a5fa` below it
 
 ## Entities
 
 [Outside: key alt+c]
-desc: CHANGED. Now bound in TaskModal too: `Binding("alt+c", "colour", "Colour", priority=True)`, gated by `TaskModal.check_action` (graph-interfaces, one notes-focus gate) on the notes' focus (LLR-4205.16). Still bound in MarkForm (a different modal; test_AT_2604 untouched). Shown to the user on the editor's Notes label (M1, LLR-4203.9), not on `#task-keys` (that line names buttons)
+desc: CHANGED. Now bound in TaskModal too: `Binding("alt+c", "colour", "Colour", priority=True)`. `TaskModal.check_action` always allows it (ARCH-2); action_colour returns at once, consuming the key, when the notes lack the focus (LLR-4205.16). In the legacy encoding the terminal's `ESC c` arrives as `Key("alt+c", "c")` (printable), so a denied binding would type "c" into the focused Input. Still bound in MarkForm (a different modal; test_AT_2604 untouched). Shown to the user on the editor's Notes label (M1, LLR-4203.9), not on `#task-keys` (that line names buttons)
 
 [Outside: palette key 1..6]
 desc: priority bindings of ColourPalette, one per PEN_CODES row in pen order: 1 r, 2 o, 3 y, 4 g, 5 b, 6 v; the app's plain digit view keys (keymap.py:65-74, not priority) never see them while the palette is on top
@@ -220,7 +227,7 @@ offers: (TC-4266) "0 none" → ColourPalette.action_pick
 offers: (TC-4268) "esc cancel" → ColourPalette.action_cancel
 
 [Interface: TaskDetails Notes label]
-desc: CHANGED. "Notes  r o y g b v", each code in its tone (DETAILS_NOTES_LABEL); the six codes only, the legacy listing is gone (P-M2-5)
+desc: CHANGED. "Notes  ::c:: … ::  r o y g b v", the hint in mut and each code letter in its tone (DETAILS_NOTES_LABEL; ruling C-2, ARCH-5); the legacy listing is gone (P-M2-5)
 
 [Data: DETAILS_NOTES_LABEL]
 in: str
@@ -233,8 +240,8 @@ desc: the anchor handed to ColourPalette at push: the editor's `#f-notes` cursor
 [Data: App.screen_stack]
 desc: the palette is pushed on top of TaskModal and popped by a pick or esc; the target (row, a, b) rides in the callback (`functools.partial`), so TaskModal keeps no palette state
 sequence:
-  altC: TaskModal.check_action → TaskModal.action_colour → TaskModal._lift_pen (pen None; an empty span removed) → colour_target (reads the lines after the lift) → ColourPalette.compose → ColourPalette.on_mount → palette_offset
-  pick: ColourPalette.action_pick → TaskModal._apply_colour → recolour → TaskModal.on_text_area_changed wins (the preview and the ink follow)
+  altC: TaskModal.check_action (always True) → TaskModal.action_colour (returns unless #f-notes has the focus) → TaskModal._pen_span (read before the lift) → TaskModal._lift_pen (pen None; an empty span removed; a missing closer written) → colour_target (only when no non-empty pen span; reads the lines after the lift) → ColourPalette.compose → ColourPalette.on_mount → palette_offset
+  pick: ColourPalette.action_pick → TaskModal._apply_colour (re-validates line_at_open) → recolour → TaskModal.on_text_area_changed wins (the preview and the ink follow)
   cancel: ColourPalette.action_cancel → TaskModal._apply_colour (code None: nothing)
 
 [I/O: notifications]
@@ -246,10 +253,11 @@ desc: tests/test_modal_keys.py `INVENTORY` (TC-2407) gains the row "ColourPalett
 ## Edges
 
 [Outside: key alt+c] ──▶ TaskModal.check_action
-when: TaskModal is the screen; allowed only while `#f-notes` has the focus; otherwise no palette opens and no field changes (LLR-4205.16, TC-4284 in graph-interfaces)
+when: TaskModal is the screen; action "colour" is always allowed (ARCH-2)
 [Outside: key alt+c] ──▶ TaskModal.action_colour
-when: TaskModal is the screen and check_action("colour") is True
+when: TaskModal is the screen; without the notes' focus the action returns at once: no palette, no field changes (LLR-4205.16, TC-4284)
 [Data: TaskModal.pen] ──▶ TaskModal._lift_pen
+TaskModal._pen_span ──▶ TaskModal.action_colour
 TaskModal.action_colour ──▶ [Data: App.screen_stack]
 TaskModal.action_colour ──▶ [I/O: notifications]
 [I/O: TextArea #f-notes].selection ──▶ colour_target
@@ -276,7 +284,7 @@ TaskModal._apply_colour ──▶ [I/O: notifications]
 
 ### Seams
 > Consumed from group V (views.py): `colour_spans(line)` → list[Span] (start, inner_start, inner_end, end, tone, code) — read by colour_target (overlap test) and recolour (the span to rewrite); `highlight_segments` (`_apply_colour`'s visible-text check, LLR-4205.15); `PEN_CODES` (pen order, code, tone, name) — read by ColourPalette.compose, the palette bindings and DETAILS_NOTES_LABEL; `Span` (the `.start/.inner_start/.inner_end/.end` fields only). recolour needs colour_spans to find an opener at the first position where one matches, also after a lone ":" ("a:::b:: plan ::" → one span start 2; P-M2-7).
-> Consumed from group M1 (modals.py): `TaskModal._lift_pen()` (called first in action_colour; after it the pen is None and the cursor at the old span's end, or at its start when the empty span was removed); the editor's Notes label shows `alt+c` (LLR-4203.9) — the palette's only on-screen key; `TaskModal.check_action` now lives in graph-interfaces with one notes-focus gate for `pen`, `pen_enter` and `colour` (P-M2-6); the live ink repaints from the TextArea's Changed after `_apply_colour`.
+> Consumed from group M1 (modals.py): `TaskModal._pen_span()` (read first in action_colour, before the lift: a non-empty pen span is the target, ARCH-3) and `TaskModal._lift_pen()` (called next; after it the pen is None and the cursor past the old span's closer — a missing closer is written first, ARCH-10 — or at its start when the empty span was removed); the editor's Notes label shows `alt+c` (LLR-4203.9) — the palette's only on-screen key; `TaskModal.check_action` now lives in graph-interfaces with one notes-focus gate for `pen`, `pen_enter` and `colour` (P-M2-6); the live ink repaints from the TextArea's Changed after `_apply_colour`.
 > Offered to the others: nothing; colour_target, recolour and palette_offset are module-level and private to the palette.
 
 ## Findings
@@ -328,3 +336,23 @@ finding P-M2-9 "next to the target" in LLR-4205.13 has no measure
 anchor: palette_offset
 seen: the threshold checks only box ⊂ screen; a box clamped to (0, 0) passes it
 decision: ruling (03-pdr-rulings round 0): "Accept: box top row = anchor row + 1, or box bottom row = anchor row − 1 when it would not fit below. LLR-4205.13 amended." Applied: palette_offset func; TC-4273 (4/4)
+
+finding ARCH-3 alt+c under a pen targeted "the word ending at the cursor", not the pen's span
+anchor: TaskModal.action_colour
+seen: (TC-4274) after the lift the cursor stands just after the closer; on "::b:: go ::now" the word is "::now" (9..14), which overlaps the span 0..11 → N2, no palette
+decision: ruling (03-pdr-rulings round 1): "Accept. `action_colour` reads `_pen_span()` BEFORE `_lift_pen()`; a non-empty pen span is the target (its inner range); an empty one is removed by the lift and the call ends with the "nothing to colour" notice. Example `::b:: go ::now` added." Applied: action_colour steps (1)-(3); TC-4274 (the "plan" + empty pen case now ends with N3), TC-4268 rewritten on a closer-less pen span
+
+finding ARCH-4 the word target swallowed span markers
+anchor: colour_target
+seen: on "::b:: abc ::d" at (0, 12) the old word "::d" (10..13) overlapped the span 0..12 → N2 about "the selection" with nothing selected
+decision: ruling (03-pdr-rulings round 1): "Accept the architect's fix (word = non-whitespace run inside the gap or span-inner region holding the cursor; a cursor on markers targets that span)." Applied: colour_target rule (2) (regions: opener, inner, closer, gaps); TC-4261 (new "::b:: abc ::d" example, "==late==" → (0, 2, 6)), TC-4280 ("x::b::y::" at (0, 0) → (0, 0, 1)), TC-4286 target (0, 2, 6)
+
+finding ARCH-5 the details label contradicted ruling C-2
+anchor: TaskDetails.compose
+seen: the node and TC-4276 pinned "Notes  r o y g b v" with "no `::`"; C-2 keeps the syntax hint
+decision: ruling (03-pdr-rulings round 1): "Accept (= C-2)." C-2: "keep the syntax hint — `Notes  ::c:: … ::  r o y g b v`, each code letter in its tone (≈ 30 cells, fits the 56-cell box). Legacy listing stays dropped." Applied: TaskDetails.compose, TC-4276, [Interface: TaskDetails Notes label]
+
+finding SEC-5 the palette callback re-read the line and could raise inside a callback
+anchor: TaskModal._apply_colour
+seen: the target (row, a, b) is computed at open, the line re-read at pick; a changed line could make `recolour` raise ValueError inside the `push_screen` callback and crash the editor
+decision: ruling (03-pdr-rulings round 1): "Accept (E4 addendum): the palette callback re-validates the target; if the line changed it does nothing and notifies." Applied: `line_at_open` rides in the partial; _apply_colour re-validation and notice N5; TC-4288

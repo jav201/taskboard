@@ -5,22 +5,23 @@ Differences from `graph-baseline.cw.md` (0a8dfaa) only. Group V owns the one sca
 ### Scanning algorithm of colour_spans (precise)
 
 > OPENER = `::([roygbv])::( ?)` built from PEN_CODES (lower case only). LEGACY = `views._HIGHLIGHT_RE` unchanged (`==(.*?)==|!!(.*?)!!|\+\+(.*?)\+\+`, lazy, `.` never matches `\n`).
-> 1. pos = 0. Loop: lm = LEGACY.search(text, pos); om = OPENER.search(text, pos). Neither → stop.
+> 1. pos = 0; lm = LEGACY.search(text, 0); om = OPENER.search(text, 0). Loop: the cached matches are kept across iterations (SEC-1, LLR-4201.10): lm is searched again, from pos, only when lm is not None and lm.start < pos, and the same for om; a kind whose search returned None is never searched again. This is exact: a match found from p1 at s is the match found from any p2 with p1 <= p2 <= s (neither regex has an anchor or a lookbehind). Neither → stop.
 > 2. Precedence: the match with the smaller start wins (a tie cannot happen: the first characters differ). If lm wins: emit Span(lm.start, start of its group, end of its group, lm.end, tone soon/over/green by group 1/2/3, code None); pos = lm.end; loop.
-> 3. If om wins: start = om.start, inner_start = om.end (the one optional space belongs to the opener). Scan j from inner_start to the first index where text[j] == "\n", or text[j:j+2] == "::", or j == len(text).
->    a. text[j:j+2] == "::" and OPENER.match(text, j) → the next opener ends the span: inner_end = end = j (no space dropped).
->    b. text[j:j+2] == "::" otherwise → a closer: inner_end = j-1 if j-1 >= inner_start and text[j-1] == " " else j; end = j+2 (the closer never takes the opener's space).
->    c. "\n" or end of text → inner_end = end = j (the `\n` is not consumed; no space dropped).
+> 3. If om wins: start = om.start, inner_start = om.end (the one optional space belongs to the opener). j = text.find("::", inner_start); nl = text.find("\n", inner_start, j if j >= 0 else len(text)) (bounded by j, so each character is looked at once per span and the spans are disjoint: linear).
+>    c. nl >= 0, or j < 0 → inner_end = end = nl (or len(text) when nl < 0) (the `\n` is not consumed; no space dropped).
+>    a. else OPENER.match(text, j) → the next opener ends the span: inner_end = end = j (no space dropped).
+>    a'. else text[j:j+3] == ":::" and OPENER.match(text, j + 1) → the opener at j + 1 ends the span: inner_end = end = j + 1, so the span text keeps the `:` (ARCH-11; the same reading as TC-4229 outside a span).
+>    b. else → a closer: inner_end = j-1 if j-1 >= inner_start and text[j-1] == " " else j; end = j+2 (the closer never takes the opener's space).
 >    Emit Span(start, inner_start, inner_end, end, PEN_CODES tone, code); pos = end; loop.
 > Inside an open colour span only an opener, `::` or `\n` is looked at, so `==`, `!!`, `++` are inner text; inside a legacy span everything up to its closer is inner text. A `::` that is not an opener while no colour span is open is never looked at, so it stays in the `mut` gap. For every input with no opener the loop is exactly `LEGACY.finditer` (LLR-4201.3).
 
 ## Nodes
 
 colour_spans
-req: LLR-4201.1, LLR-4201.2, LLR-4201.4, LLR-4201.5, LLR-4201.6, LLR-4201.7, LLR-4201.8, LLR-4201.9, LLR-4204.4, HLR-4201
+req: LLR-4201.1, LLR-4201.2, LLR-4201.4, LLR-4201.5, LLR-4201.6, LLR-4201.7, LLR-4201.8, LLR-4201.9, LLR-4201.10, LLR-4204.4, HLR-4201
 in: str text
 out: list[Span] spans
-func: the one scanner (algorithm in the note above): repeatedly the leftmost of the next legacy match and the next opener; an open colour span ends at the next opener (no space dropped), at a closer `::` (one preceding space taken as marker, never the opener's), or at `\n` / the end (no space dropped); spans in order, non-overlapping, never holding `\n`; str offsets start <= inner_start <= inner_end <= end; code None for a legacy span
+func: the one scanner (algorithm in the note above): repeatedly the leftmost of the next legacy match and the next opener; an open colour span ends at the next opener (no space dropped; at `:::<c>::` the opener at j + 1 wins), at a closer `::` (one preceding space taken as marker, never the opener's), or at `\n` / the end (no space dropped); spans in order, non-overlapping, never holding `\n`; str offsets start <= inner_start <= inner_end <= end; code None for a legacy span. Linear in len(text) (LLR-4201.10): each kind's next match is cached and searched again only when the scan has passed its start; the inner end is found with `str.find`, never a per-character loop
 module: taskboard/views.py
 examples: (TC-4201) text "::v:: x ::" → one span start `0`, inner_start `6`, inner_end `7`, end `10`, tone "violet", code "v" (same shape for each of r o y g b, tones "over" "orange" "soon" "green" "blue")
 examples: (TC-4202) text "a ::b:: x :: c" → spans start `2`, inner_start `8`, inner_end `9`, end `12`, tone "blue", code "b"
@@ -37,6 +38,9 @@ examples: (TC-4208) text "a::b::::c" → one span start `1`, inner_start `6`, in
 examples: (TC-4208) text "::b::  ::" (the fresh pen of LLR-4203.1) → one span inner_start `6`, inner_end `6`, end `9` (empty inner text)
 examples: (TC-4227) text "::b:: std::vector ::" → one span inner_start `6`, inner_end `9`, end `11` (the first `::` inside an open span closes it; see P-V-4)
 examples: (TC-4229) text "a:::b:: plan ::" → one span start `2`, inner_start `8`, inner_end `12`, end `15`, tone "blue", code "b" (OPENER.search skips the `::` at 1, which is no opener, and finds `::b::` at 2; the visible text "a:plan" is kept, P-M2-7)
+examples: (TC-4229) text "::r:: a :::b:: c ::" → span 1 start `0`, inner_start `6`, inner_end `9`, end `9`, tone "over" (inner "a :"); span 2 start `9`, inner_start `15`, inner_end `16`, end `19`, tone "blue" (ARCH-11: inside an open span the opener at j + 1 wins at `:::<c>::`)
+examples: (TC-4213) text = "::b:: x :: ::" repeated to 100 000 chars, and "std::" repeated to 100 000 chars → each tokenises in ≤ `250` ms, and t(100 000) / t(10 000) ≤ `20` (median of 3) (LLR-4201.10; scratch reference of the algorithm above, executed: 9.6 ms ratio 10.9, and 0.3 ms ratio 10.0; NC the re-search-every-loop scanner: 918 ms, ratio ≈ 100)
+examples: (TC-4213) text = "!!" + "::b::x::" repeated to 100 000 chars (one unclosed legacy opener, LEGACY searched once and never again) → ≤ `250` ms, ratio ≤ `20` (executed: 11.0 ms, ratio 10.8)
 examples: (TC-4228) text "é ::b:: café ☕ ::" → one span start `2`, inner_start `8`, inner_end `14`, end `17` (str offsets, not bytes)
 examples: (TC-4228) over the derived set of TC-4209 (11 110 inputs) → every span has start <= inner_start <= inner_end <= end, no `\n` inside text[start:end], spans non-overlapping: 0 exceptions
 
@@ -52,7 +56,7 @@ examples: (TC-4202) text "::b::x::" → segments ("x", "blue")
 examples: (TC-4202) text "::b::  x  ::" → segments (" x ", "blue")
 examples: (TC-4203) text "==y== !!r!!" → segments ("y", "soon"), (" ", "mut"), ("r", "over") as at base
 examples: (TC-4203) text "==a== !!b!! ++c++ std::vector" → segments ("a", "soon"), (" ", "mut"), ("b", "over"), (" ", "mut"), ("c", "green"), (" std::vector", "mut"), byte-equal to base (AT-4204)
-examples: (TC-4203) over `PIECES` × up to 3 of tests/test_highlight_segments.py (inputs with no `::`) → `0` differences from the base function (scratch run: 1 463 inputs, 0 differences)
+examples: (TC-4203) over `PIECES` × up to 3 of tests/test_highlight_segments.py (inputs with no `::`) → `0` differences from the base function (2 + 10 + 100 + 1 000 = `1 112` inputs, 0 differences; ARCH-12)
 examples: (TC-4204) text "::r:: open" → segments ("open", "over")
 examples: (TC-4204) text "::r:: a\nb" → segments ("a", "over"), ("\nb", "mut")
 examples: (TC-4205) text "a :: b" → segments ("a :: b", "mut"); "::x:: t ::", "::B:: t ::", "::bb:: t ::", "std::vector" each one "mut" segment equal to the input (5/5)
@@ -61,7 +65,8 @@ examples: (TC-4206) text "::r:: ab ::::b:: x ::" (the pen switch of LLR-4203.5) 
 examples: (TC-4207) text "::b:: ==a== ::" → segments ("==a==", "blue")
 examples: (TC-4207) text "==a ::b:: c==" → segments ("a ::b:: c", "soon")
 examples: (TC-4208) text "a::b::::c" → segments ("a", "mut"), ("", "blue"), ("c", "mut"); joined "ac", no segment holds ":"
-examples: (TC-4209) over pieces "ab", " ", "::b::", "::r::", "::", "==y==", "!!", "::z::", "é", "\n" × up to 4 (11 110 inputs) → 0 exceptions; joined texts equal the reference scanner's marker-free text for 100 %
+examples: (TC-4209) over pieces "ab", " ", "::b::", "::r::", "::", "==y==", "!!", "::z::", "é", "\n" × up to 4 (11 110 inputs) → 0 exceptions; joined texts equal the reference scanner's marker-free text for 100 %; every emitted tone ∈ {"mut", "soon", "over", "green", "orange", "blue", "violet"} for 100 % (SEC-9: the `hl-<tone>` class names of notes_html come from this closed set)
+examples: (TC-4229) text "::r:: a :::b:: c ::" → segments ("a :", "over"), ("c", "blue") (ARCH-11)
 examples: (TC-4227) text "::b:: std::vector ::" → segments ("std", "blue"), ("vector ::", "mut")
 
 legend_entries
@@ -162,7 +167,7 @@ examples: (TC-4218) ink on the 22 % tint (analysis): dark ink #e6edf3 on over 12
 ### README (doc, line ~247)
 
 > Proposed replacement of "- In notes, `==text==`, `!!text!!` and `++text++` are highlighted yellow, red and green.":
-> "- In notes, `::b:: text ::` colours text: `r` red, `o` orange, `y` yellow, `g` green, `b` blue, `v` violet. A span with no closing `::` ends at the line end, and a new `::<code>::` ends the open one. Inside a colour span the first `::` closes it, so `::b:: std::vector ::` shows `std` in blue and `vector ::` plain. `==text==`, `!!text!!` and `++text++` still highlight yellow, red and green; markers inside a span of the other kind stay literal. In the task editor, `alt+1`..`alt+6` pick a pen, `alt+0` lifts it, `alt+c` recolours the selection or the word. A `::` typed under a pen closes the pen's span, and the pen turns off." (The editor sentences are M1/M2 behaviour; V only writes the line. P-V-4 ruling: the `std::vector` sentence; P-M1-5 ruling: the typed `::` sentence; the legacy-marker clause follows the reworded LLR-4201.7.)
+> "- In notes, `::b:: text ::` colours text: `r` red, `o` orange, `y` yellow, `g` green, `b` blue, `v` violet. A span with no closing `::` ends at the line end, and a new `::<code>::` ends the open one. Inside a colour span the first `::` closes it, so `::b:: std::vector ::` shows `std` in blue and `vector ::` plain. `==text==`, `!!text!!` and `++text++` still highlight yellow, red and green; markers inside a span of the other kind stay literal. In the task editor, `alt+1`..`alt+6` pick a pen, `alt+0` lifts it, `alt+c` recolours the selection or the word. A `::` typed under a pen closes the pen's span, and the pen turns off; typed first thing in a fresh pen, it closes the still-empty span, which is then removed, so the line keeps only ` ::`." (The editor sentences are M1/M2 behaviour; V only writes the line. P-V-4 ruling: the `std::vector` sentence; P-M1-5 ruling: the typed `::` sentence; ARCH-13 ruling: the fresh-pen clause, pinned by M1 TC-4250; the legacy-marker clause follows the reworded LLR-4201.7.)
 
 ### Seams (what M1 and M2 consume from V)
 
@@ -272,3 +277,28 @@ seen: `_focus_note_snippet("::b:: a long blue note ::\nsecond", 14)` → "[#60a5
 cause: base clips before tokenising (pre-existing)
 effect: shorter snippets for coloured notes; the tone stays right because a cut closer leaves the span open to the line end (LLR-4201.4)
 decision: ruling (03-pdr-rulings round 0): "Backlog." _focus_note_snippet unchanged
+
+finding SEC-1 colour_spans re-searched both regexes on every loop: quadratic in spans per line
+anchor: colour_spans
+seen: (TC-4213) one 100 000-char line of "::b::x::" took 918 ms (security, executed); doubling the spans ×4 the time
+decision: ruling (03-pdr-rulings round 1): "Accept: linear scanner (cache each kind's next match) and one-pass byte offsets. New LLR-4201.10, LLR-4204.7." Applied: scanning note steps 1 and 3 (cached matches, `str.find` bounded by the next `::`); colour_spans func and TC-4213. The byte offsets are M1's (ink_highlights)
+
+finding SEC-9 the closed tone set behind `hl-<tone>` had no test
+anchor: highlight_segments
+seen: notes_html writes `class="hl-<tone>"` from the tone name; a later opener like `::(\w)::` would turn user letters into class names unseen
+decision: ruling (03-pdr-rulings round 1): "Accept (E4 addendum): TC-4209 also asserts every emitted tone ∈ {mut, soon, over, green, orange, blue, violet}." Applied: TC-4209 example of highlight_segments
+
+finding ARCH-11 inside an open span `:::b::` was read as a closer plus literal text
+anchor: colour_spans
+seen: (TC-4229) the old step 3a tried OPENER.match(text, j) only: "::r:: a :::b:: c ::" gave ("a","over"), (":b:: c ::","mut")
+decision: ruling (03-pdr-rulings round 1): "Accept the consistent reading: inside an open span, at `:::<c>::` the opener at j+1 wins (span text keeps the `:`), matching TC-4229 outside spans. Example `::r:: a :::b:: c ::` → `("a :","over"),("c","blue")`." Applied: scanning note step 3a'; TC-4229 in colour_spans and highlight_segments
+
+finding ARCH-12 the LLR-4201.3 count did not match its set
+anchor: highlight_segments
+seen: `PIECES` × up to 3 is 2 + 10 + 100 + 1 000 inputs, not 1 463
+decision: ruling (03-pdr-rulings round 1): "Accept: the count is 1 112." Applied: TC-4203 example of highlight_segments
+
+finding ARCH-13 typing `::` into a fresh pen leaves ` ::`
+anchor: colour_spans
+seen: on "::b::  ::" at (0, 6), typing `:` `:` makes the typed `::` the closer of an empty span, which `_pen_follow` removes; the line reads " ::"
+decision: ruling (03-pdr-rulings round 1): "Accept: pin the ` ::` result in TC-4250 and the README sentence; no code." Applied: the README note above (fresh-pen clause); the example is M1's TC-4250

@@ -31,31 +31,34 @@ TaskModal._lift_pen
 req: LLR-4203.3, LLR-4203.4, LLR-4203.6, LLR-4203.11, LLR-4205.14
 in: TaskModal self
 out: None
-func: if a pen is on: s = _pen_span(); if s is None only set pen to None; else if s's inner text is empty remove text[s.start:s.end] and put the cursor at s.start, else put the cursor at s.end; then set pen to None and refresh the Notes label. No pen: does nothing. Owned by M1; called by M1 (action_pen, _save) and M2 (action_colour). (P-M1-10)
+func: if a pen is on: s = _pen_span(); if s is None only set pen to None; else if s's inner text is empty remove text[s.start:s.end] and put the cursor at s.start; else if s has no closer (s.end == s.inner_end: the span ends at the line end, at `\n` or at the next opener) insert " ::" at s.inner_end and put the cursor at s.inner_end + 3 (ARCH-10: the next typed character is outside the span; before a next opener the result "…  ::::r::" tokenises with the same visible text); else put the cursor at s.end; then set pen to None, set `_pen_at` to None (SEC-4) and refresh the Notes label. No pen: does nothing. Owned by M1; called by M1 (action_pen, _save) and M2 (action_colour). (P-M1-10)
 module: taskboard/modals.py
-modify: [Data: TaskModal.pen] (replace); [Data: TextArea #f-notes] (replace)
-examples: (TC-4258) notes "::b:: abc ::", cursor (0, 9), pen `4` → notes "::b:: abc ::", cursor (0, 12), pen `None`
-examples: (TC-4259) notes "x::y::  ::", cursor (0, 7), pen `2` → notes "x", cursor (0, 1), pen `None`
+modify: [Data: TaskModal.pen] (replace); [Data: TaskModal._pen_at] (replace); [Data: TextArea #f-notes] (replace)
+examples: (TC-4258) notes "::b:: abc ::", cursor (0, 9), pen `4` → notes "::b:: abc ::", cursor (0, 12), pen `None`, _pen_at `None`
+examples: (TC-4258) notes "::b:: ab", cursor (0, 8), pen `4` (a span with no closer, for example after `delete` ×3 on "::b:: ab ::") → notes "::b:: ab ::", cursor (0, `11`), pen `None`; the next `d` gives "::b:: ab ::d", "d" in `mut` (ARCH-10)
+examples: (TC-4258) notes "::b:: x ::r:: y ::", cursor (0, 8), pen `4` (span 1 ended by the next opener) → notes "::b:: x  ::::r:: y ::", cursor (0, `11`), pen `None`; highlight_segments ("x ", "blue"), ("y", "over"), the same visible text as before
+examples: (TC-4259) notes "x::y::  ::", cursor (0, 7), pen `2` → notes "x", cursor (0, 1), pen `None`, _pen_at `None`
 
 TaskModal._pen_span
 req: LLR-4203.7, LLR-4203.8
 in:
 out: Span? span
-func: the pen's span holding the cursor: None when no pen is on, when the selection of #f-notes is not empty, or when no Span of colour_spans(cursor row) has code PEN_CODES[pen][0] with inner_start <= col <= inner_end; else the first such span. Owned by M1, used by _lift_pen and M2.
+func: the pen's span holding the cursor: None when no pen is on, when the selection of #f-notes is not empty, or when no Span of colour_spans(cursor row) has code PEN_CODES[pen][0] with inner_start <= col <= inner_end; else the first such span. Owned by M1, used by _lift_pen, check_action (the pen_enter arm, ARCH-8) and M2 (action_colour reads it before the lift, ARCH-3).
 module: taskboard/modals.py
 examples: (TC-4258) notes "::b:: abc ::", cursor (0, 9), pen `4` → span start `0`, inner_start `6`, inner_end `9`, end `12`
-examples: (TC-4245) notes "::b:: abc ::", cursor (0, 12), pen `4` → span `None`
+examples: (TC-4253) notes "::b:: abc ::", cursor (0, 12), pen `4` → span `None`
 
 TaskModal.check_action
 req: LLR-4203.10, LLR-4203.7, LLR-4205.16, HLR-4203, HLR-4205
 in: str action; tuple[object, ...] parameters
 out: bool? allowed
-func: base arms unchanged (`mark`, `drop_move`, `drop_pick`). ONE notes-focus gate (P-M2-6): `pen`, `pen_enter` and `colour` are allowed only while #f-notes has the focus; `pen_enter` additionally only while a pen is on and the `drop_pick` arm is False (P-M1-2). In BINDINGS `drop_pick` precedes `pen_enter` on `enter`, so the picker wins, then the pen, then the TextArea's newline. Every other action → True.
+func: base arms unchanged (`mark`, `drop_move`, `drop_pick`). `pen` and `colour` → always True (ARCH-2): a denied priority binding lets the terminal's `Key("alt+c", "c")` / `Key("alt+5", "5")` fall through to the focused Input, which types the character, so the focus gate lives in the actions instead: `action_pen` (M1) and `action_colour` (M2) return at once, consuming the key, while #f-notes lacks the focus. ONE gated arm: `pen_enter` is allowed only while #f-notes has the focus, a pen is on, `_pen_span()` is not None (ARCH-8) and the `drop_pick` arm is False (P-M1-2); there the fall-through to the TextArea's newline is wanted. In BINDINGS `drop_pick` precedes `pen_enter` on `enter`, so the picker wins, then the pen, then the TextArea's newline. Every other action → True.
 module: taskboard/modals.py
-examples: (TC-4240) action "pen", parameters (4,), App.focused `#f-title` → allowed `False`
+examples: (TC-4240) action "pen", parameters (4,), App.focused `#f-title` → allowed `True` (action_pen then returns at once; title and notes byte-equal)
 examples: (TC-4230) action "pen", parameters (4,), App.focused `#f-notes` → allowed `True`
 examples: (TC-4237) action "pen_enter", pen `None` → allowed `False`; the notes get a plain new line as in test_TC_2503_with_no_one_listed_enter_is_a_new_line
-examples: (TC-4284) action "colour", App.focused `#f-title` → allowed `False`
+examples: (TC-4237) action "pen_enter", pen `4`, notes "::b:: ab ::x", cursor (0, 12) (the cursor has left the span and no SelectionChanged has been handled yet) → `_pen_span()` `None` → allowed `False`; `enter` gives a plain new line: "::b:: ab ::x\n" (ARCH-8)
+examples: (TC-4284) action "colour", App.focused `#f-title` → allowed `True` (action_colour then returns at once; no palette, fields byte-equal)
 
 ## Entities
 
@@ -71,6 +74,10 @@ desc: views.py; one span of one line, str offsets.
 in: int?
 desc: the index 0..5 into PEN_CODES of the pen that is on, or None. Written by action_pen, _lift_pen, the cursor-leave handler; read by the label, enter handling, check_action.
 
+[Data: TaskModal._pen_at]
+in: tuple[int, int]?
+desc: (row, start) of the pen's span, owned by M1 (graph-proto-M1 has the full contract). Set by action_pen and action_pen_enter when they open a span, refreshed by _pen_follow, and set to None wherever the pen is set to None (here by _lift_pen; SEC-4, ARCH-8).
+
 ## Edges
 
 [Data: PEN_CODES] ──▶ colour_spans
@@ -80,3 +87,32 @@ desc: the index 0..5 into PEN_CODES of the pen that is on, or None. Written by a
 [Data: TaskModal.pen] ──▶ TaskModal.check_action
 TaskModal._pen_span ──▶ TaskModal._lift_pen
 TaskModal._lift_pen ──▶ [Data: TaskModal.pen]
+TaskModal._lift_pen ──▶ [Data: TaskModal._pen_at]
+TaskModal._pen_span ──▶ TaskModal.check_action
+
+## Findings
+
+finding ARCH-2 a denied gate let alt+c and alt+<n> fall through as printable characters
+anchor: TaskModal.check_action
+seen: in legacy encoding "\x1bc" is `Key("alt+c", "c")`, is_printable True; with check_action("colour") False and the focus in `#f-title`, Input._on_key inserts "c"; the pilot builds `Key("alt+c", None)`, so TC-4284 stayed green
+decision: ruling (03-pdr-rulings round 1): "Accept. `check_action` allows `pen` and `colour` always; the actions return early (consuming the key) when `#f-notes` lacks the focus. Only `pen_enter` stays gated. Tests post `events.Key("alt+c", "c")` / `Key("alt+5", "5")`." Applied: check_action func and TC-4240, TC-4284; the early returns are in M1 action_pen and M2 action_colour
+
+finding ARCH-8 pen decisions could read stale state when the next key overtook the editor's own SelectionChanged
+anchor: TaskModal.check_action
+seen: the pen_enter arm checked only that a pen is on, and `_pen_at` was written only by `_pen_follow`
+decision: ruling (03-pdr-rulings round 1): "Accept the 3-line fix (`_pen_at` set by `action_pen` and `action_pen_enter`; `pen_enter` arm requires `_pen_span()`)." Applied: the pen_enter arm (TC-4237) and [Data: TaskModal._pen_at] here; the writes are in M1
+
+finding ARCH-9 TC-4245 named two different tests
+anchor: TaskModal._pen_span
+seen: `_pen_span`'s example here and M1's ink_highlights both cited TC-4245
+decision: ruling (03-pdr-rulings round 1): "Accept: interface example TC-4245 → TC-4253." Applied
+
+finding ARCH-10 alt+0 on a pen span with no closer left the cursor inside
+anchor: TaskModal._lift_pen
+seen: pen on "::b:: ab ::" at (0, 8), `delete` ×3 → "::b:: ab" (end == inner_end == 8); alt+0, `d` → "::b:: abd" with "d" blue
+decision: ruling (03-pdr-rulings round 1): "Accept: `_lift_pen` on a span with no closer (`end == inner_end`) inserts ` ::` before moving past it." Applied: _lift_pen func, TC-4258 (two examples)
+
+finding SEC-4 `_pen_at` could go stale
+anchor: TaskModal._lift_pen
+seen: `_pen_at` was never reset when a pen was set or lifted, so a later leave could delete an unrelated empty span of the same code at the same start
+decision: ruling (03-pdr-rulings round 1): "Accept with ARCH-8: `_pen_at` is reset whenever a pen is set or lifted; `_pen_follow` deletes only if the text at `_pen_at` is still an empty span of the pen's code." Applied: _lift_pen sets it to None (TC-4258, TC-4259); the other writes and the guarded delete are in M1
