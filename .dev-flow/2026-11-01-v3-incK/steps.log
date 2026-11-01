@@ -20,3 +20,5 @@
 2026-11-01T12:51:17Z E4 build S done (deepseek-v4-pro, EXIT 0 12:51:04Z, inbox.py 1163 lines, deviations DEV-S-1 (note param), DEV-S-2 (lock label))
 2026-11-01T12:52:27Z E4 build V done (deepseek-v4-pro, EXIT 0 12:52:19Z, app.py +977, keymap +2, README +1; deviations none; addenda A-1, A-3 applied; TC-4321 global-key list and TC-2407 inventory need the n/ReviewList update)
 2026-11-01T12:59:40Z E4 tests done (opus tester): 3 files, 324 collected, RED on base 323 failed/1 guard (TC-4415), 0 errors; GREEN run start
+2026-11-01T13:05:04Z E4 GREEN-1: 27 failed / 438 passed (Inc K tests + keymap/help/modal keys/added list); integration start model=opus
+2026-11-01T13:17:21Z HANDOFF: orchestrator stopped mid-E4 (integration agent in flight; its edits uncommitted)
