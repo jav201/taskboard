@@ -61,3 +61,10 @@
 - **What changed:** LLR-4304.2 takes the first birth record whose `at` is a valid moment, not the first birth record (CR-1, design-gap). Threshold gains TC-4362b (an offset-aware or garbage first record, then a valid one → source `h` at the valid one).
 - **Why:** since ARCH-3 made offset-aware moments not valid, a hand-edited or foreign first record hid a later valid one and the task fell to `?`.
 - **Evidence:** `05-review-code.md` CR-1 (probe); `03-pdr-rulings.md` E5.
+
+### LED-2026-11-01-incL.6 — batch-end: the added list's census row
+- **Requirement:** LLR-4303.20
+- **Date:** 2026-11-01
+- **What changed:** no requirement text changed. `AddedList._paint`'s `update(render_added_list(...))` has a census EXEMPT row: the body is Text pieces, never parsed, and TC-4340 proves it.
+- **Why:** the batch-end full suite failed the markup census (TC-401), which cannot see into `views.py`.
+- **Evidence:** `.dev-flow/batch-end/corrective.md`, `corrective-red.txt`, `corrective-green.txt`, `suite2-chunk00..02.txt`; commit `ac1f3f3`.

@@ -75,3 +75,13 @@
 - **What changed:** LLR-4204.7 times 50 lines of 2 000 chars instead of one 100 000-char line (which LLR-4204.10 now leaves uninked); LLR-4204.10's keystroke bound is 1.5 s instead of 0.8 s.
 - **Why:** the tester found LLR-4204.7 contradicting LLR-4204.10; GREEN run 3 measured 0.85 s for the uninked keystroke on a loaded machine (Textual's own wrap of a 100 000-char line, not the ink). 1.5 s still separates the capped line from the inked one (2.6 s, SR-1), and the empty-highlights assertion is the deterministic arm.
 - **Evidence:** `evidence/green-3.txt` (TC-4296 0.85 s), `evidence/red-e5.txt`, `05-review-security.md` SR-1.
+
+### LED-2026-11-01-incC.8 — batch-end: the Notes label as Text, the ink map's census row, N4 without the second person
+- **Requirement:** LLR-4202.9
+- **Requirement:** LLR-4204.6
+- **Requirement:** LLR-4203.17
+- **Requirement:** LLR-4205.15
+- **Date:** 2026-11-01
+- **What changed:** no requirement text changed. The Notes label is `details_notes_label() -> Text` instead of a markup constant (the same plain text and spans), `InkArea._build_highlight_map`'s `dict.update` has a census EXEMPT row, and N4 reads `That colour would change the visible text: nothing changed.`
+- **Why:** the batch-end full suite failed the markup census (TC-401) and the second-person law, which the change-only validation never ran.
+- **Evidence:** `.dev-flow/batch-end/corrective.md`, `corrective-red.txt`, `corrective-green.txt`, `suite2-chunk00..02.txt`; commit `ac1f3f3`.

@@ -1,0 +1,17 @@
+taskboard: C:\Users\jjgh8\Github\taskboard-wt\capture-proto\taskboard\__init__.py
+head: 3c7e18c
+            for n in ast.walk(tree):
+                if (isinstance(n, ast.Constant) and isinstance(n.value, str) and id(n) not in docs
+                        and n.value not in STORED and n.value not in CITY_TO_ZONE
+                        and WORD_ONLY.search(n.value)):
+                    offenders.append((path.name, n.lineno, n.value[:50]))
+>       assert not offenders, offenders[:5]
+E       AssertionError: [('inbox.py', 48, 'con'), ('suggest.py', 22, '
+E         a an and are as at be been but by can de del do e')]
+E       assert not [('inbox.py', 48, 'con'), ('suggest.py', 22, '\na an and are as at be been but by can de del do e')]
+
+tests\test_english.py:138: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_colour_budget_app.py::test_TC_204_modal_titles_and_the_key_map_are_bright
+FAILED tests/test_english.py::test_TC_206_no_literal_in_the_source_carries_the_old_copy
+2 failed, 1895 passed, 1 skipped in 543.88s (0:09:03)

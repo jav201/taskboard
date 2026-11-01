@@ -1,0 +1,17 @@
+taskboard: C:\Users\jjgh8\Github\taskboard-wt\capture-proto\taskboard\__init__.py
+head: 3c7e18c
+        notifies carrying ids, names and exceptions, the standup and help labels) and
+        every `_rich` over user text; GREEN once each is a Text piece or `markup=False`."""
+        unsafe = [s for s in _package_census()
+                  if s["kind"] == "sink" and not s["safe"] and _key(s) not in EXEMPT]
+>       assert not unsafe, "Textual sinks fed a markup str:\n" + _report(unsafe)
+E       AssertionError: Textual sinks fed a markup str:
+E           app.py:1030 AddedList._paint update(render_added_list(rows, self.sel, self.newest, self.show_archived, hidden, unrea)
+E           modals.py:582 InkArea._build_highlight_map update(new <- ink_highlights(self.document.lines) | {})
+E           modals.py:3046 TaskDetails.compose Label(DETAILS_NOTES_LABEL)
+E       assert not [{'func': <ast.FunctionDef object at 0x0000019E96D4B2D0>, 'kind': 'sink', 'line': 1030, 'markup_off': False, ...}, {'f......}, {'func': <ast.FunctionDef object at 0x0000019E91A66E50>, 'kind': 'sink', 'line': 3046, 'markup_off': False, ...}]
+
+tests\test_markup_census.py:415: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_markup_census.py::test_TC_401_no_textual_sink_takes_a_markup_str
+1 failed, 1191 passed in 488.25s (0:08:08)

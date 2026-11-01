@@ -1,0 +1,14 @@
+taskboard: C:\Users\jjgh8\Github\taskboard-wt\capture-proto\taskboard\__init__.py
+head: 3c7e18c
+                    offenders.append((path.name, lit[:60]))
+>       assert not offenders, f"literals in the app's voice: {offenders[:5]}"
+E       AssertionError: literals in the app's voice: [('modals.py', 'That colour would change the text you see: nothing changed.')]
+E       assert not [('modals.py', 'That colour would change the text you see: nothing changed.')]
+
+tests\test_prism_laws.py:209: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_colour_budget_app.py::test_TC_204_modal_titles_and_the_key_map_are_bright
+FAILED tests/test_english.py::test_TC_206_no_literal_in_the_source_carries_the_old_copy
+FAILED tests/test_markup_census.py::test_TC_401_no_textual_sink_takes_a_markup_str
+FAILED tests/test_prism_laws.py::test_no_literal_in_the_source_can_emit_the_second_person
+4 failed in 1.67s

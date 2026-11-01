@@ -1,0 +1,15 @@
+taskboard: C:\Users\jjgh8\Github\taskboard-wt\capture-proto\taskboard\__init__.py
+head: ac1f3f3
+C:\Users\jjgh8\anaconda3\Lib\site-packages\pytest_asyncio\plugin.py:207: PytestDeprecationWarning: The configuration option "asyncio_default_fixture_loop_scope" is unset.
+The event loop scope for asynchronous fixtures will default to the fixture caching scope. Future versions of pytest-asyncio will default the loop scope for asynchronous fixtures to function scope. Set the default fixture loop scope explicitly in order to avoid unexpected behavior in the future. Valid fixture loop scopes are: "function", "class", "module", "package", "session"
+
+  warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCOPE_UNSET))
+=========================== short test summary info ===========================
+SKIPPED [1] tests\test_app.py:1270: Set-Clipboard refused the sample on all 5 attempts (the machine, not the code under test): Set-Clipboard : Requested Clipboard operation did not succeed.
+At line:1 char:1
++ Set-Clipboard -Value 'roundtrip 123 ABC taskboard'
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (:) [Set-Clipboard], ExternalException
+    + FullyQualifiedErrorId : System.Runtime.InteropServices.ExternalException,Microsoft.PowerShell.Commands.SetClipbo 
+   ardCommand
+1897 passed, 1 skipped in 542.64s (0:09:02)

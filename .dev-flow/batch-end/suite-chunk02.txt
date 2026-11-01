@@ -1,0 +1,17 @@
+taskboard: C:\Users\jjgh8\Github\taskboard-wt\capture-proto\taskboard\__init__.py
+head: 3c7e18c
+            src = re.sub(r'"""[\s\S]*?"""', "", src)
+            src = re.sub(r"^\s*#.*$", "", src, flags=re.M)
+            for lit in re.findall(r'"([^"\n]{4,})"', src) + re.findall(r"'([^'\n]{4,})'", src):
+                if lit in EXEMPT:
+                    continue
+                if SECOND_PERSON.search(lit) and not lit.strip().startswith("#"):
+                    offenders.append((path.name, lit[:60]))
+>       assert not offenders, f"literals in the app's voice: {offenders[:5]}"
+E       AssertionError: literals in the app's voice: [('modals.py', 'That colour would change the text you see: nothing changed.')]
+E       assert not [('modals.py', 'That colour would change the text you see: nothing changed.')]
+
+tests\test_prism_laws.py:209: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_prism_laws.py::test_no_literal_in_the_source_can_emit_the_second_person
+1 failed, 933 passed in 178.73s (0:02:58)
