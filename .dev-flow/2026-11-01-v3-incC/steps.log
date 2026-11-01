@@ -12,3 +12,7 @@
 2026-11-01T07:17:08Z E3 PDR round 1 done (arch FAIL 1M/2H, sec PwN 3 MED); rulings written; correction start model=opus
 2026-11-01T07:31:02Z E3 round-1 corrections done; round 2 (blocking-only re-review) start model=opus
 2026-11-01T07:35:15Z E3 end: PDR round 2 PASS-WITH-NOTES (arch 1 MINOR, sec 1 MED 1 LOW → addenda) model=opus
+2026-11-01T07:35:27Z E4 start: build V (deepseek-v4-pro) ∥ build M (deepseek-v4-pro) ∥ tests (opus tester)
+2026-11-01T07:45:46Z E4 build V done (deepseek-v4-pro, EXIT 0, deviations none)
+2026-11-01T07:54:59Z E4 build M done (deepseek-v4-pro, EXIT 0, deviations none)
+2026-11-01T08:01:51Z E4 tests done (opus tester): 218 tests, RED on base 212 failed/6 guards; GREEN on tree 252 passed (incl. test_modal_keys) — no integration fix needed
