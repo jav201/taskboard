@@ -13,7 +13,7 @@ from pathlib import Path
 HERE = Path(__file__).resolve().parent
 GRAPHS = ["graph-interfaces.cw.md", "graph-proto-D.cw.md", "graph-proto-V.cw.md", "graph-proto-S.cw.md"]
 BASE = {"4301": 4300, "4302": 4311, "4303": 4320, "4304": 4360, "4305": 4380, "4306": 4390}
-RULED = {"LLR-4304.16": {"TC-4373b"}}  # 03-pdr-rulings round 0, P-V-2
+RULED = {}  # round 0 mapped LLR-4304.16 -> TC-4373b (P-V-2); LLR-4304.16 is withdrawn (round 1, ARCH-3)
 KEYS = ("req:", "in:", "out:", "func:", "module:", "modify:", "examples:", "offers:", "oracle:",
         "desc:", "when:", "anchor:", "seen:", "cause:", "effect:", "decision:")
 TC_RE = re.compile(r"\((TC-\d{4}[a-z]?)")
@@ -25,9 +25,12 @@ def expected(llr):
 
 
 def llrs():
+    """(active, withdrawn): an id whose bold heading reads `— Withdrawn` is not traced."""
     text = (HERE / "01-requirements.md").read_text(encoding="utf-8")
-    return sorted(set(re.findall(r"\*\*(LLR-\d{4}\.\d+)\b", text)),
-                  key=lambda s: (s[4:8], int(s.split(".")[1])))
+    key = lambda s: (s[4:8], int(s.split(".")[1]))  # noqa: E731
+    ids = set(re.findall(r"\*\*(LLR-\d{4}\.\d+)\b", text))
+    gone = set(re.findall(r"\*\*(LLR-\d{4}\.\d+) — Withdrawn\*\*", text))
+    return sorted(ids - gone, key=key), sorted(gone, key=key)
 
 
 def blocks():
@@ -57,7 +60,7 @@ def blocks():
 
 
 def main():
-    all_llr = llrs()
+    all_llr, withdrawn = llrs()
     bl = list(blocks())
     untraced = []
     for llr in all_llr:
@@ -72,7 +75,8 @@ def main():
         print(f"{llr} (TC {'/'.join(sorted(want))}): " + ("; ".join(hits) if hits else "UNTRACED"))
         if not hits:
             untraced.append(llr)
-    print(f"traced {len(all_llr) - len(untraced)}/{len(all_llr)}")
+    print("withdrawn (not traced): " + (", ".join(withdrawn) if withdrawn else "none"))
+    print(f"traced {len(all_llr) - len(untraced)}/{len(all_llr)} active ({len(all_llr) + len(withdrawn)} ids)")
     print("untraced: " + (", ".join(untraced) if untraced else "none"))
     return 1 if untraced else 0
 

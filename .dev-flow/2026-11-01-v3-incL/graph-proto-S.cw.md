@@ -4,7 +4,9 @@ Differences from `graph-baseline.cw.md` only, for `taskboard/app.py`. New nodes 
 
 Textual 8.2.8 facts this design relies on (read in `textual/app.py:3966-3988`, `textual/app.py:4223-4248`, `textual/screen.py:408-455`, executed in probe S-1): a key is first offered to PRIORITY bindings walking `reversed(screen._binding_chain)`, i.e. the App first, then the screen, then the focused widget; then to non-priority bindings walking `screen._modal_binding_chain` from the focused widget up, a chain that STOPS at the first modal node, so under any `ModalScreen` the App's non-priority bindings (all of KEYMAP but `tab` and the four arrows/`hjkl`) are never offered. `run_action` returns False when the target's `check_action` returns False, and the walk then goes on to the next binding. Consequences on the list screen (a plain `Screen`, no focusable widget, so its chain is `[AddedList, App]`): the App's priority `cursor`/`hmove`/`toggle_presentation` bindings are offered first and refused by `check_action`, so the screen's own priority `up,k`/`down,j` act; every other screen key (`escape,N`, `o`, `v`, `enter`) has no App priority twin, so the screen's priority binding takes it before the App's non-priority `N` (`added_list`), `o` (`open_url`), `v` (`toggle_archived`), `enter` (`details`) or `escape` (`focus_exit`) are ever asked.
 
-Probe S-1 (executed, `taskboard.__file__` = `…\taskboard-wt\capture-proto\taskboard\__init__.py`, synthetic one-board app, `Path.home` redirected to a temp folder; scratch script outside the repo): with a `ConfirmModal` pushed, `A` leaves the stack `['Screen', 'ConfirmModal']` both with the real `check_action` and with `check_action` forced to allow `agenda_all`; with the task editor open, `A` types into the title (`'A'`) and the stack stays `['Screen', 'TaskModal']` in both runs. So the modal gate of `agenda_all` (and of `added_list`) is never reached by a key press (finding P-S-1). Probe S-2 (executed): `key_line(ADDED_KEYS)` gives "↑↓ move   ↵ open on board   o newest/oldest   v archived   esc / N back", cell_len `71`; at width 60 "↑↓ move   ↵ open on board   o newest/oldest   v   esc / N"; at width 30 "↑↓ move   ↵   o   v   esc / N".
+Probe S-1 (executed, `taskboard.__file__` = `…\taskboard-wt\capture-proto\taskboard\__init__.py`, synthetic one-board app, `Path.home` redirected to a temp folder; scratch script outside the repo): with a `ConfirmModal` pushed, `A` leaves the stack `['Screen', 'ConfirmModal']` both with the real `check_action` and with `check_action` forced to allow `agenda_all`; with the task editor open, `A` types into the title (`'A'`) and the stack stays `['Screen', 'TaskModal']` in both runs. So the modal gate of `agenda_all` (and of `added_list`) is never reached by a key press (finding P-S-1). Probe S-2 (executed): `key_line(ADDED_KEYS)` gives "↑↓ move   ↵ open on board   o newest/oldest   v archived   esc / N back", cell_len `71`; at width 60 "↑↓ move   ↵ open on board   o newest/oldest   v   esc / N"; at width 30 "↑↓ move   ↵   o   v   esc / N". Probe S-3 (E3 round 1, executed on the real `keymap.key_line`, scratch `%TEMP%/incL-e3/probe.py`): `key_line(ADDED_KEYS + [("·", "read-only: nothing here edits a task")])` is `112` cells ("… esc / N back   · read-only: nothing here edits a task"), so the tail fits a 116-cell key row (118x30) and is dropped at 78 (80x24), leaving the 71-cell line of the 5 keys (A-2).
+
+**Evidence state of this file's node examples (ARCH-4): `planned`.** Only probes S-1, S-2 and S-3 above were executed; none of the pilot examples on the nodes below (TC-43nn, AT-430n) was run before E4. The E4 tester's RED-on-base run is their first execution, and the tester runs every one of them.
 
 ### Test fixture of this group (synthetic; `tests/added_list_fixture.py`, built like `backlog_round_fixture.build`)
 > Home: `Path.home` redirected to `tmp_path` (the `home` fixture of `tests/test_all_agenda.py`); registry `<tmp>/.taskboard/boards.json`, `"last": "alpha"`, two active entries in this order: `alpha` "Alpha" (colour sky, `boards/alpha/board.json`) and `beta` "Beta" (colour lime, `boards/beta/board.json`), each board in its own folder (one history.jsonl per folder). App: `open_app(None)`; with two active boards it starts on BoardsHome, so every sequence below starts with `escape` (the main screen on Alpha, the board started) and every byte hash is taken AFTER that `escape` (finding P-S-4).
@@ -36,7 +38,7 @@ AddedList.compose
 req: LLR-4303.2, LLR-4303.3, LLR-4303.5, LLR-4302.6, HLR-4303
 in:
 out: ComposeResult widgets
-func: NEW, the AllBoardsAgenda pattern (app.py:887). Runs ONCE per instance: Textual composes a screen at its first push, and `_bring` returning to an instance on the stack does not compose it again, so the boards are read once when the view opens (LLR-4303.5). Steps: `self.lanes, self.ids = board_lanes(self.app)`; `self.today = date.today()`; `self.rows = added_rows(self.lanes)`; `self.first = first_created(self.rows)` (the unfiltered rows, archived included); yield `Static(id="al-body")` then `Static(id="al-keys")`. Class attribute `DEFAULT_CSS = "AddedList { background: #0d1117; overflow-y: hidden; }  #al-body { padding: 0 1; height: 1fr; }  #al-keys { dock: bottom; height: 1; padding: 0 1; background: #0b0f17; }"` (the agenda's values). Reads only: `board_lanes` gives the open board as held and `peek_board` for the others (never the seed, never a `.corrupt` copy), `added_rows` reads history.jsonl; nothing here calls `save`, `save_atomic`, `history.append` or sets `task.created` (LLR-4302.6). No try/except: `board_lanes` maps a missing/unreadable file to a None lane and `added_rows` is total (OSError → no births)
+func: NEW, the AllBoardsAgenda pattern (app.py:887). Runs ONCE per instance: Textual composes a screen at its first push, and `_bring` returning to an instance on the stack does not compose it again, so the boards are read once when the view opens (LLR-4303.5). Steps: `self.lanes, self.ids = board_lanes(self.app)`; `self.today = date.today()`; `self.rows = added_rows(self.lanes)`; `self.first = first_created(self.rows)` (the unfiltered rows, archived included); yield `Static(id="al-body")` then `Static(id="al-keys")`. Class attribute `DEFAULT_CSS = "AddedList { background: #0d1117; overflow-y: hidden; }  #al-body { padding: 0 1; height: 1fr; }  #al-keys { dock: bottom; height: 1; padding: 0 1; background: #0b0f17; }"` (the agenda's values). Reads only: `board_lanes` gives the open board as held and `peek_board` for the others (never the seed, never a `.corrupt` copy), `added_rows` reads history.jsonl; nothing here calls `save`, `save_atomic`, `history.append` or sets `task.created` (LLR-4302.6). LLR-4302.6's subject is the list view, i.e. these code paths (ARCH-6): the App's timers keep running under any screen (`_team_sync_tick` in team mode, app.py:1729, :1738; the presence renewal in `_tick`, app.py:1813–1815) and are not the list's writes; TC-4317's fixture has no team mode. No try/except: `board_lanes` maps a missing/unreadable file to a None lane and `added_rows` is total (OSError, ValueError or RecursionError from a history read → no births, SEC-2; a non-str task id → no birth lookup, SEC-3)
 module: taskboard/app.py
 modify: [Data: AddedList.snapshot] (replace)
 examples: (TC-4322, root action_added_list) fixture, `escape`, `N` → app.screen is an AddedList; app.screen_stack types ["Screen", "AddedList"]
@@ -51,7 +53,15 @@ in:
 out: None
 func: NEW. `self._paint()` (the first paint, after compose has filled the snapshot)
 module: taskboard/app.py
-examples: (TC-4322, root action_added_list) `escape`, `N` → `#al-body` line 1 holds "newest first" and `#al-keys` reads "↑↓ move   ↵ open on board   o newest/oldest   v archived   esc / N back"
+examples: (TC-4322, root action_added_list) `escape`, `N` → `#al-body` line 1 holds "newest first" and `#al-keys` starts "↑↓ move   ↵ open on board   o newest/oldest   v archived   esc / N back" (the read-only tail follows only at a width where it fits whole, A-2)
+
+AddedList.on_screen_resume
+req: LLR-4303.11, HLR-4303
+in:
+out: None
+func: NEW (addendum A-1, ARCH-5). `self._paint()`: when the list is back on top (`escape` from the agenda, the people directory or the marks manager, or `N` through `_bring`), it repaints at once, so a person or mark class renamed under `@` / `#` (`_refresh_directories`, app.py:1418) shows without waiting for the next key. The snapshot is NOT re-read (LLR-4303.5): only `_paint`, which reads the live `app.people.people` and the lane boards' `marks`
+module: taskboard/app.py
+examples: (TC-4331b, root action_added_list) fixture plus a people file with `ana` "Ana Ruiz" and ta1's notes "ping @ana"; `escape`, `N`, `down` (sel `1`, "Sync notes": pane meta holds "@Ana Ruiz"); `@`; the directory renames `ana` to "Ana Ortiz" (`app.people` re-read as `_refresh_directories` does); `escape` → stack ["Screen", "AddedList"] and, with no further key, the pane meta holds "@Ana Ortiz" (NC no `on_screen_resume`: still "@Ana Ruiz", RED)
 
 AddedList.on_resize
 req: HLR-4303
@@ -74,11 +84,11 @@ AddedList._paint
 req: LLR-4303.19, LLR-4303.6, LLR-4304.6, LLR-4302.6, HLR-4303
 in:
 out: None
-func: NEW. `w, h = self.app.size`; `rows = self._ordered()`; `hidden = 0 if self.show_archived else sum(1 for r in self.rows if r.task.archived)`; `unread = sum(1 for lane in self.lanes if lane[2] is None)`; `#al-body` ← `render_added_list(rows, self.sel, self.newest, self.show_archived, hidden, unread, self.first, self.today, self.app.people.people, w - 2, h - 1)` (a Text of plain pieces; `Static.update` of a Text parses no markup); `#al-keys` ← `key_line(ADDED_KEYS, w - 2)` (no read-only tail: the key row lists only keys). Reads the live people dict at each paint (names for `@people`); writes only the two Statics, never a board or history (LLR-4302.6)
+func: NEW. `w, h = self.app.size`; `rows = self._ordered()`; `hidden = 0 if self.show_archived else sum(1 for r in self.rows if r.task.archived)`; `unread = sum(1 for lane in self.lanes if lane[2] is None)`; `#al-body` ← `render_added_list(rows, self.sel, self.newest, self.show_archived, hidden, unread, self.first, self.today, self.app.people.people, w - 2, h - 1)` (a Text of plain pieces; `Static.update` of a Text parses no markup); `#al-keys` ← `keys = key_line(ADDED_KEYS + [("·", "read-only: nothing here edits a task")])`; `if keys.cell_len > w - 2: keys = key_line(ADDED_KEYS, w - 2)` — AllBoardsAgenda._paint's rule (app.py:936–938): the read-only tail goes first, never a key (addendum A-2, ARCH-9). Reads the live people dict at each paint (names for `@people`); writes only the two Statics, never a board or history (LLR-4302.6)
 module: taskboard/app.py
 modify: [I/O: Static #al-body] (replace); [I/O: Static #al-keys] (replace)
-examples: (TC-4339, root action_added_list) 80x24, `escape`, `N` → `#al-keys` plain "↑↓ move   ↵ open on board   o newest/oldest   v archived   esc / N back" (cell_len `71` ≤ `78`): the 5 glyphs "↑↓", "↵", "o", "v", "esc / N" present (NC omit `v`: RED)
-examples: (TC-4339, root action_added_list) 118x30 → the same line; the 5 words "move", "open on board", "newest/oldest", "archived", "back" present
+examples: (TC-4339, root action_added_list) 80x24, `escape`, `N` → `#al-keys` plain "↑↓ move   ↵ open on board   o newest/oldest   v archived   esc / N back" (the tail line is `112` > `78` cells, so it is dropped; the 5-key line is `71` ≤ `78`): the 5 glyphs "↑↓", "↵", "o", "v", "esc / N" present and no "read-only" (NC omit `v`: RED)
+examples: (TC-4339, root action_added_list) 118x30 → `#al-keys` plain "↑↓ move   ↵ open on board   o newest/oldest   v archived   esc / N back   · read-only: nothing here edits a task" (`112` ≤ `116` cells); the 5 words "move", "open on board", "newest/oldest", "archived", "back" present (A-2)
 examples: (TC-4326, root action_added_list) fixture with boards/beta/board.json deleted after build → unread `1`; rows `3`; the head holds "1 board not read"
 examples: (TC-4366, root action_added_list) `N` → newest `True`; the head holds "newest first"
 examples: (AT-4305, root action_added_list) `N`, `down` → pane source "added Sat Oct 31 · 18:20 · the created field"; `down` → "added ≈ Wed Oct 28 · 10:30 · from history.jsonl"; `down`, `down` → "added: unknown, before Oct 31 · #3 in Alpha's board file"
@@ -248,7 +258,7 @@ desc: NEW. The list and the pane from render_added_list: `h − 1` lines, `w −
 
 [I/O: Static #al-keys]
 in: Text
-desc: NEW. Docked bottom, height 1, background #0b0f17; `key_line(ADDED_KEYS, w − 2)`
+desc: NEW. Docked bottom, height 1, background #0b0f17; `key_line(ADDED_KEYS + [read-only tail])` when it fits `w − 2`, else `key_line(ADDED_KEYS, w − 2)` (A-2)
 
 [Interface: AddedList key row]
 desc: NEW. The controls `#al-keys` shows, each with the node a press must run (the screen's priority BINDINGS: `escape,N` back · `up,k` move(-1) · `down,j` move(1) · `o` order · `v` archived · `enter` jump). The seam entity `[Interface: AddedList keys]` (graph-interfaces) names the same keys; this one points each control at its action node (finding P-S-6)
@@ -403,6 +413,36 @@ finding P-S-8 the archived toggle keeps "the same task" by row, not by task id
 anchor: AddedList.action_archived
 seen: LLR-4306.4's threshold says "same task id"; task ids are unique per board only: a copied board file (backlog_round_fixture `with_copy`, `board-copy` registered) holds the ids of its source, so `task.id` can match two rows
 decision: ruling (03-pdr-rulings round 0): "Accept: the cursor keeps its task by (lane, pos) (ids can repeat across boards). LLR-4306.4 'same task' means the same (lane, pos)." Applied: AddedList.action_archived func and TC-4394 (same (lane, pos) after `v`, `v`)
+
+finding ARCH-4 MINOR: this file's node examples carried no evidence state
+anchor: AddedList.compose
+seen: (03-pdr-architect.md ARCH-4) groups D and V state that every example ran on a scratch reference; S stated only probes S-1 and S-2, so its ~45 pilot examples read as checked while they were `planned`
+decision: ruling (03-pdr-rulings round 1): "Accept: the tester runs every S example; none is claimed executed before E4." Applied: header paragraph "Evidence state of this file's node examples: planned" (probes S-1..S-3 the only executed items)
+
+finding ARCH-5 MINOR: the list did not repaint when resumed
+anchor: AddedList.on_screen_resume
+seen: (03-pdr-architect.md ARCH-5) `@` / `#` over the list can rename a person or mark class; back on the list, `#al-body` kept the last paint's names until the next key (AllBoardsAgenda has the same exposure, pre-existing)
+decision: ruling (03-pdr-rulings round 1): "Accept: AddedList.on_screen_resume repaints (people/marks renamed under @/# show at once). Example under LLR-4303.11 (TC-4331b)." (addendum A-1) Applied: new node AddedList.on_screen_resume (`self._paint()`) with TC-4331b; the agenda's twin is the orchestrator's backlog note, not in this file
+
+finding ARCH-6 MINOR: LLR-4302.6's subject was the whole system, but app timers write while the list is open
+anchor: AddedList.compose
+seen: (03-pdr-architect.md ARCH-6) `_team_sync_tick` (team mode) and the presence renewal in `_tick` run under any screen; TC-4317's fixture has no team mode, so the test passes while the system-wide statement is false in team mode
+decision: ruling (03-pdr-rulings round 1): "Accept: LLR-4302.6's subject becomes 'the list view'." Applied: AddedList.compose func (the subject is the list's own code paths; the timers named as not the list's writes); TC-4317 unchanged
+
+finding ARCH-9 MINOR: the key row dropped the agenda's read-only tail
+anchor: AddedList._paint
+seen: (03-pdr-architect.md ARCH-9) AllBoardsAgenda._paint appends `("·", "read-only: nothing here edits a task")` and drops it first when narrow (app.py:936–938); S wrote "no read-only tail" for an equally read-only screen
+decision: ruling (03-pdr-rulings round 1): "Accept (conformance): the key row adds the agenda's tail · read-only: nothing here edits a task when it fits whole, else drops it first (AllBoardsAgenda._paint)." (addendum A-2) Applied: AddedList._paint func (the agenda's two-step rule), TC-4339 (118x30: tail shown, 112 ≤ 116 cells; 80x24: tail dropped, all 5 keys stay), on_mount TC-4322 ("starts"), [I/O: Static #al-keys], probe S-3
+
+finding SEC-2 MEDIUM: a deeply nested history line crashed `N` at compose
+anchor: AddedList.compose
+seen: (03-pdr-security.md SEC-2) compose's "no try/except" rested on `added_rows` being total for OSError only; a RecursionError from `history.read` escaped compose
+decision: ruling (03-pdr-rulings round 1): "Accept. added_rows guards history.read with (OSError, ValueError, RecursionError); TC-4372c." Applied here: AddedList.compose func text (what makes `added_rows` total); the guard and TC-4372c are group V's (graph-proto-V added_rows)
+
+finding SEC-3 MEDIUM: a non-str task id on a peeked board crashed `N`
+anchor: AddedList.compose
+seen: (03-pdr-security.md SEC-3) `births.get(task.id)` ran in compose for every row; a list or dict id raised TypeError
+decision: ruling (03-pdr-rulings round 1): "Accept. Birth lookups and the after: title lookup use only str ids … New LLR-4304.17, TC-4377." Applied here: AddedList.compose func text only; the lookups and TC-4377 are group V's. The screen keeps the cursor by (lane, pos) (P-S-8), so no S code hashes a task id; `enter` on such a row passes the id to `open_on_board` → `jump_to`, which compares ids with `==` (base behaviour, not hashed)
 
 ### Seams
 > Calls INTO other groups (consumed by app.py): group D — `stamp()` (models.py) in `_on_template_picked`, ONE call per insert; `Task(..., created=when)` (the field and its keyword, LLR-4301.1); `Board.add_task` stamps for `_on_task_added` and `_create_and_link` (no app.py change); the KEYMAP entry `Key("N", "N", "added_list", …, bar=False)` (keymap.py), which makes the App binding and the SEAT_ACTIONS member this file's check_action names; README row for `N`. Group V — `added_rows(lanes)` and `first_created(rows)` in `AddedList.compose`; `added_order(rows, newest, show_archived)` in `AddedList._ordered`; `render_added_list(rows, sel, newest, show_archived, hidden, unread, first, today, people, width, height)` in `AddedList._paint`, with `width = w − 2`, `height = h − 1`, `hidden` = archived rows left out (0 while shown), `unread` = lanes whose board is None, `people` = `app.people.people`; `[Data: AddedRow]` fields `task`, `lane`, `pos` read by the screen.

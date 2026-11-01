@@ -26,27 +26,29 @@ examples: (TC-4305) task Task("a", created=None), clock 2026-11-01T08:10:00 → 
 examples: (TC-4307) task Task("a", created="2026-10-01T09:00:00") → created stays "2026-10-01T09:00:00"
 
 added_rows
-req: LLR-4303.5, LLR-4304.1, LLR-4304.2, LLR-4304.3, LLR-4304.8, LLR-4304.12, LLR-4304.13
+req: LLR-4303.5, LLR-4304.1, LLR-4304.2, LLR-4304.3, LLR-4304.8, LLR-4304.12, LLR-4304.13, LLR-4304.17
 in: list[tuple[str, str, Board?, str]] lanes
 out: list[AddedRow] rows
-func: one AddedRow per task of every lane whose board is not None, archived tasks included, in lane order then file position. Per board: births = first `at` per task id among `history.read(board.path)` records with `from` None (OSError or ValueError, e.g. UnicodeDecodeError → no births; P-V-1). Per task: `added_moment(task.created)` not None → source "c"; elif `added_moment(births.get(task.id))` not None → source "h"; else source "?" with at None. Never writes; never sets task.created.
+func: one AddedRow per task of every lane whose board is not None, archived tasks included, in lane order then file position. Per board: births = first `at` per task id among `history.read(board.path)` records with `from` None whose `task` is a str (OSError, ValueError — e.g. UnicodeDecodeError — or RecursionError → no births; P-V-1, SEC-2). Per task: `added_moment(task.created)` not None → source "c"; elif task.id is a str and `added_moment(births.get(task.id))` not None → source "h"; else source "?" with at None (a non-str id never reaches a dict lookup, SEC-3). Never writes; never sets task.created.
 module: taskboard/views.py
 examples: (TC-4361) a task with created "2026-10-31T18:20:00" and a birth at "2026-10-20T10:00:00" → source "c", at 2026-10-31 18:20
 examples: (TC-4362) no created; births at "2026-10-28T10:30:00" then "2026-10-29T11:00:00" for its id → source "h", at 2026-10-28 10:30
 examples: (TC-4363) no created, no birth → source "?", at `None`
 examples: (TC-4372) history.read raising PermissionError → rows built, the board's unstamped tasks source "?", no exception
 examples: (TC-4372b) a history.jsonl holding the byte 0xff → rows built, unstamped tasks source "?", no exception
+examples: (TC-4372c) a history.jsonl line of 10 000 nested `[` → rows built, unstamped tasks source "?", no exception
+examples: (TC-4377) a board with tasks of id ["x"] and {"a": 1} and a birth record for "x" → both rows source "?", no exception
 
 added_moment
-req: LLR-4304.8, LLR-4304.13, LLR-4304.16
+req: LLR-4304.8, LLR-4304.13
 in: object value
 out: datetime? moment
-func: a str that `datetime.fromisoformat` parses → that datetime; an aware one is converted with `.astimezone().replace(tzinfo=None)` (local naive), and a conversion that raises OSError/OverflowError/ValueError gives None (P-V-2); anything else (None, non-str, unparseable) → None. Never raises.
+func: a str that `datetime.fromisoformat` parses to a NAIVE datetime → that datetime; an offset-aware result → None (ARCH-3: no conversion; the app writes only naive local stamps); anything else (None, non-str, unparseable) → None. Never raises.
 module: taskboard/views.py
 examples: (TC-4368) value "not a date" → moment `None`
 examples: (TC-4368) value `5` → moment `None`
-examples: (TC-4373b) value "1900-01-01T00:00:00+00:00" → moment `None` (no exception)
-examples: (TC-4373) value "2026-10-31T18:20:00+00:00" → moment = datetime(2026,10,31,18,20,tzinfo=utc).astimezone().replace(tzinfo=None)
+examples: (TC-4373b) value "2026-10-31T18:20:00Z" → moment `None`
+examples: (TC-4373) value "2026-10-31T18:20:00+00:00" → moment `None`
 
 added_order
 req: LLR-4304.4, LLR-4304.5, LLR-4304.6, LLR-4306.1
@@ -54,8 +56,8 @@ in: list[AddedRow] rows; bool newest; bool show_archived
 out: list[AddedRow] ordered
 func: drop rows whose task.archived is True unless show_archived; oldest = unknown rows sorted by (lane, pos) + dated rows sorted by (at, lane, pos); newest → the exact reverse of oldest.
 module: taskboard/views.py
-examples: (TC-4364) rows A(lane 0,pos 0,"?"), B(lane 1,pos 0,"?"), C(lane 0,pos 1,at 10:00), D(lane 1,pos 1,at 10:00), E(lane 0,pos 2,at 09:00); newest `False` → A, B, E, C, D
-examples: (TC-4366b) same rows, newest `True` → D, C, E, B, A
+examples: (TC-4364) input order (hand-shuffled, ARCH-1) D(lane 1,pos 1,at 10:00), E(lane 0,pos 2,at 09:00), B(lane 1,pos 0,"?"), C(lane 0,pos 1,at 10:00), A(lane 0,pos 0,"?"); newest `False` → A, B, E, C, D
+examples: (TC-4366b) same shuffled input, newest `True` → D, C, E, B, A
 
 first_created
 req: LLR-4304.10, LLR-4304.11, LLR-4304.15, LLR-4303.9

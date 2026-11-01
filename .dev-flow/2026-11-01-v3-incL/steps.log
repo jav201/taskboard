@@ -9,3 +9,5 @@
 2026-11-01T09:15:50Z E2b prototype groups returned (D 11 nodes, V 16, S 19; 28 findings, 5 MAJOR); round-0 rulings written; correction pass start model=opus
 2026-11-01T09:21:16Z E2 end (correction pass applied; 68/68 LLR traced; lint 0 on 4 files) model=opus
 2026-11-01T09:21:16Z E3 PDR round 1 start model=opus (architect, security)
+2026-11-01T09:31:02Z E3 PDR round 1 done (arch FAIL 1H/2M/6m, sec PwN 3M/2L); rulings written; correction start model=opus
+2026-11-01T09:39:20Z E3 round-1 corrections done; round 2 (blocking-only re-review) start model=opus

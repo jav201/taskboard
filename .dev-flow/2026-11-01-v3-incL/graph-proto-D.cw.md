@@ -1,8 +1,10 @@
 # Code-Wire prototype — group D (models.py, keymap.py) — Inc L
 
-Differences from `graph-baseline.cw.md` (eb411e1) only. Group D owns `Task.created` and its persistence (models.py) and the `N` seat entry (keymap.py), plus the README key row. Changed code: 4 nodes (`Task`, `Task.from_dict`, `Board._to_dict`, `Board.load`) and 2 entities (`[Data: models._TASK_KEYS]`, `[Data: keymap.KEYMAP]`). Unchanged code, now traced with `created` / `N` examples: 7 nodes (`_rescue_task`, `seed_data`, `Board.save`, `move_project`, `app_bindings`, `global_keys`, `palette_commands`). `stamp` and `Board.add_task` are defined in `graph-interfaces.cw.md` and are not repeated here; this file cites them and proposes one refinement of `Board.add_task` (P-D-4).
+Differences from `graph-baseline.cw.md` (eb411e1) only. Group D owns `Task.created` and its persistence (models.py) and the `N` seat entry (keymap.py), plus the README key row. Changed code: 5 nodes (`Task`, `Task.from_dict`, `Board._to_dict`, `Board._serialized`, `Board.load`) and 2 entities (`[Data: models._TASK_KEYS]`, `[Data: keymap.KEYMAP]`). Unchanged code, now traced with `created` / `N` examples: 8 nodes (`_rescue_task`, `seed_data`, `Board.save`, `TeamState.push`, `move_project`, `app_bindings`, `global_keys`, `palette_commands`). `stamp` and `Board.add_task` are defined in `graph-interfaces.cw.md` and are not repeated here; this file cites them and proposes one refinement of `Board.add_task` (P-D-4).
 
 How the examples were checked: a scratch copy of `taskboard/` outside the repo (`%TEMP%/incLD/ref`, `taskboard.__file__` printed = that copy) with exactly the design below applied to models.py. Every example of this file was run there (state `executed`) unless it says `planned`. The guard suites of baseline-notes.md plus test_app.py, test_team_sync.py, test_milestones.py, test_help_keys.py and test_keymap.py were run against that copy: 780 passed, 1 skipped, 1 failed (`test_every_image_the_readme_shows_exists`: the copy holds no `docs/` folder — environment, not design). The `N` seat entry was checked by patching `keymap.KEYMAP` in a pytest plugin against the worktree's own code (tests/test_help_keys.py: 9 passed). Nothing in `taskboard/` or `tests/` of the worktree was edited.
+
+E3 round-1 corrections (03-pdr-rulings round 1: SEC-1, ARCH-2; findings at the end): `Board._to_dict` gains `with_created`, `Board._serialized` becomes a changed node and `TeamState.push` (team_sync.py, code unchanged) is traced. These corrections were NOT run on the scratch copy: every example that names `with_created`, `_serialized`, `TeamState.push`, TC-4318 or TC-4316's birth record is state `planned` (first execution: the E4 tester's RED-on-base run).
 
 TC ids follow the header rule of 01-requirements.md: LLR-4301.n → TC-(4300+n), LLR-4302.n → TC-(4311+n), LLR-4303.n → TC-(4320+n).
 
@@ -12,7 +14,7 @@ TC ids follow the header rule of 01-requirements.md: LLR-4301.n → TC-(4300+n),
 > - **plain**: tasks R("Sync notes", "ta", project_id "pa", phase "Doing"), R("Ship café", "tb") — `1126` bytes, `é` written `é`.
 > - **legacy**: one task `{"title": "Old one", "status": "doing", "url": "https://example.com/a", "id": "tl"}` — `449` bytes.
 > - **unknown key**: one task `{"zz": 1, **R("Has extra", "tu")}` — the unknown key FIRST, where `_to_dict` writes extra keys — `741` bytes.
-> At base and in the design alike: plain and unknown key are byte-equal after `Board.load` + `save()`; legacy is NOT (the status/url migration consumes both keys: 449 → `761` bytes, sha256 `fa38dbd0e977ae0b23c3ecabbd79b3ea68558fc83efb4b93fe8761139c102e54` from both trees). So LLR-4302.4's base oracle (P-D-1 ruling) is: plain and unknown key → the input bytes; legacy → these 761 bytes, a fixed literal held in the test. LLR-4302.5 (TC-4316) runs on the plain board only.
+> At base and in the design alike: plain and unknown key are byte-equal after `Board.load` + `save()`; legacy is NOT (the status/url migration consumes both keys: 449 → `761` bytes, sha256 `fa38dbd0e977ae0b23c3ecabbd79b3ea68558fc83efb4b93fe8761139c102e54` from both trees). So LLR-4302.4's base oracle (P-D-1 ruling) is: plain and unknown key → the input bytes; legacy → these 761 bytes, a fixed literal held in the test. LLR-4302.5 (TC-4316) runs on the plain board only, with a `history.jsonl` beside it holding ONE birth record for "ta": `{"task": "ta", "from": null, "to": "Doing", "at": "2026-10-20T09:00:00"}` (ARCH-2: something a back-fill mutant could copy into `created`; history is a separate file, so TC-4315's byte oracle of board.json is unaffected).
 
 ## Nodes
 
@@ -51,16 +53,36 @@ examples: (TC-4311) entry ["x"], reason "not a JSON object" (via Task.from_dict)
 examples: (TC-4311) entry "title" "Bad", "created" "2026-10-01T09:00:00", reason "TypeError" → title "Bad", created `None`
 
 Board._to_dict
-req: LLR-4302.1, LLR-4302.3, LLR-4302.4, HLR-4302
-in: Task | Project item
+req: LLR-4302.1, LLR-4302.3, LLR-4302.4, LLR-4302.7, HLR-4302
+in: Task | Project item; bool with_created = False
 out: dict record
-func: changed from baseline: one more drop, beside the `mark` and `present_rank` drops: `if "created" in d and d["created"] is None: del d["created"]` (written only when set, LLR-4302.1); then `{**d.pop("extra", {}), **d}` as at base. A set created is written in field position: after milestone / mark / show_in_present, just before `id`. A Project has no created field, so the guard `"created" in d` leaves project records exactly as at base. A non-str created from the file sits in `extra` (field None, dropped) and is written FIRST with its raw value. Also the record of every team push (team_sync.push, P-D-6)
+func: changed from baseline (SEC-1 ruling, round 1): `d = asdict(item)` (a deep copy: `item.extra` is never mutated); the `show_in_present` / `mark` / `present_rank` drops as at base; then one more drop: `if "created" in d and (d["created"] is None or not with_created): del d["created"]` (written only when set, LLR-4302.1, and only when asked, LLR-4302.7); `extra = d.pop("extra", {})`; `if not with_created: extra.pop("created", None)` (a non-str raw value in extra stays out of the push too); `return {**extra, **d}` as at base. With `with_created=True` (the board file, via `_serialized`) a set created is written in field position: after milestone / mark / show_in_present, just before `id`, and a non-str created from the file (it sits in `extra`, field None) is written FIRST with its raw value. The default `False` is what `TeamState.push` gets: it keeps calling `board._to_dict(t)` unchanged (team_sync.py:157, no 5th source file), so no push record carries `created`. A Project has no created field; an unknown "created" key in a project's extra is kept by `_serialized` (it passes `with_created=True` for projects too) and is left out only of a call that never happens for projects (the push sends tasks only). Callers (census, `grep -rn "_to_dict" taskboard/`, state `executed`): models.py:1071 and :1072 (`_serialized`, the only path to `save` and `save_atomic`), team_sync.py:157 (`TeamState.push`); nothing else in taskboard/ calls it, and no taskboard/ code other than `_serialized` needs `created` in the record. Tests that call it directly (tests/test_cascade.py:42 `_dump` compares a board's tasks before/after with the same call on both sides; tests/test_marks_directory.py:254, :263 read `mark`; tests/test_boards_move.py:188 a project) need no `created` (reasoned, `planned` for the E4 guard run)
 module: taskboard/models.py
-examples: (TC-4312) Task("x", id="t1") → no "created" key; keys end "phase_changed", "milestone", "id"
-examples: (TC-4312) Task("x", id="t1", created="2026-11-01T08:10:00") → "created": "2026-11-01T08:10:00"; keys end "milestone", "created", "id"
-examples: (TC-4314) the task of d "title" "a", "created" `5`, "id" "t5" → record "created": `5`; keys start "created", "title" and end "milestone", "id"
-examples: (TC-4314) the task of d "title" "a", "created" `None`, "id" "t5" → record "created": `None` (JSON null written back, key first)
+examples: (TC-4312) Task("x", id="t1") → no "created" key; keys end "phase_changed", "milestone", "id" (with_created `False` or `True`)
+examples: (TC-4312) Task("x", id="t1", created="2026-11-01T08:10:00"), with_created `True` → "created": "2026-11-01T08:10:00"; keys end "milestone", "created", "id" (`planned`: the with_created form)
+examples: (TC-4314) the task of d "title" "a", "created" `5`, "id" "t5", with_created `True` → record "created": `5`; keys start "created", "title" and end "milestone", "id"
+examples: (TC-4314) the task of d "title" "a", "created" `None`, "id" "t5", with_created `True` → record "created": `None` (JSON null written back, key first)
+examples: (TC-4318) Task("x", id="t1", created="2026-11-01T08:10:00"), default call `Board._to_dict(task)` (the push's call) → no "created" key; keys end "milestone", "id" (`planned`)
+examples: (TC-4318) the task of d "title" "a", "created" `5`, "id" "t5" (raw value in extra), default call → no "created" key, and the task's `extra` still holds "created": `5` afterwards (`planned`)
 examples: (TC-4312) Project("Alpha", "sky", "on_track") → keys "name", "color", "status", "archived", "pinned", "start_date", "due_date", "id" (as at base)
+
+Board._serialized
+req: LLR-4302.7, LLR-4302.1, LLR-4302.3, LLR-4302.4, HLR-4302
+in:
+out: str text
+func: changed from baseline (SEC-1 ruling): the two list comprehensions call `self._to_dict(p, with_created=True)` and `self._to_dict(t, with_created=True)`; everything else as at base (`json.dumps({phases, projects, tasks, settings}, indent=2)`). The one path to the board file (`save` and `save_atomic`), so every byte law of HLR-4302 holds exactly as with the round-0 design; LLR-4302.1's "with a value, the key holds it" is observed here, on the saved record
+module: taskboard/models.py
+modify: [I/O: board.json] (replace)
+examples: (TC-4318) a board holding the stamped task "t1" (created "2026-11-01T08:10:00") and the task "t5" whose raw "created" `5` sits in extra → `json.loads(board._serialized())["tasks"]` holds "created": "2026-11-01T08:10:00" for "t1" (before "id") and "created": `5` for "t5" (first key) (`planned`; NC `_serialized` without `with_created=True`: both keys missing, RED)
+
+TeamState.push
+req: LLR-4302.7
+in: Board board
+out: bool written
+func: unchanged from baseline (team_sync.py:143): for every task of a team project, `record = board._to_dict(t)` (the DEFAULT `with_created=False`), `record["owner"] = user_id`, written to `<shared_dir>/board.<user>.json` with `pushed_at`. No edit in team_sync.py: the drop lives in `_to_dict`'s default (SEC-1)
+module: taskboard/team_sync.py
+modify: [I/O: board.<user>.json] (replace)
+examples: (TC-4318) a team board (tests/test_team_sync.py's set-up) with one team task added through `Board.add_task` (so stamped) and one whose file entry held "created" `5` → the pushed `board.<user>.json` records hold no "created" key (`0`/`2`), every other key as before (`planned`; NC `_to_dict`'s default `with_created=True`: RED)
 
 Board.load
 req: LLR-4301.6, LLR-4302.2, LLR-4302.4, HLR-4301
@@ -92,6 +114,7 @@ examples: (TC-4315) the plain old board (fixture note above), Board.load + save 
 examples: (TC-4315) the unknown-key old board, Board.load + save → bytes equal `True`, `741` bytes, "zz" still first in its record
 examples: (TC-4315) the legacy old board, Board.load + save → `761` bytes with sha256 "fa38dbd0e977ae0b23c3ecabbd79b3ea68558fc83efb4b93fe8761139c102e54", byte-equal to the base oracle (the bytes eb411e1 writes, a literal held in the test), no "created" (P-D-1 ruling; NOT byte-equal to the 449 bytes read, at base or here)
 examples: (TC-4316) the plain old board (LLR-4302.5 runs on this fixture only, P-D-1 ruling), then Board.add_task(Task("New one", id="tn")) at clock 2026-11-01T08:10:00 → `json.dumps(entry, indent=2)` of entries 0 ("ta") and 1 ("tb") equal before and after (`2`/`2`); entry 2 "tn" ends "milestone": `False`, "created": "2026-11-01T08:10:00", "id": "tn"
+examples: (TC-4316) the same board with its `history.jsonl` holding the birth record of "ta" at "2026-10-20T09:00:00" (ARCH-2 fixture) → after the add, entry 0 ("ta") still holds no "created" key and its slice is equal before and after (`planned`; NC a save-time back-fill from birth records: "ta" gains "created": "2026-10-20T09:00:00", RED — HLR-4302's NC names this test)
 examples: (TC-4305) a board holding "to", Board.add_task(Task("a", id="tn")) at clock 2026-11-01T08:10:00 → the file's "tn" record holds "created": "2026-11-01T08:10:00" before "id"; history.jsonl gains "task": "tn", "from": `None`, "to": "Backlog", "at": "2026-11-01T08:10:00" (one `now` read by add_task: created = stamp(now), history `at=now`, the corrected interface, P-D-4 ruling)
 examples: (TC-4307) then Board.add_task(Task("b", id="tp", created="2026-10-01T09:00:00")) → the file's "tp" record holds "created": "2026-10-01T09:00:00"
 
@@ -148,12 +171,15 @@ desc: changed from baseline: also holds "created" when the file's value is not a
 [I/O: board.json]
 desc: changed from baseline: a task record holds "created" only when the task's created is set: every task added from this increment on (add_task, template insert, link create, seed) and none older; an old board keeps its bytes through load + save (P-1, TC-4315) except where base already rewrites it (legacy keys, an unknown key placed after another key)
 
+[I/O: board.<user>.json]
+desc: the team push file in the shared folder (team_sync.py); written by `TeamState.push` from `Board._to_dict(t)` records; never holds a "created" key (LLR-4302.7, SEC-1), neither the field nor a raw non-str value from extra
+
 [Data: keymap.KEYMAP]
 in: tuple[Key, ...]
 desc: changed from baseline: one entry `Key("N", "N", "added_list", "Added list", group="misc", bar=False)` declared right after the `A` entry; keys "N" and show "N" are free (P-7); uppercase letters in use become A B F H I L M N P R S T X; label "Added list" is used by no other entry (labels "Focus" and "Standup" already occur twice; the seat test does not check labels, P-D-7)
 
 [I/O: README.md key table]
-desc: the "## Keys" table (README.md:101-143); test_the_readme_keybinding_table_matches_the_seat collects every backticked token of the FIRST cell of every README line that starts with "| `" (any table) and requires each seat key in its README spelling (`N` → "N"); it pins only that token, in one direction (seat → README). The row text proposed, after README.md:135: "| `N` | Added list | Every task of every board in the order you added it, newest first (`o` flips it): when it was added (`≈` from history, `?` unknown), a box per phase, and the cursor's task in full beside the list; `v` shows archived tasks, `enter` opens a task on its board, `esc` or `N` closes. Nothing here edits a task |" — every word after the first cell is unpinned. Two more README edits, group D's at E4 (docs only, unpinned): (1) P-D-9 ruling, the "On the home:" table: after README.md:329 "| `A` | The agenda of every board (see `A` above) |" the row "| `N` | Every task of every board in the order you added it (see `N` above) |" (`N` is live over BoardsHome: graph-proto-S TC-4324 arm 3); README.md:400 (the history.jsonl row of "## Data files") is left as it is; (2) P-D-6 ruling, section "## Team mode" (README.md:257): after README.md:265 "wrong." (the end of its one paragraph, before "## Presentation" at :267), one blank line and the new paragraph "A shared task's record in `board.<user>.json` also carries `created` — when you added the task, local time to the second — for every task added from this version on; teammates read it as they read its title, notes and dates."
+desc: the "## Keys" table (README.md:101-143); test_the_readme_keybinding_table_matches_the_seat collects every backticked token of the FIRST cell of every README line that starts with "| `" (any table) and requires each seat key in its README spelling (`N` → "N"); it pins only that token, in one direction (seat → README). The row text proposed, after README.md:135: "| `N` | Added list | Every task of every board in the order you added it, newest first (`o` flips it): when it was added (`≈` from history, `?` unknown), a box per phase, and the cursor's task in full beside the list; `v` shows archived tasks, `enter` opens a task on its board, `esc` or `N` closes. Nothing here edits a task |" — every word after the first cell is unpinned. One more README edit, group D's at E4 (docs only, unpinned): P-D-9 ruling, the "On the home:" table: after README.md:329 "| `A` | The agenda of every board (see `A` above) |" the row "| `N` | Every task of every board in the order you added it (see `N` above) |" (`N` is live over BoardsHome: graph-proto-S TC-4324 arm 3); README.md:400 (the history.jsonl row of "## Data files") is left as it is. No README edit in "## Team mode": the P-D-6 team note is withdrawn (SEC-1 ruling, round 1: the push no longer carries `created`, so there is nothing to document)
 
 [Outside: key N]
 desc: changed from baseline: bound by KEYMAP (app level, not priority) to `added_list`; still free in every Screen's BINDINGS except the list view's own priority `escape,N` (group S); lowercase `n` unchanged (BoardsHome, PeopleDirectory, MarksManager, ConfirmModal, MoveConfirm)
@@ -168,8 +194,13 @@ Task.from_dict ──▶ [Data: Task.extra]
 Task ──▶ [Data: Task.created]
 [Data: Task.created] ──▶ Board._to_dict
 [Data: Task.extra] ──▶ Board._to_dict
-Board._to_dict ──▶ Board.save
+Board._to_dict ──▶ Board._serialized
+when: with_created=True (tasks and projects)
+Board._serialized ──▶ Board.save
 Board.save ──▶ [I/O: board.json]
+Board._to_dict ──▶ TeamState.push
+when: the default with_created=False: no created in the record (SEC-1)
+TeamState.push ──▶ [I/O: board.<user>.json]
 [Data: Task.created] ──▶ move_project
 seed_data ──▶ Board.load
 stamp ──▶ Board.load
@@ -213,7 +244,7 @@ finding P-D-6 the team push now carries `created` to the shared folder
 anchor: Board._to_dict
 seen: team_sync.py:157 `record = board._to_dict(t)` for every pushed team task, so a stamped team task's record in `board.<user>.json` gains "created": "<local time of day>"; team_sync.foreign_tasks (team_sync.py:221) reads it back into teammates' `Task.created`. No test pins the push record's keys: test_team_sync.py:85-113, test_milestones.py:395-410 and test_marks_directory.py:400-412 assert single keys or absent strings only (all GREEN on the design copy). report.py / report_html.py build their own dicts and never call `asdict(task)`; no other `asdict` of a Task exists outside `_to_dict`
 effect: privacy — one new piece of metadata (when the owner added a shared task, local time to the second) goes to teammates; same class as phase_changed, which already travels. Unstamped tasks push no key
-decision: ruling (03-pdr-rulings round 0): "Accept as designed, documented. README gets one line under the team section; backlog item L-BL-1 for an opt-out. The security reviewer may reopen it at PDR." Applied: [I/O: README.md key table] edit (2) — section "## Team mode", new paragraph after README.md:265 with the exact text given there (group D, E4); team_sync.py untouched; L-BL-1 is the orchestrator's BACKLOG entry, not in this file
+decision: ruling (03-pdr-rulings round 0): "Accept as designed, documented. README gets one line under the team section; backlog item L-BL-1 for an opt-out. The security reviewer may reopen it at PDR." Applied: [I/O: README.md key table] edit (2) — section "## Team mode", new paragraph after README.md:265 with the exact text given there (group D, E4); team_sync.py untouched; L-BL-1 is the orchestrator's BACKLOG entry, not in this file. SUPERSEDED by SEC-1 (round 1, below): the push no longer carries `created`, and the README team note is withdrawn
 
 finding P-D-7 the seat duplicate test checks keys and shows, not labels
 anchor: [Data: keymap.KEYMAP]
@@ -235,9 +266,25 @@ anchor: Board.load
 seen: with a frozen or real clock, a mutant that calls `stamp()` once per seeded task almost always yields 1 distinct value (16 calls inside one second), so the "1 distinct value" arm is not a negative control for it
 decision: ruling (03-pdr-rulings round 0): "Accept: TC-4303/TC-4306 use a clock that advances 1 s per call (monkeypatched models.datetime), so a stamp-per-task mutant fails." Applied: Board.load TC-4306 arm 2 (advancing clock: 1 value, the per-task NC 16); TC-4303 is group S's (graph-proto-S _on_template_picked, same clock)
 
+finding SEC-1 MEDIUM: `created` goes out in the team push and no teammate code reads it (P-D-6 reopened at PDR)
+anchor: Board._to_dict
+seen: (03-pdr-security.md SEC-1) team_sync.py:157 `record = board._to_dict(t)` for every team task; with the round-0 design each stamped team task's record in `board.<user>.json` carries a per-task, second-precision local time — a log of working hours in a synced folder, with no consumer (`foreign_tasks` builds transient Tasks; nothing reads their `created`)
+effect: personal data with no purpose leaves the machine; once synced it cannot be taken back
+decision: ruling (03-pdr-rulings round 1): "Accept — reverses P-D-6. Remove the data from the push rather than document it: Board._to_dict(item, with_created=False) leaves out created (the field and any extra["created"]); _serialized passes with_created=True. team_sync keeps calling _to_dict(t) unchanged (no 5th file). New LLR-4302.7, TC-4318. The README team note is dropped." Applied: Board._to_dict (in, func, req LLR-4302.7, TC-4312/TC-4314 arms now `with_created=True`, TC-4318 arms 1–2), new changed node Board._serialized (TC-4318 arm 3), traced node TeamState.push (TC-4318 push arm), entity [I/O: board.<user>.json], edges; caller census in Board._to_dict's func (taskboard/: `_serialized` and `TeamState.push` only; no other caller needs `created`); P-D-6's README team note removed from [I/O: README.md key table]; Seams line. Not changed here: LLR-4302.1's threshold text still reads "`Board._to_dict(Task("x"))` … with a value, the key holds it", which under the new default holds only with `with_created=True` or on the saved record (reported to the orchestrator)
+
+finding ARCH-2 MEDIUM: HLR-4302's back-fill NC named a test that never saves; TC-4316's fixture had nothing to back-fill
+anchor: Board.save
+seen: (03-pdr-architect.md ARCH-2) TC-4316 ran on the plain board with no history.jsonl, so a mutant that back-fills `created` from birth records on save writes nothing and survives
+decision: ruling (03-pdr-rulings round 1): "Accept. TC-4316's plain board gains one birth record in history.jsonl (something to back-fill from); HLR-4302's NC names TC-4316." Applied: fixture note (the history.jsonl line for "ta" at 2026-10-20T09:00:00), Board.save TC-4316 arm 2 (the back-fill NC)
+
+finding ARCH-7 MINOR: `Task.from_dict` could pop a str `created` out of extra instead of extending `_TASK_KEYS`
+anchor: Task.from_dict
+seen: (03-pdr-architect.md ARCH-7) the `_TASK_KEYS` design re-appends a non-str value at the END of extra, reordering unknown keys relative to base on a hand-edited record
+decision: ruling (03-pdr-rulings round 1): "Reject (style): D's _TASK_KEYS design stands; SEC-1 touches _to_dict anyway and both are equally small." Applied: none (Task.from_dict and [Data: models._TASK_KEYS] unchanged)
+
 ### Seams
 
 > Called by group D into the interfaces: `stamp(now=None) -> str` (graph-interfaces; defined in models.py, i.e. in this group's file) from Board.load (seed) and Board.add_task. `Board.add_task` is implemented in models.py by this group to the corrected interfaces' contract (one `now`: created = stamp(now), history `at=now`; P-D-4 ruling).
 > Offered to group S (app.py): `Board.add_task` stamps every task whose created is None, so `_on_task_added` and `_create_and_link` need no edit (LLR-4301.2, LLR-4301.4); `stamp()` for `_on_template_picked` (one call per insert, assigned to every inserted task, LLR-4301.3), which appends without add_task; the seat entry `N` → `added_list`: S must add `TaskboardApp.action_added_list` (else tests/test_keymap.py::test_every_shown_key_has_a_real_action_on_the_app is RED), name `added_list` beside agenda_all / people_directory / marks_manager in check_action's modal gate, and add AddedList to the holding tuple (LLR-4303.21, LLR-4303.22). `added_list` enters `SEAT_ACTIONS` automatically (it is built from KEYMAP).
 > Offered to group V (views.py): `Task.created` is `str | None`, any str (valid or not, aware or naive) — V's `added_moment` validates; a non-str stored value is NOT on the field (it is in `task.extra["created"]`), so V never sees a non-str there; `Board.phases` and file order are unchanged.
-> Shared files: models.py (D only), keymap.py (D only). README.md (docs, D writes the `N` row). team_sync.py untouched (P-D-6).
+> Shared files: models.py (D only), keymap.py (D only). README.md (docs, D writes the `N` row). team_sync.py untouched (SEC-1: `TeamState.push` keeps calling `_to_dict(t)`, whose default now leaves `created` out; P-D-6's README note is withdrawn).

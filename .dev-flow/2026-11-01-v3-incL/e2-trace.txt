@@ -15,6 +15,7 @@ LLR-4302.3 (TC TC-4314): proto-D:Task.from_dict TC-4314; proto-D:Board._to_dict 
 LLR-4302.4 (TC TC-4315): proto-D:Board.save TC-4315
 LLR-4302.5 (TC TC-4316): proto-D:Board.save TC-4316
 LLR-4302.6 (TC TC-4317): proto-S:AddedList.compose TC-4317
+LLR-4302.7 (TC TC-4318): proto-D:Board._to_dict TC-4318; proto-D:Board._serialized TC-4318; proto-D:TeamState.push TC-4318
 LLR-4303.1 (TC TC-4321): proto-D:app_bindings TC-4321; proto-D:global_keys TC-4321; proto-D:palette_commands TC-4321
 LLR-4303.2 (TC TC-4322): interfaces:AddedList TC-4322; proto-S:AddedList.compose TC-4322
 LLR-4303.3 (TC TC-4323): interfaces:TaskboardApp.action_added_list TC-4323; proto-S:AddedList.compose TC-4323
@@ -25,11 +26,11 @@ LLR-4303.7 (TC TC-4327): interfaces:render_added_list TC-4327; proto-V:render_ad
 LLR-4303.8 (TC TC-4328): proto-V:render_added_list TC-4328; proto-V:_added_row TC-4328; proto-V:_one_line TC-4328
 LLR-4303.9 (TC TC-4329): proto-V:render_added_list TC-4329; proto-V:_added_plan TC-4329; proto-V:_added_day_label TC-4329
 LLR-4303.10 (TC TC-4330): proto-V:render_added_list TC-4330; proto-V:_added_pane TC-4330
-LLR-4303.11 (TC TC-4331): proto-V:_added_meta TC-4331
-LLR-4303.12 (TC TC-4332): proto-V:_added_pane TC-4332
+LLR-4303.11 (TC TC-4331): proto-V:_added_meta TC-4331; proto-S:AddedList.on_screen_resume TC-4331b
+LLR-4303.12 (TC TC-4332): proto-V:_added_pane TC-4332,TC-4332b
 LLR-4303.13 (TC TC-4333): proto-V:_added_pane TC-4333
 LLR-4303.14 (TC TC-4334): proto-S:AddedList.action_move TC-4334
-LLR-4303.15 (TC TC-4335): proto-V:render_added_list TC-4335; proto-V:_added_top TC-4335
+LLR-4303.15 (TC TC-4335): proto-V:render_added_list TC-4335,TC-4335b; proto-V:_added_top TC-4335
 LLR-4303.16 (TC TC-4336): proto-S:AddedList.action_jump TC-4336,TC-4336b; proto-S:open_on_board TC-4336b,TC-4336d; proto-S:TaskboardApp.jump_to TC-4336
 LLR-4303.17 (TC TC-4337): interfaces:render_added_list TC-4337; proto-V:render_added_list TC-4337
 LLR-4303.18 (TC TC-4338): proto-S:AddedList.action_move TC-4338; proto-S:AddedList.action_jump TC-4338
@@ -50,11 +51,11 @@ LLR-4304.8 (TC TC-4368): interfaces:added_moment TC-4368; proto-V:added_rows TC-
 LLR-4304.9 (TC TC-4369): proto-V:added_time_label TC-4369
 LLR-4304.10 (TC TC-4370): interfaces:first_created TC-4370; proto-V:_added_pane TC-4370; proto-V:added_source_line TC-4370
 LLR-4304.11 (TC TC-4371): interfaces:first_created TC-4371; proto-V:_added_plan TC-4371; proto-V:first_created TC-4371
-LLR-4304.12 (TC TC-4372): interfaces:added_rows TC-4372,TC-4372b; proto-V:added_rows TC-4372,TC-4372b
-LLR-4304.13 (TC TC-4373): interfaces:added_moment TC-4373,TC-4373b; proto-V:added_moment TC-4373,TC-4373b
+LLR-4304.12 (TC TC-4372): interfaces:added_rows TC-4372,TC-4372b,TC-4372c; proto-V:added_rows TC-4372,TC-4372b,TC-4372c
+LLR-4304.13 (TC TC-4373): interfaces:added_moment TC-4373,TC-4373b; proto-V:added_rows TC-4373; proto-V:added_moment TC-4373,TC-4373b
 LLR-4304.14 (TC TC-4374): proto-V:_added_head TC-4374
 LLR-4304.15 (TC TC-4375): proto-V:added_source_line TC-4375
-LLR-4304.16 (TC TC-4373b/TC-4376): interfaces:added_moment TC-4373b; proto-V:added_moment TC-4373b
+LLR-4304.17 (TC TC-4377): interfaces:added_rows TC-4377; proto-V:_added_pane TC-4377; proto-V:added_rows TC-4377
 LLR-4305.1 (TC TC-4381): interfaces:state_boxes TC-4381; proto-V:state_boxes TC-4381
 LLR-4305.2 (TC TC-4382): interfaces:state_boxes TC-4382; proto-V:state_boxes TC-4382
 LLR-4305.3 (TC TC-4383): proto-V:render_added_list TC-4383
@@ -66,5 +67,6 @@ LLR-4306.4 (TC TC-4394): proto-S:AddedList.action_archived TC-4394
 LLR-4306.5 (TC TC-4395): proto-V:_added_row TC-4395
 LLR-4306.6 (TC TC-4396): proto-V:_added_head TC-4396
 LLR-4306.7 (TC TC-4397): proto-V:_added_meta TC-4397
-traced 68/68
+withdrawn (not traced): LLR-4304.16
+traced 69/69 active (70 ids)
 untraced: none

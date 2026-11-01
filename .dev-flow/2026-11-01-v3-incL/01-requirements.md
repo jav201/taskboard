@@ -62,7 +62,7 @@ never rewritten.)
 - **Validation:** `test` — `tests/test_task_created.py -k bytes`
 - **Numeric pass threshold:** 0 byte differences over LLR-4302.4..4302.6.
 - **Acceptance test(s):** AT-4305
-- **Negative control:** a mutant that back-fills an inferred `created` on save: AT-4305 RED.
+- **Negative control:** a mutant that back-fills an inferred `created` on save: TC-4316 RED (its board holds a birth record to back-fill from, ARCH-2).
 
 ### HLR-4303 — a global list view on `N`, variant B
 - **Traceability:** US-4301 · L-1 · verdict 2
@@ -130,7 +130,7 @@ never rewritten.)
 ### 4.2 The board file (HLR-4302)
 
 - **LLR-4302.1 — Ubiquitous.** The system shall write a task's `created` key only when the task's `created` is not `None`.
-  Threshold: `Board._to_dict(Task("x"))` has no `created` key; with a value, the key holds it; 2/2. *NC:* always write: arm 1 RED (`"created": null`).
+  Threshold: the saved record (`Board._to_dict(t, with_created=True)`, as `_serialized` calls it) of `Task("x")` has no `created` key; with a value, the key holds it; 2/2. *NC:* always write: arm 1 RED (`"created": null`).
 - **LLR-4302.2 — Ubiquitous.** The system shall read a task's `created` from a board entry whose `created` value is a `str`.
   Threshold: `Task.from_dict({"title":"a","created":"2026-10-30T08:10:00"}).created == "2026-10-30T08:10:00"`; and `"not a date"` is read as the same string (validity is the list's concern, LLR-4304.8); 2/2. *NC:* parse-or-drop on read: arm 2 RED.
 - **LLR-4302.3 — Unwanted.** If a board entry's `created` value is not a `str`, then the system shall write that value back unchanged when the board is saved.
@@ -138,9 +138,11 @@ never rewritten.)
 - **LLR-4302.4 — Event.** When an old board is loaded and saved with no change, the system shall write the exact bytes that `eb411e1` writes for that board.
   Threshold: 3 synthetic old boards (plain; legacy `status`/`url` keys; an unknown task key placed first in its record) — after `Board.load` + `save()`, byte-equal to the base oracle held in the test (for the plain and unknown-key boards that oracle is the input itself); 3/3. *NC:* `_to_dict` writes `"created": null`: RED.
 - **LLR-4302.5 — Event.** When a task is added to an old board, the system shall write every other task's entry exactly as it was.
-  Threshold: on the plain old board, each old task's JSON entry (the `json.dumps(entry, indent=2)` slice) equal before and after the add; n/n. *NC:* back-fill inferred `created` on save: RED.
-- **LLR-4302.6 — State.** While the list view is open, the system shall write no board file and no `history.jsonl`.
+  Threshold: on the plain old board (one task of it with a birth record in `history.jsonl`), each old task's JSON entry (the `json.dumps(entry, indent=2)` slice) equal before and after the add; n/n. *NC:* back-fill inferred `created` on save: RED.
+- **LLR-4302.6 — State.** While the list view is open, the list view shall write no board file and no `history.jsonl`.
   Threshold: sha256 of 2 board files and their 2 `history.jsonl` equal before `N` and after `↓ ↓ o v v esc`; 4/4. *NC:* a `save()` in the screen's compose: RED.
+- **LLR-4302.7 — Ubiquitous.** The system shall leave `created` out of every task record the team push writes.
+  Threshold: `Board._to_dict(task)` (the push's call) holds no `created` key for a stamped task and for a task whose raw `created` sits in `extra`; `Board._serialized()` holds both; 3/3. *NC:* the push record keeps `created`: RED.
 
 ### 4.3 The list view (HLR-4303)
 
@@ -203,9 +205,9 @@ never rewritten.)
 - **LLR-4304.3 — Unwanted.** If a task has neither a valid created nor a birth record, then the system shall mark its added moment unknown, with source `?`.
   Threshold: 1/1. *NC:* use file mtime: RED.
 - **LLR-4304.4 — Ubiquitous.** The system shall order dated rows by added moment, ties broken by board order and then file position.
-  Threshold: 3 tasks on 2 boards with one equal moment → order matches the graph example (oldest first); 1/1. *NC:* ignore the tie-break: RED in 1 of 2 runs with boards swapped.
+  Threshold: 3 tasks on 2 boards with one equal moment → order matches the graph example (oldest first); 1/1. *NC:* sort by moment alone (no tie-break): RED on the hand-shuffled input of TC-4364 (ARCH-1).
 - **LLR-4304.5 — Ubiquitous.** The system shall place every unknown row before every dated row in oldest-first order, unknown rows ordered by board order and then file position.
-  Threshold: oldest first → the 2 unknown rows are rows 0–1, in file order; 1/1. *NC:* unknown last: RED.
+  Threshold: on a hand-shuffled input, oldest first → the 2 unknown rows are rows 0–1, in file order; 1/1. *NC:* unknown rows last, or unknowns sorted by moment only: RED on the shuffled input (ARCH-1).
 - **LLR-4304.6 — Ubiquitous.** The list view shall open newest first (the exact reverse of oldest first).
   Threshold: on open, row 0 is the newest stamped task; 1/1. *NC:* oldest first default: RED.
 - **LLR-4304.7 — Event.** When `o` is pressed in the list view, the system shall reverse the order and put the cursor on the first row.
@@ -216,18 +218,19 @@ never rewritten.)
   Threshold: 3/3 labels. *NC:* no ≈: RED.
 - **LLR-4304.10 — Ubiquitous.** The detail pane's source line shall read `added <%a %b %d · %H:%M> · the created field` for source `c`, `added ≈ <%a %b %d · %H:%M> · from history.jsonl` for source `h`, and `added: unknown, before <first created date> · #<file position + 1> in <board name>'s board file` for source `?`.
   Threshold: 3/3 exact strings in the fixture. *NC:* omit `#n`: RED.
-- **LLR-4304.11 — Unwanted.** If no listed task has a valid created, then the list shall head the unknown rows with `BEFORE ANY RECORD · ?`.
+- **LLR-4304.11 — Unwanted.** If no task the list read (archived included) has a valid created, then the list shall head the unknown rows with `BEFORE ANY RECORD · ?`.
   Threshold: a board of 2 unknown tasks → the header string exact; 1/1. *NC:* `BEFORE NONE · ?`: RED.
-- **LLR-4304.12 — Unwanted.** If reading a board's `history.jsonl` raises `OSError` or `ValueError`, then the system shall infer that board's tasks with no birth records.
-  Threshold: `history.read` monkeypatched to raise `PermissionError` → the view opens, those tasks are source `?` or `c`; a history file holding the byte `ÿ` (UnicodeDecodeError) → the same; 0 exceptions; 2/2. *NC:* unguarded read: RED.
-- **LLR-4304.13 — Unwanted.** If an added moment carries a UTC offset, then the system shall compare it as the local naive time it denotes.
-  Threshold: `created="2026-10-31T18:20:00+00:00"` sorted with naive moments: 0 exceptions, position equals that of its local-time equivalent; 1/1. *NC:* compare aware with naive: TypeError: RED.
-- **LLR-4304.15 — Unwanted.** If no listed task has a valid created, then the detail pane's source line for source `?` shall read `added: unknown · #<file position + 1> in <board name>'s board file`.
+- **LLR-4304.12 — Unwanted.** If reading a board's `history.jsonl` raises `OSError`, `ValueError` or `RecursionError`, then the system shall infer that board's tasks with no birth records.
+  Threshold: `history.read` monkeypatched to raise `PermissionError` → the view opens, those tasks are source `?` or `c`; a history file holding the byte `ÿ` (UnicodeDecodeError) → the same; a history line nested 10 000 deep (RecursionError, SEC-2) → the same; 0 exceptions; 3/3. *NC:* unguarded read: RED.
+- **LLR-4304.13 — Unwanted.** If an added moment carries a UTC offset, then the system shall treat it as not valid.
+  Threshold: `created="2026-10-31T18:20:00+00:00"` with no birth record → source `?`; with one → source `h`; a birth `at` with an offset → not a birth; 0 exceptions; 3/3. *NC:* convert or strip the offset: arm 1 gives source `c`: RED. (ARCH-3: the app writes only naive local stamps.)
+- **LLR-4304.15 — Unwanted.** If no task the list read (archived included) has a valid created, then the detail pane's source line for source `?` shall read `added: unknown · #<file position + 1> in <board name>'s board file`.
   Threshold: 1/1 exact string. *NC:* `before None`: RED.
-- **LLR-4304.16 — Unwanted.** If converting an offset-aware moment to local time raises (`OSError`, `OverflowError` or `ValueError`), then the system shall treat that moment as not valid.
-  Threshold: `created="1900-01-01T00:00:00+00:00"` → no valid created, 0 exceptions; 1/1. *NC:* unguarded `astimezone()`: OSError on Windows: RED.
+- **LLR-4304.16 — Withdrawn** (LED.4, ARCH-3): no offset conversion remains to guard; LLR-4304.13 treats offset-aware moments as not valid.
 - **LLR-4304.14 — Ubiquitous.** The list view's head row shall name the order (`newest first` or `oldest first`), the row count and the legend `time = created  ≈ = history  ? = unknown`, clipped to the width.
   Threshold: at 118x30 the head holds `newest first` and the legend; after `o`, `oldest first`; 2/2. *NC:* fixed text: RED.
+- **LLR-4304.17 — Unwanted.** If a task's `id` is not a `str`, then the list view shall list that task with no birth record and no `after:` link resolved through it.
+  Threshold: a peeked board holding a task with `"id": ["x"]` and one with `"id": {"a": 1}` → the view opens, both listed as source `?`, cursor on each paints the pane; 0 exceptions; 2/2. *NC:* `births.get(task.id)` unguarded: TypeError: RED (SEC-3).
 
 ### 4.5 The state column (HLR-4305)
 
@@ -288,4 +291,4 @@ already move), the undo re-insert, `_rescue_task`, `history.*`.
 
 ## 7. Counts
 
-US 1 · HLR 6 · LLR 68 (4301: 11, 4302: 6, 4303: 24, 4304: 16, 4305: 4, 4306: 7) · AT 5.
+US 1 · HLR 6 · LLR 69 active of 70 ids (4301: 11, 4302: 7, 4303: 24, 4304: 17 with .16 withdrawn, 4305: 4, 4306: 7) · AT 5.

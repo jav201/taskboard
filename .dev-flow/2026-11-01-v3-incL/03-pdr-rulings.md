@@ -34,3 +34,24 @@ Rulings override every older text in the requirements, the interfaces and the gr
 | P-S-6 | minor | Accept: the offer for `escape` names `AddedList.action_back`. | interfaces |
 | P-S-7 | minor | Accept: `AddedList` has no `in: app` (it reads `self.app`). | interfaces |
 | P-S-8 | minor | Accept: the cursor keeps its task by `(lane, pos)` (ids can repeat across boards). LLR-4306.4 "same task" means the same `(lane, pos)`. | S |
+
+## Round 1 — PDR (architect FAIL: 1 HIGH, 2 MEDIUM, 6 MINOR; security PASS-WITH-NOTES: 3 MEDIUM, 2 LOW)
+
+| Id | Sev | Ruling | Applied to |
+|---|---|---|---|
+| ARCH-1 | HIGH | **Accept.** TC-4364/TC-4365 feed `added_order` a hand-shuffled input (not lane/pos order), so a mutant that drops the tie-break or puts unknowns last turns RED. LLR-4304.4/.5 NC text rewritten. | LLR-4304.4, LLR-4304.5 (LED.4); interfaces `added_order` examples |
+| ARCH-2 | MEDIUM | **Accept.** TC-4316's plain board gains one birth record in `history.jsonl` (something to back-fill from); HLR-4302's NC names TC-4316. | HLR-4302, LLR-4302.5 (LED.4); D examples |
+| ARCH-3 | MEDIUM | **Accept — remove, not guard.** An offset-aware `created` or `at` is not valid (`added_moment` → None); no conversion. LLR-4304.13 rewritten; LLR-4304.16 withdrawn (P-V-2's guard has nothing left to guard). The app only ever writes naive local stamps. | LLR-4304.13, LLR-4304.16 (LED.4); interfaces `added_moment`; V |
+| ARCH-4 | MINOR | Accept: the tester runs every S example; none is claimed `executed` before E4. | tester brief |
+| ARCH-5 | MINOR | Accept: `AddedList.on_screen_resume` repaints (people/marks renamed under `@`/`#` show at once). Example under LLR-4303.11 (TC-4331b). | addendum A-1 |
+| ARCH-6 | MINOR | Accept: LLR-4302.6's subject becomes "the list view". | LLR-4302.6 (LED.4) |
+| ARCH-7 | MINOR | Reject (style): D's `_TASK_KEYS` design stands; SEC-1 touches `_to_dict` anyway and both are equally small. | — |
+| ARCH-8 | MINOR | Accept: LLR-4304.11/.15 say "no task the list read (archived included)". | LLR-4304.11, LLR-4304.15 (LED.4) |
+| ARCH-9 | MINOR | Accept (conformance): the key row adds the agenda's tail `· read-only: nothing here edits a task` when it fits whole, else drops it first (AllBoardsAgenda._paint). | addendum A-2; LLR-4303.19 example |
+| SEC-1 | MEDIUM | **Accept — reverses P-D-6.** Remove the data from the push rather than document it: `Board._to_dict(item, with_created=False)` leaves out `created` (the field and any `extra["created"]`); `_serialized` passes `with_created=True`. `team_sync` keeps calling `_to_dict(t)` unchanged (no 5th file). New LLR-4302.7, TC-4318. The README team note is dropped. | LLR-4302.7 (LED.4); D; interfaces |
+| SEC-2 | MEDIUM | **Accept.** `added_rows` guards `history.read` with `(OSError, ValueError, RecursionError)`; TC-4372c (one deeply nested line). Backlog L-BL-2: fix `history.read` at the source (Flow view crashes today). | LLR-4304.12 (LED.4); interfaces; BACKLOG |
+| SEC-3 | MEDIUM | **Accept.** Birth lookups and the `after:` title lookup use only `str` ids; a non-`str` id gets no birth record and resolves no link. New LLR-4304.17, TC-4377. | LLR-4304.17 (LED.4); V |
+| SEC-4 | LOW | Accept: the pane wraps at most `room × (rw + 1)` characters of the cursor's note; when cut, the tail reads `… more lines` (no count). | addendum A-3 |
+| SEC-5 | LOW | Backlog L-BL-3 (inherited `peek_board` race). | BACKLOG |
+
+Round 2 (blocking-only re-review): architect re-checks ARCH-1..3; security re-checks SEC-1..3.

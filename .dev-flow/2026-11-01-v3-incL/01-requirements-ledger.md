@@ -35,3 +35,22 @@
 - **What changed:** LLR-4302.4 compares against the bytes base writes (P-D-1: the legacy migration rewrites at base too); LLR-4302.5 runs on the plain board; LLR-4302.3 checks values, not key position (P-D-3); LLR-4303.21's threshold calls `check_action` directly (P-S-1); new LLR-4303.24 for `enter` on an archived task (P-S-3); LLR-4304.12 also covers `ValueError` (P-V-1); new LLR-4304.16 for a failed time-zone conversion (P-V-2).
 - **Why:** each was found by a probe on the worktree during E2b: two thresholds could not pass at base or could not fail at all, and two failure paths crashed `N`.
 - **Evidence:** `03-pdr-rulings.md` round 0; `graph-proto-D.cw.md` P-D-1, P-D-3; `graph-proto-S.cw.md` P-S-1, P-S-3; `graph-proto-V.cw.md` P-V-1, P-V-2.
+
+### LED-2026-11-01-incL.4 — the PDR round 1 findings, ruled
+- **Requirement:** HLR-4302
+- **Requirement:** LLR-4302.5
+- **Requirement:** LLR-4302.6
+- **Requirement:** LLR-4302.7
+- **Requirement:** LLR-4304.4
+- **Requirement:** LLR-4304.5
+- **Requirement:** LLR-4304.11
+- **Requirement:** LLR-4304.12
+- **Requirement:** LLR-4304.13
+- **Requirement:** LLR-4304.15
+- **Requirement:** LLR-4304.16
+- **Requirement:** LLR-4304.17
+- **Requirement:** LLR-4302.1
+- **Date:** 2026-11-01
+- **What changed:** the tie-break and unknown-first controls get a shuffled input (ARCH-1); HLR-4302's control names TC-4316, whose board gains a birth record (ARCH-2); offset-aware moments are not valid, LLR-4304.13 rewritten and LLR-4304.16 withdrawn (ARCH-3); LLR-4302.6's subject is the list view (ARCH-6); LLR-4304.11/.15 count every task read (ARCH-8); new LLR-4302.7 keeps `created` out of the team push (SEC-1, reversing P-D-6); LLR-4304.12 also covers RecursionError (SEC-2); new LLR-4304.17 for non-str ids (SEC-3); LLR-4302.1's threshold names the saved record (`with_created=True`).
+- **Why:** two negative controls could not fire; a conversion was removable instead of guardable; a new class of personal data (when someone worked, to the second) left the machine for no reader; two crafted-file crashes of `N` were confirmed by probe.
+- **Evidence:** `03-pdr-architect.md`, `03-pdr-security.md`, `03-pdr-rulings.md` round 1.
