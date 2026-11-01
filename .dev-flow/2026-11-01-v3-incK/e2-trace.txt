@@ -16,6 +16,7 @@ LLR-4401.15 (TC TC-4415): proto-V:app_bindings TC-4415
 LLR-4401.16 (TC TC-4416): proto-V:rail_rows TC-4416; proto-V:CaptureView._paint TC-4416
 LLR-4401.17 (TC TC-4417): proto-V:rail_rows TC-4417
 LLR-4401.18 (TC TC-4418): proto-V:CaptureView.compose TC-4418
+LLR-4401.19 (TC TC-4419): interfaces:TaskboardApp.action_capture TC-4419; proto-V:TaskboardApp.check_action TC-4419
 LLR-4402.1 (TC TC-4431): interfaces:is_divider TC-4431; proto-S:is_divider TC-4431
 LLR-4402.2 (TC TC-4432): proto-S:note_parts TC-4432
 LLR-4402.3 (TC TC-4433): interfaces:note_parts TC-4433; proto-S:note_parts TC-4433
@@ -62,6 +63,9 @@ LLR-4403.25 (TC TC-4485): proto-T:corpus TC-4485; proto-T:suggest TC-4485; proto
 LLR-4403.26 (TC TC-4486): proto-T:suggest TC-4486
 LLR-4403.27 (TC TC-4487): proto-T:corpus TC-4487
 LLR-4403.28 (TC TC-4488): proto-T:suggest TC-4488; proto-V:CaptureView.options_for TC-4488
+LLR-4403.29 (TC TC-4489): interfaces:corpus TC-4489; interfaces:suggest TC-4489; proto-T:corpus TC-4489; proto-T:suggest TC-4489
+LLR-4403.30 (TC TC-4490): proto-V:CaptureView._paint TC-4490
+LLR-4403.31 (TC TC-4491): proto-V:rail_rows TC-4491; proto-V:CaptureView._paint TC-4491
 LLR-4404.1 (TC TC-4501): proto-S:dump_note TC-4501; proto-V:CaptureView._dump TC-4501
 LLR-4404.2 (TC TC-4502): interfaces:note_task TC-4502; proto-S:_title_row TC-4502; proto-S:note_task TC-4502
 LLR-4404.3 (TC TC-4503): proto-S:_task_fields TC-4503
@@ -95,6 +99,7 @@ LLR-4404.30 (TC TC-4530): interfaces:note_at TC-4530; proto-S:note_at TC-4530; p
 LLR-4404.31 (TC TC-4531): proto-S:dump_note TC-4531
 LLR-4404.32 (TC TC-4532): proto-S:_dump_other TC-4532
 LLR-4404.33 (TC TC-4533): interfaces:dump_note TC-4533; proto-S:_file_stamp TC-4533; proto-S:_dump_other TC-4533
+LLR-4404.34 (TC TC-4534): interfaces:dump_note TC-4534; proto-S:dump_note TC-4534; proto-V:CaptureView._dump TC-4534
 LLR-4405.1 (TC TC-4541): proto-S:Inbox.last_dump TC-4541; proto-V:CaptureView.action_undo TC-4541
 LLR-4405.2 (TC TC-4542): proto-S:undo_dump TC-4542; proto-S:_undo_other TC-4542
 LLR-4405.3 (TC TC-4543): interfaces:with_note TC-4543; proto-S:with_note TC-4543; proto-V:CaptureView.action_undo TC-4543
@@ -109,9 +114,11 @@ LLR-4405.11 (TC TC-4551): proto-S:undo_dump TC-4551; proto-S:_undo_open TC-4551;
 LLR-4405.12 (TC TC-4552): interfaces:prune_dumped TC-4552; proto-S:prune_dumped TC-4552; proto-S:Inbox.write_pad TC-4552
 LLR-4405.13 (TC TC-4553): proto-V:rail_rows TC-4553
 LLR-4405.14 (TC TC-4554): proto-V:CaptureView._dump TC-4554; proto-V:CaptureView.action_undo TC-4554
-LLR-4405.15 (TC TC-4555): proto-V:CaptureView.action_undo TC-4555
+LLR-4405.15 (TC TC-4555): proto-V:CaptureView._where TC-4555; proto-V:CaptureView.action_undo TC-4555
 LLR-4405.16 (TC TC-4556): proto-V:CaptureView.action_undo TC-4556
 LLR-4405.17 (TC TC-4557): interfaces:Inbox.last_dump TC-4557; proto-S:Inbox.last_dump TC-4557; proto-V:CaptureView.action_undo TC-4557
+LLR-4405.18 (TC TC-4558): interfaces:Inbox.last_dump TC-4558; proto-S:Inbox.write_pad TC-4558; proto-S:Inbox.last_dump TC-4558; proto-V:CaptureView.action_undo TC-4558
+LLR-4405.19 (TC TC-4559): interfaces:undo_dump TC-4559; proto-S:undo_dump TC-4559; proto-V:CaptureView.action_undo TC-4559
 LLR-4406.1 (TC TC-4561): proto-V:CaptureView.action_review TC-4561
 LLR-4406.2 (TC TC-4562): proto-V:review_rows TC-4562
 LLR-4406.3 (TC TC-4563): proto-V:ReviewList.on_mount TC-4563
@@ -128,6 +135,7 @@ LLR-4406.13 (TC TC-4573): proto-V:review_rows TC-4573
 LLR-4406.14 (TC TC-4574): proto-V:CaptureView.action_review TC-4574
 LLR-4406.15 (TC TC-4575): proto-V:ReviewList.on_mount TC-4575
 LLR-4406.16 (TC TC-4576): proto-V:ReviewList.action_dump TC-4576
+LLR-4406.17 (TC TC-4577): interfaces:ReviewList TC-4577; proto-V:ReviewList.action_dump TC-4577
 LLR-4407.1 (TC TC-4581): proto-S:Inbox.load TC-4581; proto-V:TaskboardApp.__init__ TC-4581
 LLR-4407.2 (TC TC-4582): proto-S:Inbox._shape TC-4582; proto-S:Inbox.write_pad TC-4582
 LLR-4407.3 (TC TC-4583): interfaces:entry_for TC-4583; proto-S:entry_for TC-4583
@@ -144,7 +152,7 @@ LLR-4407.13 (TC TC-4593): interfaces:Inbox.refresh TC-4593; proto-S:Inbox._stamp
 LLR-4407.14 (TC TC-4594): interfaces:Inbox.refresh TC-4594; proto-S:Inbox.refresh TC-4594; proto-V:CaptureView.on_mount TC-4594
 LLR-4407.15 (TC TC-4595): proto-V:CaptureView.on_text_area_changed TC-4595
 LLR-4407.16 (TC TC-4596): proto-V:CaptureView.action_close TC-4596
-LLR-4407.17 (TC TC-4597): proto-V:CaptureView.on_unmount TC-4597
+LLR-4407.17 (TC TC-4597): proto-V:TaskboardApp.action_quit TC-4597; proto-V:CaptureView.on_unmount TC-4597
 LLR-4407.18 (TC TC-4598): interfaces:Inbox.write_pad TC-4598; proto-S:Inbox.write_pad TC-4598; proto-V:CaptureView.on_text_area_changed TC-4598
 LLR-4407.19 (TC TC-4599): interfaces:union_pads TC-4599; interfaces:Inbox.write_pad TC-4599; proto-S:union_pads TC-4599; proto-S:Inbox.write_pad TC-4599
 LLR-4407.20 (TC TC-4600): interfaces:Inbox.write_pad TC-4600; proto-S:Inbox.write_pad TC-4600
@@ -153,19 +161,24 @@ LLR-4407.22 (TC TC-4602): proto-V:CaptureView._flush TC-4602
 LLR-4407.23 (TC TC-4603): proto-S:Inbox._commit TC-4603; proto-S:Inbox.write_pad TC-4603; proto-V:CaptureView._flush TC-4603
 LLR-4407.24 (TC TC-4604): proto-V:CaptureView.action_close TC-4604
 LLR-4407.25 (TC TC-4605): proto-V:CaptureView.action_close TC-4605
-LLR-4407.26 (TC TC-4606): interfaces:Inbox.flag TC-4606; proto-S:Inbox.refresh TC-4606; proto-S:Inbox.write_pad TC-4606; proto-S:Inbox.flag TC-4606; proto-V:CaptureView._dump TC-4606
 LLR-4407.27 (TC TC-4607): proto-S:Inbox.write_pad TC-4607; proto-V:CaptureView.compose TC-4607
 LLR-4407.28 (TC TC-4608): proto-S:_dump_other TC-4608
 LLR-4407.29 (TC TC-4609): proto-V:CaptureView._dump TC-4609; proto-V:CaptureView.action_image TC-4609; proto-V:CaptureView.action_undo TC-4609
-LLR-4407.30 (TC TC-4670): proto-V:CaptureView._dump TC-4670
-LLR-4407.31 (TC TC-4671): proto-S:Inbox.flag_for TC-4671; proto-V:rail_rows TC-4671; proto-V:CaptureView._where TC-4671
-LLR-4407.32 (TC TC-4672): interfaces:Inbox.flag_for TC-4672; proto-S:Inbox.flag_for TC-4672; proto-V:CaptureView.dump_part TC-4672; proto-V:CaptureView.action_new TC-4672; proto-V:ReviewList.action_toggle TC-4672
-LLR-4407.33 (TC TC-4673): proto-S:Inbox._shape TC-4673
-LLR-4407.34 (TC TC-4674): proto-S:Inbox.write_pad TC-4674
 LLR-4407.35 (TC TC-4675): proto-S:Inbox._read TC-4675; proto-S:Inbox.load TC-4675
 LLR-4407.36 (TC TC-4676): interfaces:Inbox.load TC-4676; proto-S:Inbox._too_big TC-4676; proto-S:Inbox.load TC-4676
 LLR-4407.37 (TC TC-4677): interfaces:Inbox.write_pad TC-4677; proto-S:Inbox._commit TC-4677; proto-V:CaptureView._flush TC-4677
 LLR-4407.38 (TC TC-4678): proto-S:Inbox.load TC-4678; proto-V:CaptureView.on_mount TC-4678
+LLR-4407.39 (TC TC-4679): proto-S:Inbox.write_pad TC-4679; proto-V:CaptureView._dump TC-4679
+LLR-4407.40 (TC TC-4680): proto-V:CaptureView._dump TC-4680
+LLR-4407.41 (TC TC-4681): interfaces:Inbox.write_pad TC-4681; proto-S:Inbox.write_pad TC-4681
+LLR-4407.42 (TC TC-4682): interfaces:Inbox.pad_now TC-4682; proto-S:Inbox.pad_now TC-4682; proto-V:CaptureView.compose TC-4682
+LLR-4407.43 (TC TC-4683): interfaces:Inbox.load TC-4683; proto-S:Inbox._read TC-4683; proto-S:Inbox.load TC-4683
+LLR-4407.44 (TC TC-4684): proto-S:Inbox._commit TC-4684
+LLR-4407.45 (TC TC-4685): interfaces:Inbox.refresh TC-4685; proto-S:Inbox.load TC-4685; proto-S:Inbox.refresh TC-4685
+LLR-4407.46 (TC TC-4686): proto-V:TaskboardApp.action_quit TC-4686
+LLR-4407.47 (TC TC-4687): proto-V:TaskboardApp.action_quit TC-4687
+LLR-4407.48 (TC TC-4688): interfaces:Inbox.write_pad TC-4688; proto-S:Inbox.write_pad TC-4688; proto-V:CaptureView._dump TC-4688
+LLR-4407.49 (TC TC-4689): interfaces:Inbox.write_pad TC-4689; proto-S:Inbox.write_pad TC-4689; proto-V:CaptureView.action_undo TC-4689
 LLR-4408.1 (TC TC-4611): proto-S:Inbox.__init__ TC-4611; proto-S:attach_images TC-4611
 LLR-4408.2 (TC TC-4612): proto-S:attach_images TC-4612
 LLR-4408.3 (TC TC-4613): interfaces:attach_images TC-4613; proto-S:attach_images TC-4613; proto-S:_free_name TC-4613
@@ -179,12 +192,12 @@ LLR-4408.10 (TC TC-4620): proto-S:_copy_images TC-4620; proto-S:_drop_pad_copies
 LLR-4408.11 (TC TC-4621): proto-S:_dump_other TC-4621
 LLR-4408.12 (TC TC-4622): proto-S:_task_fields TC-4622; proto-S:_copy_images TC-4622; proto-S:dump_note TC-4622; proto-V:CaptureView._dump TC-4622
 LLR-4408.13 (TC TC-4623): proto-S:_copy_images TC-4623; proto-S:_dump_other TC-4623
-LLR-4408.14 (TC TC-4624): proto-S:_new_task_id TC-4624
 LLR-4408.15 (TC TC-4625): proto-S:dump_note TC-4625
 LLR-4408.16 (TC TC-4626): interfaces:undo_dump TC-4626; proto-S:_free_name TC-4626; proto-S:undo_dump TC-4626; proto-S:_images_back TC-4626; proto-S:_renamed TC-4626
 LLR-4408.17 (TC TC-4627): proto-S:undo_dump TC-4627
 LLR-4408.18 (TC TC-4628): interfaces:image_name TC-4628; proto-S:_image_ok TC-4628; proto-S:image_name TC-4628
 LLR-4408.19 (TC TC-4629): proto-S:attach_images TC-4629
+LLR-4408.20 (TC TC-4650): proto-S:_links_ok TC-4650; proto-S:_drop_pad_copies TC-4650; proto-S:dump_note TC-4650; proto-S:_images_back TC-4650
 LLR-4409.1 (TC TC-4631): proto-V:PadArea.__init__ TC-4631
 LLR-4409.2 (TC TC-4632): proto-S:_task_fields TC-4632; proto-S:note_task TC-4632
 LLR-4409.3 (TC TC-4633): proto-S:_task_fields TC-4633; proto-S:note_task TC-4633
@@ -198,7 +211,7 @@ AT-4405: proto-V:ReviewList.action_dump
 AT-4406: proto-V:CaptureView.on_mount; proto-V:CaptureView.action_close
 AT-4407: proto-T:suggest; proto-V:CaptureView.action_image
 AT-4408: proto-V:CaptureView._flush
-withdrawn (not traced): none
-traced 192/192 active LLRs (192 ids)
+withdrawn (not traced): LLR-4407.26, LLR-4407.30, LLR-4407.31, LLR-4407.32, LLR-4407.33, LLR-4407.34, LLR-4408.14
+traced 205/205 active LLRs (212 ids)
 traced 8/8 ATs
 untraced: none

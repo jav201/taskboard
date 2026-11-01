@@ -59,3 +59,44 @@
 | P-V-8 string used in narrow rail and review row too | ACCEPT (one string everywhere). |
 | P-V-7 → LLR-4401.17, P-V-2 → LLR-4401.18, P-T-2/P-V-10/P-V-9 text | ACCEPT. |
 | `tab` priority binding inert with the name field closed | ACCEPT (the pad never moves focus by tab). |
+
+## Round 1 — PDR (architect, security)
+
+### Security (03-pdr-security.md: FAIL, 3 MAJOR, 2 MEDIUM, 6 LOW)
+
+| Finding | Ruling |
+|---|---|
+| SEC-1 (MAJOR) | ACCEPT: `union_pads` suppresses only the fresh `dumped` entries this window has NOT seen, as a multiset (an entry this window saw does not suppress a re-typed note). |
+| SEC-2 (MAJOR) | ACCEPT: a store whose strings will not encode as UTF-8 (lone surrogates) is unreadable at the door; `dump_note` refuses note text that will not encode (backstop, worded notice); `_commit` turns `UnicodeError` into `OSError`. The pre-existing `Board.save` truncate-before-fail → BACKLOG. |
+| SEC-3 (MAJOR) | ACCEPT: undo's changed-check compares the whole task record (`dataclasses.asdict`) against the expected record rebuilt from the dump entry; any difference → refused. Undo also refuses when another task's `depends_on` names the task. Worded notices. |
+| SEC-4 (MEDIUM) | ACCEPT: a failed read (OSError) at load/refresh keeps the OLD stamp, so the next write takes the union path. |
+| SEC-5 (MEDIUM) | ACCEPT: `quit` while the capture view holds an unsaved pad tries the write first; on failure it behaves like `esc` (warning, view stays; a second `quit` exits). |
+| SEC-6 (LOW) | ACCEPT: the image move/unlink paths reuse `move_project`'s junction/link check. |
+| SEC-7 (LOW) | ACCEPT: the full reserved-name list (CON, PRN, AUX, NUL, COM0-9, LPT0-9, incl. superscript digits) — defence in depth. |
+| SEC-8 (LOW) | ACCEPT: lane test by normalised path string first; `samefile` only against lane paths. |
+| SEC-9 (LOW) | ACCEPT as recorded risk (BACKLOG). |
+| SEC-10 (LOW) | ACCEPT as existing behaviour (BACKLOG). |
+| SEC-11 (LOW) | ACCEPT as BACKLOG (perf, measured cheap). |
+
+### Architect (03-pdr-architect.md: FAIL, 1 HIGH, 4 MAJOR, 1 MEDIUM, 3 MINOR/LOW, 2 INFO)
+
+| Finding | Ruling |
+|---|---|
+| ARCH-1 (HIGH) | ACCEPT the preferred change, merged with SEC-1: dump and undo are operations on the FRESH state under the lock (`people.Directory._commit` shape). Dump: remove the first fresh-pad note equal to the record's text, append the record. Undo: drop the entry, append its note to the fresh pad (`with_note`). Only the debounced typing write uses a union, whose exclusion set is the multiset of fresh `dumped` entries this Inbox had NOT seen at its last sync (SEC-1). TC arms (U), (D), (R) added to TC-4599 and AT-4408. TC-4599's threshold sentence (D) is corrected. |
+| ARCH-2 (MAJOR) | ACCEPT: a note's chosen option is stored as a key `(board path, project id)` (or the new-project sentinel), never a list index; the batch fixes every row's target before the loop and rebuilds suggestions once after it. |
+| ARCH-3 (MAJOR) | ACCEPT: `capture` is refused (check_action False) while the boards home is on the screen stack — the view is unreachable over the home. |
+| ARCH-4 (MAJOR, scope) | ACCEPT — REMOVE flagged notes (the LLRs, the `flagged` store key, `Inbox.flag`, `_unsaved_flags`, the rail flag line, P-V-8/P-V-10 strings). Replacement: when the board save succeeded and the store write failed, the app-level `Inbox` keeps the dump as a pending record (with the note already removed from the in-memory pad); every later write (debounce, close, exit) retries it first; the toast says the store write failed and will be retried. Recorded risk: an exit before any successful retry leaves the note in the on-disk pad (a re-dump makes a second task). Prefer removing over guarding. |
+| ARCH-5 (MAJOR, test design) | ACCEPT each control the finding names (TC-4403, TC-4482, TC-4486). |
+| ARCH-6 (MEDIUM) | ACCEPT: idf, document vectors and norms are computed once per corpus build (at open and after a dump/new project); a note's hits are cached by note text; scoring runs on the debounce, not per keystroke. |
+| ARCH-7 (MINOR) | ACCEPT: remove the redundant `_new_task_id` guard (LLR-4408.14 withdrawn or merged). |
+| ARCH-8 (MINOR) | ACCEPT: inbox.py never imports `modals` (or any UI module); `visible_text` comes from a non-UI module (views/models) or a local copy of the marker rule taken from `views.highlight_segments` semantics. |
+| ARCH-9 (LOW) | ACCEPT: drop or fix TC-4412's vacuous `cursor` arm. |
+| ARCH-10 (INFO) | Noted; the probe in graph-proto-V stands as evidence. |
+| ARCH-11 (INFO) | Noted; flagged to the operator in the final report (dumped text outlives its task for 7 days, commission-mandated). |
+
+### Round 1 correction-pass questions
+
+| Question | Ruling |
+|---|---|
+| A dump/undo store write also carries the window's unsaved typing (typing union applied after the op) | ACCEPT — otherwise unsaved typing is lost when a dump meets a changed file. |
+| LLR-4403.30/.31 (no scoring inside the 1 s debounce; the rail keeps the last drawn lines meanwhile) | ACCEPT — they are the visible face of ARCH-6; the E5 captures show them. |

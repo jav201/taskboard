@@ -115,3 +115,55 @@
 - **What changed:** 12 LLRs added, 13 LLRs and 2 ATs reworded, none withdrawn (LLR 180 → 192). Added: LLR-4401.17 (narrow rail with the cursor in no note reads `no note under the cursor`, P-V-7); LLR-4401.18 (every pad key a priority binding, tested with the terminal form `events.Key("alt+o", "o")`, P-V-2); LLR-4403.27 (each project document cut at `suggest.DOC_CHARS` = 100 000 characters before tokenising, P-T-5); LLR-4403.28 (a note is scored on its title line and notes from `note_task`, image lines left out, P-T-4); LLR-4405.15 (a successful undo shows `Undone: <title> left <board>; the note is back in the pad.`, P-V-12); LLR-4405.16 (undo only into a lane board, else `<board path> is not a known board — nothing undone.` and the entry kept, P-S-4); LLR-4405.17 (`alt+u` takes its entry from the store file's `dumped` read fresh, memory when unparseable, P-S-6); LLR-4407.35, LLR-4407.36, LLR-4407.37 (the store cap `STORE_MAX_BYTES` = 8 388 608: an over-cap file is read up to the cap only, treated as unreadable and not copied aside; an over-cap write changes nothing and shows its worded notice, P-S-3); LLR-4407.38 (the unreadable-store notice when no copy could be kept, P-V-6 wording); LLR-4408.19 (a clipboard file whose name fails the image-name rule is copied as `image<suffix>`, P-S-10). Reworded: LLR-4401.13 (TC-4413 also asserts the `` | `n` | Capture | `` row, P-V-4); LLR-4403.6 (threshold gains the df-0 weight 0 arm, P-T-2); LLR-4403.9 (name ties by `casefold`, then the stored name, P-T-3); LLR-4403.22 (the cap named `suggest.NOTE_CHARS`, P-T-1); LLR-4404.21 and LLR-4404.22 (the name field's board cycle is `tab`, shown `⇥ board`, P-V-1); LLR-4407.8 (only when the store was copied aside); LLR-4407.10 (entry shape: `task` id pattern, image names, non-blank `text`, bool `new_project`, P-S-4); LLR-4407.28 ("a board saved by this version", P-S-19); LLR-4407.31 (the rail's flag line `⚑ on <board> — delete it here`, P-V-8); LLR-4407.32 (`alt+n` on a flagged note refused too, P-V-10); LLR-4408.18 (the widened image-name rule, P-S-10; §1 gains the rule as a definition); LLR-4409.4 (the notice arm uses a markup project name, P-V-9); AT-4403 (`tab` for the board cycle); AT-4407 (note `Vendor call\n::b:: ask the vendor :: @username_subject`, P-V-11; the notice arm as LLR-4409.4). §1 gains the definitions `image-name rule`, `scored text` and `document text`; §6 moves the note cap to suggest.py (`NOTE_CHARS`, `DOC_CHARS`; no `SUGGEST_CHARS` in inbox.py, P-T-1 / P-S-13) and names `entry_for` and `dump_note`'s `project_name` (P-S-15, P-S-1). P-S-21 ruled "no archived check": LLR-4404.12 is unchanged. P-S-1, P-S-2, P-S-5, P-S-7, P-S-8, P-S-9, P-S-14, P-S-15, P-V-3, P-V-5, P-V-13, P-V-14 change the graphs or tests only; P-S-11, P-S-12 and P-S-17 are recorded risks / BACKLOG. Self-check rerun (a script over the file): 192 LLRs, 192 unique TC ids by the numbering rule (overflow LLR-4407.35..38 → TC-4675..TC-4678), one `shall` each, EARS openings, every LLR with an NC — 0 defects.
 - **Why:** each ruling closes a defect the group prototypes found before code: a key the terminal cannot deliver (`alt+b`), a check that could not fail (TC-4413), unbounded reads of an untrusted store, store entries that form file paths, a duplicate note restored by a stale undo, a silent success, and score/order rules left implicit (df-0 weight, case of a tie, image words, document size).
 - **Evidence:** `03-pdr-rulings.md` rounds 0a and 0b; `graph-proto-S.cw.md`, `graph-proto-T.cw.md`, `graph-proto-V.cw.md` §Findings; the E2c probe (`%TEMP%\incK-E2-probe\e2c.py`, `cap.py`, outside the repo; G-T's reference `%TEMP%\incK-T-probe\ref_suggest.py` with the P-T-3 tie order) for the LLR-4403.27 and LLR-4403.28 thresholds.
+
+### LED-2026-11-01-incK.4 — E3 round 1 PDR rulings (architect ARCH-1..ARCH-11, security SEC-1..SEC-11; `03-pdr-rulings.md` §Round 1)
+- **Requirement:** LLR-4401.3
+- **Requirement:** LLR-4401.12
+- **Requirement:** LLR-4401.14
+- **Requirement:** LLR-4401.19
+- **Requirement:** LLR-4403.21
+- **Requirement:** LLR-4403.22
+- **Requirement:** LLR-4403.24
+- **Requirement:** LLR-4403.26
+- **Requirement:** LLR-4403.29
+- **Requirement:** LLR-4403.30
+- **Requirement:** LLR-4403.31
+- **Requirement:** LLR-4404.17
+- **Requirement:** LLR-4404.34
+- **Requirement:** LLR-4405.10
+- **Requirement:** LLR-4405.16
+- **Requirement:** LLR-4405.18
+- **Requirement:** LLR-4405.19
+- **Requirement:** LLR-4406.17
+- **Requirement:** LLR-4407.2
+- **Requirement:** LLR-4407.7
+- **Requirement:** LLR-4407.10
+- **Requirement:** LLR-4407.18
+- **Requirement:** LLR-4407.19
+- **Requirement:** LLR-4407.26
+- **Requirement:** LLR-4407.30
+- **Requirement:** LLR-4407.31
+- **Requirement:** LLR-4407.32
+- **Requirement:** LLR-4407.33
+- **Requirement:** LLR-4407.34
+- **Requirement:** LLR-4407.39
+- **Requirement:** LLR-4407.40
+- **Requirement:** LLR-4407.41
+- **Requirement:** LLR-4407.42
+- **Requirement:** LLR-4407.43
+- **Requirement:** LLR-4407.44
+- **Requirement:** LLR-4407.45
+- **Requirement:** LLR-4407.46
+- **Requirement:** LLR-4407.47
+- **Requirement:** LLR-4407.48
+- **Requirement:** LLR-4407.49
+- **Requirement:** LLR-4408.13
+- **Requirement:** LLR-4408.14
+- **Requirement:** LLR-4408.18
+- **Requirement:** LLR-4408.20
+- **Requirement:** AT-4406
+- **Requirement:** AT-4408
+- **Date:** 2026-11-01
+- **What changed:** 20 LLRs added, 7 withdrawn, 17 LLRs and 2 ATs reworded (LLR ids 192 → 212; active 205). Added: LLR-4401.19 (`capture` refused while the boards home is on the stack, ARCH-3); LLR-4403.29 (idf, document vectors and norms once per document build, ARCH-6); LLR-4403.30 (no scoring while the pad changed less than 1.0 s ago, ARCH-6); LLR-4403.31 (an uncomputed note keeps its last drawn option lines, ARCH-6); LLR-4404.34 (a note that will not encode as UTF-8 is refused before any board write, SEC-2); LLR-4405.18 (pending records are the newest entries for `alt+u`, ARCH-4); LLR-4405.19 (undo refused while another task depends on the task, SEC-3); LLR-4406.17 (the batch fixes every row's target before its first dump, ARCH-2); LLR-4407.39 (a failed store write after a dump's board save keeps a pending record, ARCH-4); LLR-4407.40 (its notice, "it is retried at the next save", ARCH-4); LLR-4407.41 (pending records and drops applied first at each later pad write, ARCH-4); LLR-4407.42 (the view opens on the pad with the pending records applied, ARCH-4); LLR-4407.43 (a store string that will not encode as UTF-8 makes the file unreadable at the door, SEC-2); LLR-4407.44 (an encode failure at write is an `OSError` with a worded notice, SEC-2); LLR-4407.45 (a read that fails with `OSError` keeps the old store stamp, SEC-4); LLR-4407.46 and LLR-4407.47 (`quit` with an unsaved pad tries the write, warns on failure, exits on the second press, SEC-5); LLR-4407.48 (a dump's store write removes its note from the fresh pad, ARCH-1 case D); LLR-4407.49 (an undo's store write appends its note to the fresh pad when the fresh `dumped` holds the entry, ARCH-1 case U); LLR-4408.20 (no source file is removed through a link or junction, SEC-6). Withdrawn: LLR-4407.26, LLR-4407.30, LLR-4407.31, LLR-4407.32, LLR-4407.33, LLR-4407.34 (flagged notes removed, ARCH-4); LLR-4408.14 (merged into LLR-4408.13, ARCH-7). Reworded: LLR-4401.3 (the NC is "the pad not focused at open", ARCH-5); LLR-4401.12 (`archive` replaces the vacuous `cursor` arm, plus an arrow-keys arm, ARCH-9/ARCH-5); LLR-4401.14 (run with the home off the stack, ARCH-3); LLR-4403.21 (the cache arm waits for the debounce, ARCH-6); LLR-4403.22 (the deterministic `"x" × 9 995 + " eval harness"` arm is the control, ARCH-5); LLR-4403.24 (one rebuild per batch, ARCH-2/ARCH-6); LLR-4403.26 (two subprocesses under `PYTHONHASHSEED` 0 and 1, ARCH-5); LLR-4404.17 (the choice kept as the option's identity, ARCH-2); LLR-4405.10 (the whole task record compared, SEC-3); LLR-4405.16 (the lane test on normalised path strings, SEC-8); LLR-4407.2, LLR-4407.7, LLR-4407.10 (no `flagged` key, ARCH-4); LLR-4407.18 (a pending record makes a write due, ARCH-4); LLR-4407.19 (the union excludes by multiset the unseen entries only, SEC-1/ARCH-1); LLR-4408.13 (the taken-folder arm of the withdrawn LLR-4408.14, ARCH-7); LLR-4408.18 (the full Windows reserved-name list, the stem right-stripped, SEC-7); AT-4406 (no flagged note: the note leaves the pad and the save is retried); AT-4408 (arms D, U, R, ARCH-1). §1 gains `unseen entry`, `pending record`, `pad write`; `flagged note` is gone; `chosen option`, `store stamp`, `title line` and `image-name rule` reworded. The TC rule gains the overflow LLR-4408.n (n ≥ 20) → TC-(4630+n). §6, §7 and §8 (F-8, F-9, F-12) follow; a `## Recorded risks` list holds SEC-9, SEC-10, SEC-11, P-S-11, P-S-12, P-S-17, the ARCH-4 exit risk and the SEC-2 `Board.save` truncation. Self-check rerun (a script over the file): 205 active LLRs, 205 unique TC ids by the numbering rule, one `shall` each, EARS openings, every active LLR with an NC; 7 withdrawn — 0 defects.
+- **Why:** the PDR found the store's union losing a restored note and bringing back a dumped one (ARCH-1, SEC-1), a batch filing a note under a project it did not show (ARCH-2), a write before the open board's start (ARCH-3), a second mechanism for one failure (ARCH-4), three negative controls that could not fire (ARCH-5), per-keystroke corpus cost (ARCH-6), a lone surrogate crashing the app and truncating a board (SEC-2), an undo deleting an edited task (SEC-3), a failed read overwriting the stored pad (SEC-4), `quit` dropping an unsaved pad (SEC-5), and three LOW parity gaps (SEC-6, SEC-7, SEC-8).
+- **Evidence:** `03-pdr-architect.md`, `03-pdr-security.md`, `03-pdr-rulings.md` §Round 1; probes re-run against the corrected design in `%TEMP%\incK-e3fix\` (outside the repo): `store_fix.py` (the multiset union and the fresh-state dump/undo/pending ops: every pad in LLR-4407.19, LLR-4407.41, LLR-4407.48, LLR-4407.49, LLR-4405.18), `suggest_fix.py` (the cached corpus: same hits and digest `d694943ce6d21f09` under `PYTHONHASHSEED` 0 and 1, `_idf` 1 call, 2.7 ms vs 139.6 ms per call at 300 documents; the batch targets of LLR-4406.17 and LLR-4404.17), `nc4482.py` (0.3128 vs 0.7077), `sec_fix.py` (the surrogate door, the reserved-name rule, the whole-record compare over a real `save_atomic` + `peek_board` round trip), with the PDR probes copied beside them.

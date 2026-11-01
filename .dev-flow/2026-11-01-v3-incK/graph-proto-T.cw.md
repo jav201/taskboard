@@ -6,6 +6,8 @@ Design source: `prototypes/capture_round/suggest.py` (tfidf method). Kept from i
 
 E2 correction pass (round 0b, `03-pdr-rulings.md`): P-T-1 (`NOTE_CHARS` lives here), P-T-2 (a df-0 stem weighs 0), P-T-3 (name ties by `casefold`, then the stored name), P-T-4 (G-V passes the note's scored text: `note_task` title + "\n" + notes, image lines left out) and P-T-5 (`DOC_CHARS` = 100 000 per document) applied below. The ruled order and cap were re-executed (`%TEMP%\incK-E2-probe\run_ruled.py` = `run.py` over `ref_suggest.py` with the P-T-3 sort key; `e2c.py`, `cap.py`): every earlier example below is unchanged, and the TC-4486 digest is still `d694943ce6d21f09` under PYTHONHASHSEED 0, 1, 2.
 
+E3 round 1 (`03-pdr-rulings.md` §Round 1, LED-2026-11-01-incK.4, `03-e3-corrections.md`): ARCH-6 — `corpus` returns a `Corpus(docs, idf)`; idf, each document's tf·idf vector and its norm are computed ONCE per build and `suggest(note, corpus)` only reads them (new LLR-4403.29; G-V scores on the debounce, LLR-4403.30/31); ARCH-5 — TC-4482's control is the deterministic `"x" × 9 995 + " eval harness"` arm and TC-4486 compares two subprocesses (`PYTHONHASHSEED` 0 and 1). Re-executed against the corrected design (`%TEMP%\incK-e3fix\suggest_fix.py`, `nc4482.py` over the ruled reference): the 7 probe notes give the same hits as the per-call computation, digest `d694943ce6d21f09` under seeds 0 and 1; `_idf` is called once per build; at 300 documents (p4_cost's worst shape) a call takes 2.7 ms instead of 139.6 ms.
+
 ### Fixture F (synthetic; every example below was EXECUTED)
 
 > All numbers and "why" lists below were produced by running a scratch reference of exactly this design (`%TEMP%\incK-T-probe\ref_suggest.py`, driven by `run.py`, `more2.py`, `hand.py`; cwd = the worktree, `taskboard.__file__` printed = `C:\Users\jjgh8\Github\taskboard-wt\capture-proto\taskboard\__init__.py`; real `taskboard.models.Board/Project/Task` and `taskboard.marks.Mark` objects, never saved; nothing written in the repo). Run on 2026-11-01 under `PYTHONHASHSEED` 0, 1 and 2: identical digest `d694943ce6d21f09`.
@@ -29,12 +31,13 @@ E2 correction pass (round 0b, `03-pdr-rulings.md`): P-T-1 (`NOTE_CHARS` lives he
 
 ### Scoring algorithm of suggest (precise)
 
-> 1. docs empty → `[]`. `note` is the scored text G-V passes (`nt.title + "\n" + nt.notes` of `inbox.note_task`, P-T-4). text = note[:NOTE_CHARS] (a str slice, before any fold; NOTE_CHARS = 10 000).
-> 2. idf = `_idf(docs)`. nw = words(text). q = Counter of the stems of nw in note order; surface[stem] = the first surface word of that stem in note order.
+> 0. Once per build, in `corpus` (ARCH-6): idf = `_idf(docs)`; for each doc, `vec` = {s: tf[s] × idf[s]} (tf order) and `norm` = sqrt(Σ vec²) or 1.0; returned as `Corpus(docs, idf)`.
+> 1. corpus.docs empty → `[]`. `note` is the scored text G-V passes (`nt.title + "\n" + nt.notes` of `inbox.note_task`, P-T-4). text = note[:NOTE_CHARS] (a str slice, before any fold; NOTE_CHARS = 10 000).
+> 2. idf = `corpus.idf` (not recomputed). nw = words(text). q = Counter of the stems of nw in note order; surface[stem] = the first surface word of that stem in note order.
 > 3. qv[s] = q[s] × idf.get(s, 0.0) — a stem no document holds weighs 0 (P-T-2). |q| = sqrt(Σ qv²) or 1.0.
-> 4. For each doc in docs order: dv[s] = tf[s] × idf[s]; |d| = sqrt(Σ dv²) or 1.0 (an empty document scores 0); share = {s: qv[s] × dv[s] for s in qv if s in dv} (dict in qv's order); cosine = Σ share / (|q| × |d|); × 0.5 when len(share) == 1; score = round(…, 4). score ≤ 0 → no hit. why = [surface[s] for s, v in sorted(share.items(), key=(−v, s))].
+> 4. For each doc in docs order: dv = doc.vec, |d| = doc.norm (set at the build; an empty document scores 0); share = {s: qv[s] × dv[s] for s in qv if s in dv} (dict in qv's order); cosine = Σ share / (|q| × |d|); × 0.5 when len(share) == 1; score = round(…, 4). score ≤ 0 → no hit. why = [surface[s] for s, v in sorted(share.items(), key=(−v, s))].
 > 5. hits sorted by (−score, doc.lane, doc.project_name.casefold(), doc.project_name, doc.position) (ruled P-T-3: case-folded name first, then the stored name, then position); keep score ≥ LOW; first MAX_HITS (3).
-> No `set` is iterated for any order or any sum (the sums run over insertion-ordered dicts), so the result is independent of `PYTHONHASHSEED` (TC-4486). Cost: O(len(text[:10 000]) + Σ |tf| over docs) per call; G-V's hit cache (LLR-4403.21) calls it once per distinct note text.
+> No `set` is iterated for any order or any sum (the sums run over insertion-ordered dicts), so the result is independent of `PYTHONHASHSEED` (TC-4486). Cost: O(len(text[:10 000]) + Σ over docs of the note's stems) per call — the O(Σ |tf|) idf and vector work is paid once per build (ARCH-6); G-V's hit cache (LLR-4403.21) calls it once per distinct note text, and only on the debounce (LLR-4403.30).
 
 ## Nodes
 
@@ -69,10 +72,10 @@ examples: (TC-4461) text "Golden SET: 12 Questions @username_subject de la Café
 examples: (TC-4461) text "::b:: Golden set :: ==late== img: board-0938.png" → pairs ("golden", "golden"), ("set", "set"), ("late", "late"), ("img", "img"), ("board", "board"), ("png", "png")
 
 corpus
-req: LLR-4403.3, LLR-4403.4, LLR-4403.5, LLR-4403.23, LLR-4403.24, LLR-4403.25, LLR-4403.27, HLR-4403
+req: LLR-4403.3, LLR-4403.4, LLR-4403.5, LLR-4403.23, LLR-4403.24, LLR-4403.25, LLR-4403.27, LLR-4403.29, HLR-4403
 in: list[tuple[str, str, Board?, str]] lanes; dict marks
-out: list[Doc] docs
-func: for lane index li, lane (board_name, board_colour, board, state) in lanes order: board None → skipped (G-V counts those for LLR-4403.20); for position pi, project p in board.projects order (archived ones keep their position): p.archived → skipped; else tf = Counter(): each stem of words(p.name) += 3; for each task t in board.tasks order with `t.project_id == p.id` and not t.archived: each stem of words(t.title) += 2; each stem of words(t.notes) += 2 when it starts with `@`, else += 1; when `t.milestone is True` and t.mark and `t.mark in marks`: each stem of words(marks[t.mark].name) += 1 (a hidden mark counts too). Document cap (P-T-5, LLR-4403.27): each project starts a budget `left = DOC_CHARS` (100 000); every field is fed in the order above (p.name; then per task t.title, t.notes, the mark name) as `piece = field[:left]`, `left -= len(piece)`, and only `piece` is tokenised (a word cut at the budget edge counts as the shorter word it became); once `left` is 0 nothing more is read. Doc(lane=li, board_name, board_colour, board_path=board.path, project_id=p.id, project_name=p.name, project_colour=p.color, position=pi, tf). A task with no project, an unknown project id or an archived project joins no document. A project whose words are all dropped is still a Doc (empty tf; it counts in N and never scores). Pure: reads no file, writes nothing; G-V calls it on open (LLR-4403.23) and again after each dump or undo that changed a board (LLR-4403.24).
+out: Corpus corpus
+func: for lane index li, lane (board_name, board_colour, board, state) in lanes order: board None → skipped (G-V counts those for LLR-4403.20); for position pi, project p in board.projects order (archived ones keep their position): p.archived → skipped; else tf = Counter(): each stem of words(p.name) += 3; for each task t in board.tasks order with `t.project_id == p.id` and not t.archived: each stem of words(t.title) += 2; each stem of words(t.notes) += 2 when it starts with `@`, else += 1; when `t.milestone is True` and t.mark and `t.mark in marks`: each stem of words(marks[t.mark].name) += 1 (a hidden mark counts too). Document cap (P-T-5, LLR-4403.27): each project starts a budget `left = DOC_CHARS` (100 000); every field is fed in the order above (p.name; then per task t.title, t.notes, the mark name) as `piece = field[:left]`, `left -= len(piece)`, and only `piece` is tokenised (a word cut at the budget edge counts as the shorter word it became); once `left` is 0 nothing more is read. Doc(lane=li, board_name, board_colour, board_path=board.path, project_id=p.id, project_name=p.name, project_colour=p.color, position=pi, tf, vec, norm), vec and norm filled after all docs are built: idf = `_idf(docs)` once, then step 0 of the algorithm; returns `Corpus(docs, idf)` (ARCH-6, LLR-4403.29). A task with no project, an unknown project id or an archived project joins no document. A project whose words are all dropped is still a Doc (empty tf; it counts in N and never scores). Pure: reads no file, writes nothing; G-V calls it on open (LLR-4403.23) and again after each dump or undo that changed a board (LLR-4403.24).
 module: taskboard/suggest.py
 examples: (TC-4464) one lane, project "Eval harness" with one task "Answer key", notes "ask @username_subject key", milestone, mark "payment", marks M → tf "eval": `3`, "harnes": `3`, "answer": `2`, "key": `3`, "@username_subject": `2`, "paymen": `1` and nothing else (`6` stems; "ask" a stop word)
 examples: (TC-4463) fixture F with an archived project "Module 3 · Images" added to Course → docs `3` (not 4)
@@ -80,7 +83,8 @@ examples: (TC-4465) fixture F (task "Loose idea zebra" has no project) → no do
 examples: (TC-4483) fixture F → docs "Eval harness" (lane `0`, position `0`), "Pilot rollout" (lane `0`, position `1`), "Module 4 · Volumes" (lane `1`, position `0`, board_path "S/boards/course/board.json", board_name "Course", board_colour "violet")
 examples: (TC-4483) lanes Client A (A) and ("Gone", "pink", None, "file missing") → docs `2` (only Client A's)
 examples: (TC-4484) fixture F plus a task "Rotation plan" in Eval harness (the board as read after the dump) → Eval harness tf holds "rotati": `2` and "plan": `2`
-examples: (TC-4485) one lane whose board has 0 projects → docs `[]`
+examples: (TC-4485) one lane whose board has 0 projects → corpus docs `[]`, idf `{}`
+examples: (TC-4489) fixture F → `_idf` called `1` time for the build; then 7 suggest calls → still `1` (executed, suggest_fix.py); Eval harness's norm 13.533744 (as the hand value of |d|)
 examples: (TC-4485) a project "Q&A" with no task, placed before F's lanes → a Doc with tf `{}`, N = `4`, and N1 still scores only "Eval harness" (0.4044)
 examples: (TC-4487) one lane, project "Ledger alpha" with one task "Audit log", notes "audit " × 20 000 + "zebra" (120 005 characters) → tf {"ledger": `3`, "alpha": `3`, "audit": `16665`, "log": `2`} exactly, no "zebra"; corpus in 0.0175 s (< 1.0 s); executed (cap.py)
 examples: (TC-4487) fixture F → the same tf for all 3 documents as without the cap
@@ -89,16 +93,16 @@ _idf
 req: LLR-4403.6
 in: list[Doc] docs
 out: dict[str, float] idf
-func: df = for each doc, +1 for each distinct stem of its tf; idf[s] = `math.log((N + 1) / (df[s] + 1)) + 1.0`, N = len(docs). Only stems some document holds are keys.
+func: df = for each doc, +1 for each distinct stem of its tf; idf[s] = `math.log((N + 1) / (df[s] + 1)) + 1.0`, N = len(docs). Only stems some document holds are keys. Called by `corpus` only, once per build (ARCH-6).
 module: taskboard/suggest.py
 examples: (TC-4466) fixture F → idf "questi" 1.6931471805599454 (df 1), "@username_subject" 1.2876820724517808 (df 2), "releas" 1.2876820724517808 (df 2); `3` docs
 examples: (TC-4466) five projects "Ledger alpha" … "Ledger echo", each one task "Audit trail" → idf "ledger" `1.0` (df 5 = N), "alpha" 2.098612
 
 suggest
-req: HLR-4403, LLR-4403.6, LLR-4403.7, LLR-4403.8, LLR-4403.9, LLR-4403.10, LLR-4403.14, LLR-4403.15, LLR-4403.19, LLR-4403.22, LLR-4403.25, LLR-4403.26, LLR-4403.28
-in: str note; list[Doc] docs
+req: HLR-4403, LLR-4403.6, LLR-4403.7, LLR-4403.8, LLR-4403.9, LLR-4403.10, LLR-4403.14, LLR-4403.15, LLR-4403.19, LLR-4403.22, LLR-4403.25, LLR-4403.26, LLR-4403.28, LLR-4403.29
+in: str note; Corpus corpus
 out: list[Hit] hits
-func: the scoring algorithm in the note above (implements the interface contract): first NOTE_CHARS (10 000) characters, sliced before fold; tf·idf cosine (a stem no document holds weighs 0, P-T-2); halved on exactly one shared stem; rounded to 4 decimals; score ≥ LOW (0.08); ordered (−score, lane, project name casefolded, project name, position) (P-T-3); `note` is the scored text (P-T-4: G-V strips the image lines through `note_task`; suggest.py imports no inbox); at most 3; why = the note's first surface word of each shared stem, largest contribution qv·dv first, ties by stem; `why` holds every shared word (G-V shows at most 3). Pure and deterministic; never raises; [] for no docs.
+func: the scoring algorithm in the note above (implements the interface contract): idf, vectors and norms read from the corpus, never recomputed (ARCH-6); first NOTE_CHARS (10 000) characters, sliced before fold; tf·idf cosine (a stem no document holds weighs 0, P-T-2); halved on exactly one shared stem; rounded to 4 decimals; score ≥ LOW (0.08); ordered (−score, lane, project name casefolded, project name, position) (P-T-3); `note` is the scored text (P-T-4: G-V strips the image lines through `note_task`; suggest.py imports no inbox); at most 3; why = the note's first surface word of each shared stem, largest contribution qv·dv first, ties by stem; `why` holds every shared word (G-V shows at most 3). Pure and deterministic; never raises; [] for no docs.
 module: taskboard/suggest.py
 examples: (TC-4474) note N1 "Golden set: 12 questions still have no answer key ask @username_subject" over F → hits `1`: "Eval harness" · "Client A", score `0.4018`, why "questions", "@username_subject", "key" (in that order)
 examples: (TC-4467) note N1 against "Eval harness" → cosine 0.401774 (dot 14.783240 / (2.718753 × 13.533744)), score `0.4018`
@@ -118,11 +122,12 @@ examples: (TC-4475) the rail notes of graph-proto-V over F (executed, e2c.py, sc
 examples: (TC-4475) note "Steering deck: demo the hybrid search on pilot stores" over F → hits `1`: "Pilot rollout" `0.6444` why "pilot", "stores", "steering", "demo", "hybrid", "search"
 examples: (TC-4479) note "Answer the region chair" over F → hits `1`: "Pilot rollout" `0.1488` why "chair", "region" → opts `None`, "Pilot rollout" (weak top)
 examples: (AT-4407) note "Vendor call\n::b:: ask the vendor :: @username_subject" over F → "Eval harness" `0.0951` why "@username_subject"; "Pilot rollout" `0.08` why "@username_subject" → opts `None`, "Eval harness", "Pilot rollout"
-examples: (TC-4482) note "eval harness " + "z " × 2 000 000 (4 000 013 chars) over F → the same hits as its first 10 000 characters: "Eval harness" `0.7077` why "eval", "harness"; executed in 0.0013 s (< 1.0 s)
-examples: (TC-4482) note "x" × 9 995 + " eval harness" → only "eval" survives the cut: "Eval harness" `0.3128` why "eval"
+examples: (TC-4482) note "eval harness " + "z " × 2 000 000 (4 000 013 chars) over F → the same hits as its first 10 000 characters: "Eval harness" `0.7077` why "eval", "harness"; executed in 0.0013 s (< 1.0 s) — not the control: uncapped it still scores in 0.51 s (ARCH-5, p5_nc)
+examples: (TC-4482) note "x" × 9 995 + " eval harness" → only "eval" survives the cut: "Eval harness" `0.3128` why "eval" — THE control: uncapped → "Eval harness" `0.7077` why "eval", "harness" (executed, nc4482.py)
 examples: (TC-4484) note "rotation" over F → hits `[]`; over F plus task "Rotation plan" in Eval harness → "Eval harness" `0.1179` (one shared stem, halved) why "rotation"
-examples: (TC-4485) docs `[]`, note "eval" → hits `[]`
-examples: (TC-4486) the 7 probe notes over F, 3 runs under PYTHONHASHSEED 0, 1, 2 → identical (project id, score, why) lists, digest "d694943ce6d21f09"
+examples: (TC-4485) a corpus with docs `[]`, note "eval" → hits `[]`
+examples: (TC-4486) the 7 probe notes over F, scored in 2 subprocesses under PYTHONHASHSEED 0 and 1 (`env -u NO_COLOR`) → identical (project id, score, why) lists, digest "d694943ce6d21f09" in both (executed, suggest_fix.py over the cached corpus; ARCH-5: in-process runs share one seed)
+examples: (TC-4489) the 7 probe notes over F's corpus → the same hits as idf and vectors computed per call; over p4_cost's worst shape (20 boards × 15 projects × 40 tasks × 80 note words, 5 000-word vocabulary, seed 7: 300 docs, 734 619 stems) → corpus build 1 227 ms, suggest 2.69 ms per call (per-call idf: 139.6 ms), same hits (executed, suggest_fix.py)
 
 level
 req: LLR-4403.16
@@ -162,8 +167,12 @@ in: STOP set[str]; WORD_RE re.Pattern; W_NAME 3; W_TITLE 2; W_PEOPLE 2; W_MARK 1
 desc: module-level in suggest.py; STOP is the prototype's list verbatim (LLR-4403.1); the weights are ints (R0-7); `NOTE_CHARS` lives here, not in inbox.py (P-T-1 ruled); `DOC_CHARS` caps each document (P-T-5 ruled); never written at run time.
 
 [Data: Doc]
-in: NamedTuple(int lane, str board_name, str board_colour, Path board_path, str project_id, str project_name, str project_colour, int position, Counter tf)
-desc: as in graph-interfaces; lane = index in `board_lanes` lanes, position = index in `board.projects` (archived counted); board_name / board_colour are the lane's registry name and colour (the chip); board_path is `board.path` (G-V turns it into a DumpTarget).
+in: NamedTuple(int lane, str board_name, str board_colour, Path board_path, str project_id, str project_name, str project_colour, int position, Counter tf, dict vec, float norm)
+desc: as in graph-interfaces; lane = index in `board_lanes` lanes, position = index in `board.projects` (archived counted); board_name / board_colour are the lane's registry name and colour (the chip); board_path is `board.path` (G-V turns it into a DumpTarget); vec / norm set once per build (ARCH-6).
+
+[Data: Corpus]
+in: NamedTuple(list[Doc] docs, dict[str, float] idf)
+desc: as in graph-interfaces; what corpus returns and suggest reads (ARCH-6).
 
 [Data: Hit]
 in: NamedTuple(Doc doc, float score, list[str] why)
@@ -195,8 +204,10 @@ words ──▶ suggest
 [Data: marks.Directory.marks].name ──▶ corpus
 corpus ──▶ [Data: Doc]
 [Data: Doc] ──▶ _idf
-[Data: Doc] ──▶ suggest
-_idf ──▶ suggest
+_idf ──▶ corpus
+corpus ──▶ [Data: Corpus]
+[Data: Doc] ──▶ [Data: Corpus]
+[Data: Corpus] ──▶ suggest
 suggest ──▶ [Data: Hit]
 [Data: Hit] ──▶ options
 level ──▶ bars
@@ -205,8 +216,8 @@ level ──▶ bars
 
 > Calls G-T makes into other groups: none. suggest.py imports no taskboard module; it reads the Board/Project/Task/Mark attributes listed in the head note on the objects G-V hands it.
 > Calls other groups make into G-T (all from G-V, `taskboard/app.py`):
-> - `corpus(lanes, app.marks.marks)` with `lanes = board_lanes(app)[0]` — in CaptureView on open (LLR-4403.23) and after every dump or undo whose outcome changed a board (LLR-4403.24), each time from a fresh `board_lanes` (the other boards re-peeked). G-V clears its hit cache whenever it rebuilds docs.
-> - `suggest(scored_text, docs)` once per distinct note text while docs are unchanged (G-V's cache, keyed by the Part text, LLR-4403.21); scored_text = `nt.title + "\n" + nt.notes` of `inbox.note_task(part.text)` — image lines left out (P-T-4 ruled; G-T stays free of inbox imports).
+> - `corpus(lanes, app.marks.marks)` with `lanes = board_lanes(app)[0]` — in CaptureView on open (LLR-4403.23) and once after every dump, undo or review batch whose outcome changed a board (LLR-4403.24, ARCH-2/ARCH-6), each time from a fresh `board_lanes` (the other boards re-peeked). G-V clears its hit cache whenever it rebuilds the corpus.
+> - `suggest(scored_text, corpus)` once per distinct note text while the corpus is unchanged, and from the rail only once the pad has been still for 1.0 s (LLR-4403.30) (G-V's cache, keyed by the Part text, LLR-4403.21); scored_text = `nt.title + "\n" + nt.notes` of `inbox.note_task(part.text)` — image lines left out (P-T-4 ruled; G-T stays free of inbox imports).
 > - `options(hits)` → the note's option cycle (`alt+o` / `o` steps through it; `+ new project` = None). LLR-4403.18 ("no project shares a word") is `hits == []`; LLR-4403.19 uses `hits[0].doc.project_name` and `hits[0].why[:2]`.
 > - `bars(hit.score)` for the cue; G-V styles the project name with `HEX[doc.project_colour]` and the board name with `HEX[doc.board_colour]` (LLR-4403.16).
 > - `Doc.board_path`, `Doc.board_name`, `Doc.project_id` → G-V's DumpTarget and dump_note's project_id (G-S).

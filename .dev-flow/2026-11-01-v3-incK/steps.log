@@ -11,3 +11,6 @@
 2026-11-01T11:04:14Z E2b prototype start model=opus (3 agents: S inbox.py, T suggest.py, V app.py+keymap+README)
 2026-11-01T11:26:17Z E2b prototype groups returned (S 46 nodes, T 9, V 40; findings S18 T5 V14, MAJOR S5 V1); round-0b rulings written; correction pass start model=opus
 2026-11-01T11:43:20Z E2 end (correction pass: LLR 180→192, LED.3; trace 192/192 LLR + 8/8 AT; lint 0 on 4 files; E2c 6 score mismatches fixed, G-T won) model=opus
+2026-11-01T11:43:21Z E3 PDR round 1 start model=opus (architect, security)
+2026-11-01T11:56:31Z E3 PDR round 1 done (arch FAIL 1H/4M/1MED/3m/2I, sec FAIL 3M/2MED/6L); rulings written; correction start model=opus
+2026-11-01T12:26:03Z E3 round-1 corrections done (LLR 212 ids: 205 active, 7 withdrawn; LED.4; trace 205/205 + 8/8; lint 0 x4); round 2 (blocking-only re-review) start model=opus

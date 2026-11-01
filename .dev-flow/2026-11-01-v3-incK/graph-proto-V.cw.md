@@ -4,6 +4,8 @@ Differences from `graph-baseline.cw.md` (545c18a) only. Group V owns the capture
 
 E2 correction pass (round 0b, `03-pdr-rulings.md`): every finding below carries its ruling; P-V-1 (`tab` board cycle), P-V-2, P-V-6, P-V-7, P-V-8, P-V-10, P-V-12, P-V-13, P-S-4, P-S-8, P-S-15 and P-T-4 are applied in the nodes. E2c cross-check: the fixture is now G-T's executed fixture F and every hit score and why list below equals an executed example of graph-proto-T (G-T wins; the earlier scratch values of `ref_rail.py` over G-V's own boards are withdrawn).
 
+E3 round 1 (`03-pdr-rulings.md` §Round 1, LED-2026-11-01-incK.4, `03-e3-corrections.md`): ARCH-1 (dump and undo writes are G-S's fresh-state ops; G-V passes `drop=dict(entry, text=out.note_text)`), ARCH-2 (the choice is the option's identity; the batch fixes its targets, then rebuilds the corpus once), ARCH-3 (`capture` refused while the home is on the stack), ARCH-4 (flagged notes removed: no `⚑` rail line, no flag refusals, no `_flag_pending` / `_pending_drop`; the Inbox keeps pending records), ARCH-5 / ARCH-9 (TC-4403 and TC-4412 controls), ARCH-6 (the rail scores only on the debounce; an uncomputed note keeps its last drawn lines), SEC-3 (state "needed"), SEC-5 (`quit` guard), SEC-8 (lane match by normalised string) applied below. The P-V-8 and P-V-10 strings are gone with the flags.
+
 ### Fixture F (synthetic; G-T's executed fixture F; every example below uses it unless it says otherwise)
 
 > Clock now 2026-11-01T10:02:00 (graph-interfaces). Store folder `S` = the registry's folder; store `S/inbox.json`; pad images `S/inbox-images/`.
@@ -57,14 +59,15 @@ examples: (TC-4581) a registry in a temporary folder T → app.inbox.path == T /
 examples: (TC-4586) no inbox.json in T → app.inbox.pad "", no file created by the constructor
 
 TaskboardApp.check_action
-req: LLR-4401.3, LLR-4401.11, LLR-4401.12, LLR-4401.14, LLR-4401.15
+req: LLR-4401.3, LLR-4401.11, LLR-4401.12, LLR-4401.14, LLR-4401.15, LLR-4401.19
 in: str action; tuple[object, ...] parameters
 out: bool? allowed
-func: changed from baseline: the always-allowed tuple becomes ("agenda_all", "people_directory", "marks_manager", "added_list", "capture") — each allowed only while no ModalScreen is on the stack; the holding tuple becomes (BoardsHome, AllBoardsAgenda, PeopleDirectory, MarksManager, AddedList, CaptureView) — while one is on the stack every other SEAT action but `quit` is refused; so the priority app bindings j/k/h/l/up/down/left/right/tab are refused in the pad and in the review list and fall through to the TextArea / the list's own bindings; the docstring names `capture` and `n` beside `A`, `@`, `#`, `N`
+func: changed from baseline: `capture` while a BoardsHome is on the stack → False, asked before the always-allowed branch (ARCH-3: under the home the open board is mounted but not started, and a dump would save it before `_open_board`'s backup; the home's own `n` is "new board"); the always-allowed tuple becomes ("agenda_all", "people_directory", "marks_manager", "added_list", "capture") — each allowed only while no ModalScreen is on the stack; the holding tuple becomes (BoardsHome, AllBoardsAgenda, PeopleDirectory, MarksManager, AddedList, CaptureView) — while one is on the stack every other SEAT action but `quit` is refused; so the priority app bindings j/k/h/l/up/down/left/right/tab are refused in the pad and in the review list and fall through to the TextArea / the list's own bindings; the docstring names `capture` and `n` beside `A`, `@`, `#`, `N`
 module: taskboard/app.py
 examples: (TC-4411) a ModalScreen (TaskModal) on the stack, action "capture" → allowed `False`; no ModalScreen → `True`; `a`, then `n` typed in the task editor's title → title holds "n", no CaptureView on the stack (3/3)
-examples: (TC-4412) CaptureView open, actions "add_task", "delete", "cursor" → allowed `False` each (3/3); "quit" → `True`
-examples: (TC-4403, root action_capture) empty pad, keys n N A q j k h l B u v @ # ? ; typed → pad text "nNAqjkhlBuv@#?;", app.screen still the CaptureView, `0` board writes (3/3: the NC drops CaptureView from the holding tuple, so `j`/`k` reach `cursor` and arm 1 fails)
+examples: (TC-4412) CaptureView open, actions "add_task", "delete", "archive" → allowed `False` each; "quit" → `True`; `up` `down` `left` `right` in the pad → the pad cursor moves, app.selected_task_id unchanged (4/4; ARCH-9: "cursor" is refused by the pushed-screen clause anyway, so it is no arm)
+examples: (TC-4403, root action_capture) empty pad, keys n N A q j k h l B u v @ # ? ; typed → pad text "nNAqjkhlBuv@#?;", app.screen still the CaptureView, `0` board writes (3/3; NC: the pad not focused at open → `q` quits and arm 1 fails. ARCH-5, executed by the architect's p3_consume.py: Textual drops a printable priority binding above a focused TextArea, so a holding-tuple mutant leaves this GREEN)
+examples: (TC-4419, root action_capture) fixture F (2 boards: the home on top at start) → check_action("capture") `False`; `N`, then `n` → no CaptureView on the stack, both board files' bytes unchanged; `escape` (the home closes, the board starts), `N`, `n` → a CaptureView (3/3)
 examples: (TC-4414) AddedList on top (`N`), action "capture" → `True` (no modal); AllBoardsAgenda on top (`A`) → `True`
 
 TaskboardApp.action_capture
@@ -80,6 +83,17 @@ examples: (AT-4401, root action_capture) 118x30, fixture F, no inbox.json. Keys:
 examples: (AT-4401, root action_capture) then type `Golden set answer key`, `enter`, `_` `_` `_` `_`, `enter` → screen row 3, cells x 2..65 = 64 × `─`; exactly `1` notification "That ____ line divides notes: the text above and below it dump as two tasks. alt+l inserts one." title "Capture"; S/inbox.json holds "divider_notice": `True`; row 0 `CAPTURE  2 notes · suggestions read every board`
 examples: (AT-4401, root action_capture) then type `Pilot stores`, `alt+l` → pad text "Golden set answer key\n____\nPilot stores\n____\n", cursor (4, 0); `escape` → app.screen is the main Screen; S/inbox.json "pad" equals "Golden set answer key\n____\nPilot stores\n____\n"; sha256 of both board.json, both history.jsonl, people.json and marks.json equal their values before `n` (6/6)
 examples: (AT-4401, root action_capture) the same keys at 80x24 → the rail-box region (0, 16, 80, 7) starts below the pad region (0, 1, 80, 14); the hint row is (0, 15, 80, 1)
+
+TaskboardApp.action_quit
+req: LLR-4407.17, LLR-4407.46, LLR-4407.47
+in:
+out: None
+func: new override of Textual's `App.action_quit` (SEC-5; `q` and `ctrl+q` both reach it; in the pad `q` is typed, so `ctrl+q` is the pad's quit): view = the CaptureView on the stack, if any; none, or not `view._unsaved()` → `self.exit()`. Else `view._quit_armed` → `self.exit()` (on_unmount tries once more). Else `view._flush()` True → `self.exit()`; False → `view._quit_armed = True`, notify("inbox.json could not be saved — quit again exits without saving.", title="Capture", severity="warning", timeout=15, markup=False) and the app stays. Any text change or cursor move in the pad disarms (on_text_area_changed / selection_changed)
+module: taskboard/app.py
+modify: [Data: CaptureView._quit_armed] (replace)
+examples: (TC-4686, root action_quit) a fresh foreign S/inbox.json.lock, `x` typed, `ctrl+q` → the app still runs, app.screen the CaptureView; notification "inbox.json could not be saved — quit again exits without saving.", markup `False`, severity "warning" (2/2)
+examples: (TC-4687, root action_quit) then `ctrl+q` → the app exits (1/1); instead `y` typed, then `ctrl+q` → the warning again (2/2)
+examples: (TC-4597, root action_quit) `abc` typed, `ctrl+q` at once with the store writable → stored "pad" "abc", the app exits
 
 PadArea.__init__
 req: LLR-4402.12, LLR-4409.1
@@ -129,10 +143,10 @@ module: taskboard/app.py
 examples: (TC-4441) the hint row's plain text equals "____ ↵ new note · alt+l divider" at 118x30 (row 28) and 80x24 (row 15), with an empty pad, with 3 notes (N1, N2, N3) and with the name field open (4/4)
 
 rail_rows
-req: LLR-4401.8, LLR-4401.16, LLR-4401.17, LLR-4403.15, LLR-4403.17, LLR-4403.18, LLR-4403.19, LLR-4403.25, LLR-4405.13, LLR-4407.31, LLR-4408.9, LLR-4409.4
+req: LLR-4401.8, LLR-4401.16, LLR-4401.17, LLR-4403.15, LLR-4403.17, LLR-4403.18, LLR-4403.19, LLR-4403.25, LLR-4403.31, LLR-4405.13, LLR-4408.9, LLR-4409.4
 in: list[RailNote] notes; int? cur; int width; bool wide; int dumped
 out: Text rail
-func: new pure painter; rows built as Text (no_wrap, each truncated to `width` with "…"), joined by "\n" onto one `out = Text()`. No notes → the one row "no notes yet" (dim), then, wide and dumped > 0, a blank row and the dumped row. Wide: every note in pad order; narrow (`wide` False): only notes[cur]; cur None and notes exist → the one row "no note under the cursor" (dim, P-V-7 ruled ACCEPT, LLR-4401.17). Per note k (1-based), p = "▌" (accent) when k−1 == cur else " ": (1) p + f"{k} " (`b accent` on the cursor's note, else dim) + title (`b ink` / hd) + (f"  ▣ {n}" in amber when n = note.images > 0); a flagged note (note.flag set) → (2) p + "  ⚑ " + note.flag (amber; note.flag = f"on {board} — delete it here", P-V-8 ruled) and nothing else; else (2) p + "  → " (accent) + hit_text(chosen); (3) chosen not None → p + "    why " (dim) + " · ".join(chosen.why[:3]) (mut); chosen None and hits → p + "    weak: " (dim) + " · ".join(hits[0].why[:2]) + f" ({hits[0].doc.project_name})" (mut); chosen None, no hits → p + "    no project shares a word" (mut); (4) only on the cursor's note and only when the note has other options → p + "    or " (dim) + the options other than the chosen one, in options order, each hit_text, joined by "  ·  " (dim); then, wide only, one blank row. Wide and dumped > 0 → last row "✓ dumped {dumped}" (`b #3f9c6d`) + "  ·  alt+u undo  ·  kept 7 days" (dim)
+func: new pure painter; rows built as Text (no_wrap, each truncated to `width` with "…"), joined by "\n" onto one `out = Text()`. No notes → the one row "no notes yet" (dim), then, wide and dumped > 0, a blank row and the dumped row. Wide: every note in pad order; narrow (`wide` False): only notes[cur]; cur None and notes exist → the one row "no note under the cursor" (dim, P-V-7 ruled ACCEPT, LLR-4401.17). Per note k (1-based), p = "▌" (accent) when k−1 == cur else " ": (1) p + f"{k} " (`b accent` on the cursor's note, else dim) + title (`b ink` / hd) + (f"  ▣ {n}" in amber when n = note.images > 0); note.options None (hits not computed and none drawn at that position, LLR-4403.31) → the title row and nothing else; else (2) p + "  → " (accent) + hit_text(chosen); (3) chosen not None → p + "    why " (dim) + " · ".join(chosen.why[:3]) (mut); chosen None and hits → p + "    weak: " (dim) + " · ".join(hits[0].why[:2]) + f" ({hits[0].doc.project_name})" (mut); chosen None, no hits → p + "    no project shares a word" (mut); (4) only on the cursor's note and only when the note has other options → p + "    or " (dim) + the options other than the chosen one, in options order, each hit_text, joined by "  ·  " (dim); then, wide only, one blank row. Wide and dumped > 0 → last row "✓ dumped {dumped}" (`b #3f9c6d`) + "  ·  alt+u undo  ·  kept 7 days" (dim)
 module: taskboard/app.py
 examples: (TC-4475) N1, N2, N3, cur `2`, width `48`, wide, dumped `0` → plain rows " 1 Golden set: 12 questions still have no answe…", "   → Eval harness · Client A ▰▰▰", "     why questions · @username_subject · key", "", " 2 Volume lab fails on WSL  ▣ 1", "   → Module 4 · Volumes · Course ▰▰▰", "     why volume · oracle · script", "", "▌3 Quote for the new client: contracts Q&A", "▌  → + new project", "▌    no project shares a word", "" (9 lines + 3 spacers; hits = G-T's executed TC-4475 example)
 examples: (TC-4477) N1, N2, N3, cur `0` → rows 1..4 "▌1 Golden set: 12 questions still have no answe…", "▌  → Eval harness · Client A ▰▰▰", "▌    why questions · @username_subject · key", "▌    or Pilot rollout · Client A ▰▰▱"; notes 2 and 3 have no "or" row (2/2)
@@ -143,7 +157,7 @@ examples: (TC-4416) notes [], wide, dumped `0` → plain "no notes yet"
 examples: (TC-4485) one board with 0 projects, note "rotation plan" → rows "▌1 rotation plan", "▌  → + new project", "▌    no project shares a word"; `0` exceptions (2/2)
 examples: (TC-4553) N3 only, dumped `2`, wide → last row "✓ dumped 2  ·  alt+u undo  ·  kept 7 days"; dumped `0` → no row starting "✓ dumped" (2/2)
 examples: (TC-4619) N2 → its title row ends "  ▣ 1"; N3 → no "▣" (2/2)
-examples: (TC-4671) N1, N2 flagged with flag "on Course — delete it here", N3, cur `0`, width `48` → rows 5..6 " 2 Volume lab fails on WSL  ▣ 1", "   ⚑ on Course — delete it here" (31 cells, uncut); no "→ Module" option row for it (2/2; P-V-8 ruled)
+examples: (TC-4491) N1, N2, a fourth note "Rotation plan" with options `None`, cur `0`, width `48` → its block is the one title row " 3 Rotation plan" then a spacer; no "→" row for it
 examples: (TC-4417) notes [N1, N2], cur `None`, width `78`, narrow → the one row "no note under the cursor" (1/1)
 examples: (TC-4634) note title "[red]x[/red] [@click=app.quit]q", cur `0` → row 1 plain "▌1 [red]x[/red] [@click=app.quit]q" (literal; the app keeps running)
 
@@ -151,23 +165,24 @@ review_rows
 req: LLR-4406.2, LLR-4406.13, LLR-4409.4
 in: list[ReviewRow] rows; int sel; int width
 out: Text body
-func: new pure painter; tw = width − 42 when width ≥ 90 (wide) else width − 6. Per row i: r1 = ("▶ " if i == sel else "  ", accent) + ("[x] ", `b accent`) or ("[ ] ", dim) + the title (row.title, or "(no title line)" in dim when ""), `b ink` on sel else hd, truncated to tw with "…" and padded to tw (`truncate(tw, overflow="ellipsis", pad=True)`); wide and not flagged → "  " + hit_text(row.option, 34). r2 = "      " + (narrow and not flagged → hit_text(row.option, 34) + "  ") + (flagged → "⚑ " + row.flag in amber, row.flag = "on <board> — delete it here" (P-V-8); option None → "needs a name: alt+n in the pad" in amber; else "why " dim + " · ".join(row.option.why[:3]) mut), truncated to width. After the rows: a blank row and `key_line([("↑↓", "move"), ("␣", "include"), ("o", "other"), ("d", f"dump {k} checked"), ("u", "undo"), ("esc", "back")], width)`, k = the checked count. Joined onto one Text
+func: new pure painter; tw = width − 42 when width ≥ 90 (wide) else width − 6. Per row i: r1 = ("▶ " if i == sel else "  ", accent) + ("[x] ", `b accent`) or ("[ ] ", dim) + the title (row.title, or "(no title line)" in dim when ""), `b ink` on sel else hd, truncated to tw with "…" and padded to tw (`truncate(tw, overflow="ellipsis", pad=True)`); wide → "  " + hit_text(row.option, 34). r2 = "      " + (narrow → hit_text(row.option, 34) + "  ") + (option None → "needs a name: alt+n in the pad" in amber; else "why " dim + " · ".join(row.option.why[:3]) mut), truncated to width. After the rows: a blank row and `key_line([("↑↓", "move"), ("␣", "include"), ("o", "other"), ("d", f"dump {k} checked"), ("u", "undo"), ("esc", "back")], width)`, k = the checked count. Joined onto one Text
 module: taskboard/app.py
 examples: (TC-4562) rows N1 [x] Eval harness, N2 [x] Module 4 · Volumes, N3 [ ] None, N4 [x] Pilot rollout, sel `0`, width `108` → plain lines "▶ [x] Golden set: 12 questions still have no answer key                   Eval harness · Client A ▰▰▰", "      why questions · @username_subject · key", "  [x] Volume lab fails on WSL                                             Module 4 · Volumes · Course ▰▰▰", "      why volume · oracle · script", "  [ ] Quote for the new client: contracts Q&A                             + new project", "      needs a name: alt+n in the pad", "  [x] Steering deck: demo the hybrid search on pilot stores               Pilot rollout · Client A ▰▰▰", "      why pilot · stores · steering", "", "↑↓ move   ␣ include   o other   d dump 3 checked   u undo   esc back" (trailing spaces stripped)
 examples: (TC-4573) the same rows with N4 unchecked → last line holds "d dump 2 checked"; width `72` → all 6 key glyphs "↑↓", "␣", "o", "d", "u", "esc" present (2/2)
 examples: (TC-4634) a row titled "[red]x[/red]" → r1 holds the literal "[red]x[/red]"
 
 CaptureView.compose
-req: LLR-4401.6, LLR-4401.7, LLR-4401.8, LLR-4401.18, LLR-4403.23, LLR-4407.13, LLR-4407.27, HLR-4401
+req: LLR-4401.6, LLR-4401.7, LLR-4401.8, LLR-4401.18, LLR-4403.23, LLR-4407.13, LLR-4407.27, LLR-4407.42, HLR-4401
 in:
 out: ComposeResult widgets
-func: new `CaptureView(Screen[None])`, BINDINGS all priority (P-V-3; P-V-2 ruled, LLR-4401.18): escape→close, alt+d→dump, alt+o→other, alt+n→new, tab→board (P-V-1 ruled: acts only while the name field is open, else does nothing), alt+a→review, alt+i→image, alt+u→undo, alt+l→divider; NO alt+enter, no alt+b. compose: `self._refreshed = self.app.inbox.refresh()` (re-read only when the store stamp changed; never writes), `self._rebuild_docs()`, then yields `Static(id="cap-head")`, `Horizontal(#cap-main)` holding `Vertical(#cap-left)` [PadArea(self.app.inbox.pad, id="cap-pad"), Static(capture_hint(), id="cap-hint")] and `Vertical(#cap-rail-box)` [Static(id="cap-rail"), Input(placeholder="project name", id="cap-new")], then `Static(id="cap-keys")`. State set here: `self._saved = self.app.inbox.pad`, `self._text = self._saved`, `self.choice = {}`, `self._field = None`, `self._field_lane = 0`, `self._timer = None`, `self._esc_armed = False`, `self._flag_pending = False`, `self._pending_drop = None`. Writes no board, no history, no store
+func: new `CaptureView(Screen[None])`, BINDINGS all priority (P-V-3; P-V-2 ruled, LLR-4401.18): escape→close, alt+d→dump, alt+o→other, alt+n→new, tab→board (P-V-1 ruled: acts only while the name field is open, else does nothing), alt+a→review, alt+i→image, alt+u→undo, alt+l→divider; NO alt+enter, no alt+b. compose: `self._refreshed = self.app.inbox.refresh()` (re-read only when the store stamp changed; never writes), `self._rebuild_docs()`, then yields `Static(id="cap-head")`, `Horizontal(#cap-main)` holding `Vertical(#cap-left)` [PadArea(self.app.inbox.pad_now(), id="cap-pad") (ARCH-4, LLR-4407.42: the pending records applied), Static(capture_hint(), id="cap-hint")] and `Vertical(#cap-rail-box)` [Static(id="cap-rail"), Input(placeholder="project name", id="cap-new")], then `Static(id="cap-keys")`. State set here: `self._saved = self.app.inbox.pad` (the store's pad: with a pending record the shown pad differs, so the view is unsaved and its close writes), `self._text = self.app.inbox.pad_now()`, `self.choice = {}` (note text → option identity, ARCH-2), `self._drawn = {}` (note position → the RailNote options last drawn, ARCH-6), `self._field = None`, `self._field_lane = 0`, `self._timer = None`, `self._esc_armed = False`, `self._quit_armed = False` (SEC-5). No `_flag_pending` and no `_pending_drop` (ARCH-4: pending records live in the Inbox). Writes no board, no history, no store
 module: taskboard/app.py
 modify: [Data: CaptureView.docs] (replace); [Data: CaptureView._saved] (replace)
 examples: (TC-4406, root action_capture) store "pad" "a\n____\nb" → pad text "a\n____\nb" (1/1)
+examples: (TC-4682, root action_capture) taskboard.inbox.write_atomic failing once, N2 dumped from the pad N1\n____\nN2 (the task on Course), `escape` twice (closed unsaved), `n` → pad text N1 (no N2); `alt+d` cannot reach N2 a second time (1/1)
 examples: (TC-4407, root action_capture) 118x30 → rail-box region x `68`, width `50`; pad region x `0` (2/2, P-V-5)
 examples: (TC-4593, root action_capture) a second Inbox wrote pad "x" after this app loaded → the next `n` shows pad "x"; a reopen with the file unchanged → `0` parses (spy on Inbox._read) (2/2)
-examples: (TC-4483, root action_capture) fixture F → CaptureView.docs holds `3` docs: 2 from Client A and 1 from Course (corpus over both lanes, not app.board only)
+examples: (TC-4483, root action_capture) fixture F → CaptureView.docs (a Corpus) holds `3` docs: 2 from Client A and 1 from Course (corpus over both lanes, not app.board only)
 examples: (TC-4607, root action_capture) `n`, type "abc", wait 1.3 s, `escape` → sha256 of both board.json, both history.jsonl, people.json and marks.json unchanged (6/6)
 examples: (TC-4447, harness) CaptureView.BINDINGS, PadArea.BINDINGS (inherited) and ReviewList.BINDINGS → no key list names "alt+enter"
 examples: (TC-4418, root action_capture) pad "abc", cursor (0, 1), `events.Key("alt+o", "o")` posted through the driver (the terminal form, P-V-3) → pad text "abc"; `events.Key("alt+u", "u")` with empty "dumped" → pad "abc", notification "Nothing to undo."; every CaptureView binding `priority` `True` (3/3)
@@ -188,34 +203,38 @@ CaptureView._rebuild_docs
 req: LLR-4403.20, LLR-4403.23, LLR-4403.24, LLR-4403.21
 in:
 out: None
-func: new: `self.lanes, self.ids = board_lanes(self.app)`; `self.docs = corpus(self.lanes, self.app.marks.marks)`; `self.unread = sum(1 for lane in self.lanes if lane[2] is None)`; `self._hits = {}` (the cache is valid only for these docs). Called by compose, after every dump that saved a board and after every undo in state "undone"
+func: new: `self.lanes, self.ids = board_lanes(self.app)`; `self.docs = corpus(self.lanes, self.app.marks.marks)` (a Corpus: idf, vectors and norms built here once, ARCH-6); `self.unread = sum(1 for lane in self.lanes if lane[2] is None)`; `self._hits = {}` (the cache is valid only for these docs; `self._drawn` is kept, so the rail keeps its lines until the next scored paint). Called by compose, after every single dump that saved a board, after every undo in state "undone", and ONCE after a review batch (the batch's dumps pass `rebuild=False`, ARCH-2/ARCH-6, LLR-4403.24)
 module: taskboard/app.py
 modify: [Data: CaptureView.docs] (replace); [Data: CaptureView._hits] (clear)
 examples: (TC-4484, root action_dump) before: note "rotation" → hits [] ; dump note "Rotation plan" into Eval harness (alt+d with that choice), then type note "rotation" → hits hold Eval harness `0.1179` why "rotation" (G-T's executed TC-4484)
 examples: (TC-4480, root action_capture) Course's board.json deleted before `n` → unread `1`, head ends " · 1 board not read", no doc from Course
+examples: (TC-4484, root action_review) a review batch of 3 checked rows → exactly `1` corpus call after the batch, `0` between its dumps (spy on taskboard.app.corpus)
 
 CaptureView.options_for
 req: LLR-4403.21, LLR-4404.17, LLR-4403.28
 in: str text
 out: list[Hit?] opts
-func: new: hits = `self._hits.get(text)`, else nt = `note_task(text)` and `self._hits[text] = suggest(nt.title + "\n" + nt.notes, self.docs)` (the module attribute `suggest`, so a spy sees each call; the cache keyed by the Part text, the scored text without image lines: P-T-4 ruled, LLR-4403.28); returns `options(hits)`. `chosen(text)` = opts[self.choice.get(text, 0) % len(opts)]; the choice dict is keyed by the note's exact text and shared with the review list (S-c)
+func: new: hits = `self._hits.get(text)`, else nt = `note_task(text)` and `self._hits[text] = suggest(nt.title + "\n" + nt.notes, self.docs)` (the module attribute `suggest`, so a spy sees each call; the cache keyed by the Part text, the scored text without image lines: P-T-4 ruled, LLR-4403.28); returns `options(hits)`. Called on demand by the actions (alt+d, alt+o, alt+n, alt+a, the review list) and by a SCORED paint only (LLR-4403.30). `key(opt)` = `(str(opt.doc.board_path), opt.doc.project_id)`, or `NEW_KEY` for None. `chosen(text)` = the option of opts whose key equals `self.choice.get(text)`, else opts[0] (the top choice; also when the stored identity is no longer among the options) (ARCH-2: never an index, so a corpus rebuild cannot move an explicit pick); the choice dict is keyed by the note's exact text and shared with the review list (S-c)
 module: taskboard/app.py
 modify: [Data: CaptureView._hits] (append)
 examples: (TC-4481, root action_capture) pad N1, N2, N3 painted (3 suggest calls), then 5 characters typed at the end of N2's first line → `0` further calls for N1's and N3's texts (spy on taskboard.app.suggest; calls only for N2's 5 new texts)
 examples: (TC-4517, root action_other) cursor in N1, `alt+o`, then `alt+a` → review row 1 shows "Pilot rollout · Client A ▰▰▱", the same option as the rail's `→` line
+examples: (TC-4517, root action_other) note "Rubric for the pilot" (options Pilot rollout 0.2232, Eval harness 0.0885), `alt+o` → choice key ("S/boards/client-a/board.json", "pe"); after dumps of "Rubric review", "Rubric scoring", "Pilot judge rubric" into Eval harness its options are [Eval harness 0.6028, Pilot rollout 0.1593] → chosen still Eval harness (an index 1 would give Pilot rollout; executed, suggest_fix.py)
 examples: (TC-4488, root action_capture) pad N2 → the spy sees suggest called with "Volume lab fails on WSL\nthe oracle script expects /mnt/c" (no image line)
 
 CaptureView._paint
-req: LLR-4401.8, LLR-4401.9, LLR-4401.10, LLR-4401.16, LLR-4403.15, LLR-4404.22, LLR-4402.11, HLR-4401
-in:
+req: LLR-4401.8, LLR-4401.9, LLR-4401.10, LLR-4401.16, LLR-4403.15, LLR-4403.30, LLR-4403.31, LLR-4404.22, LLR-4402.11, HLR-4401
+in: bool score = True
 out: None
-func: new: parts = `note_parts(pad.text)`, notes = [p for p in parts if p.is_note]; cur = index in notes of `note_at(pad.text, pad.cursor_location[0])` (None when that is None); `#cap-head` ← capture_head(note_count(pad.text), self.unread, w − 2); `#cap-rail` ← rail_rows([RailNote(note_task(p.text).title, image-line count, self.options_for(p.text), chosen, hits, flag line from `app.inbox.flag_for(p.text)` via `_where`)], cur, rail content width (48 wide / 78 narrow), wide = w ≥ 100, dumped = len(prune_dumped(app.inbox.dumped, datetime.now()))); `#cap-keys` ← field closed: key_line(CAPTURE_KEYS, w − 2) with CAPTURE_KEYS = [("alt+d", "dump"), ("alt+o", "other"), ("alt+n", "new project"), ("alt+a", "review"), ("alt+i", "image"), ("alt+u", "undo"), ("esc", "close")]; field open: key_line([("↵", f"create on {lane name} + dump"), ("⇥", "board"), ("esc", "back")], w − 2) (P-V-1 ruled); then `self._notice_divider()`. Called on mount, resize, screen resume, every TextArea.Changed and SelectionChanged, and after every action
+func: new: parts = `note_parts(pad.text)`, notes = [p for p in parts if p.is_note]; cur = index in notes of `note_at(pad.text, pad.cursor_location[0])` (None when that is None); scoring = `score and self._timer is None` (no debounce pending: the pad has been still for 1.0 s, ARCH-6, LLR-4403.30); per note k: opts = `self.options_for(p.text)` when scoring or `p.text in self._hits`, else `self._drawn.get(k)` (the options last drawn at that position, None when none, LLR-4403.31); `self._drawn[k] = opts` when computed; `#cap-head` ← capture_head(note_count(pad.text), self.unread, w − 2); `#cap-rail` ← rail_rows([RailNote(note_task(p.text).title, image-line count, opts, chosen, hits)], cur, rail content width (48 wide / 78 narrow), wide = w ≥ 100, dumped = len(prune_dumped(app.inbox.dumped, datetime.now()))); `#cap-keys` ← field closed: key_line(CAPTURE_KEYS, w − 2) with CAPTURE_KEYS = [("alt+d", "dump"), ("alt+o", "other"), ("alt+n", "new project"), ("alt+a", "review"), ("alt+i", "image"), ("alt+u", "undo"), ("esc", "close")]; field open: key_line([("↵", f"create on {lane name} + dump"), ("⇥", "board"), ("esc", "back")], w − 2) (P-V-1 ruled); then `self._notice_divider()`. Called on mount, resize, screen resume, every TextArea.Changed and SelectionChanged, and after every action
 module: taskboard/app.py
 examples: (TC-4410, root action_capture) 80x24 → key row plain "alt+d dump   alt+o other   alt+n new project   alt+a   alt+i   alt+u   esc" (7/7 glyphs); 118x30 → "alt+d dump   alt+o other   alt+n new project   alt+a review   alt+i image   alt+u undo   esc close" (7/7 words) (2/2, P-V-6)
 examples: (TC-4408, root action_capture) 80x24, pad N1\n____\nN2\n____\nN3, cursor in N2 → rail region (0, 16, 80, 7), y `16` > the pad's last row `14`, height `7`; its rows hold exactly 1 title row, "▌2 Volume lab fails on WSL  ▣ 1"
 examples: (TC-4522, root action_new) 118x30, field open, open board Client A → key row plain "↵ create on Client A + dump   ⇥ board   esc back"
 examples: (TC-4409, root action_capture) pad N1\n____\nN2\n____\nN3 → head plain "CAPTURE  3 notes · suggestions read every board"
 examples: (TC-4416, root action_capture) empty pad, no dumped entries → rail plain "no notes yet"
+examples: (TC-4490, root action_capture) pad N1\n____\nN2\n____\nN3 painted (3 suggest calls), 10 characters typed at the end of N2 0.05 s apart → `0` suggest calls until 1.0 s after the last key; at 1.3 s exactly `1` (N2's new text) (spy on taskboard.app.suggest) (2/2)
+examples: (TC-4491, root action_capture) the same pad, `x` typed at N2's end → within 1.0 s the rail rows under N2's title still "   → Module 4 · Volumes · Course ▰▰▰", "     why volume · oracle · script"; a new note "Rotation plan" typed after a new divider → its title row only until 1.0 s after the last key (2/2)
 
 CaptureView._notice_divider
 req: LLR-4402.13, LLR-4402.14, LLR-4402.15
@@ -233,7 +252,7 @@ CaptureView.on_text_area_changed
 req: LLR-4407.15, LLR-4407.18, LLR-4407.25
 in: TextArea.Changed event
 out: None
-func: new: `self._text = pad.text`; `self._esc_armed = False`; when `self._unsaved()` (= strip_controls(self._text) != self._saved or self._flag_pending or self._pending_drop is not None) → stop `self._timer` and `self._timer = self.set_timer(1.0, self._flush)` (debounce: one write 1.0 s after the last change); `self._paint()`. `on_text_area_selection_changed` sets `self._esc_armed = False` and repaints (no timer)
+func: new: `self._text = pad.text`; `self._esc_armed = False`; `self._quit_armed = False`; stop `self._timer` and `self._timer = self.set_timer(1.0, self._idle)` (debounce: `_idle` sets `self._timer = None`, runs `self._flush()` — which writes only when `self._unsaved()` (= strip_controls(self._text) != self._saved or `app.inbox.pending`, ARCH-4) — then `self._paint(score=True)`, so the rail scores 1.0 s after the last change, LLR-4403.30); `self._paint(score=False)`. `on_text_area_selection_changed` disarms both and repaints with `score=False` (no timer)
 module: taskboard/app.py
 modify: [Data: CaptureView._text] (replace)
 examples: (TC-4595, root action_capture) type "abc", wait 1.3 s → stored "pad" "abc"; 10 keys 0.05 s apart then 1.3 s → exactly `1` call of Inbox.write_pad (spy) (2/2)
@@ -243,18 +262,19 @@ CaptureView._flush
 req: LLR-4407.15, LLR-4407.18, LLR-4407.21, LLR-4407.22, LLR-4407.23, LLR-4407.37, LLR-4402.16, LLR-4409.5
 in:
 out: bool saved
-func: new: the one pad write. Not `_unsaved()` → True (no write). text = strip_controls(pad.text); `res = app.inbox.write_pad(text, drop=self._pending_drop)`; OSError e → notify(f"inbox.json could not be saved: {e}", title="Capture", severity="warning", timeout=15, markup=False), return False (pad and memory kept). Success → `self._saved = res.pad`, `self._flag_pending = False`, `self._pending_drop = None`; `res.written and res.pad != pad.text` (a union or stripped controls, P-S-8 ruled) → pad.text = res.pad, cursor (min(row, last line), min(col, that line's length)), `self._text = res.pad`; only `res.union` → notify("inbox.json changed in another window: its notes were merged into the pad.", title="Capture", severity="warning", timeout=15, markup=False); return True. The divider lines go verbatim (no normalising)
+func: new: the one pad write. Not `_unsaved()` → True (no write). text = strip_controls(pad.text); `res = app.inbox.write_pad(text)` (G-S applies the Inbox's pending records and drops first, ARCH-4); OSError e (busy, cap, encode — G-S raises every failure as OSError, SEC-2) → notify(f"inbox.json could not be saved: {e}", title="Capture", severity="warning", timeout=15, markup=False), return False (pad and memory kept). Success → `self._saved = res.pad`; `res.written and res.pad != pad.text` (a union or stripped controls, P-S-8 ruled) → pad.text = res.pad, cursor (min(row, last line), min(col, that line's length)), `self._text = res.pad`; only `res.union` → notify("inbox.json changed in another window: its notes were merged into the pad.", title="Capture", severity="warning", timeout=15, markup=False); return True. The divider lines go verbatim (no normalising)
 module: taskboard/app.py
 modify: [Data: inbox.json] (replace); [Data: CaptureView._saved] (replace)
 examples: (TC-4446, root action_capture) type "______" → pad text and stored "pad" both "______" (1/1)
 examples: (TC-4600, root action_capture) pad "a\n________\n\nb  " on an unchanged file → stored "pad" byte-identical "a\n________\n\nb  "
-examples: (TC-4601, root action_capture) the file changed by a second Inbox (fresh pad "a\n____\nc", fresh dumped text "b"), this pad "a\n____\nb\n____\nd", cursor (4, 1) → pad text "a\n____\nc\n____\nd", cursor (4, 1) (2/2)
+examples: (TC-4601, root action_capture) the file changed by a second Inbox (fresh pad "a\n____\nc", an unseen entry of text "b"), this pad "a\n____\nb\n____\nd", cursor (4, 1) → pad text "a\n____\nc\n____\nd", cursor (4, 1) (2/2)
+examples: (TC-4599, root action_capture) case R: this window dumped "follow up" 3 days ago (its entry held), a second Inbox wrote pad "x"; this pad "x\n____\nfollow up" typed, wait 1.3 s → S/inbox.json "pad" == "x\n____\nfollow up" (the re-typed note kept; executed, store_fix.py)
 examples: (TC-4602, root action_capture) the same → notification "inbox.json changed in another window: its notes were merged into the pad." (1/1)
 examples: (TC-4603, root action_capture) a fresh foreign S/inbox.json.lock, type "x", wait 3.3 s (LOCK_WAIT 2 s + debounce) → notification starting "inbox.json could not be saved: " and holding "is busy"; pad "x"; app.inbox.dumped unchanged (2/2)
 examples: (TC-4635, root action_capture) a pasted "\x1b" and "\x9b" in the pad → stored "pad" holds neither, and the pad text holds neither after the write (P-S-8), no merge notification (2/2)
 examples: (TC-4677, root action_capture) a pad of "a" × 8 400 000 pasted, wait 1.3 s → notification "inbox.json could not be saved: inbox.json would hold 8400047 bytes, over the 8388608-byte limit, so it was not written" (G-S's OSError text after LLR-4407.23's prefix); inbox.json bytes and app.inbox.pad unchanged (3/3)
 examples: (TC-4589, root action_capture) unreadable store with keep_aside patched to return None, type "x", wait 1.3 s → file bytes unchanged; the save notification holds "was not written" (G-S's OSError text, shown verbatim)
-examples: (AT-4408, root action_capture) this pad "a\n____\nb"; a second Inbox instance records a dump entry of text "b" and writes pad "a\n____\nc"; here type `enter`, "____", `enter`, "d" (pad "a\n____\nb\n____\nd"), wait 1.3 s → S/inbox.json "pad" == "a\n____\nc\n____\nd", the pad shows it, the merge notification once, and the boards hold the one task the second window made (no task created twice)
+examples: (AT-4408, root action_capture) this pad "a\n____\nb"; a second Inbox instance records a dump entry of text "b" and writes pad "a\n____\nc"; here type `enter`, "____", `enter`, "d" (pad "a\n____\nb\n____\nd"), wait 1.3 s → S/inbox.json "pad" == "a\n____\nc\n____\nd", the pad shows it, the merge notification once, and the boards hold the one task the second window made (no task created twice); arms D and U on CaptureView._dump and CaptureView.action_undo, arm R on the TC-4599 example above
 
 CaptureView.action_close
 req: LLR-4401.4, LLR-4404.27, LLR-4407.16, LLR-4407.24, LLR-4407.25
@@ -274,7 +294,7 @@ CaptureView.on_unmount
 req: LLR-4407.17
 in:
 out: None
-func: new: stops `self._timer`; when `self._unsaved()` → `app.inbox.write_pad(strip_controls(self._text), drop=self._pending_drop)` inside try/except OSError (swallowed: the screen is gone). Reads `self._text`, never the PadArea (P-V-4: children are already removed at unmount)
+func: new: stops `self._timer`; when `self._unsaved()` → `app.inbox.write_pad(strip_controls(self._text))` inside try/except (OSError, ValueError) (swallowed: the screen is gone; SEC-5 widens it to ValueError as a backstop, though G-S raises every failure as OSError). Reads `self._text`, never the PadArea (P-V-4: children are already removed at unmount)
 module: taskboard/app.py
 modify: [Data: inbox.json] (replace)
 examples: (TC-4597, root action_capture) type "abc", `app.exit()` at once → stored "pad" "abc" (1/1)
@@ -301,19 +321,18 @@ examples: (TC-4518, root action_dump) cursor in N3 (chosen + new project), `alt+
 examples: (AT-4402, root action_dump) fixture F, store pad = N2 with S/inbox-images/board-0938.png present. Keys: `escape`, `n` → rail rows "▌1 Volume lab fails on WSL  ▣ 1", "▌  → Module 4 · Volumes · Course ▰▰▰", "▌    why volume · oracle · script"; `alt+d` → Course's board.json holds a task titled "Volume lab fails on WSL", notes "the oracle script expects /mnt/c", phase "Todo", created matching `^\d{4}-\d\d-\d\dT\d\d:\d\d:\d\d$`, images [S/boards/course/images/<id>/board-0938.png]; S/inbox-images/board-0938.png gone; pad ""; notification "Dumped → Module 4 · Volumes · Course   ·   alt+u undo"; inbox.json "dumped" holds `1` entry with images ["board-0938.png"]
 
 CaptureView.dump_part
-req: LLR-4407.32, LLR-4404.29, LLR-4404.18, HLR-4404
-in: Part part; bool quiet
+req: LLR-4404.29, LLR-4404.18, LLR-4406.17, HLR-4404
+in: Part part; bool quiet; Hit? target = None; bool rebuild = True
 out: bool ok
-func: new, the one dump path of `alt+d` and the review list's `d`: flag = `app.inbox.flag_for(part.text)` → notify(f"This note is already on {board}; delete it from the pad.", warning) and False (board = `_where(flag["board"], flag["project"])[1]`); `note_task(part.text).title == ""` → notify("This note has no text line for a title.", warning), False; ch = chosen(part.text); ch None → quiet: False; else open the name field for this note (as action_new) and False; else `self._dump(part, ch.doc.board_path, ch.doc.board_name, ch.doc.project_id, None, quiet, ch.doc.project_name)`
+func: new, the one dump path of `alt+d` and the review list's `d` (no flag check: ARCH-4): `note_task(part.text).title == ""` → notify("This note has no text line for a title.", warning), False; ch = `target` when given (the review list's option fixed before its batch, ARCH-2) else chosen(part.text); ch None → quiet: False; else open the name field for this note (as action_new) and False; else `self._dump(part, ch.doc.board_path, ch.doc.board_name, ch.doc.project_id, None, quiet, ch.doc.project_name, rebuild)`
 module: taskboard/app.py
-examples: (TC-4672, root action_dump) a flagged note (text N2, flag board S/boards/course/board.json), `alt+d` → `0` tasks added; notification "This note is already on Course; delete it from the pad." (3/3 with the review arms of ReviewList.action_toggle)
 examples: (TC-4529, root action_dump) note "img: a.png" and note "::b:: ::" → "This note has no text line for a title."; `0` tasks (2/2)
 
 CaptureView._dump
-req: LLR-4404.1, LLR-4404.6, LLR-4404.7, LLR-4404.8, LLR-4404.10, LLR-4404.11, LLR-4404.12, LLR-4404.13, LLR-4404.14, LLR-4405.14, LLR-4407.26, LLR-4407.29, LLR-4407.30, LLR-4403.24, LLR-4408.12, LLR-4409.4
-in: Part part; Path path; str board; str? project_id; str? new_name; bool quiet; str project_name = ""
+req: LLR-4404.1, LLR-4404.6, LLR-4404.7, LLR-4404.8, LLR-4404.10, LLR-4404.11, LLR-4404.12, LLR-4404.13, LLR-4404.14, LLR-4404.34, LLR-4405.14, LLR-4407.29, LLR-4407.39, LLR-4407.40, LLR-4407.48, LLR-4403.24, LLR-4408.12, LLR-4409.4
+in: Part part; Path path; str board; str? project_id; str? new_name; bool quiet; str project_name = ""; bool rebuild = True
 out: bool ok
-func: new: target = DumpTarget(path, board, live=app.board when `Path(path).resolve() == Path(app.board.path).resolve()` else None); stop the timer; out = `dump_note(target, project_id, new_name, part.text, app.inbox.images_dir, project_name)` (P-S-1: `project_name` = the chosen hit's `doc.project_name`, "" for a new project); not out.ok → notify(out.notice, title="Capture", severity="warning", timeout=15, markup=False) (G-S's text, shown verbatim), return False, pad untouched. ok → new, row = `without_note(pad.text, part)`; entry = `entry_for(out, part.text, path, datetime.now())` (P-S-15 ruled: G-V builds no entry itself; `images` = out.images, the moved file names, P-V-13); try `res = app.inbox.write_pad(strip_controls(new), record=entry)` (LLR-4407.29: at once): success → pad.text = res.pad (P-S-8: whatever the file now holds), cursor (row, 0), `self._text`/`self._saved` = res.pad, union → the merge notice; OSError e → the pad keeps the note, `app.inbox.flag(entry)`, `self._flag_pending = True`, the timer restarted (1.0 s), notify(f"{out.project_name} · {board} got the task, but inbox.json could not be saved: {e} — the note stays in the pad, flagged ⚑.", severity="warning", timeout=30, markup=False). Then (both branches) not quiet and the store write succeeded → notify(f"Dumped → {out.project_name} · {board}   ·   alt+u undo", title="Capture", severity="information", timeout=10, markup=False); out.missing → notify(f"{len(out.missing)} image(s) not found: {', '.join(out.missing)}", warning); target.live → `app.refresh_view()` (P-V-8: reaches the board view from a pushed screen); `self._rebuild_docs()`; repaint; return True. Never touches `app._undo_stack`
+func: new: target = DumpTarget(path, board, live=app.board when `Path(path).resolve() == Path(app.board.path).resolve()` else None); stop the timer; out = `dump_note(target, project_id, new_name, part.text, app.inbox.images_dir, project_name)` (P-S-1: `project_name` = the chosen hit's `doc.project_name`, "" for a new project); not out.ok → notify(out.notice, title="Capture", severity="warning", timeout=15, markup=False) (G-S's text, shown verbatim), return False, pad untouched. ok → new, row = `without_note(pad.text, part)`; entry = `entry_for(out, part.text, path, datetime.now())` (P-S-15 ruled: G-V builds no entry itself; `images` = out.images, the moved file names, P-V-13); try `res = app.inbox.write_pad(strip_controls(new), record=entry)` (LLR-4407.29: at once; G-S removes the note from the FRESH pad, ARCH-1 case D): success → pad.text = res.pad (P-S-8: whatever the file now holds), cursor (row, 0), `self._text`/`self._saved` = res.pad, union → the merge notice; OSError e → G-S kept `entry` as a pending record (ARCH-4); the pad still loses the note (pad.text = new, cursor (row, 0), `self._text` = new; `self._saved` unchanged, so the view stays unsaved and every later write retries), the timer restarted (1.0 s), notify(f"{out.project_name} · {board} got the task, but inbox.json could not be saved: {e} — it is retried at the next save.", title="Capture", severity="warning", timeout=30, markup=False) (LLR-4407.40). Then (both branches) not quiet and the store write succeeded → notify(f"Dumped → {out.project_name} · {board}   ·   alt+u undo", title="Capture", severity="information", timeout=10, markup=False); out.missing → notify(f"{len(out.missing)} image(s) not found: {', '.join(out.missing)}", warning); target.live → `app.refresh_view()` (P-V-8: reaches the board view from a pushed screen); `rebuild` → `self._rebuild_docs()` (False inside a review batch, which rebuilds once after it); repaint; return True. Never touches `app._undo_stack`. A note that will not encode is refused by G-S before any board write (its notice shown verbatim, SEC-2)
 module: taskboard/app.py
 modify: [Data: inbox.json] (replace); [Data: CaptureView._saved] (replace); [Data: Inbox state] (append)
 examples: (TC-4501, root action_dump) cursor in N2 → Course's task count +1, the new task's project_id = Module 4 · Volumes' id (2/2: not the open board)
@@ -326,41 +345,43 @@ examples: (TC-4512, root action_dump) Module 4 · Volumes removed from Course's 
 examples: (TC-4513, root action_dump) a fresh foreign Course board.json.lock → notification holds "is busy"; pad and board bytes unchanged (3/3)
 examples: (TC-4514, root action_dump) Course's board.json read-only → notification starts "Course could not be saved: " and ends " — nothing dumped."; pad unchanged (2/2)
 examples: (TC-4554, root action_dump) dump N1 (open board) → len(app._undo_stack) unchanged (`0`); `escape`, `u` on the board → "Nothing to undo." and the task stays (3/3 with action_undo's arm)
-examples: (TC-4606, root action_dump) taskboard.inbox.write_atomic patched to raise OSError once, dump N2 → Course holds the task; the pad still holds N2; app.inbox.flagged holds `1` entry with text N2; after 1.3 s (the retry write succeeds) inbox.json "flagged" holds it and "dumped" does not (4/4)
-examples: (TC-4670, root action_dump) the same → notification starting "Module 4 · Volumes · Course got the task, but inbox.json could not be saved: " and ending " — the note stays in the pad, flagged ⚑.", markup `False`, severity "warning" (1/1)
+examples: (TC-4679, root action_dump) taskboard.inbox.write_atomic patched to raise OSError once, dump N2 → Course holds the task; the pad no longer holds N2; app.inbox.pending holds `1` ("record", entry) whose task is the new id; inbox.json bytes unchanged (4/4)
+examples: (TC-4680, root action_dump) the same → notification starting "Module 4 · Volumes · Course got the task, but inbox.json could not be saved: " and ending " — it is retried at the next save.", markup `False`, severity "warning" (1/1)
+examples: (TC-4681, root action_dump) then `x` typed in a new note, wait 1.3 s (the retry succeeds) → inbox.json "dumped" holds N2's entry, "pad" equals the pad text, app.inbox.pending `[]` (3/3 with G-S's arms)
+examples: (TC-4688, root action_dump) AT-4408 arm D: this pad "a\n____\nb", a second Inbox wrote pad "a\n____\nb\n____\nc"; `b` dumped here → S/inbox.json "pad" == "a\n____\nc", the pad shows it, "dumped" holds b's entry; a second window's later typing write cannot bring `b` back (executed pads, store_fix.py)
+examples: (TC-4534, root action_dump) a store-loaded note "T\ud800x" cannot arrive (LLR-4407.43); a layer-0 dump_note with it → G-S's "This note holds a character that cannot be saved — nothing dumped." shown verbatim, `markup=False`, pad unchanged
 examples: (TC-4609, root action_dump) after `alt+d` → stored "pad" equals the pad text with no wait (0 s) (1/3; the undo and image arms on their nodes)
 examples: (TC-4622, root action_dump) a note "T\nimg: gone.png" (no such file) dumped → the task notes hold "img: gone.png"; notification "1 image(s) not found: gone.png" (2/2)
 examples: (TC-4634, root on_input_submitted) a new project "[b]P[/b]" on Client A → notification "Dumped → [b]P[/b] · Client A   ·   alt+u undo" literal (markup False; the notice holds no note title, finding P-V-9)
 
 CaptureView._where
-req: LLR-4407.31, LLR-4407.32, LLR-4405.9
+req: LLR-4405.9, LLR-4405.15
 in: str board_path; str project_id
 out: tuple(str project, str board)
-func: new: board = the name of the registry entry whose resolved path equals `Path(board_path).resolve()` (`app.registry.active()`), else `name_for(board_path)`; project = the name of the project with that id on that lane's board when the lane is readable, else the id itself (finding P-V-8: flagged/dumped entries carry ids only)
+func: new: board = the name of the lane whose normalised path string (`os.path.normcase(os.path.abspath(...))`) equals board_path's (SEC-8: no file system call on the store's string), else `name_for(board_path)`; project = the name of the project with that id on that lane's board when the lane is readable, else the id itself (finding P-V-8: dumped entries carry ids only)
 module: taskboard/app.py
-examples: (TC-4671, harness) board_path "S/boards/course/board.json", project_id "pv" → project "Module 4 · Volumes", board "Course" (the rail's flag line "on Course — delete it here")
+examples: (TC-4555, harness) board_path "S/boards/course/board.json", project_id "pv" → project "Module 4 · Volumes", board "Course" (the undo notice's board)
 examples: (TC-4549, harness) a path in no registry entry ".../loose/board.json" → board "loose" (name_for)
 
 CaptureView.action_other
 req: LLR-4404.16, LLR-4404.17
 in:
 out: None
-func: new, `alt+o` (priority); field open → nothing; part None → "No note under the cursor." (warning); else `self.choice[part.text] = self.choice.get(part.text, 0) + 1` (wraps through `% len(opts)` when read), repaint
+func: new, `alt+o` (priority); field open → nothing; part None → "No note under the cursor." (warning); else opts = options_for(part.text), i = opts.index(chosen(part.text)), `self.choice[part.text] = key(opts[(i + 1) % len(opts)])` (the next option's identity, wrapping after the last, ARCH-2), repaint
 module: taskboard/app.py
 modify: [Data: CaptureView.choice] (replace)
 examples: (TC-4516, root action_other) cursor in a note with 3 options [A, B, C] → `alt+o` ×3 → the rail's `→` line shows A again; after one `alt+o` it shows B (2/2)
 examples: (AT-4403, root action_other) pad N5, cursor in it → rail "▌  → + new project", "▌    weak: chair · region (Pilot rollout)"; `alt+o` → "▌  → Pilot rollout · Client A ▰▱▱"; `alt+o` → "▌  → + new project" again
 
 CaptureView.action_new
-req: LLR-4404.19, LLR-4404.20, LLR-4404.28, LLR-4407.32
+req: LLR-4404.19, LLR-4404.20, LLR-4404.28
 in:
 out: None
-func: new, `alt+n` (priority); field open → nothing; part None → "No note under the cursor."; flagged → the flagged refusal of dump_part (P-V-10 ruled ACCEPT, LLR-4407.32); title "" → "This note has no text line for a title."; else `self._field = part.text`, `self._field_lane` = the index of the lane whose board is `app.board`, the Input: `border_title = Text(f"New project for note {k}")` (k = 1-based position of the part among the notes), value "", `add_class("on")`, `focus()`; repaint (key row of the field)
+func: new, `alt+n` (priority); field open → nothing; part None → "No note under the cursor."; title "" → "This note has no text line for a title."; else `self._field = part.text`, `self._field_lane` = the index of the lane whose board is `app.board`, the Input: `border_title = Text(f"New project for note {k}")` (k = 1-based position of the part among the notes), value "", `add_class("on")`, `focus()`; repaint (key row of the field)
 module: taskboard/app.py
 modify: [Data: CaptureView._field] (replace)
 examples: (TC-4519, root action_new) pad N1\n____\nN2\n____\nN3, cursor in N3, `alt+n` → field border title plain "New project for note 3" (1/1)
 examples: (TC-4520, root action_new) open board Course (lane 1) → key row "↵ create on Course + dump   ⇥ board   esc back" (1/1; the NC starts at lane 0 Client A)
-examples: (TC-4672, root action_new) a flagged note (text N2), `alt+n` → no name field; notification "This note is already on Course; delete it from the pad." (the alt+n arm)
 
 CaptureView.action_board
 req: LLR-4404.21
@@ -406,30 +427,33 @@ examples: (TC-4609, root action_image) after `alt+i` → stored "pad" equals the
 examples: (AT-4407, root action_image) pad "Vendor call\n::b:: ask the vendor :: @username_subject", taskboard.app.grab_clipboard_image patched to a 2x2 PIL image: `escape`, `n`, `alt+i` → pad "Vendor call\n::b:: ask the vendor :: @username_subject\nimg: paste-001.png", S/inbox-images/paste-001.png exists, the cells of "ask the vendor" carry `#60a5fa`; `alt+n`, type "Vendor desk", `enter` → the task "Vendor call" on Client A with notes "::b:: ask the vendor :: @username_subject" byte for byte and images [S/boards/client-a/images/<id>/paste-001.png]; then pad "[red]x[/red]" → rail row "▌1 [red]x[/red]" literal; `alt+n`, type "[b]P[/b]", `enter` → "Dumped → [b]P[/b] · Client A   ·   alt+u undo" literal (finding P-V-11 on the AT text)
 
 CaptureView.action_undo
-req: LLR-4405.1, LLR-4405.3, LLR-4405.7, LLR-4405.9, LLR-4405.10, LLR-4405.11, LLR-4405.14, LLR-4405.15, LLR-4405.16, LLR-4405.17, LLR-4407.29, LLR-4403.24, HLR-4405
+req: LLR-4405.1, LLR-4405.3, LLR-4405.7, LLR-4405.9, LLR-4405.10, LLR-4405.11, LLR-4405.14, LLR-4405.15, LLR-4405.16, LLR-4405.17, LLR-4405.18, LLR-4405.19, LLR-4407.29, LLR-4407.49, LLR-4403.24, HLR-4405
 in:
 out: None
-func: new, `alt+u` (priority; the review list's `u` calls it too); field open → nothing. `self._pending_drop` set → `self._flush()` first and stop when it fails. entry = `app.inbox.last_dump(datetime.now())` (G-S reads the file's `dumped` fresh, P-S-6 ruled); None → notify("Nothing to undo.", title="Capture", severity="warning", timeout=10, markup=False). `entry["board"]` not samefile with the file of a lane of `self.lanes` (`board_lanes`) → notify(f"{entry['board']} is not a known board — nothing undone.", warning), the entry kept, nothing else (P-S-4 ruled, LLR-4405.16). live = app.board when Path(entry["board"]).resolve() == Path(app.board.path).resolve() else None; out = `undo_dump(entry, live, app.inbox.images_dir)`; board = _where(entry["board"], entry["project"])[1]; state "changed" → notify(f"{entry['title']} changed since the dump — undo left it.", warning), nothing else; "failed" → notify(f"{board} could not be changed: {out.notice} — nothing undone.", warning), nothing else; "undone" / "gone" → new = with_note(pad.text, out.note_text); try `res = app.inbox.write_pad(strip_controls(new), drop=entry)` → pad.text = res.pad whenever it differs (P-S-8; cursor kept, clamped), `self._saved`/`self._text` = res.pad; OSError e → pad.text = new, `self._pending_drop = entry`, the save notice; "gone" → notify(f"{entry['title']} is no longer on {board}: the note is back in the pad.", warning); "undone" → notify(f"Undone: {entry['title']} left {board}; the note is back in the pad.", title="Capture", severity="information", timeout=10, markup=False) (P-V-12 ruled AMEND, LLR-4405.15); live: `app.refresh_view()`; `self._rebuild_docs()`. Never reads or writes `app._undo_stack` (R1-4)
+func: new, `alt+u` (priority; the review list's `u` calls it too); field open → nothing. entry = `app.inbox.last_dump(datetime.now())` (G-S reads the file's `dumped` fresh, P-S-6 ruled, and puts the Inbox's pending records last, ARCH-4, LLR-4405.18); None → notify("Nothing to undo.", title="Capture", severity="warning", timeout=10, markup=False). `norm(entry["board"])` equal to `norm(lane path)` for no lane of `self.lanes` (`board_lanes`), norm = `os.path.normcase(os.path.abspath(...))`, a string test with no `os.stat` / `samefile` on the store's value (SEC-8) → notify(f"{entry['board']} is not a known board — nothing undone.", warning), the entry kept, nothing else (P-S-4 ruled, LLR-4405.16). live = app.board when that lane's board is `app.board` else None; out = `undo_dump(entry, live, app.inbox.images_dir)`; board = _where(entry["board"], entry["project"])[1]; state "changed" (any field differs, SEC-3) → notify(f"{entry['title']} changed since the dump — undo left it.", warning), nothing else; "needed" → notify(f"Another task depends on {entry['title']} — undo left it.", warning), nothing else (LLR-4405.19); "failed" → notify(f"{board} could not be changed: {out.notice} — nothing undone.", warning), nothing else; "undone" / "gone" → new = with_note(pad.text, out.note_text); try `res = app.inbox.write_pad(strip_controls(new), drop=dict(entry, text=out.note_text))` (G-S appends the note to the FRESH pad when the file still holds the entry, ARCH-1 case U) → pad.text = res.pad whenever it differs (P-S-8; cursor kept, clamped), `self._saved`/`self._text` = res.pad; OSError e → pad.text = new, `self._text` = new, G-S kept the drop as pending (ARCH-4), the save notice; "gone" → notify(f"{entry['title']} is no longer on {board}: the note is back in the pad.", warning); "undone" → notify(f"Undone: {entry['title']} left {board}; the note is back in the pad.", title="Capture", severity="information", timeout=10, markup=False) (P-V-12 ruled AMEND, LLR-4405.15); live: `app.refresh_view()`; `self._rebuild_docs()`. Never reads or writes `app._undo_stack` (R1-4)
 module: taskboard/app.py
 modify: [Data: inbox.json] (replace); [Data: CaptureView._saved] (replace)
 examples: (TC-4541, root action_undo) dumps of N1 then N2; `alt+u` → N2's task gone from Course, N1's kept on Client A; `alt+u` → N1's gone (2/2)
 examples: (TC-4543, root action_undo) pad "a" at the undo → pad "a\n____\n" + N2; empty pad → pad N2 (2/2, with_note applied)
 examples: (TC-4547, root action_undo) empty "dumped", and one entry at "2026-10-24T10:01:00" (8 days old) → notification "Nothing to undo."; `0` changes (2/2)
 examples: (TC-4549, root action_undo) N2's task deleted from Course after the dump → notification "Volume lab fails on WSL is no longer on Course: the note is back in the pad."; the pad ends with N2 (1/1)
-examples: (TC-4550, root action_undo) N2's task retitled after the dump → "Volume lab fails on WSL changed since the dump — undo left it."; board, pad and inbox.json bytes unchanged (2/2)
+examples: (TC-4550, root action_undo) N2's task retitled after the dump → "Volume lab fails on WSL changed since the dump — undo left it."; board, pad and inbox.json bytes unchanged; the same notice and unchanged bytes for: phase moved to "Doing", due date set, a URL added, an image added in the editor (6/6 with the as-dumped arm; SEC-3)
+examples: (TC-4559, root action_undo) after the N2 dump, Course's "Volume oracle script" given depends_on [N2's task id] → notification "Another task depends on Volume lab fails on WSL — undo left it."; board, pad and inbox.json bytes unchanged (2/2)
 examples: (TC-4551, root action_undo) a fresh foreign Course board.json.lock → notification starts "Course could not be changed: " and ends " — nothing undone."; pad and inbox.json unchanged (2/2)
 examples: (TC-4554, root action_undo) len(app._undo_stack) equal before the dump, after it and after `alt+u` (3/3 with _dump's arms)
 examples: (TC-4609, root action_undo) after `alt+u` → stored "pad" equals the pad text at once (3/3)
 examples: (TC-4555, root action_undo) the AT-4402 dump, then `alt+u` → exactly `1` notification "Undone: Volume lab fails on WSL left Course; the note is back in the pad.", title "Capture", markup `False` (1/1)
-examples: (TC-4556, root action_undo) the newest entry's "board" edited in inbox.json to "S/loose/board.json" (a board-shaped file in no lane) → notification "S/loose/board.json is not a known board — nothing undone."; the entry still in "dumped"; S/loose/board.json and both lane board files byte-unchanged (3/3)
+examples: (TC-4556, root action_undo) the newest entry's "board" edited in inbox.json to "S/loose/board.json" (a board-shaped file in no lane) → notification "S/loose/board.json is not a known board — nothing undone."; the entry still in "dumped"; S/loose/board.json and both lane board files byte-unchanged; "board" set to "\\host\share\board.json" → the same refusal with `0` os.stat / os.path.samefile calls on that string (spy) (4/4)
+examples: (TC-4558, root action_undo) pad "a\n____\nb", `b` dumped with taskboard.inbox.write_atomic failing once (pending record), `alt+u` → b's task leaves its board; the store write succeeds → inbox.json "dumped" without b's entry, "pad" "a\n____\nb" (b once; executed, store_fix.py)
+examples: (TC-4689, root action_undo) AT-4408 arm U: a second Inbox wrote pad "a\n____\nc\n____\nd" (the file still holding b's entry); `alt+u` here undoes b → S/inbox.json "pad" == "a\n____\nc\n____\nd\n____\nb", the pad shows it, "dumped" without b (executed; the old union lost b)
 examples: (TC-4557, root action_undo) dumps of N1 then N2; a second Inbox drops N2's entry from inbox.json (undone in another window); `alt+u` here → N1's task leaves Client A; N2's note not restored here (2/2 with G-S's memory arm)
 examples: (AT-4404, root action_undo) fixture F, pad N1\n____\nN2: cursor in N2 `alt+d`, cursor in N1 `alt+d` (pad ""); `alt+u` → N1's task leaves Client A and the pad is N1 (empty pad: no divider); `alt+a`, `u` → N2's task leaves Course, the review shows 2 rows, pad "N1\n____\nN2"; `escape`, `alt+u` → "Nothing to undo."; an entry at "2026-10-24T10:01:00" added to inbox.json "dumped" by hand, then any pad write → it is gone from "dumped"
 
 ReviewList.on_mount
-req: LLR-4406.1, LLR-4406.3, LLR-4406.15, LLR-4407.32, HLR-4406
+req: LLR-4406.1, LLR-4406.3, LLR-4406.15, HLR-4406
 in:
 out: None
-func: new `ReviewList(ModalScreen[None])` built with (CaptureView view, list[str] texts); compose: `Vertical(#rv-box)` (border_title "Review · dump checked") holding `Static(id="rv-body")`; BINDINGS priority: escape→back, up→move(-1), down→move(1), space→toggle, o→other, d→dump, u→undo. on_mount: `self.styles.background = Color(13, 17, 23, 0.6)` (P-V-9), `self.sel = 0`, `self.on = [view.chosen(t) is not None and app.inbox.flag_for(t) is None for t in texts]`, paint = review_rows([ReviewRow(note_task(t).title, view.chosen(t), on[i], flag line)], sel, #rv-body content width (108 at 118x30, 72 at 80x24)). A ModalScreen, so typed letters never reach the pad; `x`, `a` bubble to the app and are held by check_action (CaptureView on the stack). Needs `"ReviewList": {}` in tests/test_modal_keys.py INVENTORY (finding P-V-5)
+func: new `ReviewList(ModalScreen[None])` built with (CaptureView view, list[str] texts); compose: `Vertical(#rv-box)` (border_title "Review · dump checked") holding `Static(id="rv-body")`; BINDINGS priority: escape→back, up→move(-1), down→move(1), space→toggle, o→other, d→dump, u→undo. on_mount: `self.styles.background = Color(13, 17, 23, 0.6)` (P-V-9), `self.sel = 0`, `self.on = [view.chosen(t) is not None for t in texts]`, paint = review_rows([ReviewRow(note_task(t).title, view.chosen(t), on[i])], sel, #rv-body content width (108 at 118x30, 72 at 80x24)). A ModalScreen, so typed letters never reach the pad; `x`, `a` bubble to the app and are held by check_action (CaptureView on the stack). Needs `"ReviewList": {}` in tests/test_modal_keys.py INVENTORY (finding P-V-5)
 module: taskboard/app.py
 examples: (TC-4563, root action_review) N1, N2, N3, N4 → rows 1, 2, 4 "[x]", row 3 "[ ]" (2/2)
 examples: (TC-4575, root action_review) typing `x` and `a` in the review list → the pad text unchanged; Client A's task count unchanged (1/1)
@@ -443,34 +467,34 @@ module: taskboard/app.py
 examples: (TC-4564, root action_review) `up` at row 0 → sel `0`; `down` ×9 on 4 rows → sel `3` (2/2)
 
 ReviewList.action_toggle
-req: LLR-4406.5, LLR-4406.6, LLR-4407.32
+req: LLR-4406.5, LLR-4406.6
 in:
 out: None
-func: new, `space`: t = texts[sel]; flagged → notify(f"This note is already on {board}; delete it from the pad.", warning), stays unchecked; view.chosen(t) None → stays unchecked, notify("Needs a name: alt+n in the pad.", title="Capture", severity="warning", timeout=10, markup=False); else `self.on[sel] = not self.on[sel]`; repaint (the key row's k follows)
+func: new, `space`: t = texts[sel]; view.chosen(t) None → stays unchecked, notify("Needs a name: alt+n in the pad.", title="Capture", severity="warning", timeout=10, markup=False); else `self.on[sel] = not self.on[sel]`; repaint (the key row's k follows)
 module: taskboard/app.py
 examples: (TC-4565, root action_review) row 1 "[x]" → `space` "[ ]" → `space` "[x]" (2/2)
 examples: (TC-4566, root action_review) `space` on N3's row → stays "[ ]"; notification "Needs a name: alt+n in the pad." (2/2)
-examples: (TC-4672, root action_review) a flagged note's row opens "[ ]"; `space` → stays "[ ]" with "This note is already on Course; delete it from the pad."
 
 ReviewList.action_other
 req: LLR-4406.7
 in:
 out: None
-func: new, `o`: `view.choice[t] = view.choice.get(t, 0) + 1` for t = texts[sel] (the shared dict); the chosen option now None → `self.on[sel] = False`; repaint
+func: new, `o`: for t = texts[sel], the next option's identity is stored in the shared dict exactly as CaptureView.action_other does (ARCH-2); the chosen option now None → `self.on[sel] = False`; repaint
 module: taskboard/app.py
 modify: [Data: CaptureView.choice] (replace)
 examples: (TC-4567, root action_review) row 1 (N1) `o` → row 1 shows "Pilot rollout · Client A ▰▰▱"; `escape` → the rail's N1 `→` row shows "Pilot rollout · Client A ▰▰▱" (2/2)
 
 ReviewList.action_dump
-req: LLR-4406.8, LLR-4406.9, LLR-4406.10, LLR-4406.16, HLR-4406
+req: LLR-4406.8, LLR-4406.9, LLR-4406.10, LLR-4406.16, LLR-4406.17, LLR-4403.24, HLR-4406
 in:
 out: None
-func: new, `d`: checked = [t for t, on in zip(texts, self.on) if on] (pad order); k = 0; for each t: part = the first note Part of view's current pad whose text == t (None → not dumped); `view.dump_part(part, quiet=True)` True → k += 1 (each failure shows its own notice and leaves its note in the pad); then notify(f"Dumped {k} of {len(checked)} checked", title="Capture", severity="information", timeout=10, markup=False) and `self.dismiss(None)`
+func: new, `d`: checked = [t for t, on in zip(texts, self.on) if on] (pad order); targets = {t: view.chosen(t) for t in checked}, fixed BEFORE the first dump (ARCH-2, LLR-4406.17: a dump rebuilds the corpus and would reorder the later rows' options); k = 0; for each t: part = the first note Part of view's current pad whose text == t (None → not dumped); `view.dump_part(part, quiet=True, target=targets[t], rebuild=False)` True → k += 1 (each failure shows its own notice and leaves its note in the pad); then, when k > 0, `view._rebuild_docs()` once (LLR-4403.24); then notify(f"Dumped {k} of {len(checked)} checked", title="Capture", severity="information", timeout=10, markup=False) and `self.dismiss(None)`
 module: taskboard/app.py
 examples: (TC-4568, root action_review) 3 of 4 checked (N1, N2, N4) → 3 tasks on their boards; the pad holds N3 only (2/2)
 examples: (TC-4569, root action_review) after `d` → app.screen is the CaptureView (1/1)
 examples: (TC-4570, root action_review) Course's file deleted before `d` → N1 and N4 dumped, N2 in the pad, notifications "Course's file is missing — nothing dumped." and "Dumped 2 of 3 checked" (3/3)
 examples: (TC-4576, root action_review) all 3 succeed → notification "Dumped 3 of 3 checked", markup `False` (1/1)
+examples: (TC-4577, root action_review) fixture F, pad "Rubric review\n____\nRubric scoring\n____\nPilot judge rubric\n____\nRubric for the pilot": `alt+o` on notes 1 and 2 (→ Eval harness 0.1251 each), `alt+a`, rows 1, 2 `space` (checked), rows 3 (Eval harness 0.2889) and 4 (Pilot rollout 0.2232) open checked; `d` → Client A's Eval harness holds 3 new tasks and Pilot rollout holds "Rubric for the pilot"; "Dumped 4 of 4 checked" (executed, suggest_fix.py: re-resolved after the first three dumps row 4's options are [Eval harness 0.6028, Pilot rollout 0.1593], so the NC files it under Eval harness)
 examples: (AT-4405, root action_review) fixture F, pad N1\n____\nN2\n____\nN3\n____\nN4: `escape`, `n`, `alt+a` → 4 rows, rows 1, 2, 4 "[x]"; `down` `down` `space` → row 3 stays "[ ]", "Needs a name: alt+n in the pad."; `up` `up` `o` → row 1 "Pilot rollout · Client A ▰▰▱"; `d` → Client A holds N1's task (project Pilot rollout) and N4's (Pilot rollout), Course holds N2's; "Dumped 3 of 3 checked"; app.screen is the CaptureView; pad == N3
 
 ReviewList.action_undo
@@ -507,16 +531,24 @@ in: list[Screen]
 desc: Textual's stack; CaptureView is a Screen (not modal); ReviewList a ModalScreen over it
 
 [Data: CaptureView.docs]
-in: list[Doc]
-desc: NEW: corpus(lanes) at open and after every board-changing dump/undo, with `lanes`, `ids`, `unread`
+in: Corpus
+desc: NEW: corpus(lanes) at open, after every board-changing single dump or undo, and once after a review batch (ARCH-6), with `lanes`, `ids`, `unread`
+
+[Data: CaptureView._drawn]
+in: dict[int, list[Hit?]?]
+desc: NEW (ARCH-6): per note position, the options the rail last drew; what an uncomputed note shows while the pad is not still (LLR-4403.31)
+
+[Data: CaptureView._quit_armed]
+in: bool
+desc: NEW (SEC-5): True after the "quit again exits without saving" warning until the text or the cursor changes
 
 [Data: CaptureView._hits]
 in: dict[str, list[Hit]]
 desc: NEW: the hit cache keyed by the note's exact text; cleared with every new docs (LLR-4403.21)
 
 [Data: CaptureView.choice]
-in: dict[str, int]
-desc: NEW: the chosen option index per note text, read modulo len(options); shared with ReviewList (S-c)
+in: dict[str, tuple[str, str] | str]
+desc: NEW: the chosen option's identity per note text — (board path, project id), or NEW_KEY for `+ new project` — never an index (ARCH-2); shared with ReviewList (S-c)
 
 [Data: CaptureView._saved]
 in: str
@@ -535,12 +567,12 @@ in: bool
 desc: NEW: True after the "esc again closes without saving" warning until the text or the cursor changes
 
 [Data: RailNote]
-in: NamedTuple(str title, int images, list[Hit?] options, Hit? chosen, list[Hit] hits, str? flag)
-desc: NEW, app.py: one note as the rail paints it; `flag` is "on <board> — delete it here" for a flagged note (P-V-8 ruled AMEND; the rail draws "⚑ " before it)
+in: NamedTuple(str title, int images, list[Hit?]? options, Hit? chosen, list[Hit] hits)
+desc: NEW, app.py: one note as the rail paints it; options None = not computed and none drawn at that position (LLR-4403.31); no flag field (ARCH-4)
 
 [Data: ReviewRow]
-in: NamedTuple(str title, Hit? option, bool checked, str? flag)
-desc: NEW, app.py: one review row
+in: NamedTuple(str title, Hit? option, bool checked)
+desc: NEW, app.py: one review row (no flag field, ARCH-4)
 
 [Data: app.GHOST]
 in: str
@@ -551,7 +583,7 @@ in: list[tuple[str, str]]
 desc: NEW: [("alt+d", "dump"), ("alt+o", "other"), ("alt+n", "new project"), ("alt+a", "review"), ("alt+i", "image"), ("alt+u", "undo"), ("esc", "close")]
 
 [Data: Inbox state]
-desc: G-S (graph-interfaces): read through `pad`, `dumped`, `flagged`, `divider_notice`, `load_report`, `images_dir`; changed only through write_pad, flag, mark_notice
+desc: G-S (graph-interfaces): read through `pad_now()`, `pad`, `dumped`, `pending`, `divider_notice`, `load_report`, `images_dir`; changed only through write_pad and mark_notice
 
 [Data: inbox.json]
 desc: G-S (graph-interfaces): written by Inbox.write_pad / Inbox.mark_notice only
@@ -560,7 +592,7 @@ desc: G-S (graph-interfaces): written by Inbox.write_pad / Inbox.mark_notice onl
 desc: G-S (graph-interfaces): ok, task, project_id, project_name, new_project, images, missing, notice
 
 [Data: UndoOutcome]
-desc: G-S (graph-interfaces): state, note_text, notice
+desc: G-S (graph-interfaces): state ("undone", "gone", "changed", "needed", "failed"), note_text, notice
 
 [Data: Hit]
 desc: G-T (graph-interfaces): doc, score, why
@@ -613,7 +645,6 @@ TaskboardApp.action_capture ──▶ [Data: App.screen_stack]
 [Data: App.screen_stack] ──▶ TaskboardApp.check_action
 [Data: TaskboardApp.inbox] ──▶ CaptureView.compose
 [Data: Inbox state] ──▶ CaptureView._paint
-[Data: Inbox state] ──▶ CaptureView.dump_part
 [Data: Inbox state] ──▶ CaptureView.action_undo
 CaptureView.compose ──▶ [Data: CaptureView.docs]
 CaptureView._rebuild_docs ──▶ [Data: CaptureView.docs]
@@ -653,6 +684,13 @@ CaptureView.action_close ──▶ [Data: CaptureView._esc_armed]
 [Data: CaptureView._esc_armed] ──▶ CaptureView.action_close
 CaptureView.action_close ──▶ [Data: App.screen_stack]
 CaptureView.action_review ──▶ [Data: App.screen_stack]
+TaskboardApp.action_quit ──▶ [Data: CaptureView._quit_armed]
+[Data: CaptureView._quit_armed] ──▶ TaskboardApp.action_quit
+TaskboardApp.action_quit ──▶ CaptureView._flush
+CaptureView._paint ──▶ [Data: CaptureView._drawn]
+[Data: CaptureView._drawn] ──▶ CaptureView._paint
+ReviewList.action_dump ──▶ CaptureView.dump_part
+ReviewList.action_dump ──▶ CaptureView._rebuild_docs
 review_rows ──▶ ReviewList.on_mount
 
 ## Findings
@@ -711,7 +749,7 @@ anchor: CaptureView._where
 seen: FlaggedEntry / DumpedEntry hold `board` (path) and `project` (id) but no names; LLR-4407.31's line "⚑ already dumped → Module 4 · Volumes · Course — delete it here" is 60 cells with its 3-cell indent, the wide rail is 48 (P-V-5)
 cause: the entry schema (LLR-4407.33) and the rail width were set apart
 effect: names must be resolved by G-V; the line is cut ("…") in the wide rail, so "delete it here" is lost for long names
-decision: ruled — AMEND (round 0b): names resolved as proposed (_where); the wide-rail flag line is shortened to `⚑ on <board> — delete it here` (the same text in the narrow rail and the review row, one string); the LLR-4407.30 notice keeps the full sentence; LLR-4407.31 reworded. Applied: rail_rows, review_rows, [Data: RailNote], CaptureView._where
+decision: ruled — AMEND (round 0b): names resolved as proposed (_where); the wide-rail flag line is shortened to `⚑ on <board> — delete it here` (the same text in the narrow rail and the review row, one string); the LLR-4407.30 notice keeps the full sentence; LLR-4407.31 reworded. Applied: rail_rows, review_rows, [Data: RailNote], CaptureView._where. Withdrawn at E3 round 1 (ARCH-4): flagged notes and this string are removed; `_where` stays for the undo notices
 
 finding P-V-9 TC-4634's notice arm cannot see a note title: the dump notice holds none
 anchor: CaptureView._dump
@@ -725,7 +763,7 @@ anchor: CaptureView.action_new
 seen: LLR-4407.32 refuses `alt+d` and the review `d` on a flagged note; `alt+n` + enter creates a project and dumps the same note again (a duplicate task)
 cause: gap in LLR-4407.32
 effect: the duplicate R2 F-12 wanted to prevent
-decision: ruled — ACCEPT (round 0b): LLR-4407.32 names `alt+n`; TC-4672 gains the arm. Applied: CaptureView.action_new
+decision: ruled — ACCEPT (round 0b): LLR-4407.32 names `alt+n`; TC-4672 gains the arm. Applied: CaptureView.action_new. Withdrawn at E3 round 1 (ARCH-4): no flagged note is left in the pad, so there is nothing to refuse
 
 finding P-V-11 AT-4407's note has no notes line
 anchor: CaptureView.action_image
@@ -753,11 +791,11 @@ anchor: CaptureView.action_undo
 seen: undo_dump removes the task from its board, then write_pad(drop=entry) may fail; the entry stays in the file's `dumped`, so a later `alt+u` would find the task gone and restore the note a second time
 cause: the board-then-store pair is not atomic (R2 F-12) and Inbox.write_pad takes one `drop`
 effect: a duplicated note in the pad
-decision: ruled — ACCEPT (round 0b), as designed; no change
+decision: ruled — ACCEPT (round 0b), as designed; no change. E3 round 1 (ARCH-4): the pending drop moved from CaptureView (`_pending_drop`) into the app-level Inbox, beside the pending record, so it survives closing the view
 
 ### Seams
 
-> Calls G-V makes into G-S (`taskboard/inbox.py`): `INBOX_NAME`; `Inbox.load(path)` (TaskboardApp.__init__); `inbox.refresh()` (CaptureView.compose); `inbox.pad`, `.dumped`, `.flagged`, `.divider_notice`, `.load_report`, `.images_dir` (read only); `inbox.write_pad(pad, record=, drop=)` → WriteResult (or OSError) (_flush, _dump, action_undo, on_unmount); `inbox.flag(entry)` (_dump on OSError); `inbox.flag_for(text)` (_paint, dump_part, action_new, ReviewList); `inbox.last_dump(now)` (action_undo); `inbox.mark_notice()` (_notice_divider); `is_divider`, `note_parts`, `note_count`, `note_at`, `note_task`, `without_note`, `with_note`, `prune_dumped` (the dumped count of the rail); `DumpTarget(path, name, live)`; `dump_note(target, project_id, new_name, note, folder, project_name)` → DumpOutcome (P-S-1); `entry_for(outcome, note, board_path, now)` → DumpedEntry (P-S-15); `undo_dump(entry, live, folder)` → UndoOutcome; `attach_images(folder, grabbed)` → AttachResult.
-> Calls G-V makes into G-T (`taskboard/suggest.py`): `corpus(lanes, app.marks.marks)` (lanes = board_lanes(app)[0]); `suggest(nt.title + "\n" + nt.notes, docs)` → [Hit] with nt = `note_task(part.text)` (P-T-4; through the module attribute `taskboard.app.suggest`); `options(hits)` → [Hit?]; `bars(score)`. Reads `Hit.doc.project_name`, `.project_colour`, `.board_name`, `.board_colour`, `.board_path`, `.project_id`, `Hit.score`, `Hit.why`.
+> Calls G-V makes into G-S (`taskboard/inbox.py`): `INBOX_NAME`; `Inbox.load(path)` (TaskboardApp.__init__); `inbox.refresh()` (CaptureView.compose); `inbox.pad`, `.dumped`, `.pending`, `.divider_notice`, `.load_report`, `.images_dir` (read only; no `.flagged`, ARCH-4); `inbox.write_pad(pad, record=, drop=)` → WriteResult (or OSError; a failed record/drop stays pending in the Inbox, ARCH-4) (_flush, _dump, action_undo, on_unmount, action_quit through _flush); `inbox.pad_now()` (compose); `inbox.pending` (`_unsaved`); `inbox.last_dump(now)` (action_undo); `inbox.mark_notice()` (_notice_divider); `is_divider`, `note_parts`, `note_count`, `note_at`, `note_task`, `without_note`, `with_note`, `prune_dumped` (the dumped count of the rail); `DumpTarget(path, name, live)`; `dump_note(target, project_id, new_name, note, folder, project_name)` → DumpOutcome (P-S-1); `entry_for(outcome, note, board_path, now)` → DumpedEntry (P-S-15); `undo_dump(entry, live, folder)` → UndoOutcome; `attach_images(folder, grabbed)` → AttachResult.
+> Calls G-V makes into G-T (`taskboard/suggest.py`): `corpus(lanes, app.marks.marks)` → Corpus (lanes = board_lanes(app)[0]; once per open, single dump/undo, or batch); `suggest(nt.title + "\n" + nt.notes, docs)` → [Hit] (on demand for actions, and on scored paints only, LLR-4403.30) with nt = `note_task(part.text)` (P-T-4; through the module attribute `taskboard.app.suggest`); `options(hits)` → [Hit?]; `bars(score)`. Reads `Hit.doc.project_name`, `.project_colour`, `.board_name`, `.board_colour`, `.board_path`, `.project_id`, `Hit.score`, `Hit.why`.
 > Calls into G-V from other groups: none (G-S and G-T import nothing from app.py). The orchestrator's checks: TaskboardApp.check_action's two tuples (R1-6) and the README row (LLR-4401.13).
 > Seam changes ruled in round 0b and applied in graph-interfaces: P-V-1 (`alt+b` → `tab`), P-V-13 (DumpOutcome.images = names; refusal-text ownership), P-S-1, P-S-8, P-S-15, P-T-4.
