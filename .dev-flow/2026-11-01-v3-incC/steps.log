@@ -1,0 +1,6 @@
+# stage start/end (UTC) model notes
+2026-11-01T06:27:38Z E0 setup start model=opus
+2026-11-01T06:28:30Z E0 setup end (approx: base + marks worktrees made)
+2026-11-01T06:28:30Z E1 requirements start model=opus (approx)
+2026-11-01T06:28:30Z E2a baseline-graph start model=opus (background agent, parallel with E1)
+2026-11-01T06:32:35Z E1 requirements end model=opus hlr=6 llr=55 at=4
