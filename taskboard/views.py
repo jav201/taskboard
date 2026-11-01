@@ -9645,7 +9645,9 @@ def render_added_list(rows: list[AddedRow], sel: int, newest: bool,
         for i, lab in plan[top:top + room]:
             if i < 0:
                 st = f"b {HEX['dim']}" if lab.startswith("BEFORE ") else f"b {HEX['hd']}"
-                left.append(Text(fit(lab, lw), st))
+                # a span, not the Text's base style: a base style would run on
+                # over the separator and the pane appended to this line (E4 seam)
+                left.append(Text.assemble((fit(lab, lw), st)))
             else:
                 left.append(_added_row(rows[i], i == sel, sw, lw))
         right, cut = _added_pane(rows[sel], first, people, today, rw, room)
@@ -9658,7 +9660,7 @@ def render_added_list(rows: list[AddedRow], sel: int, newest: bool,
             more = len(right) - room + 1
             right = right[:room - 1] + [Text(clip(f"… {more} more lines", rw), HEX["dim"])]
     else:
-        left.append(Text(fit("no tasks to list", lw), HEX["dim"]))
+        left.append(Text.assemble((fit("no tasks to list", lw), HEX["dim"])))
     for k in range(room):
         ln = left[k].copy() if k < len(left) else Text(" " * lw)
         ln.append(" │ ", HEX["frame"])

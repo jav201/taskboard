@@ -15,3 +15,6 @@
 2026-11-01T09:42:38Z E4 start: build D ∥ build V ∥ build S (deepseek-v4-pro) ∥ tests (opus tester)
 2026-11-01T09:46:54Z E4 build D done (deepseek-v4-pro, EXIT 0 09:46:44Z, deviations none); build S done (EXIT 0 09:46:28Z, deviations none)
 2026-11-01T09:54:22Z E4 build V done (deepseek-v4-pro, EXIT 0 09:53:48Z)
+2026-11-01T10:06:12Z E4 tests done (opus tester): 94 tests, RED on base 90 failed/4 guards, 0 errors; GREEN run start
+2026-11-01T10:13:11Z E4 integration (opus): 1 seam fixed (day-header base style leaked bold over the pane, views.render_added_list); GREEN 162 passed (Inc L tests + keymap/help/modal keys); guards 722 passed 1 env-skip (clipboard)
+2026-11-01T10:13:11Z E4 end

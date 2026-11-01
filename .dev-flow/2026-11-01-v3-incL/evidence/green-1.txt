@@ -1,0 +1,37 @@
+# GREEN-1 cwd=/c/Users/jjgh8/Github/taskboard-wt/capture-proto head=8b72e02
+taskboard.__file__ = C:\Users\jjgh8\Github\taskboard-wt\capture-proto\taskboard\__init__.py
+C:\Users\jjgh8\anaconda3\Lib\site-packages\pytest_asyncio\plugin.py:207: PytestDeprecationWarning: The configuration option "asyncio_default_fixture_loop_scope" is unset.
+The event loop scope for asynchronous fixtures will default to the fixture caching scope. Future versions of pytest-asyncio will default the loop scope for asynchronous fixtures to function scope. Set the default fixture loop scope explicitly in order to avoid unexpected behavior in the future. Valid fixture loop scopes are: "function", "class", "module", "package", "session"
+
+  warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCOPE_UNSET))
+..............................................F......................... [ 56%]
+.......................................................                  [100%]
+================================== FAILURES ===================================
+__________ test_TC_4331_the_meta_line_holds_every_fact_the_task_has ___________
+
+tmp_path = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-31622/test_TC_4331_the_meta_line_hol0')
+
+    def test_TC_4331_the_meta_line_holds_every_fact_the_task_has(tmp_path):
+        """TC-4331 (LLR-4303.11): w2 (all seven facts) \u2192 `Doing  \u25b2 high  Oct 30\u2192Nov 3  \u25c6
+        milestone  @Ana Ruiz  \u2197 1  \u25a4 1` in one line at 118 (7/7, each in its style), two at
+        80 (7/7, P-V-3); the bare w1 \u2192 `Backlog  \xb7 normal` (2 pieces). NC drop the dates."""
+        body, _ = _fv_body(tmp_path)
+        line = fx.text_lines(body)[4]
+        meta = line.plain[49:].rstrip()
+        expect = [("Doing", fx.SKY, False), ("\u25b2 high", fx.ROSE, False),
+                  ("Oct 30\u2192Nov 3", fx.MUT, False), ("\u25c6 milestone", fx.MUT, False),
+                  ("@Ana Ruiz", fx.PINK, True), ("\u2197 1", fx.MUT, False), ("\u25a4 1", fx.MUT, False)]
+        assert meta == "  ".join(p for p, _c, _b in expect)
+        for piece, colour, bold in expect:
+            i = 49 + meta.index(piece)
+>           assert (fx.colour_at(line, i), fx.bold_at(line, i)) == (colour, bold), piece
+E           AssertionError: Doing
+E           assert ('#38bdf8', True) == ('#38bdf8', False)
+E             
+E             At index 1 diff: True != False
+E             Use -v to get more diff
+
+tests\test_added_list.py:540: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_added_list.py::test_TC_4331_the_meta_line_holds_every_fact_the_task_has
+1 failed, 126 passed in 38.31s

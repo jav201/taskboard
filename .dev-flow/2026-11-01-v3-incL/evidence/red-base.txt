@@ -1,0 +1,2747 @@
+C:\Users\jjgh8\Github\taskboard-wt\incL-base\taskboard\__init__.py
+# base HEAD eb411e1c38f39763c64c1cff925d330dc3754df5 (worktree incL-base, clean but for the 3 copied test files); command:
+# cd C:/Users/jjgh8/Github/taskboard-wt/incL-base && env -u NO_COLOR C:/Users/jjgh8/anaconda3/python.exe -c "import taskboard;print(taskboard.__file__)" && env -u NO_COLOR C:/Users/jjgh8/anaconda3/python.exe -m pytest -q -p no:cacheprovider tests/test_task_created.py tests/test_added_list.py -rA
+C:\Users\jjgh8\anaconda3\Lib\site-packages\pytest_asyncio\plugin.py:207: PytestDeprecationWarning: The configuration option "asyncio_default_fixture_loop_scope" is unset.
+The event loop scope for asynchronous fixtures will default to the fixture caching scope. Future versions of pytest-asyncio will default the loop scope for asynchronous fixtures to function scope. Set the default fixture loop scope explicitly in order to avoid unexpected behavior in the future. Valid fixture loop scopes are: "function", "class", "module", "package", "session"
+
+  warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCOPE_UNSET))
+FFFFFFFFFFFFFFF....FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF [ 76%]
+FFFFFFFFFFFFFFFFFFFFFF                                                   [100%]
+================================== FAILURES ===================================
+_______ test_TC_4301_created_is_an_optional_field_that_defaults_to_none _______
+
+    def test_TC_4301_created_is_an_optional_field_that_defaults_to_none():
+        """TC-4301 (LLR-4301.1): `Task("x").created is None` (a transient Task is not
+        stamped: NC a `default_factory` stamp); a given value is kept; positional fields keep
+        their meaning (the field follows them)."""
+>       need_created_field()
+
+tests\test_task_created.py:99: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+    def need_created_field() -> None:
+        if "created" not in {f.name for f in fields(Task)}:
+>           pytest.fail("Task.created missing: the dataclass has no `created` field (not built yet)")
+E           Failed: Task.created missing: the dataclass has no `created` field (not built yet)
+
+tests\added_list_fixture.py:54: Failed
+_____________ test_TC_4302b_the_stamp_is_local_time_to_the_second _____________
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x000002F5A1DEEA20>
+
+    def test_TC_4302b_the_stamp_is_local_time_to_the_second(monkeypatch):
+        """TC-4302b (stamp, graph-interfaces): `stamp(now)` is `now` to the second in the
+        format of `history.append`'s `at`; `stamp()` reads `models.datetime.now()` — the one
+        clock every creation path stamps from (P-D-4)."""
+>       stamp = need(models, "stamp")
+
+tests\test_task_created.py:110: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+module = <module 'taskboard.models' from 'C:\\Users\\jjgh8\\Github\\taskboard-wt\\incL-base\\taskboard\\models.py'>
+name = 'stamp'
+
+    def need(module, name: str):
+        """`module.name`, or a test failure that says the increment's name is missing."""
+        obj = getattr(module, name, None)
+        if obj is None:
+>           pytest.fail(f"{module.__name__}.{name} missing (not built yet)")
+E           Failed: taskboard.models.stamp missing (not built yet)
+
+tests\added_list_fixture.py:48: Failed
+_____________ test_TC_4302_a_task_added_in_the_editor_is_stamped ______________
+
+tmp_path = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-31620/test_TC_4302_a_task_added_in_t0')
+
+    async def test_TC_4302_a_task_added_in_the_editor_is_stamped(tmp_path):
+        """TC-4302 (LLR-4301.2): `a`, a title, `alt+s` (real clock) \u2192 the saved task's
+        `created` is `YYYY-MM-DDTHH:MM:SS` within [t0, t1] of the test's clock reads, and the
+        board file holds the same value. NC: no stamp on the add path \u2192 None."""
+        path = _single_board(tmp_path)
+        app = _app(path)
+        async with app.run_test(size=(118, 30)) as pilot:
+            await pilot.pause()
+            t0 = datetime.now().replace(microsecond=0)
+            await press(pilot, "a")
+            assert type(app.screen).__name__ == "TaskModal"
+            await pilot.press(*"Call the bank")
+            await press(pilot, "alt+s")
+            t1 = datetime.now()
+            assert type(app.screen).__name__ != "TaskModal"
+        new = next(t for t in app.board.tasks if t.title == "Call the bank")
+        c = _records(path)[new.id].get("created")
+>       assert isinstance(c, str) and re.match(fx.STAMP_RE, c), f"the file holds created={c!r}"
+E       AssertionError: the file holds created=None
+E       assert (False)
+E        +  where False = isinstance(None, str)
+
+tests\test_task_created.py:134: AssertionError
+______ test_TC_4303_a_template_insert_stamps_every_task_with_one_moment _______
+
+tmp_path = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-31620/test_TC_4303_a_template_insert0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x000002F5A1F0DE80>
+
+    async def test_TC_4303_a_template_insert_stamps_every_task_with_one_moment(tmp_path,
+                                                                              monkeypatch):
+        """TC-4303 (LLR-4301.3): `I`, `Simple chain` \u2192 Plan, Build, Ship each stamped, ONE
+        distinct value under a clock that moves 1 s per call (NC a stamp per task: 3 values);
+        the file holds it in the 3 new entries; the insert still writes no history line."""
+        path = _single_board(tmp_path)
+        monkeypatch.setattr(models, "datetime", fx.advancing_clock(), raising=False)
+        hist_before = (path.parent / "history.jsonl").read_text(encoding="utf-8")
+        app = _app(path)
+        async with app.run_test(size=(118, 30)) as pilot:
+            await pilot.pause()
+            app.selected_task_id = "ta1"
+            await press(pilot, "I")
+            await press(pilot, "down", "enter")
+        new = app.board.tasks[3:]
+        assert [t.title for t in new] == ["Plan", "Build", "Ship"]
+        recs = _records(path)
+        values = [recs[t.id].get("created") for t in new]
+>       assert all(isinstance(v, str) and re.match(fx.STAMP_RE, v) for v in values), values
+E       AssertionError: [None, None, None]
+E       assert False
+E        +  where False = all(<generator object test_TC_4303_a_template_insert_stamps_every_task_with_one_moment.<locals>.<genexpr> at 0x000002F5A2142420>)
+
+tests\test_task_created.py:157: AssertionError
+________ test_TC_4304_the_link_pickers_create_row_stamps_the_new_task _________
+
+tmp_path = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-31620/test_TC_4304_the_link_pickers_0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x000002F5A211BB90>
+
+    async def test_TC_4304_the_link_pickers_create_row_stamps_the_new_task(tmp_path, monkeypatch):
+        """TC-4304 (LLR-4301.4): `_create_and_link(waiter, "new")` \u2192 the new task stamped
+        `2026-11-01T08:10:00`, the waiter waits on it, and its birth record is written. NC: a
+        create that bypasses the stamp \u2192 None."""
+        path = _single_board(tmp_path)
+        monkeypatch.setattr(models, "datetime", fx.FixedNow, raising=False)
+        app = _app(path)
+        async with app.run_test(size=(118, 30)) as pilot:
+            await pilot.pause()
+            waiter = app.board.task_by_id("ta1")
+            app._create_and_link(waiter, "new")
+            await pilot.pause()
+        new = next(t for t in app.board.tasks if t.title == "new")
+        assert new.id in app.board.task_by_id("ta1").depends_on
+        assert any(r["task"] == new.id and r["from"] is None for r in history.read(path)[0])
+>       assert _records(path)[new.id].get("created") == ADD_AT
+E       AssertionError: assert None == '2026-11-01T08:10:00'
+E        +  where None = <built-in method get of dict object at 0x000002F5A24B2000>('created')
+E        +    where <built-in method get of dict object at 0x000002F5A24B2000> = {'archived': False, 'blocked': False, 'depends_on': [], 'due_date': None, ...}.get
+
+tests\test_task_created.py:179: AssertionError
+__ test_TC_4305_add_task_stamps_before_the_save_and_the_birth_record_agrees ___
+
+tmp_path = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-31620/test_TC_4305_add_task_stamps_b0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x000002F5A2512CF0>
+
+    def test_TC_4305_add_task_stamps_before_the_save_and_the_birth_record_agrees(tmp_path,
+                                                                                monkeypatch):
+        """TC-4305 (LLR-4301.5): `Board.add_task(Task("a"))` \u2192 the file read back holds
+        `"created": "2026-11-01T08:10:00"` (NC stamp after `save()`: the key missing); the
+        birth record's `at` is the same second — one clock read (P-D-4), checked under a
+        clock that moves 1 s per call."""
+        monkeypatch.setattr(models, "datetime", fx.FixedNow, raising=False)
+        path = tmp_path / "b" / "board.json"
+        b = Board([], [Task("old", id="to")], path, {})
+        b.save()
+        b.add_task(Task("a", id="tn"))
+>       assert _records(path)["tn"].get("created") == ADD_AT
+E       AssertionError: assert None == '2026-11-01T08:10:00'
+E        +  where None = <built-in method get of dict object at 0x000002F5A24A7900>('created')
+E        +    where <built-in method get of dict object at 0x000002F5A24A7900> = {'archived': False, 'blocked': False, 'depends_on': [], 'due_date': None, ...}.get
+
+tests\test_task_created.py:194: AssertionError
+________ test_TC_4306_a_seeded_board_stamps_every_task_with_one_moment ________
+
+tmp_path = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-31620/test_TC_4306_a_seeded_board_st0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x000002F5A2548AA0>
+
+    def test_TC_4306_a_seeded_board_stamps_every_task_with_one_moment(tmp_path, monkeypatch):
+        """TC-4306 (LLR-4301.6): `Board.load` on a missing file \u2192 the 16 seeded tasks share
+        ONE stamp under a clock that moves 1 s per call (NC a stamp per task: 16 values); the
+        file holds 16 `"created":` keys; no history is written for the seed."""
+        monkeypatch.setattr(models, "datetime", fx.advancing_clock(), raising=False)
+        path = tmp_path / "new" / "board.json"
+        board = Board.load(path)
+        assert len(board.tasks) == 16
+>       assert _text(path).count('"created":') == 16
+E       assert 0 == 16
+E        +  where 0 = <built-in method count of str object at 0x000002F5A1089A80>('"created":')
+E        +    where <built-in method count of str object at 0x000002F5A1089A80> = '{\n  "phases": [\n    "Backlog",\n    "Doing",\n    "Done"\n  ],\n  "projects": [\n    {\n      "name": "Website Rede..."62169f5d"\n    }\n  ],\n  "settings": {\n    "migrations": {\n      "links": 1,\n      "milestones": 1\n    }\n  }\n}'.count
+E        +      where '{\n  "phases": [\n    "Backlog",\n    "Doing",\n    "Done"\n  ],\n  "projects": [\n    {\n      "name": "Website Rede..."62169f5d"\n    }\n  ],\n  "settings": {\n    "migrations": {\n      "links": 1,\n      "milestones": 1\n    }\n  }\n}' = _text(WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-31620/test_TC_4306_a_seeded_board_st0/new/board.json'))
+
+tests\test_task_created.py:215: AssertionError
+__________ test_TC_4307_add_task_keeps_a_created_that_is_already_set __________
+
+tmp_path = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-31620/test_TC_4307_add_task_keeps_a_0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x000002F5A2681E50>
+
+    def test_TC_4307_add_task_keeps_a_created_that_is_already_set(tmp_path, monkeypatch):
+        """TC-4307 (LLR-4301.7): a task arriving with `created="2026-10-01T09:00:00"` keeps
+        it through `add_task` (NC: always overwrite \u2192 08:10:00)."""
+>       need_created_field()
+
+tests\test_task_created.py:226: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+    def need_created_field() -> None:
+        if "created" not in {f.name for f in fields(Task)}:
+>           pytest.fail("Task.created missing: the dataclass has no `created` field (not built yet)")
+E           Failed: Task.created missing: the dataclass has no `created` field (not built yet)
+
+tests\added_list_fixture.py:54: Failed
+________________ test_TC_4308_an_edit_keeps_created_as_it_was _________________
+
+tmp_path = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-31620/test_TC_4308_an_edit_keeps_cre0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x000002F5A24872F0>
+
+    async def test_TC_4308_an_edit_keeps_created_as_it_was(tmp_path, monkeypatch):
+        """TC-4308 (LLR-4301.8): `e`, a new title, `alt+s` on a stamped task and on an
+        unstamped one \u2192 `"2026-10-31T18:20:00"` and None unchanged, the unstamped entry still
+        holds no `created` key (NC stamp on edit: arm 2 gets 08:10:00)."""
+        path = _single_board(tmp_path)
+        monkeypatch.setattr(models, "datetime", fx.FixedNow, raising=False)
+        app = _app(path)
+        async with app.run_test(size=(118, 30)) as pilot:
+            await pilot.pause()
+            for tid, title in (("ta1", "Sync notes v2"), ("ta2", "Pilot store list v2")):
+                app.selected_task_id = tid
+                await press(pilot, "e")
+                assert type(app.screen).__name__ == "TaskModal"
+                app.screen.query_one("#f-title", Input).value = title
+                await press(pilot, "alt+s")
+                assert app.board.task_by_id(tid).title == title
+        recs = _records(path)
+>       assert created_of(app.board.task_by_id("ta1")) == "2026-10-31T18:20:00"
+
+tests\test_task_created.py:252: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+tests\added_list_fixture.py:59: in created_of
+    need_created_field()
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+    def need_created_field() -> None:
+        if "created" not in {f.name for f in fields(Task)}:
+>           pytest.fail("Task.created missing: the dataclass has no `created` field (not built yet)")
+E           Failed: Task.created missing: the dataclass has no `created` field (not built yet)
+
+tests\added_list_fixture.py:54: Failed
+_________ test_TC_4309_a_project_move_keeps_each_moved_tasks_created __________
+
+tmp_path = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-31620/test_TC_4309_a_project_move_ke0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x000002F5A25EB950>
+
+    def test_TC_4309_a_project_move_keeps_each_moved_tasks_created(tmp_path, monkeypatch):
+        """TC-4309 (LLR-4301.9): `move_project` of `pm` \u2192 in the target file the stamped
+        task keeps `"2026-10-30T09:00:00"` and the unstamped one holds no key; read back, the
+        fields are the same (NC re-stamp moved tasks \u2192 08:10:00)."""
+        monkeypatch.setattr(models, "datetime", fx.FixedNow, raising=False)
+        src_p, dst_p = tmp_path / "src" / "board.json", tmp_path / "dst" / "board.json"
+        src = Board([Project("Move me", "sky", id="pm"), Project("Stay", "lime", id="ps")],
+                    [Task("m1", project_id="pm", id="m1"), Task("s1", project_id="ps", id="s1"),
+                     Task("m2", project_id="pm", id="m2")], src_p, dict(fx.SETTINGS))
+        fx.write_board(src_p, src, {"m1": "2026-10-30T09:00:00"})
+        dst = Board([], [Task("d1", id="d1")], dst_p, dict(fx.SETTINGS))
+        fx.write_board(dst_p, dst, {})
+        src, dst = Board.load(src_p), peek_board(dst_p)
+        plan = move_plan(src, dst, "pm", set(), set())
+        assert plan.refusal is None, plan.refusal
+        move_project(src, dst, "pm", plan, "2026-11-01", ("Src", "Dst"))
+        recs = _file(dst_p)["tasks"]
+        assert [r["id"] for r in recs] == ["d1", "m1", "m2"]
+        assert recs[1].get("created") == "2026-10-30T09:00:00"
+        assert "created" not in recs[2]
+        moved = Board.load(dst_p)
+>       assert created_of(moved.task_by_id("m1")) == "2026-10-30T09:00:00"
+
+tests\test_task_created.py:279: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+tests\added_list_fixture.py:59: in created_of
+    need_created_field()
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+    def need_created_field() -> None:
+        if "created" not in {f.name for f in fields(Task)}:
+>           pytest.fail("Task.created missing: the dataclass has no `created` field (not built yet)")
+E           Failed: Task.created missing: the dataclass has no `created` field (not built yet)
+
+tests\added_list_fixture.py:54: Failed
+_________ test_TC_4310_undo_restores_a_deleted_task_with_its_created __________
+
+tmp_path = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-31620/test_TC_4310_undo_restores_a_d0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x000002F5A03A8EF0>
+
+    async def test_TC_4310_undo_restores_a_deleted_task_with_its_created(tmp_path, monkeypatch):
+        """TC-4310 (LLR-4301.10): `d`, `y`, `u` on a stamped and on an unstamped task \u2192 each
+        back with `created` as it was and the file the same (NC re-stamp on restore)."""
+        path = _single_board(tmp_path)
+        monkeypatch.setattr(models, "datetime", fx.FixedNow, raising=False)
+        app = _app(path)
+        async with app.run_test(size=(118, 30)) as pilot:
+            await pilot.pause()
+            for tid in ("ta1", "ta2"):
+                app.selected_task_id = tid
+                await press(pilot, "d", "y")
+                assert app.board.task_by_id(tid) is None
+                await press(pilot, "u")
+                assert app.board.task_by_id(tid) is not None
+        assert [t.id for t in app.board.tasks][:3] == ["ta1", "ta2", "ta3"]
+        recs = _records(path)
+>       assert created_of(app.board.task_by_id("ta1")) == "2026-10-31T18:20:00"
+
+tests\test_task_created.py:299: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+tests\added_list_fixture.py:59: in created_of
+    need_created_field()
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+    def need_created_field() -> None:
+        if "created" not in {f.name for f in fields(Task)}:
+>           pytest.fail("Task.created missing: the dataclass has no `created` field (not built yet)")
+E           Failed: Task.created missing: the dataclass has no `created` field (not built yet)
+
+tests\added_list_fixture.py:54: Failed
+_________________ test_TC_4311_a_rescued_entry_is_not_stamped _________________
+
+    def test_TC_4311_a_rescued_entry_is_not_stamped():
+        """TC-4311 (LLR-4301.11): an unreadable entry rescued (`Task.from_dict(["x"])`, or
+        `_rescue_task` on a dict that tripped the parser) has `created` None — even when the
+        entry held a `created` string (it survives only in the rescued notes)."""
+        t = Task.from_dict(["x"])
+        assert t.title == "(recovered task)" and t.extra.get("_rescued") is True
+>       assert created_of(t) is None
+
+tests\test_task_created.py:311: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+tests\added_list_fixture.py:59: in created_of
+    need_created_field()
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+    def need_created_field() -> None:
+        if "created" not in {f.name for f in fields(Task)}:
+>           pytest.fail("Task.created missing: the dataclass has no `created` field (not built yet)")
+E           Failed: Task.created missing: the dataclass has no `created` field (not built yet)
+
+tests\added_list_fixture.py:54: Failed
+________________ test_TC_4312_created_is_written_only_when_set ________________
+
+tmp_path = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-31620/test_TC_4312_created_is_writte0')
+
+    def test_TC_4312_created_is_written_only_when_set(tmp_path):
+        """TC-4312 (LLR-4302.1): the saved record of `Task("x")` holds no `created` key (NC
+        always write: `"created": null`); with a value the key holds it, just before `id`
+        (group D's field position); a project's record is as at base."""
+>       need_created_field()
+
+tests\test_task_created.py:324: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+    def need_created_field() -> None:
+        if "created" not in {f.name for f in fields(Task)}:
+>           pytest.fail("Task.created missing: the dataclass has no `created` field (not built yet)")
+E           Failed: Task.created missing: the dataclass has no `created` field (not built yet)
+
+tests\added_list_fixture.py:54: Failed
+_______________ test_TC_4313_a_string_created_is_read_as_it_is ________________
+
+tmp_path = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-31620/test_TC_4313_a_string_created_0')
+
+    def test_TC_4313_a_string_created_is_read_as_it_is(tmp_path):
+        """TC-4313 (LLR-4302.2): a `str` `created` is read verbatim — a valid stamp and
+        `"not a date"` alike (validity is the list's concern, LLR-4304.8; NC parse-or-drop on
+        read) — and none lands in `extra`; `Board.load` reads it and writes nothing."""
+        for value in ("2026-10-30T08:10:00", "not a date"):
+            t = Task.from_dict({"title": "a", "created": value})
+>           assert created_of(t) == value and "created" not in t.extra
+
+tests\test_task_created.py:344: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+tests\added_list_fixture.py:59: in created_of
+    need_created_field()
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+    def need_created_field() -> None:
+        if "created" not in {f.name for f in fields(Task)}:
+>           pytest.fail("Task.created missing: the dataclass has no `created` field (not built yet)")
+E           Failed: Task.created missing: the dataclass has no `created` field (not built yet)
+
+tests\added_list_fixture.py:54: Failed
+_________ test_TC_4314_a_non_string_created_is_written_back_unchanged _________
+
+tmp_path = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-31620/test_TC_4314_a_non_string_crea0')
+
+    def test_TC_4314_a_non_string_created_is_written_back_unchanged(tmp_path):
+        """TC-4314 (LLR-4302.3): entries with `"created": 5`, `null` and `true` round-trip
+        load \u2192 save with the same VALUES (the key may move to the front, P-D-3), the field
+        None and the raw value in `extra`; a second save is a fixed point. An entry with no
+        key gains none. NC: drop non-string values."""
+        path = tmp_path / "b" / "board.json"
+        raw = {"phases": ["Backlog", "Done"], "projects": [], "settings": {},
+               "tasks": [{"title": "a", "created": 5, "id": "t5"},
+                         {"title": "b", "created": None, "id": "t6"},
+                         {"title": "c", "created": True, "id": "t7"},
+                         {"title": "d", "id": "t8"}]}
+        path.parent.mkdir(parents=True)
+        path.write_text(json.dumps(raw, indent=2), encoding="utf-8")
+        board = Board.load(path)
+        for tid, value in (("t5", 5), ("t6", None), ("t7", True)):
+            t = board.task_by_id(tid)
+>           assert created_of(t) is None and "created" in t.extra and t.extra["created"] == value
+
+tests\test_task_created.py:369: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+tests\added_list_fixture.py:59: in created_of
+    need_created_field()
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+    def need_created_field() -> None:
+        if "created" not in {f.name for f in fields(Task)}:
+>           pytest.fail("Task.created missing: the dataclass has no `created` field (not built yet)")
+E           Failed: Task.created missing: the dataclass has no `created` field (not built yet)
+
+tests\added_list_fixture.py:54: Failed
+________________ test_TC_4318_the_team_push_carries_no_created ________________
+
+tmp_path = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-31620/test_TC_4318_the_team_push_car0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x000002F5A1FA7FB0>
+
+    def test_TC_4318_the_team_push_carries_no_created(tmp_path, monkeypatch):
+        """TC-4318 (LLR-4302.7, SEC-1): `Board._to_dict(task)` — the push's own call — holds
+        no `created` for a stamped task nor for one whose raw `created` sits in `extra` (and
+        leaves that `extra` as it was); `Board._serialized()` holds both; the pushed
+        `board.<user>.json` records hold no `created` key. NC: the push record keeps it."""
+>       need_created_field()
+
+tests\test_task_created.py:491: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+    def need_created_field() -> None:
+        if "created" not in {f.name for f in fields(Task)}:
+>           pytest.fail("Task.created missing: the dataclass has no `created` field (not built yet)")
+E           Failed: Task.created missing: the dataclass has no `created` field (not built yet)
+
+tests\added_list_fixture.py:54: Failed
+_______ test_AT_4302_a_task_added_on_an_old_board_is_first_in_the_list ________
+
+home = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-31620/test_AT_4302_a_task_added_on_a0/.taskboard')
+
+    async def test_AT_4302_a_task_added_on_an_old_board_is_first_in_the_list(home):
+        """AT-4302 (HLR-4301, HLR-4302, HLR-4304): on the registry's boards, `a`, `Call the
+        bank`, `alt+s` \u2192 Alpha's file holds its `created` 2026-11-01T08:10:00 and every old
+        entry's slice is byte-identical; `N` \u2192 `Call the bank` is row 0 with `08:10` under
+        TODAY, the cursor on it, the pane's source line `the created field`; row 1 `Pay the
+        rent`."""
+        fx.build(home)
+        alpha = fx.board_path(home, "alpha")
+        app = open_s_app()
+        async with app.run_test(size=(118, 30)) as pilot:
+            await pilot.pause()
+            await press(pilot, "escape")
+            old = _file(alpha)["tasks"]
+            await press(pilot, "a")
+            await pilot.press(*"Call the bank")
+            await press(pilot, "alt+s")
+            new = next(t for t in app.board.tasks if t.title == "Call the bank")
+>           assert _records(alpha)[new.id].get("created") == ADD_AT
+E           AssertionError: assert None == '2026-11-01T08:10:00'
+E            +  where None = <built-in method get of dict object at 0x000002F5A2A168C0>('created')
+E            +    where <built-in method get of dict object at 0x000002F5A2A168C0> = {'archived': False, 'blocked': False, 'depends_on': [], 'due_date': None, ...}.get
+
+tests\test_task_created.py:533: AssertionError
+________ test_AT_4303_a_template_insert_lists_its_tasks_with_one_time _________
+
+home = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-31620/test_AT_4303_a_template_insert0/.taskboard')
+
+    async def test_AT_4303_a_template_insert_lists_its_tasks_with_one_time(home):
+        """AT-4303 (HLR-4301, HLR-4304): `I`, `Simple chain` \u2192 Alpha gains Plan, Build, Ship,
+        each created 2026-11-01T08:10:00, history still 1 line; `N` \u2192 rows 0\u20132 Ship, Build,
+        Plan (one moment: ties by file position, newest first the exact reverse) with one
+        label `08:10` under TODAY; row 3 `Pay the rent`."""
+        fx.build(home)
+        alpha = fx.board_path(home, "alpha")
+        app = open_s_app()
+        async with app.run_test(size=(118, 30)) as pilot:
+            await pilot.pause()
+            await press(pilot, "escape")
+            app.selected_task_id = "ta1"
+            await press(pilot, "I")
+            await press(pilot, "down", "enter")
+            recs = _file(alpha)["tasks"]
+            assert [r["title"] for r in recs[3:]] == ["Plan", "Build", "Ship"]
+>           assert [r.get("created") for r in recs[3:]] == [ADD_AT] * 3
+E           AssertionError: assert [None, None, None] == ['2026-11-01T...-01T08:10:00']
+E             
+E             At index 0 diff: None != '2026-11-01T08:10:00'
+E             Use -v to get more diff
+
+tests\test_task_created.py:561: AssertionError
+_____ test_TC_4361_a_valid_created_is_the_moment_even_with_a_birth_record _____
+
+tmp_path = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-31620/test_TC_4361_a_valid_created_i0')
+
+    def test_TC_4361_a_valid_created_is_the_moment_even_with_a_birth_record(tmp_path):
+        """TC-4361 (LLR-4304.1): F-V's stamped tasks are source `c` at their created; a task
+        with a created AND a birth record of another time takes the created (NC prefer
+        history \u2192 2026-10-20 10:00)."""
+>       rows = _by_id(_rows(fx.fv_lanes(tmp_path)))
+
+tests\test_added_list.py:166: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+tests\test_added_list.py:62: in _rows
+    return _v("added_rows")(lanes)
+tests\test_added_list.py:58: in _v
+    return need(views, name)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+module = <module 'taskboard.views' from 'C:\\Users\\jjgh8\\Github\\taskboard-wt\\incL-base\\taskboard\\views.py'>
+name = 'added_rows'
+
+    def need(module, name: str):
+        """`module.name`, or a test failure that says the increment's name is missing."""
+        obj = getattr(module, name, None)
+        if obj is None:
+>           pytest.fail(f"{module.__name__}.{name} missing (not built yet)")
+E           Failed: taskboard.views.added_rows missing (not built yet)
+
+tests\added_list_fixture.py:48: Failed
+____________ test_TC_4362_no_created_takes_the_first_birth_record _____________
+
+tmp_path = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-31620/test_TC_4362_no_created_takes_0')
+
+    def test_TC_4362_no_created_takes_the_first_birth_record(tmp_path):
+        """TC-4362 (LLR-4304.2): w3 has births at 10-28 10:30 then 10-29 11:00 \u2192 source `h`
+        at the FIRST (NC last record \u2192 10-29)."""
+>       w3 = _by_id(_rows(fx.fv_lanes(tmp_path)))["w3"]
+
+tests\test_added_list.py:180: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+tests\test_added_list.py:62: in _rows
+    return _v("added_rows")(lanes)
+tests\test_added_list.py:58: in _v
+    return need(views, name)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+module = <module 'taskboard.views' from 'C:\\Users\\jjgh8\\Github\\taskboard-wt\\incL-base\\taskboard\\views.py'>
+name = 'added_rows'
+
+    def need(module, name: str):
+        """`module.name`, or a test failure that says the increment's name is missing."""
+        obj = getattr(module, name, None)
+        if obj is None:
+>           pytest.fail(f"{module.__name__}.{name} missing (not built yet)")
+E           Failed: taskboard.views.added_rows missing (not built yet)
+
+tests\added_list_fixture.py:48: Failed
+______________ test_TC_4363_neither_created_nor_birth_is_unknown ______________
+
+tmp_path = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-31620/test_TC_4363_neither_created_n0')
+
+    def test_TC_4363_neither_created_nor_birth_is_unknown(tmp_path):
+        """TC-4363 (LLR-4304.3): w1, w5 (archived) and h1 \u2192 source `?`, moment None (NC a
+        file-time guess); every task of every lane is a row, archived included, lane then file
+        position, each with its lane and position."""
+>       rows = _rows(fx.fv_lanes(tmp_path))
+
+tests\test_added_list.py:188: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+tests\test_added_list.py:62: in _rows
+    return _v("added_rows")(lanes)
+tests\test_added_list.py:58: in _v
+    return need(views, name)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+module = <module 'taskboard.views' from 'C:\\Users\\jjgh8\\Github\\taskboard-wt\\incL-base\\taskboard\\views.py'>
+name = 'added_rows'
+
+    def need(module, name: str):
+        """`module.name`, or a test failure that says the increment's name is missing."""
+        obj = getattr(module, name, None)
+        if obj is None:
+>           pytest.fail(f"{module.__name__}.{name} missing (not built yet)")
+E           Failed: taskboard.views.added_rows missing (not built yet)
+
+tests\added_list_fixture.py:48: Failed
+___________ test_TC_4368_a_created_that_is_not_a_date_is_no_created ___________
+
+tmp_path = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-31620/test_TC_4368_a_created_that_is0')
+
+    def test_TC_4368_a_created_that_is_not_a_date_is_no_created(tmp_path):
+        """TC-4368 (LLR-4304.8): `added_moment` gives None for "not a date" and for 5, a
+        naive datetime for "2026-10-31"; a task whose created is "not a date" is `h` with a
+        birth, `?` without; 0 exceptions (NC crash on parse)."""
+>       added_moment = _v("added_moment")
+
+tests\test_added_list.py:201: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+tests\test_added_list.py:58: in _v
+    return need(views, name)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+module = <module 'taskboard.views' from 'C:\\Users\\jjgh8\\Github\\taskboard-wt\\incL-base\\taskboard\\views.py'>
+name = 'added_moment'
+
+    def need(module, name: str):
+        """`module.name`, or a test failure that says the increment's name is missing."""
+        obj = getattr(module, name, None)
+        if obj is None:
+>           pytest.fail(f"{module.__name__}.{name} missing (not built yet)")
+E           Failed: taskboard.views.added_moment missing (not built yet)
+
+tests\added_list_fixture.py:48: Failed
+______________ test_TC_4373_an_offset_aware_moment_is_not_valid _______________
+
+tmp_path = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-31620/test_TC_4373_an_offset_aware_m0')
+
+    def test_TC_4373_an_offset_aware_moment_is_not_valid(tmp_path):
+        """TC-4373 (LLR-4304.13, ARCH-3): `added_moment` of "…+00:00" is None (no conversion,
+        the same on every machine); such a created with no birth \u2192 `?`, with a birth \u2192 `h`;
+        a birth `at` with an offset is no birth; 0 exceptions (NC convert/strip the offset \u2192
+        source `c`)."""
+>       assert _v("added_moment")("2026-10-31T18:20:00+00:00") is None
+
+tests\test_added_list.py:219: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+tests\test_added_list.py:58: in _v
+    return need(views, name)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+module = <module 'taskboard.views' from 'C:\\Users\\jjgh8\\Github\\taskboard-wt\\incL-base\\taskboard\\views.py'>
+name = 'added_moment'
+
+    def need(module, name: str):
+        """`module.name`, or a test failure that says the increment's name is missing."""
+        obj = getattr(module, name, None)
+        if obj is None:
+>           pytest.fail(f"{module.__name__}.{name} missing (not built yet)")
+E           Failed: taskboard.views.added_moment missing (not built yet)
+
+tests\added_list_fixture.py:48: Failed
+___ test_TC_4373b_a_zulu_or_pre_1970_offset_moment_is_none_without_raising ____
+
+    def test_TC_4373b_a_zulu_or_pre_1970_offset_moment_is_none_without_raising():
+        """TC-4373b (LLR-4304.13): "\u2026Z" and "1960-01-01T00:00:00+00:00" \u2192 None, no exception
+        (the conversion P-V-2 guarded is gone, ARCH-3)."""
+>       added_moment = _v("added_moment")
+
+tests\test_added_list.py:235: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+tests\test_added_list.py:58: in _v
+    return need(views, name)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+module = <module 'taskboard.views' from 'C:\\Users\\jjgh8\\Github\\taskboard-wt\\incL-base\\taskboard\\views.py'>
+name = 'added_moment'
+
+    def need(module, name: str):
+        """`module.name`, or a test failure that says the increment's name is missing."""
+        obj = getattr(module, name, None)
+        if obj is None:
+>           pytest.fail(f"{module.__name__}.{name} missing (not built yet)")
+E           Failed: taskboard.views.added_moment missing (not built yet)
+
+tests\added_list_fixture.py:48: Failed
+_______ test_TC_4372_a_history_read_that_raises_oserror_gives_no_births _______
+
+tmp_path = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-31620/test_TC_4372_a_history_read_th0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x000002F5A26DA9C0>
+
+    def test_TC_4372_a_history_read_that_raises_oserror_gives_no_births(tmp_path, monkeypatch):
+        """TC-4372 (LLR-4304.12): `history.read` raising PermissionError \u2192 rows built, the
+        unstamped task `?`, the stamped one `c`, no exception; the same when history.jsonl is
+        a folder (a real OSError through the real read). NC an unguarded read."""
+        real = history.read
+    
+        def refuse(_path):
+            raise PermissionError(13, "Permission denied")
+    
+        lanes = _unreadable_history_lanes(tmp_path)
+>       assert _by_id(_rows(lanes))["s2"].source == "h"            # readable: the birth counts
+
+tests\test_added_list.py:272: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+tests\test_added_list.py:62: in _rows
+    return _v("added_rows")(lanes)
+tests\test_added_list.py:58: in _v
+    return need(views, name)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+module = <module 'taskboard.views' from 'C:\\Users\\jjgh8\\Github\\taskboard-wt\\incL-base\\taskboard\\views.py'>
+name = 'added_rows'
+
+    def need(module, name: str):
+        """`module.name`, or a test failure that says the increment's name is missing."""
+        obj = getattr(module, name, None)
+        if obj is None:
+>           pytest.fail(f"{module.__name__}.{name} missing (not built yet)")
+E           Failed: taskboard.views.added_rows missing (not built yet)
+
+tests\added_list_fixture.py:48: Failed
+________ test_TC_4372b_a_history_file_that_is_not_utf8_gives_no_births ________
+
+tmp_path = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-31620/test_TC_4372b_a_history_file_t0')
+
+    def test_TC_4372b_a_history_file_that_is_not_utf8_gives_no_births(tmp_path):
+        """TC-4372b (LLR-4304.12, P-V-1): a history.jsonl holding the bytes 0xff 0xfe
+        (UnicodeDecodeError, a ValueError) \u2192 rows built, no exception."""
+>       _assert_unread_history(_rows(_unreadable_history_lanes(tmp_path, b"\xff\xfe\n")))
+
+tests\test_added_list.py:285: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+tests\test_added_list.py:62: in _rows
+    return _v("added_rows")(lanes)
+tests\test_added_list.py:58: in _v
+    return need(views, name)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+module = <module 'taskboard.views' from 'C:\\Users\\jjgh8\\Github\\taskboard-wt\\incL-base\\taskboard\\views.py'>
+name = 'added_rows'
+
+    def need(module, name: str):
+        """`module.name`, or a test failure that says the increment's name is missing."""
+        obj = getattr(module, name, None)
+        if obj is None:
+>           pytest.fail(f"{module.__name__}.{name} missing (not built yet)")
+E           Failed: taskboard.views.added_rows missing (not built yet)
+
+tests\added_list_fixture.py:48: Failed
+_________ test_TC_4372c_a_deeply_nested_history_line_gives_no_births __________
+
+tmp_path = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-31620/test_TC_4372c_a_deeply_nested_0')
+
+    def test_TC_4372c_a_deeply_nested_history_line_gives_no_births(tmp_path):
+        """TC-4372c (LLR-4304.12, SEC-2): one line of 10 000 nested `[` (RecursionError from
+        the base `history.read`) \u2192 rows built, no exception."""
+        line = ("[" * 10000 + "]" * 10000 + "\n").encode()
+>       _assert_unread_history(_rows(_unreadable_history_lanes(tmp_path, line)))
+
+tests\test_added_list.py:292: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+tests\test_added_list.py:62: in _rows
+    return _v("added_rows")(lanes)
+tests\test_added_list.py:58: in _v
+    return need(views, name)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+module = <module 'taskboard.views' from 'C:\\Users\\jjgh8\\Github\\taskboard-wt\\incL-base\\taskboard\\views.py'>
+name = 'added_rows'
+
+    def need(module, name: str):
+        """`module.name`, or a test failure that says the increment's name is missing."""
+        obj = getattr(module, name, None)
+        if obj is None:
+>           pytest.fail(f"{module.__name__}.{name} missing (not built yet)")
+E           Failed: taskboard.views.added_rows missing (not built yet)
+
+tests\added_list_fixture.py:48: Failed
+________ test_TC_4377_a_task_id_that_is_not_a_string_is_listed_unknown ________
+
+tmp_path = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-31620/test_TC_4377_a_task_id_that_is0')
+
+    def test_TC_4377_a_task_id_that_is_not_a_string_is_listed_unknown(tmp_path):
+        """TC-4377 (LLR-4304.17, SEC-3): a peeked board holding tasks of id ["x"] and
+        {"a": 1}, and a birth record for "x" \u2192 both listed `?`; the cursor on each paints the
+        pane; a task waiting on "x" shows `after: x` (the list id resolves no title); 0
+        exceptions (NC `births.get(task.id)` \u2192 TypeError)."""
+        folder = tmp_path / "odd"
+        folder.mkdir()
+        (folder / "board.json").write_text(json.dumps({
+            "phases": ["Todo", "Doing", "Done"], "projects": [], "settings": {},
+            "tasks": [{"title": "Odd", "id": ["x"]}, {"title": "Odder", "id": {"a": 1}},
+                      {"title": "Waits", "id": "w", "depends_on": ["x"],
+                       "created": "2026-10-31T18:20:00"}]}), encoding="utf-8")
+        fx.write_history(folder, [fx.birth("x", "2026-10-28T10:30:00", "Todo")])
+        board = Board.load(folder / "board.json")
+        assert [t.id for t in board.tasks][:2] == [["x"], {"a": 1}]
+        lanes = [("Odd", "pink", board, "")]
+>       rows = _rows(lanes)
+
+tests\test_added_list.py:311: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+tests\test_added_list.py:62: in _rows
+    return _v("added_rows")(lanes)
+tests\test_added_list.py:58: in _v
+    return need(views, name)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+module = <module 'taskboard.views' from 'C:\\Users\\jjgh8\\Github\\taskboard-wt\\incL-base\\taskboard\\views.py'>
+name = 'added_rows'
+
+    def need(module, name: str):
+        """`module.name`, or a test failure that says the increment's name is missing."""
+        obj = getattr(module, name, None)
+        if obj is None:
+>           pytest.fail(f"{module.__name__}.{name} missing (not built yet)")
+E           Failed: taskboard.views.added_rows missing (not built yet)
+
+tests\added_list_fixture.py:48: Failed
+__________ test_TC_4364_ties_break_by_board_order_then_file_position __________
+
+    def test_TC_4364_ties_break_by_board_order_then_file_position():
+        """TC-4364 (LLR-4304.4): the shuffled input D(1,1,10:00) E(0,2,09:00) B(1,0,?)
+        C(0,1,10:00) A(0,0,?), oldest first \u2192 A, B, E, C, D; two rows of one moment on two
+        boards follow the registry order whichever comes first in the input (NC sort by
+        moment alone: input order kept)."""
+>       assert _ids(_order(_five(), newest=False)) == ["A", "B", "E", "C", "D"]
+
+tests\test_added_list.py:337: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+tests\test_added_list.py:327: in _five
+    return [_row(t["D"], 1, 1, "c", ten), _row(t["E"], 0, 2, "c", nine),
+tests\test_added_list.py:86: in _row
+    AddedRow = _v("AddedRow")
+tests\test_added_list.py:58: in _v
+    return need(views, name)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+module = <module 'taskboard.views' from 'C:\\Users\\jjgh8\\Github\\taskboard-wt\\incL-base\\taskboard\\views.py'>
+name = 'AddedRow'
+
+    def need(module, name: str):
+        """`module.name`, or a test failure that says the increment's name is missing."""
+        obj = getattr(module, name, None)
+        if obj is None:
+>           pytest.fail(f"{module.__name__}.{name} missing (not built yet)")
+E           Failed: taskboard.views.AddedRow missing (not built yet)
+
+tests\added_list_fixture.py:48: Failed
+_______________ test_TC_4366b_newest_first_is_the_exact_reverse _______________
+
+tmp_path = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-31620/test_TC_4366b_newest_first_is_0')
+
+    def test_TC_4366b_newest_first_is_the_exact_reverse(tmp_path):
+        """TC-4366b (LLR-4304.6): the same shuffled input, newest first \u2192 D, C, E, B, A \u2014
+        the exact reverse of oldest first; F-V likewise."""
+>       assert _ids(_order(_five(), newest=True)) == ["D", "C", "E", "B", "A"]
+
+tests\test_added_list.py:349: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+tests\test_added_list.py:327: in _five
+    return [_row(t["D"], 1, 1, "c", ten), _row(t["E"], 0, 2, "c", nine),
+tests\test_added_list.py:86: in _row
+    AddedRow = _v("AddedRow")
+tests\test_added_list.py:58: in _v
+    return need(views, name)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+module = <module 'taskboard.views' from 'C:\\Users\\jjgh8\\Github\\taskboard-wt\\incL-base\\taskboard\\views.py'>
+name = 'AddedRow'
+
+    def need(module, name: str):
+        """`module.name`, or a test failure that says the increment's name is missing."""
+        obj = getattr(module, name, None)
+        if obj is None:
+>           pytest.fail(f"{module.__name__}.{name} missing (not built yet)")
+E           Failed: taskboard.views.AddedRow missing (not built yet)
+
+tests\added_list_fixture.py:48: Failed
+________ test_TC_4365_unknown_rows_come_first_in_board_then_file_order ________
+
+tmp_path = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-31620/test_TC_4365_unknown_rows_come0')
+
+    def test_TC_4365_unknown_rows_come_first_in_board_then_file_order(tmp_path):
+        """TC-4365 (LLR-4304.5): F-V rows given in REVERSE (lane, pos) order, oldest first \u2192
+        w1, h1, w3, w2, h2, w4: the 2 unknown rows are rows 0–1 in file order (NC unknowns in
+        input order: h1, w1 …; NC unknowns last)."""
+>       rows = list(reversed(_rows(fx.fv_lanes(tmp_path))))
+
+tests\test_added_list.py:358: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+tests\test_added_list.py:62: in _rows
+    return _v("added_rows")(lanes)
+tests\test_added_list.py:58: in _v
+    return need(views, name)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+module = <module 'taskboard.views' from 'C:\\Users\\jjgh8\\Github\\taskboard-wt\\incL-base\\taskboard\\views.py'>
+name = 'added_rows'
+
+    def need(module, name: str):
+        """`module.name`, or a test failure that says the increment's name is missing."""
+        obj = getattr(module, name, None)
+        if obj is None:
+>           pytest.fail(f"{module.__name__}.{name} missing (not built yet)")
+E           Failed: taskboard.views.added_rows missing (not built yet)
+
+tests\added_list_fixture.py:48: Failed
+__ test_TC_4365b_with_archived_shown_unknowns_stay_in_board_then_file_order ___
+
+tmp_path = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-31620/test_TC_4365b_with_archived_sh0')
+
+    def test_TC_4365b_with_archived_shown_unknowns_stay_in_board_then_file_order(tmp_path):
+        """TC-4365b (LLR-4304.5): the reversed input, archived shown \u2192 w1, w5, h1, w3, w2,
+        h2, w4 (w5 at Work's position 4 before Home's lane)."""
+>       rows = list(reversed(_rows(fx.fv_lanes(tmp_path))))
+
+tests\test_added_list.py:366: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+tests\test_added_list.py:62: in _rows
+    return _v("added_rows")(lanes)
+tests\test_added_list.py:58: in _v
+    return need(views, name)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+module = <module 'taskboard.views' from 'C:\\Users\\jjgh8\\Github\\taskboard-wt\\incL-base\\taskboard\\views.py'>
+name = 'added_rows'
+
+    def need(module, name: str):
+        """`module.name`, or a test failure that says the increment's name is missing."""
+        obj = getattr(module, name, None)
+        if obj is None:
+>           pytest.fail(f"{module.__name__}.{name} missing (not built yet)")
+E           Failed: taskboard.views.added_rows missing (not built yet)
+
+tests\added_list_fixture.py:48: Failed
+____________ test_TC_4391_archived_tasks_are_left_out_while_hidden ____________
+
+tmp_path = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-31620/test_TC_4391_archived_tasks_ar0')
+
+    def test_TC_4391_archived_tasks_are_left_out_while_hidden(tmp_path):
+        """TC-4391 (LLR-4306.1): newest first, archived hidden \u2192 w4, h2, w2, w3, h1, w1 (6,
+        w5 absent; NC no filter \u2192 7); shown \u2192 w5 between h1 and w1 (7)."""
+>       rows = _rows(fx.fv_lanes(tmp_path))
+
+tests\test_added_list.py:373: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+tests\test_added_list.py:62: in _rows
+    return _v("added_rows")(lanes)
+tests\test_added_list.py:58: in _v
+    return need(views, name)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+module = <module 'taskboard.views' from 'C:\\Users\\jjgh8\\Github\\taskboard-wt\\incL-base\\taskboard\\views.py'>
+name = 'added_rows'
+
+    def need(module, name: str):
+        """`module.name`, or a test failure that says the increment's name is missing."""
+        obj = getattr(module, name, None)
+        if obj is None:
+>           pytest.fail(f"{module.__name__}.{name} missing (not built yet)")
+E           Failed: taskboard.views.added_rows missing (not built yet)
+
+tests\added_list_fixture.py:48: Failed
+__________ test_TC_4370_first_created_is_the_earliest_valid_created ___________
+
+tmp_path = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-31620/test_TC_4370_first_created_is_0')
+
+    def test_TC_4370_first_created_is_the_earliest_valid_created(tmp_path):
+        """TC-4370 (LLR-4304.10's first created date): over every F-V row (archived
+        included) the earliest valid created is 2026-10-31 18:20."""
+>       rows = _rows(fx.fv_lanes(tmp_path))
+
+tests\test_added_list.py:381: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+tests\test_added_list.py:62: in _rows
+    return _v("added_rows")(lanes)
+tests\test_added_list.py:58: in _v
+    return need(views, name)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+module = <module 'taskboard.views' from 'C:\\Users\\jjgh8\\Github\\taskboard-wt\\incL-base\\taskboard\\views.py'>
+name = 'added_rows'
+
+    def need(module, name: str):
+        """`module.name`, or a test failure that says the increment's name is missing."""
+        obj = getattr(module, name, None)
+        if obj is None:
+>           pytest.fail(f"{module.__name__}.{name} missing (not built yet)")
+E           Failed: taskboard.views.added_rows missing (not built yet)
+
+tests\added_list_fixture.py:48: Failed
+_________ test_TC_4370_the_source_line_names_how_the_moment_is_known __________
+
+tmp_path = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-31620/test_TC_4370_the_source_line_n0')
+
+    def test_TC_4370_the_source_line_names_how_the_moment_is_known(tmp_path):
+        """TC-4370 (LLR-4304.10): the pane's source line for w2 (`c`), w3 (`h`) and h1 (`?`)
+        at 118x30; at 80x24 it wraps inside the pane, never clipped (P-V-3). NC omit `#n`."""
+        want = {2: "added Sat Oct 31 · 18:20 · the created field",
+                3: "added \u2248 Wed Oct 28 \xb7 10:30 \xb7 from history.jsonl",
+                4: "added: unknown, before Oct 31 · #1 in Home's board file"}
+        for sel, line in want.items():
+>           body, listed = _fv_body(tmp_path / str(sel), sel=sel)
+
+tests\test_added_list.py:392: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+tests\test_added_list.py:106: in _fv_body
+    return _listed_body(fx.fv_lanes(tmp_path), sel, newest, show, fx.fv_people(), width,
+tests\test_added_list.py:96: in _listed_body
+    rows = _rows(lanes)
+tests\test_added_list.py:62: in _rows
+    return _v("added_rows")(lanes)
+tests\test_added_list.py:58: in _v
+    return need(views, name)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+module = <module 'taskboard.views' from 'C:\\Users\\jjgh8\\Github\\taskboard-wt\\incL-base\\taskboard\\views.py'>
+name = 'added_rows'
+
+    def need(module, name: str):
+        """`module.name`, or a test failure that says the increment's name is missing."""
+        obj = getattr(module, name, None)
+        if obj is None:
+>           pytest.fail(f"{module.__name__}.{name} missing (not built yet)")
+E           Failed: taskboard.views.added_rows missing (not built yet)
+
+tests\added_list_fixture.py:48: Failed
+_ test_TC_4371_with_no_valid_created_anywhere_unknowns_sit_before_any_record __
+
+tmp_path = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-31620/test_TC_4371_with_no_valid_cre0')
+
+    def test_TC_4371_with_no_valid_created_anywhere_unknowns_sit_before_any_record(tmp_path):
+        """TC-4371 (LLR-4304.11): a board of 2 unknown tasks \u2192 first None and the header
+        `BEFORE ANY RECORD · ?` (NC `BEFORE NONE · ?`); a board whose only stamped task is
+        archived and hidden still dates the header `BEFORE OCT 30 · ?` (ARCH-8: archived
+        included)."""
+        lanes = fx.solo_lanes(tmp_path / "a", [Task("One", id="s1"), Task("Two", id="s2")])
+>       rows = _rows(lanes)
+
+tests\test_added_list.py:404: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+tests\test_added_list.py:62: in _rows
+    return _v("added_rows")(lanes)
+tests\test_added_list.py:58: in _v
+    return need(views, name)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+module = <module 'taskboard.views' from 'C:\\Users\\jjgh8\\Github\\taskboard-wt\\incL-base\\taskboard\\views.py'>
+name = 'added_rows'
+
+    def need(module, name: str):
+        """`module.name`, or a test failure that says the increment's name is missing."""
+        obj = getattr(module, name, None)
+        if obj is None:
+>           pytest.fail(f"{module.__name__}.{name} missing (not built yet)")
+E           Failed: taskboard.views.added_rows missing (not built yet)
+
+tests\added_list_fixture.py:48: Failed
+__ test_TC_4375_with_no_valid_created_the_unknown_source_line_names_no_date ___
+
+tmp_path = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-31620/test_TC_4375_with_no_valid_cre0')
+
+    def test_TC_4375_with_no_valid_created_the_unknown_source_line_names_no_date(tmp_path):
+        """TC-4375 (LLR-4304.15): no valid created anywhere \u2192 `added: unknown \xb7 #2 in Solo's
+        board file` for the board's second task (NC `before None`); F-V's h1 rendered with
+        `first` None \u2192 `added: unknown \xb7 #1 in Home's board file`."""
+        lanes = fx.solo_lanes(tmp_path, [Task("One", id="s1"), Task("Two", id="s2")])
+>       body, listed = _listed_body(lanes, sel=1, newest=False)
+
+tests\test_added_list.py:422: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+tests\test_added_list.py:96: in _listed_body
+    rows = _rows(lanes)
+tests\test_added_list.py:62: in _rows
+    return _v("added_rows")(lanes)
+tests\test_added_list.py:58: in _v
+    return need(views, name)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+module = <module 'taskboard.views' from 'C:\\Users\\jjgh8\\Github\\taskboard-wt\\incL-base\\taskboard\\views.py'>
+name = 'added_rows'
+
+    def need(module, name: str):
+        """`module.name`, or a test failure that says the increment's name is missing."""
+        obj = getattr(module, name, None)
+        if obj is None:
+>           pytest.fail(f"{module.__name__}.{name} missing (not built yet)")
+E           Failed: taskboard.views.added_rows missing (not built yet)
+
+tests\added_list_fixture.py:48: Failed
+___________ test_TC_4327_the_body_at_118x30_is_the_designed_capture ___________
+
+tmp_path = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-31620/test_TC_4327_the_body_at_118x30')
+
+    def test_TC_4327_the_body_at_118x30_is_the_designed_capture(tmp_path):
+        """TC-4327 / TC-4328 / TC-4329 / TC-4330 (LLR-4303.7..4303.10): F-V, newest first,
+        the cursor on w2, render 116x29 \u2192 the 29 lines of graph-proto-V's capture exactly:
+        every line 116 cells, `\u2502` at cell 47 (lw 46 + 1) on lines 2\u201328 and nowhere else."""
+>       body, _ = _fv_body(tmp_path)
+
+tests\test_added_list.py:439: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+tests\test_added_list.py:106: in _fv_body
+    return _listed_body(fx.fv_lanes(tmp_path), sel, newest, show, fx.fv_people(), width,
+tests\test_added_list.py:96: in _listed_body
+    rows = _rows(lanes)
+tests\test_added_list.py:62: in _rows
+    return _v("added_rows")(lanes)
+tests\test_added_list.py:58: in _v
+    return need(views, name)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+module = <module 'taskboard.views' from 'C:\\Users\\jjgh8\\Github\\taskboard-wt\\incL-base\\taskboard\\views.py'>
+name = 'added_rows'
+
+    def need(module, name: str):
+        """`module.name`, or a test failure that says the increment's name is missing."""
+        obj = getattr(module, name, None)
+        if obj is None:
+>           pytest.fail(f"{module.__name__}.{name} missing (not built yet)")
+E           Failed: taskboard.views.added_rows missing (not built yet)
+
+tests\added_list_fixture.py:48: Failed
+___________ test_TC_4327_the_body_at_80x24_is_the_designed_capture ____________
+
+tmp_path = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-31620/test_TC_4327_the_body_at_80x240')
+
+    def test_TC_4327_the_body_at_80x24_is_the_designed_capture(tmp_path):
+        """TC-4327 (LLR-4303.7, LLR-4303.11 P-V-3, LLR-4304.14 P-V-6): the same state at
+        78x23 \u2192 23 lines of 78 cells, `\u2502` at cell 35 (lw 34 + 1), the meta and source lines
+        wrapped inside the pane, the head's legend clipped before the archived count."""
+>       body, _ = _fv_body(tmp_path, width=78, height=23)
+
+tests\test_added_list.py:452: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+tests\test_added_list.py:106: in _fv_body
+    return _listed_body(fx.fv_lanes(tmp_path), sel, newest, show, fx.fv_people(), width,
+tests\test_added_list.py:96: in _listed_body
+    rows = _rows(lanes)
+tests\test_added_list.py:62: in _rows
+    return _v("added_rows")(lanes)
+tests\test_added_list.py:58: in _v
+    return need(views, name)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+module = <module 'taskboard.views' from 'C:\\Users\\jjgh8\\Github\\taskboard-wt\\incL-base\\taskboard\\views.py'>
+name = 'added_rows'
+
+    def need(module, name: str):
+        """`module.name`, or a test failure that says the increment's name is missing."""
+        obj = getattr(module, name, None)
+        if obj is None:
+>           pytest.fail(f"{module.__name__}.{name} missing (not built yet)")
+E           Failed: taskboard.views.added_rows missing (not built yet)
+
+tests\added_list_fixture.py:48: Failed
+____________ test_TC_4328_a_row_reads_cursor_time_boxes_hue_title _____________
+
+tmp_path = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-31620/test_TC_4328_a_row_reads_curso0')
+
+    def test_TC_4328_a_row_reads_cursor_time_boxes_hue_title(tmp_path):
+        """TC-4328 (LLR-4303.8): the cursor's row `\u25b618:20  \u25a0\u25a0\u25a1\u25a1 \u258dSync notes` \u2014 `\u25b6` accent,
+        the label ink, `\u25a0\u25a0` ink, `\u25a1\u25a1` dim, `\u258d` the project's hue (blue), the title bold ink
+        (NC boxes after the title); no row exceeds lw; a tab or newline in a title is drawn
+        as one space (P-V-9)."""
+>       body, _ = _fv_body(tmp_path)
+
+tests\test_added_list.py:466: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+tests\test_added_list.py:106: in _fv_body
+    return _listed_body(fx.fv_lanes(tmp_path), sel, newest, show, fx.fv_people(), width,
+tests\test_added_list.py:96: in _listed_body
+    rows = _rows(lanes)
+tests\test_added_list.py:62: in _rows
+    return _v("added_rows")(lanes)
+tests\test_added_list.py:58: in _v
+    return need(views, name)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+module = <module 'taskboard.views' from 'C:\\Users\\jjgh8\\Github\\taskboard-wt\\incL-base\\taskboard\\views.py'>
+name = 'added_rows'
+
+    def need(module, name: str):
+        """`module.name`, or a test failure that says the increment's name is missing."""
+        obj = getattr(module, name, None)
+        if obj is None:
+>           pytest.fail(f"{module.__name__}.{name} missing (not built yet)")
+E           Failed: taskboard.views.added_rows missing (not built yet)
+
+tests\added_list_fixture.py:48: Failed
+____________________ test_TC_4329_day_headers_newest_first ____________________
+
+tmp_path = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-31620/test_TC_4329_day_headers_newes0')
+
+    def test_TC_4329_day_headers_newest_first(tmp_path):
+        """TC-4329 (LLR-4303.9): F-V's headers TODAY, YESTERDAY, WED OCT 28 \u2248, BEFORE OCT 31 \xb7
+        ? on lines 2, 4, 7, 9 (NC no \u2248); one header per day, ` \u2248` only when every row of the
+        day is from history (P-V-5); other days `%a %b %d` upper case, zero-padded."""
+>       body, _ = _fv_body(tmp_path)
+
+tests\test_added_list.py:487: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+tests\test_added_list.py:106: in _fv_body
+    return _listed_body(fx.fv_lanes(tmp_path), sel, newest, show, fx.fv_people(), width,
+tests\test_added_list.py:96: in _listed_body
+    rows = _rows(lanes)
+tests\test_added_list.py:62: in _rows
+    return _v("added_rows")(lanes)
+tests\test_added_list.py:58: in _v
+    return need(views, name)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+module = <module 'taskboard.views' from 'C:\\Users\\jjgh8\\Github\\taskboard-wt\\incL-base\\taskboard\\views.py'>
+name = 'added_rows'
+
+    def need(module, name: str):
+        """`module.name`, or a test failure that says the increment's name is missing."""
+        obj = getattr(module, name, None)
+        if obj is None:
+>           pytest.fail(f"{module.__name__}.{name} missing (not built yet)")
+E           Failed: taskboard.views.added_rows missing (not built yet)
+
+tests\added_list_fixture.py:48: Failed
+______ test_TC_4330_the_pane_heads_with_title_chip_meta_source_and_rule _______
+
+tmp_path = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-31620/test_TC_4330_the_pane_heads_wi0')
+
+    def test_TC_4330_the_pane_heads_with_title_chip_meta_source_and_rule(tmp_path):
+        """TC-4330 (LLR-4303.10): pane lines 1–5 for w2 at 118x30: the title in bold ink;
+        `Eval harness · Work` (project hue, a dim ` · `, the board's colour); the meta line;
+        the source line; a rule of 67 `\u2500` (NC source line missing)."""
+>       body, _ = _fv_body(tmp_path)
+
+tests\test_added_list.py:513: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+tests\test_added_list.py:106: in _fv_body
+    return _listed_body(fx.fv_lanes(tmp_path), sel, newest, show, fx.fv_people(), width,
+tests\test_added_list.py:96: in _listed_body
+    rows = _rows(lanes)
+tests\test_added_list.py:62: in _rows
+    return _v("added_rows")(lanes)
+tests\test_added_list.py:58: in _v
+    return need(views, name)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+module = <module 'taskboard.views' from 'C:\\Users\\jjgh8\\Github\\taskboard-wt\\incL-base\\taskboard\\views.py'>
+name = 'added_rows'
+
+    def need(module, name: str):
+        """`module.name`, or a test failure that says the increment's name is missing."""
+        obj = getattr(module, name, None)
+        if obj is None:
+>           pytest.fail(f"{module.__name__}.{name} missing (not built yet)")
+E           Failed: taskboard.views.added_rows missing (not built yet)
+
+tests\added_list_fixture.py:48: Failed
+__________ test_TC_4331_the_meta_line_holds_every_fact_the_task_has ___________
+
+tmp_path = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-31620/test_TC_4331_the_meta_line_hol0')
+
+    def test_TC_4331_the_meta_line_holds_every_fact_the_task_has(tmp_path):
+        """TC-4331 (LLR-4303.11): w2 (all seven facts) \u2192 `Doing  \u25b2 high  Oct 30\u2192Nov 3  \u25c6
+        milestone  @Ana Ruiz  \u2197 1  \u25a4 1` in one line at 118 (7/7, each in its style), two at
+        80 (7/7, P-V-3); the bare w1 \u2192 `Backlog  \xb7 normal` (2 pieces). NC drop the dates."""
+>       body, _ = _fv_body(tmp_path)
+
+tests\test_added_list.py:531: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+tests\test_added_list.py:106: in _fv_body
+    return _listed_body(fx.fv_lanes(tmp_path), sel, newest, show, fx.fv_people(), width,
+tests\test_added_list.py:96: in _listed_body
+    rows = _rows(lanes)
+tests\test_added_list.py:62: in _rows
+    return _v("added_rows")(lanes)
+tests\test_added_list.py:58: in _v
+    return need(views, name)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+module = <module 'taskboard.views' from 'C:\\Users\\jjgh8\\Github\\taskboard-wt\\incL-base\\taskboard\\views.py'>
+name = 'added_rows'
+
+    def need(module, name: str):
+        """`module.name`, or a test failure that says the increment's name is missing."""
+        obj = getattr(module, name, None)
+        if obj is None:
+>           pytest.fail(f"{module.__name__}.{name} missing (not built yet)")
+E           Failed: taskboard.views.added_rows missing (not built yet)
+
+tests\added_list_fixture.py:48: Failed
+______ test_TC_4332_notes_are_drawn_through_notes_text_never_as_markers _______
+
+tmp_path = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-31620/test_TC_4332_notes_are_drawn_t0')
+
+    def test_TC_4332_notes_are_drawn_through_notes_text_never_as_markers(tmp_path):
+        """TC-4332 (LLR-4303.12): `::b:: ask the vendor ::` \u2192 `ask the vendor` in blue, no
+        `::` drawn (NC plain Text(notes)); a mention drawn `@Ana Ruiz` bold pink; a long
+        green note wraps at the pane width keeping its colour."""
+>       body, _ = _fv_body(tmp_path)
+
+tests\test_added_list.py:553: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+tests\test_added_list.py:106: in _fv_body
+    return _listed_body(fx.fv_lanes(tmp_path), sel, newest, show, fx.fv_people(), width,
+tests\test_added_list.py:96: in _listed_body
+    rows = _rows(lanes)
+tests\test_added_list.py:62: in _rows
+    return _v("added_rows")(lanes)
+tests\test_added_list.py:58: in _v
+    return need(views, name)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+module = <module 'taskboard.views' from 'C:\\Users\\jjgh8\\Github\\taskboard-wt\\incL-base\\taskboard\\views.py'>
+name = 'added_rows'
+
+    def need(module, name: str):
+        """`module.name`, or a test failure that says the increment's name is missing."""
+        obj = getattr(module, name, None)
+        if obj is None:
+>           pytest.fail(f"{module.__name__}.{name} missing (not built yet)")
+E           Failed: taskboard.views.added_rows missing (not built yet)
+
+tests\added_list_fixture.py:48: Failed
+____________ test_TC_4332b_a_huge_note_is_cut_before_it_is_wrapped ____________
+
+tmp_path = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-31620/test_TC_4332b_a_huge_note_is_c0')
+
+    def test_TC_4332b_a_huge_note_is_cut_before_it_is_wrapped(tmp_path):
+        """TC-4332b (SEC-4, addendum A-3): a 5 000 000-character note \u2192 the pane ends
+        `… more lines` (no count) and one paint at 118x30 takes under 50 ms (best of 3; the
+        uncut wrap measured 0.92 s)."""
+        note = "lorem " * (5_000_000 // 6)
+        lanes = fx.solo_lanes(tmp_path, [fx.make_task("Huge", created="2026-11-01T08:00:00",
+                                                      notes=note, id="hg")])
+>       rows = _rows(lanes)
+
+tests\test_added_list.py:584: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+tests\test_added_list.py:62: in _rows
+    return _v("added_rows")(lanes)
+tests\test_added_list.py:58: in _v
+    return need(views, name)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+module = <module 'taskboard.views' from 'C:\\Users\\jjgh8\\Github\\taskboard-wt\\incL-base\\taskboard\\views.py'>
+name = 'added_rows'
+
+    def need(module, name: str):
+        """`module.name`, or a test failure that says the increment's name is missing."""
+        obj = getattr(module, name, None)
+        if obj is None:
+>           pytest.fail(f"{module.__name__}.{name} missing (not built yet)")
+E           Failed: taskboard.views.added_rows missing (not built yet)
+
+tests\added_list_fixture.py:48: Failed
+_____ test_TC_4333_the_pane_lists_urls_images_and_what_the_task_waits_on ______
+
+tmp_path = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-31620/test_TC_4333_the_pane_lists_ur0')
+
+    def test_TC_4333_the_pane_lists_urls_images_and_what_the_task_waits_on(tmp_path):
+        """TC-4333 (LLR-4303.13): after w2's notes: `\u2197 https://example.com/spec` (cyan),
+        `\u25a4 board.png` (muted) and `after: Pilot store list` (muted) \u2014 3/3 (NC drop
+        `after:`)."""
+>       body, _ = _fv_body(tmp_path)
+
+tests\test_added_list.py:599: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+tests\test_added_list.py:106: in _fv_body
+    return _listed_body(fx.fv_lanes(tmp_path), sel, newest, show, fx.fv_people(), width,
+tests\test_added_list.py:96: in _listed_body
+    rows = _rows(lanes)
+tests\test_added_list.py:62: in _rows
+    return _v("added_rows")(lanes)
+tests\test_added_list.py:58: in _v
+    return need(views, name)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+module = <module 'taskboard.views' from 'C:\\Users\\jjgh8\\Github\\taskboard-wt\\incL-base\\taskboard\\views.py'>
+name = 'added_rows'
+
+    def need(module, name: str):
+        """`module.name`, or a test failure that says the increment's name is missing."""
+        obj = getattr(module, name, None)
+        if obj is None:
+>           pytest.fail(f"{module.__name__}.{name} missing (not built yet)")
+E           Failed: taskboard.views.added_rows missing (not built yet)
+
+tests\added_list_fixture.py:48: Failed
+_________ test_TC_4335_the_list_scrolls_to_keep_the_cursor_on_screen __________
+
+tmp_path = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-31620/test_TC_4335_the_list_scrolls_0')
+
+    def test_TC_4335_the_list_scrolls_to_keep_the_cursor_on_screen(tmp_path):
+        """TC-4335 (LLR-4303.15): 40 tasks at 80x24, the cursor on the last (oldest) row \u2192
+        its row `\u25b609:00  \u25a0\u25a1\u25a1 \u258dTask 00` is the last body line under `THU OCT 01` (NC no
+        scroll window: not drawn); with the cursor on row 0 the list starts at the top."""
+>       body, listed = _listed_body(_big(tmp_path), sel=39, width=78, height=23)
+
+tests\test_added_list.py:616: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+tests\test_added_list.py:96: in _listed_body
+    rows = _rows(lanes)
+tests\test_added_list.py:62: in _rows
+    return _v("added_rows")(lanes)
+tests\test_added_list.py:58: in _v
+    return need(views, name)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+module = <module 'taskboard.views' from 'C:\\Users\\jjgh8\\Github\\taskboard-wt\\incL-base\\taskboard\\views.py'>
+name = 'added_rows'
+
+    def need(module, name: str):
+        """`module.name`, or a test failure that says the increment's name is missing."""
+        obj = getattr(module, name, None)
+        if obj is None:
+>           pytest.fail(f"{module.__name__}.{name} missing (not built yet)")
+E           Failed: taskboard.views.added_rows missing (not built yet)
+
+tests\added_list_fixture.py:48: Failed
+_________ test_TC_4335_a_note_longer_than_the_pane_ends_with_a_count __________
+
+tmp_path = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-31620/test_TC_4335_a_note_longer_tha0')
+
+    def test_TC_4335_a_note_longer_than_the_pane_ends_with_a_count(tmp_path):
+        """TC-4335 (P-V-7 under LLR-4303.12): a 40-line note at 80x24 \u2192 body lines 2\u201321 hold
+        pane lines 1–20, line 22 reads `… 26 more lines` in dim; a 100 000-character note
+        reads `… more lines` (cut, no count: A-3)."""
+        note = "\n".join(f"line {i}" for i in range(40))
+        lanes = fx.solo_lanes(tmp_path, [fx.make_task("Long note", created="2026-10-31T18:20:00",
+                                                      notes=note, id="ln")])
+>       body, _ = _listed_body(lanes, width=78, height=23)
+
+tests\test_added_list.py:633: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+tests\test_added_list.py:96: in _listed_body
+    rows = _rows(lanes)
+tests\test_added_list.py:62: in _rows
+    return _v("added_rows")(lanes)
+tests\test_added_list.py:58: in _v
+    return need(views, name)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+module = <module 'taskboard.views' from 'C:\\Users\\jjgh8\\Github\\taskboard-wt\\incL-base\\taskboard\\views.py'>
+name = 'added_rows'
+
+    def need(module, name: str):
+        """`module.name`, or a test failure that says the increment's name is missing."""
+        obj = getattr(module, name, None)
+        if obj is None:
+>           pytest.fail(f"{module.__name__}.{name} missing (not built yet)")
+E           Failed: taskboard.views.added_rows missing (not built yet)
+
+tests\added_list_fixture.py:48: Failed
+_____________________ test_TC_4337_an_empty_list_says_so ______________________
+
+tmp_path = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-31620/test_TC_4337_an_empty_list_say0')
+
+    def test_TC_4337_an_empty_list_says_so(tmp_path):
+        """TC-4337 (LLR-4303.17): rows [] \u2192 the list area's first line `no tasks to list` in
+        dim, the pane blank, `\u2502` still at cell 47 on lines 2\u201328 (NC blank)."""
+>       body = _render([], 0, True, False, 1, 0, None, fx.TODAY, {}, 116, 29)
+
+tests\test_added_list.py:648: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+tests\test_added_list.py:71: in _render
+    return _v("render_added_list")(rows, sel, newest, show, hidden, unread, first, today,
+tests\test_added_list.py:58: in _v
+    return need(views, name)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+module = <module 'taskboard.views' from 'C:\\Users\\jjgh8\\Github\\taskboard-wt\\incL-base\\taskboard\\views.py'>
+name = 'render_added_list'
+
+    def need(module, name: str):
+        """`module.name`, or a test failure that says the increment's name is missing."""
+        obj = getattr(module, name, None)
+        if obj is None:
+>           pytest.fail(f"{module.__name__}.{name} missing (not built yet)")
+E           Failed: taskboard.views.render_added_list missing (not built yet)
+
+tests\added_list_fixture.py:48: Failed
+______ test_TC_4340_board_text_that_looks_like_markup_is_drawn_literally ______
+
+tmp_path = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-31620/test_TC_4340_board_text_that_l0')
+
+    def test_TC_4340_board_text_that_looks_like_markup_is_drawn_literally(tmp_path):
+        """TC-4340 (LLR-4303.20): a title `[red]x[/red]`, a project `[b]P[/b]`, a board
+        `[i]B[/i]` and a note holding `[red]x[/red]` \u2192 drawn as typed in the row and the pane
+        (NC `Text.from_markup(title)`), the pen span still blue."""
+        p = Project("[b]P[/b]", "blue", id="pp")
+        lanes = fx.solo_lanes(tmp_path, [fx.make_task(
+            "[red]x[/red]", created="2026-11-01T08:00:00", project_id="pp",
+            notes="[red]x[/red] ::b:: ask the vendor ::", id="m")], name="[i]B[/i]", projects=[p])
+>       body, _ = _listed_body(lanes)
+
+tests\test_added_list.py:663: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+tests\test_added_list.py:96: in _listed_body
+    rows = _rows(lanes)
+tests\test_added_list.py:62: in _rows
+    return _v("added_rows")(lanes)
+tests\test_added_list.py:58: in _v
+    return need(views, name)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+module = <module 'taskboard.views' from 'C:\\Users\\jjgh8\\Github\\taskboard-wt\\incL-base\\taskboard\\views.py'>
+name = 'added_rows'
+
+    def need(module, name: str):
+        """`module.name`, or a test failure that says the increment's name is missing."""
+        obj = getattr(module, name, None)
+        if obj is None:
+>           pytest.fail(f"{module.__name__}.{name} missing (not built yet)")
+E           Failed: taskboard.views.added_rows missing (not built yet)
+
+tests\added_list_fixture.py:48: Failed
+____________ test_TC_4369_time_labels_say_how_the_moment_is_known _____________
+
+tmp_path = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-31620/test_TC_4369_time_labels_say_h0')
+
+    def test_TC_4369_time_labels_say_how_the_moment_is_known(tmp_path):
+        """TC-4369 (LLR-4304.9): F-V's rows, newest first \u2192 `08:10`, `21:47`, `18:20`,
+        `\u224810:30`, `?`, `?` (ink \xd73, muted, dim \xd72; NC no \u2248)."""
+>       body, _ = _fv_body(tmp_path)
+
+tests\test_added_list.py:677: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+tests\test_added_list.py:106: in _fv_body
+    return _listed_body(fx.fv_lanes(tmp_path), sel, newest, show, fx.fv_people(), width,
+tests\test_added_list.py:96: in _listed_body
+    rows = _rows(lanes)
+tests\test_added_list.py:62: in _rows
+    return _v("added_rows")(lanes)
+tests\test_added_list.py:58: in _v
+    return need(views, name)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+module = <module 'taskboard.views' from 'C:\\Users\\jjgh8\\Github\\taskboard-wt\\incL-base\\taskboard\\views.py'>
+name = 'added_rows'
+
+    def need(module, name: str):
+        """`module.name`, or a test failure that says the increment's name is missing."""
+        obj = getattr(module, name, None)
+        if obj is None:
+>           pytest.fail(f"{module.__name__}.{name} missing (not built yet)")
+E           Failed: taskboard.views.added_rows missing (not built yet)
+
+tests\added_list_fixture.py:48: Failed
+____________ test_TC_4374_the_head_names_the_order_and_the_legend _____________
+
+tmp_path = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-31620/test_TC_4374_the_head_names_th0')
+
+    def test_TC_4374_the_head_names_the_order_and_the_legend(tmp_path):
+        """TC-4374 (LLR-4304.14): at 118x30 the head is `ADDED  6 tasks · every board ·
+        newest first  \xb7  time = created  \u2248 = history  ? = unknown \xb7 1 archived hidden`;
+        oldest first names `oldest first` (NC fixed text)."""
+>       body, _ = _fv_body(tmp_path)
+
+tests\test_added_list.py:688: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+tests\test_added_list.py:106: in _fv_body
+    return _listed_body(fx.fv_lanes(tmp_path), sel, newest, show, fx.fv_people(), width,
+tests\test_added_list.py:96: in _listed_body
+    rows = _rows(lanes)
+tests\test_added_list.py:62: in _rows
+    return _v("added_rows")(lanes)
+tests\test_added_list.py:58: in _v
+    return need(views, name)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+module = <module 'taskboard.views' from 'C:\\Users\\jjgh8\\Github\\taskboard-wt\\incL-base\\taskboard\\views.py'>
+name = 'added_rows'
+
+    def need(module, name: str):
+        """`module.name`, or a test failure that says the increment's name is missing."""
+        obj = getattr(module, name, None)
+        if obj is None:
+>           pytest.fail(f"{module.__name__}.{name} missing (not built yet)")
+E           Failed: taskboard.views.added_rows missing (not built yet)
+
+tests\added_list_fixture.py:48: Failed
+________________ test_TC_4326_the_head_counts_boards_not_read _________________
+
+tmp_path = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-31620/test_TC_4326_the_head_counts_b0')
+
+    def test_TC_4326_the_head_counts_boards_not_read(tmp_path):
+        """TC-4326 (LLR-4303.6, P-V-6): unread 1 \u2192 `\xb7 1 board not read` (amber) before the
+        archived count, each piece in its style; unread 2 \u2192 `\xb7 2 boards not read`; at 80 the
+        legend goes first and the counts stay (NC silent skip)."""
+>       listed = _order(_rows(fx.fv_lanes(tmp_path)), True, False)
+
+tests\test_added_list.py:702: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+tests\test_added_list.py:62: in _rows
+    return _v("added_rows")(lanes)
+tests\test_added_list.py:58: in _v
+    return need(views, name)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+module = <module 'taskboard.views' from 'C:\\Users\\jjgh8\\Github\\taskboard-wt\\incL-base\\taskboard\\views.py'>
+name = 'added_rows'
+
+    def need(module, name: str):
+        """`module.name`, or a test failure that says the increment's name is missing."""
+        obj = getattr(module, name, None)
+        if obj is None:
+>           pytest.fail(f"{module.__name__}.{name} missing (not built yet)")
+E           Failed: taskboard.views.added_rows missing (not built yet)
+
+tests\added_list_fixture.py:48: Failed
+_____________ test_TC_4396_the_head_ends_with_the_archived_state ______________
+
+tmp_path = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-31620/test_TC_4396_the_head_ends_wit0')
+
+    def test_TC_4396_the_head_ends_with_the_archived_state(tmp_path):
+        """TC-4396 (LLR-4306.6): shown \u2192 ends `? = unknown \xb7 archived shown`; hidden 1 at 80
+        \u2192 `\u2026 \u2248 = his\u2026 \xb7 1 archived hidden`; hidden 0 \u2192 no archived piece (NC no count)."""
+>       rows = _rows(fx.fv_lanes(tmp_path))
+
+tests\test_added_list.py:723: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+tests\test_added_list.py:62: in _rows
+    return _v("added_rows")(lanes)
+tests\test_added_list.py:58: in _v
+    return need(views, name)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+module = <module 'taskboard.views' from 'C:\\Users\\jjgh8\\Github\\taskboard-wt\\incL-base\\taskboard\\views.py'>
+name = 'added_rows'
+
+    def need(module, name: str):
+        """`module.name`, or a test failure that says the increment's name is missing."""
+        obj = getattr(module, name, None)
+        if obj is None:
+>           pytest.fail(f"{module.__name__}.{name} missing (not built yet)")
+E           Failed: taskboard.views.added_rows missing (not built yet)
+
+tests\added_list_fixture.py:48: Failed
+____________ test_TC_4381_boxes_fill_up_to_and_including_the_phase ____________
+
+    def test_TC_4381_boxes_fill_up_to_and_including_the_phase():
+        """TC-4381 (LLR-4305.1): Backlog Doing Review Done \u2192 `\u25a0\u25a1\u25a1\u25a1`, `\u25a0\u25a0\u25a1\u25a1`, `\u25a0\u25a0\u25a0\u25a1`, `\u25a0\u25a0\u25a0\u25a0`
+        (NC exclusive fill: `\u25a1\u25a1\u25a1\u25a1` for Backlog)."""
+>       state_boxes = _v("state_boxes")
+
+tests\test_added_list.py:736: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+tests\test_added_list.py:58: in _v
+    return need(views, name)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+module = <module 'taskboard.views' from 'C:\\Users\\jjgh8\\Github\\taskboard-wt\\incL-base\\taskboard\\views.py'>
+name = 'state_boxes'
+
+    def need(module, name: str):
+        """`module.name`, or a test failure that says the increment's name is missing."""
+        obj = getattr(module, name, None)
+        if obj is None:
+>           pytest.fail(f"{module.__name__}.{name} missing (not built yet)")
+E           Failed: taskboard.views.state_boxes missing (not built yet)
+
+tests\added_list_fixture.py:48: Failed
+____________ test_TC_4382_more_than_eight_phases_draw_eight_boxes _____________
+
+    def test_TC_4382_more_than_eight_phases_draw_eight_boxes():
+        """TC-4382 (LLR-4305.2): 10 phases \u2192 8 boxes, ceil(8 \xd7 (i + 1) / 10) filled: index 0
+        \u2192 1, 4 \u2192 4, 9 \u2192 8 (NC 10 boxes)."""
+>       state_boxes = _v("state_boxes")
+
+tests\test_added_list.py:744: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+tests\test_added_list.py:58: in _v
+    return need(views, name)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+module = <module 'taskboard.views' from 'C:\\Users\\jjgh8\\Github\\taskboard-wt\\incL-base\\taskboard\\views.py'>
+name = 'state_boxes'
+
+    def need(module, name: str):
+        """`module.name`, or a test failure that says the increment's name is missing."""
+        obj = getattr(module, name, None)
+        if obj is None:
+>           pytest.fail(f"{module.__name__}.{name} missing (not built yet)")
+E           Failed: taskboard.views.state_boxes missing (not built yet)
+
+tests\added_list_fixture.py:48: Failed
+________ test_TC_4383_the_state_column_is_as_wide_as_the_widest_board _________
+
+tmp_path = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-31620/test_TC_4383_the_state_column_0')
+
+    def test_TC_4383_the_state_column_is_as_wide_as_the_widest_board(tmp_path):
+        """TC-4383 (LLR-4305.3): a 3-phase and a 5-phase row \u2192 `\u25b607:00  \u25a0\u25a1\u25a1   \u258dThree` and
+        ` 06:00  \u25a0\u25a0\u25a0\u25a1\u25a1 \u258dFive`, both titles at cell 15; with a 10-phase row at 80 \u2192 titles at
+        cell 18 (NC no padding)."""
+        def two(name, other_phases, other_phase, other_title, other_at, width, height):
+            a = Board([], [fx.make_task("Three", created="2026-11-01T07:00:00", phase="A", id="t3")],
+                      tmp_path / name / "a" / "board.json", {}, ["A", "B", "C"])
+            b = Board([], [fx.make_task(other_title, created=other_at, phase=other_phase, id="t5")],
+                      tmp_path / name / "b" / "board.json", {}, other_phases)
+            for bd in (a, b):
+                bd.path.parent.mkdir(parents=True, exist_ok=True)
+            body, _ = _listed_body([("A", "sky", a, ""), ("B", "lime", b, "")], width=width,
+                                   height=height)
+            return _list(body, width)[0]
+    
+>       rows = two("five", ["A", "B", "C", "D", "E"], "C", "Five", "2026-11-01T06:00:00", 116, 29)
+
+tests\test_added_list.py:766: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+tests\test_added_list.py:762: in two
+    body, _ = _listed_body([("A", "sky", a, ""), ("B", "lime", b, "")], width=width,
+tests\test_added_list.py:96: in _listed_body
+    rows = _rows(lanes)
+tests\test_added_list.py:62: in _rows
+    return _v("added_rows")(lanes)
+tests\test_added_list.py:58: in _v
+    return need(views, name)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+module = <module 'taskboard.views' from 'C:\\Users\\jjgh8\\Github\\taskboard-wt\\incL-base\\taskboard\\views.py'>
+name = 'added_rows'
+
+    def need(module, name: str):
+        """`module.name`, or a test failure that says the increment's name is missing."""
+        obj = getattr(module, name, None)
+        if obj is None:
+>           pytest.fail(f"{module.__name__}.{name} missing (not built yet)")
+E           Failed: taskboard.views.added_rows missing (not built yet)
+
+tests\added_list_fixture.py:48: Failed
+______________ test_TC_4384_the_state_column_is_ink_and_dim_only ______________
+
+tmp_path = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-31620/test_TC_4384_the_state_column_0')
+
+    def test_TC_4384_the_state_column_is_ink_and_dim_only(tmp_path):
+        """TC-4384 (LLR-4305.4): over F-V's six rows the state-column cells carry only ink
+        (filled) and dim (empty) \u2014 no phase hue; the hue bar `\u258d` is the project's (green for
+        House, dim for the Inbox)."""
+>       body, _ = _fv_body(tmp_path)
+
+tests\test_added_list.py:779: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+tests\test_added_list.py:106: in _fv_body
+    return _listed_body(fx.fv_lanes(tmp_path), sel, newest, show, fx.fv_people(), width,
+tests\test_added_list.py:96: in _listed_body
+    rows = _rows(lanes)
+tests\test_added_list.py:62: in _rows
+    return _v("added_rows")(lanes)
+tests\test_added_list.py:58: in _v
+    return need(views, name)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+module = <module 'taskboard.views' from 'C:\\Users\\jjgh8\\Github\\taskboard-wt\\incL-base\\taskboard\\views.py'>
+name = 'added_rows'
+
+    def need(module, name: str):
+        """`module.name`, or a test failure that says the increment's name is missing."""
+        obj = getattr(module, name, None)
+        if obj is None:
+>           pytest.fail(f"{module.__name__}.{name} missing (not built yet)")
+E           Failed: taskboard.views.added_rows missing (not built yet)
+
+tests\added_list_fixture.py:48: Failed
+______________ test_TC_4395_archived_rows_are_dimmed_while_shown ______________
+
+tmp_path = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-31620/test_TC_4395_archived_rows_are0')
+
+    def test_TC_4395_archived_rows_are_dimmed_while_shown(tmp_path):
+        """TC-4395 (LLR-4306.5): archived shown \u2192 w5's row ` ?      \u25a0\u25a0\u25a0\u25a0 \u258dOld archived` with
+        its title in dim; under the cursor, bold dim (NC no dimming)."""
+>       body, listed = _fv_body(tmp_path, sel=0, show=True)
+
+tests\test_added_list.py:800: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+tests\test_added_list.py:106: in _fv_body
+    return _listed_body(fx.fv_lanes(tmp_path), sel, newest, show, fx.fv_people(), width,
+tests\test_added_list.py:96: in _listed_body
+    rows = _rows(lanes)
+tests\test_added_list.py:62: in _rows
+    return _v("added_rows")(lanes)
+tests\test_added_list.py:58: in _v
+    return need(views, name)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+module = <module 'taskboard.views' from 'C:\\Users\\jjgh8\\Github\\taskboard-wt\\incL-base\\taskboard\\views.py'>
+name = 'added_rows'
+
+    def need(module, name: str):
+        """`module.name`, or a test failure that says the increment's name is missing."""
+        obj = getattr(module, name, None)
+        if obj is None:
+>           pytest.fail(f"{module.__name__}.{name} missing (not built yet)")
+E           Failed: taskboard.views.added_rows missing (not built yet)
+
+tests\added_list_fixture.py:48: Failed
+__________________ test_TC_4397_the_meta_line_says_archived ___________________
+
+tmp_path = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-31620/test_TC_4397_the_meta_line_say0')
+
+    def test_TC_4397_the_meta_line_says_archived(tmp_path):
+        """TC-4397 (LLR-4306.7): archived shown, the cursor on w5 \u2192 meta `Done  archived  \xb7
+        normal` (NC no word)."""
+>       rows = _order(_rows(fx.fv_lanes(tmp_path)), True, True)
+
+tests\test_added_list.py:816: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+tests\test_added_list.py:62: in _rows
+    return _v("added_rows")(lanes)
+tests\test_added_list.py:58: in _v
+    return need(views, name)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+module = <module 'taskboard.views' from 'C:\\Users\\jjgh8\\Github\\taskboard-wt\\incL-base\\taskboard\\views.py'>
+name = 'added_rows'
+
+    def need(module, name: str):
+        """`module.name`, or a test failure that says the increment's name is missing."""
+        obj = getattr(module, name, None)
+        if obj is None:
+>           pytest.fail(f"{module.__name__}.{name} missing (not built yet)")
+E           Failed: taskboard.views.added_rows missing (not built yet)
+
+tests\added_list_fixture.py:48: Failed
+________________ test_TC_4321_N_is_one_global_key_of_the_seat _________________
+
+    def test_TC_4321_N_is_one_global_key_of_the_seat():
+        """TC-4321 (LLR-4303.1): exactly one KEYMAP entry `N` \u2192 `added_list`, label `Added
+        list`, `bar=False`, no `views`, not priority (like `A`); the app has the action; the
+        `?` help's global keys read … A N H …; every palette lists it once (NC missing)."""
+        entries = [k for k in keymap.KEYMAP if k.keys == "N"]
+>       assert len(entries) == 1, "no KEYMAP entry for N"
+E       AssertionError: no KEYMAP entry for N
+E       assert 0 == 1
+E        +  where 0 = len([])
+
+tests\test_added_list.py:830: AssertionError
+______________ test_TC_4343_the_readme_key_table_has_a_row_for_N ______________
+
+    def test_TC_4343_the_readme_key_table_has_a_row_for_N():
+        """TC-4343 (LLR-4303.23): the README's `## Keys` table carries a `| `N` |` row,
+        right after the `A` row — the row `test_keymap.py::test_the_readme_keybinding_table_
+        matches_the_seat` needs once `N` is bound (NC no row)."""
+        readme = (Path(__file__).resolve().parents[1] / "README.md").read_text(encoding="utf-8")
+        lines = readme.splitlines()
+        keys = lines.index("## Keys")
+        a = next(i for i in range(keys, len(lines)) if lines[i].startswith("| `A` |"))
+>       assert lines[a + 1].startswith("| `N` |"), lines[a + 1]
+E       AssertionError: | `@` | People directory | Who you owe what: the people of `~/.taskboard/people.json` (most late first) beside the chosen person's open tasks of every board, each with the note line that mentions them and a `late · today · open` box; `enter` opens a task on its board, `n`/`e` add and edit a person, `/` finds a name. Not view `9` (the team's `People`) |
+E       assert False
+E        +  where False = <built-in method startswith of str object at 0x000002F5A1DB49F0>('| `N` |')
+E        +    where <built-in method startswith of str object at 0x000002F5A1DB49F0> = "| `@` | People directory | Who you owe what: the people of `~/.taskboard/people.json` (most late first) beside the ch...nter` opens a task on its board, `n`/`e` add and edit a person, `/` finds a name. Not view `9` (the team's `People`) |".startswith
+
+tests\test_added_list.py:848: AssertionError
+_____________________ test_TC_4322_N_opens_the_list_view ______________________
+
+home = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-31620/test_TC_4322_N_opens_the_list_0/.taskboard')
+
+    async def test_TC_4322_N_opens_the_list_view(home):
+        """TC-4322 (LLR-4303.2): `N` on the main screen \u2192 the list view is `app.screen`,
+        its head names `newest first`, its key row starts with the five keys (NC unbound)."""
+        fx.build(home)
+        app = open_s_app()
+        async with app.run_test(size=W118) as pilot:
+            await _leave_home(pilot, app)
+>           await open_list(pilot, app)
+
+tests\test_added_list.py:879: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+pilot = <Pilot app=TaskboardApp(title='taskboard', classes={'-dark-mode'}, pseudo_classes={'focus', 'dark'})>
+app = TaskboardApp(title='taskboard', classes={'-dark-mode'}, pseudo_classes={'focus', 'dark'})
+before = ()
+
+    async def open_list(pilot, app, *before):
+        """`escape` (leave the home: the board starts, P-S-4), any `before` keys, then `N`;
+        fails here, with a message, when `N` opens no list view (the base revision)."""
+        await press(pilot, *before, "N")
+        await pilot.pause(0.3)
+>       assert on_list(app), f"`N` opened no list view: screen stack {names(app)}"
+E       AssertionError: `N` opened no list view: screen stack ['Screen']
+
+tests\added_list_fixture.py:313: AssertionError
+________ test_TC_4323_N_brings_the_open_list_back_without_a_second_one ________
+
+home = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-31620/test_TC_4323_N_brings_the_open0/.taskboard')
+
+    async def test_TC_4323_N_brings_the_open_list_back_without_a_second_one(home):
+        """TC-4323 (LLR-4303.3, LLR-4303.5): `N`, `A`, `N` \u2192 exactly one list view, the
+        SAME one (read once), on top (NC always push: 2); `A` on the agenda and `escape`
+        unwind to the board."""
+        fx.build(home)
+        app = open_s_app()
+        async with app.run_test(size=W118) as pilot:
+            await _leave_home(pilot, app)
+>           await open_list(pilot, app)
+
+tests\test_added_list.py:894: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+pilot = <Pilot app=TaskboardApp(title='taskboard', classes={'-dark-mode'}, pseudo_classes={'focus', 'dark'})>
+app = TaskboardApp(title='taskboard', classes={'-dark-mode'}, pseudo_classes={'focus', 'dark'})
+before = ()
+
+    async def open_list(pilot, app, *before):
+        """`escape` (leave the home: the board starts, P-S-4), any `before` keys, then `N`;
+        fails here, with a message, when `N` opens no list view (the base revision)."""
+        await press(pilot, *before, "N")
+        await pilot.pause(0.3)
+>       assert on_list(app), f"`N` opened no list view: screen stack {names(app)}"
+E       AssertionError: `N` opened no list view: screen stack ['Screen']
+
+tests\added_list_fixture.py:313: AssertionError
+__________________ test_TC_4324_escape_or_N_closes_the_list ___________________
+
+home = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-31620/test_TC_4324_escape_or_N_close0/.taskboard')
+
+    async def test_TC_4324_escape_or_N_closes_the_list(home):
+        """TC-4324 (LLR-4303.4): `escape` closes the list; `N` in the list closes it too (NC
+        `N` not bound in the screen: the list stays)."""
+        fx.build(home)
+        app = open_s_app()
+        async with app.run_test(size=W118) as pilot:
+            await _leave_home(pilot, app)
+>           await open_list(pilot, app)
+
+tests\test_added_list.py:915: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+pilot = <Pilot app=TaskboardApp(title='taskboard', classes={'-dark-mode'}, pseudo_classes={'focus', 'dark'})>
+app = TaskboardApp(title='taskboard', classes={'-dark-mode'}, pseudo_classes={'focus', 'dark'})
+before = ()
+
+    async def open_list(pilot, app, *before):
+        """`escape` (leave the home: the board starts, P-S-4), any `before` keys, then `N`;
+        fails here, with a message, when `N` opens no list view (the base revision)."""
+        await press(pilot, *before, "N")
+        await pilot.pause(0.3)
+>       assert on_list(app), f"`N` opened no list view: screen stack {names(app)}"
+E       AssertionError: `N` opened no list view: screen stack ['Screen']
+
+tests\added_list_fixture.py:313: AssertionError
+__________ test_TC_4324_N_on_the_home_opens_over_it_and_N_closes_it ___________
+
+home = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-31620/test_TC_4324_N_on_the_home_ope0/.taskboard')
+
+    async def test_TC_4324_N_on_the_home_opens_over_it_and_N_closes_it(home):
+        """TC-4324 (LLR-4303.2, LLR-4303.4): at start (the home on top) `N` opens the list
+        over the home; `N` returns to the home."""
+        fx.build(home)
+        app = open_s_app()
+        async with app.run_test(size=W118) as pilot:
+            await pilot.pause()
+            assert names(app) == ["Screen", "BoardsHome"]
+>           await open_list(pilot, app)
+
+tests\test_added_list.py:931: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+pilot = <Pilot app=TaskboardApp(title='taskboard', classes={'-dark-mode'}, pseudo_classes={'focus', 'dark'})>
+app = TaskboardApp(title='taskboard', classes={'-dark-mode'}, pseudo_classes={'focus', 'dark'})
+before = ()
+
+    async def open_list(pilot, app, *before):
+        """`escape` (leave the home: the board starts, P-S-4), any `before` keys, then `N`;
+        fails here, with a message, when `N` opens no list view (the base revision)."""
+        await press(pilot, *before, "N")
+        await pilot.pause(0.3)
+>       assert on_list(app), f"`N` opened no list view: screen stack {names(app)}"
+E       AssertionError: `N` opened no list view: screen stack ['Screen', 'BoardsHome']
+
+tests\added_list_fixture.py:313: AssertionError
+___________ test_TC_4325_the_list_reads_every_board_of_the_registry ___________
+
+home = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-31620/test_TC_4325_the_list_reads_ev0/.taskboard')
+
+    async def test_TC_4325_the_list_reads_every_board_of_the_registry(home):
+        """TC-4325 (LLR-4303.5): a registry of 2 boards (3 + 2 tasks) \u2192 5 rows, both boards'
+        tasks (NC only `app.board`: 3)."""
+        fx.build(home)
+        app = open_s_app()
+        async with app.run_test(size=W118) as pilot:
+            await _leave_home(pilot, app)
+>           await open_list(pilot, app)
+
+tests\test_added_list.py:944: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+pilot = <Pilot app=TaskboardApp(title='taskboard', classes={'-dark-mode'}, pseudo_classes={'focus', 'dark'})>
+app = TaskboardApp(title='taskboard', classes={'-dark-mode'}, pseudo_classes={'focus', 'dark'})
+before = ()
+
+    async def open_list(pilot, app, *before):
+        """`escape` (leave the home: the board starts, P-S-4), any `before` keys, then `N`;
+        fails here, with a message, when `N` opens no list view (the base revision)."""
+        await press(pilot, *before, "N")
+        await pilot.pause(0.3)
+>       assert on_list(app), f"`N` opened no list view: screen stack {names(app)}"
+E       AssertionError: `N` opened no list view: screen stack ['Screen']
+
+tests\added_list_fixture.py:313: AssertionError
+_______ test_TC_4326_a_board_whose_file_is_missing_is_counted_not_read ________
+
+home = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-31620/test_TC_4326_a_board_whose_fil0/.taskboard')
+
+    async def test_TC_4326_a_board_whose_file_is_missing_is_counted_not_read(home):
+        """TC-4326 (LLR-4303.6): Beta's file deleted \u2192 the head holds `1 board not read`,
+        Alpha's 3 rows listed (NC silent skip)."""
+        fx.build(home)
+        fx.board_path(home, "beta").unlink()
+        app = open_s_app()
+        async with app.run_test(size=W118) as pilot:
+            await _leave_home(pilot, app)
+>           await open_list(pilot, app)
+
+tests\test_added_list.py:959: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+pilot = <Pilot app=TaskboardApp(title='taskboard', classes={'-dark-mode'}, pseudo_classes={'focus', 'dark'})>
+app = TaskboardApp(title='taskboard', classes={'-dark-mode'}, pseudo_classes={'focus', 'dark'})
+before = ()
+
+    async def open_list(pilot, app, *before):
+        """`escape` (leave the home: the board starts, P-S-4), any `before` keys, then `N`;
+        fails here, with a message, when `N` opens no list view (the base revision)."""
+        await press(pilot, *before, "N")
+        await pilot.pause(0.3)
+>       assert on_list(app), f"`N` opened no list view: screen stack {names(app)}"
+E       AssertionError: `N` opened no list view: screen stack ['Screen']
+
+tests\added_list_fixture.py:313: AssertionError
+____________ test_TC_4327_the_separator_follows_the_terminal_width ____________
+
+home = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-31620/test_TC_4327_the_separator_fol0/.taskboard')
+
+    async def test_TC_4327_the_separator_follows_the_terminal_width(home):
+        """TC-4327 (LLR-4303.7): at 118x30 the `\u2502` is at screen column 48 (cell 47 after the
+        1-cell gutter) on every body line; after a resize to 80x24 at body cell 35 (NC one
+        width for both)."""
+        from test_modal_keys import _svg_rows
+        fx.build(home)
+        app = open_s_app()
+        async with app.run_test(size=W118) as pilot:
+            await _leave_home(pilot, app)
+>           await open_list(pilot, app)
+
+tests\test_added_list.py:973: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+pilot = <Pilot app=TaskboardApp(title='taskboard', classes={'-dark-mode'}, pseudo_classes={'focus', 'dark'})>
+app = TaskboardApp(title='taskboard', classes={'-dark-mode'}, pseudo_classes={'focus', 'dark'})
+before = ()
+
+    async def open_list(pilot, app, *before):
+        """`escape` (leave the home: the board starts, P-S-4), any `before` keys, then `N`;
+        fails here, with a message, when `N` opens no list view (the base revision)."""
+        await press(pilot, *before, "N")
+        await pilot.pause(0.3)
+>       assert on_list(app), f"`N` opened no list view: screen stack {names(app)}"
+E       AssertionError: `N` opened no list view: screen stack ['Screen']
+
+tests\added_list_fixture.py:313: AssertionError
+______________ test_TC_4334_up_and_down_move_the_cursor_clamped _______________
+
+home = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-31620/test_TC_4334_up_and_down_move_0/.taskboard')
+
+    async def test_TC_4334_up_and_down_move_the_cursor_clamped(home):
+        """TC-4334 (LLR-4303.14): one board, 3 rows: `up` at row 0 stays 0; `down` ×5 ends
+        at 2; `k` \u2192 1; `j` \u2192 2 (NC no clamp)."""
+        fx.build(home, only_alpha=True)
+        app = open_s_app()
+        async with app.run_test(size=W80) as pilot:
+            await _leave_home(pilot, app)
+>           await open_list(pilot, app)
+
+tests\test_added_list.py:993: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+pilot = <Pilot app=TaskboardApp(title='taskboard', classes={'-dark-mode'}, pseudo_classes={'focus', 'dark'})>
+app = TaskboardApp(title='taskboard', classes={'-dark-mode'}, pseudo_classes={'focus', 'dark'})
+before = ()
+
+    async def open_list(pilot, app, *before):
+        """`escape` (leave the home: the board starts, P-S-4), any `before` keys, then `N`;
+        fails here, with a message, when `N` opens no list view (the base revision)."""
+        await press(pilot, *before, "N")
+        await pilot.pause(0.3)
+>       assert on_list(app), f"`N` opened no list view: screen stack {names(app)}"
+E       AssertionError: `N` opened no list view: screen stack ['Screen']
+
+tests\added_list_fixture.py:313: AssertionError
+_______________ test_TC_4336_enter_opens_the_task_on_its_board ________________
+
+home = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-31620/test_TC_4336_enter_opens_the_t0/.taskboard')
+
+    async def test_TC_4336_enter_opens_the_task_on_its_board(home):
+        """TC-4336 (LLR-4303.16): the cursor on `Sync notes` (the open board), `enter` \u2192 the
+        list gone, Alpha open, `ta1` selected (NC `enter` unbound)."""
+        fx.build(home)
+        app = open_s_app()
+        async with app.run_test(size=W118) as pilot:
+            await _leave_home(pilot, app)
+>           await open_list(pilot, app)
+
+tests\test_added_list.py:1014: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+pilot = <Pilot app=TaskboardApp(title='taskboard', classes={'-dark-mode'}, pseudo_classes={'focus', 'dark'})>
+app = TaskboardApp(title='taskboard', classes={'-dark-mode'}, pseudo_classes={'focus', 'dark'})
+before = ()
+
+    async def open_list(pilot, app, *before):
+        """`escape` (leave the home: the board starts, P-S-4), any `before` keys, then `N`;
+        fails here, with a message, when `N` opens no list view (the base revision)."""
+        await press(pilot, *before, "N")
+        await pilot.pause(0.3)
+>       assert on_list(app), f"`N` opened no list view: screen stack {names(app)}"
+E       AssertionError: `N` opened no list view: screen stack ['Screen']
+
+tests\added_list_fixture.py:313: AssertionError
+__________ test_TC_4336b_enter_on_another_boards_task_switches_to_it __________
+
+home = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-31620/test_TC_4336b_enter_on_another0/.taskboard')
+
+    async def test_TC_4336b_enter_on_another_boards_task_switches_to_it(home):
+        """TC-4336b (LLR-4303.16): row 0 `Pay the rent` of Beta, `enter` \u2192 Beta open, `tb1`
+        selected, the list gone."""
+        fx.build(home)
+        app = open_s_app()
+        async with app.run_test(size=W118) as pilot:
+            await _leave_home(pilot, app)
+>           await open_list(pilot, app)
+
+tests\test_added_list.py:1029: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+pilot = <Pilot app=TaskboardApp(title='taskboard', classes={'-dark-mode'}, pseudo_classes={'focus', 'dark'})>
+app = TaskboardApp(title='taskboard', classes={'-dark-mode'}, pseudo_classes={'focus', 'dark'})
+before = ()
+
+    async def open_list(pilot, app, *before):
+        """`escape` (leave the home: the board starts, P-S-4), any `before` keys, then `N`;
+        fails here, with a message, when `N` opens no list view (the base revision)."""
+        await press(pilot, *before, "N")
+        await pilot.pause(0.3)
+>       assert on_list(app), f"`N` opened no list view: screen stack {names(app)}"
+E       AssertionError: `N` opened no list view: screen stack ['Screen']
+
+tests\added_list_fixture.py:313: AssertionError
+_______ test_TC_4336d_enter_on_a_board_whose_file_went_missing_says_so ________
+
+home = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-31620/test_TC_4336d_enter_on_a_board0/.taskboard')
+
+    async def test_TC_4336d_enter_on_a_board_whose_file_went_missing_says_so(home):
+        """TC-4336d (LLR-4303.16): Beta's file deleted while the list is open, `enter` on
+        `Pay the rent` \u2192 the list gone, Alpha still open, a notice `its file is missing`."""
+        fx.build(home)
+        app = open_s_app()
+        async with app.run_test(size=W118, notifications=True) as pilot:
+            await _leave_home(pilot, app)
+>           await open_list(pilot, app)
+
+tests\test_added_list.py:1043: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+pilot = <Pilot app=TaskboardApp(title='taskboard', classes={'-dark-mode'}, pseudo_classes={'focus', 'dark'})>
+app = TaskboardApp(title='taskboard', classes={'-dark-mode'}, pseudo_classes={'focus', 'dark'})
+before = ()
+
+    async def open_list(pilot, app, *before):
+        """`escape` (leave the home: the board starts, P-S-4), any `before` keys, then `N`;
+        fails here, with a message, when `N` opens no list view (the base revision)."""
+        await press(pilot, *before, "N")
+        await pilot.pause(0.3)
+>       assert on_list(app), f"`N` opened no list view: screen stack {names(app)}"
+E       AssertionError: `N` opened no list view: screen stack ['Screen']
+
+tests\added_list_fixture.py:313: AssertionError
+___________ test_TC_4338_an_empty_list_ignores_enter_and_the_arrows ___________
+
+home = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-31620/test_TC_4338_an_empty_list_ign0/.taskboard')
+
+    async def test_TC_4338_an_empty_list_ignores_enter_and_the_arrows(home):
+        """TC-4338 (LLR-4303.17, LLR-4303.18): every task archived \u2192 `no tasks to list`;
+        `up`, `down`, `enter` change nothing: still the list, the selection unchanged, 0
+        exceptions (NC index the empty list)."""
+        fx.build(home, only_alpha=True, all_archived=True)
+        app = open_s_app()
+        async with app.run_test(size=W118) as pilot:
+            await _leave_home(pilot, app)
+            before = app.selected_task_id
+>           await open_list(pilot, app)
+
+tests\test_added_list.py:1059: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+pilot = <Pilot app=TaskboardApp(title='taskboard', classes={'-dark-mode'}, pseudo_classes={'focus', 'dark'})>
+app = TaskboardApp(title='taskboard', classes={'-dark-mode'}, pseudo_classes={'focus', 'dark'})
+before = ()
+
+    async def open_list(pilot, app, *before):
+        """`escape` (leave the home: the board starts, P-S-4), any `before` keys, then `N`;
+        fails here, with a message, when `N` opens no list view (the base revision)."""
+        await press(pilot, *before, "N")
+        await pilot.pause(0.3)
+>       assert on_list(app), f"`N` opened no list view: screen stack {names(app)}"
+E       AssertionError: `N` opened no list view: screen stack ['Screen']
+
+tests\added_list_fixture.py:313: AssertionError
+_______ test_TC_4339_the_key_row_shows_every_key_the_view_binds[size0] ________
+
+home = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-31620/test_TC_4339_the_key_row_shows0/.taskboard')
+size = (80, 24)
+
+    @pytest.mark.parametrize("size", [W80, W118])
+    async def test_TC_4339_the_key_row_shows_every_key_the_view_binds(home, size):
+        """TC-4339 (LLR-4303.19, A-2): at 80x24 the key row is the five keys, the read-only
+        tail dropped (all 5 glyphs); at 118x30 the five keys and `· read-only: nothing here
+        edits a task` (all 5 words) (NC omit `v`)."""
+        fx.build(home)
+        app = open_s_app()
+        async with app.run_test(size=size) as pilot:
+            await _leave_home(pilot, app)
+>           await open_list(pilot, app)
+
+tests\test_added_list.py:1078: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+pilot = <Pilot app=TaskboardApp(title='taskboard', classes={'-dark-mode'}, pseudo_classes={'focus', 'dark'})>
+app = TaskboardApp(title='taskboard', classes={'-dark-mode'}, pseudo_classes={'focus', 'dark'})
+before = ()
+
+    async def open_list(pilot, app, *before):
+        """`escape` (leave the home: the board starts, P-S-4), any `before` keys, then `N`;
+        fails here, with a message, when `N` opens no list view (the base revision)."""
+        await press(pilot, *before, "N")
+        await pilot.pause(0.3)
+>       assert on_list(app), f"`N` opened no list view: screen stack {names(app)}"
+E       AssertionError: `N` opened no list view: screen stack ['Screen']
+
+tests\added_list_fixture.py:313: AssertionError
+_______ test_TC_4339_the_key_row_shows_every_key_the_view_binds[size1] ________
+
+home = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-31620/test_TC_4339_the_key_row_shows1/.taskboard')
+size = (118, 30)
+
+    @pytest.mark.parametrize("size", [W80, W118])
+    async def test_TC_4339_the_key_row_shows_every_key_the_view_binds(home, size):
+        """TC-4339 (LLR-4303.19, A-2): at 80x24 the key row is the five keys, the read-only
+        tail dropped (all 5 glyphs); at 118x30 the five keys and `· read-only: nothing here
+        edits a task` (all 5 words) (NC omit `v`)."""
+        fx.build(home)
+        app = open_s_app()
+        async with app.run_test(size=size) as pilot:
+            await _leave_home(pilot, app)
+>           await open_list(pilot, app)
+
+tests\test_added_list.py:1078: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+pilot = <Pilot app=TaskboardApp(title='taskboard', classes={'-dark-mode'}, pseudo_classes={'focus', 'dark'})>
+app = TaskboardApp(title='taskboard', classes={'-dark-mode'}, pseudo_classes={'focus', 'dark'})
+before = ()
+
+    async def open_list(pilot, app, *before):
+        """`escape` (leave the home: the board starts, P-S-4), any `before` keys, then `N`;
+        fails here, with a message, when `N` opens no list view (the base revision)."""
+        await press(pilot, *before, "N")
+        await pilot.pause(0.3)
+>       assert on_list(app), f"`N` opened no list view: screen stack {names(app)}"
+E       AssertionError: `N` opened no list view: screen stack ['Screen']
+
+tests\added_list_fixture.py:313: AssertionError
+______________ test_TC_4341_added_list_is_refused_under_a_modal _______________
+
+home = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-31620/test_TC_4341_added_list_is_ref0/.taskboard')
+
+    async def test_TC_4341_added_list_is_refused_under_a_modal(home):
+        """TC-4341 (LLR-4303.21, P-S-1): `app.check_action("added_list", ())` is True on the
+        main screen and False with the task editor or a confirmation on the stack — the only
+        arm that can fail the NC (`added_list` not gated); `N` typed in the editor types `N`
+        and opens no list."""
+        from taskboard.modals import ConfirmModal
+        fx.build(home)
+        app = open_s_app()
+        async with app.run_test(size=W118) as pilot:
+            await _leave_home(pilot, app)
+            assert app.check_action("added_list", ()) is True
+            await press(pilot, "a")
+            assert names(app) == ["Screen", "TaskModal"]
+>           assert app.check_action("added_list", ()) is False
+E           AssertionError: assert True is False
+E            +  where True = check_action('added_list', ())
+E            +    where check_action = TaskboardApp(title='taskboard', classes={'-dark-mode'}, pseudo_classes={'focus', 'dark'}).check_action
+
+tests\test_added_list.py:1102: AssertionError
+____________________ test_TC_4342_the_list_holds_the_seat _____________________
+
+home = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-31620/test_TC_4342_the_list_holds_th0/.taskboard')
+
+    async def test_TC_4342_the_list_holds_the_seat(home):
+        """TC-4342 (LLR-4303.22): with the list open `a` opens no editor, `d` deletes
+        nothing, `A` and `@` open over it and `N` comes back to it; the seat answers quit
+        yes, templates no, agenda_all yes (NC the list missing from the holding tuple)."""
+        fx.build(home)
+        app = open_s_app()
+        async with app.run_test(size=W118) as pilot:
+            await _leave_home(pilot, app)
+>           await open_list(pilot, app)
+
+tests\test_added_list.py:1121: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+pilot = <Pilot app=TaskboardApp(title='taskboard', classes={'-dark-mode'}, pseudo_classes={'focus', 'dark'})>
+app = TaskboardApp(title='taskboard', classes={'-dark-mode'}, pseudo_classes={'focus', 'dark'})
+before = ()
+
+    async def open_list(pilot, app, *before):
+        """`escape` (leave the home: the board starts, P-S-4), any `before` keys, then `N`;
+        fails here, with a message, when `N` opens no list view (the base revision)."""
+        await press(pilot, *before, "N")
+        await pilot.pause(0.3)
+>       assert on_list(app), f"`N` opened no list view: screen stack {names(app)}"
+E       AssertionError: `N` opened no list view: screen stack ['Screen']
+
+tests\added_list_fixture.py:313: AssertionError
+_____ test_TC_4344_enter_on_an_archived_task_says_so_and_selects_nothing ______
+
+home = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-31620/test_TC_4344_enter_on_an_archi0/.taskboard')
+
+    async def test_TC_4344_enter_on_an_archived_task_says_so_and_selects_nothing(home):
+        """TC-4344 (LLR-4303.24, P-S-3): Alpha (open) holds the archived `Old memo`; the
+        list shows it (`v`), `enter` on it \u2192 the list gone, the selection unchanged, the main
+        screen's `v` still off, the notice `Old memo is archived — v shows it` (NC select
+        it)."""
+        fx.build(home, archived_on_alpha=True)
+        app = open_s_app()
+        async with app.run_test(size=W118, notifications=True) as pilot:
+            await _leave_home(pilot, app)
+            before = app.selected_task_id
+>           await open_list(pilot, app)
+
+tests\test_added_list.py:1148: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+pilot = <Pilot app=TaskboardApp(title='taskboard', classes={'-dark-mode'}, pseudo_classes={'focus', 'dark'})>
+app = TaskboardApp(title='taskboard', classes={'-dark-mode'}, pseudo_classes={'focus', 'dark'})
+before = ()
+
+    async def open_list(pilot, app, *before):
+        """`escape` (leave the home: the board starts, P-S-4), any `before` keys, then `N`;
+        fails here, with a message, when `N` opens no list view (the base revision)."""
+        await press(pilot, *before, "N")
+        await pilot.pause(0.3)
+>       assert on_list(app), f"`N` opened no list view: screen stack {names(app)}"
+E       AssertionError: `N` opened no list view: screen stack ['Screen']
+
+tests\added_list_fixture.py:313: AssertionError
+__ test_TC_4344b_enter_on_another_boards_archived_task_switches_then_says_so __
+
+home = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-31620/test_TC_4344b_enter_on_another0/.taskboard')
+
+    async def test_TC_4344b_enter_on_another_boards_archived_task_switches_then_says_so(home):
+        """TC-4344b (LLR-4303.24): `Old receipts` (archived, Beta) \u2192 Beta opens, `tb3` is not
+        selected, the notice `Old receipts is archived — v shows it`."""
+        fx.build(home, with_archived=True)
+        app = open_s_app()
+        async with app.run_test(size=W118, notifications=True) as pilot:
+            await _leave_home(pilot, app)
+>           await open_list(pilot, app)
+
+tests\test_added_list.py:1165: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+pilot = <Pilot app=TaskboardApp(title='taskboard', classes={'-dark-mode'}, pseudo_classes={'focus', 'dark'})>
+app = TaskboardApp(title='taskboard', classes={'-dark-mode'}, pseudo_classes={'focus', 'dark'})
+before = ()
+
+    async def open_list(pilot, app, *before):
+        """`escape` (leave the home: the board starts, P-S-4), any `before` keys, then `N`;
+        fails here, with a message, when `N` opens no list view (the base revision)."""
+        await press(pilot, *before, "N")
+        await pilot.pause(0.3)
+>       assert on_list(app), f"`N` opened no list view: screen stack {names(app)}"
+E       AssertionError: `N` opened no list view: screen stack ['Screen']
+
+tests\added_list_fixture.py:313: AssertionError
+__________________ test_TC_4366_the_list_opens_newest_first ___________________
+
+home = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-31620/test_TC_4366_the_list_opens_ne0/.taskboard')
+
+    async def test_TC_4366_the_list_opens_newest_first(home):
+        """TC-4366 (LLR-4304.6): on open, row 0 is the newest stamped task `Pay the rent`,
+        the cursor on it, the head `newest first` (NC oldest first)."""
+        fx.build(home)
+        app = open_s_app()
+        async with app.run_test(size=W118) as pilot:
+            await _leave_home(pilot, app)
+>           await open_list(pilot, app)
+
+tests\test_added_list.py:1182: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+pilot = <Pilot app=TaskboardApp(title='taskboard', classes={'-dark-mode'}, pseudo_classes={'focus', 'dark'})>
+app = TaskboardApp(title='taskboard', classes={'-dark-mode'}, pseudo_classes={'focus', 'dark'})
+before = ()
+
+    async def open_list(pilot, app, *before):
+        """`escape` (leave the home: the board starts, P-S-4), any `before` keys, then `N`;
+        fails here, with a message, when `N` opens no list view (the base revision)."""
+        await press(pilot, *before, "N")
+        await pilot.pause(0.3)
+>       assert on_list(app), f"`N` opened no list view: screen stack {names(app)}"
+E       AssertionError: `N` opened no list view: screen stack ['Screen']
+
+tests\added_list_fixture.py:313: AssertionError
+________ test_TC_4367_o_reverses_the_order_and_puts_the_cursor_on_top _________
+
+home = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-31620/test_TC_4367_o_reverses_the_or0/.taskboard')
+
+    async def test_TC_4367_o_reverses_the_order_and_puts_the_cursor_on_top(home):
+        """TC-4367 (LLR-4304.7): the cursor on row 3, `o` \u2192 oldest first, row 0 `Old
+        invoice`, the cursor 0 (NC keep the index); `o` \u2192 newest first, `Pay the rent`, 0."""
+        fx.build(home)
+        app = open_s_app()
+        async with app.run_test(size=W118) as pilot:
+            await _leave_home(pilot, app)
+>           await open_list(pilot, app)
+
+tests\test_added_list.py:1195: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+pilot = <Pilot app=TaskboardApp(title='taskboard', classes={'-dark-mode'}, pseudo_classes={'focus', 'dark'})>
+app = TaskboardApp(title='taskboard', classes={'-dark-mode'}, pseudo_classes={'focus', 'dark'})
+before = ()
+
+    async def open_list(pilot, app, *before):
+        """`escape` (leave the home: the board starts, P-S-4), any `before` keys, then `N`;
+        fails here, with a message, when `N` opens no list view (the base revision)."""
+        await press(pilot, *before, "N")
+        await pilot.pause(0.3)
+>       assert on_list(app), f"`N` opened no list view: screen stack {names(app)}"
+E       AssertionError: `N` opened no list view: screen stack ['Screen']
+
+tests\added_list_fixture.py:313: AssertionError
+______ test_TC_4392_the_list_opens_with_archived_hidden_whatever_v_says _______
+
+home = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-31620/test_TC_4392_the_list_opens_wi0/.taskboard')
+
+    async def test_TC_4392_the_list_opens_with_archived_hidden_whatever_v_says(home):
+        """TC-4392 (LLR-4306.2): the main screen showing archived (`v`), then `N` \u2192 archived
+        hidden: 5 rows, no `Old receipts`, the head ends `· 1 archived hidden`; the main
+        screen's `v` left as it was (NC inherit `show_archived`)."""
+        fx.build(home, with_archived=True)
+        app = open_s_app()
+        async with app.run_test(size=W118) as pilot:
+            await _leave_home(pilot, app)
+            await press(pilot, "v")
+            assert app.show_archived is True
+>           await open_list(pilot, app)
+
+tests\test_added_list.py:1218: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+pilot = <Pilot app=TaskboardApp(title='taskboard', classes={'-dark-mode'}, pseudo_classes={'focus', 'dark'})>
+app = TaskboardApp(title='taskboard', classes={'-dark-mode'}, pseudo_classes={'focus', 'dark'})
+before = ()
+
+    async def open_list(pilot, app, *before):
+        """`escape` (leave the home: the board starts, P-S-4), any `before` keys, then `N`;
+        fails here, with a message, when `N` opens no list view (the base revision)."""
+        await press(pilot, *before, "N")
+        await pilot.pause(0.3)
+>       assert on_list(app), f"`N` opened no list view: screen stack {names(app)}"
+E       AssertionError: `N` opened no list view: screen stack ['Screen']
+
+tests\added_list_fixture.py:313: AssertionError
+_______________ test_TC_4393_v_toggles_archived_tasks_both_ways _______________
+
+home = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-31620/test_TC_4393_v_toggles_archive0/.taskboard')
+
+    async def test_TC_4393_v_toggles_archived_tasks_both_ways(home):
+        """TC-4393 (LLR-4306.3): 5 rows; `v` \u2192 6 (with `Old receipts`); `v` \u2192 5 (NC one-way);
+        the main screen's `v` untouched."""
+        fx.build(home, with_archived=True)
+        app = open_s_app()
+        async with app.run_test(size=W118) as pilot:
+            await _leave_home(pilot, app)
+>           await open_list(pilot, app)
+
+tests\test_added_list.py:1232: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+pilot = <Pilot app=TaskboardApp(title='taskboard', classes={'-dark-mode'}, pseudo_classes={'focus', 'dark'})>
+app = TaskboardApp(title='taskboard', classes={'-dark-mode'}, pseudo_classes={'focus', 'dark'})
+before = ()
+
+    async def open_list(pilot, app, *before):
+        """`escape` (leave the home: the board starts, P-S-4), any `before` keys, then `N`;
+        fails here, with a message, when `N` opens no list view (the base revision)."""
+        await press(pilot, *before, "N")
+        await pilot.pause(0.3)
+>       assert on_list(app), f"`N` opened no list view: screen stack {names(app)}"
+E       AssertionError: `N` opened no list view: screen stack ['Screen']
+
+tests\added_list_fixture.py:313: AssertionError
+____________ test_TC_4394_the_toggle_keeps_the_cursor_on_its_task _____________
+
+home = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-31620/test_TC_4394_the_toggle_keeps_0/.taskboard')
+
+    async def test_TC_4394_the_toggle_keeps_the_cursor_on_its_task(home):
+        """TC-4394 (LLR-4306.4, P-S-8): the cursor on `Pilot store list` (row 2), `v` \u2192 still
+        on it (row 3), `v` \u2192 row 2 (NC reset to 0); the cursor on the archived `Old receipts`,
+        `v` \u2192 row 0."""
+        fx.build(home, with_archived=True)
+        app = open_s_app()
+        async with app.run_test(size=W118) as pilot:
+            await _leave_home(pilot, app)
+>           await open_list(pilot, app)
+
+tests\test_added_list.py:1251: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+pilot = <Pilot app=TaskboardApp(title='taskboard', classes={'-dark-mode'}, pseudo_classes={'focus', 'dark'})>
+app = TaskboardApp(title='taskboard', classes={'-dark-mode'}, pseudo_classes={'focus', 'dark'})
+before = ()
+
+    async def open_list(pilot, app, *before):
+        """`escape` (leave the home: the board starts, P-S-4), any `before` keys, then `N`;
+        fails here, with a message, when `N` opens no list view (the base revision)."""
+        await press(pilot, *before, "N")
+        await pilot.pause(0.3)
+>       assert on_list(app), f"`N` opened no list view: screen stack {names(app)}"
+E       AssertionError: `N` opened no list view: screen stack ['Screen']
+
+tests\added_list_fixture.py:313: AssertionError
+__________ test_TC_4317_the_open_list_writes_no_board_and_no_history __________
+
+home = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-31620/test_TC_4317_the_open_list_wri0/.taskboard')
+
+    async def test_TC_4317_the_open_list_writes_no_board_and_no_history(home):
+        """TC-4317 (LLR-4302.6, P-S-4): sha256 of both boards and both history.jsonl, taken
+        after leaving the home, are equal after `N \u2193 \u2193 o v v esc` (4/4; NC a `save()` in
+        the screen's compose)."""
+        fx.build(home, with_archived=True)
+        app = open_s_app()
+        async with app.run_test(size=W118) as pilot:
+            await _leave_home(pilot, app)
+            before = _hashes(home)
+>           await open_list(pilot, app)
+
+tests\test_added_list.py:1279: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+pilot = <Pilot app=TaskboardApp(title='taskboard', classes={'-dark-mode'}, pseudo_classes={'focus', 'dark'})>
+app = TaskboardApp(title='taskboard', classes={'-dark-mode'}, pseudo_classes={'focus', 'dark'})
+before = ()
+
+    async def open_list(pilot, app, *before):
+        """`escape` (leave the home: the board starts, P-S-4), any `before` keys, then `N`;
+        fails here, with a message, when `N` opens no list view (the base revision)."""
+        await press(pilot, *before, "N")
+        await pilot.pause(0.3)
+>       assert on_list(app), f"`N` opened no list view: screen stack {names(app)}"
+E       AssertionError: `N` opened no list view: screen stack ['Screen']
+
+tests\added_list_fixture.py:313: AssertionError
+______ test_TC_4331b_a_name_renamed_under_the_list_shows_when_it_returns ______
+
+home = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-31620/test_TC_4331b_a_name_renamed_u0/.taskboard')
+
+    async def test_TC_4331b_a_name_renamed_under_the_list_shows_when_it_returns(home):
+        """TC-4331b (LLR-4303.11, ARCH-5 / A-1): the pane meta of `Sync notes` holds
+        `@Ana Ruiz`; `@`, the directory renames `ana` to `Ana Ortiz`, `escape` \u2192 with no
+        further key the pane holds `@Ana Ortiz` (NC no repaint on resume)."""
+        fx.build(home, people={"ana": "Ana Ruiz"}, notes={"ta1": "ping @ana"})
+        app = open_s_app()
+        async with app.run_test(size=W118) as pilot:
+            await _leave_home(pilot, app)
+>           await open_list(pilot, app)
+
+tests\test_added_list.py:1293: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+pilot = <Pilot app=TaskboardApp(title='taskboard', classes={'-dark-mode'}, pseudo_classes={'focus', 'dark'})>
+app = TaskboardApp(title='taskboard', classes={'-dark-mode'}, pseudo_classes={'focus', 'dark'})
+before = ()
+
+    async def open_list(pilot, app, *before):
+        """`escape` (leave the home: the board starts, P-S-4), any `before` keys, then `N`;
+        fails here, with a message, when `N` opens no list view (the base revision)."""
+        await press(pilot, *before, "N")
+        await pilot.pause(0.3)
+>       assert on_list(app), f"`N` opened no list view: screen stack {names(app)}"
+E       AssertionError: `N` opened no list view: screen stack ['Screen']
+
+tests\added_list_fixture.py:313: AssertionError
+______________ test_AT_4301_one_list_of_every_board_newest_first ______________
+
+home = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-31620/test_AT_4301_one_list_of_every0/.taskboard')
+
+    async def test_AT_4301_one_list_of_every_board_newest_first(home):
+        """AT-4301 (US-4301, HLR-4303..4305): two registry boards (3 + 2 tasks, one with 4
+        phases): `N` \u2192 5 rows newest first under their day headers with their state boxes;
+        `o` \u2192 oldest first; `down` \u2192 the pane follows; `escape` \u2192 the board as it was; the
+        board and history bytes unchanged."""
+        fx.build(home)
+        app = open_s_app()
+        async with app.run_test(size=W118) as pilot:
+            await _leave_home(pilot, app)
+            before, selected = _hashes(home), app.selected_task_id
+>           await open_list(pilot, app)
+
+tests\test_added_list.py:1318: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+pilot = <Pilot app=TaskboardApp(title='taskboard', classes={'-dark-mode'}, pseudo_classes={'focus', 'dark'})>
+app = TaskboardApp(title='taskboard', classes={'-dark-mode'}, pseudo_classes={'focus', 'dark'})
+before = ()
+
+    async def open_list(pilot, app, *before):
+        """`escape` (leave the home: the board starts, P-S-4), any `before` keys, then `N`;
+        fails here, with a message, when `N` opens no list view (the base revision)."""
+        await press(pilot, *before, "N")
+        await pilot.pause(0.3)
+>       assert on_list(app), f"`N` opened no list view: screen stack {names(app)}"
+E       AssertionError: `N` opened no list view: screen stack ['Screen']
+
+tests\added_list_fixture.py:313: AssertionError
+______________________ test_AT_4304_the_archived_toggle _______________________
+
+home = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-31620/test_AT_4304_the_archived_togg0/.taskboard')
+
+    async def test_AT_4304_the_archived_toggle(home):
+        """AT-4304 (US-4301, HLR-4306): one archived task: `N` \u2192 not listed, the head ends
+        `1 archived hidden`; `v` \u2192 listed under FRI OCT 30, its title dimmed, the head ends
+        `archived shown`, the cursor still on `Pay the rent`; `v` \u2192 hidden again."""
+        fx.build(home, with_archived=True)
+        app = open_s_app()
+        async with app.run_test(size=W118) as pilot:
+            await _leave_home(pilot, app)
+>           await open_list(pilot, app)
+
+tests\test_added_list.py:1350: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+pilot = <Pilot app=TaskboardApp(title='taskboard', classes={'-dark-mode'}, pseudo_classes={'focus', 'dark'})>
+app = TaskboardApp(title='taskboard', classes={'-dark-mode'}, pseudo_classes={'focus', 'dark'})
+before = ()
+
+    async def open_list(pilot, app, *before):
+        """`escape` (leave the home: the board starts, P-S-4), any `before` keys, then `N`;
+        fails here, with a message, when `N` opens no list view (the base revision)."""
+        await press(pilot, *before, "N")
+        await pilot.pause(0.3)
+>       assert on_list(app), f"`N` opened no list view: screen stack {names(app)}"
+E       AssertionError: `N` opened no list view: screen stack ['Screen']
+
+tests\added_list_fixture.py:313: AssertionError
+______ test_AT_4305_old_tasks_are_inferred_honestly_and_never_rewritten _______
+
+home = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-31620/test_AT_4305_old_tasks_are_inf0/.taskboard')
+
+    async def test_AT_4305_old_tasks_are_inferred_honestly_and_never_rewritten(home):
+        """AT-4305 (US-4301, HLR-4302, HLR-4304): an old board with a birth record for one
+        task and none for another, plus a stamped task: the list shows `18:20`, `\u224810:30` and
+        `?` with the source lines of LLR-4304.10; after `escape` the board files and the
+        histories are byte-identical and the old entries still hold no `created`."""
+        fx.build(home)
+        app = open_s_app()
+        async with app.run_test(size=W118) as pilot:
+            await _leave_home(pilot, app)
+            before = _hashes(home)
+>           await open_list(pilot, app)
+
+tests\test_added_list.py:1379: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+pilot = <Pilot app=TaskboardApp(title='taskboard', classes={'-dark-mode'}, pseudo_classes={'focus', 'dark'})>
+app = TaskboardApp(title='taskboard', classes={'-dark-mode'}, pseudo_classes={'focus', 'dark'})
+before = ()
+
+    async def open_list(pilot, app, *before):
+        """`escape` (leave the home: the board starts, P-S-4), any `before` keys, then `N`;
+        fails here, with a message, when `N` opens no list view (the base revision)."""
+        await press(pilot, *before, "N")
+        await pilot.pause(0.3)
+>       assert on_list(app), f"`N` opened no list view: screen stack {names(app)}"
+E       AssertionError: `N` opened no list view: screen stack ['Screen']
+
+tests\added_list_fixture.py:313: AssertionError
+=================================== PASSES ====================================
+=========================== short test summary info ===========================
+PASSED tests/test_task_created.py::test_TC_4315_an_old_board_keeps_the_bytes_eb411e1_writes[plain]
+PASSED tests/test_task_created.py::test_TC_4315_an_old_board_keeps_the_bytes_eb411e1_writes[legacy]
+PASSED tests/test_task_created.py::test_TC_4315_an_old_board_keeps_the_bytes_eb411e1_writes[unknown]
+PASSED tests/test_task_created.py::test_TC_4316_an_add_leaves_every_old_entry_as_it_was
+FAILED tests/test_task_created.py::test_TC_4301_created_is_an_optional_field_that_defaults_to_none
+FAILED tests/test_task_created.py::test_TC_4302b_the_stamp_is_local_time_to_the_second
+FAILED tests/test_task_created.py::test_TC_4302_a_task_added_in_the_editor_is_stamped
+FAILED tests/test_task_created.py::test_TC_4303_a_template_insert_stamps_every_task_with_one_moment
+FAILED tests/test_task_created.py::test_TC_4304_the_link_pickers_create_row_stamps_the_new_task
+FAILED tests/test_task_created.py::test_TC_4305_add_task_stamps_before_the_save_and_the_birth_record_agrees
+FAILED tests/test_task_created.py::test_TC_4306_a_seeded_board_stamps_every_task_with_one_moment
+FAILED tests/test_task_created.py::test_TC_4307_add_task_keeps_a_created_that_is_already_set
+FAILED tests/test_task_created.py::test_TC_4308_an_edit_keeps_created_as_it_was
+FAILED tests/test_task_created.py::test_TC_4309_a_project_move_keeps_each_moved_tasks_created
+FAILED tests/test_task_created.py::test_TC_4310_undo_restores_a_deleted_task_with_its_created
+FAILED tests/test_task_created.py::test_TC_4311_a_rescued_entry_is_not_stamped
+FAILED tests/test_task_created.py::test_TC_4312_created_is_written_only_when_set
+FAILED tests/test_task_created.py::test_TC_4313_a_string_created_is_read_as_it_is
+FAILED tests/test_task_created.py::test_TC_4314_a_non_string_created_is_written_back_unchanged
+FAILED tests/test_task_created.py::test_TC_4318_the_team_push_carries_no_created
+FAILED tests/test_task_created.py::test_AT_4302_a_task_added_on_an_old_board_is_first_in_the_list
+FAILED tests/test_task_created.py::test_AT_4303_a_template_insert_lists_its_tasks_with_one_time
+FAILED tests/test_added_list.py::test_TC_4361_a_valid_created_is_the_moment_even_with_a_birth_record
+FAILED tests/test_added_list.py::test_TC_4362_no_created_takes_the_first_birth_record
+FAILED tests/test_added_list.py::test_TC_4363_neither_created_nor_birth_is_unknown
+FAILED tests/test_added_list.py::test_TC_4368_a_created_that_is_not_a_date_is_no_created
+FAILED tests/test_added_list.py::test_TC_4373_an_offset_aware_moment_is_not_valid
+FAILED tests/test_added_list.py::test_TC_4373b_a_zulu_or_pre_1970_offset_moment_is_none_without_raising
+FAILED tests/test_added_list.py::test_TC_4372_a_history_read_that_raises_oserror_gives_no_births
+FAILED tests/test_added_list.py::test_TC_4372b_a_history_file_that_is_not_utf8_gives_no_births
+FAILED tests/test_added_list.py::test_TC_4372c_a_deeply_nested_history_line_gives_no_births
+FAILED tests/test_added_list.py::test_TC_4377_a_task_id_that_is_not_a_string_is_listed_unknown
+FAILED tests/test_added_list.py::test_TC_4364_ties_break_by_board_order_then_file_position
+FAILED tests/test_added_list.py::test_TC_4366b_newest_first_is_the_exact_reverse
+FAILED tests/test_added_list.py::test_TC_4365_unknown_rows_come_first_in_board_then_file_order
+FAILED tests/test_added_list.py::test_TC_4365b_with_archived_shown_unknowns_stay_in_board_then_file_order
+FAILED tests/test_added_list.py::test_TC_4391_archived_tasks_are_left_out_while_hidden
+FAILED tests/test_added_list.py::test_TC_4370_first_created_is_the_earliest_valid_created
+FAILED tests/test_added_list.py::test_TC_4370_the_source_line_names_how_the_moment_is_known
+FAILED tests/test_added_list.py::test_TC_4371_with_no_valid_created_anywhere_unknowns_sit_before_any_record
+FAILED tests/test_added_list.py::test_TC_4375_with_no_valid_created_the_unknown_source_line_names_no_date
+FAILED tests/test_added_list.py::test_TC_4327_the_body_at_118x30_is_the_designed_capture
+FAILED tests/test_added_list.py::test_TC_4327_the_body_at_80x24_is_the_designed_capture
+FAILED tests/test_added_list.py::test_TC_4328_a_row_reads_cursor_time_boxes_hue_title
+FAILED tests/test_added_list.py::test_TC_4329_day_headers_newest_first - Fail...
+FAILED tests/test_added_list.py::test_TC_4330_the_pane_heads_with_title_chip_meta_source_and_rule
+FAILED tests/test_added_list.py::test_TC_4331_the_meta_line_holds_every_fact_the_task_has
+FAILED tests/test_added_list.py::test_TC_4332_notes_are_drawn_through_notes_text_never_as_markers
+FAILED tests/test_added_list.py::test_TC_4332b_a_huge_note_is_cut_before_it_is_wrapped
+FAILED tests/test_added_list.py::test_TC_4333_the_pane_lists_urls_images_and_what_the_task_waits_on
+FAILED tests/test_added_list.py::test_TC_4335_the_list_scrolls_to_keep_the_cursor_on_screen
+FAILED tests/test_added_list.py::test_TC_4335_a_note_longer_than_the_pane_ends_with_a_count
+FAILED tests/test_added_list.py::test_TC_4337_an_empty_list_says_so - Failed:...
+FAILED tests/test_added_list.py::test_TC_4340_board_text_that_looks_like_markup_is_drawn_literally
+FAILED tests/test_added_list.py::test_TC_4369_time_labels_say_how_the_moment_is_known
+FAILED tests/test_added_list.py::test_TC_4374_the_head_names_the_order_and_the_legend
+FAILED tests/test_added_list.py::test_TC_4326_the_head_counts_boards_not_read
+FAILED tests/test_added_list.py::test_TC_4396_the_head_ends_with_the_archived_state
+FAILED tests/test_added_list.py::test_TC_4381_boxes_fill_up_to_and_including_the_phase
+FAILED tests/test_added_list.py::test_TC_4382_more_than_eight_phases_draw_eight_boxes
+FAILED tests/test_added_list.py::test_TC_4383_the_state_column_is_as_wide_as_the_widest_board
+FAILED tests/test_added_list.py::test_TC_4384_the_state_column_is_ink_and_dim_only
+FAILED tests/test_added_list.py::test_TC_4395_archived_rows_are_dimmed_while_shown
+FAILED tests/test_added_list.py::test_TC_4397_the_meta_line_says_archived - F...
+FAILED tests/test_added_list.py::test_TC_4321_N_is_one_global_key_of_the_seat
+FAILED tests/test_added_list.py::test_TC_4343_the_readme_key_table_has_a_row_for_N
+FAILED tests/test_added_list.py::test_TC_4322_N_opens_the_list_view - Asserti...
+FAILED tests/test_added_list.py::test_TC_4323_N_brings_the_open_list_back_without_a_second_one
+FAILED tests/test_added_list.py::test_TC_4324_escape_or_N_closes_the_list - A...
+FAILED tests/test_added_list.py::test_TC_4324_N_on_the_home_opens_over_it_and_N_closes_it
+FAILED tests/test_added_list.py::test_TC_4325_the_list_reads_every_board_of_the_registry
+FAILED tests/test_added_list.py::test_TC_4326_a_board_whose_file_is_missing_is_counted_not_read
+FAILED tests/test_added_list.py::test_TC_4327_the_separator_follows_the_terminal_width
+FAILED tests/test_added_list.py::test_TC_4334_up_and_down_move_the_cursor_clamped
+FAILED tests/test_added_list.py::test_TC_4336_enter_opens_the_task_on_its_board
+FAILED tests/test_added_list.py::test_TC_4336b_enter_on_another_boards_task_switches_to_it
+FAILED tests/test_added_list.py::test_TC_4336d_enter_on_a_board_whose_file_went_missing_says_so
+FAILED tests/test_added_list.py::test_TC_4338_an_empty_list_ignores_enter_and_the_arrows
+FAILED tests/test_added_list.py::test_TC_4339_the_key_row_shows_every_key_the_view_binds[size0]
+FAILED tests/test_added_list.py::test_TC_4339_the_key_row_shows_every_key_the_view_binds[size1]
+FAILED tests/test_added_list.py::test_TC_4341_added_list_is_refused_under_a_modal
+FAILED tests/test_added_list.py::test_TC_4342_the_list_holds_the_seat - Asser...
+FAILED tests/test_added_list.py::test_TC_4344_enter_on_an_archived_task_says_so_and_selects_nothing
+FAILED tests/test_added_list.py::test_TC_4344b_enter_on_another_boards_archived_task_switches_then_says_so
+FAILED tests/test_added_list.py::test_TC_4366_the_list_opens_newest_first - A...
+FAILED tests/test_added_list.py::test_TC_4367_o_reverses_the_order_and_puts_the_cursor_on_top
+FAILED tests/test_added_list.py::test_TC_4392_the_list_opens_with_archived_hidden_whatever_v_says
+FAILED tests/test_added_list.py::test_TC_4393_v_toggles_archived_tasks_both_ways
+FAILED tests/test_added_list.py::test_TC_4394_the_toggle_keeps_the_cursor_on_its_task
+FAILED tests/test_added_list.py::test_TC_4317_the_open_list_writes_no_board_and_no_history
+FAILED tests/test_added_list.py::test_TC_4331b_a_name_renamed_under_the_list_shows_when_it_returns
+FAILED tests/test_added_list.py::test_AT_4301_one_list_of_every_board_newest_first
+FAILED tests/test_added_list.py::test_AT_4304_the_archived_toggle - Assertion...
+FAILED tests/test_added_list.py::test_AT_4305_old_tasks_are_inferred_honestly_and_never_rewritten
+90 failed, 4 passed in 23.66s
+# pytest exit 1
