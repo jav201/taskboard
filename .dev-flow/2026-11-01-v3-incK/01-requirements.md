@@ -181,8 +181,8 @@ focused view, plus the `____` divider; D1 one global inbox; D2 TF-IDF explained.
   Threshold: store `pad` = `"a\n____\nb"` → pad text equal; 1/1. *NC:* start empty: RED. **TC-4406**
 - **LLR-4401.7 — State.** While the screen is at least 100 cells wide, the capture view shall place the rail in a 50-cell column to the right of the pad.
   Threshold: at 118x30 the rail's region has `x = 68` and `width = 50`, the pad's region `x = 0`; 2/2. *NC:* rail below the pad: RED. **TC-4407**
-- **LLR-4401.8 — State.** While the screen is narrower than 100 cells, the capture view shall place the rail below the pad, 7 rows high, showing the cursor's note only.
-  Threshold: at 80x24 the rail's region starts below the pad's last row, `height = 7`, and holds exactly 1 note title (the cursor's) out of 3 notes; 3/3. *NC:* all notes in the narrow rail: RED. **TC-4408**
+- **LLR-4401.8 — State.** While the screen is narrower than 100 cells, the capture view shall place the rail below the pad, 7 rows high, showing the cursor's note only, each rail row cut to the rail's content width (`w − 2`) (CR-7).
+  Threshold: at 80x24 the rail's region starts below the pad's last row, `height = 7`, and holds exactly 1 note title (the cursor's) out of 3 notes; at 60x24, a cursor note whose title is longer than the rail → the rail's content width 58 and every rail row ≤ 58 cells, the title cut with `…`; 4/4. *NC:* all notes in the narrow rail: RED; a fixed 78-cell cut: the title row over 58 cells: arm 4 RED. **TC-4408**, **TC-4408b**
 - **LLR-4401.9 — Ubiquitous.** The capture view's head row shall read `CAPTURE  <n> notes · suggestions read every board` (`1 note` for one), clipped to the width.
   Threshold: 3 notes → that plain text exactly at 118x30; 1 note → `CAPTURE  1 note · suggestions read every board`; 2/2. *NC:* fixed `notes`: arm 2 RED. **TC-4409**
 - **LLR-4401.10 — Ubiquitous.** The capture view's key row shall show `alt+d dump`, `alt+o other`, `alt+n new project`, `alt+a review`, `alt+i image`, `alt+u undo` and `esc close`, fitted by `keymap.key_line` (words go first, keys never).
@@ -235,7 +235,9 @@ focused view, plus the `____` divider; D1 one global inbox; D2 TF-IDF explained.
 - **LLR-4402.13 — Event.** When a divider line is first drawn as a rule while the store's divider-notice flag is not set, the system shall show the notice `That ____ line divides notes: the text above and below it dump as two tasks. alt+l inserts one.`
   Threshold: exactly 1 notification with that text, title `Capture`, `markup=False`; a second divider in the same session → still 1; 2/2. *NC:* notice on every divider: arm 2 RED. **TC-4443**
 - **LLR-4402.14 — Event.** When the divider notice is shown, the system shall set `divider_notice` to true in the store.
-  Threshold: the store read back holds `"divider_notice": true`; 1/1. *NC:* a session flag only: RED. **TC-4444**
+  Threshold: the store read back holds `"divider_notice": true`; a store whose flag another window already set → 0 store writes (CR-5); pad `x|b` loaded by windows X and Y, Y dumps `b`, then X's notice and X writes `x|b|d` → the stored pad `"x
+____
+d"`, union True (X holds the file's `dumped` only when the file was unchanged, CR-1/SEC-1); 3/3. *NC:* a session flag only: arm 1 RED; always write: arm 2 RED; hold the file's `dumped` while it changed: `b` back: arm 3 RED. **TC-4444**, **TC-4444c**, **TC-4444d**
 - **LLR-4402.15 — Unwanted.** If the store's `divider_notice` is true, then the system shall not show the divider notice.
   Threshold: a new app instance on a store with the flag, a divider made → 0 notices; 1/1. *NC:* ignore the stored flag: RED. **TC-4445**
 - **LLR-4402.16 — Ubiquitous.** The system shall keep a divider line's text as typed, in the pad and in the store.
@@ -498,7 +500,15 @@ focused view, plus the `____` divider; D1 one global inbox; D2 TF-IDF explained.
 - **LLR-4407.18 — Unwanted.** If the pad is unchanged since its last read or write and the Inbox holds no pending record or pending drop, then the system shall not write the store.
   Threshold: open, move the cursor, wait 1.3 s, `esc` → store bytes and mtime unchanged; with no store, no file created; with a pending record and an unchanged pad, `esc` → exactly 1 store write; 3/3. *NC:* write on close always: arm 1 RED; skip while a record is pending: arm 3 RED. **TC-4598**
 - **LLR-4407.19 — Unwanted.** If the store file changed since this app's last read or write when the pad is written, then the system shall write as the pad the fresh pad's notes followed by this window's notes in this window's order, less one copy per fresh-pad note and per unseen entry's `text` of equal text (a multiset, `collections.Counter`), joined by `\n____\n` (note-level union, R2 F-8, SEC-1, ARCH-1).
-  Threshold: fresh pad `a|c` with an unseen entry of text `b`, window `a|b|d` → `"a\n____\nc\n____\nd"`; a note deleted here by hand but present in the fresh pad comes back (`a|c`, window `a` → `"a\n____\nc"`); fresh pad `x`, a 3-day-old entry `follow up` this Inbox holds, window `x|follow up` → `"x\n____\nfollow up"` (the re-typed note written); fresh pad `x`, an unseen entry `follow up`, window `x|follow up|follow up` → `"x\n____\nfollow up"` (one copy kept); 4/4. *NC:* last writer wins: `c` lost and `b` back: arm 1 RED; exclude by every fresh `dumped` text: `"x"`: arm 3 RED; exclude by set membership: no copy kept: arm 4 RED. **TC-4599**
+  Threshold: fresh pad `a|c` with an unseen entry of text `b`, window `a|b|d` → `"a\n____\nc\n____\nd"`; a note deleted here by hand but present in the fresh pad comes back (`a|c`, window `a` → `"a\n____\nc"`); fresh pad `x`, a 3-day-old entry `follow up` this Inbox holds, window `x|follow up` → `"x\n____\nfollow up"` (the re-typed note written); fresh pad `x`, an unseen entry `follow up`, window `x|follow up|follow up` → `"x\n____\nfollow up"` (one copy kept); 4/4. *NC:* last writer wins: `c` lost and `b` back: arm 1 RED; exclude by every fresh `dumped` text: `"x"`: arm 3 RED; exclude by set membership: no copy kept: arm 4 RED. Store stamp timing (CR-2): another window writes `a|z` right after this window's store write releases the lock, then this window writes `a|q` → `"a
+____
+z
+____
+q"`; another window writes `p|z` between this window's load read and its stat, then this window writes `p|q` → `"p
+____
+z
+____
+q"`; 2/2. *NC:* the stamp taken after the lock / after the read: `z` lost: RED. **TC-4599**, **TC-4599b**, **TC-4599c**
 - **LLR-4407.20 — Ubiquitous.** The system shall write this window's pad verbatim when the store file is unchanged since this app's last read or write.
   Threshold: a pad with `________`, blank lines and trailing spaces → stored byte-identical; 1/1. *NC:* always normalise through the union: RED. **TC-4600**
 - **LLR-4407.21 — Event.** When a union was written, the system shall replace the pad's text with the written text.
@@ -524,7 +534,7 @@ focused view, plus the `____` divider; D1 one global inbox; D2 TF-IDF explained.
 - **LLR-4407.33 — Withdrawn (ARCH-4)** (LED.4): the store has no `flagged` key (LLR-4407.2).
 - **LLR-4407.34 — Withdrawn (ARCH-4)** (LED.4): no flag to drop; a pending record leaves the Inbox at the first successful pad write (LLR-4407.41).
 - **LLR-4407.35 — Unwanted.** If the store file is larger than `STORE_MAX_BYTES` (8 388 608 bytes), then the system shall treat it as unreadable after reading at most 8 388 609 bytes of it (P-S-3).
-  Threshold: a store of 8 388 609 bytes → `load_report["unreadable"]` True, the pad empty, at most 8 388 609 bytes read (spy on the read); a store of 8 388 608 valid bytes → read normally; 2/2. *NC:* `read_bytes()` of the whole file: the byte-count arm RED. **TC-4675**
+  Threshold: a store of 8 388 609 bytes → `load_report["unreadable"]` True, the pad empty, at most 8 388 609 bytes read (spy on the read); a valid store of 8 388 608 + 4 096 bytes → unreadable after at most 8 388 609 bytes read (the arm a whole-file read exceeds, M48); a store of 8 388 608 valid bytes → read normally; 3/3. *NC:* `fh.read()` / `read_bytes()` of the whole file: the 8 392 704-byte arm RED. **TC-4675**
 - **LLR-4407.36 — Unwanted.** If an unreadable store file is larger than `STORE_MAX_BYTES`, then the system shall not copy it aside.
   Threshold: a store of 8 388 609 bytes → no `inbox.json.corrupt`; `load_report["backup"]` None; after a pad change the file's bytes unchanged (LLR-4407.9); 3/3. *NC:* `keep_aside` on it: a `.corrupt` copy: RED. **TC-4676**
 - **LLR-4407.37 — Unwanted.** If a store write would hold more than `STORE_MAX_BYTES`, then the system shall leave the file and the in-memory store unchanged and show `inbox.json could not be saved: inbox.json would hold <n> bytes, over the 8388608-byte limit, so it was not written`.
@@ -553,6 +563,10 @@ focused view, plus the `____` divider; D1 one global inbox; D2 TF-IDF explained.
   Threshold: this window's pad `a|b`, another window wrote pad `a|b|c`; `b` dumped here (window `a`) → the stored pad `"a\n____\nc"`, `dumped` holds `b`'s entry; on an unchanged file → the stored pad `"a"`; 2/2. *NC:* the typing union for the dump write: `"a\n____\nb\n____\nc"` (`b` back in the pad: a second dump makes a duplicate task): arm 1 RED. **TC-4688**
 - **LLR-4407.49 — Event.** When an undo's entry is dropped from the store while the store file's `dumped` holds that entry, the system shall append the restored note to the store file's pad as the file holds it at that moment (ARCH-1, case U).
   Threshold: the file changed by another window to pad `a|c|d`, still holding entry `b`; `b` undone here (window `a|c|b`) → the stored pad `"a\n____\nc\n____\nd\n____\nb"`, `dumped` without `b`; the entry already gone from the file (undone in another window, which restored `b`: fresh pad `a|b`), window `a|b` → the stored pad `"a\n____\nb"` (`b` once); 2/2. *NC:* the typing union for the undo write: `"a\n____\nc\n____\nd"` (`b` lost from the pad, the store and its board): arm 1 RED. **TC-4689**
+- **LLR-4407.50 — Unwanted.** If reading the store fails with `OSError` when it is first loaded, then the capture view shall show `inbox.json could not be read right now; its notes merge back on the next save.` instead of the LLR-4407.38 notice (A-4, K-SEC-2).
+  Threshold: the open of `inbox.json` failing once at start over a store with pad `p` → that notice once, `markup=False`, severity `warning`; the LLR-4407.38 notice 0 times; the pad `p` after the view's open refresh; 1/1. *NC:* the LLR-4407.38 wording: RED. **TC-4690**
+- **LLR-4407.51 — Event.** When `quit` is pressed on any screen with no capture view on the stack while the Inbox holds a pending record or pending drop, the system shall try the store write once before exiting (A-3, CR-3, K-SEC-3).
+  Threshold: a dump of N2 whose store write and both close-time writes fail, then `q` from the board and from the boards home → 1 more store write each; it succeeds → `inbox.json` holds N2's entry; it fails → the app exits; 4/4. *NC:* no retry on the home's `q`: no entry: the home arms RED; no retry at all: every arm RED. **TC-4691**
 
 ### 4.8 Images (HLR-4408)
 
@@ -560,8 +574,8 @@ focused view, plus the `____` divider; D1 one global inbox; D2 TF-IDF explained.
   Threshold: an attached bitmap lands at `<store dir>/inbox-images/paste-001.png`; 1/1. *NC:* inside a board's `images/`: RED. **TC-4611**
 - **LLR-4408.2 — Event.** When `alt+i` is pressed and the clipboard holds a bitmap, the system shall save it as the next free `paste-NNN.png` in the pad images folder through `models.save_pil_image`.
   Threshold: with `paste-001.png` present → `paste-002.png`; 1/1. *NC:* overwrite `paste-001.png`: RED. **TC-4612**
-- **LLR-4408.3 — Event.** When `alt+i` is pressed and the clipboard holds files, the system shall copy each regular file whose lower-case suffix is in `IMAGE_EXTS` into the pad images folder, under its own name or `<stem>-<k><suffix>` (k = 2, 3, …) when that name is taken.
-  Threshold: the source file still exists byte-identical; the copy's bytes equal; a taken name → `shot-2.png`; 3/3. *NC:* move the user's file: source gone: RED. **TC-4613**
+- **LLR-4408.3 — Event.** When `alt+i` is pressed and the clipboard holds files, the system shall copy each regular file whose lower-case suffix is in `IMAGE_EXTS` into the pad images folder, under its own name or `<stem>-<k><suffix>` (k = 2, 3, …) when that name is taken, the stem cut so that the name stays within 128 characters (K-SEC-5).
+  Threshold: the source file still exists byte-identical; the copy's bytes equal; a taken name → `shot-2.png`; a taken 128-character name → a copy of ≤ 128 characters ending `-2.png` that passes the image-name rule; 4/4. *NC:* move the user's file: source gone: RED; no cut: a 130-character name: arm 4 RED. **TC-4613**, **TC-4613b**
 - **LLR-4408.4 — Event.** When images are added to a note, the system shall insert one line `img: <name>` per image after that note's last line.
   Threshold: note `"T\nx"` + 2 images → `"T\nx\nimg: paste-001.png\nimg: shot.png"`; 1/1. *NC:* insert at the cursor mid-line: RED. **TC-4614**
 - **LLR-4408.5 — Unwanted.** If the clipboard holds no image and no files, then the system shall show `No image found in the clipboard.`
@@ -595,6 +609,8 @@ focused view, plus the `____` divider; D1 one global inbox; D2 TF-IDF explained.
   Threshold: a clipboard file `con.png` → the line `img: image.png`, the copy's bytes equal the source's, the source unchanged; with `image.png` present → `img: image-2.png`; 2/2. *NC:* copy under the own name: a line the dump can never read: RED. **TC-4629**
 - **LLR-4408.20 — Unwanted.** If the pad images folder or a task's images folder is a symbolic link or a junction, or that task folder does not resolve to a folder directly inside its board's `images` folder, then the system shall copy the dump's or the undo's image files without removing any source file (SEC-6: `move_project`'s link check).
   Threshold: `inbox-images` made a junction to a folder J holding `a.png`, a note with `img: a.png` dumped → the task's copy present and `J/a.png` still present; a dumped task's `images/<id>` made a junction to a folder J2 holding `a.png`, then undone → `a.png` copied into the pad images folder and `J2/a.png` still present; with plain folders → the sources removed as before (LLR-4408.10, LLR-4408.16); 3/3. *NC:* unlink with no link check: `J/a.png` gone: arm 1 RED. **TC-4650**
+- **LLR-4408.21 — Unwanted.** If a dump's image files cannot be moved back into the pad images folder when it is undone, then the system shall complete the undo, return the note's text, and leave those files in the task's images folder (K-SEC-1, RISK-P-S-12).
+  Threshold: `inbox-images` a regular file; a note with no image undone → state `undone`, the note text back, the task gone from its board; a note with `img: paste-001.png` undone → state `undone`, the note text as dumped, the task gone, `images/<id>/paste-001.png` still there; 0 exceptions; 2/2. *NC:* the folder made outside the guard: `FileExistsError`: RED. **TC-4651**
 
 ### 4.9 Colour, mentions and untrusted text (HLR-4409)
 
@@ -664,9 +680,10 @@ Unchanged on purpose (to verify at E2): `Board.add_task` (stamps and writes the 
 
 ## 7. Counts
 
-US 1 · HLR 9 · LLR ids 212, active 205, withdrawn 7 (active by group — 4401: 19, 4402: 18, 4403: 31, 4404: 34, 4405: 19, 4406: 17, 4407: 43, 4408: 19, 4409: 5) · AT 8.
+US 1 · HLR 9 · LLR ids 215, active 206, withdrawn 9 (active by group — 4401: 19, 4402: 18, 4403: 29, 4404: 34, 4405: 19, 4406: 17, 4407: 45, 4408: 20, 4409: 5) · AT 8.
 (E2 correction pass, LED-2026-11-01-incK.3: 12 LLRs added — LLR-4401.17, LLR-4401.18, LLR-4403.27, LLR-4403.28, LLR-4405.15, LLR-4405.16, LLR-4405.17, LLR-4407.35, LLR-4407.36, LLR-4407.37, LLR-4407.38, LLR-4408.19; none withdrawn.)
 (E3 round 1, LED-2026-11-01-incK.4: 20 LLRs added — LLR-4401.19, LLR-4403.29, LLR-4403.30, LLR-4403.31, LLR-4404.34, LLR-4405.18, LLR-4405.19, LLR-4406.17, LLR-4407.39, LLR-4407.40, LLR-4407.41, LLR-4407.42, LLR-4407.43, LLR-4407.44, LLR-4407.45, LLR-4407.46, LLR-4407.47, LLR-4407.48, LLR-4407.49, LLR-4408.20; 7 withdrawn — LLR-4407.26, LLR-4407.30, LLR-4407.31, LLR-4407.32, LLR-4407.33, LLR-4407.34 (ARCH-4), LLR-4408.14 (ARCH-7).)
+(E5 corrective pass, LED-2026-11-01-incK.6: 3 LLRs added — LLR-4407.50, LLR-4407.51, LLR-4408.21; none withdrawn; 5 reworded — LLR-4401.8, LLR-4402.14, LLR-4407.19, LLR-4407.35, LLR-4408.3. The count line also takes in LED.5's withdrawal of LLR-4403.30 and LLR-4403.31, which it had not shown.)
 
 ## Recorded risks (E3 round 1; the orchestrator moves them to BACKLOG at E5)
 

@@ -35,6 +35,7 @@ clock, so every dumped entry a write must keep is stamped relative to `datetime.
 from __future__ import annotations
 
 import builtins
+import contextlib
 import inspect
 import io
 import json
@@ -1342,14 +1343,23 @@ async def test_TC_4609_a_dump_an_undo_and_an_attach_write_the_store_at_once(home
 def test_TC_4675_a_store_over_the_cap_is_unreadable_after_cap_plus_one_bytes(tmp_path,
                                                                             monkeypatch):
     """TC-4675 (LLR-4407.35): a VALID store of 8 388 609 bytes → unreadable, pad empty, at
-    most 8 388 609 bytes read from it; one of 8 388 608 bytes → read normally. NC
-    `read_bytes()` of the whole file: the byte-count arm RED."""
+    most 8 388 609 bytes read from it; one of 8 388 608 bytes → read normally. WHY (E5, M48):
+    a store far over the cap must cost at most the cap to reject, never a whole-file read, so
+    the arm of CAP + 4096 bytes is the one a whole-file read exceeds (at CAP + 1 the two read
+    the same bytes). NC `fh.read()` / `read_bytes()` of the whole file: the CAP + 4096 arm RED."""
     assert fx.need("inbox", "STORE_MAX_BYTES") == CAP
     big = tmp_path / "big"
     fx.write_store(big, raw=_store_of_size(CAP + 1))
     with monkeypatch.context() as m:
         box = _count_reads(m)
         x = _load(big / "inbox.json")
+    assert x.load_report.get("unreadable") is True and x.pad == ""
+    assert box["bytes"] <= CAP + 1, box
+    bigger = tmp_path / "bigger"
+    fx.write_store(bigger, raw=_store_of_size(CAP + 4096))
+    with monkeypatch.context() as m:
+        box = _count_reads(m)
+        x = _load(bigger / "inbox.json")
     assert x.load_report.get("unreadable") is True and x.pad == ""
     assert box["bytes"] <= CAP + 1, box
     ok = tmp_path / "ok"
@@ -2126,3 +2136,231 @@ def test_TC_4635_the_pad_is_stored_without_control_characters(tmp_path):
     x = _load(tmp_path / "inbox.json")
     res = x.write_pad("a\x1bb\x9bc")
     assert res.pad == "abc" and _store(tmp_path)["pad"] == "abc"
+
+
+# =========================================================================== #
+# E5 corrective pass (05-corrections.md, LED-2026-11-01-incK.6)
+# =========================================================================== #
+def test_TC_4444c_a_note_dumped_in_another_window_stays_out_after_the_notice(tmp_path):
+    """TC-4444c (LLR-4402.14, SEC-1, CR-1). WHY: a note dumped as a task in one window must
+    never come back into the pad through another window — a later `alt+d` on it would make
+    a second task. Pad `x|b`, windows X and Y load it; Y dumps `b`; X shows the divider
+    notice (`mark_notice`), then writes `x|b|d` → the stored pad `x|d`, union True, `dumped`
+    still holds b's entry. NC `mark_notice` holds the file's `dumped` while the file had
+    changed (X then counts Y's entry as seen and keeps its stale `b`): `x|b|d`: RED."""
+    fx.write_store(tmp_path, pad="x\n____\nb")
+    x = _load(tmp_path / "inbox.json")
+    y = _load(tmp_path / "inbox.json")
+    y.write_pad("x", record=dict(_e("b", "tb", board=tmp_path / "c" / "board.json")))
+    x.mark_notice()
+    assert _store(tmp_path)["divider_notice"] is True
+    res = x.write_pad("x\n____\nb\n____\nd")
+    data = _store(tmp_path)
+    assert data["pad"] == "x\n____\nd", data["pad"]
+    assert res.union is True
+    assert [d["task"] for d in data["dumped"]] == ["tb"]
+
+
+def test_TC_4444d_the_notice_is_not_written_when_the_file_already_holds_it(tmp_path,
+                                                                           monkeypatch):
+    """TC-4444d (LLR-4402.14, CR-5). WHY: a write the design says does not happen still
+    takes the store's lock and moves its stamp, so every other window then merges instead of
+    writing its pad as typed. Window X loaded before window Y set the flag; X's
+    `mark_notice` → 0 store writes, the file's bytes unchanged, X's flag True. NC always
+    `_commit`: 1 write: RED."""
+    fx.write_store(tmp_path, pad="a")
+    x = _load(tmp_path / "inbox.json")
+    _load(tmp_path / "inbox.json").mark_notice()
+    before = _bytes(tmp_path / "inbox.json")
+    calls = _spy_store_writes(monkeypatch)
+    x.mark_notice()
+    assert calls == [] and _bytes(tmp_path / "inbox.json") == before
+    assert x.divider_notice is True
+
+
+def _foreign_write_after_read(m, path: Path, text: str) -> dict:
+    """The first `open` of `inbox.json` for reading: once that handle is closed, another
+    window writes `text` to the file (before the reader can stat it)."""
+    real = io.open
+    box = {"left": 1}
+
+    class _Then:
+        def __init__(self, fh):
+            self._fh = fh
+
+        def __enter__(self):
+            self._fh.__enter__()
+            return self
+
+        def read(self, *a):
+            return self._fh.read(*a)
+
+        def __exit__(self, *a):
+            r = self._fh.__exit__(*a)
+            with real(path, "w", encoding="utf-8") as out:
+                out.write(text)
+            return r
+
+        def __getattr__(self, a):
+            return getattr(self._fh, a)
+
+    def spy(file, *a, **k):
+        fh = real(file, *a, **k)
+        try:
+            hit = Path(os.fsdecode(file)).name == "inbox.json"
+        except TypeError:
+            hit = False
+        mode = a[0] if a else k.get("mode", "r")
+        if hit and "r" in mode and box["left"] > 0:
+            box["left"] -= 1
+            return _Then(fh)
+        return fh
+    m.setattr(builtins, "open", spy)
+    m.setattr(io, "open", spy)
+    return box
+
+
+def test_TC_4599b_the_stamp_is_the_files_as_this_window_last_read_or_wrote_it(tmp_path,
+                                                                              monkeypatch):
+    """TC-4599b (LLR-4407.19, CR-2). WHY: the stamp decides between writing this window's
+    pad as typed and merging; a stamp taken after another window's write makes this window
+    overwrite that window's notes silently. Arm 1: right after X's store write releases the
+    lock, window Y writes `a|z`; X then writes `a|q` → `a|z|q` (union). The load side is
+    TC-4599c. NC the stamp taken after the lock is released: `a|q`, `z` lost: RED."""
+    inbox_mod = fx.inbox()
+    real_lock = inbox_mod.file_lock
+    box = {"left": 0}
+    store = tmp_path / "inbox.json"
+
+    @contextlib.contextmanager
+    def lock_then_foreign(path, label):
+        with real_lock(path, label):
+            yield
+        if box["left"]:
+            box["left"] -= 1
+            other = _load(store)
+            other.write_pad(other.pad + "\n____\nz")
+
+    monkeypatch.setattr(inbox_mod, "file_lock", lock_then_foreign)
+    fx.write_store(tmp_path, pad="")
+    x = _load(store)
+    box["left"] = 1
+    x.write_pad("a")
+    assert _store(tmp_path)["pad"] == "a\n____\nz"
+    res = x.write_pad("a\n____\nq")
+    assert _store(tmp_path)["pad"] == "a\n____\nz\n____\nq", _store(tmp_path)["pad"]
+    assert res.union is True
+
+
+def test_TC_4599c_the_load_stamp_is_taken_before_the_read(tmp_path, monkeypatch):
+    """TC-4599c (LLR-4407.19, CR-2). WHY: as TC-4599b, at load: right after X's load read the
+    file and before it could stat it, window Y writes pad `p|z`; X writes `p|q` → `p|z|q`
+    (union). NC the stamp taken after the read: `p|q`, `z` lost: RED."""
+    s2 = tmp_path / "load"
+    fx.write_store(s2, pad="p")
+    foreign = json.dumps({"version": 1, "pad": "p\n____\nz", "dumped": []}, indent=2)
+    with monkeypatch.context() as m:
+        _foreign_write_after_read(m, s2 / "inbox.json", foreign)
+        x = _load(s2 / "inbox.json")
+    assert x.pad == "p" and _store(s2)["pad"] == "p\n____\nz"
+    res = x.write_pad("p\n____\nq")
+    assert _store(s2)["pad"] == "p\n____\nz\n____\nq", _store(s2)["pad"]
+    assert res.union is True
+
+
+A4_NOTICE = "inbox.json could not be read right now; its notes merge back on the next save."
+
+
+async def test_TC_4690_a_store_that_cannot_be_read_now_says_its_notes_merge_back(home,
+                                                                                 monkeypatch):
+    """TC-4690 (LLR-4407.50, A-4, K-SEC-2). WHY: the file is only held by another process
+    for a moment — its notes are not gone and merge back at the next save (SEC-4); a notice
+    saying "no copy could be kept" makes the owner re-type them (duplicates) or delete the
+    file to repair it (real loss). The open of `inbox.json` failing once at start → the A-4
+    notice once (warning, markup False), not the LLR-4407.38 one; the pad holds `p` (the
+    view's refresh at open re-reads the file, which reads now: nothing lost). NC the
+    LLR-4407.38 wording: RED."""
+    fx.build_f(home)
+    fx.write_store(home, pad="p")
+    _fail_open(monkeypatch, times=1)
+    app = fx.open_f_app()
+    async with app.run_test(size=fx.W118) as pilot:
+        await _capture(pilot, app)
+        assert fx.notified(app, "inbox.json could not be read and no copy could be kept; "
+                                "the pad starts empty.") == [], fx.messages(app)
+        _one(app, A4_NOTICE)
+        assert _pad(app) == "p"
+
+
+@pytest.mark.parametrize("where", ["main", "home"])
+@pytest.mark.parametrize("fails", [3, 4])
+async def test_TC_4691_quit_retries_a_held_pending_record_once(home, monkeypatch, where,
+                                                               fails):
+    """TC-4691 (LLR-4407.51, A-3, CR-3, K-SEC-3). WHY: a dump whose store write failed is
+    kept only in memory as a pending record; a quit that does not retry it once leaves the
+    note's task on the board with no undo entry in the store. The dump of N2 fails its store
+    write, and so do the view's two close-time writes (`esc` warns, a second `esc` closes and
+    its unmount write fails: the record still pending); then `q` from the board (`main`) or
+    from the boards home (`home`, `B`): one more store write is tried; it succeeds (fails=3)
+    → `inbox.json` holds N2's entry; it fails (fails=4) → the NC no retry on the home's `q`: 3 writes and no entry: RED (home);
+    NC no retry at all: RED (main)."""
+    _pilot_store(home)
+    app = fx.open_f_app()
+    async with app.run_test(size=fx.W118) as pilot:
+        box = await _failed_dump(home, pilot, app, monkeypatch, times=fails)
+        await fx.press(pilot, "escape")
+        await fx.press(pilot, "escape")
+        assert fx.captures_on_stack(app) == 0, fx.screen_names(app)
+        assert len(_inbox_of(app).pending) == 1 and box["calls"] == 3, box
+        if where == "home":
+            await fx.press(pilot, "B")
+            assert type(app.screen).__name__ == "BoardsHome", fx.screen_names(app)
+        await fx.press(pilot, "q")
+        assert app._exit is True
+        assert box["calls"] == 4, box
+    assert [d["text"] for d in _store(home)["dumped"]] == ([fx.N2] if fails == 3 else [])
+
+
+def test_TC_4651_an_undo_whose_images_cannot_come_back_still_completes(tmp_path,
+                                                                       monkeypatch):
+    """TC-4651 (LLR-4408.21, K-SEC-1, RISK-P-S-12). WHY: the board save has already removed
+    the task when the image files are moved back; an exception there ends the app with the
+    note in neither the board nor the pad (and any pending record lost). `inbox-images` is a
+    regular file: a note with no image → undone, the note text back, the task gone; a note
+    with `paste-001.png` → undone, the note text as dumped, the task gone, the image left in
+    the board's task folder. NC the folder made outside the guard: FileExistsError: RED."""
+    undo = _f("undo_dump")
+    for sub, note, image in (("plain", "Plain note\nno image here", None),
+                             ("image", "T\nimg: paste-001.png", "paste-001.png")):
+        s = fx.build_s(tmp_path / sub)
+        fx.seq_ids(monkeypatch)
+        if image:
+            _png(s["F"] / image, b"DUMPED")
+        out = _dump(s, note)
+        assert out.ok, out.notice
+        entry = _entry_of(out, note, s["C"])
+        shutil.rmtree(s["F"], ignore_errors=True)
+        s["F"].write_bytes(b"a file where the pad images folder belongs")
+        res = undo(entry, None, s["F"])
+        assert res.state == "undone", res
+        assert res.note_text == note
+        assert _task_rec(s["C"], "t0000001") is None
+        if image:
+            assert (_img_dir(s) / image).read_bytes() == b"DUMPED"
+
+
+def test_TC_4613b_a_renamed_copy_still_passes_the_image_name_rule(tmp_path):
+    """TC-4613b (LLR-4408.3, K-SEC-5). WHY: a copy whose name the image-name rule rejects is
+    no image line at all — the file sits in `inbox-images/` that nothing manages, and its
+    line dumps as text. A 128-character `s…s.png` taken → the copy's name is at most 128
+    characters, passes `image_name`, ends `-2.png`, holds the source's bytes. NC no cut:
+    `…-2.png` of 130 characters: RED."""
+    folder = tmp_path / "F"
+    name = "s" * 124 + ".png"
+    assert len(name) == 128
+    _png(folder / name, b"older")
+    src = _png(tmp_path / "U" / name, b"mine")
+    (new,) = _f("attach_images")(folder, [str(src)]).names
+    assert len(new) <= 128 and new.endswith("-2.png"), (len(new), new)
+    assert _f("image_name")("img: " + new) == new
+    assert (folder / new).read_bytes() == b"mine"

@@ -1,0 +1,20 @@
+Inc K — GREEN-3 (after the E5 corrective pass; source changes in taskboard/inbox.py, taskboard/app.py, uncommitted on f931070)
+taskboard.__file__ = C:\Users\jjgh8\Github\taskboard-wt\capture-proto\taskboard\__init__.py
+command = env -u NO_COLOR C:/Users/jjgh8/anaconda3/python.exe -m pytest -q -p no:cacheprovider tests/test_inbox_store.py tests/test_suggest.py tests/test_capture_view.py tests/test_modal_keys.py tests/test_keymap.py tests/test_help_keys.py tests/test_added_list.py
+start = 2026-11-01T14:06:45Z
+
+C:\Users\jjgh8\anaconda3\Lib\site-packages\pytest_asyncio\plugin.py:207: PytestDeprecationWarning: The configuration option "asyncio_default_fixture_loop_scope" is unset.
+The event loop scope for asynchronous fixtures will default to the fixture caching scope. Future versions of pytest-asyncio will default the loop scope for asynchronous fixtures to function scope. Set the default fixture loop scope explicitly in order to avoid unexpected behavior in the future. Valid fixture loop scopes are: "function", "class", "module", "package", "session"
+
+  warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCOPE_UNSET))
+........................................................................ [ 15%]
+........................................................................ [ 30%]
+........................................................................ [ 45%]
+........................................................................ [ 60%]
+........................................................................ [ 75%]
+........................................................................ [ 90%]
+..............................................                           [100%]
+478 passed in 301.75s (0:05:01)
+
+end = 2026-11-01T14:11:49Z
+exit code = 0

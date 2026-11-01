@@ -401,16 +401,6 @@ class Inbox:
         self.dumped = list(state["dumped"])
         self.divider_notice = state["divider_notice"]
 
-    def _stamped(self) -> None:
-        """The file's (st_mtime_ns, st_size) as of the last read or write here;
-        None when the file is missing (SEC-4: taken after every load, refresh and
-        successful write, never after a read that raised OSError)."""
-        try:
-            st = self.path.stat()
-            self._stamp = (st.st_mtime_ns, st.st_size)
-        except OSError:
-            self._stamp = None
-
     # -- reading -------------------------------------------------------------
     @staticmethod
     def _entry(item: object) -> dict | None:
@@ -486,18 +476,20 @@ class Inbox:
         """Never raises. Missing or blank → empty (nothing written). Unparseable
         or over the cap → empty, the file copied aside first (never when over the
         cap, P-S-3); a read that raises OSError keeps the stamp None (SEC-4) and
-        copies nothing (A-4). The stamp is taken otherwise (LLR-4407.45)."""
+        copies nothing (A-4). The stamp is taken otherwise (LLR-4407.45), before
+        the read: a write between the read and the stat then shows as a change."""
         path = Path(path)
         inbox = cls(path)
         read_failed = False
+        stamp = _file_stamp(path)
         try:
             if not path.exists():
-                inbox._stamped()
+                inbox._stamp = stamp
                 return inbox
             with open(path, "rb") as fh:
                 head = fh.read(STORE_MAX_BYTES + 1)
             if not head.strip():
-                inbox._stamped()
+                inbox._stamp = stamp
                 return inbox
             state = cls._parse(head)
         except OSError:
@@ -507,11 +499,12 @@ class Inbox:
             backup = None
             if not read_failed and not cls._too_big(path):
                 backup = keep_aside(path)
-            inbox.load_report = {"unreadable": True, "backup": str(backup) if backup else None}
+            inbox.load_report = {"unreadable": True, "backup": str(backup) if backup else None,
+                                 "read_failed": read_failed}
         else:
             inbox._hold(state)
         if not read_failed:
-            inbox._stamped()
+            inbox._stamp = stamp
         return inbox
 
     def refresh(self) -> bool | None:
@@ -573,7 +566,8 @@ class Inbox:
         (`people.Directory._commit`'s shape): re-read under the lock, apply
         `change` to the FRESH state (ARCH-1), prune, shape, cap-check, encode
         probe (SEC-2) and `write_atomic`. Any OSError leaves memory unchanged
-        (it propagates before the hold); returns (new state, changed)."""
+        (it propagates before the hold); returns (new state, changed, the file's
+        stamp taken under the lock right after the write)."""
         self.path.parent.mkdir(parents=True, exist_ok=True)
         with file_lock(self.path, INBOX_NAME):
             before = _file_stamp(self.path)
@@ -605,7 +599,8 @@ class Inbox:
                 raise OSError(f"inbox.json would hold {size} bytes, over the "
                               "8388608-byte limit, so it was not written")
             write_atomic(self.path, text)
-        return new, changed
+            stamp = _file_stamp(self.path)
+        return new, changed, stamp
 
     def write_pad(self, pad: str, record: dict | None = None,
                   drop: dict | None = None) -> WriteResult:
@@ -647,7 +642,7 @@ class Inbox:
             return base
 
         try:
-            new, changed = self._commit(change)
+            new, changed, stamp = self._commit(change)
         except OSError:
             if record is not None:
                 self.pending.append(("record", record))
@@ -657,7 +652,7 @@ class Inbox:
         written = new["pad"]
         self._hold(new)
         self.pending = []
-        self._stamped()
+        self._stamp = stamp
         return WriteResult(True, written, changed and written != pad)
 
     def pad_now(self) -> str:
@@ -700,21 +695,28 @@ class Inbox:
     def mark_notice(self) -> None:
         """Set `divider_notice` true (the pad as the file holds it). Not a pad
         write: no pending op is applied (they wait for the next `write_pad`,
-        ARCH-4). Pad and stamp are held only when the file was unchanged before it
-        (P-S-5)."""
+        ARCH-4). The file's flag already true → no write. Pad, dumped and stamp
+        are held only when the file was unchanged before it (P-S-5, CR-1)."""
         if self.divider_notice:
+            return
+        try:
+            state = self._read(self.path)
+        except OSError:
+            state = None
+        if state is not None and state["divider_notice"]:
+            self.divider_notice = True
             return
 
         def change(base, changed):
             base["divider_notice"] = True
             return base
 
-        new, changed = self._commit(change)
+        new, changed, stamp = self._commit(change)
         self.divider_notice = new["divider_notice"]
-        self.dumped = list(new["dumped"])
         if not changed:
             self.pad = new["pad"]
-            self._stamped()
+            self.dumped = list(new["dumped"])
+            self._stamp = stamp
 
 
 # ---- image helpers ---------------------------------------------------------
@@ -726,7 +728,7 @@ def _free_name(folder: Path, name: str) -> str:
         return name
     stem, suffix = os.path.splitext(name)
     for k in range(2, 10000):
-        candidate = f"{stem}-{k}{suffix}"
+        candidate = f"{stem[:IMAGE_NAME_MAX - len(suffix) - len(str(k)) - 1]}-{k}{suffix}"
         if not os.path.lexists(folder / candidate):
             return candidate
     raise OSError(f"no free name for {name}")
@@ -1097,9 +1099,13 @@ def _images_back(src_dir: Path, folder: Path, names: list[str],
     """Copy the board's image copies back into the pad images folder (renaming
     when taken), unlinking the board copies only when `unlink_ok` (SEC-6).
     Returns {old name: new name} for every file moved. An OSError stops the loop
-    (the file stays in the board; P-S-12)."""
-    folder.mkdir(parents=True, exist_ok=True)
+    (the file stays in the board; P-S-12) — it never raises: the board is
+    already saved (K-SEC-1)."""
     renames: dict[str, str] = {}
+    try:
+        folder.mkdir(parents=True, exist_ok=True)
+    except OSError:
+        return renames
     for name in names:
         src = src_dir / name
         try:
@@ -1108,8 +1114,8 @@ def _images_back(src_dir: Path, folder: Path, names: list[str],
             st = None
         if st is None or not stat.S_ISREG(st.st_mode):
             continue                    # its line keeps its name
-        free = _free_name(folder, name)
         try:
+            free = _free_name(folder, name)
             shutil.copy2(src, folder / free)
             renames[name] = free
             if unlink_ok:

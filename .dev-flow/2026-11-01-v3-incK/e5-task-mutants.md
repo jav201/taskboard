@@ -1,8 +1,8 @@
 # E5 mutants — Inc K new arms (mechanical task)
 
 Run each mutant below in the COPY `C:/Users/jjgh8/Github/taskboard-wt/incK-mut`, a detached worktree of
-the head commit `<HEAD>` (the orchestrator fills `<HEAD>`; the copy is made with
-`git -C C:/Users/jjgh8/Github/taskboard-wt/capture-proto worktree add --detach ../incK-mut <HEAD>`).
+the head commit `f931070` (the orchestrator fills `f931070`; the copy is made with
+`git -C C:/Users/jjgh8/Github/taskboard-wt/capture-proto worktree add --detach ../incK-mut f931070`).
 NEVER edit the main worktree `capture-proto` except to write the two output files named at the end.
 Interpreter: `C:/Users/jjgh8/anaconda3/python.exe` — never the shell's `python`. Run every pytest with
 `env -u NO_COLOR`, cwd = `C:/Users/jjgh8/Github/taskboard-wt/incK-mut`, and first print
@@ -14,9 +14,7 @@ Remove nothing: no file, folder or worktree is deleted by this task.
 `env -u NO_COLOR C:/Users/jjgh8/anaconda3/python.exe -m pytest -q -p no:cacheprovider tests/test_inbox_store.py tests/test_suggest.py tests/test_capture_view.py`
 (no `-x`). Record every failing test node id as BASELINE-RED in the transcript and in the result file.
 Add `--deselect <node id>` for each BASELINE-RED test to every mutant run below. A mutant whose row's
-tests are all BASELINE-RED is recorded `NOT JUDGED (baseline red)`, not SURVIVED. (Known risk: TC-4685,
-the only test of M46, may be red at baseline — `Inbox.load` no longer calls `Inbox._read`, which the
-test wraps.)
+tests are all BASELINE-RED is recorded `NOT JUDGED (baseline red)`, not SURVIVED. (TC-4685 was fixed in f931070 to fail the open at load; it is expected GREEN at baseline.)
 
 **For each mutant:** apply the ONE edit to the copy's source, then run
 `env -u NO_COLOR C:/Users/jjgh8/anaconda3/python.exe -m pytest -q -x -p no:cacheprovider <files> [-k "<filter>"]`

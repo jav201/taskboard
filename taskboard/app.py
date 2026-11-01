@@ -841,8 +841,8 @@ class BoardsHome(Screen[None]):
         self.app.pop_screen()
         self.app.push_screen(BoardsHome())
 
-    def action_quit_app(self) -> None:
-        self.app.exit()
+    async def action_quit_app(self) -> None:
+        await self.app.action_quit()
 
 
 AGENDA_KEYS = [("←→", "day"), ("↑↓", "task"), ("↵", "open on its board"), ("esc", "back")]
@@ -1591,7 +1591,11 @@ class CaptureView(Screen[None]):
         if app.inbox.load_report.get("unreadable") and not app._inbox_said:
             app._inbox_said = True
             backup = app.inbox.load_report["backup"]
-            if backup:
+            if app.inbox.load_report.get("read_failed"):
+                self.notify("inbox.json could not be read right now; its notes merge back "
+                            "on the next save.",
+                            title="Capture", severity="warning", timeout=15, markup=False)
+            elif backup:
                 self.notify(f"inbox.json could not be read; it was copied to {Path(backup).name} "
                             f"and the pad starts empty.",
                             title="Capture", severity="warning", timeout=15, markup=False)
@@ -1685,7 +1689,7 @@ class CaptureView(Screen[None]):
         self.query_one("#cap-head", Static).update(
             capture_head(note_count(pad.text), self.unread, w - 2))
         self.query_one("#cap-rail", Static).update(
-            rail_rows(rail_notes, cur, 48 if wide else 78, wide, dumped))
+            rail_rows(rail_notes, cur, 48 if wide else max(1, w - 2), wide, dumped))
         keys = self.query_one("#cap-keys", Static)
         if self._field is None:
             keys.update(key_line(CAPTURE_KEYS, w - 2))

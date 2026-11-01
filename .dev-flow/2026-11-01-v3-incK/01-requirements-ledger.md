@@ -175,3 +175,17 @@
 - **What changed:** LLR-4403.30 and LLR-4403.31 withdrawn (ARCH-12: during the 1 s pause the rail could show an option `alt+d` would not use; with the cached corpus scoring costs 2.7 ms per call). Active LLRs 205 → 203. R2-1 (quit while a pending record is held) goes to E4 as addendum A-3, no LLR change.
 - **Why:** prefer removing a feature over guarding it (skill E3).
 - **Evidence:** `03-pdr-architect-r2.md`, `03-pdr-security-r2.md`, `03-pdr-rulings.md` §Round 2.
+
+### LED-2026-11-01-incK.6 — E5 corrective pass (code review CR-1, CR-2, CR-3, CR-5, CR-7; security K-SEC-1, K-SEC-2, K-SEC-3, K-SEC-5; mutant M48)
+- **Requirement:** LLR-4401.8
+- **Requirement:** LLR-4402.14
+- **Requirement:** LLR-4407.19
+- **Requirement:** LLR-4407.35
+- **Requirement:** LLR-4407.50
+- **Requirement:** LLR-4407.51
+- **Requirement:** LLR-4408.3
+- **Requirement:** LLR-4408.21
+- **Date:** 2026-11-01
+- **What changed:** 3 LLRs added, none withdrawn, 5 reworded (LLR ids 212 → 215; active 203 → 206). Added: LLR-4407.50 (an `OSError` at the first load shows the A-4 notice `inbox.json could not be read right now; its notes merge back on the next save.`, K-SEC-2, TC-4690); LLR-4407.51 (`quit` on any screen with no capture view on the stack tries a held pending store write once before exiting — addendum A-3 made a requirement, CR-3, K-SEC-3, TC-4691); LLR-4408.21 (an undo whose image files cannot come back still completes and returns the note, the files left in the task folder, K-SEC-1, TC-4651). Reworded: LLR-4401.8 (each narrow rail row cut to `w − 2`, arm TC-4408b at 60x24, CR-7); LLR-4402.14 (no store write when the file's flag is already true, TC-4444d, CR-5; the file's `dumped` held only when the file was unchanged, TC-4444c, CR-1); LLR-4407.19 (threshold arms for the stamp taken under the lock and before the load read, TC-4599b, TC-4599c, CR-2); LLR-4407.35 (an arm of 8 388 608 + 4 096 bytes, the one a whole-file read exceeds, M48); LLR-4408.3 (a renamed copy's stem cut so the name stays within 128 characters, TC-4613b, K-SEC-5). §7 counts updated; the count line had not shown LED.5's two withdrawals (LLR-4403.30, LLR-4403.31).
+- **Why:** the E5 reviews (`05-review-code.md`, `05-review-security.md`) and the mutant run (`05-mutants.md`: M48 survived) found these behaviours untested or wrong; `03-pdr-rulings.md` §E5 ruled each one FIX.
+- **Evidence:** `05-corrections.md`; `evidence/red-e5.txt` (each new test RED on `f931070` for its behavioural reason, or RED under its temporary mutant, then GREEN); `evidence/green-3.txt`.

@@ -297,6 +297,25 @@ async def test_TC_4408_narrow_the_rail_sits_below_the_pad_with_the_cursors_note_
             "▌    why volume · oracle · script"]
 
 
+async def test_TC_4408b_a_narrow_rail_row_never_wraps_below_80_columns(home):
+    """TC-4408b (LLR-4401.8, CR-7). WHY: the narrow rail is 7 rows; a row longer than the
+    rail wraps and pushes the cursor note's lower lines (its project, its reason) out of
+    sight — layouts are derived for any width. At 60x24, the cursor in a note whose title is
+    longer than the rail → the rail's content width is 58 (w − 2) and every rail row fits it
+    (cell length ≤ 58), the long title cut with `…`. NC a fixed 78-cell cut: the title row
+    over 58 cells: RED."""
+    from rich.cells import cell_len
+    long_title = "Quarterly review of the contracts Q&A pipeline with the new client's team"
+    assert len(long_title) > 58
+    pad = f"{N1}\n____\n{long_title}\nagenda and owners"
+    async with capture(home, pad=pad, size=(60, 24), cursor=(3, 0)) as (app, pilot, p):
+        rail = fx.by_id(app, "cap-rail")
+        assert rail.content_region.width == 58, rail.content_region
+        lines = fx.rail_lines(app)
+        assert all(cell_len(x) <= 58 for x in lines), [(cell_len(x), x) for x in lines]
+        assert lines[0].startswith("▌2 Quarterly") and lines[0].endswith("…"), lines
+
+
 @pytest.mark.parametrize("pad, expected", [
     (f"{N1}\n____\n{N2}\n____\n{N3}", "CAPTURE  3 notes · suggestions read every board"),
     (N1, "CAPTURE  1 note · suggestions read every board"),

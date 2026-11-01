@@ -26,3 +26,10 @@
 2026-11-01T13:21:40Z E4 R-E4-1 applied (inbox._commit counts on-disk bytes; TC-4677 n per platform; TC-4677c new, RED before fix: DID NOT RAISE); GREEN-2 start model=opus
 2026-11-01T13:28:20Z E4 GREEN-2 run 1: 1 failed / 465 passed (TC-4685: _read patch bypassed by F3) -> F9 test seam fix, NC re-proven; GREEN-2 re-run start model=opus
 2026-11-01T13:33:37Z E4 end: GREEN-2 466 passed / 0 failed (7 files, 298.9 s); guards-1 255 passed (integration agent); commit model=opus
+2026-11-01T13:33:46Z E5 start model=opus: mutants (deepseek-v4-pro in incK-mut) ∥ code review ∥ security review (opus)
+2026-11-01T13:34:50Z E5 captures start model=opus (agent, 16 PNG at f931070)
+2026-11-01T13:45:18Z E5 reviews done model=opus: code PASS-WITH-NOTES (0H 0M, 1 MEDIUM CR-1 design-gap, 7 MINOR); security PASS-WITH-NOTES (5 LOW, 3 INFO)
+2026-11-01T13:53:52Z E5 mutants end: 59/60 killed (deepseek-v4-pro, 13:34-13:52); M48 SURVIVED (TC-4675 file is exactly CAP+1, a whole read is indistinguishable) -> test gap for the corrective pass; orchestrator replay M40 killed, M48 survived (evidence/mutant-spotcheck.txt)
+2026-11-01T13:53:52Z E5 captures end: 16 PNG, 223-487 colours, 0 retries, no cpi- window left (opus agent); orchestrator viewed k-rail_118x30: matches design
+2026-11-01T13:53:52Z E5 corrective pass start model=opus (agent; RED first)
+2026-11-01T14:14:51Z E5 corrective pass end model=opus: 9/9 FIX items fixed RED-first (05-corrections.md, red-e5.txt), LED.6; GREEN-3 478 passed / 0 failed (301.8 s); re-review: no MAJOR/HIGH was open, orchestrator re-read the CR-1 fix diff (mark_notice holds dumped only when unchanged) - closed

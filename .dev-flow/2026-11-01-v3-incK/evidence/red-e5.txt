@@ -1,0 +1,35 @@
+Inc K — E5 corrective pass: RED then GREEN per new test / arm
+taskboard.__file__ = C:\Users\jjgh8\Github\taskboard-wt\capture-proto\taskboard\__init__.py
+interpreter        = C:/Users/jjgh8/anaconda3/python.exe (cwd = the worktree, head f931070)
+command            = env -u NO_COLOR C:/Users/jjgh8/anaconda3/python.exe -m pytest -q -p no:cacheprovider tests/test_inbox_store.py tests/test_capture_view.py -k "<ids>" -rA
+
+RED runs (product code = f931070, tests added first)
+  2026-11-01T14:00:38Z  -k "4444c or 4444d or 4599b or 4690 or 4691 or 4651 or 4613b or 4675 or 4408b"
+  2026-11-01T14:01:24Z  -k "4599c or 4691"   (TC-4599b split into b/c; TC-4691 counts corrected: esc warns, a second esc closes, its unmount write is the 3rd)
+  2026-11-01T14:01:43Z  -k "4675 or 4691"    under TEMPORARY mutants, restored right after (git diff --stat taskboard/ empty):
+                        M48  inbox.py Inbox.load  `head = fh.read(STORE_MAX_BYTES + 1)` -> `head = fh.read()`
+                        A-3  app.py _retry_pending_once  `if self.inbox.pending:` -> `if False and self.inbox.pending:`
+
+| test | item | RED (reason) | GREEN |
+|---|---|---|---|
+| TC-4444c | CR-1 | f931070: `assert 'x\n____\nb\n____\nd' == 'x\n____\nd'` — the note dumped in window Y came back through X's write after `mark_notice` held the file's `dumped` with its stale pad | PASSED |
+| TC-4444d | CR-5 | f931070: `assert ([(WindowsPath(...inbox.json), True)] == [])` — 1 store write although the file's flag was already true | PASSED |
+| TC-4599b | CR-2 (write) | f931070: `assert 'a\n____\nq' == 'a\n____\nz\n____\nq'` — the stamp taken after the lock held window Y's stamp; X overwrote `z` | PASSED |
+| TC-4599c | CR-2 (load) | f931070: `assert 'p\n____\nq' == 'p\n____\nz\n____\nq'` — the stamp taken after the load read held Y's stamp; X overwrote `z` | PASSED |
+| TC-4690 | K-SEC-2 | f931070: `AssertionError: ['inbox.json could not be read and no copy could be kept; the pad starts empty.']` — the LLR-4407.38 notice shown for a transient OSError | PASSED |
+| TC-4691[3-home] | CR-3 | f931070: `AssertionError: {'calls': 3, 'left': 0}` / `assert 3 == 4` — the home's `q` exited with no retry; no entry stored | PASSED |
+| TC-4691[4-home] | CR-3 | f931070: `AssertionError: {'calls': 3, 'left': 1}` / `assert 3 == 4` — no retry attempted | PASSED |
+| TC-4691[3-main] | K-SEC-3 | GREEN on f931070 (the main-screen retry already existed; the gap was the test). RED under the A-3 mutant: `{'calls': 3, 'left': 0}` / `assert 3 == 4` | PASSED |
+| TC-4691[4-main] | K-SEC-3 | GREEN on f931070; RED under the A-3 mutant: `{'calls': 3, 'left': 1}` / `assert 3 == 4` | PASSED |
+| TC-4651 | K-SEC-1 | f931070: `FileExistsError: [WinError 183] ... \plain\inbox-images` raised by `undo_dump` after the board save | PASSED |
+| TC-4613b | K-SEC-5 | f931070: `AssertionError: (130, 'ssss…s-2.png')` / `assert (130 <= 128)` — the renamed copy fails the image-name rule | PASSED |
+| TC-4675 (CAP + 4096 arm) | M48 | GREEN on f931070 (the code reads at most CAP + 1). RED under M48: `AssertionError: {'bytes': 8392704}` / `assert 8392704 <= (8388608 + 1)` | PASSED |
+| TC-4408b | CR-7 | f931070: `[(76, "▌2 Quarterly review of the contracts Q&A pipeline with the new client's team"), ...]` — a 76-cell row in a 58-cell rail (fixed 78 cut) | PASSED |
+
+GREEN run (fixes applied: taskboard/inbox.py, taskboard/app.py)
+  2026-11-01T14:02:48Z  -k "4444 or 4599 or 4690 or 4691 or 4651 or 4613 or 4675 or 4408 or 4678 or 4685 or 4626 or 4588"
+                        24 passed, 1 failed (TC-4690: the test asserted pad "" but the view's open refresh re-reads
+                        the now-readable file → pad "p"; the test's expectation was wrong, not the code — nothing
+                        is lost, which is A-4's point; the assertion now reads pad "p")
+  then                  -k "4690" → 1 passed
+Full files: see green-3.txt.

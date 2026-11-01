@@ -118,3 +118,24 @@
 | Finding | Ruling |
 |---|---|
 | R-E4-1 (store bytes on Windows, e4-integration.md) | Do NOT change `models.write_atomic` (option a would alter every board/people/marks file's bytes on Windows). The store's size cap (LLR-4407.37, TC-4677) counts the bytes actually written to disk: `_commit` computes the count with the same newline translation the writer applies (text mode, `\n` → `os.linesep`), the smaller of the two changes. The cap may never be exceeded on disk. TC-4677's pinned count follows the platform (8 400 047 with `\n`, 8 400 051 with `\r\n`: 4 structural lines). New TC-4677c writes at the cap and one byte over it on the real filesystem and checks `os.path.getsize`. |
+
+## E5 — review findings (05-review-code.md, 05-review-security.md)
+
+No HIGH or MAJOR. One corrective pass (RED first) takes the findings below marked FIX; the rest go to BACKLOG.
+
+| Finding | Tag | Ruling |
+|---|---|---|
+| CR-1 (MEDIUM) `mark_notice` takes the file's `dumped` while keeping its out-of-date pad → a dumped note comes back (breaks SEC-1) | design-gap | FIX: take the fresh `dumped` only when the file was unchanged (as the pad/stamp, P-S-5); new TC-4444 arm. |
+| CR-2 (MINOR) stamp taken after the lock is released / after the read in `load` | design-gap | FIX if it stays local to `_commit`/`load` (stamp inside the lock; before the read in `load`); else BACKLOG. |
+| CR-3 (MINOR) home `q` (`quit_app`) skips A-3's single retry of a held pending write | impl | FIX: route through the same retry; test. |
+| CR-4 (MINOR) `_hits` cache grows per keystroke | design-gap | BACKLOG (K-BL). |
+| CR-5 (MINOR) `mark_notice` writes when `divider_notice` already true | impl | FIX: no write (graph-proto-S); test. |
+| CR-6 (MINOR) duplicated pending-op loop / write-result handling; unused `KEEP_DAYS` | impl | BACKLOG (refactor not in a corrective pass); prefer removing nothing now. |
+| CR-7 (MINOR) narrow rail cut at 78 cells wraps below 80 columns | design-gap | FIX: `w - 2`; test at a width < 80. |
+| CR-8 (MINOR) failed open-board dump leaves an orphan birth record (`add_task` writes history before save) | design-gap | BACKLOG as a recorded risk (pre-existing `add_task` order, Inc L). |
+| K-SEC-1 (LOW) `undo_dump` can raise after the board save (`_images_back` mkdir/_free_name outside try) → crash | impl | FIX: the image-back step never raises (leftover per RISK-P-S-12); test with `inbox-images` a regular file. |
+| K-SEC-2 (LOW) OSError at load shows the "no copy could be kept" notice (A-4 not landed) | impl | FIX: the A-4 wording; test. |
+| K-SEC-3 (LOW) no test for the A-3 quit retry | impl (test) | FIX: test (with CR-3). |
+| K-SEC-4 (LOW) undo deletes a dump-created project even after a rename/recolour | design-gap | BACKLOG. |
+| K-SEC-5 (LOW) `_free_name` can yield a name `_image_ok` rejects (130 chars) | impl | BACKLOG unless a one-line clamp; tester decides with RED. |
+| I-1..I-3 (INFO) | — | Retention notes + BACKLOG move: done at close. |

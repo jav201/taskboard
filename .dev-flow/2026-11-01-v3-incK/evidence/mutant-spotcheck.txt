@@ -1,0 +1,15 @@
+# orchestrator spot-check 2026-11-01T13:53:18Z, copy incK-mut @ f931070
+C:\Users\jjgh8\Github\taskboard-wt\incK-mut\taskboard\__init__.py
+## M40: delete 'budget.update(unseen)'
+1
+warning: in the working copy of 'taskboard/inbox.py', LF will be replaced by CRLF the next time Git touches it
+ taskboard/inbox.py | 1 -
+ 1 file changed, 1 deletion(-)
+!!!!!!!!!!!!!!!!!!!!!!!!!! stopping after 1 failures !!!!!!!!!!!!!!!!!!!!!!!!!!
+1 failed, 142 deselected in 0.38s
+## M48: fh.read() in load
+warning: in the working copy of 'taskboard/inbox.py', LF will be replaced by CRLF the next time Git touches it
+ taskboard/inbox.py | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+1 passed, 142 deselected in 1.03s
+0
