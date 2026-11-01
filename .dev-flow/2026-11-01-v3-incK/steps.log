@@ -15,3 +15,8 @@
 2026-11-01T11:56:31Z E3 PDR round 1 done (arch FAIL 1H/4M/1MED/3m/2I, sec FAIL 3M/2MED/6L); rulings written; correction start model=opus
 2026-11-01T12:26:03Z E3 round-1 corrections done (LLR 212 ids: 205 active, 7 withdrawn; LED.4; trace 205/205 + 8/8; lint 0 x4); round 2 (blocking-only re-review) start model=opus
 2026-11-01T12:28:57Z E3 end: PDR round 2 PASS-WITH-NOTES (arch ARCH-12 MED → LLR-4403.30/.31 withdrawn, ARCH-13 MINOR; sec R2-1 LOW + 1 INFO → addenda A-1..A-4); LED.5; trace 203/203 + 8/8 model=opus
+2026-11-01T12:29:10Z E4 start: build S ∥ build T ∥ build V (deepseek-v4-pro) ∥ tests (opus tester)
+2026-11-01T12:34:31Z E4 build T done (deepseek-v4-pro, EXIT 0 12:34:22Z, 256 lines, deviations none)
+2026-11-01T12:51:17Z E4 build S done (deepseek-v4-pro, EXIT 0 12:51:04Z, inbox.py 1163 lines, deviations DEV-S-1 (note param), DEV-S-2 (lock label))
+2026-11-01T12:52:27Z E4 build V done (deepseek-v4-pro, EXIT 0 12:52:19Z, app.py +977, keymap +2, README +1; deviations none; addenda A-1, A-3 applied; TC-4321 global-key list and TC-2407 inventory need the n/ReviewList update)
+2026-11-01T12:59:40Z E4 tests done (opus tester): 3 files, 324 collected, RED on base 323 failed/1 guard (TC-4415), 0 errors; GREEN run start
