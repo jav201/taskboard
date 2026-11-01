@@ -62,6 +62,11 @@ EXEMPT = {
         "the marks manager's frame: views.render_marks builds explicit-style Text pieces (batch 2026-10-24-batch-01, LLR-2606.3)",
     ("modals.py", "TaskModal.compose", "Select", "opts"):
         "the class Select's options: (Text, id) pairs, the Text built by mark_option_text with Text.assemble — never markup (batch 2026-10-24-batch-01, LLR-2605.1, C-17)",
+    ("app.py", "AddedList._paint", "update",
+     "render_added_list(rows, self.sel, self.newest, self.show_archived, hidden, unread, self.first, self.today, self.app.people.people, w - 2, h - 1)"):
+        "the added list's body: views.render_added_list builds explicit-style Text pieces (Text.assemble / append, notes through notes_text), never a parser; board text drawn literally is TC-4340 (Inc L, LLR-4303.20)",
+    ("modals.py", "InkArea._build_highlight_map", "update", "new <- ink_highlights(self.document.lines) | {}"):
+        "not a widget: dict.update of TextArea's private highlight map with (start, end, style-name) tuples from ink_highlights — no text, no markup (Inc C, LLR-4204.6)",
 
     ("keymap.py", "KeyBar.refresh_bar", "update",
      "markup <- render_key_bar(max(0, width), self.view_mode, self.bar_layer)"):

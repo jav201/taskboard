@@ -123,6 +123,15 @@ def test_TC_206_no_literal_in_the_source_carries_the_old_copy():
 
     from taskboard import views as pkg
     from taskboard.models import CITY_TO_ZONE        # place names are data
+    from taskboard.inbox import RESERVED_STEMS       # Windows device names are data (`con`, SEC-7)
+    from taskboard.suggest import STOP               # the tokenizer's stop words are data, never painted
+
+    def stop_words(value: str) -> bool:
+        # the exemption covers a literal only when EVERY word of it is a stop word:
+        # a painted sentence that merely shares `para`/`que` with the list stays seen
+        return bool(value.split()) and set(value.split()) <= STOP
+
+    assert not stop_words("abre la columna para ver que hay")    # guard: not a blind spot
     offenders = []
     for path in sorted(Path(pkg.__file__).parent.glob("*.py")):
         tree = ast.parse(path.read_text(encoding="utf-8"))
@@ -133,6 +142,7 @@ def test_TC_206_no_literal_in_the_source_carries_the_old_copy():
         for n in ast.walk(tree):
             if (isinstance(n, ast.Constant) and isinstance(n.value, str) and id(n) not in docs
                     and n.value not in STORED and n.value not in CITY_TO_ZONE
+                    and n.value not in RESERVED_STEMS and not stop_words(n.value)
                     and WORD_ONLY.search(n.value)):
                 offenders.append((path.name, n.lineno, n.value[:50]))
     assert not offenders, offenders[:5]

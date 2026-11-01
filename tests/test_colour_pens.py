@@ -52,7 +52,7 @@ TONE = {"r": "over", "o": "orange", "y": "soon", "g": "green", "b": "blue", "v":
 NAME = {"r": "red", "o": "orange", "y": "yellow", "g": "green", "b": "blue", "v": "violet"}
 BLUE, DIM = HEX["blue"], HEX["dim"]
 NOTICE_PEN = "Pens write new text — use alt+c to recolour."
-NOTICE_N4 = "That colour would change the text you see: nothing changed."
+NOTICE_N4 = "That colour would change the visible text: nothing changed."
 
 
 def _need(mod, name: str):

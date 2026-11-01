@@ -119,6 +119,11 @@ KeyBar {
 .modal Input:focus {
     border: tall #2dd4bf;
 }
+/* the capture pad keeps the accent while it is the field being edited; its
+   neutral border lives in PadArea.DEFAULT_CSS (the colour budget, HLR-202) */
+PadArea:focus {
+    border: tall #2dd4bf 40%;
+}
 .modal Select {
     width: 1fr;
 }

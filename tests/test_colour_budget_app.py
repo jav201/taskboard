@@ -539,7 +539,7 @@ def test_TC_204_modal_titles_and_the_key_map_are_bright():
     css = Path(app_module.__file__).with_name("taskboard.tcss").read_text(encoding="utf-8")
     block = css[css.index(".modal-title {"):].split("}")[0]
     assert "color: #e6edf7" in block and "bold" in block
-    for focus_rule in (".modal Input:focus", "#proj-list:focus"):
+    for focus_rule in (".modal Input:focus", "#proj-list:focus", "PadArea:focus"):
         rule = css[css.index(focus_rule):].split("}")[0]
         assert ACCENT in rule.lower(), focus_rule
     from taskboard.modals import CommandPalette           # the palette's own field (F4)

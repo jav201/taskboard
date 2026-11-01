@@ -1507,7 +1507,7 @@ class PadArea(InkArea):
     by the line render (never the highlight map, R1-5)."""
 
     DEFAULT_CSS = """
-    PadArea { height: 1fr; border: tall #2dd4bf 40%; background: #0b0f17; }
+    PadArea { height: 1fr; border: tall #1b2431; background: #0b0f17; }
     PadArea > .text-area--placeholder { color: #5b6675; }
     """
 
@@ -2117,7 +2117,8 @@ class ReviewList(ModalScreen[None]):
     DEFAULT_CSS = """
     ReviewList { align: center middle; }
     #rv-box { width: 96%; max-width: 112; height: auto; max-height: 90%;
-              background: #0b0f17; border: round #2dd4bf; border-title-color: #2dd4bf;
+              background: #0b0f17; border: round #334154; border-title-color: #e6edf7;
+              border-title-style: bold;
               padding: 0 1; }
     #rv-body { height: auto; }
     """

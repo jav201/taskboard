@@ -44,7 +44,7 @@ NAME = {"r": "red", "o": "orange", "y": "yellow", "g": "green", "b": "blue", "v"
 N1 = "Colour one line at a time."
 N2 = "The selection crosses a colour edge: select inside one colour, or plain text."
 N3 = "Nothing to colour: select text or put the cursor on a word."
-N4 = "That colour would change the text you see: nothing changed."
+N4 = "That colour would change the visible text: nothing changed."
 N5 = "The notes changed while the palette was open: nothing changed."
 
 

@@ -588,7 +588,7 @@ class InkArea(TextArea):
 NOTICE_ONE_LINE = "Colour one line at a time."
 NOTICE_CROSSES = "The selection crosses a colour edge: select inside one colour, or plain text."
 NOTICE_NOTHING = "Nothing to colour: select text or put the cursor on a word."
-NOTICE_VISIBLE = "That colour would change the text you see: nothing changed."
+NOTICE_VISIBLE = "That colour would change the visible text: nothing changed."
 NOTICE_CHANGED = "The notes changed while the palette was open: nothing changed."
 NOTICE_PEN = "Pens write new text — use alt+c to recolour."
 
@@ -703,13 +703,14 @@ def _palette_rows() -> Text:
     return rows
 
 
-# the details screen's Notes label (ruling C-2, ARCH-5, LLR-4202.9)
-DETAILS_NOTES_LABEL = (
-    "[b]Notes[/b]  "
-    + f"[{HEX['mut']}]::c:: … ::[/]"
-    + "  "
-    + " ".join(f"[{HEX[tone]}]{code}[/]" for code, tone, _name in PEN_CODES)
-)
+def details_notes_label() -> Text:
+    """The details screen's Notes label (ruling C-2, ARCH-5, LLR-4202.9): Text
+    pieces, never markup (HLR-401, the markup census)."""
+    out = Text.assemble(("Notes", "bold"), "  ", ("::c:: … ::", HEX["mut"]), " ")
+    for code, tone, _name in PEN_CODES:
+        out.append(" ")
+        out.append(code, HEX[tone])
+    return out
 
 
 class ColourPalette(ModalScreen[str | None]):
@@ -3043,7 +3044,7 @@ class TaskDetails(ModalScreen[None]):
                 yield Label("Due")
                 yield Label(Text(t.due_date or "—"))
             yield from self._links()
-            yield Label(DETAILS_NOTES_LABEL)
+            yield Label(details_notes_label())
             if t.notes:
                 yield Static(notes_preview(t.notes, self._board.people))
             else:
