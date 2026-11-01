@@ -4,3 +4,4 @@
 2026-11-01T08:46:16Z E1 requirements start model=opus
 2026-11-01T08:46:16Z E2a baseline-graph start model=opus (background agent, parallel with E1)
 2026-11-01T08:49:57Z E1 requirements end model=opus hlr=6 llr=63 at=5 slice=9 units/4 files
+2026-11-01T08:59:03Z E2a baseline-graph end model=opus nodes=26 entities=23 edges=37 lint=0 extract=1 (8 untyped-input findings, no drift); E1 amended +3 LLR (LED.2) → 66

@@ -1,0 +1,115 @@
+# Extractor output — baseline graph at eb411e1 (marks tree taskboard-wt/incL-marks, 26 generated marks)
+# command: python code-wire/tools/codewire_lint.py capture-proto/.dev-flow/2026-11-01-v3-incL/graph-baseline.cw.md   (nodes=26 entities=23 edges=37 findings=0 not read=0, exit 0)
+# command: python code-wire/tools/codewire_marks.py --repo incL-marks --graph capture-proto/.dev-flow/2026-11-01-v3-incL/graph-baseline.cw.md   (26 marks written, 0 nodes without code, exit 0)
+# command: python code-wire/tools/codewire_extract.py --repo incL-marks --graph capture-proto/.dev-flow/2026-11-01-v3-incL/graph-baseline.cw.md --path taskboard/models.py --path taskboard/history.py --path taskboard/app.py --path taskboard/boards.py --path taskboard/views.py --path taskboard/keymap.py --out <tmp>
+# exit code: 1 — 8 findings, all of kind input_untyped_in_code (the code has no annotation on that parameter; the graph names the type it is called with). No type mismatch, no missing node, no mark drift.
+# NOTE: line numbers below are in the MARKED tree (each mark adds one line above its def); baseline-notes.md gives the eb411e1 lines.
+# NOTE: history.append / history.read are nodes `append` / `read`. The extractor resolves `x.append()` / `x.read()` to a top-level def of that name, so every list.append / Text.append / file .read() in a marked node (or in unmarked code it lifts through) shows as a call of the history functions. The calls table below is regenerated from extract.json with a classification column; sites are capped at 8 per row (the count is given). The raw diff-report.md (99.7 KB, almost all `append` collision sites) is not copied.
+# NOTE: top-level sites are listed for taskboard/ only; sites in prototypes/, _prototypes/ and .fast-dev-flow/probes/ (not product code) are counted, not listed.
+
+## stdout
+marks=26 graph_nodes=26 calls=44 findings=8 parse_failures=0
+
+## diff-report.md (head and findings, verbatim)
+# Code-Wire extractor report
+
+- Marks found: 26
+- Graph nodes parsed: 26
+- Real calls between marked nodes: 44
+- Findings: 8 (8 drift, 0 info)
+- Ambiguous call resolutions (a name matched several defs): 943
+- Files that failed to parse: 0
+
+Type normalisation: spaces and quotes dropped; `List/Dict/Tuple/Set` -> builtins; `X | None` and graph `X?` -> `Optional[X]`; graph `(Callable) A->B` -> `Callable[[A], B]`; graph `tuple(A a, B b)` -> `tuple[A, B]`. A bare graph container (`dict`) against a parameterised code type (`dict[str, Any]`) is info (loose match), not drift.
+
+Call resolution is name-based (`f()`, `Class()` -> `__init__`, `self.m()`, `x.m()` -> top-level `m` or a marked method `m`); dynamic calls and callables passed as values are not seen. Tests excluded.
+
+## Counts
+
+| Kind | Count |
+|---|---|
+| Parameter unannotated in code (cannot compare) | 8 |
+
+## Parameter unannotated in code (cannot compare)
+
+- `taskboard/models.py:760` — `entry` has no annotation (graph: `object`)
+- `taskboard/models.py:1058` — `item` has no annotation (graph: `Task | Project`)
+- `taskboard/history.py:24` — `board_path` has no annotation (graph: `str | Path`)
+- `taskboard/history.py:48` — `board_path` has no annotation (graph: `str | Path`)
+- `taskboard/boards.py:614` — `path` has no annotation (graph: `str | Path`)
+- `taskboard/app.py:843` — `app` has no annotation (graph: `TaskboardApp`)
+- `taskboard/app.py:1412` — `make` has no annotation (graph: `Callable`)
+- `taskboard/views.py:7739` — `lanes` has no annotation (graph: `list`)
+
+## Calls between marked nodes (regenerated from extract.json, classified)
+
+| Caller | Callee | n | Class | Sites (first 8) |
+|---|---|---|---|---|
+| `AllBoardsAgenda._paint` | `append` | 28 | COLLISION: Text.append inside render_all_agenda (lifted), not history.append | taskboard/views.py:7776, taskboard/views.py:7777, taskboard/views.py:7778, taskboard/views.py:7779, taskboard/views.py:7790, taskboard/views.py:7791, taskboard/views.py:7792, taskboard/views.py:7793 … |
+| `AllBoardsAgenda._paint` | `key_line` | 2 | REAL: app.py:939, :941 (marked tree) | taskboard/app.py:939, taskboard/app.py:941 |
+| `AllBoardsAgenda.compose` | `all_agenda` | 1 | REAL | taskboard/app.py:917 |
+| `AllBoardsAgenda.compose` | `board_lanes` | 1 | REAL | taskboard/app.py:915 |
+| `Board.add_task` | `Board.save` | 1 | REAL | taskboard/models.py:1277 |
+| `Board.add_task` | `append` | 2 | REAL at models.py:1276 (history.append); :1275 is self.tasks.append (collision) | taskboard/models.py:1275, taskboard/models.py:1276 |
+| `Board.load` | `Board.save` | 1 | REAL: the seed path (missing file) | taskboard/models.py:1015 |
+| `Board.load` | `Task.from_dict` | 2 | REAL at models.py:1042; :1036 is Project.from_dict (name collision) | taskboard/models.py:1036, taskboard/models.py:1042 |
+| `Board.load` | `append` | 3 | COLLISION: list.append (projects/tasks) | taskboard/models.py:1036, taskboard/models.py:1038, taskboard/models.py:1043 |
+| `Board.save` | `Board._to_dict` | 2 | REAL, lifted through Board._serialized (unmarked) | taskboard/models.py:1075, taskboard/models.py:1076 |
+| `Board.set_task_phase` | `append` | 1 | REAL: history.append | taskboard/models.py:1270 |
+| `Task.from_dict` | `_rescue_task` | 2 | REAL (non-dict entry; except branch) | taskboard/models.py:912, taskboard/models.py:955 |
+| `TaskboardApp._create_and_link` | `Board.add_task` | 1 | REAL | taskboard/app.py:2575 |
+| `TaskboardApp._create_and_link` | `Board.phase_index` | 8 | LIFTED through unmarked app code (refresh_view, link_tasks, cascade); not a direct call | taskboard/app.py:2232, taskboard/app.py:2234, taskboard/app.py:2252, taskboard/views.py:1691, taskboard/views.py:250, taskboard/views.py:5001, taskboard/views.py:5315, taskboard/views.py:5859 |
+| `TaskboardApp._create_and_link` | `Board.save` | 1 | LIFTED through unmarked app code (refresh_view, link_tasks, cascade); not a direct call | taskboard/app.py:2529 |
+| `TaskboardApp._create_and_link` | `Board.visible_tasks` | 19 | LIFTED through unmarked app code (refresh_view, link_tasks, cascade); not a direct call | taskboard/app.py:2175, taskboard/models.py:1472, taskboard/views.py:1219, taskboard/views.py:1906, taskboard/views.py:2457, taskboard/views.py:3343, taskboard/views.py:4177, taskboard/views.py:4600 … |
+| `TaskboardApp._create_and_link` | `append` | 243 | COLLISION: list/Text .append, lifted through unmarked app code (refresh_view and others) | taskboard/app.py:2527, taskboard/models.py:1481, taskboard/models.py:2141, taskboard/models.py:2144, taskboard/views.py:1143, taskboard/views.py:1150, taskboard/views.py:1156, taskboard/views.py:1159 … |
+| `TaskboardApp._create_and_link` | `read` | 1 | LIFTED: render_flow via refresh_view (views.py:4599) | taskboard/views.py:4599 |
+| `TaskboardApp._on_task_added` | `Board.add_task` | 1 | REAL | taskboard/app.py:3413 |
+| `TaskboardApp._on_task_added` | `Board.phase_index` | 10 | LIFTED through unmarked app code (refresh_view, link_tasks, cascade); not a direct call | taskboard/app.py:2232, taskboard/app.py:2234, taskboard/app.py:2252, taskboard/views.py:1691, taskboard/views.py:250, taskboard/views.py:2831, taskboard/views.py:2863, taskboard/views.py:5001 … |
+| `TaskboardApp._on_task_added` | `Board.visible_tasks` | 20 | LIFTED through unmarked app code (refresh_view, link_tasks, cascade); not a direct call | taskboard/app.py:2175, taskboard/models.py:1472, taskboard/views.py:1219, taskboard/views.py:1906, taskboard/views.py:2457, taskboard/views.py:3343, taskboard/views.py:4177, taskboard/views.py:4600 … |
+| `TaskboardApp._on_task_added` | `append` | 296 | COLLISION: list/Text .append, lifted through unmarked app code (refresh_view and others) | _prototypes/proto.py:42, _prototypes/proto.py:44, prototypes/people_round/proto.py:83, prototypes/present_portfolio/portfolio_proto.py:312, prototypes/present_portfolio/portfolio_proto.py:313, prototypes/present_portfolio/portfolio_proto.py:319, prototypes/present_portfolio/portfolio_proto.py:360, prototypes/present_portfolio/portfolio_proto.py:362 … |
+| `TaskboardApp._on_task_added` | `read` | 1 | LIFTED: render_flow via refresh_view (views.py:4599) | taskboard/views.py:4599 |
+| `TaskboardApp._on_task_edited` | `Board.phase_index` | 10 | LIFTED through unmarked app code (refresh_view, link_tasks, cascade); not a direct call | taskboard/app.py:2232, taskboard/app.py:2234, taskboard/app.py:2252, taskboard/views.py:1691, taskboard/views.py:250, taskboard/views.py:2831, taskboard/views.py:2863, taskboard/views.py:5001 … |
+| `TaskboardApp._on_task_edited` | `Board.save` | 2 | REAL at app.py:3504; :2722 lifted (cascade helper) | taskboard/app.py:2722, taskboard/app.py:3504 |
+| `TaskboardApp._on_task_edited` | `Board.set_task_phase` | 1 | REAL | taskboard/app.py:3455 |
+| `TaskboardApp._on_task_edited` | `Board.visible_tasks` | 20 | LIFTED through unmarked app code (refresh_view, link_tasks, cascade); not a direct call | taskboard/app.py:2175, taskboard/models.py:1472, taskboard/views.py:1219, taskboard/views.py:1906, taskboard/views.py:2457, taskboard/views.py:3343, taskboard/views.py:4177, taskboard/views.py:4600 … |
+| `TaskboardApp._on_task_edited` | `append` | 304 | COLLISION: list/Text .append, lifted through unmarked app code (refresh_view and others) | _prototypes/proto.py:42, _prototypes/proto.py:44, prototypes/people_round/proto.py:83, prototypes/present_portfolio/portfolio_proto.py:312, prototypes/present_portfolio/portfolio_proto.py:313, prototypes/present_portfolio/portfolio_proto.py:319, prototypes/present_portfolio/portfolio_proto.py:360, prototypes/present_portfolio/portfolio_proto.py:362 … |
+| `TaskboardApp._on_task_edited` | `read` | 1 | LIFTED: render_flow via refresh_view (views.py:4599) | taskboard/views.py:4599 |
+| `TaskboardApp._on_template_picked` | `Board.phase_index` | 10 | LIFTED through unmarked app code (refresh_view, link_tasks, cascade); not a direct call | taskboard/app.py:2232, taskboard/app.py:2234, taskboard/app.py:2252, taskboard/views.py:1691, taskboard/views.py:250, taskboard/views.py:2831, taskboard/views.py:2863, taskboard/views.py:5001 … |
+| `TaskboardApp._on_template_picked` | `Board.save` | 1 | REAL; note NO call to Board.add_task (template tasks are list-appended) | taskboard/app.py:2034 |
+| `TaskboardApp._on_template_picked` | `Board.visible_tasks` | 20 | LIFTED through unmarked app code (refresh_view, link_tasks, cascade); not a direct call | taskboard/app.py:2175, taskboard/models.py:1472, taskboard/views.py:1219, taskboard/views.py:1906, taskboard/views.py:2457, taskboard/views.py:3343, taskboard/views.py:4177, taskboard/views.py:4600 … |
+| `TaskboardApp._on_template_picked` | `append` | 301 | COLLISION: list/Text .append, lifted through unmarked app code (refresh_view and others) | _prototypes/proto.py:42, _prototypes/proto.py:44, prototypes/people_round/proto.py:83, prototypes/present_portfolio/portfolio_proto.py:312, prototypes/present_portfolio/portfolio_proto.py:313, prototypes/present_portfolio/portfolio_proto.py:319, prototypes/present_portfolio/portfolio_proto.py:360, prototypes/present_portfolio/portfolio_proto.py:362 … |
+| `TaskboardApp._on_template_picked` | `read` | 1 | LIFTED: render_flow via refresh_view (views.py:4599) | taskboard/views.py:4599 |
+| `TaskboardApp.action_agenda_all` | `TaskboardApp._bring` | 1 | REAL | taskboard/app.py:1445 |
+| `all_agenda` | `append` | 1 | COLLISION: list.append | taskboard/views.py:7754 |
+| `board_lanes` | `append` | 4 | COLLISION: list/Text .append, lifted through unmarked app code (refresh_view and others) | taskboard/app.py:864, taskboard/app.py:865, taskboard/app.py:868, taskboard/app.py:869 |
+| `board_lanes` | `peek_board` | 1 | REAL | taskboard/app.py:854 |
+| `key_line` | `append` | 4 | COLLISION: Text.append | taskboard/keymap.py:190, taskboard/keymap.py:193, taskboard/keymap.py:194, taskboard/keymap.py:196 |
+| `move_project` | `append` | 15 | COLLISION: list.append (lifted, incl. prototypes/) | prototypes/capture_languages.py:266, prototypes/capture_languages.py:267, prototypes/capture_languages.py:330, prototypes/capture_languages.py:344, taskboard/boards.py:785, taskboard/boards.py:788, taskboard/boards.py:806, taskboard/boards.py:808 … |
+| `move_project` | `read` | 1 | COLLISION: a file .read() in file_lock/_lock_token (lifted) | taskboard/boards.py:96 |
+| `peek_board` | `Board.load` | 2 | REAL at boards.py:631; prototypes/ site is a collision | prototypes/kanban_ideas/proto.py:35, taskboard/boards.py:631 |
+| `peek_board` | `append` | 2 | COLLISION: list.append in .fast-dev-flow/probes (not product code) | .fast-dev-flow/probes/_probe_premises.py:52, .fast-dev-flow/probes/_probe_premises.py:54 |
+| `read` | `append` | 1 | COLLISION: records.append | taskboard/history.py:88 |
+
+## Top-level sites (no marked node above them), taskboard/ only
+
+- `AllBoardsAgenda._paint`: taskboard/app.py:1090, taskboard/app.py:922, taskboard/app.py:925, taskboard/app.py:947, taskboard/app.py:951; +2 outside taskboard/
+- `AllBoardsAgenda.compose`: (none in taskboard/); +3 outside taskboard/
+- `Board._to_dict`: taskboard/team_sync.py:157
+- `Board.add_task`: (none in taskboard/); +1 outside taskboard/
+- `Board.load`: taskboard/__main__.py:28, taskboard/app.py:1104, taskboard/app.py:1222, taskboard/app.py:1231, taskboard/app.py:1234, taskboard/app.py:1527; +23 outside taskboard/
+- `Board.phase_index`: taskboard/app.py:2326, taskboard/app.py:3333, taskboard/models.py:1181, taskboard/views.py:2262, taskboard/views.py:8489, taskboard/views.py:8730; +6 outside taskboard/
+- `Board.save`: taskboard/app.py:1649, taskboard/app.py:1662, taskboard/app.py:1727, taskboard/app.py:2077, taskboard/app.py:2106, taskboard/app.py:2334, taskboard/app.py:2398, taskboard/app.py:2416, taskboard/app.py:2474, taskboard/app.py:2541, taskboard/app.py:2768, taskboard/app.py:2819, taskboard/app.py:2832, taskboard/app.py:2848, taskboard/app.py:2858, taskboard/app.py:2877, taskboard/app.py:3054, taskboard/app.py:3276, taskboard/app.py:3290, taskboard/app.py:3533, taskboard/app.py:3585, taskboard/app.py:505, taskboard/app.py:518, taskboard/app.py:527, taskboard/app.py:548, taskboard/app.py:560, taskboard/app.py:588, taskboard/boards.py:357, taskboard/modals.py:1545, taskboard/modals.py:1665, taskboard/modals.py:2121, taskboard/modals.py:2856, taskboard/models.py:1107, taskboard/models.py:1281, taskboard/models.py:1285, taskboard/models.py:1293, taskboard/models.py:640; +31 outside taskboard/
+- `Board.set_task_phase`: taskboard/app.py:2332; +2 outside taskboard/
+- `Board.visible_tasks`: taskboard/models.py:1184, taskboard/models.py:1370, taskboard/report.py:238, taskboard/views.py:2008, taskboard/views.py:6688, taskboard/views.py:8481, taskboard/views.py:8873; +44 outside taskboard/
+- `Task.from_dict`: taskboard/team_sync.py:221, taskboard/team_sync.py:279, taskboard/team_sync.py:295
+- `TaskboardApp._bring`: taskboard/app.py:1435, taskboard/app.py:1440
+- `TaskboardApp._create_and_link`: taskboard/app.py:2503, taskboard/app.py:2513
+- `TaskboardApp._on_task_edited`: taskboard/app.py:3434
+- `TaskboardApp._on_template_picked`: taskboard/app.py:2005
+- `TaskboardApp.check_action`: (none in taskboard/); +10 outside taskboard/
+- `append`: 494 taskboard/ sites (name collisions with list/Text/file methods, not listed), 1069 elsewhere
+- `board_lanes`: taskboard/app.py:1001, taskboard/app.py:1936; +1 outside taskboard/
+- `key_line`: taskboard/app.py:1028, taskboard/modals.py:1202, taskboard/modals.py:1416, taskboard/modals.py:1902, taskboard/modals.py:2343, taskboard/modals.py:2395, taskboard/modals.py:2433, taskboard/modals.py:2463, taskboard/modals.py:2515, taskboard/modals.py:2640, taskboard/modals.py:2782, taskboard/modals.py:3738, taskboard/modals.py:3819, taskboard/modals.py:912; +16 outside taskboard/
+- `move_project`: taskboard/modals.py:1620
+- `peek_board`: taskboard/__main__.py:200, taskboard/app.py:705, taskboard/modals.py:1592, taskboard/modals.py:1602; +4 outside taskboard/
+- `read`: taskboard/boards.py:567, taskboard/views.py:8799 (views.py:8799 is the real history.read in legend_entries mode flow; boards.py:567 is a file .read() collision); +1 outside taskboard/

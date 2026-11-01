@@ -185,6 +185,13 @@ never rewritten.)
 - **LLR-4303.20 — Unwanted.** If a title, project name, board name or note holds Rich markup (e.g. `[red]x[/red]`), then the list view shall draw it as literal text.
   Threshold: the literal `[red]x[/red]` appears in the list row and in the pane; 2/2. *NC:* `Text.from_markup(title)`: RED.
 
+- **LLR-4303.21 — Unwanted.** If a modal screen is on the screen stack, then the system shall refuse the `added_list` action.
+  Threshold: with the task editor open, `N` (as `alt`-less `N` reaching the app) → no list view on the stack; 1/1. *NC:* `added_list` not gated: RED.
+- **LLR-4303.22 — State.** While a list view is on the screen stack, the system shall refuse every action of the key seat except `quit`, `agenda_all`, `people_directory`, `marks_manager` and `added_list`.
+  Threshold: in the list view, `a` → no TaskModal; `d` → the board's task count unchanged; `A` → the agenda opens; 3/3. *NC:* the list view missing from `check_action`'s holding tuple: arm 1 RED.
+- **LLR-4303.23 — Ubiquitous.** The README key table pinned to the seat shall carry a row for `N`.
+  Threshold: `tests/test_keymap.py::test_the_readme_keybinding_table_matches_the_seat` GREEN with the `N` entry; 1/1. *NC:* no README row: that test RED.
+
 ### 4.4 Order and inference (HLR-4304)
 
 - **LLR-4304.1 — Ubiquitous.** The system shall take a task's added moment from its valid created when it has one.
@@ -267,12 +274,14 @@ never rewritten.)
 | 7 | app.py | `action_added_list` + list screen (`AddedList`: compose, paint, move, order, archived, jump, back) | new |
 | 8 | views.py | `added_rows(lanes, …)` (rows + inference), `added_order`, `state_boxes`, `render_added_list` | new |
 | 9 | keymap.py | `KEYMAP` entry `N` | changed |
+| 10 | app.py | `TaskboardApp.check_action` (gate `added_list`; the list view holds the seat) | changed |
+| — | README.md | key table rows for `N` (docs, not a source file) | changed |
 
 Unchanged on purpose (verified at E2): `_on_task_added` and `_create_and_link` (both reach
 `Board.add_task`), `_on_task_edited`, `boards.move_project` (deepcopy keeps the field; history lines
 already move), the undo re-insert, `_rescue_task`, `history.*`.
-**Count: 9 units in 4 source files** (models.py, app.py, views.py, keymap.py) — within the 4-source-file budget.
+**Count: 10 units in 4 source files** (models.py, app.py, views.py, keymap.py) — within the 4-source-file budget.
 
 ## 7. Counts
 
-US 1 · HLR 6 · LLR 63 (4301: 11, 4302: 6, 4303: 20, 4304: 15, 4305: 4, 4306: 7) · AT 5.
+US 1 · HLR 6 · LLR 66 (4301: 11, 4302: 6, 4303: 23, 4304: 15, 4305: 4, 4306: 7) · AT 5.
