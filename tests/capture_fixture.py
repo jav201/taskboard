@@ -277,7 +277,7 @@ def write_store(folder: Path, pad: str = "", dumped: list | None = None,
     path = Path(folder) / "inbox.json"
     path.parent.mkdir(parents=True, exist_ok=True)
     if raw is not None:
-        path.write_text(raw, encoding="utf-8")
+        path.write_bytes(raw.encode("utf-8"))   # exact bytes: no newline translation
         return path
     data = {"version": 1, "pad": pad, "dumped": dumped or []}
     if divider_notice is not None:

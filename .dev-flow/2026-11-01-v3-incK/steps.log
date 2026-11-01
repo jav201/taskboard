@@ -22,3 +22,7 @@
 2026-11-01T12:59:40Z E4 tests done (opus tester): 3 files, 324 collected, RED on base 323 failed/1 guard (TC-4415), 0 errors; GREEN run start
 2026-11-01T13:05:04Z E4 GREEN-1: 27 failed / 438 passed (Inc K tests + keymap/help/modal keys/added list); integration start model=opus
 2026-11-01T13:17:21Z HANDOFF: orchestrator stopped mid-E4 (integration agent in flight; its edits uncommitted)
+2026-11-01T13:19:15Z E4 resume (new conductor) model=opus: review uncommitted integration fixes F1-F8 vs e4-integration.md; R-E4-1 ruling
+2026-11-01T13:21:40Z E4 R-E4-1 applied (inbox._commit counts on-disk bytes; TC-4677 n per platform; TC-4677c new, RED before fix: DID NOT RAISE); GREEN-2 start model=opus
+2026-11-01T13:28:20Z E4 GREEN-2 run 1: 1 failed / 465 passed (TC-4685: _read patch bypassed by F3) -> F9 test seam fix, NC re-proven; GREEN-2 re-run start model=opus
+2026-11-01T13:33:37Z E4 end: GREEN-2 466 passed / 0 failed (7 files, 298.9 s); guards-1 255 passed (integration agent); commit model=opus

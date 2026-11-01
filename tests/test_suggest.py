@@ -558,8 +558,10 @@ def test_TC_4488_a_note_is_scored_on_its_title_and_notes_without_image_lines(tmp
     assert [(h.doc.project_name, h.score) for h in _hits(raw, corpus)] == [("Png board", 1.0)]
     nt2 = note_task(PROBES[1])
     assert nt2.title + "\n" + nt2.notes == PROBES[2]
-    for text in (PROBES[1], PROBES[2]):
-        assert [(h.doc.project_name, h.score) for h in _hits(text, corpus)] == [
+    # graph-proto-T TC-4488: the line weighs 0 over F only; over F + Shots only the scored text
+    # (the extra document moves idf: 0.668 is the graph's 3-place figure there)
+    for text, over in ((PROBES[1], _f(tmp_path)), (PROBES[2], corpus)):
+        assert [(h.doc.project_name, round(h.score, 3)) for h in _hits(text, over)] == [
             ("Module 4 · Volumes", 0.668)]
 
 

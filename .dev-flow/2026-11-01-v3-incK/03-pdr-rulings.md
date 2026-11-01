@@ -112,3 +112,9 @@
 | R2-1 (LOW, new) | ACCEPT the fix: `action_quit` (from any screen) retries a held pending store write once before exiting; on failure it exits anyway and the note stays recoverable with `alt+u` (recorded risk). E4 addendum A-3. |
 
 **E3 verdict: PASS-WITH-NOTES** (architect and security, round 2). Addenda A-1..A-3 go to E4.
+
+## E4 integration — orchestrator ruling
+
+| Finding | Ruling |
+|---|---|
+| R-E4-1 (store bytes on Windows, e4-integration.md) | Do NOT change `models.write_atomic` (option a would alter every board/people/marks file's bytes on Windows). The store's size cap (LLR-4407.37, TC-4677) counts the bytes actually written to disk: `_commit` computes the count with the same newline translation the writer applies (text mode, `\n` → `os.linesep`), the smaller of the two changes. The cap may never be exceeded on disk. TC-4677's pinned count follows the platform (8 400 047 with `\n`, 8 400 051 with `\r\n`: 4 structural lines). New TC-4677c writes at the cap and one byte over it on the real filesystem and checks `os.path.getsize`. |

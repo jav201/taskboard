@@ -1,0 +1,2559 @@
+C:\Users\jjgh8\Github\taskboard-wt\capture-proto\taskboard\__init__.py
+C:\Users\jjgh8\anaconda3\Lib\site-packages\pytest_asyncio\plugin.py:207: PytestDeprecationWarning: The configuration option "asyncio_default_fixture_loop_scope" is unset.
+The event loop scope for asynchronous fixtures will default to the fixture caching scope. Future versions of pytest-asyncio will default the loop scope for asynchronous fixtures to function scope. Set the default fixture loop scope explicitly in order to avoid unexpected behavior in the future. Valid fixture loop scopes are: "function", "class", "module", "package", "session"
+
+  warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCOPE_UNSET))
+....................................F................................... [ 15%]
+.....FF................................................................. [ 30%]
+.......................F................................................ [ 46%]
+..........................F...............................F............. [ 61%]
+........F....F.FFFFFFFFFFFFF.FFFFF...................................... [ 77%]
+........................................................................ [ 92%]
+...F.............................                                        [100%]
+================================== FAILURES ===================================
+____________ test_TC_4582_the_store_is_written_in_one_exact_shape _____________
+
+tmp_path = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-31730/test_TC_4582_the_store_is_writ0')
+
+    def test_TC_4582_the_store_is_written_in_one_exact_shape(tmp_path):
+        """TC-4582 (LLR-4407.2): `version`, `pad`, `dumped`, then `divider_notice` only once set,
+        `indent=2`, `ensure_ascii=False` (é as C3 A9), no `flagged` key. NC `ensure_ascii=True`:
+        `\\u00e9`: RED."""
+        x = _load(tmp_path / "inbox.json")
+        x.write_pad("é\n____\nb")
+        raw = (tmp_path / "inbox.json").read_bytes()
+>       assert raw.decode("utf-8") == '{\n  "version": 1,\n  "pad": "é\\n____\\nb",\n  "dumped": []\n}'
+E       assert '{\r\n  "vers...ped": []\r\n}' == '{\n  "versio...umped": []\n}'
+E         
+E         - {
+E         + {
+E         ?  +
+E         -   "version": 1,
+E         +   "version": 1,
+E         ?                +...
+E         
+E         ...Full output truncated (7 lines hidden), use '-vv' to show
+
+tests\test_inbox_store.py:741: AssertionError
+______ test_TC_4609_a_dump_an_undo_and_an_attach_write_the_store_at_once ______
+
+home = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-31730/test_TC_4609_a_dump_an_undo_an0/.taskboard')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x000001F8B9EE1C10>
+
+    async def test_TC_4609_a_dump_an_undo_and_an_attach_write_the_store_at_once(home, monkeypatch):
+        """TC-4609 (LLR-4407.29): after `alt+d`, `alt+u` and `alt+i` each, the stored `pad`
+        equals the pad text with no wait. NC leave it to the 1.0 s debounce: RED."""
+        fx.build_f(home)
+        _png(home / "inbox-images" / "board-0938.png")
+        fx.write_store(home, pad=fx.N1 + "\n____\n" + fx.N2, divider_notice=True)
+        _img_patch(monkeypatch, _pil())
+        app = fx.open_f_app()
+        async with app.run_test(size=fx.W118) as pilot:
+            await _capture(pilot, app)
+            await fx.cursor_to(pilot, app, 3, 0)
+            await fx.press(pilot, "alt+d")
+            assert fx.N2 not in _pad(app)
+            assert _store(home)["pad"] == _pad(app)
+            await fx.press(pilot, "alt+u")
+            assert "Volume lab fails on WSL" in _pad(app)
+            assert _store(home)["pad"] == _pad(app)
+            await fx.cursor_to(pilot, app, 0, 0)
+            await fx.press(pilot, "alt+i")
+            assert "img: paste-001.png" in _pad(app)
+>           assert _store(home)["pad"] == _pad(app)
+E           AssertionError: assert 'Golden set: ...oard-0938.png' == 'Golden set: ...oard-0938.png'
+E             
+E             Skipping 81 identical leading characters in diff, use -v to show
+E               res count
+E             - img: paste-001.png
+E               ____
+E               Volume lab fails on WSL
+E               the oracle script expects /mnt/c
+E               img: board-0938.png
+
+tests\test_inbox_store.py:1317: AssertionError
+__ test_TC_4675_a_store_over_the_cap_is_unreadable_after_cap_plus_one_bytes ___
+
+tmp_path = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-31730/test_TC_4675_a_store_over_the_0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x000001F8B8A92F90>
+
+    def test_TC_4675_a_store_over_the_cap_is_unreadable_after_cap_plus_one_bytes(tmp_path,
+                                                                                monkeypatch):
+        """TC-4675 (LLR-4407.35): a VALID store of 8 388 609 bytes \u2192 unreadable, pad empty, at
+        most 8 388 609 bytes read from it; one of 8 388 608 bytes \u2192 read normally. NC
+        `read_bytes()` of the whole file: the byte-count arm RED."""
+        assert fx.need("inbox", "STORE_MAX_BYTES") == CAP
+        big = tmp_path / "big"
+        fx.write_store(big, raw=_store_of_size(CAP + 1))
+        with monkeypatch.context() as m:
+            box = _count_reads(m)
+            x = _load(big / "inbox.json")
+        assert x.load_report.get("unreadable") is True and x.pad == ""
+>       assert box["bytes"] <= CAP + 1, box
+E       AssertionError: {'bytes': 16777218}
+E       assert 16777218 <= (8388608 + 1)
+
+tests\test_inbox_store.py:1333: AssertionError
+__ test_TC_4488_a_note_is_scored_on_its_title_and_notes_without_image_lines ___
+
+tmp_path = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-31730/test_TC_4488_a_note_is_scored_0')
+
+    def test_TC_4488_a_note_is_scored_on_its_title_and_notes_without_image_lines(tmp_path):
+        """TC-4488 (LLR-4403.28, P-T-4): F plus a lane `Shots` holding `Png board` (no task) —
+        the scored text of `Shot\\nimg: board-1.png` (`inbox.note_task` title + "\\n" + notes)
+        \u2192 hits [] (the raw part text would hit `Png board` 1.0: the control is live); the AT-4402
+        note \u2192 `Module 4 \xb7 Volumes` 0.668 with or without its image line."""
+        note_task = fx.need(fx.inbox(), "note_task")
+        lanes = fx.f_lanes(tmp_path)
+        shots = _board(tmp_path, "shots", [Project("Png board", "pink", id="pb")], [])
+        corpus = _corpus(lanes + [_lane("Shots", "pink", shots)])
+        raw = "Shot\nimg: board-1.png"
+        nt = note_task(raw)
+        scored = nt.title + "\n" + nt.notes
+        assert scored == "Shot\n"
+        assert _hits(scored, corpus) == []
+        assert [(h.doc.project_name, h.score) for h in _hits(raw, corpus)] == [("Png board", 1.0)]
+        nt2 = note_task(PROBES[1])
+        assert nt2.title + "\n" + nt2.notes == PROBES[2]
+        for text in (PROBES[1], PROBES[2]):
+>           assert [(h.doc.project_name, h.score) for h in _hits(text, corpus)] == [
+                ("Module 4 · Volumes", 0.668)]
+E           AssertionError: assert [('Png board'...mes', 0.5173)] == [('Module 4 ·...umes', 0.668)]
+E             
+E             At index 0 diff: ('Png board', 0.6325) != ('Module 4 · Volumes', 0.668)
+E             Left contains one more item: ('Module 4 · Volumes', 0.5173)
+E             Use -v to get more diff
+
+tests\test_suggest.py:562: AssertionError
+___ test_TC_4517_the_choice_is_the_options_identity_shared_with_the_review ____
+
+home = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-31730/test_TC_4517_the_choice_is_the0/.taskboard')
+
+    async def test_TC_4517_the_choice_is_the_options_identity_shared_with_the_review(home):
+        """TC-4517 (LLR-4404.17, ARCH-2), 3 arms. (1) `alt+o` on note 2 (N1), then `alt+a` \u2192 its
+        review row shows the same option, Pilot rollout. (2) `Rubric for the pilot` (Pilot rollout
+        0.2232, Eval harness 0.0885) set to Eval harness with `alt+o`; three rubric notes dumped into
+        Eval harness (its options become [Eval harness 0.6028, Pilot rollout 0.1593]) \u2192 the choice is
+        still Eval harness (an index 1 would now be Pilot rollout). (3) a chosen option that is no
+        longer among the options (its project archived, the suggestions rebuilt by a dump) \u2192 the top
+        choice. NC: keyed by note index / kept as a list index."""
+        async with capture(home, pad=f"{N2T}\n____\n{N1}", cursor=(3, 0)) as (app, pilot, p):
+            await fx.press(pilot, "alt+o")
+            assert _arrow_of(app, 2) == "\u258c  \u2192 Pilot rollout \xb7 Client A \u25b0\u25b0\u25b1", fx.rail_lines(app)
+            await fx.press(pilot, "alt+a")
+            await pilot.pause(0.2)
+            body = fx.plain(fx.by_id(app, "rv-body", screen=app.screen)).split("\n")
+>           row = next(x for x in body if "Golden set" in x)
+E           StopIteration
+
+tests\test_capture_view.py:1220: StopIteration
+
+During handling of the above exception, another exception occurred:
+
+home = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-31730/test_TC_4517_the_choice_is_the0/.taskboard')
+
+    async def test_TC_4517_the_choice_is_the_options_identity_shared_with_the_review(home):
+        """TC-4517 (LLR-4404.17, ARCH-2), 3 arms. (1) `alt+o` on note 2 (N1), then `alt+a` \u2192 its
+        review row shows the same option, Pilot rollout. (2) `Rubric for the pilot` (Pilot rollout
+        0.2232, Eval harness 0.0885) set to Eval harness with `alt+o`; three rubric notes dumped into
+        Eval harness (its options become [Eval harness 0.6028, Pilot rollout 0.1593]) \u2192 the choice is
+        still Eval harness (an index 1 would now be Pilot rollout). (3) a chosen option that is no
+        longer among the options (its project archived, the suggestions rebuilt by a dump) \u2192 the top
+        choice. NC: keyed by note index / kept as a list index."""
+>       async with capture(home, pad=f"{N2T}\n____\n{N1}", cursor=(3, 0)) as (app, pilot, p):
+
+tests\test_capture_view.py:1214: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+..\..\..\anaconda3\Lib\contextlib.py:231: in __aexit__
+    await self.gen.athrow(value)
+tests\test_capture_view.py:71: in capture
+    async with app.run_test(size=size) as pilot:
+..\..\..\anaconda3\Lib\contextlib.py:231: in __aexit__
+    await self.gen.athrow(value)
+..\..\..\anaconda3\Lib\site-packages\textual\app.py:2218: in run_test
+    raise self._exception
+..\..\..\anaconda3\Lib\site-packages\textual\message_pump.py:604: in _pre_process
+    await self._dispatch_message(events.Mount())
+..\..\..\anaconda3\Lib\site-packages\textual\message_pump.py:727: in _dispatch_message
+    await self.on_event(message)
+..\..\..\anaconda3\Lib\site-packages\textual\message_pump.py:808: in on_event
+    await self._on_message(event)
+..\..\..\anaconda3\Lib\site-packages\textual\message_pump.py:829: in _on_message
+    await invoke(method, message)
+..\..\..\anaconda3\Lib\site-packages\textual\_callback.py:96: in invoke
+    return await _invoke(callback, *params)
+..\..\..\anaconda3\Lib\site-packages\textual\_callback.py:56: in _invoke
+    result = callback(*params[:parameter_count])
+taskboard\app.py:2134: in on_mount
+    self.styles.background = Color(13, 17, 23, 0.6)   # P-V-9
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <textual.css._style_properties.ColorProperty object at 0x000001F8B72295E0>
+obj = RenderStyles(ReviewList(), layout=<vertical>, auto_color=False, color=Color(230, 237, 243), background=Color(13, 17, 2...to_link_color_hover=True, link_background_hover=Color(1, 120, 212), link_style_hover=Style(bold=True, underline=False))
+color = Color(13, 17, number=23, triplet=0.6)
+
+    def __set__(self, obj: StylesBase, color: Color | str | None) -> None:
+        """Set the Color.
+    
+        Args:
+            obj: The ``Styles`` object.
+            color: The color to set. Pass a ``Color`` instance directly,
+                or pass a ``str`` which will be parsed into a color (e.g. ``"red""``, ``"rgb(20, 50, 80)"``,
+                ``"#f4e32d"``).
+    
+        Raises:
+            ColorParseError: When the color string is invalid.
+        """
+        _rich_traceback_omit = True
+        if color is None:
+            if obj.clear_rule(self.name):
+                obj.refresh(children=True)
+        elif isinstance(color, Color):
+            if obj.set_rule(self.name, color):
+                obj.refresh(children=True)
+        elif isinstance(color, str):
+            alpha = 1.0
+            parsed_color = Color(255, 255, 255)
+            for token in color.split():
+                if token.endswith("%"):
+                    try:
+                        alpha = percentage_string_to_float(token)
+                    except ValueError:
+                        raise StyleValueError(f"invalid percentage value '{token}'")
+                    continue
+                try:
+                    parsed_color = Color.parse(token)
+                except ColorParseError as error:
+                    raise StyleValueError(
+                        f"Invalid color value '{token}'",
+                        help_text=color_property_help_text(
+                            self.name, context="inline", error=error, value=token
+                        ),
+                    )
+            parsed_color = parsed_color.multiply_alpha(alpha)
+    
+            if obj.set_rule(self.name, parsed_color):
+                obj.refresh(children=True)
+        else:
+>           raise StyleValueError(f"Invalid color value {color}")
+E           textual.css.errors.StyleValueError: Invalid color value Color(13, 17, number=23, triplet=0.6)
+
+..\..\..\anaconda3\Lib\site-packages\textual\css\_style_properties.py:1027: StyleValueError
+---------------------------- Captured stderr call -----------------------------
+\u256d\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500 Traceback (most recent call last) \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\n\u2502 C:\\Users\\jjgh8\\Github\\taskboard-wt\\capture-proto\\taskboard\\app.py:2134 in    \n\u2502 on_mount                                                                     \n\u2502                                                                              \n\u2502   2131 \u2502   \u2502   \u2502   yield Static(id="rv-body")                                \n\u2502   2132 \u2502                                                                     \n\u2502   2133 \u2502   def on_mount(self) -> None:                                       \n\u2502 \u2771 2134 \u2502   \u2502   self.styles.background = Color(13, 17, 23, 0.6)   # P-V-9     \n\u2502   2135 \u2502   \u2502   self.sel = 0                                                  \n\u2502   2136 \u2502   \u2502   self.on = [self.view.chosen(t) is not None for t in self.text \n\u2502   2137 \u2502   \u2502   self._paint()                                                 \n\u2502                                                                              \n\u2502 \u256d\u2500\u2500\u2500\u2500\u2500\u2500 locals \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u256e                                                      \n\u2502 \u2502 self = ReviewList() \u2502                                                      \n\u2502 \u2570\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u256f                                                      \n\u2570\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\nStyleValueError: Invalid color value Color(13, 17, number=23, triplet=0.6)
+_____________ test_TC_4550b_an_edited_task_is_never_undone[edit0] _____________
+
+home = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-31730/test_TC_4550b_an_edited_task_i0/.taskboard')
+edit = {'title': 'Volume lab fixed'}
+
+    @pytest.mark.parametrize("edit", [
+        {"title": "Volume lab fixed"}, {"phase": "Doing"}, {"due_date": "2026-11-05"},
+        {"urls": ["https://example.com/x"]}, {"images": lambda v: (v or []) + ["C:/x/shot.png"]},
+    ])
+    async def test_TC_4550b_an_edited_task_is_never_undone(home, edit):
+        """TC-4550b (LLR-4405.10, pilot): after the dump, each of: the title edited, the phase moved,
+        a due date set, a URL added, an image added \u2192 `alt+u` shows `Volume lab fails on WSL changed
+        since the dump — undo left it.`, and the board, the pad and inbox.json keep their bytes (the
+        owner's later work on the task is never thrown away). NC: compare title and notes only (the
+        phase arm)."""
+        async with capture(home, pad=N2T) as (app, pilot, p):
+            await fx.press(pilot, "alt+d")
+            await pilot.pause(0.2)
+>           _edit_task(p["C"], "Volume lab fails on WSL", **edit)
+E           TypeError: _edit_task() got multiple values for argument 'title'
+
+tests\test_capture_view.py:1700: TypeError
+______ test_TC_4634_markup_in_notes_projects_and_boards_draws_literally _______
+
+home = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-31730/test_TC_4634_markup_in_notes_p0/.taskboard')
+
+    async def test_TC_4634_markup_in_notes_projects_and_boards_draws_literally(home):
+        """TC-4634 (LLR-4409.4): a note titled `[red]x[/red] [@click=app.quit]q` is drawn literally in
+        the rail row and the review row; a project named `[b]P[/b]`, made with `alt+n`, is literal in
+        the dump notice and in its rail option; the app still runs (4/4). NC: `Text.from_markup` of the
+        title (the tags vanish, the click becomes an action)."""
+        title = "[red]x[/red] [@click=app.quit]q"
+        async with capture(home, pad=f"{title}\n____\nVendor desk") as (app, pilot, p):
+            await fx.cursor_to(pilot, app, 0, 0)
+            assert any(title in x for x in title_rows(fx.rail_lines(app))), fx.rail_lines(app)
+            await fx.press(pilot, "alt+a")
+            await pilot.pause(0.2)
+            body = fx.plain(fx.by_id(app, "rv-body", screen=app.screen))
+>           assert title in body, body
+E           AssertionError: 
+E           assert '[red]x[/red] [@click=app.quit]q' in ''
+
+tests\test_capture_view.py:1984: AssertionError
+
+During handling of the above exception, another exception occurred:
+
+home = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-31730/test_TC_4634_markup_in_notes_p0/.taskboard')
+
+    async def test_TC_4634_markup_in_notes_projects_and_boards_draws_literally(home):
+        """TC-4634 (LLR-4409.4): a note titled `[red]x[/red] [@click=app.quit]q` is drawn literally in
+        the rail row and the review row; a project named `[b]P[/b]`, made with `alt+n`, is literal in
+        the dump notice and in its rail option; the app still runs (4/4). NC: `Text.from_markup` of the
+        title (the tags vanish, the click becomes an action)."""
+        title = "[red]x[/red] [@click=app.quit]q"
+>       async with capture(home, pad=f"{title}\n____\nVendor desk") as (app, pilot, p):
+
+tests\test_capture_view.py:1978: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+..\..\..\anaconda3\Lib\contextlib.py:231: in __aexit__
+    await self.gen.athrow(value)
+tests\test_capture_view.py:71: in capture
+    async with app.run_test(size=size) as pilot:
+..\..\..\anaconda3\Lib\contextlib.py:231: in __aexit__
+    await self.gen.athrow(value)
+..\..\..\anaconda3\Lib\site-packages\textual\app.py:2218: in run_test
+    raise self._exception
+..\..\..\anaconda3\Lib\site-packages\textual\message_pump.py:604: in _pre_process
+    await self._dispatch_message(events.Mount())
+..\..\..\anaconda3\Lib\site-packages\textual\message_pump.py:727: in _dispatch_message
+    await self.on_event(message)
+..\..\..\anaconda3\Lib\site-packages\textual\message_pump.py:808: in on_event
+    await self._on_message(event)
+..\..\..\anaconda3\Lib\site-packages\textual\message_pump.py:829: in _on_message
+    await invoke(method, message)
+..\..\..\anaconda3\Lib\site-packages\textual\_callback.py:96: in invoke
+    return await _invoke(callback, *params)
+..\..\..\anaconda3\Lib\site-packages\textual\_callback.py:56: in _invoke
+    result = callback(*params[:parameter_count])
+taskboard\app.py:2134: in on_mount
+    self.styles.background = Color(13, 17, 23, 0.6)   # P-V-9
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <textual.css._style_properties.ColorProperty object at 0x000001F8B72295E0>
+obj = RenderStyles(ReviewList(), layout=<vertical>, auto_color=False, color=Color(230, 237, 243), background=Color(13, 17, 2...to_link_color_hover=True, link_background_hover=Color(1, 120, 212), link_style_hover=Style(bold=True, underline=False))
+color = Color(13, 17, number=23, triplet=0.6)
+
+    def __set__(self, obj: StylesBase, color: Color | str | None) -> None:
+        """Set the Color.
+    
+        Args:
+            obj: The ``Styles`` object.
+            color: The color to set. Pass a ``Color`` instance directly,
+                or pass a ``str`` which will be parsed into a color (e.g. ``"red""``, ``"rgb(20, 50, 80)"``,
+                ``"#f4e32d"``).
+    
+        Raises:
+            ColorParseError: When the color string is invalid.
+        """
+        _rich_traceback_omit = True
+        if color is None:
+            if obj.clear_rule(self.name):
+                obj.refresh(children=True)
+        elif isinstance(color, Color):
+            if obj.set_rule(self.name, color):
+                obj.refresh(children=True)
+        elif isinstance(color, str):
+            alpha = 1.0
+            parsed_color = Color(255, 255, 255)
+            for token in color.split():
+                if token.endswith("%"):
+                    try:
+                        alpha = percentage_string_to_float(token)
+                    except ValueError:
+                        raise StyleValueError(f"invalid percentage value '{token}'")
+                    continue
+                try:
+                    parsed_color = Color.parse(token)
+                except ColorParseError as error:
+                    raise StyleValueError(
+                        f"Invalid color value '{token}'",
+                        help_text=color_property_help_text(
+                            self.name, context="inline", error=error, value=token
+                        ),
+                    )
+            parsed_color = parsed_color.multiply_alpha(alpha)
+    
+            if obj.set_rule(self.name, parsed_color):
+                obj.refresh(children=True)
+        else:
+>           raise StyleValueError(f"Invalid color value {color}")
+E           textual.css.errors.StyleValueError: Invalid color value Color(13, 17, number=23, triplet=0.6)
+
+..\..\..\anaconda3\Lib\site-packages\textual\css\_style_properties.py:1027: StyleValueError
+---------------------------- Captured stderr call -----------------------------
+\u256d\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500 Traceback (most recent call last) \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\n\u2502 C:\\Users\\jjgh8\\Github\\taskboard-wt\\capture-proto\\taskboard\\app.py:2134 in    \n\u2502 on_mount                                                                     \n\u2502                                                                              \n\u2502   2131 \u2502   \u2502   \u2502   yield Static(id="rv-body")                                \n\u2502   2132 \u2502                                                                     \n\u2502   2133 \u2502   def on_mount(self) -> None:                                       \n\u2502 \u2771 2134 \u2502   \u2502   self.styles.background = Color(13, 17, 23, 0.6)   # P-V-9     \n\u2502   2135 \u2502   \u2502   self.sel = 0                                                  \n\u2502   2136 \u2502   \u2502   self.on = [self.view.chosen(t) is not None for t in self.text \n\u2502   2137 \u2502   \u2502   self._paint()                                                 \n\u2502                                                                              \n\u2502 \u256d\u2500\u2500\u2500\u2500\u2500\u2500 locals \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u256e                                                      \n\u2502 \u2502 self = ReviewList() \u2502                                                      \n\u2502 \u2570\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u256f                                                      \n\u2570\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\nStyleValueError: Invalid color value Color(13, 17, number=23, triplet=0.6)
+__________________ test_AT_4404_undo_the_dumps_newest_first ___________________
+
+home = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-31730/test_AT_4404_undo_the_dumps_ne0/.taskboard')
+
+    async def test_AT_4404_undo_the_dumps_newest_first(home):
+        """AT-4404 (K-4): two dumps; `alt+u` \u2192 the second task leaves its board and its note returns
+        at the pad's end after a divider; `alt+a`, `u` \u2192 the first undone too; a third `alt+u` \u2192
+        `Nothing to undo.`; an entry dated 8 days ago is dropped from `dumped` at the next write."""
+        pad = f"{N1}\n____\n{N2T}\n____\nkeep me"
+        async with capture(home, pad=pad) as (app, pilot, p):
+            await dump_at(pilot, app, row_of(pad_text(app), "Volume lab"))
+            await dump_at(pilot, app, 0)
+            assert pad_text(app) == "keep me", (pad_text(app), fx.messages(app))
+            assert task_rec(p["A"], fx.N1_TITLE) and task_rec(p["C"], "Volume lab fails on WSL")
+            await fx.press(pilot, "alt+u")
+            await pilot.pause(0.2)
+            assert task_rec(p["A"], fx.N1_TITLE) is None
+            assert pad_text(app) == f"keep me\n____\n{N1}"
+            await fx.press(pilot, "alt+a")
+            await pilot.pause(0.2)
+            assert type(app.screen).__name__ == "ReviewList", fx.screen_names(app)
+            await fx.press(pilot, "u")
+            await pilot.pause(0.3)
+>           assert task_rec(p["C"], "Volume lab fails on WSL") is None
+E           AssertionError: assert {'archived': False, 'blocked': False, 'created': '2026-11-01T07:02:41', 'depends_on': [], ...} is None
+E            +  where {'archived': False, 'blocked': False, 'created': '2026-11-01T07:02:41', 'depends_on': [], ...} = task_rec(WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-31730/test_AT_4404_undo_the_dumps_ne0/.taskboard/boards/course/board.json'), 'Volume lab fails on WSL')
+
+tests\test_capture_view.py:2138: AssertionError
+
+During handling of the above exception, another exception occurred:
+
+home = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-31730/test_AT_4404_undo_the_dumps_ne0/.taskboard')
+
+    async def test_AT_4404_undo_the_dumps_newest_first(home):
+        """AT-4404 (K-4): two dumps; `alt+u` \u2192 the second task leaves its board and its note returns
+        at the pad's end after a divider; `alt+a`, `u` \u2192 the first undone too; a third `alt+u` \u2192
+        `Nothing to undo.`; an entry dated 8 days ago is dropped from `dumped` at the next write."""
+        pad = f"{N1}\n____\n{N2T}\n____\nkeep me"
+>       async with capture(home, pad=pad) as (app, pilot, p):
+
+tests\test_capture_view.py:2124: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+..\..\..\anaconda3\Lib\contextlib.py:231: in __aexit__
+    await self.gen.athrow(value)
+tests\test_capture_view.py:71: in capture
+    async with app.run_test(size=size) as pilot:
+..\..\..\anaconda3\Lib\contextlib.py:231: in __aexit__
+    await self.gen.athrow(value)
+..\..\..\anaconda3\Lib\site-packages\textual\app.py:2218: in run_test
+    raise self._exception
+..\..\..\anaconda3\Lib\site-packages\textual\message_pump.py:604: in _pre_process
+    await self._dispatch_message(events.Mount())
+..\..\..\anaconda3\Lib\site-packages\textual\message_pump.py:727: in _dispatch_message
+    await self.on_event(message)
+..\..\..\anaconda3\Lib\site-packages\textual\message_pump.py:808: in on_event
+    await self._on_message(event)
+..\..\..\anaconda3\Lib\site-packages\textual\message_pump.py:829: in _on_message
+    await invoke(method, message)
+..\..\..\anaconda3\Lib\site-packages\textual\_callback.py:96: in invoke
+    return await _invoke(callback, *params)
+..\..\..\anaconda3\Lib\site-packages\textual\_callback.py:56: in _invoke
+    result = callback(*params[:parameter_count])
+taskboard\app.py:2134: in on_mount
+    self.styles.background = Color(13, 17, 23, 0.6)   # P-V-9
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <textual.css._style_properties.ColorProperty object at 0x000001F8B72295E0>
+obj = RenderStyles(ReviewList(), layout=<vertical>, auto_color=False, color=Color(230, 237, 243), background=Color(13, 17, 2...to_link_color_hover=True, link_background_hover=Color(1, 120, 212), link_style_hover=Style(bold=True, underline=False))
+color = Color(13, 17, number=23, triplet=0.6)
+
+    def __set__(self, obj: StylesBase, color: Color | str | None) -> None:
+        """Set the Color.
+    
+        Args:
+            obj: The ``Styles`` object.
+            color: The color to set. Pass a ``Color`` instance directly,
+                or pass a ``str`` which will be parsed into a color (e.g. ``"red""``, ``"rgb(20, 50, 80)"``,
+                ``"#f4e32d"``).
+    
+        Raises:
+            ColorParseError: When the color string is invalid.
+        """
+        _rich_traceback_omit = True
+        if color is None:
+            if obj.clear_rule(self.name):
+                obj.refresh(children=True)
+        elif isinstance(color, Color):
+            if obj.set_rule(self.name, color):
+                obj.refresh(children=True)
+        elif isinstance(color, str):
+            alpha = 1.0
+            parsed_color = Color(255, 255, 255)
+            for token in color.split():
+                if token.endswith("%"):
+                    try:
+                        alpha = percentage_string_to_float(token)
+                    except ValueError:
+                        raise StyleValueError(f"invalid percentage value '{token}'")
+                    continue
+                try:
+                    parsed_color = Color.parse(token)
+                except ColorParseError as error:
+                    raise StyleValueError(
+                        f"Invalid color value '{token}'",
+                        help_text=color_property_help_text(
+                            self.name, context="inline", error=error, value=token
+                        ),
+                    )
+            parsed_color = parsed_color.multiply_alpha(alpha)
+    
+            if obj.set_rule(self.name, parsed_color):
+                obj.refresh(children=True)
+        else:
+>           raise StyleValueError(f"Invalid color value {color}")
+E           textual.css.errors.StyleValueError: Invalid color value Color(13, 17, number=23, triplet=0.6)
+
+..\..\..\anaconda3\Lib\site-packages\textual\css\_style_properties.py:1027: StyleValueError
+---------------------------- Captured stderr call -----------------------------
+\u256d\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500 Traceback (most recent call last) \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\n\u2502 C:\\Users\\jjgh8\\Github\\taskboard-wt\\capture-proto\\taskboard\\app.py:2134 in    \n\u2502 on_mount                                                                     \n\u2502                                                                              \n\u2502   2131 \u2502   \u2502   \u2502   yield Static(id="rv-body")                                \n\u2502   2132 \u2502                                                                     \n\u2502   2133 \u2502   def on_mount(self) -> None:                                       \n\u2502 \u2771 2134 \u2502   \u2502   self.styles.background = Color(13, 17, 23, 0.6)   # P-V-9     \n\u2502   2135 \u2502   \u2502   self.sel = 0                                                  \n\u2502   2136 \u2502   \u2502   self.on = [self.view.chosen(t) is not None for t in self.text \n\u2502   2137 \u2502   \u2502   self._paint()                                                 \n\u2502                                                                              \n\u2502 \u256d\u2500\u2500\u2500\u2500\u2500\u2500 locals \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u256e                                                      \n\u2502 \u2502 self = ReviewList() \u2502                                                      \n\u2502 \u2570\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u256f                                                      \n\u2570\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\nStyleValueError: Invalid color value Color(13, 17, number=23, triplet=0.6)
+______ test_TC_4561_alt_a_opens_one_row_per_note_of_the_pad_as_it_is_now ______
+
+home = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-31730/test_TC_4561_alt_a_opens_one_r0/.taskboard')
+
+    async def test_TC_4561_alt_a_opens_one_row_per_note_of_the_pad_as_it_is_now(home):
+        """TC-4561 (LLR-4406.1): N1..N3 in the store, N4 typed 0.2 s before `alt+a` \u2192 4 rows in
+        pad order, over the capture view, a ModalScreen (NC rows from the store's last write: N4
+        missing)."""
+        from textual.screen import ModalScreen
+        _rv_setup(home, pad="\n____\n".join([fx.N1, fx.N2, fx.N3]))
+        app = fx.open_f_app()
+        async with app.run_test(size=fx.W118) as pilot:
+            await fx.leave_home(pilot)
+            await fx.open_capture(pilot, app)
+            pad = fx.pad_of(app)
+            pad.move_cursor(pad.document.end)
+            await pilot.pause()
+            await fx.press(pilot, "enter")
+            await fx.type_text(pilot, "____\n" + RV_N4_TITLE)
+            await pilot.pause(0.2)
+            await _rv_open(pilot, app)
+            assert isinstance(app.screen, ModalScreen)
+            assert fx.captures_on_stack(app) == 1
+            rows = _rv_rows(app)
+>           assert len(rows) == 4
+E           assert 0 == 4
+E            +  where 0 = len([])
+
+tests\test_capture_view.py:2302: AssertionError
+
+During handling of the above exception, another exception occurred:
+
+home = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-31730/test_TC_4561_alt_a_opens_one_r0/.taskboard')
+
+    async def test_TC_4561_alt_a_opens_one_row_per_note_of_the_pad_as_it_is_now(home):
+        """TC-4561 (LLR-4406.1): N1..N3 in the store, N4 typed 0.2 s before `alt+a` \u2192 4 rows in
+        pad order, over the capture view, a ModalScreen (NC rows from the store's last write: N4
+        missing)."""
+        from textual.screen import ModalScreen
+        _rv_setup(home, pad="\n____\n".join([fx.N1, fx.N2, fx.N3]))
+        app = fx.open_f_app()
+>       async with app.run_test(size=fx.W118) as pilot:
+
+tests\test_capture_view.py:2289: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+..\..\..\anaconda3\Lib\contextlib.py:231: in __aexit__
+    await self.gen.athrow(value)
+..\..\..\anaconda3\Lib\site-packages\textual\app.py:2218: in run_test
+    raise self._exception
+..\..\..\anaconda3\Lib\site-packages\textual\message_pump.py:604: in _pre_process
+    await self._dispatch_message(events.Mount())
+..\..\..\anaconda3\Lib\site-packages\textual\message_pump.py:727: in _dispatch_message
+    await self.on_event(message)
+..\..\..\anaconda3\Lib\site-packages\textual\message_pump.py:808: in on_event
+    await self._on_message(event)
+..\..\..\anaconda3\Lib\site-packages\textual\message_pump.py:829: in _on_message
+    await invoke(method, message)
+..\..\..\anaconda3\Lib\site-packages\textual\_callback.py:96: in invoke
+    return await _invoke(callback, *params)
+..\..\..\anaconda3\Lib\site-packages\textual\_callback.py:56: in _invoke
+    result = callback(*params[:parameter_count])
+taskboard\app.py:2134: in on_mount
+    self.styles.background = Color(13, 17, 23, 0.6)   # P-V-9
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <textual.css._style_properties.ColorProperty object at 0x000001F8B72295E0>
+obj = RenderStyles(ReviewList(), layout=<vertical>, auto_color=False, color=Color(230, 237, 243), background=Color(13, 17, 2...to_link_color_hover=True, link_background_hover=Color(1, 120, 212), link_style_hover=Style(bold=True, underline=False))
+color = Color(13, 17, number=23, triplet=0.6)
+
+    def __set__(self, obj: StylesBase, color: Color | str | None) -> None:
+        """Set the Color.
+    
+        Args:
+            obj: The ``Styles`` object.
+            color: The color to set. Pass a ``Color`` instance directly,
+                or pass a ``str`` which will be parsed into a color (e.g. ``"red""``, ``"rgb(20, 50, 80)"``,
+                ``"#f4e32d"``).
+    
+        Raises:
+            ColorParseError: When the color string is invalid.
+        """
+        _rich_traceback_omit = True
+        if color is None:
+            if obj.clear_rule(self.name):
+                obj.refresh(children=True)
+        elif isinstance(color, Color):
+            if obj.set_rule(self.name, color):
+                obj.refresh(children=True)
+        elif isinstance(color, str):
+            alpha = 1.0
+            parsed_color = Color(255, 255, 255)
+            for token in color.split():
+                if token.endswith("%"):
+                    try:
+                        alpha = percentage_string_to_float(token)
+                    except ValueError:
+                        raise StyleValueError(f"invalid percentage value '{token}'")
+                    continue
+                try:
+                    parsed_color = Color.parse(token)
+                except ColorParseError as error:
+                    raise StyleValueError(
+                        f"Invalid color value '{token}'",
+                        help_text=color_property_help_text(
+                            self.name, context="inline", error=error, value=token
+                        ),
+                    )
+            parsed_color = parsed_color.multiply_alpha(alpha)
+    
+            if obj.set_rule(self.name, parsed_color):
+                obj.refresh(children=True)
+        else:
+>           raise StyleValueError(f"Invalid color value {color}")
+E           textual.css.errors.StyleValueError: Invalid color value Color(13, 17, number=23, triplet=0.6)
+
+..\..\..\anaconda3\Lib\site-packages\textual\css\_style_properties.py:1027: StyleValueError
+---------------------------- Captured stderr call -----------------------------
+\u256d\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500 Traceback (most recent call last) \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\n\u2502 C:\\Users\\jjgh8\\Github\\taskboard-wt\\capture-proto\\taskboard\\app.py:2134 in    \n\u2502 on_mount                                                                     \n\u2502                                                                              \n\u2502   2131 \u2502   \u2502   \u2502   yield Static(id="rv-body")                                \n\u2502   2132 \u2502                                                                     \n\u2502   2133 \u2502   def on_mount(self) -> None:                                       \n\u2502 \u2771 2134 \u2502   \u2502   self.styles.background = Color(13, 17, 23, 0.6)   # P-V-9     \n\u2502   2135 \u2502   \u2502   self.sel = 0                                                  \n\u2502   2136 \u2502   \u2502   self.on = [self.view.chosen(t) is not None for t in self.text \n\u2502   2137 \u2502   \u2502   self._paint()                                                 \n\u2502                                                                              \n\u2502 \u256d\u2500\u2500\u2500\u2500\u2500\u2500 locals \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u256e                                                      \n\u2502 \u2502 self = ReviewList() \u2502                                                      \n\u2502 \u2570\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u256f                                                      \n\u2570\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\nStyleValueError: Invalid color value Color(13, 17, number=23, triplet=0.6)
+_____ test_TC_4562_each_row_draws_cursor_box_title_option_and_a_why_line ______
+
+home = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-31730/test_TC_4562_each_row_draws_cu0/.taskboard')
+
+    async def test_TC_4562_each_row_draws_cursor_box_title_option_and_a_why_line(home):
+        """TC-4562 (LLR-4406.2): the 4-row fixture at 118x30 (body width 108) \u2192 the graph's plain
+        lines exactly (title padded to 66, the option at column 74, a second `why` line or
+        `needs a name: alt+n in the pad`, then the key row) (NC no second line)."""
+        _rv_setup(home)
+        app = fx.open_f_app()
+        async with app.run_test(size=fx.W118) as pilot:
+            await _rv_start(pilot, app)
+            await _rv_open(pilot, app)
+            want = [
+                "\u25b6 [x] " + fx.N1_TITLE.ljust(66) + "  Eval harness \xb7 Client A \u25b0\u25b0\u25b0",
+                "      why questions · @username_subject · key",
+                "  [x] " + fx.N2_TITLE.ljust(66) + "  Module 4 \xb7 Volumes \xb7 Course \u25b0\u25b0\u25b0",
+                "      why volume · oracle · script",
+                "  [ ] " + RV_N3_TITLE.ljust(66) + "  + new project",
+                "      needs a name: alt+n in the pad",
+                "  [x] " + RV_N4_TITLE.ljust(66) + "  Pilot rollout \xb7 Client A \u25b0\u25b0\u25b0",
+                "      why pilot · stores · steering",
+                "",
+                RV_KEYS3,
+            ]
+            body = _rv_body(app)
+            while body and not body[-1]:
+                body.pop()
+>           assert body == want
+E           AssertionError: assert [] == ['\u25b6 [x] Golde...the pad', ...]
+E             
+E             Right contains 10 more items, first extra item: '\u25b6 [x] Golden set: 12 questions still have no answer key                   Eval harness \xb7 Client A \u25b0\u25b0\u25b0'
+E             Use -v to get more diff
+
+tests\test_capture_view.py:2331: AssertionError
+
+During handling of the above exception, another exception occurred:
+
+home = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-31730/test_TC_4562_each_row_draws_cu0/.taskboard')
+
+    async def test_TC_4562_each_row_draws_cursor_box_title_option_and_a_why_line(home):
+        """TC-4562 (LLR-4406.2): the 4-row fixture at 118x30 (body width 108) \u2192 the graph's plain
+        lines exactly (title padded to 66, the option at column 74, a second `why` line or
+        `needs a name: alt+n in the pad`, then the key row) (NC no second line)."""
+        _rv_setup(home)
+        app = fx.open_f_app()
+>       async with app.run_test(size=fx.W118) as pilot:
+
+tests\test_capture_view.py:2313: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+..\..\..\anaconda3\Lib\contextlib.py:231: in __aexit__
+    await self.gen.athrow(value)
+..\..\..\anaconda3\Lib\site-packages\textual\app.py:2218: in run_test
+    raise self._exception
+..\..\..\anaconda3\Lib\site-packages\textual\message_pump.py:604: in _pre_process
+    await self._dispatch_message(events.Mount())
+..\..\..\anaconda3\Lib\site-packages\textual\message_pump.py:727: in _dispatch_message
+    await self.on_event(message)
+..\..\..\anaconda3\Lib\site-packages\textual\message_pump.py:808: in on_event
+    await self._on_message(event)
+..\..\..\anaconda3\Lib\site-packages\textual\message_pump.py:829: in _on_message
+    await invoke(method, message)
+..\..\..\anaconda3\Lib\site-packages\textual\_callback.py:96: in invoke
+    return await _invoke(callback, *params)
+..\..\..\anaconda3\Lib\site-packages\textual\_callback.py:56: in _invoke
+    result = callback(*params[:parameter_count])
+taskboard\app.py:2134: in on_mount
+    self.styles.background = Color(13, 17, 23, 0.6)   # P-V-9
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <textual.css._style_properties.ColorProperty object at 0x000001F8B72295E0>
+obj = RenderStyles(ReviewList(), layout=<vertical>, auto_color=False, color=Color(230, 237, 243), background=Color(13, 17, 2...to_link_color_hover=True, link_background_hover=Color(1, 120, 212), link_style_hover=Style(bold=True, underline=False))
+color = Color(13, 17, number=23, triplet=0.6)
+
+    def __set__(self, obj: StylesBase, color: Color | str | None) -> None:
+        """Set the Color.
+    
+        Args:
+            obj: The ``Styles`` object.
+            color: The color to set. Pass a ``Color`` instance directly,
+                or pass a ``str`` which will be parsed into a color (e.g. ``"red""``, ``"rgb(20, 50, 80)"``,
+                ``"#f4e32d"``).
+    
+        Raises:
+            ColorParseError: When the color string is invalid.
+        """
+        _rich_traceback_omit = True
+        if color is None:
+            if obj.clear_rule(self.name):
+                obj.refresh(children=True)
+        elif isinstance(color, Color):
+            if obj.set_rule(self.name, color):
+                obj.refresh(children=True)
+        elif isinstance(color, str):
+            alpha = 1.0
+            parsed_color = Color(255, 255, 255)
+            for token in color.split():
+                if token.endswith("%"):
+                    try:
+                        alpha = percentage_string_to_float(token)
+                    except ValueError:
+                        raise StyleValueError(f"invalid percentage value '{token}'")
+                    continue
+                try:
+                    parsed_color = Color.parse(token)
+                except ColorParseError as error:
+                    raise StyleValueError(
+                        f"Invalid color value '{token}'",
+                        help_text=color_property_help_text(
+                            self.name, context="inline", error=error, value=token
+                        ),
+                    )
+            parsed_color = parsed_color.multiply_alpha(alpha)
+    
+            if obj.set_rule(self.name, parsed_color):
+                obj.refresh(children=True)
+        else:
+>           raise StyleValueError(f"Invalid color value {color}")
+E           textual.css.errors.StyleValueError: Invalid color value Color(13, 17, number=23, triplet=0.6)
+
+..\..\..\anaconda3\Lib\site-packages\textual\css\_style_properties.py:1027: StyleValueError
+---------------------------- Captured stderr call -----------------------------
+\u256d\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500 Traceback (most recent call last) \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\n\u2502 C:\\Users\\jjgh8\\Github\\taskboard-wt\\capture-proto\\taskboard\\app.py:2134 in    \n\u2502 on_mount                                                                     \n\u2502                                                                              \n\u2502   2131 \u2502   \u2502   \u2502   yield Static(id="rv-body")                                \n\u2502   2132 \u2502                                                                     \n\u2502   2133 \u2502   def on_mount(self) -> None:                                       \n\u2502 \u2771 2134 \u2502   \u2502   self.styles.background = Color(13, 17, 23, 0.6)   # P-V-9     \n\u2502   2135 \u2502   \u2502   self.sel = 0                                                  \n\u2502   2136 \u2502   \u2502   self.on = [self.view.chosen(t) is not None for t in self.text \n\u2502   2137 \u2502   \u2502   self._paint()                                                 \n\u2502                                                                              \n\u2502 \u256d\u2500\u2500\u2500\u2500\u2500\u2500 locals \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u256e                                                      \n\u2502 \u2502 self = ReviewList() \u2502                                                      \n\u2502 \u2570\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u256f                                                      \n\u2570\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\nStyleValueError: Invalid color value Color(13, 17, number=23, triplet=0.6)
+_ test_TC_4563_rows_open_checked_for_a_project_and_unchecked_for_new_project __
+
+home = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-31730/test_TC_4563_rows_open_checked0/.taskboard')
+
+    async def test_TC_4563_rows_open_checked_for_a_project_and_unchecked_for_new_project(home):
+        """TC-4563 (LLR-4406.3): N1, N2, N4 (a project each) open `[x]`, N3 (`+ new project`)
+        `[ ]` (NC all checked)."""
+        _rv_setup(home)
+        app = fx.open_f_app()
+        async with app.run_test(size=fx.W118) as pilot:
+            await _rv_start(pilot, app)
+            await _rv_open(pilot, app)
+>           assert _rv_checks(app) == [True, True, False, True]
+E           assert [] == [True, True, False, True]
+E             
+E             Right contains 4 more items, first extra item: True
+E             Use -v to get more diff
+
+tests\test_capture_view.py:2342: AssertionError
+
+During handling of the above exception, another exception occurred:
+
+home = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-31730/test_TC_4563_rows_open_checked0/.taskboard')
+
+    async def test_TC_4563_rows_open_checked_for_a_project_and_unchecked_for_new_project(home):
+        """TC-4563 (LLR-4406.3): N1, N2, N4 (a project each) open `[x]`, N3 (`+ new project`)
+        `[ ]` (NC all checked)."""
+        _rv_setup(home)
+        app = fx.open_f_app()
+>       async with app.run_test(size=fx.W118) as pilot:
+
+tests\test_capture_view.py:2339: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+..\..\..\anaconda3\Lib\contextlib.py:231: in __aexit__
+    await self.gen.athrow(value)
+..\..\..\anaconda3\Lib\site-packages\textual\app.py:2218: in run_test
+    raise self._exception
+..\..\..\anaconda3\Lib\site-packages\textual\message_pump.py:604: in _pre_process
+    await self._dispatch_message(events.Mount())
+..\..\..\anaconda3\Lib\site-packages\textual\message_pump.py:727: in _dispatch_message
+    await self.on_event(message)
+..\..\..\anaconda3\Lib\site-packages\textual\message_pump.py:808: in on_event
+    await self._on_message(event)
+..\..\..\anaconda3\Lib\site-packages\textual\message_pump.py:829: in _on_message
+    await invoke(method, message)
+..\..\..\anaconda3\Lib\site-packages\textual\_callback.py:96: in invoke
+    return await _invoke(callback, *params)
+..\..\..\anaconda3\Lib\site-packages\textual\_callback.py:56: in _invoke
+    result = callback(*params[:parameter_count])
+taskboard\app.py:2134: in on_mount
+    self.styles.background = Color(13, 17, 23, 0.6)   # P-V-9
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <textual.css._style_properties.ColorProperty object at 0x000001F8B72295E0>
+obj = RenderStyles(ReviewList(), layout=<vertical>, auto_color=False, color=Color(230, 237, 243), background=Color(13, 17, 2...to_link_color_hover=True, link_background_hover=Color(1, 120, 212), link_style_hover=Style(bold=True, underline=False))
+color = Color(13, 17, number=23, triplet=0.6)
+
+    def __set__(self, obj: StylesBase, color: Color | str | None) -> None:
+        """Set the Color.
+    
+        Args:
+            obj: The ``Styles`` object.
+            color: The color to set. Pass a ``Color`` instance directly,
+                or pass a ``str`` which will be parsed into a color (e.g. ``"red""``, ``"rgb(20, 50, 80)"``,
+                ``"#f4e32d"``).
+    
+        Raises:
+            ColorParseError: When the color string is invalid.
+        """
+        _rich_traceback_omit = True
+        if color is None:
+            if obj.clear_rule(self.name):
+                obj.refresh(children=True)
+        elif isinstance(color, Color):
+            if obj.set_rule(self.name, color):
+                obj.refresh(children=True)
+        elif isinstance(color, str):
+            alpha = 1.0
+            parsed_color = Color(255, 255, 255)
+            for token in color.split():
+                if token.endswith("%"):
+                    try:
+                        alpha = percentage_string_to_float(token)
+                    except ValueError:
+                        raise StyleValueError(f"invalid percentage value '{token}'")
+                    continue
+                try:
+                    parsed_color = Color.parse(token)
+                except ColorParseError as error:
+                    raise StyleValueError(
+                        f"Invalid color value '{token}'",
+                        help_text=color_property_help_text(
+                            self.name, context="inline", error=error, value=token
+                        ),
+                    )
+            parsed_color = parsed_color.multiply_alpha(alpha)
+    
+            if obj.set_rule(self.name, parsed_color):
+                obj.refresh(children=True)
+        else:
+>           raise StyleValueError(f"Invalid color value {color}")
+E           textual.css.errors.StyleValueError: Invalid color value Color(13, 17, number=23, triplet=0.6)
+
+..\..\..\anaconda3\Lib\site-packages\textual\css\_style_properties.py:1027: StyleValueError
+---------------------------- Captured stderr call -----------------------------
+\u256d\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500 Traceback (most recent call last) \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\n\u2502 C:\\Users\\jjgh8\\Github\\taskboard-wt\\capture-proto\\taskboard\\app.py:2134 in    \n\u2502 on_mount                                                                     \n\u2502                                                                              \n\u2502   2131 \u2502   \u2502   \u2502   yield Static(id="rv-body")                                \n\u2502   2132 \u2502                                                                     \n\u2502   2133 \u2502   def on_mount(self) -> None:                                       \n\u2502 \u2771 2134 \u2502   \u2502   self.styles.background = Color(13, 17, 23, 0.6)   # P-V-9     \n\u2502   2135 \u2502   \u2502   self.sel = 0                                                  \n\u2502   2136 \u2502   \u2502   self.on = [self.view.chosen(t) is not None for t in self.text \n\u2502   2137 \u2502   \u2502   self._paint()                                                 \n\u2502                                                                              \n\u2502 \u256d\u2500\u2500\u2500\u2500\u2500\u2500 locals \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u256e                                                      \n\u2502 \u2502 self = ReviewList() \u2502                                                      \n\u2502 \u2570\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u256f                                                      \n\u2570\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\nStyleValueError: Invalid color value Color(13, 17, number=23, triplet=0.6)
+________ test_TC_4564_up_and_down_move_the_cursor_clamped_to_the_rows _________
+
+home = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-31730/test_TC_4564_up_and_down_move_0/.taskboard')
+
+    async def test_TC_4564_up_and_down_move_the_cursor_clamped_to_the_rows(home):
+        """TC-4564 (LLR-4406.4): `\u2191` at row 0 stays 0; `\u2193` \xd79 on 4 rows ends at 3 (NC no
+        clamp)."""
+        _rv_setup(home)
+        app = fx.open_f_app()
+        async with app.run_test(size=fx.W118) as pilot:
+            await _rv_start(pilot, app)
+            await _rv_open(pilot, app)
+>           assert _rv_sel(app) == 0
+
+tests\test_capture_view.py:2353: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+app = TaskboardApp(title='taskboard', classes={'-dark-mode'}, pseudo_classes={'dark', 'focus'})
+
+    def _rv_sel(app) -> int:
+        marks = [i for i, r in enumerate(_rv_rows(app)) if r["cursor"]]
+>       assert len(marks) == 1, f"expected one cursor row, got {marks}"
+E       AssertionError: expected one cursor row, got []
+E       assert 0 == 1
+E        +  where 0 = len([])
+
+tests\test_capture_view.py:2265: AssertionError
+
+During handling of the above exception, another exception occurred:
+
+home = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-31730/test_TC_4564_up_and_down_move_0/.taskboard')
+
+    async def test_TC_4564_up_and_down_move_the_cursor_clamped_to_the_rows(home):
+        """TC-4564 (LLR-4406.4): `\u2191` at row 0 stays 0; `\u2193` \xd79 on 4 rows ends at 3 (NC no
+        clamp)."""
+        _rv_setup(home)
+        app = fx.open_f_app()
+>       async with app.run_test(size=fx.W118) as pilot:
+
+tests\test_capture_view.py:2350: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+..\..\..\anaconda3\Lib\contextlib.py:231: in __aexit__
+    await self.gen.athrow(value)
+..\..\..\anaconda3\Lib\site-packages\textual\app.py:2218: in run_test
+    raise self._exception
+..\..\..\anaconda3\Lib\site-packages\textual\message_pump.py:604: in _pre_process
+    await self._dispatch_message(events.Mount())
+..\..\..\anaconda3\Lib\site-packages\textual\message_pump.py:727: in _dispatch_message
+    await self.on_event(message)
+..\..\..\anaconda3\Lib\site-packages\textual\message_pump.py:808: in on_event
+    await self._on_message(event)
+..\..\..\anaconda3\Lib\site-packages\textual\message_pump.py:829: in _on_message
+    await invoke(method, message)
+..\..\..\anaconda3\Lib\site-packages\textual\_callback.py:96: in invoke
+    return await _invoke(callback, *params)
+..\..\..\anaconda3\Lib\site-packages\textual\_callback.py:56: in _invoke
+    result = callback(*params[:parameter_count])
+taskboard\app.py:2134: in on_mount
+    self.styles.background = Color(13, 17, 23, 0.6)   # P-V-9
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <textual.css._style_properties.ColorProperty object at 0x000001F8B72295E0>
+obj = RenderStyles(ReviewList(), layout=<vertical>, auto_color=False, color=Color(230, 237, 243), background=Color(13, 17, 2...to_link_color_hover=True, link_background_hover=Color(1, 120, 212), link_style_hover=Style(bold=True, underline=False))
+color = Color(13, 17, number=23, triplet=0.6)
+
+    def __set__(self, obj: StylesBase, color: Color | str | None) -> None:
+        """Set the Color.
+    
+        Args:
+            obj: The ``Styles`` object.
+            color: The color to set. Pass a ``Color`` instance directly,
+                or pass a ``str`` which will be parsed into a color (e.g. ``"red""``, ``"rgb(20, 50, 80)"``,
+                ``"#f4e32d"``).
+    
+        Raises:
+            ColorParseError: When the color string is invalid.
+        """
+        _rich_traceback_omit = True
+        if color is None:
+            if obj.clear_rule(self.name):
+                obj.refresh(children=True)
+        elif isinstance(color, Color):
+            if obj.set_rule(self.name, color):
+                obj.refresh(children=True)
+        elif isinstance(color, str):
+            alpha = 1.0
+            parsed_color = Color(255, 255, 255)
+            for token in color.split():
+                if token.endswith("%"):
+                    try:
+                        alpha = percentage_string_to_float(token)
+                    except ValueError:
+                        raise StyleValueError(f"invalid percentage value '{token}'")
+                    continue
+                try:
+                    parsed_color = Color.parse(token)
+                except ColorParseError as error:
+                    raise StyleValueError(
+                        f"Invalid color value '{token}'",
+                        help_text=color_property_help_text(
+                            self.name, context="inline", error=error, value=token
+                        ),
+                    )
+            parsed_color = parsed_color.multiply_alpha(alpha)
+    
+            if obj.set_rule(self.name, parsed_color):
+                obj.refresh(children=True)
+        else:
+>           raise StyleValueError(f"Invalid color value {color}")
+E           textual.css.errors.StyleValueError: Invalid color value Color(13, 17, number=23, triplet=0.6)
+
+..\..\..\anaconda3\Lib\site-packages\textual\css\_style_properties.py:1027: StyleValueError
+---------------------------- Captured stderr call -----------------------------
+\u256d\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500 Traceback (most recent call last) \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\n\u2502 C:\\Users\\jjgh8\\Github\\taskboard-wt\\capture-proto\\taskboard\\app.py:2134 in    \n\u2502 on_mount                                                                     \n\u2502                                                                              \n\u2502   2131 \u2502   \u2502   \u2502   yield Static(id="rv-body")                                \n\u2502   2132 \u2502                                                                     \n\u2502   2133 \u2502   def on_mount(self) -> None:                                       \n\u2502 \u2771 2134 \u2502   \u2502   self.styles.background = Color(13, 17, 23, 0.6)   # P-V-9     \n\u2502   2135 \u2502   \u2502   self.sel = 0                                                  \n\u2502   2136 \u2502   \u2502   self.on = [self.view.chosen(t) is not None for t in self.text \n\u2502   2137 \u2502   \u2502   self._paint()                                                 \n\u2502                                                                              \n\u2502 \u256d\u2500\u2500\u2500\u2500\u2500\u2500 locals \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u256e                                                      \n\u2502 \u2502 self = ReviewList() \u2502                                                      \n\u2502 \u2570\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u256f                                                      \n\u2570\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\nStyleValueError: Invalid color value Color(13, 17, number=23, triplet=0.6)
+_______________ test_TC_4565_space_toggles_a_project_rows_check _______________
+
+home = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-31730/test_TC_4565_space_toggles_a_p0/.taskboard')
+
+    async def test_TC_4565_space_toggles_a_project_rows_check(home):
+        """TC-4565 (LLR-4406.5): row 1 `[x]` \u2192 `space` `[ ]` \u2192 `space` `[x]` (NC one-way)."""
+        _rv_setup(home)
+        app = fx.open_f_app()
+        async with app.run_test(size=fx.W118) as pilot:
+            await _rv_start(pilot, app)
+            await _rv_open(pilot, app)
+>           assert _rv_checks(app)[0] is True
+E           IndexError: list index out of range
+
+tests\test_capture_view.py:2368: IndexError
+
+During handling of the above exception, another exception occurred:
+
+home = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-31730/test_TC_4565_space_toggles_a_p0/.taskboard')
+
+    async def test_TC_4565_space_toggles_a_project_rows_check(home):
+        """TC-4565 (LLR-4406.5): row 1 `[x]` \u2192 `space` `[ ]` \u2192 `space` `[x]` (NC one-way)."""
+        _rv_setup(home)
+        app = fx.open_f_app()
+>       async with app.run_test(size=fx.W118) as pilot:
+
+tests\test_capture_view.py:2365: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+..\..\..\anaconda3\Lib\contextlib.py:231: in __aexit__
+    await self.gen.athrow(value)
+..\..\..\anaconda3\Lib\site-packages\textual\app.py:2218: in run_test
+    raise self._exception
+..\..\..\anaconda3\Lib\site-packages\textual\message_pump.py:604: in _pre_process
+    await self._dispatch_message(events.Mount())
+..\..\..\anaconda3\Lib\site-packages\textual\message_pump.py:727: in _dispatch_message
+    await self.on_event(message)
+..\..\..\anaconda3\Lib\site-packages\textual\message_pump.py:808: in on_event
+    await self._on_message(event)
+..\..\..\anaconda3\Lib\site-packages\textual\message_pump.py:829: in _on_message
+    await invoke(method, message)
+..\..\..\anaconda3\Lib\site-packages\textual\_callback.py:96: in invoke
+    return await _invoke(callback, *params)
+..\..\..\anaconda3\Lib\site-packages\textual\_callback.py:56: in _invoke
+    result = callback(*params[:parameter_count])
+taskboard\app.py:2134: in on_mount
+    self.styles.background = Color(13, 17, 23, 0.6)   # P-V-9
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <textual.css._style_properties.ColorProperty object at 0x000001F8B72295E0>
+obj = RenderStyles(ReviewList(), layout=<vertical>, auto_color=False, color=Color(230, 237, 243), background=Color(13, 17, 2...to_link_color_hover=True, link_background_hover=Color(1, 120, 212), link_style_hover=Style(bold=True, underline=False))
+color = Color(13, 17, number=23, triplet=0.6)
+
+    def __set__(self, obj: StylesBase, color: Color | str | None) -> None:
+        """Set the Color.
+    
+        Args:
+            obj: The ``Styles`` object.
+            color: The color to set. Pass a ``Color`` instance directly,
+                or pass a ``str`` which will be parsed into a color (e.g. ``"red""``, ``"rgb(20, 50, 80)"``,
+                ``"#f4e32d"``).
+    
+        Raises:
+            ColorParseError: When the color string is invalid.
+        """
+        _rich_traceback_omit = True
+        if color is None:
+            if obj.clear_rule(self.name):
+                obj.refresh(children=True)
+        elif isinstance(color, Color):
+            if obj.set_rule(self.name, color):
+                obj.refresh(children=True)
+        elif isinstance(color, str):
+            alpha = 1.0
+            parsed_color = Color(255, 255, 255)
+            for token in color.split():
+                if token.endswith("%"):
+                    try:
+                        alpha = percentage_string_to_float(token)
+                    except ValueError:
+                        raise StyleValueError(f"invalid percentage value '{token}'")
+                    continue
+                try:
+                    parsed_color = Color.parse(token)
+                except ColorParseError as error:
+                    raise StyleValueError(
+                        f"Invalid color value '{token}'",
+                        help_text=color_property_help_text(
+                            self.name, context="inline", error=error, value=token
+                        ),
+                    )
+            parsed_color = parsed_color.multiply_alpha(alpha)
+    
+            if obj.set_rule(self.name, parsed_color):
+                obj.refresh(children=True)
+        else:
+>           raise StyleValueError(f"Invalid color value {color}")
+E           textual.css.errors.StyleValueError: Invalid color value Color(13, 17, number=23, triplet=0.6)
+
+..\..\..\anaconda3\Lib\site-packages\textual\css\_style_properties.py:1027: StyleValueError
+---------------------------- Captured stderr call -----------------------------
+\u256d\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500 Traceback (most recent call last) \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\n\u2502 C:\\Users\\jjgh8\\Github\\taskboard-wt\\capture-proto\\taskboard\\app.py:2134 in    \n\u2502 on_mount                                                                     \n\u2502                                                                              \n\u2502   2131 \u2502   \u2502   \u2502   yield Static(id="rv-body")                                \n\u2502   2132 \u2502                                                                     \n\u2502   2133 \u2502   def on_mount(self) -> None:                                       \n\u2502 \u2771 2134 \u2502   \u2502   self.styles.background = Color(13, 17, 23, 0.6)   # P-V-9     \n\u2502   2135 \u2502   \u2502   self.sel = 0                                                  \n\u2502   2136 \u2502   \u2502   self.on = [self.view.chosen(t) is not None for t in self.text \n\u2502   2137 \u2502   \u2502   self._paint()                                                 \n\u2502                                                                              \n\u2502 \u256d\u2500\u2500\u2500\u2500\u2500\u2500 locals \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u256e                                                      \n\u2502 \u2502 self = ReviewList() \u2502                                                      \n\u2502 \u2570\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u256f                                                      \n\u2570\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\nStyleValueError: Invalid color value Color(13, 17, number=23, triplet=0.6)
+______ test_TC_4566_space_on_a_new_project_row_is_refused_with_a_notice _______
+
+home = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-31730/test_TC_4566_space_on_a_new_pr0/.taskboard')
+
+    async def test_TC_4566_space_on_a_new_project_row_is_refused_with_a_notice(home):
+        """TC-4566 (LLR-4406.6): `space` on N3's row \u2192 it stays `[ ]`; notice `Needs a name:
+        alt+n in the pad.` (NC checkable)."""
+        _rv_setup(home)
+        app = fx.open_f_app()
+        async with app.run_test(size=fx.W118) as pilot:
+            await _rv_start(pilot, app)
+            await _rv_open(pilot, app)
+            await fx.press(pilot, "down", "down", "space")
+>           assert _rv_sel(app) == 2
+
+tests\test_capture_view.py:2384: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+app = TaskboardApp(title='taskboard', classes={'-dark-mode'}, pseudo_classes={'dark', 'focus'})
+
+    def _rv_sel(app) -> int:
+        marks = [i for i, r in enumerate(_rv_rows(app)) if r["cursor"]]
+>       assert len(marks) == 1, f"expected one cursor row, got {marks}"
+E       AssertionError: expected one cursor row, got []
+E       assert 0 == 1
+E        +  where 0 = len([])
+
+tests\test_capture_view.py:2265: AssertionError
+
+During handling of the above exception, another exception occurred:
+
+home = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-31730/test_TC_4566_space_on_a_new_pr0/.taskboard')
+
+    async def test_TC_4566_space_on_a_new_project_row_is_refused_with_a_notice(home):
+        """TC-4566 (LLR-4406.6): `space` on N3's row \u2192 it stays `[ ]`; notice `Needs a name:
+        alt+n in the pad.` (NC checkable)."""
+        _rv_setup(home)
+        app = fx.open_f_app()
+>       async with app.run_test(size=fx.W118) as pilot:
+
+tests\test_capture_view.py:2380: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+..\..\..\anaconda3\Lib\contextlib.py:231: in __aexit__
+    await self.gen.athrow(value)
+..\..\..\anaconda3\Lib\site-packages\textual\app.py:2218: in run_test
+    raise self._exception
+..\..\..\anaconda3\Lib\site-packages\textual\message_pump.py:604: in _pre_process
+    await self._dispatch_message(events.Mount())
+..\..\..\anaconda3\Lib\site-packages\textual\message_pump.py:727: in _dispatch_message
+    await self.on_event(message)
+..\..\..\anaconda3\Lib\site-packages\textual\message_pump.py:808: in on_event
+    await self._on_message(event)
+..\..\..\anaconda3\Lib\site-packages\textual\message_pump.py:829: in _on_message
+    await invoke(method, message)
+..\..\..\anaconda3\Lib\site-packages\textual\_callback.py:96: in invoke
+    return await _invoke(callback, *params)
+..\..\..\anaconda3\Lib\site-packages\textual\_callback.py:56: in _invoke
+    result = callback(*params[:parameter_count])
+taskboard\app.py:2134: in on_mount
+    self.styles.background = Color(13, 17, 23, 0.6)   # P-V-9
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <textual.css._style_properties.ColorProperty object at 0x000001F8B72295E0>
+obj = RenderStyles(ReviewList(), layout=<vertical>, auto_color=False, color=Color(230, 237, 243), background=Color(13, 17, 2...to_link_color_hover=True, link_background_hover=Color(1, 120, 212), link_style_hover=Style(bold=True, underline=False))
+color = Color(13, 17, number=23, triplet=0.6)
+
+    def __set__(self, obj: StylesBase, color: Color | str | None) -> None:
+        """Set the Color.
+    
+        Args:
+            obj: The ``Styles`` object.
+            color: The color to set. Pass a ``Color`` instance directly,
+                or pass a ``str`` which will be parsed into a color (e.g. ``"red""``, ``"rgb(20, 50, 80)"``,
+                ``"#f4e32d"``).
+    
+        Raises:
+            ColorParseError: When the color string is invalid.
+        """
+        _rich_traceback_omit = True
+        if color is None:
+            if obj.clear_rule(self.name):
+                obj.refresh(children=True)
+        elif isinstance(color, Color):
+            if obj.set_rule(self.name, color):
+                obj.refresh(children=True)
+        elif isinstance(color, str):
+            alpha = 1.0
+            parsed_color = Color(255, 255, 255)
+            for token in color.split():
+                if token.endswith("%"):
+                    try:
+                        alpha = percentage_string_to_float(token)
+                    except ValueError:
+                        raise StyleValueError(f"invalid percentage value '{token}'")
+                    continue
+                try:
+                    parsed_color = Color.parse(token)
+                except ColorParseError as error:
+                    raise StyleValueError(
+                        f"Invalid color value '{token}'",
+                        help_text=color_property_help_text(
+                            self.name, context="inline", error=error, value=token
+                        ),
+                    )
+            parsed_color = parsed_color.multiply_alpha(alpha)
+    
+            if obj.set_rule(self.name, parsed_color):
+                obj.refresh(children=True)
+        else:
+>           raise StyleValueError(f"Invalid color value {color}")
+E           textual.css.errors.StyleValueError: Invalid color value Color(13, 17, number=23, triplet=0.6)
+
+..\..\..\anaconda3\Lib\site-packages\textual\css\_style_properties.py:1027: StyleValueError
+---------------------------- Captured stderr call -----------------------------
+\u256d\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500 Traceback (most recent call last) \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\n\u2502 C:\\Users\\jjgh8\\Github\\taskboard-wt\\capture-proto\\taskboard\\app.py:2134 in    \n\u2502 on_mount                                                                     \n\u2502                                                                              \n\u2502   2131 \u2502   \u2502   \u2502   yield Static(id="rv-body")                                \n\u2502   2132 \u2502                                                                     \n\u2502   2133 \u2502   def on_mount(self) -> None:                                       \n\u2502 \u2771 2134 \u2502   \u2502   self.styles.background = Color(13, 17, 23, 0.6)   # P-V-9     \n\u2502   2135 \u2502   \u2502   self.sel = 0                                                  \n\u2502   2136 \u2502   \u2502   self.on = [self.view.chosen(t) is not None for t in self.text \n\u2502   2137 \u2502   \u2502   self._paint()                                                 \n\u2502                                                                              \n\u2502 \u256d\u2500\u2500\u2500\u2500\u2500\u2500 locals \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u256e                                                      \n\u2502 \u2502 self = ReviewList() \u2502                                                      \n\u2502 \u2570\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u256f                                                      \n\u2570\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\nStyleValueError: Invalid color value Color(13, 17, number=23, triplet=0.6)
+__________ test_TC_4567_o_picks_the_next_option_shared_with_the_rail __________
+
+home = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-31730/test_TC_4567_o_picks_the_next_0/.taskboard')
+
+    async def test_TC_4567_o_picks_the_next_option_shared_with_the_rail(home):
+        """TC-4567 (LLR-4406.7, ARCH-2): `o` on row 1 (N1) \u2192 row 1 shows `Pilot rollout \xb7 Client A
+        \u25b0\u25b0\u25b1`; after `esc` the rail's N1 `\u2192` line shows the same option (NC a review-local choice:
+        the rail still shows Eval harness)."""
+        _rv_setup(home)
+        app = fx.open_f_app()
+        async with app.run_test(size=fx.W118) as pilot:
+            await _rv_start(pilot, app)
+            await _rv_open(pilot, app)
+            await fx.press(pilot, "o")
+>           row = _rv_rows(app)[0]
+E           IndexError: list index out of range
+
+tests\test_capture_view.py:2400: IndexError
+
+During handling of the above exception, another exception occurred:
+
+home = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-31730/test_TC_4567_o_picks_the_next_0/.taskboard')
+
+    async def test_TC_4567_o_picks_the_next_option_shared_with_the_rail(home):
+        """TC-4567 (LLR-4406.7, ARCH-2): `o` on row 1 (N1) \u2192 row 1 shows `Pilot rollout \xb7 Client A
+        \u25b0\u25b0\u25b1`; after `esc` the rail's N1 `\u2192` line shows the same option (NC a review-local choice:
+        the rail still shows Eval harness)."""
+        _rv_setup(home)
+        app = fx.open_f_app()
+>       async with app.run_test(size=fx.W118) as pilot:
+
+tests\test_capture_view.py:2396: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+..\..\..\anaconda3\Lib\contextlib.py:231: in __aexit__
+    await self.gen.athrow(value)
+..\..\..\anaconda3\Lib\site-packages\textual\app.py:2218: in run_test
+    raise self._exception
+..\..\..\anaconda3\Lib\site-packages\textual\message_pump.py:604: in _pre_process
+    await self._dispatch_message(events.Mount())
+..\..\..\anaconda3\Lib\site-packages\textual\message_pump.py:727: in _dispatch_message
+    await self.on_event(message)
+..\..\..\anaconda3\Lib\site-packages\textual\message_pump.py:808: in on_event
+    await self._on_message(event)
+..\..\..\anaconda3\Lib\site-packages\textual\message_pump.py:829: in _on_message
+    await invoke(method, message)
+..\..\..\anaconda3\Lib\site-packages\textual\_callback.py:96: in invoke
+    return await _invoke(callback, *params)
+..\..\..\anaconda3\Lib\site-packages\textual\_callback.py:56: in _invoke
+    result = callback(*params[:parameter_count])
+taskboard\app.py:2134: in on_mount
+    self.styles.background = Color(13, 17, 23, 0.6)   # P-V-9
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <textual.css._style_properties.ColorProperty object at 0x000001F8B72295E0>
+obj = RenderStyles(ReviewList(), layout=<vertical>, auto_color=False, color=Color(230, 237, 243), background=Color(13, 17, 2...to_link_color_hover=True, link_background_hover=Color(1, 120, 212), link_style_hover=Style(bold=True, underline=False))
+color = Color(13, 17, number=23, triplet=0.6)
+
+    def __set__(self, obj: StylesBase, color: Color | str | None) -> None:
+        """Set the Color.
+    
+        Args:
+            obj: The ``Styles`` object.
+            color: The color to set. Pass a ``Color`` instance directly,
+                or pass a ``str`` which will be parsed into a color (e.g. ``"red""``, ``"rgb(20, 50, 80)"``,
+                ``"#f4e32d"``).
+    
+        Raises:
+            ColorParseError: When the color string is invalid.
+        """
+        _rich_traceback_omit = True
+        if color is None:
+            if obj.clear_rule(self.name):
+                obj.refresh(children=True)
+        elif isinstance(color, Color):
+            if obj.set_rule(self.name, color):
+                obj.refresh(children=True)
+        elif isinstance(color, str):
+            alpha = 1.0
+            parsed_color = Color(255, 255, 255)
+            for token in color.split():
+                if token.endswith("%"):
+                    try:
+                        alpha = percentage_string_to_float(token)
+                    except ValueError:
+                        raise StyleValueError(f"invalid percentage value '{token}'")
+                    continue
+                try:
+                    parsed_color = Color.parse(token)
+                except ColorParseError as error:
+                    raise StyleValueError(
+                        f"Invalid color value '{token}'",
+                        help_text=color_property_help_text(
+                            self.name, context="inline", error=error, value=token
+                        ),
+                    )
+            parsed_color = parsed_color.multiply_alpha(alpha)
+    
+            if obj.set_rule(self.name, parsed_color):
+                obj.refresh(children=True)
+        else:
+>           raise StyleValueError(f"Invalid color value {color}")
+E           textual.css.errors.StyleValueError: Invalid color value Color(13, 17, number=23, triplet=0.6)
+
+..\..\..\anaconda3\Lib\site-packages\textual\css\_style_properties.py:1027: StyleValueError
+---------------------------- Captured stderr call -----------------------------
+\u256d\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500 Traceback (most recent call last) \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\n\u2502 C:\\Users\\jjgh8\\Github\\taskboard-wt\\capture-proto\\taskboard\\app.py:2134 in    \n\u2502 on_mount                                                                     \n\u2502                                                                              \n\u2502   2131 \u2502   \u2502   \u2502   yield Static(id="rv-body")                                \n\u2502   2132 \u2502                                                                     \n\u2502   2133 \u2502   def on_mount(self) -> None:                                       \n\u2502 \u2771 2134 \u2502   \u2502   self.styles.background = Color(13, 17, 23, 0.6)   # P-V-9     \n\u2502   2135 \u2502   \u2502   self.sel = 0                                                  \n\u2502   2136 \u2502   \u2502   self.on = [self.view.chosen(t) is not None for t in self.text \n\u2502   2137 \u2502   \u2502   self._paint()                                                 \n\u2502                                                                              \n\u2502 \u256d\u2500\u2500\u2500\u2500\u2500\u2500 locals \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u256e                                                      \n\u2502 \u2502 self = ReviewList() \u2502                                                      \n\u2502 \u2570\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u256f                                                      \n\u2570\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\nStyleValueError: Invalid color value Color(13, 17, number=23, triplet=0.6)
+____________ test_TC_4568_d_dumps_every_checked_row_and_only_those ____________
+
+home = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-31730/test_TC_4568_d_dumps_every_che0/.taskboard')
+
+    async def test_TC_4568_d_dumps_every_checked_row_and_only_those(home):
+        """TC-4568 (LLR-4406.8): 3 of 4 checked (N1, N2, N4) \u2192 `d` \u2192 N1 in Eval harness and N4 in
+        Pilot rollout on Client A, N2 in Module 4 · Volumes on Course; the pad holds N3 only (NC
+        unchecked rows dumped too: a 4th task)."""
+        p = _rv_setup(home)
+        a0, c0 = len(fx.tasks_of(p["A"])), len(fx.tasks_of(p["C"]))
+        app = fx.open_f_app()
+        async with app.run_test(size=fx.W118) as pilot:
+            await _rv_start(pilot, app)
+            await _rv_open(pilot, app)
+            await fx.press(pilot, "d")
+            await pilot.pause(0.2)
+>           assert _rv_pad(app) == fx.N3
+E           AssertionError: assert 'Golden set: ... pilot stores' == 'Quote for th..., fixed price'
+E             
+E             + Golden set: 12 questions still have no answer key
+E             + ask @username_subject which stores count
+E             + ____
+E             + Volume lab fails on WSL
+E             + the oracle script expects /mnt/c
+E             + img: board-0938.png...
+E             
+E             ...Full output truncated (7 lines hidden), use '-vv' to show
+
+tests\test_capture_view.py:2421: AssertionError
+
+During handling of the above exception, another exception occurred:
+
+home = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-31730/test_TC_4568_d_dumps_every_che0/.taskboard')
+
+    async def test_TC_4568_d_dumps_every_checked_row_and_only_those(home):
+        """TC-4568 (LLR-4406.8): 3 of 4 checked (N1, N2, N4) \u2192 `d` \u2192 N1 in Eval harness and N4 in
+        Pilot rollout on Client A, N2 in Module 4 · Volumes on Course; the pad holds N3 only (NC
+        unchecked rows dumped too: a 4th task)."""
+        p = _rv_setup(home)
+        a0, c0 = len(fx.tasks_of(p["A"])), len(fx.tasks_of(p["C"]))
+        app = fx.open_f_app()
+>       async with app.run_test(size=fx.W118) as pilot:
+
+tests\test_capture_view.py:2416: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+..\..\..\anaconda3\Lib\contextlib.py:231: in __aexit__
+    await self.gen.athrow(value)
+..\..\..\anaconda3\Lib\site-packages\textual\app.py:2218: in run_test
+    raise self._exception
+..\..\..\anaconda3\Lib\site-packages\textual\message_pump.py:604: in _pre_process
+    await self._dispatch_message(events.Mount())
+..\..\..\anaconda3\Lib\site-packages\textual\message_pump.py:727: in _dispatch_message
+    await self.on_event(message)
+..\..\..\anaconda3\Lib\site-packages\textual\message_pump.py:808: in on_event
+    await self._on_message(event)
+..\..\..\anaconda3\Lib\site-packages\textual\message_pump.py:829: in _on_message
+    await invoke(method, message)
+..\..\..\anaconda3\Lib\site-packages\textual\_callback.py:96: in invoke
+    return await _invoke(callback, *params)
+..\..\..\anaconda3\Lib\site-packages\textual\_callback.py:56: in _invoke
+    result = callback(*params[:parameter_count])
+taskboard\app.py:2134: in on_mount
+    self.styles.background = Color(13, 17, 23, 0.6)   # P-V-9
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <textual.css._style_properties.ColorProperty object at 0x000001F8B72295E0>
+obj = RenderStyles(ReviewList(), layout=<vertical>, auto_color=False, color=Color(230, 237, 243), background=Color(13, 17, 2...to_link_color_hover=True, link_background_hover=Color(1, 120, 212), link_style_hover=Style(bold=True, underline=False))
+color = Color(13, 17, number=23, triplet=0.6)
+
+    def __set__(self, obj: StylesBase, color: Color | str | None) -> None:
+        """Set the Color.
+    
+        Args:
+            obj: The ``Styles`` object.
+            color: The color to set. Pass a ``Color`` instance directly,
+                or pass a ``str`` which will be parsed into a color (e.g. ``"red""``, ``"rgb(20, 50, 80)"``,
+                ``"#f4e32d"``).
+    
+        Raises:
+            ColorParseError: When the color string is invalid.
+        """
+        _rich_traceback_omit = True
+        if color is None:
+            if obj.clear_rule(self.name):
+                obj.refresh(children=True)
+        elif isinstance(color, Color):
+            if obj.set_rule(self.name, color):
+                obj.refresh(children=True)
+        elif isinstance(color, str):
+            alpha = 1.0
+            parsed_color = Color(255, 255, 255)
+            for token in color.split():
+                if token.endswith("%"):
+                    try:
+                        alpha = percentage_string_to_float(token)
+                    except ValueError:
+                        raise StyleValueError(f"invalid percentage value '{token}'")
+                    continue
+                try:
+                    parsed_color = Color.parse(token)
+                except ColorParseError as error:
+                    raise StyleValueError(
+                        f"Invalid color value '{token}'",
+                        help_text=color_property_help_text(
+                            self.name, context="inline", error=error, value=token
+                        ),
+                    )
+            parsed_color = parsed_color.multiply_alpha(alpha)
+    
+            if obj.set_rule(self.name, parsed_color):
+                obj.refresh(children=True)
+        else:
+>           raise StyleValueError(f"Invalid color value {color}")
+E           textual.css.errors.StyleValueError: Invalid color value Color(13, 17, number=23, triplet=0.6)
+
+..\..\..\anaconda3\Lib\site-packages\textual\css\_style_properties.py:1027: StyleValueError
+---------------------------- Captured stderr call -----------------------------
+\u256d\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500 Traceback (most recent call last) \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\n\u2502 C:\\Users\\jjgh8\\Github\\taskboard-wt\\capture-proto\\taskboard\\app.py:2134 in    \n\u2502 on_mount                                                                     \n\u2502                                                                              \n\u2502   2131 \u2502   \u2502   \u2502   yield Static(id="rv-body")                                \n\u2502   2132 \u2502                                                                     \n\u2502   2133 \u2502   def on_mount(self) -> None:                                       \n\u2502 \u2771 2134 \u2502   \u2502   self.styles.background = Color(13, 17, 23, 0.6)   # P-V-9     \n\u2502   2135 \u2502   \u2502   self.sel = 0                                                  \n\u2502   2136 \u2502   \u2502   self.on = [self.view.chosen(t) is not None for t in self.text \n\u2502   2137 \u2502   \u2502   self._paint()                                                 \n\u2502                                                                              \n\u2502 \u256d\u2500\u2500\u2500\u2500\u2500\u2500 locals \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u256e                                                      \n\u2502 \u2502 self = ReviewList() \u2502                                                      \n\u2502 \u2570\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u256f                                                      \n\u2570\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\nStyleValueError: Invalid color value Color(13, 17, number=23, triplet=0.6)
+___________ test_TC_4569_the_review_list_closes_when_the_batch_ends ___________
+
+home = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-31730/test_TC_4569_the_review_list_c0/.taskboard')
+
+    async def test_TC_4569_the_review_list_closes_when_the_batch_ends(home):
+        """TC-4569 (LLR-4406.9): after `d` the capture view is on top (NC the list stays open)."""
+        _rv_setup(home)
+        app = fx.open_f_app()
+        async with app.run_test(size=fx.W118) as pilot:
+            await _rv_start(pilot, app)
+            await _rv_open(pilot, app)
+            await fx.press(pilot, "d")
+            await pilot.pause(0.2)
+>           assert fx.on_capture(app), fx.screen_names(app)
+E           AssertionError: ['Screen', 'CaptureView', 'ReviewList']
+E           assert False
+E            +  where False = <function on_capture at 0x000001F8B7863240>(TaskboardApp(title='taskboard', classes={'-dark-mode'}, pseudo_classes={'dark', 'focus'}))
+E            +    where <function on_capture at 0x000001F8B7863240> = fx.on_capture
+
+tests\test_capture_view.py:2438: AssertionError
+
+During handling of the above exception, another exception occurred:
+
+home = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-31730/test_TC_4569_the_review_list_c0/.taskboard')
+
+    async def test_TC_4569_the_review_list_closes_when_the_batch_ends(home):
+        """TC-4569 (LLR-4406.9): after `d` the capture view is on top (NC the list stays open)."""
+        _rv_setup(home)
+        app = fx.open_f_app()
+>       async with app.run_test(size=fx.W118) as pilot:
+
+tests\test_capture_view.py:2433: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+..\..\..\anaconda3\Lib\contextlib.py:231: in __aexit__
+    await self.gen.athrow(value)
+..\..\..\anaconda3\Lib\site-packages\textual\app.py:2218: in run_test
+    raise self._exception
+..\..\..\anaconda3\Lib\site-packages\textual\message_pump.py:604: in _pre_process
+    await self._dispatch_message(events.Mount())
+..\..\..\anaconda3\Lib\site-packages\textual\message_pump.py:727: in _dispatch_message
+    await self.on_event(message)
+..\..\..\anaconda3\Lib\site-packages\textual\message_pump.py:808: in on_event
+    await self._on_message(event)
+..\..\..\anaconda3\Lib\site-packages\textual\message_pump.py:829: in _on_message
+    await invoke(method, message)
+..\..\..\anaconda3\Lib\site-packages\textual\_callback.py:96: in invoke
+    return await _invoke(callback, *params)
+..\..\..\anaconda3\Lib\site-packages\textual\_callback.py:56: in _invoke
+    result = callback(*params[:parameter_count])
+taskboard\app.py:2134: in on_mount
+    self.styles.background = Color(13, 17, 23, 0.6)   # P-V-9
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <textual.css._style_properties.ColorProperty object at 0x000001F8B72295E0>
+obj = RenderStyles(ReviewList(), layout=<vertical>, auto_color=False, color=Color(230, 237, 243), background=Color(13, 17, 2...to_link_color_hover=True, link_background_hover=Color(1, 120, 212), link_style_hover=Style(bold=True, underline=False))
+color = Color(13, 17, number=23, triplet=0.6)
+
+    def __set__(self, obj: StylesBase, color: Color | str | None) -> None:
+        """Set the Color.
+    
+        Args:
+            obj: The ``Styles`` object.
+            color: The color to set. Pass a ``Color`` instance directly,
+                or pass a ``str`` which will be parsed into a color (e.g. ``"red""``, ``"rgb(20, 50, 80)"``,
+                ``"#f4e32d"``).
+    
+        Raises:
+            ColorParseError: When the color string is invalid.
+        """
+        _rich_traceback_omit = True
+        if color is None:
+            if obj.clear_rule(self.name):
+                obj.refresh(children=True)
+        elif isinstance(color, Color):
+            if obj.set_rule(self.name, color):
+                obj.refresh(children=True)
+        elif isinstance(color, str):
+            alpha = 1.0
+            parsed_color = Color(255, 255, 255)
+            for token in color.split():
+                if token.endswith("%"):
+                    try:
+                        alpha = percentage_string_to_float(token)
+                    except ValueError:
+                        raise StyleValueError(f"invalid percentage value '{token}'")
+                    continue
+                try:
+                    parsed_color = Color.parse(token)
+                except ColorParseError as error:
+                    raise StyleValueError(
+                        f"Invalid color value '{token}'",
+                        help_text=color_property_help_text(
+                            self.name, context="inline", error=error, value=token
+                        ),
+                    )
+            parsed_color = parsed_color.multiply_alpha(alpha)
+    
+            if obj.set_rule(self.name, parsed_color):
+                obj.refresh(children=True)
+        else:
+>           raise StyleValueError(f"Invalid color value {color}")
+E           textual.css.errors.StyleValueError: Invalid color value Color(13, 17, number=23, triplet=0.6)
+
+..\..\..\anaconda3\Lib\site-packages\textual\css\_style_properties.py:1027: StyleValueError
+---------------------------- Captured stderr call -----------------------------
+\u256d\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500 Traceback (most recent call last) \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\n\u2502 C:\\Users\\jjgh8\\Github\\taskboard-wt\\capture-proto\\taskboard\\app.py:2134 in    \n\u2502 on_mount                                                                     \n\u2502                                                                              \n\u2502   2131 \u2502   \u2502   \u2502   yield Static(id="rv-body")                                \n\u2502   2132 \u2502                                                                     \n\u2502   2133 \u2502   def on_mount(self) -> None:                                       \n\u2502 \u2771 2134 \u2502   \u2502   self.styles.background = Color(13, 17, 23, 0.6)   # P-V-9     \n\u2502   2135 \u2502   \u2502   self.sel = 0                                                  \n\u2502   2136 \u2502   \u2502   self.on = [self.view.chosen(t) is not None for t in self.text \n\u2502   2137 \u2502   \u2502   self._paint()                                                 \n\u2502                                                                              \n\u2502 \u256d\u2500\u2500\u2500\u2500\u2500\u2500 locals \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u256e                                                      \n\u2502 \u2502 self = ReviewList() \u2502                                                      \n\u2502 \u2570\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u256f                                                      \n\u2570\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\nStyleValueError: Invalid color value Color(13, 17, number=23, triplet=0.6)
+______ test_TC_4570_a_failed_row_stays_in_the_pad_and_the_batch_goes_on _______
+
+home = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-31730/test_TC_4570_a_failed_row_stay0/.taskboard')
+
+    async def test_TC_4570_a_failed_row_stays_in_the_pad_and_the_batch_goes_on(home):
+        """TC-4570 (LLR-4406.10): 3 checked, the 2nd row's board (Course) deleted before `d` \u2192
+        rows 1 and 3 dumped, N2 still in the pad, notices `Course's file is missing — nothing
+        dumped.` and `Dumped 2 of 3 checked` (NC stop at the first failure: N4 not dumped)."""
+        p = _rv_setup(home)
+        app = fx.open_f_app()
+        async with app.run_test(size=fx.W118) as pilot:
+            await _rv_start(pilot, app)
+            await _rv_open(pilot, app)
+            p["C"].unlink()
+            await fx.press(pilot, "d")
+            await pilot.pause(0.2)
+            text = _rv_pad(app)
+            assert fx.N2 in text and fx.N3 in text
+>           assert fx.N1 not in text and RV_N4_TITLE not in text
+E           AssertionError: assert ('Golden set:...stores count' not in 'Golden set:...pilot stores'
+E             
+E             'Golden set: 12 que... which stores count' is contained here:
+E               Golden set: 12 questions still have no answer key
+E               ask @username_subject which stores count
+E               ____
+E               Volume lab fails on WSL
+E               the oracle script expects /mnt/c...
+E             
+E             ...Full output truncated (6 lines hidden), use '-vv' to show)
+
+tests\test_capture_view.py:2456: AssertionError
+
+During handling of the above exception, another exception occurred:
+
+home = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-31730/test_TC_4570_a_failed_row_stay0/.taskboard')
+
+    async def test_TC_4570_a_failed_row_stays_in_the_pad_and_the_batch_goes_on(home):
+        """TC-4570 (LLR-4406.10): 3 checked, the 2nd row's board (Course) deleted before `d` \u2192
+        rows 1 and 3 dumped, N2 still in the pad, notices `Course's file is missing — nothing
+        dumped.` and `Dumped 2 of 3 checked` (NC stop at the first failure: N4 not dumped)."""
+        p = _rv_setup(home)
+        app = fx.open_f_app()
+>       async with app.run_test(size=fx.W118) as pilot:
+
+tests\test_capture_view.py:2448: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+..\..\..\anaconda3\Lib\contextlib.py:231: in __aexit__
+    await self.gen.athrow(value)
+..\..\..\anaconda3\Lib\site-packages\textual\app.py:2218: in run_test
+    raise self._exception
+..\..\..\anaconda3\Lib\site-packages\textual\message_pump.py:604: in _pre_process
+    await self._dispatch_message(events.Mount())
+..\..\..\anaconda3\Lib\site-packages\textual\message_pump.py:727: in _dispatch_message
+    await self.on_event(message)
+..\..\..\anaconda3\Lib\site-packages\textual\message_pump.py:808: in on_event
+    await self._on_message(event)
+..\..\..\anaconda3\Lib\site-packages\textual\message_pump.py:829: in _on_message
+    await invoke(method, message)
+..\..\..\anaconda3\Lib\site-packages\textual\_callback.py:96: in invoke
+    return await _invoke(callback, *params)
+..\..\..\anaconda3\Lib\site-packages\textual\_callback.py:56: in _invoke
+    result = callback(*params[:parameter_count])
+taskboard\app.py:2134: in on_mount
+    self.styles.background = Color(13, 17, 23, 0.6)   # P-V-9
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <textual.css._style_properties.ColorProperty object at 0x000001F8B72295E0>
+obj = RenderStyles(ReviewList(), layout=<vertical>, auto_color=False, color=Color(230, 237, 243), background=Color(13, 17, 2...to_link_color_hover=True, link_background_hover=Color(1, 120, 212), link_style_hover=Style(bold=True, underline=False))
+color = Color(13, 17, number=23, triplet=0.6)
+
+    def __set__(self, obj: StylesBase, color: Color | str | None) -> None:
+        """Set the Color.
+    
+        Args:
+            obj: The ``Styles`` object.
+            color: The color to set. Pass a ``Color`` instance directly,
+                or pass a ``str`` which will be parsed into a color (e.g. ``"red""``, ``"rgb(20, 50, 80)"``,
+                ``"#f4e32d"``).
+    
+        Raises:
+            ColorParseError: When the color string is invalid.
+        """
+        _rich_traceback_omit = True
+        if color is None:
+            if obj.clear_rule(self.name):
+                obj.refresh(children=True)
+        elif isinstance(color, Color):
+            if obj.set_rule(self.name, color):
+                obj.refresh(children=True)
+        elif isinstance(color, str):
+            alpha = 1.0
+            parsed_color = Color(255, 255, 255)
+            for token in color.split():
+                if token.endswith("%"):
+                    try:
+                        alpha = percentage_string_to_float(token)
+                    except ValueError:
+                        raise StyleValueError(f"invalid percentage value '{token}'")
+                    continue
+                try:
+                    parsed_color = Color.parse(token)
+                except ColorParseError as error:
+                    raise StyleValueError(
+                        f"Invalid color value '{token}'",
+                        help_text=color_property_help_text(
+                            self.name, context="inline", error=error, value=token
+                        ),
+                    )
+            parsed_color = parsed_color.multiply_alpha(alpha)
+    
+            if obj.set_rule(self.name, parsed_color):
+                obj.refresh(children=True)
+        else:
+>           raise StyleValueError(f"Invalid color value {color}")
+E           textual.css.errors.StyleValueError: Invalid color value Color(13, 17, number=23, triplet=0.6)
+
+..\..\..\anaconda3\Lib\site-packages\textual\css\_style_properties.py:1027: StyleValueError
+---------------------------- Captured stderr call -----------------------------
+\u256d\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500 Traceback (most recent call last) \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\n\u2502 C:\\Users\\jjgh8\\Github\\taskboard-wt\\capture-proto\\taskboard\\app.py:2134 in    \n\u2502 on_mount                                                                     \n\u2502                                                                              \n\u2502   2131 \u2502   \u2502   \u2502   yield Static(id="rv-body")                                \n\u2502   2132 \u2502                                                                     \n\u2502   2133 \u2502   def on_mount(self) -> None:                                       \n\u2502 \u2771 2134 \u2502   \u2502   self.styles.background = Color(13, 17, 23, 0.6)   # P-V-9     \n\u2502   2135 \u2502   \u2502   self.sel = 0                                                  \n\u2502   2136 \u2502   \u2502   self.on = [self.view.chosen(t) is not None for t in self.text \n\u2502   2137 \u2502   \u2502   self._paint()                                                 \n\u2502                                                                              \n\u2502 \u256d\u2500\u2500\u2500\u2500\u2500\u2500 locals \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u256e                                                      \n\u2502 \u2502 self = ReviewList() \u2502                                                      \n\u2502 \u2570\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u256f                                                      \n\u2570\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\nStyleValueError: Invalid color value Color(13, 17, number=23, triplet=0.6)
+_________ test_TC_4571_u_undoes_the_newest_dump_and_rebuilds_the_rows _________
+
+home = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-31730/test_TC_4571_u_undoes_the_newe0/.taskboard')
+
+    async def test_TC_4571_u_undoes_the_newest_dump_and_rebuilds_the_rows(home):
+        """TC-4571 (LLR-4406.11): N2 dumped earlier with `alt+d`, the review open on N1 alone,
+        `u` \u2192 N2's task leaves Course and its note appears as row 2 `[x]` (NC `u` unbound)."""
+        p = _rv_setup(home, pad=fx.N1 + "\n____\n" + fx.N2)
+        c0 = fx.task_ids(p["C"])
+        app = fx.open_f_app()
+        async with app.run_test(size=fx.W118) as pilot:
+            await _rv_start(pilot, app, cursor=(3, 0))
+            await fx.press(pilot, "alt+d")
+            await pilot.pause(0.2)
+            assert len(fx.task_ids(p["C"])) == len(c0) + 1, "alt+d dumped nothing"
+            await fx.cursor_to(pilot, app, 0, 0)
+            await _rv_open(pilot, app)
+>           assert len(_rv_rows(app)) == 1
+E           AssertionError: assert 0 == 1
+E            +  where 0 = len([])
+E            +    where [] = _rv_rows(TaskboardApp(title='taskboard', classes={'-dark-mode'}, pseudo_classes={'dark', 'focus'}))
+
+tests\test_capture_view.py:2477: AssertionError
+
+During handling of the above exception, another exception occurred:
+
+home = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-31730/test_TC_4571_u_undoes_the_newe0/.taskboard')
+
+    async def test_TC_4571_u_undoes_the_newest_dump_and_rebuilds_the_rows(home):
+        """TC-4571 (LLR-4406.11): N2 dumped earlier with `alt+d`, the review open on N1 alone,
+        `u` \u2192 N2's task leaves Course and its note appears as row 2 `[x]` (NC `u` unbound)."""
+        p = _rv_setup(home, pad=fx.N1 + "\n____\n" + fx.N2)
+        c0 = fx.task_ids(p["C"])
+        app = fx.open_f_app()
+>       async with app.run_test(size=fx.W118) as pilot:
+
+tests\test_capture_view.py:2470: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+..\..\..\anaconda3\Lib\contextlib.py:231: in __aexit__
+    await self.gen.athrow(value)
+..\..\..\anaconda3\Lib\site-packages\textual\app.py:2218: in run_test
+    raise self._exception
+..\..\..\anaconda3\Lib\site-packages\textual\message_pump.py:604: in _pre_process
+    await self._dispatch_message(events.Mount())
+..\..\..\anaconda3\Lib\site-packages\textual\message_pump.py:727: in _dispatch_message
+    await self.on_event(message)
+..\..\..\anaconda3\Lib\site-packages\textual\message_pump.py:808: in on_event
+    await self._on_message(event)
+..\..\..\anaconda3\Lib\site-packages\textual\message_pump.py:829: in _on_message
+    await invoke(method, message)
+..\..\..\anaconda3\Lib\site-packages\textual\_callback.py:96: in invoke
+    return await _invoke(callback, *params)
+..\..\..\anaconda3\Lib\site-packages\textual\_callback.py:56: in _invoke
+    result = callback(*params[:parameter_count])
+taskboard\app.py:2134: in on_mount
+    self.styles.background = Color(13, 17, 23, 0.6)   # P-V-9
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <textual.css._style_properties.ColorProperty object at 0x000001F8B72295E0>
+obj = RenderStyles(ReviewList(), layout=<vertical>, auto_color=False, color=Color(230, 237, 243), background=Color(13, 17, 2...to_link_color_hover=True, link_background_hover=Color(1, 120, 212), link_style_hover=Style(bold=True, underline=False))
+color = Color(13, 17, number=23, triplet=0.6)
+
+    def __set__(self, obj: StylesBase, color: Color | str | None) -> None:
+        """Set the Color.
+    
+        Args:
+            obj: The ``Styles`` object.
+            color: The color to set. Pass a ``Color`` instance directly,
+                or pass a ``str`` which will be parsed into a color (e.g. ``"red""``, ``"rgb(20, 50, 80)"``,
+                ``"#f4e32d"``).
+    
+        Raises:
+            ColorParseError: When the color string is invalid.
+        """
+        _rich_traceback_omit = True
+        if color is None:
+            if obj.clear_rule(self.name):
+                obj.refresh(children=True)
+        elif isinstance(color, Color):
+            if obj.set_rule(self.name, color):
+                obj.refresh(children=True)
+        elif isinstance(color, str):
+            alpha = 1.0
+            parsed_color = Color(255, 255, 255)
+            for token in color.split():
+                if token.endswith("%"):
+                    try:
+                        alpha = percentage_string_to_float(token)
+                    except ValueError:
+                        raise StyleValueError(f"invalid percentage value '{token}'")
+                    continue
+                try:
+                    parsed_color = Color.parse(token)
+                except ColorParseError as error:
+                    raise StyleValueError(
+                        f"Invalid color value '{token}'",
+                        help_text=color_property_help_text(
+                            self.name, context="inline", error=error, value=token
+                        ),
+                    )
+            parsed_color = parsed_color.multiply_alpha(alpha)
+    
+            if obj.set_rule(self.name, parsed_color):
+                obj.refresh(children=True)
+        else:
+>           raise StyleValueError(f"Invalid color value {color}")
+E           textual.css.errors.StyleValueError: Invalid color value Color(13, 17, number=23, triplet=0.6)
+
+..\..\..\anaconda3\Lib\site-packages\textual\css\_style_properties.py:1027: StyleValueError
+---------------------------- Captured stderr call -----------------------------
+\u256d\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500 Traceback (most recent call last) \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\n\u2502 C:\\Users\\jjgh8\\Github\\taskboard-wt\\capture-proto\\taskboard\\app.py:2134 in    \n\u2502 on_mount                                                                     \n\u2502                                                                              \n\u2502   2131 \u2502   \u2502   \u2502   yield Static(id="rv-body")                                \n\u2502   2132 \u2502                                                                     \n\u2502   2133 \u2502   def on_mount(self) -> None:                                       \n\u2502 \u2771 2134 \u2502   \u2502   self.styles.background = Color(13, 17, 23, 0.6)   # P-V-9     \n\u2502   2135 \u2502   \u2502   self.sel = 0                                                  \n\u2502   2136 \u2502   \u2502   self.on = [self.view.chosen(t) is not None for t in self.text \n\u2502   2137 \u2502   \u2502   self._paint()                                                 \n\u2502                                                                              \n\u2502 \u256d\u2500\u2500\u2500\u2500\u2500\u2500 locals \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u256e                                                      \n\u2502 \u2502 self = ReviewList() \u2502                                                      \n\u2502 \u2570\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u256f                                                      \n\u2570\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\nStyleValueError: Invalid color value Color(13, 17, number=23, triplet=0.6)
+_________ test_TC_4572_esc_closes_the_review_list_and_changes_nothing _________
+
+home = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-31730/test_TC_4572_esc_closes_the_re0/.taskboard')
+
+    async def test_TC_4572_esc_closes_the_review_list_and_changes_nothing(home):
+        """TC-4572 (LLR-4406.12): `esc` \u2192 the capture view on top; boards, histories and
+        inbox.json bytes unchanged (NC `esc` closes the capture view too)."""
+        p = _rv_setup(home)
+        app = fx.open_f_app()
+        async with app.run_test(size=fx.W118) as pilot:
+            await _rv_start(pilot, app)
+            before = fx.shas(p) + [fx.sha(p["store"])]
+            await _rv_open(pilot, app)
+            await fx.press(pilot, "escape")
+            await pilot.pause(0.2)
+>           assert fx.on_capture(app), fx.screen_names(app)
+E           AssertionError: ['Screen', 'CaptureView', 'ReviewList']
+E           assert False
+E            +  where False = <function on_capture at 0x000001F8B7863240>(TaskboardApp(title='taskboard', classes={'-dark-mode'}, pseudo_classes={'dark', 'focus'}))
+E            +    where <function on_capture at 0x000001F8B7863240> = fx.on_capture
+
+tests\test_capture_view.py:2498: AssertionError
+
+During handling of the above exception, another exception occurred:
+
+home = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-31730/test_TC_4572_esc_closes_the_re0/.taskboard')
+
+    async def test_TC_4572_esc_closes_the_review_list_and_changes_nothing(home):
+        """TC-4572 (LLR-4406.12): `esc` \u2192 the capture view on top; boards, histories and
+        inbox.json bytes unchanged (NC `esc` closes the capture view too)."""
+        p = _rv_setup(home)
+        app = fx.open_f_app()
+>       async with app.run_test(size=fx.W118) as pilot:
+
+tests\test_capture_view.py:2492: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+..\..\..\anaconda3\Lib\contextlib.py:231: in __aexit__
+    await self.gen.athrow(value)
+..\..\..\anaconda3\Lib\site-packages\textual\app.py:2218: in run_test
+    raise self._exception
+..\..\..\anaconda3\Lib\site-packages\textual\message_pump.py:604: in _pre_process
+    await self._dispatch_message(events.Mount())
+..\..\..\anaconda3\Lib\site-packages\textual\message_pump.py:727: in _dispatch_message
+    await self.on_event(message)
+..\..\..\anaconda3\Lib\site-packages\textual\message_pump.py:808: in on_event
+    await self._on_message(event)
+..\..\..\anaconda3\Lib\site-packages\textual\message_pump.py:829: in _on_message
+    await invoke(method, message)
+..\..\..\anaconda3\Lib\site-packages\textual\_callback.py:96: in invoke
+    return await _invoke(callback, *params)
+..\..\..\anaconda3\Lib\site-packages\textual\_callback.py:56: in _invoke
+    result = callback(*params[:parameter_count])
+taskboard\app.py:2134: in on_mount
+    self.styles.background = Color(13, 17, 23, 0.6)   # P-V-9
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <textual.css._style_properties.ColorProperty object at 0x000001F8B72295E0>
+obj = RenderStyles(ReviewList(), layout=<vertical>, auto_color=False, color=Color(230, 237, 243), background=Color(13, 17, 2...to_link_color_hover=True, link_background_hover=Color(1, 120, 212), link_style_hover=Style(bold=True, underline=False))
+color = Color(13, 17, number=23, triplet=0.6)
+
+    def __set__(self, obj: StylesBase, color: Color | str | None) -> None:
+        """Set the Color.
+    
+        Args:
+            obj: The ``Styles`` object.
+            color: The color to set. Pass a ``Color`` instance directly,
+                or pass a ``str`` which will be parsed into a color (e.g. ``"red""``, ``"rgb(20, 50, 80)"``,
+                ``"#f4e32d"``).
+    
+        Raises:
+            ColorParseError: When the color string is invalid.
+        """
+        _rich_traceback_omit = True
+        if color is None:
+            if obj.clear_rule(self.name):
+                obj.refresh(children=True)
+        elif isinstance(color, Color):
+            if obj.set_rule(self.name, color):
+                obj.refresh(children=True)
+        elif isinstance(color, str):
+            alpha = 1.0
+            parsed_color = Color(255, 255, 255)
+            for token in color.split():
+                if token.endswith("%"):
+                    try:
+                        alpha = percentage_string_to_float(token)
+                    except ValueError:
+                        raise StyleValueError(f"invalid percentage value '{token}'")
+                    continue
+                try:
+                    parsed_color = Color.parse(token)
+                except ColorParseError as error:
+                    raise StyleValueError(
+                        f"Invalid color value '{token}'",
+                        help_text=color_property_help_text(
+                            self.name, context="inline", error=error, value=token
+                        ),
+                    )
+            parsed_color = parsed_color.multiply_alpha(alpha)
+    
+            if obj.set_rule(self.name, parsed_color):
+                obj.refresh(children=True)
+        else:
+>           raise StyleValueError(f"Invalid color value {color}")
+E           textual.css.errors.StyleValueError: Invalid color value Color(13, 17, number=23, triplet=0.6)
+
+..\..\..\anaconda3\Lib\site-packages\textual\css\_style_properties.py:1027: StyleValueError
+---------------------------- Captured stderr call -----------------------------
+\u256d\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500 Traceback (most recent call last) \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\n\u2502 C:\\Users\\jjgh8\\Github\\taskboard-wt\\capture-proto\\taskboard\\app.py:2134 in    \n\u2502 on_mount                                                                     \n\u2502                                                                              \n\u2502   2131 \u2502   \u2502   \u2502   yield Static(id="rv-body")                                \n\u2502   2132 \u2502                                                                     \n\u2502   2133 \u2502   def on_mount(self) -> None:                                       \n\u2502 \u2771 2134 \u2502   \u2502   self.styles.background = Color(13, 17, 23, 0.6)   # P-V-9     \n\u2502   2135 \u2502   \u2502   self.sel = 0                                                  \n\u2502   2136 \u2502   \u2502   self.on = [self.view.chosen(t) is not None for t in self.text \n\u2502   2137 \u2502   \u2502   self._paint()                                                 \n\u2502                                                                              \n\u2502 \u256d\u2500\u2500\u2500\u2500\u2500\u2500 locals \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u256e                                                      \n\u2502 \u2502 self = ReviewList() \u2502                                                      \n\u2502 \u2570\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u256f                                                      \n\u2570\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\nStyleValueError: Invalid color value Color(13, 17, number=23, triplet=0.6)
+______________ test_TC_4573_the_key_row_counts_the_checked_rows _______________
+
+home = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-31730/test_TC_4573_the_key_row_count0/.taskboard')
+
+    async def test_TC_4573_the_key_row_counts_the_checked_rows(home):
+        """TC-4573 (LLR-4406.13): the key row reads `d dump 3 checked`, then `d dump 2 checked`
+        after one `space` (NC fixed `dump checked`); at 80x24 all 6 key glyphs are present."""
+        _rv_setup(home)
+        app = fx.open_f_app()
+        async with app.run_test(size=fx.W118) as pilot:
+            await _rv_start(pilot, app)
+            await _rv_open(pilot, app)
+>           assert _rv_key_row(app) == RV_KEYS3
+
+tests\test_capture_view.py:2510: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+app = TaskboardApp(title='taskboard', classes={'-dark-mode'}, pseudo_classes={'dark', 'focus'})
+
+    def _rv_key_row(app) -> str:
+        lines = [x for x in _rv_body(app) if x.strip()]
+>       return lines[-1]
+E       IndexError: list index out of range
+
+tests\test_capture_view.py:2271: IndexError
+
+During handling of the above exception, another exception occurred:
+
+home = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-31730/test_TC_4573_the_key_row_count0/.taskboard')
+
+    async def test_TC_4573_the_key_row_counts_the_checked_rows(home):
+        """TC-4573 (LLR-4406.13): the key row reads `d dump 3 checked`, then `d dump 2 checked`
+        after one `space` (NC fixed `dump checked`); at 80x24 all 6 key glyphs are present."""
+        _rv_setup(home)
+        app = fx.open_f_app()
+>       async with app.run_test(size=fx.W118) as pilot:
+
+tests\test_capture_view.py:2507: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+..\..\..\anaconda3\Lib\contextlib.py:231: in __aexit__
+    await self.gen.athrow(value)
+..\..\..\anaconda3\Lib\site-packages\textual\app.py:2218: in run_test
+    raise self._exception
+..\..\..\anaconda3\Lib\site-packages\textual\message_pump.py:604: in _pre_process
+    await self._dispatch_message(events.Mount())
+..\..\..\anaconda3\Lib\site-packages\textual\message_pump.py:727: in _dispatch_message
+    await self.on_event(message)
+..\..\..\anaconda3\Lib\site-packages\textual\message_pump.py:808: in on_event
+    await self._on_message(event)
+..\..\..\anaconda3\Lib\site-packages\textual\message_pump.py:829: in _on_message
+    await invoke(method, message)
+..\..\..\anaconda3\Lib\site-packages\textual\_callback.py:96: in invoke
+    return await _invoke(callback, *params)
+..\..\..\anaconda3\Lib\site-packages\textual\_callback.py:56: in _invoke
+    result = callback(*params[:parameter_count])
+taskboard\app.py:2134: in on_mount
+    self.styles.background = Color(13, 17, 23, 0.6)   # P-V-9
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <textual.css._style_properties.ColorProperty object at 0x000001F8B72295E0>
+obj = RenderStyles(ReviewList(), layout=<vertical>, auto_color=False, color=Color(230, 237, 243), background=Color(13, 17, 2...to_link_color_hover=True, link_background_hover=Color(1, 120, 212), link_style_hover=Style(bold=True, underline=False))
+color = Color(13, 17, number=23, triplet=0.6)
+
+    def __set__(self, obj: StylesBase, color: Color | str | None) -> None:
+        """Set the Color.
+    
+        Args:
+            obj: The ``Styles`` object.
+            color: The color to set. Pass a ``Color`` instance directly,
+                or pass a ``str`` which will be parsed into a color (e.g. ``"red""``, ``"rgb(20, 50, 80)"``,
+                ``"#f4e32d"``).
+    
+        Raises:
+            ColorParseError: When the color string is invalid.
+        """
+        _rich_traceback_omit = True
+        if color is None:
+            if obj.clear_rule(self.name):
+                obj.refresh(children=True)
+        elif isinstance(color, Color):
+            if obj.set_rule(self.name, color):
+                obj.refresh(children=True)
+        elif isinstance(color, str):
+            alpha = 1.0
+            parsed_color = Color(255, 255, 255)
+            for token in color.split():
+                if token.endswith("%"):
+                    try:
+                        alpha = percentage_string_to_float(token)
+                    except ValueError:
+                        raise StyleValueError(f"invalid percentage value '{token}'")
+                    continue
+                try:
+                    parsed_color = Color.parse(token)
+                except ColorParseError as error:
+                    raise StyleValueError(
+                        f"Invalid color value '{token}'",
+                        help_text=color_property_help_text(
+                            self.name, context="inline", error=error, value=token
+                        ),
+                    )
+            parsed_color = parsed_color.multiply_alpha(alpha)
+    
+            if obj.set_rule(self.name, parsed_color):
+                obj.refresh(children=True)
+        else:
+>           raise StyleValueError(f"Invalid color value {color}")
+E           textual.css.errors.StyleValueError: Invalid color value Color(13, 17, number=23, triplet=0.6)
+
+..\..\..\anaconda3\Lib\site-packages\textual\css\_style_properties.py:1027: StyleValueError
+---------------------------- Captured stderr call -----------------------------
+\u256d\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500 Traceback (most recent call last) \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\n\u2502 C:\\Users\\jjgh8\\Github\\taskboard-wt\\capture-proto\\taskboard\\app.py:2134 in    \n\u2502 on_mount                                                                     \n\u2502                                                                              \n\u2502   2131 \u2502   \u2502   \u2502   yield Static(id="rv-body")                                \n\u2502   2132 \u2502                                                                     \n\u2502   2133 \u2502   def on_mount(self) -> None:                                       \n\u2502 \u2771 2134 \u2502   \u2502   self.styles.background = Color(13, 17, 23, 0.6)   # P-V-9     \n\u2502   2135 \u2502   \u2502   self.sel = 0                                                  \n\u2502   2136 \u2502   \u2502   self.on = [self.view.chosen(t) is not None for t in self.text \n\u2502   2137 \u2502   \u2502   self._paint()                                                 \n\u2502                                                                              \n\u2502 \u256d\u2500\u2500\u2500\u2500\u2500\u2500 locals \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u256e                                                      \n\u2502 \u2502 self = ReviewList() \u2502                                                      \n\u2502 \u2570\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u256f                                                      \n\u2570\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\nStyleValueError: Invalid color value Color(13, 17, number=23, triplet=0.6)
+_______ test_TC_4575_typed_keys_in_the_review_list_never_reach_the_pad ________
+
+home = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-31730/test_TC_4575_typed_keys_in_the0/.taskboard')
+
+    async def test_TC_4575_typed_keys_in_the_review_list_never_reach_the_pad(home):
+        """TC-4575 (LLR-4406.15): `x` and `a` typed in the review list \u2192 the pad text unchanged
+        and Client A's task count unchanged (`a` is add-task on the board) (NC not modal)."""
+        p = _rv_setup(home)
+        app = fx.open_f_app()
+>       async with app.run_test(size=fx.W118) as pilot:
+
+tests\test_capture_view.py:2543: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+..\..\..\anaconda3\Lib\contextlib.py:217: in __aexit__
+    await anext(self.gen)
+..\..\..\anaconda3\Lib\site-packages\textual\app.py:2218: in run_test
+    raise self._exception
+..\..\..\anaconda3\Lib\site-packages\textual\message_pump.py:604: in _pre_process
+    await self._dispatch_message(events.Mount())
+..\..\..\anaconda3\Lib\site-packages\textual\message_pump.py:727: in _dispatch_message
+    await self.on_event(message)
+..\..\..\anaconda3\Lib\site-packages\textual\message_pump.py:808: in on_event
+    await self._on_message(event)
+..\..\..\anaconda3\Lib\site-packages\textual\message_pump.py:829: in _on_message
+    await invoke(method, message)
+..\..\..\anaconda3\Lib\site-packages\textual\_callback.py:96: in invoke
+    return await _invoke(callback, *params)
+..\..\..\anaconda3\Lib\site-packages\textual\_callback.py:56: in _invoke
+    result = callback(*params[:parameter_count])
+taskboard\app.py:2134: in on_mount
+    self.styles.background = Color(13, 17, 23, 0.6)   # P-V-9
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <textual.css._style_properties.ColorProperty object at 0x000001F8B72295E0>
+obj = RenderStyles(ReviewList(), layout=<vertical>, auto_color=False, color=Color(230, 237, 243), background=Color(13, 17, 2...to_link_color_hover=True, link_background_hover=Color(1, 120, 212), link_style_hover=Style(bold=True, underline=False))
+color = Color(13, 17, number=23, triplet=0.6)
+
+    def __set__(self, obj: StylesBase, color: Color | str | None) -> None:
+        """Set the Color.
+    
+        Args:
+            obj: The ``Styles`` object.
+            color: The color to set. Pass a ``Color`` instance directly,
+                or pass a ``str`` which will be parsed into a color (e.g. ``"red""``, ``"rgb(20, 50, 80)"``,
+                ``"#f4e32d"``).
+    
+        Raises:
+            ColorParseError: When the color string is invalid.
+        """
+        _rich_traceback_omit = True
+        if color is None:
+            if obj.clear_rule(self.name):
+                obj.refresh(children=True)
+        elif isinstance(color, Color):
+            if obj.set_rule(self.name, color):
+                obj.refresh(children=True)
+        elif isinstance(color, str):
+            alpha = 1.0
+            parsed_color = Color(255, 255, 255)
+            for token in color.split():
+                if token.endswith("%"):
+                    try:
+                        alpha = percentage_string_to_float(token)
+                    except ValueError:
+                        raise StyleValueError(f"invalid percentage value '{token}'")
+                    continue
+                try:
+                    parsed_color = Color.parse(token)
+                except ColorParseError as error:
+                    raise StyleValueError(
+                        f"Invalid color value '{token}'",
+                        help_text=color_property_help_text(
+                            self.name, context="inline", error=error, value=token
+                        ),
+                    )
+            parsed_color = parsed_color.multiply_alpha(alpha)
+    
+            if obj.set_rule(self.name, parsed_color):
+                obj.refresh(children=True)
+        else:
+>           raise StyleValueError(f"Invalid color value {color}")
+E           textual.css.errors.StyleValueError: Invalid color value Color(13, 17, number=23, triplet=0.6)
+
+..\..\..\anaconda3\Lib\site-packages\textual\css\_style_properties.py:1027: StyleValueError
+---------------------------- Captured stderr call -----------------------------
+\u256d\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500 Traceback (most recent call last) \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\n\u2502 C:\\Users\\jjgh8\\Github\\taskboard-wt\\capture-proto\\taskboard\\app.py:2134 in    \n\u2502 on_mount                                                                     \n\u2502                                                                              \n\u2502   2131 \u2502   \u2502   \u2502   yield Static(id="rv-body")                                \n\u2502   2132 \u2502                                                                     \n\u2502   2133 \u2502   def on_mount(self) -> None:                                       \n\u2502 \u2771 2134 \u2502   \u2502   self.styles.background = Color(13, 17, 23, 0.6)   # P-V-9     \n\u2502   2135 \u2502   \u2502   self.sel = 0                                                  \n\u2502   2136 \u2502   \u2502   self.on = [self.view.chosen(t) is not None for t in self.text \n\u2502   2137 \u2502   \u2502   self._paint()                                                 \n\u2502                                                                              \n\u2502 \u256d\u2500\u2500\u2500\u2500\u2500\u2500 locals \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u256e                                                      \n\u2502 \u2502 self = ReviewList() \u2502                                                      \n\u2502 \u2570\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u256f                                                      \n\u2570\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\nStyleValueError: Invalid color value Color(13, 17, number=23, triplet=0.6)
+___________ test_TC_4576_the_batch_ends_with_dumped_k_of_n_checked ____________
+
+home = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-31730/test_TC_4576_the_batch_ends_wi0/.taskboard')
+
+    async def test_TC_4576_the_batch_ends_with_dumped_k_of_n_checked(home):
+        """TC-4576 (LLR-4406.16): all 3 checked rows succeed \u2192 exactly one notice `Dumped 3 of 3
+        checked`, markup False (NC no notice)."""
+        _rv_setup(home)
+        app = fx.open_f_app()
+        async with app.run_test(size=fx.W118) as pilot:
+            await _rv_start(pilot, app)
+            await _rv_open(pilot, app)
+            await fx.press(pilot, "d")
+            await pilot.pause(0.2)
+            got = fx.notified(app, "Dumped 3 of 3 checked")
+>           assert len(got) == 1 and got[0].markup is False
+E           assert (0 == 1)
+E            +  where 0 = len([])
+
+tests\test_capture_view.py:2566: AssertionError
+
+During handling of the above exception, another exception occurred:
+
+home = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-31730/test_TC_4576_the_batch_ends_wi0/.taskboard')
+
+    async def test_TC_4576_the_batch_ends_with_dumped_k_of_n_checked(home):
+        """TC-4576 (LLR-4406.16): all 3 checked rows succeed \u2192 exactly one notice `Dumped 3 of 3
+        checked`, markup False (NC no notice)."""
+        _rv_setup(home)
+        app = fx.open_f_app()
+>       async with app.run_test(size=fx.W118) as pilot:
+
+tests\test_capture_view.py:2560: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+..\..\..\anaconda3\Lib\contextlib.py:231: in __aexit__
+    await self.gen.athrow(value)
+..\..\..\anaconda3\Lib\site-packages\textual\app.py:2218: in run_test
+    raise self._exception
+..\..\..\anaconda3\Lib\site-packages\textual\message_pump.py:604: in _pre_process
+    await self._dispatch_message(events.Mount())
+..\..\..\anaconda3\Lib\site-packages\textual\message_pump.py:727: in _dispatch_message
+    await self.on_event(message)
+..\..\..\anaconda3\Lib\site-packages\textual\message_pump.py:808: in on_event
+    await self._on_message(event)
+..\..\..\anaconda3\Lib\site-packages\textual\message_pump.py:829: in _on_message
+    await invoke(method, message)
+..\..\..\anaconda3\Lib\site-packages\textual\_callback.py:96: in invoke
+    return await _invoke(callback, *params)
+..\..\..\anaconda3\Lib\site-packages\textual\_callback.py:56: in _invoke
+    result = callback(*params[:parameter_count])
+taskboard\app.py:2134: in on_mount
+    self.styles.background = Color(13, 17, 23, 0.6)   # P-V-9
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <textual.css._style_properties.ColorProperty object at 0x000001F8B72295E0>
+obj = RenderStyles(ReviewList(), layout=<vertical>, auto_color=False, color=Color(230, 237, 243), background=Color(13, 17, 2...to_link_color_hover=True, link_background_hover=Color(1, 120, 212), link_style_hover=Style(bold=True, underline=False))
+color = Color(13, 17, number=23, triplet=0.6)
+
+    def __set__(self, obj: StylesBase, color: Color | str | None) -> None:
+        """Set the Color.
+    
+        Args:
+            obj: The ``Styles`` object.
+            color: The color to set. Pass a ``Color`` instance directly,
+                or pass a ``str`` which will be parsed into a color (e.g. ``"red""``, ``"rgb(20, 50, 80)"``,
+                ``"#f4e32d"``).
+    
+        Raises:
+            ColorParseError: When the color string is invalid.
+        """
+        _rich_traceback_omit = True
+        if color is None:
+            if obj.clear_rule(self.name):
+                obj.refresh(children=True)
+        elif isinstance(color, Color):
+            if obj.set_rule(self.name, color):
+                obj.refresh(children=True)
+        elif isinstance(color, str):
+            alpha = 1.0
+            parsed_color = Color(255, 255, 255)
+            for token in color.split():
+                if token.endswith("%"):
+                    try:
+                        alpha = percentage_string_to_float(token)
+                    except ValueError:
+                        raise StyleValueError(f"invalid percentage value '{token}'")
+                    continue
+                try:
+                    parsed_color = Color.parse(token)
+                except ColorParseError as error:
+                    raise StyleValueError(
+                        f"Invalid color value '{token}'",
+                        help_text=color_property_help_text(
+                            self.name, context="inline", error=error, value=token
+                        ),
+                    )
+            parsed_color = parsed_color.multiply_alpha(alpha)
+    
+            if obj.set_rule(self.name, parsed_color):
+                obj.refresh(children=True)
+        else:
+>           raise StyleValueError(f"Invalid color value {color}")
+E           textual.css.errors.StyleValueError: Invalid color value Color(13, 17, number=23, triplet=0.6)
+
+..\..\..\anaconda3\Lib\site-packages\textual\css\_style_properties.py:1027: StyleValueError
+---------------------------- Captured stderr call -----------------------------
+\u256d\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500 Traceback (most recent call last) \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\n\u2502 C:\\Users\\jjgh8\\Github\\taskboard-wt\\capture-proto\\taskboard\\app.py:2134 in    \n\u2502 on_mount                                                                     \n\u2502                                                                              \n\u2502   2131 \u2502   \u2502   \u2502   yield Static(id="rv-body")                                \n\u2502   2132 \u2502                                                                     \n\u2502   2133 \u2502   def on_mount(self) -> None:                                       \n\u2502 \u2771 2134 \u2502   \u2502   self.styles.background = Color(13, 17, 23, 0.6)   # P-V-9     \n\u2502   2135 \u2502   \u2502   self.sel = 0                                                  \n\u2502   2136 \u2502   \u2502   self.on = [self.view.chosen(t) is not None for t in self.text \n\u2502   2137 \u2502   \u2502   self._paint()                                                 \n\u2502                                                                              \n\u2502 \u256d\u2500\u2500\u2500\u2500\u2500\u2500 locals \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u256e                                                      \n\u2502 \u2502 self = ReviewList() \u2502                                                      \n\u2502 \u2570\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u256f                                                      \n\u2570\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\nStyleValueError: Invalid color value Color(13, 17, number=23, triplet=0.6)
+____ test_TC_4577_every_checked_rows_target_is_fixed_before_the_first_dump ____
+
+home = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-31730/test_TC_4577_every_checked_row0/.taskboard')
+
+    async def test_TC_4577_every_checked_rows_target_is_fixed_before_the_first_dump(home):
+        """TC-4577 (LLR-4406.17, ARCH-2): rows `Rubric review`, `Rubric scoring` (`o` once each \u2192
+        Eval harness, then `space`), `Pilot judge rubric` (top Eval harness 0.2889) and `Rubric for
+        the pilot` (top Pilot rollout 0.2232), all checked, `d` \u2192 the first 3 in Eval harness and
+        `Rubric for the pilot` in Pilot rollout, the option its row showed (NC each target
+        re-resolved after the earlier dumps: Eval harness 0.6028)."""
+        p = _rv_setup(home, pad=RUBRIC_PAD, image=False)
+        app = fx.open_f_app()
+        async with app.run_test(size=fx.W118) as pilot:
+            await _rv_start(pilot, app)
+            await _rv_open(pilot, app)
+>           assert _rv_checks(app) == [False, False, True, True]
+E           assert [] == [False, False, True, True]
+E             
+E             Right contains 4 more items, first extra item: False
+E             Use -v to get more diff
+
+tests\test_capture_view.py:2580: AssertionError
+
+During handling of the above exception, another exception occurred:
+
+home = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-31730/test_TC_4577_every_checked_row0/.taskboard')
+
+    async def test_TC_4577_every_checked_rows_target_is_fixed_before_the_first_dump(home):
+        """TC-4577 (LLR-4406.17, ARCH-2): rows `Rubric review`, `Rubric scoring` (`o` once each \u2192
+        Eval harness, then `space`), `Pilot judge rubric` (top Eval harness 0.2889) and `Rubric for
+        the pilot` (top Pilot rollout 0.2232), all checked, `d` \u2192 the first 3 in Eval harness and
+        `Rubric for the pilot` in Pilot rollout, the option its row showed (NC each target
+        re-resolved after the earlier dumps: Eval harness 0.6028)."""
+        p = _rv_setup(home, pad=RUBRIC_PAD, image=False)
+        app = fx.open_f_app()
+>       async with app.run_test(size=fx.W118) as pilot:
+
+tests\test_capture_view.py:2577: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+..\..\..\anaconda3\Lib\contextlib.py:231: in __aexit__
+    await self.gen.athrow(value)
+..\..\..\anaconda3\Lib\site-packages\textual\app.py:2218: in run_test
+    raise self._exception
+..\..\..\anaconda3\Lib\site-packages\textual\message_pump.py:604: in _pre_process
+    await self._dispatch_message(events.Mount())
+..\..\..\anaconda3\Lib\site-packages\textual\message_pump.py:727: in _dispatch_message
+    await self.on_event(message)
+..\..\..\anaconda3\Lib\site-packages\textual\message_pump.py:808: in on_event
+    await self._on_message(event)
+..\..\..\anaconda3\Lib\site-packages\textual\message_pump.py:829: in _on_message
+    await invoke(method, message)
+..\..\..\anaconda3\Lib\site-packages\textual\_callback.py:96: in invoke
+    return await _invoke(callback, *params)
+..\..\..\anaconda3\Lib\site-packages\textual\_callback.py:56: in _invoke
+    result = callback(*params[:parameter_count])
+taskboard\app.py:2134: in on_mount
+    self.styles.background = Color(13, 17, 23, 0.6)   # P-V-9
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <textual.css._style_properties.ColorProperty object at 0x000001F8B72295E0>
+obj = RenderStyles(ReviewList(), layout=<vertical>, auto_color=False, color=Color(230, 237, 243), background=Color(13, 17, 2...to_link_color_hover=True, link_background_hover=Color(1, 120, 212), link_style_hover=Style(bold=True, underline=False))
+color = Color(13, 17, number=23, triplet=0.6)
+
+    def __set__(self, obj: StylesBase, color: Color | str | None) -> None:
+        """Set the Color.
+    
+        Args:
+            obj: The ``Styles`` object.
+            color: The color to set. Pass a ``Color`` instance directly,
+                or pass a ``str`` which will be parsed into a color (e.g. ``"red""``, ``"rgb(20, 50, 80)"``,
+                ``"#f4e32d"``).
+    
+        Raises:
+            ColorParseError: When the color string is invalid.
+        """
+        _rich_traceback_omit = True
+        if color is None:
+            if obj.clear_rule(self.name):
+                obj.refresh(children=True)
+        elif isinstance(color, Color):
+            if obj.set_rule(self.name, color):
+                obj.refresh(children=True)
+        elif isinstance(color, str):
+            alpha = 1.0
+            parsed_color = Color(255, 255, 255)
+            for token in color.split():
+                if token.endswith("%"):
+                    try:
+                        alpha = percentage_string_to_float(token)
+                    except ValueError:
+                        raise StyleValueError(f"invalid percentage value '{token}'")
+                    continue
+                try:
+                    parsed_color = Color.parse(token)
+                except ColorParseError as error:
+                    raise StyleValueError(
+                        f"Invalid color value '{token}'",
+                        help_text=color_property_help_text(
+                            self.name, context="inline", error=error, value=token
+                        ),
+                    )
+            parsed_color = parsed_color.multiply_alpha(alpha)
+    
+            if obj.set_rule(self.name, parsed_color):
+                obj.refresh(children=True)
+        else:
+>           raise StyleValueError(f"Invalid color value {color}")
+E           textual.css.errors.StyleValueError: Invalid color value Color(13, 17, number=23, triplet=0.6)
+
+..\..\..\anaconda3\Lib\site-packages\textual\css\_style_properties.py:1027: StyleValueError
+---------------------------- Captured stderr call -----------------------------
+\u256d\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500 Traceback (most recent call last) \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\n\u2502 C:\\Users\\jjgh8\\Github\\taskboard-wt\\capture-proto\\taskboard\\app.py:2134 in    \n\u2502 on_mount                                                                     \n\u2502                                                                              \n\u2502   2131 \u2502   \u2502   \u2502   yield Static(id="rv-body")                                \n\u2502   2132 \u2502                                                                     \n\u2502   2133 \u2502   def on_mount(self) -> None:                                       \n\u2502 \u2771 2134 \u2502   \u2502   self.styles.background = Color(13, 17, 23, 0.6)   # P-V-9     \n\u2502   2135 \u2502   \u2502   self.sel = 0                                                  \n\u2502   2136 \u2502   \u2502   self.on = [self.view.chosen(t) is not None for t in self.text \n\u2502   2137 \u2502   \u2502   self._paint()                                                 \n\u2502                                                                              \n\u2502 \u256d\u2500\u2500\u2500\u2500\u2500\u2500 locals \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u256e                                                      \n\u2502 \u2502 self = ReviewList() \u2502                                                      \n\u2502 \u2570\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u256f                                                      \n\u2570\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\nStyleValueError: Invalid color value Color(13, 17, number=23, triplet=0.6)
+__ test_TC_4484c_a_review_batch_rebuilds_the_documents_once_after_its_dumps ___
+
+home = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-31730/test_TC_4484c_a_review_batch_r0/.taskboard')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x000001F8B9EC6390>
+
+    async def test_TC_4484c_a_review_batch_rebuilds_the_documents_once_after_its_dumps(
+            home, monkeypatch):
+        """TC-4484c (LLR-4403.24, ARCH-2/ARCH-6): a batch of 3 checked rows \u2192 exactly 1 `corpus`
+        call, after the batch's last dump and 0 between its dumps (spies on taskboard.app.corpus
+        and taskboard.app.dump_note) (NC a rebuild per dump: 3 calls)."""
+        real_corpus = fx.need(app_module, "corpus")
+        real_dump = fx.need(app_module, "dump_note")
+        events_seen: list[str] = []
+    
+        def corpus_spy(*a, **k):
+            events_seen.append("corpus")
+            return real_corpus(*a, **k)
+    
+        def dump_spy(*a, **k):
+            events_seen.append("dump")
+            return real_dump(*a, **k)
+        monkeypatch.setattr(app_module, "corpus", corpus_spy, raising=False)
+        monkeypatch.setattr(app_module, "dump_note", dump_spy, raising=False)
+        _rv_setup(home, pad="\n____\n".join([fx.N1, fx.N2, fx.N4]))
+        app = fx.open_f_app()
+        async with app.run_test(size=fx.W118) as pilot:
+            await _rv_start(pilot, app)
+            await _rv_open(pilot, app)
+>           assert _rv_checks(app) == [True, True, True]
+E           assert [] == [True, True, True]
+E             
+E             Right contains 3 more items, first extra item: True
+E             Use -v to get more diff
+
+tests\test_capture_view.py:2622: AssertionError
+
+During handling of the above exception, another exception occurred:
+
+home = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-31730/test_TC_4484c_a_review_batch_r0/.taskboard')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x000001F8B9EC6390>
+
+    async def test_TC_4484c_a_review_batch_rebuilds_the_documents_once_after_its_dumps(
+            home, monkeypatch):
+        """TC-4484c (LLR-4403.24, ARCH-2/ARCH-6): a batch of 3 checked rows \u2192 exactly 1 `corpus`
+        call, after the batch's last dump and 0 between its dumps (spies on taskboard.app.corpus
+        and taskboard.app.dump_note) (NC a rebuild per dump: 3 calls)."""
+        real_corpus = fx.need(app_module, "corpus")
+        real_dump = fx.need(app_module, "dump_note")
+        events_seen: list[str] = []
+    
+        def corpus_spy(*a, **k):
+            events_seen.append("corpus")
+            return real_corpus(*a, **k)
+    
+        def dump_spy(*a, **k):
+            events_seen.append("dump")
+            return real_dump(*a, **k)
+        monkeypatch.setattr(app_module, "corpus", corpus_spy, raising=False)
+        monkeypatch.setattr(app_module, "dump_note", dump_spy, raising=False)
+        _rv_setup(home, pad="\n____\n".join([fx.N1, fx.N2, fx.N4]))
+        app = fx.open_f_app()
+>       async with app.run_test(size=fx.W118) as pilot:
+
+tests\test_capture_view.py:2619: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+..\..\..\anaconda3\Lib\contextlib.py:231: in __aexit__
+    await self.gen.athrow(value)
+..\..\..\anaconda3\Lib\site-packages\textual\app.py:2218: in run_test
+    raise self._exception
+..\..\..\anaconda3\Lib\site-packages\textual\message_pump.py:604: in _pre_process
+    await self._dispatch_message(events.Mount())
+..\..\..\anaconda3\Lib\site-packages\textual\message_pump.py:727: in _dispatch_message
+    await self.on_event(message)
+..\..\..\anaconda3\Lib\site-packages\textual\message_pump.py:808: in on_event
+    await self._on_message(event)
+..\..\..\anaconda3\Lib\site-packages\textual\message_pump.py:829: in _on_message
+    await invoke(method, message)
+..\..\..\anaconda3\Lib\site-packages\textual\_callback.py:96: in invoke
+    return await _invoke(callback, *params)
+..\..\..\anaconda3\Lib\site-packages\textual\_callback.py:56: in _invoke
+    result = callback(*params[:parameter_count])
+taskboard\app.py:2134: in on_mount
+    self.styles.background = Color(13, 17, 23, 0.6)   # P-V-9
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <textual.css._style_properties.ColorProperty object at 0x000001F8B72295E0>
+obj = RenderStyles(ReviewList(), layout=<vertical>, auto_color=False, color=Color(230, 237, 243), background=Color(13, 17, 2...to_link_color_hover=True, link_background_hover=Color(1, 120, 212), link_style_hover=Style(bold=True, underline=False))
+color = Color(13, 17, number=23, triplet=0.6)
+
+    def __set__(self, obj: StylesBase, color: Color | str | None) -> None:
+        """Set the Color.
+    
+        Args:
+            obj: The ``Styles`` object.
+            color: The color to set. Pass a ``Color`` instance directly,
+                or pass a ``str`` which will be parsed into a color (e.g. ``"red""``, ``"rgb(20, 50, 80)"``,
+                ``"#f4e32d"``).
+    
+        Raises:
+            ColorParseError: When the color string is invalid.
+        """
+        _rich_traceback_omit = True
+        if color is None:
+            if obj.clear_rule(self.name):
+                obj.refresh(children=True)
+        elif isinstance(color, Color):
+            if obj.set_rule(self.name, color):
+                obj.refresh(children=True)
+        elif isinstance(color, str):
+            alpha = 1.0
+            parsed_color = Color(255, 255, 255)
+            for token in color.split():
+                if token.endswith("%"):
+                    try:
+                        alpha = percentage_string_to_float(token)
+                    except ValueError:
+                        raise StyleValueError(f"invalid percentage value '{token}'")
+                    continue
+                try:
+                    parsed_color = Color.parse(token)
+                except ColorParseError as error:
+                    raise StyleValueError(
+                        f"Invalid color value '{token}'",
+                        help_text=color_property_help_text(
+                            self.name, context="inline", error=error, value=token
+                        ),
+                    )
+            parsed_color = parsed_color.multiply_alpha(alpha)
+    
+            if obj.set_rule(self.name, parsed_color):
+                obj.refresh(children=True)
+        else:
+>           raise StyleValueError(f"Invalid color value {color}")
+E           textual.css.errors.StyleValueError: Invalid color value Color(13, 17, number=23, triplet=0.6)
+
+..\..\..\anaconda3\Lib\site-packages\textual\css\_style_properties.py:1027: StyleValueError
+---------------------------- Captured stderr call -----------------------------
+\u256d\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500 Traceback (most recent call last) \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\n\u2502 C:\\Users\\jjgh8\\Github\\taskboard-wt\\capture-proto\\taskboard\\app.py:2134 in    \n\u2502 on_mount                                                                     \n\u2502                                                                              \n\u2502   2131 \u2502   \u2502   \u2502   yield Static(id="rv-body")                                \n\u2502   2132 \u2502                                                                     \n\u2502   2133 \u2502   def on_mount(self) -> None:                                       \n\u2502 \u2771 2134 \u2502   \u2502   self.styles.background = Color(13, 17, 23, 0.6)   # P-V-9     \n\u2502   2135 \u2502   \u2502   self.sel = 0                                                  \n\u2502   2136 \u2502   \u2502   self.on = [self.view.chosen(t) is not None for t in self.text \n\u2502   2137 \u2502   \u2502   self._paint()                                                 \n\u2502                                                                              \n\u2502 \u256d\u2500\u2500\u2500\u2500\u2500\u2500 locals \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u256e                                                      \n\u2502 \u2502 self = ReviewList() \u2502                                                      \n\u2502 \u2570\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u256f                                                      \n\u2570\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\nStyleValueError: Invalid color value Color(13, 17, number=23, triplet=0.6)
+_______ test_AT_4405_review_four_notes_refuse_one_switch_one_dump_three _______
+
+home = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-31730/test_AT_4405_review_four_notes0/.taskboard')
+
+    async def test_AT_4405_review_four_notes_refuse_one_switch_one_dump_three(home):
+        """AT-4405 (K-1 variant C, HLR-4406): fixture F, pad N1..N4: `n`, `alt+a` \u2192 4 rows, rows 1,
+        2, 4 `[x]`; `\u2193 \u2193 space` \u2192 row 3 stays `[ ]` with `Needs a name: alt+n in the pad.`; `\u2191 \u2191 o`
+        \u2192 row 1 `Pilot rollout \xb7 Client A \u25b0\u25b0\u25b1`; `d` \u2192 Client A holds N1's task (Pilot rollout) and
+        N4's (Pilot rollout), Course holds N2's with its image moved; `Dumped 3 of 3 checked`; the
+        capture view on top; the pad is N3."""
+        p = _rv_setup(home)
+        app = fx.open_f_app()
+        async with app.run_test(size=fx.W118) as pilot:
+            await _rv_start(pilot, app)
+            await _rv_open(pilot, app)
+>           assert len(_rv_rows(app)) == 4
+E           AssertionError: assert 0 == 4
+E            +  where 0 = len([])
+E            +    where [] = _rv_rows(TaskboardApp(title='taskboard', classes={'-dark-mode'}, pseudo_classes={'dark', 'focus'}))
+
+tests\test_capture_view.py:2642: AssertionError
+
+During handling of the above exception, another exception occurred:
+
+home = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-31730/test_AT_4405_review_four_notes0/.taskboard')
+
+    async def test_AT_4405_review_four_notes_refuse_one_switch_one_dump_three(home):
+        """AT-4405 (K-1 variant C, HLR-4406): fixture F, pad N1..N4: `n`, `alt+a` \u2192 4 rows, rows 1,
+        2, 4 `[x]`; `\u2193 \u2193 space` \u2192 row 3 stays `[ ]` with `Needs a name: alt+n in the pad.`; `\u2191 \u2191 o`
+        \u2192 row 1 `Pilot rollout \xb7 Client A \u25b0\u25b0\u25b1`; `d` \u2192 Client A holds N1's task (Pilot rollout) and
+        N4's (Pilot rollout), Course holds N2's with its image moved; `Dumped 3 of 3 checked`; the
+        capture view on top; the pad is N3."""
+        p = _rv_setup(home)
+        app = fx.open_f_app()
+>       async with app.run_test(size=fx.W118) as pilot:
+
+tests\test_capture_view.py:2639: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+..\..\..\anaconda3\Lib\contextlib.py:231: in __aexit__
+    await self.gen.athrow(value)
+..\..\..\anaconda3\Lib\site-packages\textual\app.py:2218: in run_test
+    raise self._exception
+..\..\..\anaconda3\Lib\site-packages\textual\message_pump.py:604: in _pre_process
+    await self._dispatch_message(events.Mount())
+..\..\..\anaconda3\Lib\site-packages\textual\message_pump.py:727: in _dispatch_message
+    await self.on_event(message)
+..\..\..\anaconda3\Lib\site-packages\textual\message_pump.py:808: in on_event
+    await self._on_message(event)
+..\..\..\anaconda3\Lib\site-packages\textual\message_pump.py:829: in _on_message
+    await invoke(method, message)
+..\..\..\anaconda3\Lib\site-packages\textual\_callback.py:96: in invoke
+    return await _invoke(callback, *params)
+..\..\..\anaconda3\Lib\site-packages\textual\_callback.py:56: in _invoke
+    result = callback(*params[:parameter_count])
+taskboard\app.py:2134: in on_mount
+    self.styles.background = Color(13, 17, 23, 0.6)   # P-V-9
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <textual.css._style_properties.ColorProperty object at 0x000001F8B72295E0>
+obj = RenderStyles(ReviewList(), layout=<vertical>, auto_color=False, color=Color(230, 237, 243), background=Color(13, 17, 2...to_link_color_hover=True, link_background_hover=Color(1, 120, 212), link_style_hover=Style(bold=True, underline=False))
+color = Color(13, 17, number=23, triplet=0.6)
+
+    def __set__(self, obj: StylesBase, color: Color | str | None) -> None:
+        """Set the Color.
+    
+        Args:
+            obj: The ``Styles`` object.
+            color: The color to set. Pass a ``Color`` instance directly,
+                or pass a ``str`` which will be parsed into a color (e.g. ``"red""``, ``"rgb(20, 50, 80)"``,
+                ``"#f4e32d"``).
+    
+        Raises:
+            ColorParseError: When the color string is invalid.
+        """
+        _rich_traceback_omit = True
+        if color is None:
+            if obj.clear_rule(self.name):
+                obj.refresh(children=True)
+        elif isinstance(color, Color):
+            if obj.set_rule(self.name, color):
+                obj.refresh(children=True)
+        elif isinstance(color, str):
+            alpha = 1.0
+            parsed_color = Color(255, 255, 255)
+            for token in color.split():
+                if token.endswith("%"):
+                    try:
+                        alpha = percentage_string_to_float(token)
+                    except ValueError:
+                        raise StyleValueError(f"invalid percentage value '{token}'")
+                    continue
+                try:
+                    parsed_color = Color.parse(token)
+                except ColorParseError as error:
+                    raise StyleValueError(
+                        f"Invalid color value '{token}'",
+                        help_text=color_property_help_text(
+                            self.name, context="inline", error=error, value=token
+                        ),
+                    )
+            parsed_color = parsed_color.multiply_alpha(alpha)
+    
+            if obj.set_rule(self.name, parsed_color):
+                obj.refresh(children=True)
+        else:
+>           raise StyleValueError(f"Invalid color value {color}")
+E           textual.css.errors.StyleValueError: Invalid color value Color(13, 17, number=23, triplet=0.6)
+
+..\..\..\anaconda3\Lib\site-packages\textual\css\_style_properties.py:1027: StyleValueError
+---------------------------- Captured stderr call -----------------------------
+\u256d\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500 Traceback (most recent call last) \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\n\u2502 C:\\Users\\jjgh8\\Github\\taskboard-wt\\capture-proto\\taskboard\\app.py:2134 in    \n\u2502 on_mount                                                                     \n\u2502                                                                              \n\u2502   2131 \u2502   \u2502   \u2502   yield Static(id="rv-body")                                \n\u2502   2132 \u2502                                                                     \n\u2502   2133 \u2502   def on_mount(self) -> None:                                       \n\u2502 \u2771 2134 \u2502   \u2502   self.styles.background = Color(13, 17, 23, 0.6)   # P-V-9     \n\u2502   2135 \u2502   \u2502   self.sel = 0                                                  \n\u2502   2136 \u2502   \u2502   self.on = [self.view.chosen(t) is not None for t in self.text \n\u2502   2137 \u2502   \u2502   self._paint()                                                 \n\u2502                                                                              \n\u2502 \u256d\u2500\u2500\u2500\u2500\u2500\u2500 locals \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u256e                                                      \n\u2502 \u2502 self = ReviewList() \u2502                                                      \n\u2502 \u2570\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u256f                                                      \n\u2570\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\nStyleValueError: Invalid color value Color(13, 17, number=23, triplet=0.6)
+________________ test_TC_4321_N_is_one_global_key_of_the_seat _________________
+
+    def test_TC_4321_N_is_one_global_key_of_the_seat():
+        """TC-4321 (LLR-4303.1): exactly one KEYMAP entry `N` \u2192 `added_list`, label `Added
+        list`, `bar=False`, no `views`, not priority (like `A`); the app has the action; the
+        `?` help's global keys read … A N H …; every palette lists it once (NC missing)."""
+        entries = [k for k in keymap.KEYMAP if k.keys == "N"]
+        assert len(entries) == 1, "no KEYMAP entry for N"
+        n = entries[0]
+        assert (n.show, n.action, n.label, n.bar, n.views, n.priority, n.group) == \
+            ("N", "added_list", "Added list", False, None, False, "misc")
+        assert hasattr(TaskboardApp, "action_added_list")
+>       assert [k.show for k in keymap.global_keys("gantt")] == [
+            "o", "i", "p", "P", "f", "c", "R", "A", "N", "H", "@", "#", "I", "S"]
+E       AssertionError: assert ['o', 'i', 'p...'f', 'c', ...] == ['o', 'i', 'p...'f', 'c', ...]
+E         
+E         At index 9 diff: 'n' != 'H'
+E         Left contains one more item: 'S'
+E         Use -v to get more diff
+
+tests\test_added_list.py:880: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_inbox_store.py::test_TC_4582_the_store_is_written_in_one_exact_shape
+FAILED tests/test_inbox_store.py::test_TC_4609_a_dump_an_undo_and_an_attach_write_the_store_at_once
+FAILED tests/test_inbox_store.py::test_TC_4675_a_store_over_the_cap_is_unreadable_after_cap_plus_one_bytes
+FAILED tests/test_suggest.py::test_TC_4488_a_note_is_scored_on_its_title_and_notes_without_image_lines
+FAILED tests/test_capture_view.py::test_TC_4517_the_choice_is_the_options_identity_shared_with_the_review
+FAILED tests/test_capture_view.py::test_TC_4550b_an_edited_task_is_never_undone[edit0]
+FAILED tests/test_capture_view.py::test_TC_4634_markup_in_notes_projects_and_boards_draws_literally
+FAILED tests/test_capture_view.py::test_AT_4404_undo_the_dumps_newest_first
+FAILED tests/test_capture_view.py::test_TC_4561_alt_a_opens_one_row_per_note_of_the_pad_as_it_is_now
+FAILED tests/test_capture_view.py::test_TC_4562_each_row_draws_cursor_box_title_option_and_a_why_line
+FAILED tests/test_capture_view.py::test_TC_4563_rows_open_checked_for_a_project_and_unchecked_for_new_project
+FAILED tests/test_capture_view.py::test_TC_4564_up_and_down_move_the_cursor_clamped_to_the_rows
+FAILED tests/test_capture_view.py::test_TC_4565_space_toggles_a_project_rows_check
+FAILED tests/test_capture_view.py::test_TC_4566_space_on_a_new_project_row_is_refused_with_a_notice
+FAILED tests/test_capture_view.py::test_TC_4567_o_picks_the_next_option_shared_with_the_rail
+FAILED tests/test_capture_view.py::test_TC_4568_d_dumps_every_checked_row_and_only_those
+FAILED tests/test_capture_view.py::test_TC_4569_the_review_list_closes_when_the_batch_ends
+FAILED tests/test_capture_view.py::test_TC_4570_a_failed_row_stays_in_the_pad_and_the_batch_goes_on
+FAILED tests/test_capture_view.py::test_TC_4571_u_undoes_the_newest_dump_and_rebuilds_the_rows
+FAILED tests/test_capture_view.py::test_TC_4572_esc_closes_the_review_list_and_changes_nothing
+FAILED tests/test_capture_view.py::test_TC_4573_the_key_row_counts_the_checked_rows
+FAILED tests/test_capture_view.py::test_TC_4575_typed_keys_in_the_review_list_never_reach_the_pad
+FAILED tests/test_capture_view.py::test_TC_4576_the_batch_ends_with_dumped_k_of_n_checked
+FAILED tests/test_capture_view.py::test_TC_4577_every_checked_rows_target_is_fixed_before_the_first_dump
+FAILED tests/test_capture_view.py::test_TC_4484c_a_review_batch_rebuilds_the_documents_once_after_its_dumps
+FAILED tests/test_capture_view.py::test_AT_4405_review_four_notes_refuse_one_switch_one_dump_three
+FAILED tests/test_added_list.py::test_TC_4321_N_is_one_global_key_of_the_seat
+27 failed, 438 passed in 297.38s (0:04:57)

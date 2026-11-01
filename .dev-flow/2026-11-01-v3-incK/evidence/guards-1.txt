@@ -1,0 +1,13 @@
+# GUARDS-1 (E4 integration), 2026-11-01T13:21:15Z, tree = 626c3f6 + working-tree fixes
+# guard set: the 7 named modules + test files importing taskboard.app that mention check_action/action_quit (test_added_list.py and test_capture_view.py already in GREEN-2)
+$ env -u NO_COLOR C:/Users/jjgh8/anaconda3/python.exe -m pytest -q -p no:cacheprovider tests/test_people_directory.py tests/test_marks_directory.py tests/test_history.py tests/test_task_created.py tests/test_templates_app.py tests/test_link_picker.py tests/test_all_agenda.py tests/test_boards_home.py tests/test_colour_pens.py tests/test_present_views_app.py
+C:\Users\jjgh8\Github\taskboard-wt\capture-proto\taskboard\__init__.py
+C:\Users\jjgh8\anaconda3\Lib\site-packages\pytest_asyncio\plugin.py:207: PytestDeprecationWarning: The configuration option "asyncio_default_fixture_loop_scope" is unset.
+The event loop scope for asynchronous fixtures will default to the fixture caching scope. Future versions of pytest-asyncio will default the loop scope for asynchronous fixtures to function scope. Set the default fixture loop scope explicitly in order to avoid unexpected behavior in the future. Valid fixture loop scopes are: "function", "class", "module", "package", "session"
+
+  warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCOPE_UNSET))
+........................................................................ [ 28%]
+........................................................................ [ 56%]
+........................................................................ [ 84%]
+.......................................                                  [100%]
+255 passed in 109.77s (0:01:49)

@@ -1607,7 +1607,7 @@ def _drop_task(path: Path, title: str) -> None:
     Path(path).write_text(json.dumps(data, indent=2), encoding="utf-8")
 
 
-def _edit_task(path: Path, title: str, **fields) -> None:
+def _edit_task(path: Path, title: str, /, **fields) -> None:
     data = json.loads(Path(path).read_text(encoding="utf-8"))
     for t in data["tasks"]:
         if t["title"] == title:

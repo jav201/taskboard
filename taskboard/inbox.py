@@ -450,7 +450,12 @@ class Inbox:
         read raises OSError (the caller decides). The encode probe at the door
         catches a lone surrogate a later write could never save (SEC-2)."""
         with open(path, "rb") as fh:
-            data = fh.read(STORE_MAX_BYTES + 1)
+            return Inbox._parse(fh.read(STORE_MAX_BYTES + 1))
+
+    @staticmethod
+    def _parse(data: bytes) -> dict | None:
+        """`_read`'s parse of the capped bytes, shared with `load` so the file is
+        read once (LLR-4407.35: at most the cap + 1 byte)."""
         if len(data) > STORE_MAX_BYTES:
             return None
         try:
@@ -494,7 +499,7 @@ class Inbox:
             if not head.strip():
                 inbox._stamped()
                 return inbox
-            state = cls._read(path)
+            state = cls._parse(head)
         except OSError:
             state = None
             read_failed = True
@@ -593,8 +598,11 @@ class Inbox:
             except UnicodeError as exc:
                 raise OSError(f"inbox.json holds a character that cannot be saved "
                               f"({exc.reason}), so it was not written")
-            if len(data) > STORE_MAX_BYTES:
-                raise OSError(f"inbox.json would hold {len(data)} bytes, over the "
+            # the bytes on disk (R-E4-1): `write_atomic` writes text mode, so each
+            # structural "\n" lands as os.linesep (string newlines are escaped)
+            size = len(data) + text.count("\n") * (len(os.linesep) - 1)
+            if size > STORE_MAX_BYTES:
+                raise OSError(f"inbox.json would hold {size} bytes, over the "
                               "8388608-byte limit, so it was not written")
             write_atomic(self.path, text)
         return new, changed

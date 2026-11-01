@@ -175,6 +175,26 @@ def _store_of_size(n: int) -> str:
     return text
 
 
+def _fail_open(m, times: int, name: str = "inbox.json") -> dict:
+    """`open` / `io.open` of a file named `name` raises OSError the next `times` calls (the
+    store held open by another process); every other open goes through."""
+    real = io.open
+    box = {"left": times}
+
+    def failing(file, *a, **k):
+        try:
+            hit = Path(os.fsdecode(file)).name == name
+        except TypeError:
+            hit = False
+        if hit and box["left"] > 0:
+            box["left"] -= 1
+            raise OSError("the file is in use by another process")
+        return real(file, *a, **k)
+    m.setattr(builtins, "open", failing)
+    m.setattr(io, "open", failing)
+    return box
+
+
 def _count_reads(m, name: str = "inbox.json") -> dict:
     """Count the bytes read from any file named `name` through `open` / `io.open`
     (`Path.open` and `Path.read_bytes` go through `io.open`)."""
@@ -738,7 +758,8 @@ def test_TC_4582_the_store_is_written_in_one_exact_shape(tmp_path):
     x = _load(tmp_path / "inbox.json")
     x.write_pad("é\n____\nb")
     raw = (tmp_path / "inbox.json").read_bytes()
-    assert raw.decode("utf-8") == '{\n  "version": 1,\n  "pad": "é\\n____\\nb",\n  "dumped": []\n}'
+    # models.write_atomic (unchanged on purpose, graph-proto-S) writes platform newlines
+    assert raw.decode("utf-8").replace(os.linesep, "\n") == '{\n  "version": 1,\n  "pad": "é\\n____\\nb",\n  "dumped": []\n}'
     assert b"\xc3\xa9" in raw and b"\\u00e9" not in raw
     assert "divider_notice" not in json.loads(raw) and "flagged" not in json.loads(raw)
     x.mark_notice()
@@ -1353,25 +1374,53 @@ def test_TC_4676_a_store_over_the_cap_is_not_copied_aside_nor_written(tmp_path):
 
 
 def _would_hold(pad: str) -> int:
-    return len(json.dumps({"version": 1, "pad": pad, "dumped": []}, indent=2,
-                          ensure_ascii=False).encode("utf-8"))
+    """The bytes the store would hold ON DISK (R-E4-1): `write_atomic` writes text mode, so
+    each structural newline of the JSON lands as `os.linesep`."""
+    text = json.dumps({"version": 1, "pad": pad, "dumped": []}, indent=2, ensure_ascii=False)
+    return len(text.replace("\n", os.linesep).encode("utf-8"))
 
 
 def test_TC_4677_a_write_over_the_cap_changes_nothing(tmp_path, monkeypatch):
     """TC-4677 (LLR-4407.37): pad `a` × 8 400 000 → OSError `inbox.json would hold 8400047
-    bytes, over the 8388608-byte limit, so it was not written`; `write_atomic` 0 calls; the
+    (LF) / 8400051 (CRLF, the bytes on disk: R-E4-1) bytes, over the 8388608-byte limit, so it was not written`; `write_atomic` 0 calls; the
     file and memory unchanged. NC no write cap: RED."""
     store = fx.write_store(tmp_path, pad="small")
     x = _load(store)
     before = store.read_bytes()
     calls = _spy_store_writes(monkeypatch)
     pad = "a" * 8_400_000
-    assert _would_hold(pad) == 8_400_047
+    n = 8_400_047 if os.linesep == "\n" else 8_400_051   # 4 structural lines (R-E4-1)
+    assert _would_hold(pad) == n
     with pytest.raises(OSError) as exc:
         x.write_pad(pad)
-    assert str(exc.value) == ("inbox.json would hold 8400047 bytes, over the 8388608-byte "
+    assert str(exc.value) == (f"inbox.json would hold {n} bytes, over the 8388608-byte "
                               "limit, so it was not written")
     assert calls == [] and store.read_bytes() == before and x.pad == "small"
+
+
+def test_TC_4677c_the_cap_holds_on_disk(tmp_path):
+    """TC-4677c (LLR-4407.37, R-E4-1, real filesystem): the cap counts the bytes the file
+    holds on disk, not the JSON text. The store's own overhead is measured from a real
+    one-character write (`os.path.getsize`), so no newline rule is assumed. A pad that makes
+    the file exactly CAP bytes is written and the file is CAP bytes; one more character is
+    refused with n = CAP + 1 and the file keeps its bytes. WHY: a file over the cap on disk
+    is unreadable at the next load (LLR-4407.35) and is not copied aside (LLR-4407.36), so
+    the pad would start empty: the note the owner typed would be lost. NC: the cap counts
+    `len(text.encode())` (the CR of each Windows CRLF not counted): the CAP + 1 write goes
+    through, getsize CAP + 1: RED (on a CRLF platform)."""
+    store = fx.write_store(tmp_path, pad="small")
+    x = _load(store)
+    x.write_pad("a")
+    overhead = os.path.getsize(store) - 1
+    x.write_pad("a" * (CAP - overhead))
+    assert os.path.getsize(store) == CAP
+    assert _load(store).pad == "a" * (CAP - overhead)      # read back: not unreadable
+    before = store.read_bytes()
+    with pytest.raises(OSError) as exc:
+        x.write_pad("a" * (CAP - overhead + 1))
+    assert str(exc.value) == (f"inbox.json would hold {CAP + 1} bytes, over the 8388608-byte "
+                              "limit, so it was not written")
+    assert os.path.getsize(store) == CAP and store.read_bytes() == before
 
 
 async def test_TC_4677b_the_view_says_the_pad_is_over_the_cap(home):
@@ -1623,9 +1672,12 @@ def test_TC_4685_a_failed_read_keeps_the_old_stamp(tmp_path, monkeypatch):
     """TC-4685 (LLR-4407.45, SEC-4): `_read` raising OSError at load over pad `p` → pad "",
     stamp None; `q` written → the union `p|q`; a refresh whose read raises after a second
     Inbox wrote `z` → False, stamp kept, the next write holds `z`. NC take the file's stamp
-    after the failed read: `p` lost: arm 1 RED."""
+    after the failed read: `p` lost: arm 1 RED.
+    Arm 1 fails the OPEN of `inbox.json` (a Windows sharing violation): `load` reads the file
+    once itself and parses those bytes (`_parse`, F3 in e4-integration.md), so it no longer
+    goes through `_read`; the refresh arms still do."""
     fx.write_store(tmp_path, pad="p")
-    _wrap_read(monkeypatch, raise_times=1)
+    _fail_open(monkeypatch, times=1)
     x = _load(tmp_path / "inbox.json")
     assert x.pad == "" and x._stamp is None
     res = x.write_pad("q")

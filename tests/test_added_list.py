@@ -878,7 +878,7 @@ def test_TC_4321_N_is_one_global_key_of_the_seat():
         ("N", "added_list", "Added list", False, None, False, "misc")
     assert hasattr(TaskboardApp, "action_added_list")
     assert [k.show for k in keymap.global_keys("gantt")] == [
-        "o", "i", "p", "P", "f", "c", "R", "A", "N", "H", "@", "#", "I", "S"]
+        "o", "i", "p", "P", "f", "c", "R", "A", "N", "n", "H", "@", "#", "I", "S"]  # n: Inc K, LLR-4401.1
     assert keymap.palette_commands("swimlanes").count(("N", "Added list", "added_list")) == 1
 
 

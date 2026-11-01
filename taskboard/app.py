@@ -10,11 +10,11 @@ from pathlib import Path
 
 from typing import NamedTuple
 
-from rich.color import Color
 from rich.text import Text
 from textual import events
 from textual.app import App, ComposeResult
 from textual.binding import Binding
+from textual.color import Color
 from textual.containers import Grid, Horizontal, Vertical, VerticalScroll
 from textual.keys import format_key
 from textual.screen import ModalScreen, Screen
@@ -2030,6 +2030,7 @@ class CaptureView(Screen[None]):
             j = part.end
         line = pad.document.get_line(j)
         pad.insert("".join("\nimg: " + n for n in res.names), (j, len(line)))
+        self._text = pad.text
         self._flush()
 
     def action_undo(self) -> None:
