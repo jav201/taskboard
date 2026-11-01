@@ -28,6 +28,7 @@ from rich.text import Text
 from textual import events
 from textual.app import ComposeResult
 from textual.binding import Binding
+from textual.color import Color
 from textual.containers import Grid, Horizontal, Vertical, VerticalScroll
 from textual.keys import format_key
 from textual.screen import ModalScreen
@@ -527,10 +528,18 @@ def _byte_offsets(line: str) -> list[int]:
     return cum
 
 
+# Textual re-applies every highlight of a line on each of its wrapped rows, so a very
+# long inked line costs seconds per keystroke; such a line is shown without ink
+# (the preview still colours it) — E5 security SR-1, LLR-4204.10
+INK_MAX_LINE = 2000
+
+
 def ink_highlights(lines: list[str]) -> dict[int, list[tuple[int, int, str]]]:
-    """The live ink as Textual's byte-offset highlight map (LLR-4204.1/.2/.4/.5)."""
+    """The live ink as Textual's byte-offset highlight map (LLR-4204.1/.2/.4/.5/.10)."""
     out: dict[int, list[tuple[int, int, str]]] = {}
     for row, line in enumerate(lines):
+        if len(line) > INK_MAX_LINE:
+            continue
         spans = colour_spans(line)
         if not spans:
             continue
@@ -575,12 +584,25 @@ class InkArea(TextArea):
             super()._build_highlight_map()   # no ink, the field keeps working (SEC-3)
 
 
+# the colour notices, each written once (E5 code review CR-5)
+NOTICE_ONE_LINE = "Colour one line at a time."
+NOTICE_CROSSES = "The selection crosses a colour edge: select inside one colour, or plain text."
+NOTICE_NOTHING = "Nothing to colour: select text or put the cursor on a word."
+NOTICE_VISIBLE = "That colour would change the text you see: nothing changed."
+NOTICE_CHANGED = "The notes changed while the palette was open: nothing changed."
+NOTICE_PEN = "Pens write new text — use alt+c to recolour."
+
+
+def visible_text(line: str) -> str:
+    """What a line shows once its markers are dropped — the check that a pen or
+    the palette never changes the text you see (LLR-4203.17, LLR-4205.15)."""
+    return "".join(seg for seg, _ in highlight_segments(line))
+
+
 def colour_target(lines: list[str], start: tuple[int, int], end: tuple[int, int]):
     """The palette's target (row, a, b) or a notice, exactly one None
     (LLR-4205.1/.2/.10/.11/.12)."""
-    n1 = "Colour one line at a time."
-    n2 = "The selection crosses a colour edge: select inside one colour, or plain text."
-    n3 = "Nothing to colour: select text or put the cursor on a word."
+    n1, n2, n3 = NOTICE_ONE_LINE, NOTICE_CROSSES, NOTICE_NOTHING
     if start[0] != end[0]:
         return None, n1
     row = start[0]
@@ -616,18 +638,18 @@ def _word_at(line: str, col: int) -> tuple[int, int] | None:
         pos = s.end
     if pos < n:
         regions.append((pos, n))
-    for rs, re in regions:
-        if rs <= col < re and not line[col].isspace():
+    for rs, rend in regions:
+        if rs <= col < rend and not line[col].isspace():
             ws = col
             while ws > rs and not line[ws - 1].isspace():
                 ws -= 1
             we = col + 1
-            while we < re and not line[we].isspace():
+            while we < rend and not line[we].isspace():
                 we += 1
             return ws, we
     if 0 < col <= n and not line[col - 1].isspace():
-        for rs, re in regions:
-            if rs <= col - 1 < re and col <= re:
+        for rs, rend in regions:
+            if rs <= col - 1 < rend and col <= rend:
                 ws = col - 1
                 while ws > rs and not line[ws - 1].isspace():
                     ws -= 1
@@ -636,8 +658,11 @@ def _word_at(line: str, col: int) -> tuple[int, int] | None:
 
 
 def recolour(line: str, a: int, b: int, code: str) -> tuple[str, int | None]:
-    """The palette's rewrite of one line (LLR-4205.4/.5/.6/.9). Raises ValueError
-    only on a target that partly overlaps a span — `colour_target` never hands one."""
+    """The palette's rewrite of one line (LLR-4205.4/.5/.6/.9): `code` is a pen
+    code or "0" (no colour); any other code raises ValueError (E5 CR-4).
+    `colour_target` never hands a target that partly overlaps a span."""
+    if code != "0" and code not in {c for c, _tone, _name in PEN_CODES}:
+        raise ValueError(f"not a colour code: {code!r}")
     s = next((sp for sp in colour_spans(line) if sp.start <= a and b <= sp.end), None)
     if s is not None:
         inner = line[s.inner_start:s.inner_end]
@@ -713,6 +738,9 @@ class ColourPalette(ModalScreen[str | None]):
             yield Static(_palette_rows(), id="cp-rows")
 
     def on_mount(self) -> None:
+        # the app's `Screen { background: #0d1117 }` outranks DEFAULT_CSS: set inline,
+        # so the editor shows through around the small palette (E13-1, C-3)
+        self.styles.background = Color(13, 17, 23, 0.2)
         box = self.query_one("#cp-box")
         box.styles.offset = palette_offset(self._at.x, self._at.y,
                                            self.app.size.width, self.app.size.height)
@@ -769,7 +797,7 @@ class TaskModal(ClipboardPasteMixin, EmojiPickerMixin, DatePickerMixin, ButtonKe
         # save, so images live at images/<task-id>/.
         self._img_key = task.id if task else _new_id()
         # the pen (Inc C): None until alt+1..alt+6 opens one; `_pen_at` is the
-        # (row, start) of the pen's current span, reset wherever the pen is
+        # (row, start, row text) of the pen's current span, reset wherever the pen is
         self.pen = None
         self._pen_at = None
 
@@ -931,6 +959,7 @@ class TaskModal(ClipboardPasteMixin, EmojiPickerMixin, DatePickerMixin, ButtonKe
         s = self._pen_span()
         notes = self.query_one("#f-notes", TextArea)
         if s is None:
+            self._drop_remembered_span()     # E5 CR-3: the cursor already left it
             self.pen = None
             self._pen_at = None
             self._pen_label()
@@ -948,6 +977,13 @@ class TaskModal(ClipboardPasteMixin, EmojiPickerMixin, DatePickerMixin, ButtonKe
         self._pen_at = None
         self._pen_label()
 
+    def action_paste_text(self) -> None:
+        """`ctrl+v`: with a pen on in the notes, lift it first, so the paste lands
+        as plain text after the span and never splits it across lines (E5 CR-2)."""
+        if self.pen is not None and self.query_one("#f-notes", TextArea).has_focus:
+            self._lift_pen()
+        super().action_paste_text()
+
     def _pen_label(self) -> None:
         """Rewrite the Notes label from the pen state (LLR-4203.9)."""
         self.query_one("#notes-label", Label).update(pen_label(self.pen))
@@ -961,14 +997,12 @@ class TaskModal(ClipboardPasteMixin, EmojiPickerMixin, DatePickerMixin, ButtonKe
             return                       # the same pen: nothing changes (LLR-4203.15)
         if self.pen is None and i >= 0:
             if not notes.selection.is_empty:
-                self.notify("Pens write new text — use alt+c to recolour.",
-                            severity="warning", markup=False)
+                self.notify(NOTICE_PEN, severity="warning", markup=False)
                 return
             row, col = notes.cursor_location
             for s in colour_spans(notes.document.get_line(row)):
                 if s.start < col < s.end:
-                    self.notify("Pens write new text — use alt+c to recolour.",
-                                severity="warning", markup=False)
+                    self.notify(NOTICE_PEN, severity="warning", markup=False)
                     return
         if self.pen is not None:
             self._lift_pen()
@@ -978,15 +1012,13 @@ class TaskModal(ClipboardPasteMixin, EmojiPickerMixin, DatePickerMixin, ButtonKe
             code = PEN_CODES[i][0]
             pair = f"::{code}::  ::"
             new_line = line[:col] + pair + line[col:]
-            if ("".join(seg for seg, _ in highlight_segments(new_line))
-                    != "".join(seg for seg, _ in highlight_segments(line))):
-                self.notify("That colour would change the text you see: nothing changed.",
-                            severity="warning", markup=False)
+            if visible_text(new_line) != visible_text(line):
+                self.notify(NOTICE_VISIBLE, severity="warning", markup=False)
                 return
             notes.insert(pair, (row, col))
             notes.move_cursor((row, col + 6))
             self.pen = i
-            self._pen_at = (row, col)
+            self._pen_at = (row, col, new_line)
         self._pen_label()
 
     def action_pen_enter(self) -> None:
@@ -996,7 +1028,7 @@ class TaskModal(ClipboardPasteMixin, EmojiPickerMixin, DatePickerMixin, ButtonKe
         code = PEN_CODES[self.pen][0]
         notes.insert(f" ::\n::{code}:: ", (row, col))
         notes.move_cursor((row + 1, 6))
-        self._pen_at = (row + 1, 0)
+        self._pen_at = (row + 1, 0, notes.document.get_line(row + 1))
 
     def _pen_follow(self) -> None:
         """The cursor-leave check (LLR-4203.8/.14): an empty span left by the
@@ -1007,30 +1039,39 @@ class TaskModal(ClipboardPasteMixin, EmojiPickerMixin, DatePickerMixin, ButtonKe
         s = self._pen_span()
         if s is not None:
             row, _col = notes.cursor_location
-            self._pen_at = (row, s.start)
+            self._pen_at = (row, s.start, notes.document.get_line(row))
             return
-        if self._pen_at is not None:
-            row0, start0 = self._pen_at
-            code = PEN_CODES[self.pen][0]
-            target = None
-            for sp in colour_spans(notes.document.get_line(row0)):
-                if sp.start == start0 and sp.code == code and sp.inner_start == sp.inner_end:
-                    target = sp
-                    break
-            if target is not None:
-                row, col = notes.cursor_location
-                notes.replace("", (row0, target.start), (row0, target.end))
-                if row == row0:
-                    if col < start0:
-                        new_col = col
-                    elif col <= target.end:
-                        new_col = start0
-                    else:
-                        new_col = col - (target.end - target.start)
-                    notes.move_cursor((row0, new_col))
+        self._drop_remembered_span()
         self.pen = None
         self._pen_at = None
         self._pen_label()
+
+    def _drop_remembered_span(self) -> None:
+        """Remove the pen's remembered empty span (LLR-4203.14) — only while its
+        row still reads exactly as recorded, so an undo or an edit elsewhere never
+        loses the user's own text (E5 security SR-2, code review CR-3)."""
+        if self.pen is None or self._pen_at is None:
+            return
+        notes = self.query_one("#f-notes", TextArea)
+        row0, start0, text0 = self._pen_at
+        if row0 >= notes.document.line_count or notes.document.get_line(row0) != text0:
+            return
+        code = PEN_CODES[self.pen][0]
+        target = next((sp for sp in colour_spans(text0)
+                       if sp.start == start0 and sp.code == code
+                       and sp.inner_start == sp.inner_end), None)
+        if target is None:
+            return
+        row, col = notes.cursor_location
+        notes.replace("", (row0, target.start), (row0, target.end))
+        if row == row0:
+            if col < start0:
+                new_col = col
+            elif col <= target.end:
+                new_col = start0
+            else:
+                new_col = col - (target.end - target.start)
+            notes.move_cursor((row0, new_col))
 
     def action_colour(self) -> None:
         """`alt+c`: open the palette for the pen's span, or the word/selection at
@@ -1045,8 +1086,7 @@ class TaskModal(ClipboardPasteMixin, EmojiPickerMixin, DatePickerMixin, ButtonKe
             if s.inner_start < s.inner_end:
                 target = (row, s.inner_start, s.inner_end)
             else:
-                self.notify("Nothing to colour: select text or put the cursor on a word.",
-                            severity="warning", markup=False)
+                self.notify(NOTICE_NOTHING, severity="warning", markup=False)
                 return
         else:
             target, notice = colour_target(notes.document.lines,
@@ -1066,16 +1106,13 @@ class TaskModal(ClipboardPasteMixin, EmojiPickerMixin, DatePickerMixin, ButtonKe
             return
         notes = self.query_one("#f-notes", TextArea)
         if row >= notes.document.line_count or notes.document.get_line(row) != line_at_open:
-            self.notify("The notes changed while the palette was open: nothing changed.",
-                        severity="warning", markup=False)
+            self.notify(NOTICE_CHANGED, severity="warning", markup=False)
             return
         new_line, col = recolour(line_at_open, a, b, code)
         if col is None:
             return
-        if ("".join(seg for seg, _ in highlight_segments(new_line))
-                != "".join(seg for seg, _ in highlight_segments(line_at_open))):
-            self.notify("That colour would change the text you see: nothing changed.",
-                        severity="warning", markup=False)
+        if visible_text(new_line) != visible_text(line_at_open):
+            self.notify(NOTICE_VISIBLE, severity="warning", markup=False)
             return
         notes.replace(new_line, (row, 0), (row, len(line_at_open)))
         notes.move_cursor((row, col))

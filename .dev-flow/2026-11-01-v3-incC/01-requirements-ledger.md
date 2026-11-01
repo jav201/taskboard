@@ -67,3 +67,11 @@
 - **What changed:** new LLR-4204.10: no ink on a notes line longer than 2 000 characters (68 LLRs).
 - **Why:** E5 security review SR-1: Textual's `_render_line` re-applies every highlight of a line on each wrapped row, so a 100 000-char line of spans costs 2.6 s per keystroke with ink (0.5 s without).
 - **Evidence:** `05-review-security.md` SR-1; ruling in `03-pdr-rulings.md` §E5.
+
+### LED-2026-11-01-incC.7 — the two ink timing thresholds, made consistent and stable
+- **Requirement:** LLR-4204.7
+- **Requirement:** LLR-4204.10
+- **Date:** 2026-11-01
+- **What changed:** LLR-4204.7 times 50 lines of 2 000 chars instead of one 100 000-char line (which LLR-4204.10 now leaves uninked); LLR-4204.10's keystroke bound is 1.5 s instead of 0.8 s.
+- **Why:** the tester found LLR-4204.7 contradicting LLR-4204.10; GREEN run 3 measured 0.85 s for the uninked keystroke on a loaded machine (Textual's own wrap of a 100 000-char line, not the ink). 1.5 s still separates the capped line from the inked one (2.6 s, SR-1), and the empty-highlights assertion is the deterministic arm.
+- **Evidence:** `evidence/green-3.txt` (TC-4296 0.85 s), `evidence/red-e5.txt`, `05-review-security.md` SR-1.

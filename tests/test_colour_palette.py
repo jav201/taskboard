@@ -676,3 +676,55 @@ async def test_AT_4202_select_a_word_colour_it_yellow_and_save(tmp_path):
         assert not isinstance(app.screen, TaskModal)
     saved = json.loads((tmp_path / "board.json").read_text(encoding="utf-8"))
     assert [t["notes"] for t in saved["tasks"]] == ["the ::y:: plan :: works"]
+
+
+# =========================================================================== #
+# E5 corrective pass (03-pdr-rulings §E5) — regressions, written before the fixes
+# =========================================================================== #
+def _seen_rows(app) -> list[str]:
+    """What the terminal SHOWS: the top screen composited over the screens under it
+    (`App.export_screenshot`'s own path: `render_update(full=True,
+    screen_stack=app._background_screens)`), as plain text rows. `render_strips` alone
+    renders only the top screen and cannot tell an opaque palette from a see-through one."""
+    import io
+    from rich.console import Console
+    w, h = app.size
+    con = Console(width=w, height=h, file=io.StringIO(), force_terminal=True,
+                  color_system="truecolor", record=True, legacy_windows=False, safe_box=False)
+    con.print(app.screen._compositor.render_update(full=True,
+                                                   screen_stack=app._background_screens))
+    return con.export_text().splitlines()
+
+
+@pytest.mark.parametrize("size", [(118, 30), (80, 24)], ids=lambda s: f"{s[0]}x{s[1]}")
+async def test_TC_4290_the_editor_shows_through_around_the_palette(tmp_path, size):
+    """TC-4290 (E13-1, ruled Fix; C-3 "a small palette over the selection"): with the
+    palette open, the editor stays visible around the box — the task's title, painted on a
+    row the box does not cover, is still shown on screen (`multicolour note`: at 80
+    columns the title Input is scrolled), and so is the notes' text. NC: an
+    opaque palette screen (the app's `Screen { background }` outranking the palette's own
+    CSS) → nothing but background outside the box (RED: the shipped code,
+    evidence/captures/palette_118x30.png)."""
+    app = _app(tmp_path, "the plan works")
+    async with app.run_test(size=size) as pilot:
+        scr, ta = await _editor(app, pilot, (0, 6))
+        title_row = scr.query_one("#f-title").region.y
+        await _alt_c(pilot)
+        assert _on_palette(app), f"no palette: the screen is {type(app.screen).__name__}"
+        box = app.screen.query_one("#cp-box").region
+        assert not (box.y <= title_row < box.y + box.height), "the box covers the title row"
+        rows = _seen_rows(app)
+        # a fragment that survives the title Input's horizontal scroll at 80 columns
+        # (`… e the multicolour note`); an opaque screen paints only background here
+        assert "multicolour note" in rows[title_row], rows[title_row]
+        assert any("the plan works" in r for r in rows), "the notes vanished behind the palette"
+        await _key(pilot, "escape")
+
+
+def test_TC_4295_recolour_refuses_an_unknown_code():
+    """TC-4295 (CR-4, ruled Fix): `recolour` raises ValueError on a code outside
+    `r o y g b v` (and the uncolour `0`), as its contract says. NC: write `::z::` →
+    `the ::z:: plan :: works` (RED: the shipped code)."""
+    recolour = _need(modals, "recolour")
+    with pytest.raises(ValueError):
+        recolour("the plan works", 4, 8, "z")

@@ -198,14 +198,14 @@ Each line: **id — form — statement.** Threshold. *NC:* negative control.
   Threshold: after the editor mounts, the `#f-urls` TextArea's theme `syntax_styles` has 0 `pen.`/colour keys, and the built-in theme object is unchanged (`is not` the editor's). *NC:* mutate the shared theme: RED.
 
 - **LLR-4204.7 — Ubiquitous.** The TextArea shall rebuild its colours in time linear in the text length.
-  Threshold: a 100 000-char single line with 10 000 spans builds in ≤ 250 ms; t(100k)/t(10k) ≤ 20. *NC:* per-offset prefix re-encode: RED.
+  Threshold: 50 lines of 2 000 chars (100 000 chars, the longest lines that still get ink — LLR-4204.10) build in ≤ 250 ms; t(100k)/t(10k) ≤ 20. *NC:* per-offset prefix re-encode: RED.
 - **LLR-4204.8 — Unwanted.** If building the colours raises any exception, then the TextArea shall show the text without ink and keep working.
   Threshold: with `colour_spans` monkeypatched to raise, the editor opens, accepts typing and saves; 0 uncaught exceptions. *NC:* no fallback: the app crashes, RED.
 - **LLR-4204.9 — Unwanted.** If the notes hold a lone surrogate code point, then the TextArea shall open and accept typing without ink.
   Threshold: notes `"\ud800 ::b:: x ::"` → editor opens, typing `y` changes the text, 0 uncaught exceptions; the highlight map is empty. *NC:* strict `encode("utf-8")` in the ink path raises UnicodeEncodeError: RED.
 
 - **LLR-4204.10 — Unwanted.** If a notes line is longer than 2 000 characters, then the TextArea shall paint that line without ink.
-  Threshold: a 100 000-char line of spans → its highlight list is empty and one keystroke on it takes ≤ 0.8 s in the pilot (security measured 0.5 s without ink, 2.6 s with); a 2 000-char line still has ink; 2/2. *NC:* no length cap: the line is inked, RED.
+  Threshold: a 100 000-char line of spans → its highlight list is empty and one keystroke on it takes ≤ 1.5 s in the pilot (security measured 0.5 s without ink, 2.6 s with); a 2 000-char line still has ink; 2/2. *NC:* no length cap: the line is inked, RED.
 
 ### 4.5 Palette — HLR-4205
 

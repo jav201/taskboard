@@ -1,0 +1,11 @@
+# GREEN run 3b (TC-4296 after LED.7) — cwd /c/Users/jjgh8/Github/taskboard-wt/capture-proto
+taskboard.__file__ = C:\Users\jjgh8\Github\taskboard-wt\capture-proto\taskboard\__init__.py
+PASSED tests/test_colour_pens.py::test_TC_4246_ink_offsets_are_utf8_bytes_even_for_a_lone_surrogate
+PASSED tests/test_colour_pens.py::test_TC_4246_the_ink_is_built_in_linear_time[::b:: x ::]
+PASSED tests/test_colour_pens.py::test_TC_4246_the_ink_is_built_in_linear_time[::b:: \xe9 ::]
+PASSED tests/test_colour_pens.py::test_TC_4246_non_ascii_text_is_inked_on_exactly_its_cells
+PASSED tests/test_colour_pens.py::test_TC_4246_a_lone_surrogate_opens_and_types_without_ink
+PASSED tests/test_colour_pens.py::test_TC_4296_a_line_over_2000_chars_gets_no_ink_and_stays_fast
+PASSED tests/test_colour_pens.py::test_TC_4297_a_line_of_exactly_2000_chars_is_still_inked
+7 passed, 74 deselected in 3.89s
+# exit code: 0

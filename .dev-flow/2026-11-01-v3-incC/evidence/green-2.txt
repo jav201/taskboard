@@ -1,0 +1,62 @@
+# GREEN run 2 (after the corrective pass) â€” cwd /c/Users/jjgh8/Github/taskboard-wt/capture-proto HEAD 4fa090a + working tree
+taskboard.__file__ = C:\Users\jjgh8\Github\taskboard-wt\capture-proto\taskboard\__init__.py
+C:\Users\jjgh8\anaconda3\Lib\site-packages\pytest_asyncio\plugin.py:207: PytestDeprecationWarning: The configuration option "asyncio_default_fixture_loop_scope" is unset.
+The event loop scope for asynchronous fixtures will default to the fixture caching scope. Future versions of pytest-asyncio will default the loop scope for asynchronous fixtures to function scope. Set the default fixture loop scope explicitly in order to avoid unexpected behavior in the future. Valid fixture loop scopes are: "function", "class", "module", "package", "session"
+
+  warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCOPE_UNSET))
+........................................................................ [ 27%]
+......................F................................................. [ 54%]
+........................................................................ [ 82%]
+.........F....................................                           [100%]
+================================== FAILURES ===================================
+_ test_TC_4250_two_colons_first_thing_in_a_fresh_pen_leave_only_the_old_closer _
+
+tmp_path = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-31599/test_TC_4250_two_colons_first_0')
+
+    async def test_TC_4250_two_colons_first_thing_in_a_fresh_pen_leave_only_the_old_closer(tmp_path):
+        """TC-4250 (ARCH-13, pinned): pen `b` on `::b::  ::`, typing `:` `:` makes an empty
+        span that the leave removes; the line reads ` ::`, the pen off."""
+        app = _app(tmp_path, "")
+        async with app.run_test(size=SIZE) as pilot:
+            scr, ta = await _editor(app, pilot)
+            await pilot.press("alt+5", ":", ":")
+            await pilot.pause()
+>           assert ta.text == " ::"
+E           AssertionError: assert '::b:: :: ::' == ' ::'
+E             
+E             -  ::
+E             + ::b:: :: ::
+
+tests\test_colour_pens.py:589: AssertionError
+_______ test_TC_4290_the_editor_shows_through_around_the_palette[80x24] _______
+
+tmp_path = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-31599/test_TC_4290_the_editor_shows_1')
+size = (80, 24)
+
+    @pytest.mark.parametrize("size", [(118, 30), (80, 24)], ids=lambda s: f"{s[0]}x{s[1]}")
+    async def test_TC_4290_the_editor_shows_through_around_the_palette(tmp_path, size):
+        """TC-4290 (E13-1, ruled Fix; C-3 "a small palette over the selection"): with the
+        palette open, the editor stays visible around the box — the task's title, painted on a
+        row the box does not cover, is still shown on screen, and so is the notes' text. NC: an
+        opaque palette screen (the app's `Screen { background }` outranking the palette's own
+        CSS) \u2192 nothing but background outside the box (RED: the shipped code,
+        evidence/captures/palette_118x30.png)."""
+        app = _app(tmp_path, "the plan works")
+        async with app.run_test(size=size) as pilot:
+            scr, ta = await _editor(app, pilot, (0, 6))
+            title_row = scr.query_one("#f-title").region.y
+            await _alt_c(pilot)
+            assert _on_palette(app), f"no palette: the screen is {type(app.screen).__name__}"
+            box = app.screen.query_one("#cp-box").region
+            assert not (box.y <= title_row < box.y + box.height), "the box covers the title row"
+            rows = _seen_rows(app)
+>           assert "Write the multicolour note" in rows[title_row], rows[title_row]
+E           AssertionError:  Edit task  \xb7 ctrl+e emoji \u258a e the multicolour note  \u258a\u2590X\u258c Show in presentation  
+E           assert 'Write the multicolour note' in ' Edit task  \xb7 ctrl+e emoji \u258a e the multicolour note  \u258a\u2590X\u258c Show in presentation  '
+
+tests\test_colour_palette.py:716: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_colour_pens.py::test_TC_4250_two_colons_first_thing_in_a_fresh_pen_leave_only_the_old_closer
+FAILED tests/test_colour_palette.py::test_TC_4290_the_editor_shows_through_around_the_palette[80x24]
+2 failed, 260 passed in 113.59s (0:01:53)
+# exit code: 1

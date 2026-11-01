@@ -579,15 +579,19 @@ async def test_TC_4250_typing_a_double_colon_under_a_pen_closes_its_span(tmp_pat
 
 
 async def test_TC_4250_two_colons_first_thing_in_a_fresh_pen_leave_only_the_old_closer(tmp_path):
-    """TC-4250 (ARCH-13, pinned): pen `b` on `::b::  ::`, typing `:` `:` makes an empty
-    span that the leave removes; the line reads ` ::`, the pen off."""
+    """TC-4250 (ARCH-13, pinned; re-pinned at E5 after SR-2): pen `b` on `::b::  ::`,
+    typing `:` `:` makes the typed `::` the closer of an empty span. Since SR-2's guard
+    (a remembered empty span is removed only while its row reads exactly as recorded) the
+    edited row no longer matches, so nothing is deleted: the text is `::b:: :: ::`, the
+    VISIBLE text is still ` ::` (as at the first pin), the pen off."""
     app = _app(tmp_path, "")
     async with app.run_test(size=SIZE) as pilot:
         scr, ta = await _editor(app, pilot)
         await pilot.press("alt+5", ":", ":")
         await pilot.pause()
-        assert ta.text == " ::"
-        assert ta.cursor_location == (0, 0) and _pen(scr) is None
+        assert ta.text == "::b:: :: ::"
+        assert "".join(s for s, _ in views.highlight_segments(ta.text)) == " ::"
+        assert _pen(scr) is None
 
 
 # --------------------------------------------------------------------------- #
@@ -818,11 +822,15 @@ def test_TC_4246_ink_offsets_are_utf8_bytes_even_for_a_lone_surrogate():
 
 @pytest.mark.parametrize("unit", ["::b:: x ::", "::b:: é ::"])
 def test_TC_4246_the_ink_is_built_in_linear_time(unit):
-    """TC-4246 (LLR-4204.7, SEC-1): a 100 000-char line with 10 000 spans builds in <=
-    250 ms and t(100k)/t(10k) <= 20 (median of 3), and it inks all 10 000 spans.
-    NC: per-offset prefix re-encode (1 103 ms) → RED."""
+    """TC-4246 (LLR-4204.7, SEC-1): 100 000 chars with 10 000 spans build in <= 250 ms and
+    t(100k)/t(10k) <= 20 (median of 3), and all 10 000 spans are inked. Since LLR-4204.10
+    (E5, SR-1) a line longer than 2 000 chars gets no ink, so the 100 000 chars are 50
+    lines of exactly 2 000 (each still inked) instead of one line. NC: per-offset prefix
+    re-encode (1 103 ms) → RED."""
     ink_highlights = _need(modals, "ink_highlights")
-    big, small = [unit * 10_000], [unit * 1_000]
+    line = unit * 200
+    assert len(line) == 2000
+    big, small = [line] * 50, [line] * 5
 
     def med(arg):
         ts = []
@@ -831,7 +839,8 @@ def test_TC_4246_the_ink_is_built_in_linear_time(unit):
             ink_highlights(arg)
             ts.append(time.perf_counter() - t0)
         return statistics.median(ts)
-    assert sum(1 for *_r, n in ink_highlights(big)[0] if n == "pen.blue") == 10_000
+    assert sum(1 for row in ink_highlights(big).values() for *_r, n in row
+               if n == "pen.blue") == 10_000
     t_big, t_small = med(big), med(small)
     assert t_big <= 0.250, f"{t_big * 1000:.1f} ms"
     assert t_big / max(t_small, 1e-6) <= 20, f"ratio {t_big / max(t_small, 1e-6):.1f}"
@@ -991,3 +1000,126 @@ async def test_AT_4201_a_pen_written_note_is_saved_and_shown_blue(tmp_path):
         assert BLUE not in {fg for _c, fg, _b in cells[at + 3:at + 7]}
     saved = json.loads((tmp_path / "board.json").read_text(encoding="utf-8"))
     assert [t["notes"] for t in saved["tasks"]] == ["::b:: ask :: now"]
+
+
+# =========================================================================== #
+# E5 corrective pass (03-pdr-rulings §E5) — regressions, written before the fixes
+# =========================================================================== #
+async def test_TC_4291_a_legacy_pair_typed_under_a_pen_is_pinned_as_designed(tmp_path):
+    """TC-4291 (CR-1, ruled "as designed" like P-M1-5): notes `if a == b`, `alt+5`, then
+    ` then c == d` typed under the pen. The typed `==` pairs with the earlier one (legacy
+    spans start first, LLR-4201.7), so the pen's span is swallowed and the pen turns off.
+    PIN of the result the shipped code gives (05-review-code.md probe R1), and it never
+    raises. Expected to PASS before and after the E5 fixes; it goes RED only if the rule
+    changes, which must then be a decision."""
+    app = _app(tmp_path, "if a == b")
+    async with app.run_test(size=SIZE) as pilot:
+        scr, ta = await _editor(app, pilot)
+        await pilot.press("alt+5", *" then c == d")
+        await pilot.pause()
+        assert ta.text == "if a == b::b::  then c == d ::"
+        assert highlight_segments(ta.text) == [("if a ", "mut"), (" b::b::  then c ", "soon"),
+                                               (" d ::", "mut")]
+        assert _pen(scr) is None
+        assert isinstance(app.screen, TaskModal)
+
+
+async def test_TC_4292_a_paste_under_a_pen_lands_as_plain_text_after_the_span(tmp_path,
+                                                                             monkeypatch):
+    """TC-4292 (CR-2, ruled Fix): with a pen on (`alt+5`, `x`) and a two-line clipboard
+    (`ab\\ncd`), `ctrl+v` lifts the pen first: the paste lands as plain text after the
+    span's closer — `::b:: x ::ab\\ncd` — and no line ends in a literal ` ::`. NC: insert
+    at the cursor inside the span → `::b:: xab\\ncd ::` (RED: the shipped code)."""
+    monkeypatch.setattr(modals, "grab_clipboard_text", lambda: "ab\ncd")
+    app = _app(tmp_path, "")
+    async with app.run_test(size=SIZE) as pilot:
+        scr, ta = await _editor(app, pilot)
+        await pilot.press("alt+5", "x", "ctrl+v")
+        await pilot.pause()
+        assert ta.text == "::b:: x ::ab\ncd"
+        assert [highlight_segments(ln) for ln in ta.text.split("\n")] == [
+            [("x", "blue"), ("ab", "mut")], [("cd", "mut")]]
+        assert _pen(scr) is None
+
+
+async def test_TC_4293_save_after_leaving_an_empty_pen_span_saves_no_span(tmp_path):
+    """TC-4293 (CR-3, ruled Fix; the reviewer's deterministic repro P2): notes `x`, the pen
+    action called, the cursor moved to (0, 0) and `_save` run BEFORE the move's
+    SelectionChanged is handled — so `_lift_pen` sees `_pen_span()` None and must fall back
+    to the remembered span. The saved notes are `x`. NC: `_lift_pen` ignores `_pen_at` →
+    `x::y::  ::` saved (RED: the shipped code)."""
+    app = _app(tmp_path, "x")
+    async with app.run_test(size=SIZE) as pilot:
+        scr, ta = await _editor(app, pilot)
+        scr.action_pen(2)
+        assert ta.text == "x::y::  ::"
+        ta.move_cursor((0, 0))
+        scr._save()
+        for _ in range(3):
+            await pilot.pause()
+        assert not isinstance(app.screen, TaskModal)
+    assert app.board.tasks[0].notes == "x"
+    saved = json.loads((tmp_path / "board.json").read_text(encoding="utf-8"))
+    assert [t["notes"] for t in saved["tasks"]] == ["x"]
+
+
+@pytest.mark.parametrize("notes, cursor", [
+    ("==a=::b::  ::=x", (0, 4)),        # the user's own empty span would become `==a==x`
+    ("keep ::b::  :: me", (0, 5)),      # 9 characters the user wrote would be deleted
+])
+async def test_TC_4294_undo_after_a_pen_never_deletes_the_users_own_span(tmp_path, notes,
+                                                                        cursor):
+    """TC-4294 (SR-2 + CR-3, ruled Fix): `alt+5` at the start of an empty `::b::  ::` the
+    USER wrote, then `ctrl+z` (the pair undone, the pen still on), then `alt+s`: the saved
+    notes are byte-equal to the user's text and its visible text unchanged. NC: delete any
+    empty span of the pen's code at `_pen_at` → `==a==x` / `keep  me` (RED: the shipped
+    code)."""
+    from test_colour_notes import ref_visible
+    app = _app(tmp_path, notes)
+    async with app.run_test(size=SIZE) as pilot:
+        scr, ta = await _editor(app, pilot, cursor)
+        await pilot.press("alt+5")
+        assert ta.text != notes                       # the pair went in
+        await pilot.press("ctrl+z")
+        await pilot.pause()
+        assert ta.text == notes
+        await pilot.press("alt+s")
+        for _ in range(3):
+            await pilot.pause()
+        assert not isinstance(app.screen, TaskModal)
+    saved = app.board.tasks[0].notes
+    assert saved == notes
+    assert ref_visible(saved) == ref_visible(notes)
+
+
+async def test_TC_4296_a_line_over_2000_chars_gets_no_ink_and_stays_fast(tmp_path):
+    """TC-4296 (LLR-4204.10, SR-1): one 100 000-char notes line of spans
+    (`::b::x::` × 12 500) → the field's highlight list for that row is empty, and one
+    keystroke on it takes <= 1.5 s in the pilot (security measured 0.5 s without ink,
+    2.6 s with). NC: no length cap → the row is inked (RED: the shipped code)."""
+    note = "::b::x::" * 12_500
+    assert len(note) == 100_000
+    app = _app(tmp_path, note)
+    async with app.run_test(size=SIZE) as pilot:
+        scr, ta = await _editor(app, pilot, (0, 0))
+        assert not ta._highlights.get(0), f"{len(ta._highlights.get(0, []))} highlights on row 0"
+        t0 = time.perf_counter()
+        await pilot.press("y")
+        took = time.perf_counter() - t0
+        assert ta.text.startswith("y::b::x::")
+        assert not ta._highlights.get(0)
+        assert took <= 1.5, f"one keystroke took {took:.2f} s"
+
+
+async def test_TC_4297_a_line_of_exactly_2000_chars_is_still_inked(tmp_path):
+    """TC-4297 (LLR-4204.10, the boundary): a 2 000-char line of spans (`::b::x::` × 250)
+    is inked: its row holds 250 `pen.blue` ranges and the first `x` cell is blue. NC: a
+    cap at or below 2 000 → RED. Passes on the shipped code (no cap yet) — it guards the
+    boundary of the fix."""
+    note = "::b::x::" * 250
+    assert len(note) == 2000
+    app = _app(tmp_path, note)
+    async with app.run_test(size=SIZE) as pilot:
+        scr, ta = await _editor(app, pilot, (0, 0))
+        assert sum(1 for *_r, n in ta._highlights.get(0, []) if n == "pen.blue") == 250
+        assert _ink(ta)[5][:2] == ("x", BLUE)

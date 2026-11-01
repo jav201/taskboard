@@ -1,0 +1,45 @@
+# GREEN run 3 (final: Inc C tests + guards) — cwd /c/Users/jjgh8/Github/taskboard-wt/capture-proto HEAD 4fa090a + corrective working tree
+taskboard.__file__ = C:\Users\jjgh8\Github\taskboard-wt\capture-proto\taskboard\__init__.py
+C:\Users\jjgh8\anaconda3\Lib\site-packages\pytest_asyncio\plugin.py:207: PytestDeprecationWarning: The configuration option "asyncio_default_fixture_loop_scope" is unset.
+The event loop scope for asynchronous fixtures will default to the fixture caching scope. Future versions of pytest-asyncio will default the loop scope for asynchronous fixtures to function scope. Set the default fixture loop scope explicitly in order to avoid unexpected behavior in the future. Valid fixture loop scopes are: "function", "class", "module", "package", "session"
+
+  warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCOPE_UNSET))
+........................................................................ [ 11%]
+...........................................................F............ [ 23%]
+........................................................................ [ 35%]
+........................................................................ [ 47%]
+........................................................................ [ 58%]
+........................................................................ [ 70%]
+........................................................................ [ 82%]
+........................................................................ [ 94%]
+...................................                                      [100%]
+================================== FAILURES ===================================
+_______ test_TC_4296_a_line_over_2000_chars_gets_no_ink_and_stays_fast ________
+
+tmp_path = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-31604/test_TC_4296_a_line_over_2000_0')
+
+    async def test_TC_4296_a_line_over_2000_chars_gets_no_ink_and_stays_fast(tmp_path):
+        """TC-4296 (LLR-4204.10, SR-1): one 100 000-char notes line of spans
+        (`::b::x::` \xd7 12 500) \u2192 the field's highlight list for that row is empty, and one
+        keystroke on it takes <= 0.8 s in the pilot (security measured 0.5 s without ink,
+        2.6 s with). NC: no length cap \u2192 the row is inked (RED: the shipped code)."""
+        note = "::b::x::" * 12_500
+        assert len(note) == 100_000
+        app = _app(tmp_path, note)
+        async with app.run_test(size=SIZE) as pilot:
+            scr, ta = await _editor(app, pilot, (0, 0))
+            assert not ta._highlights.get(0), f"{len(ta._highlights.get(0, []))} highlights on row 0"
+            t0 = time.perf_counter()
+            await pilot.press("y")
+            took = time.perf_counter() - t0
+            assert ta.text.startswith("y::b::x::")
+            assert not ta._highlights.get(0)
+>           assert took <= 0.8, f"one keystroke took {took:.2f} s"
+E           AssertionError: one keystroke took 0.85 s
+E           assert 0.848625999991782 <= 0.8
+
+tests\test_colour_pens.py:1111: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_colour_pens.py::test_TC_4296_a_line_over_2000_chars_gets_no_ink_and_stays_fast
+1 failed, 610 passed in 297.75s (0:04:57)
+# exit code: 1

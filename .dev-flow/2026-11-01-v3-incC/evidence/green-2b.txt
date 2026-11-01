@@ -1,0 +1,114 @@
+
+# ===== run A (GREEN): the two re-ruled tests on the worktree — 2026-11-01T02:34:15-06:00 — cwd /c/Users/jjgh8/Github/taskboard-wt/capture-proto — HEAD 4fa090a + uncommitted corrective pass
+# command: env -u NO_COLOR C:/Users/jjgh8/anaconda3/python.exe -c "import taskboard;print(taskboard.__file__)" && env -u NO_COLOR C:/Users/jjgh8/anaconda3/python.exe -m pytest -q -p no:cacheprovider tests/test_colour_palette.py::test_TC_4290_the_editor_shows_through_around_the_palette tests/test_colour_pens.py::test_TC_4250_two_colons_first_thing_in_a_fresh_pen_leave_only_the_old_closer -rA
+C:\Users\jjgh8\Github\taskboard-wt\capture-proto\taskboard\__init__.py
+C:\Users\jjgh8\anaconda3\Lib\site-packages\pytest_asyncio\plugin.py:207: PytestDeprecationWarning: The configuration option "asyncio_default_fixture_loop_scope" is unset.
+The event loop scope for asynchronous fixtures will default to the fixture caching scope. Future versions of pytest-asyncio will default the loop scope for asynchronous fixtures to function scope. Set the default fixture loop scope explicitly in order to avoid unexpected behavior in the future. Valid fixture loop scopes are: "function", "class", "module", "package", "session"
+
+  warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCOPE_UNSET))
+...                                                                      [100%]
+=================================== PASSES ====================================
+=========================== short test summary info ===========================
+PASSED tests/test_colour_palette.py::test_TC_4290_the_editor_shows_through_around_the_palette[118x30]
+PASSED tests/test_colour_palette.py::test_TC_4290_the_editor_shows_through_around_the_palette[80x24]
+PASSED tests/test_colour_pens.py::test_TC_4250_two_colons_first_thing_in_a_fresh_pen_leave_only_the_old_closer
+3 passed in 2.63s
+# exit code: 0
+
+# ===== run B (RED control for TC-4290): same tree, E13-1 reverted AT RUNTIME by a scratch plugin outside the repo (opaque_palette.py: after ColourPalette.on_mount, styles.background = Color(13,17,23)); taskboard/ not edited
+# command: PYTHONPATH=C:/Users/jjgh8/AppData/Local/Temp/incC-tester/plug env -u NO_COLOR C:/Users/jjgh8/anaconda3/python.exe -m pytest -q -p no:cacheprovider -p opaque_palette tests/test_colour_palette.py::test_TC_4290_the_editor_shows_through_around_the_palette -rA --tb=short
+C:\Users\jjgh8\Github\taskboard-wt\capture-proto\taskboard\__init__.py
+C:\Users\jjgh8\anaconda3\Lib\site-packages\pytest_asyncio\plugin.py:207: PytestDeprecationWarning: The configuration option "asyncio_default_fixture_loop_scope" is unset.
+The event loop scope for asynchronous fixtures will default to the fixture caching scope. Future versions of pytest-asyncio will default the loop scope for asynchronous fixtures to function scope. Set the default fixture loop scope explicitly in order to avoid unexpected behavior in the future. Valid fixture loop scopes are: "function", "class", "module", "package", "session"
+
+  warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCOPE_UNSET))
+FF                                                                       [100%]
+================================== FAILURES ===================================
+______ test_TC_4290_the_editor_shows_through_around_the_palette[118x30] _______
+tests\test_colour_palette.py:719: in test_TC_4290_the_editor_shows_through_around_the_palette
+    assert "multicolour note" in rows[title_row], rows[title_row]
+E   IndexError: list index out of range
+
+During handling of the above exception, another exception occurred:
+tests\test_colour_palette.py:709: in test_TC_4290_the_editor_shows_through_around_the_palette
+    async with app.run_test(size=size) as pilot:
+..\..\..\anaconda3\Lib\contextlib.py:231: in __aexit__
+    await self.gen.athrow(value)
+..\..\..\anaconda3\Lib\site-packages\textual\app.py:2218: in run_test
+    raise self._exception
+..\..\..\anaconda3\Lib\site-packages\textual\message_pump.py:604: in _pre_process
+    await self._dispatch_message(events.Mount())
+..\..\..\anaconda3\Lib\site-packages\textual\message_pump.py:727: in _dispatch_message
+    await self.on_event(message)
+..\..\..\anaconda3\Lib\site-packages\textual\message_pump.py:808: in on_event
+    await self._on_message(event)
+..\..\..\anaconda3\Lib\site-packages\textual\message_pump.py:829: in _on_message
+    await invoke(method, message)
+..\..\..\anaconda3\Lib\site-packages\textual\_callback.py:96: in invoke
+    return await _invoke(callback, *params)
+..\..\..\anaconda3\Lib\site-packages\textual\_callback.py:56: in _invoke
+    result = callback(*params[:parameter_count])
+..\..\..\AppData\Local\Temp\incC-tester\plug\opaque_palette.py:11: in on_mount
+    r = orig(self, *a, **k)
+E   TypeError: ColourPalette.on_mount() takes 1 positional argument but 2 were given
+---------------------------- Captured stderr call -----------------------------
+\u256d\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500 Traceback (most recent call last) \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\n\u2502 C:\\Users\\jjgh8\\AppData\\Local\\Temp\\incC-tester\\plug\\opaque_palette.py:11 in   \n\u2502 on_mount                                                                     \n\u2502                                                                              \n\u2502    8 \u2502   from taskboard import modals                                        \n\u2502    9 \u2502   orig = modals.ColourPalette.on_mount                                \n\u2502   10 \u2502   def on_mount(self, *a, **k):                                        \n\u2502 \u2771 11 \u2502   \u2502   r = orig(self, *a, **k)                                         \n\u2502   12 \u2502   \u2502   self.styles.background = Color(13, 17, 23)                      \n\u2502   13 \u2502   \u2502   return r                                                        \n\u2502   14 \u2502   monkeypatch.setattr(modals.ColourPalette, "on_mount", on_mount)     \n\u2502                                                                              \n\u2502 \u256d\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500 locals \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u256e                                                   \n\u2502 \u2502    a = (Mount(),)      \u2502                                                   \n\u2502 \u2502    k = {}              \u2502                                                   \n\u2502 \u2502 self = ColourPalette() \u2502                                                   \n\u2502 \u2570\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u256f                                                   \n\u2570\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\nTypeError: ColourPalette.on_mount() takes 1 positional argument but 2 were give
+_______ test_TC_4290_the_editor_shows_through_around_the_palette[80x24] _______
+tests\test_colour_palette.py:719: in test_TC_4290_the_editor_shows_through_around_the_palette
+    assert "multicolour note" in rows[title_row], rows[title_row]
+E   IndexError: list index out of range
+
+During handling of the above exception, another exception occurred:
+tests\test_colour_palette.py:709: in test_TC_4290_the_editor_shows_through_around_the_palette
+    async with app.run_test(size=size) as pilot:
+..\..\..\anaconda3\Lib\contextlib.py:231: in __aexit__
+    await self.gen.athrow(value)
+..\..\..\anaconda3\Lib\site-packages\textual\app.py:2218: in run_test
+    raise self._exception
+..\..\..\anaconda3\Lib\site-packages\textual\message_pump.py:604: in _pre_process
+    await self._dispatch_message(events.Mount())
+..\..\..\anaconda3\Lib\site-packages\textual\message_pump.py:727: in _dispatch_message
+    await self.on_event(message)
+..\..\..\anaconda3\Lib\site-packages\textual\message_pump.py:808: in on_event
+    await self._on_message(event)
+..\..\..\anaconda3\Lib\site-packages\textual\message_pump.py:829: in _on_message
+    await invoke(method, message)
+..\..\..\anaconda3\Lib\site-packages\textual\_callback.py:96: in invoke
+    return await _invoke(callback, *params)
+..\..\..\anaconda3\Lib\site-packages\textual\_callback.py:56: in _invoke
+    result = callback(*params[:parameter_count])
+..\..\..\AppData\Local\Temp\incC-tester\plug\opaque_palette.py:11: in on_mount
+    r = orig(self, *a, **k)
+E   TypeError: ColourPalette.on_mount() takes 1 positional argument but 2 were given
+---------------------------- Captured stderr call -----------------------------
+\u256d\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500 Traceback (most recent call last) \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\n\u2502 C:\\Users\\jjgh8\\AppData\\Local\\Temp\\incC-tester\\plug\\opaque_palette.py:11 in   \n\u2502 on_mount                                                                     \n\u2502                                                                              \n\u2502    8 \u2502   from taskboard import modals                                        \n\u2502    9 \u2502   orig = modals.ColourPalette.on_mount                                \n\u2502   10 \u2502   def on_mount(self, *a, **k):                                        \n\u2502 \u2771 11 \u2502   \u2502   r = orig(self, *a, **k)                                         \n\u2502   12 \u2502   \u2502   self.styles.background = Color(13, 17, 23)                      \n\u2502   13 \u2502   \u2502   return r                                                        \n\u2502   14 \u2502   monkeypatch.setattr(modals.ColourPalette, "on_mount", on_mount)     \n\u2502                                                                              \n\u2502 \u256d\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500 locals \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u256e                                                   \n\u2502 \u2502    a = (Mount(),)      \u2502                                                   \n\u2502 \u2502    k = {}              \u2502                                                   \n\u2502 \u2502 self = ColourPalette() \u2502                                                   \n\u2502 \u2570\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u256f                                                   \n\u2570\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\nTypeError: ColourPalette.on_mount() takes 1 positional argument but 2 were give
+=========================== short test summary info ===========================
+FAILED tests/test_colour_palette.py::test_TC_4290_the_editor_shows_through_around_the_palette[118x30]
+FAILED tests/test_colour_palette.py::test_TC_4290_the_editor_shows_through_around_the_palette[80x24]
+2 failed in 1.78s
+# exit code: 1
+
+# ===== run B2 (RED control for TC-4290, repeated): run B above is VOID — its scratch wrapper took *args and Textual passed the Mount event (TypeError in the harness, not a test verdict). Wrapper fixed to on_mount(self). 2026-11-01T02:34:37-06:00
+# command: PYTHONPATH=C:/Users/jjgh8/AppData/Local/Temp/incC-tester/plug env -u NO_COLOR C:/Users/jjgh8/anaconda3/python.exe -m pytest -q -p no:cacheprovider -p opaque_palette tests/test_colour_palette.py::test_TC_4290_the_editor_shows_through_around_the_palette -rA --tb=short
+C:\Users\jjgh8\Github\taskboard-wt\capture-proto\taskboard\__init__.py
+C:\Users\jjgh8\anaconda3\Lib\site-packages\pytest_asyncio\plugin.py:207: PytestDeprecationWarning: The configuration option "asyncio_default_fixture_loop_scope" is unset.
+The event loop scope for asynchronous fixtures will default to the fixture caching scope. Future versions of pytest-asyncio will default the loop scope for asynchronous fixtures to function scope. Set the default fixture loop scope explicitly in order to avoid unexpected behavior in the future. Valid fixture loop scopes are: "function", "class", "module", "package", "session"
+
+  warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCOPE_UNSET))
+FF                                                                       [100%]
+================================== FAILURES ===================================
+______ test_TC_4290_the_editor_shows_through_around_the_palette[118x30] _______
+tests\test_colour_palette.py:719: in test_TC_4290_the_editor_shows_through_around_the_palette
+    assert "multicolour note" in rows[title_row], rows[title_row]
+E   AssertionError:                                                                                                                       
+E   assert 'multicolour note' in '                                                                                                                      '
+_______ test_TC_4290_the_editor_shows_through_around_the_palette[80x24] _______
+tests\test_colour_palette.py:719: in test_TC_4290_the_editor_shows_through_around_the_palette
+    assert "multicolour note" in rows[title_row], rows[title_row]
+E   AssertionError:                                                                                 
+E   assert 'multicolour note' in '                                                                                '
+=========================== short test summary info ===========================
+FAILED tests/test_colour_palette.py::test_TC_4290_the_editor_shows_through_around_the_palette[118x30]
+FAILED tests/test_colour_palette.py::test_TC_4290_the_editor_shows_through_around_the_palette[80x24]
+2 failed in 1.50s
+# exit code: 1

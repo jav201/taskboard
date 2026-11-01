@@ -1,0 +1,228 @@
+# RED of the E5 regressions on the CURRENT tree â€” 2026-11-01T02:29:50-06:00 â€” cwd /c/Users/jjgh8/Github/taskboard-wt/capture-proto â€” HEAD 4fa090a (taskboard/ unmodified: 0 changed files)
+# command: env -u NO_COLOR C:/Users/jjgh8/anaconda3/python.exe -c "import taskboard;print(taskboard.__file__)" && env -u NO_COLOR C:/Users/jjgh8/anaconda3/python.exe -m pytest -q -p no:cacheprovider tests/test_colour_pens.py tests/test_colour_palette.py -k "TC_429 or TC_4246_the_ink_is_built_in_linear_time" -rA
+C:\Users\jjgh8\Github\taskboard-wt\capture-proto\taskboard\__init__.py
+C:\Users\jjgh8\anaconda3\Lib\site-packages\pytest_asyncio\plugin.py:207: PytestDeprecationWarning: The configuration option "asyncio_default_fixture_loop_scope" is unset.
+The event loop scope for asynchronous fixtures will default to the fixture caching scope. Future versions of pytest-asyncio will default the loop scope for asynchronous fixtures to function scope. Set the default fixture loop scope explicitly in order to avoid unexpected behavior in the future. Valid fixture loop scopes are: "function", "class", "module", "package", "session"
+
+  warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCOPE_UNSET))
+...FFFFF.FFF                                                             [100%]
+================================== FAILURES ===================================
+_____ test_TC_4292_a_paste_under_a_pen_lands_as_plain_text_after_the_span _____
+
+tmp_path = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-31597/test_TC_4292_a_paste_under_a_p0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x000001D8EF062420>
+
+    async def test_TC_4292_a_paste_under_a_pen_lands_as_plain_text_after_the_span(tmp_path,
+                                                                                 monkeypatch):
+        """TC-4292 (CR-2, ruled Fix): with a pen on (`alt+5`, `x`) and a two-line clipboard
+        (`ab\\ncd`), `ctrl+v` lifts the pen first: the paste lands as plain text after the
+        span's closer — `::b:: x ::ab\\ncd` — and no line ends in a literal ` ::`. NC: insert
+        at the cursor inside the span \u2192 `::b:: xab\\\\ncd ::` (RED: the shipped code)."""
+        monkeypatch.setattr(modals, "grab_clipboard_text", lambda: "ab\ncd")
+        app = _app(tmp_path, "")
+        async with app.run_test(size=SIZE) as pilot:
+            scr, ta = await _editor(app, pilot)
+            await pilot.press("alt+5", "x", "ctrl+v")
+            await pilot.pause()
+>           assert ta.text == "::b:: x ::ab\ncd"
+E           AssertionError: assert '::b:: xab\ncd ::' == '::b:: x ::ab\ncd'
+E             
+E             - ::b:: x ::ab
+E             ?        ---
+E             + ::b:: xab
+E             - cd
+E             + cd ::
+
+tests\test_colour_pens.py:1035: AssertionError
+_______ test_TC_4293_save_after_leaving_an_empty_pen_span_saves_no_span _______
+
+tmp_path = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-31597/test_TC_4293_save_after_leavin0')
+
+    async def test_TC_4293_save_after_leaving_an_empty_pen_span_saves_no_span(tmp_path):
+        """TC-4293 (CR-3, ruled Fix; the reviewer's deterministic repro P2): notes `x`, the pen
+        action called, the cursor moved to (0, 0) and `_save` run BEFORE the move's
+        SelectionChanged is handled — so `_lift_pen` sees `_pen_span()` None and must fall back
+        to the remembered span. The saved notes are `x`. NC: `_lift_pen` ignores `_pen_at` \u2192
+        `x::y::  ::` saved (RED: the shipped code)."""
+        app = _app(tmp_path, "x")
+        async with app.run_test(size=SIZE) as pilot:
+            scr, ta = await _editor(app, pilot)
+            scr.action_pen(2)
+            assert ta.text == "x::y::  ::"
+            ta.move_cursor((0, 0))
+            scr._save()
+            for _ in range(3):
+                await pilot.pause()
+            assert not isinstance(app.screen, TaskModal)
+>       assert app.board.tasks[0].notes == "x"
+E       AssertionError: assert 'x::y::  ::' == 'x'
+E         
+E         - x
+E         + x::y::  ::
+
+tests\test_colour_pens.py:1057: AssertionError
+_ test_TC_4294_undo_after_a_pen_never_deletes_the_users_own_span[==a=::b::  ::=x-cursor0] _
+
+tmp_path = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-31597/test_TC_4294_undo_after_a_pen_0')
+notes = '==a=::b::  ::=x', cursor = (0, 4)
+
+    @pytest.mark.parametrize("notes, cursor", [
+        ("==a=::b::  ::=x", (0, 4)),        # the user's own empty span would become `==a==x`
+        ("keep ::b::  :: me", (0, 5)),      # 9 characters the user wrote would be deleted
+    ])
+    async def test_TC_4294_undo_after_a_pen_never_deletes_the_users_own_span(tmp_path, notes,
+                                                                            cursor):
+        """TC-4294 (SR-2 + CR-3, ruled Fix): `alt+5` at the start of an empty `::b::  ::` the
+        USER wrote, then `ctrl+z` (the pair undone, the pen still on), then `alt+s`: the saved
+        notes are byte-equal to the user's text and its visible text unchanged. NC: delete any
+        empty span of the pen's code at `_pen_at` \u2192 `==a==x` / `keep  me` (RED: the shipped
+        code)."""
+        from test_colour_notes import ref_visible
+        app = _app(tmp_path, notes)
+        async with app.run_test(size=SIZE) as pilot:
+            scr, ta = await _editor(app, pilot, cursor)
+            await pilot.press("alt+5")
+            assert ta.text != notes                       # the pair went in
+            await pilot.press("ctrl+z")
+            await pilot.pause()
+>           assert ta.text == notes
+E           AssertionError: assert '==a==x' == '==a=::b::  ::=x'
+E             
+E             - ==a=::b::  ::=x
+E             + ==a==x
+
+tests\test_colour_pens.py:1081: AssertionError
+_ test_TC_4294_undo_after_a_pen_never_deletes_the_users_own_span[keep ::b::  :: me-cursor1] _
+
+tmp_path = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-31597/test_TC_4294_undo_after_a_pen_1')
+notes = 'keep ::b::  :: me', cursor = (0, 5)
+
+    @pytest.mark.parametrize("notes, cursor", [
+        ("==a=::b::  ::=x", (0, 4)),        # the user's own empty span would become `==a==x`
+        ("keep ::b::  :: me", (0, 5)),      # 9 characters the user wrote would be deleted
+    ])
+    async def test_TC_4294_undo_after_a_pen_never_deletes_the_users_own_span(tmp_path, notes,
+                                                                            cursor):
+        """TC-4294 (SR-2 + CR-3, ruled Fix): `alt+5` at the start of an empty `::b::  ::` the
+        USER wrote, then `ctrl+z` (the pair undone, the pen still on), then `alt+s`: the saved
+        notes are byte-equal to the user's text and its visible text unchanged. NC: delete any
+        empty span of the pen's code at `_pen_at` \u2192 `==a==x` / `keep  me` (RED: the shipped
+        code)."""
+        from test_colour_notes import ref_visible
+        app = _app(tmp_path, notes)
+        async with app.run_test(size=SIZE) as pilot:
+            scr, ta = await _editor(app, pilot, cursor)
+            await pilot.press("alt+5")
+            assert ta.text != notes                       # the pair went in
+            await pilot.press("ctrl+z")
+            await pilot.pause()
+>           assert ta.text == notes
+E           AssertionError: assert 'keep  me' == 'keep ::b::  :: me'
+E             
+E             - keep ::b::  :: me
+E             + keep  me
+
+tests\test_colour_pens.py:1081: AssertionError
+_______ test_TC_4296_a_line_over_2000_chars_gets_no_ink_and_stays_fast ________
+
+tmp_path = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-31597/test_TC_4296_a_line_over_2000_0')
+
+    async def test_TC_4296_a_line_over_2000_chars_gets_no_ink_and_stays_fast(tmp_path):
+        """TC-4296 (LLR-4204.10, SR-1): one 100 000-char notes line of spans
+        (`::b::x::` \xd7 12 500) \u2192 the field's highlight list for that row is empty, and one
+        keystroke on it takes <= 0.8 s in the pilot (security measured 0.5 s without ink,
+        2.6 s with). NC: no length cap \u2192 the row is inked (RED: the shipped code)."""
+        note = "::b::x::" * 12_500
+        assert len(note) == 100_000
+        app = _app(tmp_path, note)
+        async with app.run_test(size=SIZE) as pilot:
+            scr, ta = await _editor(app, pilot, (0, 0))
+>           assert not ta._highlights.get(0), f"{len(ta._highlights.get(0, []))} highlights on row 0"
+E           AssertionError: 37500 highlights on row 0
+E           assert not [(0, 5, 'pen.mark'), (5, 6, 'pen.blue'), (6, 8, 'pen.mark'), (8, 13, 'pen.mark'), (13, 14, 'pen.blue'), (14, 16, 'pen.mark'), ...]
+E            +  where [(0, 5, 'pen.mark'), (5, 6, 'pen.blue'), (6, 8, 'pen.mark'), (8, 13, 'pen.mark'), (13, 14, 'pen.blue'), (14, 16, 'pen.mark'), ...] = <built-in method get of collections.defaultdict object at 0x000001D8F05F7790>(0)
+E            +    where <built-in method get of collections.defaultdict object at 0x000001D8F05F7790> = defaultdict(<class 'list'>, {0: [(0, 5, 'pen.mark'), (5, 6, 'pen.blue'), (6, 8, 'pen.mark'), (8, 13, 'pen.mark'), (13,...e'), (99990, 99992, 'pen.mark'), (99992, 99997, 'pen.mark'), (99997, 99998, 'pen.blue'), (99998, 100000, 'pen.mark')]}).get
+E            +      where defaultdict(<class 'list'>, {0: [(0, 5, 'pen.mark'), (5, 6, 'pen.blue'), (6, 8, 'pen.mark'), (8, 13, 'pen.mark'), (13,...e'), (99990, 99992, 'pen.mark'), (99992, 99997, 'pen.mark'), (99997, 99998, 'pen.blue'), (99998, 100000, 'pen.mark')]}) = InkArea(id='f-notes')._highlights
+
+tests\test_colour_pens.py:1101: AssertionError
+______ test_TC_4290_the_editor_shows_through_around_the_palette[118x30] _______
+
+tmp_path = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-31597/test_TC_4290_the_editor_shows_0')
+size = (118, 30)
+
+    @pytest.mark.parametrize("size", [(118, 30), (80, 24)], ids=lambda s: f"{s[0]}x{s[1]}")
+    async def test_TC_4290_the_editor_shows_through_around_the_palette(tmp_path, size):
+        """TC-4290 (E13-1, ruled Fix; C-3 "a small palette over the selection"): with the
+        palette open, the editor stays visible around the box — the task's title, painted on a
+        row the box does not cover, is still shown on screen, and so is the notes' text. NC: an
+        opaque palette screen (the app's `Screen { background }` outranking the palette's own
+        CSS) \u2192 nothing but background outside the box (RED: the shipped code,
+        evidence/captures/palette_118x30.png)."""
+        app = _app(tmp_path, "the plan works")
+        async with app.run_test(size=size) as pilot:
+            scr, ta = await _editor(app, pilot, (0, 6))
+            title_row = scr.query_one("#f-title").region.y
+            await _alt_c(pilot)
+            assert _on_palette(app), f"no palette: the screen is {type(app.screen).__name__}"
+            box = app.screen.query_one("#cp-box").region
+            assert not (box.y <= title_row < box.y + box.height), "the box covers the title row"
+            rows = _seen_rows(app)
+>           assert "Write the multicolour note" in rows[title_row], rows[title_row]
+E           AssertionError:                                                                                                                       
+E           assert 'Write the multicolour note' in '                                                                                                                      '
+
+tests\test_colour_palette.py:716: AssertionError
+_______ test_TC_4290_the_editor_shows_through_around_the_palette[80x24] _______
+
+tmp_path = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-31597/test_TC_4290_the_editor_shows_1')
+size = (80, 24)
+
+    @pytest.mark.parametrize("size", [(118, 30), (80, 24)], ids=lambda s: f"{s[0]}x{s[1]}")
+    async def test_TC_4290_the_editor_shows_through_around_the_palette(tmp_path, size):
+        """TC-4290 (E13-1, ruled Fix; C-3 "a small palette over the selection"): with the
+        palette open, the editor stays visible around the box — the task's title, painted on a
+        row the box does not cover, is still shown on screen, and so is the notes' text. NC: an
+        opaque palette screen (the app's `Screen { background }` outranking the palette's own
+        CSS) \u2192 nothing but background outside the box (RED: the shipped code,
+        evidence/captures/palette_118x30.png)."""
+        app = _app(tmp_path, "the plan works")
+        async with app.run_test(size=size) as pilot:
+            scr, ta = await _editor(app, pilot, (0, 6))
+            title_row = scr.query_one("#f-title").region.y
+            await _alt_c(pilot)
+            assert _on_palette(app), f"no palette: the screen is {type(app.screen).__name__}"
+            box = app.screen.query_one("#cp-box").region
+            assert not (box.y <= title_row < box.y + box.height), "the box covers the title row"
+            rows = _seen_rows(app)
+>           assert "Write the multicolour note" in rows[title_row], rows[title_row]
+E           AssertionError:                                                                                 
+E           assert 'Write the multicolour note' in '                                                                                '
+
+tests\test_colour_palette.py:716: AssertionError
+________________ test_TC_4295_recolour_refuses_an_unknown_code ________________
+
+    def test_TC_4295_recolour_refuses_an_unknown_code():
+        """TC-4295 (CR-4, ruled Fix): `recolour` raises ValueError on a code outside
+        `r o y g b v` (and the uncolour `0`), as its contract says. NC: write `::z::` \u2192
+        `the ::z:: plan :: works` (RED: the shipped code)."""
+        recolour = _need(modals, "recolour")
+>       with pytest.raises(ValueError):
+E       Failed: DID NOT RAISE <class 'ValueError'>
+
+tests\test_colour_palette.py:726: Failed
+=================================== PASSES ====================================
+=========================== short test summary info ===========================
+PASSED tests/test_colour_pens.py::test_TC_4246_the_ink_is_built_in_linear_time[::b:: x ::]
+PASSED tests/test_colour_pens.py::test_TC_4246_the_ink_is_built_in_linear_time[::b:: \xe9 ::]
+PASSED tests/test_colour_pens.py::test_TC_4291_a_legacy_pair_typed_under_a_pen_is_pinned_as_designed
+PASSED tests/test_colour_pens.py::test_TC_4297_a_line_of_exactly_2000_chars_is_still_inked
+FAILED tests/test_colour_pens.py::test_TC_4292_a_paste_under_a_pen_lands_as_plain_text_after_the_span
+FAILED tests/test_colour_pens.py::test_TC_4293_save_after_leaving_an_empty_pen_span_saves_no_span
+FAILED tests/test_colour_pens.py::test_TC_4294_undo_after_a_pen_never_deletes_the_users_own_span[==a=::b::  ::=x-cursor0]
+FAILED tests/test_colour_pens.py::test_TC_4294_undo_after_a_pen_never_deletes_the_users_own_span[keep ::b::  :: me-cursor1]
+FAILED tests/test_colour_pens.py::test_TC_4296_a_line_over_2000_chars_gets_no_ink_and_stays_fast
+FAILED tests/test_colour_palette.py::test_TC_4290_the_editor_shows_through_around_the_palette[118x30]
+FAILED tests/test_colour_palette.py::test_TC_4290_the_editor_shows_through_around_the_palette[80x24]
+FAILED tests/test_colour_palette.py::test_TC_4295_recolour_refuses_an_unknown_code
+8 failed, 4 passed, 163 deselected in 11.57s
+# exit code: 1
