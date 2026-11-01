@@ -85,3 +85,13 @@ parser level only.
 |---|---|---|
 | R1-1 | SEC-6: LLR-4204.9's "x blue" cannot hold on Textual 8.2.8 (`_render_line` encodes strictly) | **Amend LLR-4204.9** to "opens and accepts typing without ink" (LED.5). No `_render_line` override. |
 | R1-2 | 31 TC ids shared by a caller and its callee within one owner | **Accept** (a TC groups the test functions of one thread, the TC-2503 convention). |
+
+## Round 2 — blocking-only re-review: architect PASS-WITH-NOTES (1 MINOR), security PASS-WITH-NOTES (1 MEDIUM, 1 LOW)
+
+E3 is DONE (no open MAJOR/HIGH). The notes go to E4 as addenda (`e4-addenda.md`), not another round.
+
+| Id | Ruling |
+|---|---|
+| ARCH-14 MINOR | **Accept:** E5 attempts one real Windows Terminal check (alt+5, type x, x blue). Key injection failed on this desktop at E3; if it fails again the check is recorded `not-run` and handed to the operator. Fix the TC-4249 double naming (addendum A-3). The `_ansi_sequences` change joins the Textual-pin backlog item. |
+| SEC-R2-1 MEDIUM | **Accept (addendum A-1):** `_unshadow_alt_digits` pops a key only while it still maps to its 8.2.8 glyph, inside `try/except Exception` (a read-only table leaves the app starting, alt+digit then degrades to glyphs). TC-4249 gains the immutable-table arm. |
+| SEC-R2-2 LOW | **Reject the version gate** (a gate is a guard; the build-time try/except already covers the override). Paint-time risk → BACKLOG with the Textual pin. |
