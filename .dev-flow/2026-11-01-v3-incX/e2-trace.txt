@@ -1,7 +1,7 @@
 # E2 trace, Inc X (LLR -> example, AT -> example) over graph-interfaces + graph-proto-A + graph-proto-B
 # command: python e2_trace.py .dev-flow/2026-11-01-v3-incX   (the script is reproduced below; adapted from incK/e2-trace.py)
 # lint: codewire_lint.py on the three files -> not read=0, exit 0 each
-# re-run after the rulings 8-10 design pass (cover nodes removed from proto-B: render, _cover, _presented_line)
+# re-run after the rulings 12-22 targeted design-correction pass
 
 LLR-4501.1 (TC TC-4701): interfaces:present_name TC-4701,TC-4701b; proto-A:PresentScreen.action_export TC-4701; proto-B:present_name TC-4701c
 LLR-4501.2 (TC TC-4702): interfaces:present_name TC-4702; proto-A:PresentScreen.action_export TC-4702
@@ -17,18 +17,20 @@ LLR-4501.11 (TC TC-4711): proto-A:PresentScreen._deck_lane TC-4711
 LLR-4501.12 (TC TC-4712): interfaces:present_deck_boards TC-4712; interfaces:render TC-4712
 LLR-4501.13 (TC TC-4713): proto-A:PresentScreen.action_export TC-4713
 LLR-4501.14 (TC TC-4714): proto-A:PresentScreen.action_export TC-4714
+LLR-4501.15 (TC TC-4715): interfaces:present_deck_boards TC-4715; proto-A:PresentScreen.action_export TC-4715; proto-B:present_deck_boards TC-4715
 LLR-4502.1 (TC TC-4721): interfaces:present_deck_boards TC-4721
 LLR-4502.2 (TC TC-4722): interfaces:present_deck_boards TC-4722
 LLR-4502.3 (TC TC-4723): interfaces:present_deck_boards TC-4723
 LLR-4502.4 (TC TC-4724): interfaces:present_deck_boards TC-4724
 LLR-4502.5 (TC TC-4725): interfaces:present_deck_boards TC-4725
 LLR-4502.6 (TC TC-4726): proto-A:PresentScreen.action_export TC-4726
+LLR-4502.7 (TC TC-4727): interfaces:present_deck_boards TC-4727; proto-A:PresentScreen.action_export TC-4727; proto-B:present_deck_boards TC-4727
 LLR-4503.1 (TC TC-4731): proto-A:PresentScreen.action_export TC-4731; proto-A:TaskboardApp._write_report TC-4731
 LLR-4503.2 (TC TC-4732): interfaces:PresentScreen.action_open_export TC-4732; proto-A:present_bindings TC-4732
 LLR-4503.3 (TC TC-4733): interfaces:PresentScreen.action_open_export TC-4733
 LLR-4503.4 (TC TC-4734): proto-A:PresentScreen.action_export TC-4734; proto-A:TaskboardApp._write_report TC-4734
 LLR-4503.5 (TC TC-4735): proto-A:PresentScreen.action_export TC-4735
-LLR-4503.6 (TC TC-4736): interfaces:PresentScreen.action_open_export TC-4736
+LLR-4503.6 (TC TC-4736): interfaces:PresentScreen.action_open_export TC-4736; proto-A:TaskboardApp._open_report TC-4736
 LLR-4503.7 (TC TC-4737): proto-A:PresentScreen.action_export TC-4737; proto-A:TaskboardApp._write_report TC-4737
 LLR-4504.1 (TC TC-4741): proto-A:PresentScreen.action_export TC-4741; proto-B:save_present_svg TC-4741; proto-B:save_present_png TC-4741
 LLR-4504.2 (TC TC-4742): proto-A:PresentScreen.action_export TC-4742; proto-B:_find_msedge TC-4742; proto-B:save_present_png TC-4742
@@ -50,7 +52,7 @@ AT-4504: proto-A:PresentScreen.action_export
 AT-4505: proto-A:PresentScreen.action_export
 AT-4506: proto-A:PresentKeys.lines; proto-A:fit_bar; proto-A:HelpModal._key_texts
 withdrawn (not traced): none
-traced 40/40 active LLRs (40 ids)
+traced 42/42 active LLRs (42 ids)
 traced 6/6 ATs
 untraced: none
 exit=0

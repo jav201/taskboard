@@ -30,7 +30,7 @@ No new dependency.
 | presented board | the board `R` was opened on (the open board) |
 | presented project | in views 1 and 2 (`gantt`, `split`), the project the screen shows |
 | shown project | in view 3 (`all`), a visible (not archived) project whose `show_in_present` is true |
-| shown task | a task of a presented or shown project that is not archived, whose `show_in_present` is true, and that is not a milestone of a hidden milestone class — the tasks the presentation's views draw, open and done |
+| shown task | a task of a presented or shown project that is not archived, whose `show_in_present` is true, and that is not a milestone of a hidden milestone class — the tasks the presentation does not hide; its views draw the open ones as rows and count the done ones |
 | presentation order | `present_order` of the presented board: ranked projects first by rank, then the rest in board order |
 | board slug | `report_html.slug` of the presented board's registry name (its label for an unlisted board) |
 | offer | the single-use permission, live for 10 s after a written toast, for `o` to open that file |
@@ -55,14 +55,14 @@ sentido ahora, y quedémonos con el html.»)
 - **Validation:** `test` — `tests/test_present_x_html.py` (pilot + layer 0)
 - **Numeric pass threshold:** all LLR-4501.n thresholds.
 - **Acceptance test(s):** AT-4501, AT-4502, AT-4505
-- **Negative control:** base `x` writes an `.svg`: TC-4701 RED at base (no `deck-*.html`).
+- **Negative control:** base `x` writes an `.svg`: TC-4701 RED at base (no `present-*.html`).
 
 ### HLR-4502 — what the presentation hides is not in the file's bytes
 - **Traceability:** US-4501 · X-1
 - **Ledger:** LED-2026-11-01-incX.1
 - **Statement:** The system shall leave out of the deck's bytes every project and task the presentation does not draw.
 - **Validation:** `test` — byte search over the written file
-- **Numeric pass threshold:** 0 occurrences of every sentinel over LLR-4502.1..4502.6.
+- **Numeric pass threshold:** 0 occurrences of every sentinel over LLR-4502.1..4502.7.
 - **Acceptance test(s):** AT-4501, AT-4502
 - **Negative control:** export the unfiltered board: TC-4721 RED.
 
@@ -108,12 +108,12 @@ sentido ahora, y quedémonos con el html.»)
 
 - **LLR-4501.1 — Event.** When `x` is pressed in view 1 or view 2 at a width of 36 columns or more, the system shall write the deck to `<board dir>/reports/present-<project slug>-<date>.html`, where the project slug is `report_html.slug` of the presented project's name, or `project` when that slug is empty.
   Threshold: views 1 and 2 each → that file exists, its name exact; 2/2. *NC:* write `H`'s name `deck-<board slug>-<project slug>-<date>.html`: RED.
-- **LLR-4501.2 — Event.** When `x` is pressed in view 3 at a width of 36 columns or more, the system shall write the deck to `<board dir>/reports/present-all-<date>.html`.
+- **LLR-4501.2 — Event.** When `x` is pressed in view 3 at a width of 36 columns or more, the system shall write the deck to `<board dir>/reports/present-<date>.html`.
   Threshold: 1/1 exact name. *NC:* write `H`'s name `deck-<date>.html`: RED.
-- **LLR-4501.3 — State.** While no task of the presented project is hidden, archived or a milestone of a hidden class, the deck `x` writes in view 1 or view 2 shall be byte-identical to the deck `H` writes with `c` and scope `p` for that project on the same day.
-  Threshold: fixture board (2 projects, a done task, a milestone with a class, a dependency, notes with a mention), views 1 and 2 vs `H c p` → `bytes ==`; 2/2. *NC:* render with a board key other than the registry id (`#0`): RED.
-- **LLR-4501.4 — State.** While the registry lists only the presented board and none of its projects or tasks is hidden, archived, ranked out of board order or without a project, the deck `x` writes in view 3 shall be byte-identical to the deck `H` writes with `c` and scope `o` on the same day.
-  Threshold: 1/1 `bytes ==`. *NC:* pass `people={}` to the extraction: the mention renders as plain `@handle`: RED.
+- **LLR-4501.3 — State.** While the presented board is in the registry and no task of the presented project is hidden, archived or a milestone of a hidden class, the deck `x` writes in view 1 or view 2 shall be byte-identical to the deck `H` writes with `c` and scope `p` for that project on the same day from the same proxy board with every held task's `urls` cleared.
+  Threshold: fixture board (2 projects, a done task, a milestone with a class, a dependency, notes with a mention, a task URL), views 1 and 2 vs `H c p` over the same URL-cleared proxy → `bytes ==`; 2/2. *NC:* render with a board key other than the registry id (`#0`): RED.
+- **LLR-4501.4 — State.** While the registry lists only the presented board and none of its projects or tasks is hidden, archived, ranked out of board order, without a project or a milestone of a hidden class, the deck `x` writes in view 3 shall be byte-identical to the deck `H` writes with `c` and scope `o` on the same day from the same proxy board with every held task's `urls` cleared.
+  Threshold: 1/1 `bytes ==` over the same URL-cleared proxy. *NC:* pass `people={}` to the extraction: the mention renders as plain `@handle`: RED.
 - **LLR-4501.5 — Ubiquitous.** The deck `x` writes in view 1 or view 2 shall hold the presented project as its only project, whatever that project's own `show_in_present` value.
   Threshold: board of 3 projects → 1 project slide, named the presented project, the other 2 names 0 occurrences; the same with the presented project's flag set false (hidden on view 3's rail); 2/2. *NC:* scope = every shown project: RED.
 - **LLR-4501.6 — Ubiquitous.** The deck `x` writes in view 3 shall hold the shown projects in presentation order.
@@ -134,6 +134,8 @@ sentido ahora, y quedémonos con el html.»)
   Threshold: 30 columns → the toast text exact; 1/1 (unchanged from base). *NC:* drop the narrow branch: RED.
 - **LLR-4501.14 — Unwanted.** If `x` is pressed while the presentation is narrower than 36 columns, then the system shall write no file.
   Threshold: `reports/` absent after `x` at 30 columns; 1/1. *NC:* write before the width check: RED.
+- **LLR-4501.15 — Unwanted.** If the presented project is not on the board, then the system shall write the deck for the first visible project the frame shows.
+  Threshold: presented id `missing`, visible projects Alpha then Beta → the deck holds Alpha, not Beta, and 0 exceptions; 1/1. *NC:* put `None` in the proxy's projects or keep the missing id: RED.
 
 ### 4.2 What stays out of the bytes (HLR-4502)
 
@@ -149,6 +151,8 @@ sentido ahora, y quedémonos con el html.»)
   Threshold: a class `CLASS-ONLY-HIDDEN` used only by a hidden task → its name 0 occurrences; 1/1. *NC:* pass every class to the deck: RED.
 - **LLR-4502.6 — Event.** When `x` is pressed, the system shall read the presentation's hide flags as they stand at that press.
   Threshold: `space` on a task in view 1, then `x` → that title 0 occurrences; `a`, then `x` → present; 2/2. *NC:* a scope captured when `R` opened: RED.
+- **LLR-4502.7 — Unwanted.** If a task in the deck's scope has a URL, then the system shall write the deck with no task URL in its bytes.
+  Threshold: shown task a1 with `https://example.test/capability-a1` → 0 occurrences of that URL in views 1, 2 and 3; 3/3. *NC:* leave a task URL present in the file: RED.
 
 ### 4.3 The toast and the offer (HLR-4503)
 
@@ -170,7 +174,7 @@ sentido ahora, y quedémonos con el html.»)
 ### 4.4 The SVG/PNG export removed (HLR-4504)
 
 - **LLR-4504.1 — Ubiquitous.** The presentation's export shall write exactly one file, an `.html`.
-  Threshold: `reports/` after `x` in views 1, 2 and 3 holds 0 `.svg`, 0 `.png` and, for each press, exactly 1 new file, that view's `present-*.html`; 3/3. *NC:* keep the `save_present_svg` call: RED.
+  Threshold: after each `x` in views 1, 2 and 3, `reports/` holds that scope's `present-*.html`, 0 `.svg`, 0 `.png`, and no other file is new or changed; 3/3. *NC:* keep the `save_present_svg` call: RED.
 - **LLR-4504.2 — Ubiquitous.** The presentation's export shall start no external process.
   Threshold: `subprocess.run` and `subprocess.Popen` monkeypatched to raise → `x` in views 1, 2 and 3 writes the deck; 0 calls; 3/3. *NC:* keep the Edge rasteriser: RED.
 - **LLR-4504.3 — Ubiquitous.** The package shall hold no code that writes the presentation frame as an SVG or rasterises it.
@@ -205,7 +209,7 @@ sentido ahora, y quedémonos con el html.»)
 ## 5. Acceptance tests (black-box, keys and dialogs)
 
 - **AT-4501** — views 1 and 2. A registry of 2 boards; the open board has 2 projects; a task of the presented project titled `HIDDEN-T-7Q`. `R`, `space` on that task, `x` → the toast reads `Report written: present-<project slug>-<date>.html` …; the file exists; `HIDDEN-T-7Q`, the other project's name and the other board's name 0 occurrences; `reports/` holds no `.svg`/`.png`; the board file's sha256 equal before and after `x`. `2`, `x` → the same file, rewritten. (LLR-4501.1, .5, .7, .10; LLR-4502.1, .6; LLR-4504.1)
-- **AT-4502** — view 3. Projects A, B, C. `R`, `3`; on the rail `K` until C is first; `space` on B (hidden); `enter` folds A on the timeline; `x` → `present-all-<date>.html`; overview and slides read C, A; B's name 0 occurrences; A's slide lists all its shown tasks. (LLR-4501.2, .6, .8; LLR-4502.2)
+- **AT-4502** — view 3. Projects A, B, C. `R`, `3`; on the rail `K` until C is first; `space` on B (hidden); `enter` folds A on the timeline; `x` → `present-<date>.html`; overview and slides read C, A; B's name 0 occurrences; A's slide lists all its shown tasks. (LLR-4501.2, .6, .8; LLR-4502.2)
 - **AT-4503** — the offer. `R`, `x`, `o` → the OS handler (monkeypatched) gets the deck's path once; `o` again → no second call; `x`, the clock moved 10 s, `o` → no call. (LLR-4503.1..4503.3)
 - **AT-4504** — the failure. `reports` exists as a plain file. `R`, `x` → `Report not (fully) written: …`; `o` → no call; the presentation still answers `esc`. (LLR-4503.4, .5)
 - **AT-4505** — narrow. The terminal at 30 columns: `R`, `x` → `Widen the terminal to 36+ columns to export`; no `reports/` folder. (LLR-4501.13, .14)
@@ -215,32 +219,40 @@ sentido ahora, y quedémonos con el html.»)
 
 | # | File | Unit | Change | Requirements |
 |---|---|---|---|---|
-| 1 | app.py | `PresentScreen.action_export` | rewritten: the deck of the scope through `report_html.extract` + `write_reports(…, ("deck",), …)`; the narrow branch kept | LLR-4501.1–.14, LLR-4502.6, LLR-4503.1, .4, .5, LLR-4504.1, .2 |
-| 2 | app.py | `PresentScreen.action_open_export` (`o`) | new: takes the app's offer, else nothing | LLR-4503.2, .3, .6 |
+| 1 | app.py | `PresentScreen.action_export` | rewritten: the scoped, URL-cleared proxy through `extract` + `render` + `_write_report`; the narrow branch kept | LLR-4501.1–.15, LLR-4502.6, .7, LLR-4503.1, .4, .5, LLR-4504.1, .2 |
+| 2 | app.py | `PresentScreen.action_open_export` (`o`) | new: consumes the app's shared offer, else nothing | LLR-4503.2, .3, .6 |
 | 3 | app.py | `TaskboardApp._on_report_chosen` | changed: its write → toast → offer tail becomes one shared method both `H` and `x` call | LLR-4501.3, .4, LLR-4503.1, .4, .5, .7 |
-| 4 | app.py | module imports from `views` (drop `present_paths`, `save_present_svg`, `save_present_png`, `present_all_export`); `PresentScreen` docstring | changed | LLR-4504.3 |
-| 5 | views.py | `present_deck_boards(board, project_id \| None)` — the presented board filtered to the shown projects (presentation order) and shown tasks, never saved | new | LLR-4501.5–.9, LLR-4502.1–.5 |
-| 6 | views.py | `present_paths` | removed | LLR-4504.3 |
-| 7 | views.py | `save_present_svg` | removed | LLR-4504.1, .3 |
-| 8 | views.py | `_find_msedge` | removed | LLR-4504.2, .3 |
-| 9 | views.py | `save_present_png` | removed | LLR-4504.2, .3 |
-| 10 | views.py | `present_all_export` | removed | LLR-4504.3 |
-| 11 | views.py | `_all_timeline` parameter `anchor` (its only caller is `present_all_export`) and the now-unused imports `os`, `shutil`, `subprocess` | changed (E2 confirms no other user) | LLR-4504.3 |
-| 12 | keymap.py | `KEYMAP` entry `H`: `bar=True`, `primary=True`, declared after `↑` so it is the primary layer's last entry | changed | LLR-4505.1–.5 |
-| 13 | keymap.py | `PRESENT_KEYS`: the `x` row's words; a new `o` row (`open_export`, group `OUT`) | changed | LLR-4506.1–.3 |
+| 4 | app.py | `TaskboardApp._write_report` | new: shared write → toast tail; returns the first path or None | LLR-4503.1, .4, .7 |
+| 5 | app.py | `PresentScreen._deck_lane` | new: the presented board's registry identity for `extract` | LLR-4501.7, .11 |
+| 6 | app.py | `TaskboardApp._open_report` | changed: catch `ValueError` from `as_uri()` beside `OSError` | LLR-4503.6 |
+| 7 | views.py | `present_deck_boards(lane, project_id \| None)` | new: frame-equivalent project resolution, shown tasks in board order, shallow task copies with URLs cleared, never cached or saved | LLR-4501.5–.9, .12, .15, LLR-4502.1–.5, .7 |
+| 8 | views.py | `present_name(project_name, today)` | new: function-local `report_html.slug` import; view 3 uses `present-<date>.html` | LLR-4501.1, .2 |
+| 9 | views.py | `present_paths` | removed | LLR-4504.3 |
+| 10 | views.py | `save_present_svg` | removed | LLR-4504.1, .3 |
+| 11 | views.py | `_find_msedge` | removed | LLR-4504.2, .3 |
+| 12 | views.py | `save_present_png` | removed | LLR-4504.2, .3 |
+| 13 | views.py | `present_all_export` | removed | LLR-4504.3 |
+| 14 | views.py | `_all_timeline` parameter `anchor` (its only caller is `present_all_export`) and the now-unused imports `os`, `shutil`, `subprocess` | changed (E2 confirms no other user) | LLR-4504.3 |
+| 15 | keymap.py | `KEYMAP` entry `H`: `bar=True`, `primary=True`, at its current seat between `n` and `@`; stale `H`/`N` comments corrected | changed | LLR-4505.1–.5 |
+| 16 | keymap.py | `PRESENT_KEYS`: the `x` row's words; a new `o` row (`open_export`, group `OUT`) | changed | LLR-4506.1–.3 |
+| — | app.py | module imports from `views` (drop the four removed public names); `PresentScreen` docstring | changed, not a unit | LLR-4504.3 |
 | — | README.md | lines 140, 189, 291, 410 (docs, not a source file) | changed | LLR-4506.5 |
-| — | .dev-flow/BACKLOG.md | items on the SVG/PNG export (lines 284, 298, 326 at base) closed as obsolete, citing the commission (process record) | changed | X-2 |
+| — | docs/ARCHITECTURE.md | Edge and SVG/PNG export references (lines 42, 48, 70, 117, 122, 131 at base) | changed | HLR-4504 |
+| — | .dev-flow/BACKLOG.md | items on the SVG/PNG export (lines 284, 298, 326 at base) closed as obsolete; E3 known limits recorded | changed | X-2, rulings 14, 18, 22 |
 
-**Count: 13 units in 3 source files** (app.py, views.py, keymap.py) — 5 removed, 2 new, 6 changed;
+**Count: 16 units in 3 source files** (app.py, views.py, keymap.py) — 5 removed, 5 new, 6 changed;
 within the 4-source-file budget. `report_html.py`, `report_deck.py`, `modals.py` unchanged on purpose.
 
 **Tests the removal touches (for E4, justified one by one in the packet):** `tests/test_present.py`
 (~185), `test_present_all.py` (~488, ~697), `test_present_backlog_round.py` (~64, 144–145, 233–308),
 `test_present_room.py` (~56), `test_present_views_app.py` (~240, 320–323), `test_tick_label.py`
 (~51, ~251), `test_legend.py` (587–762), `test_present_hide.py` (~370), `test_present_narrow.py` (~242),
-`test_present_note_highlights.py` (~211), `test_present_polish.py`, `test_markup_census.py` (a census
-row naming the `x` export); any key-bar test that pins `H` as `bar=False`.
+`test_present_note_highlights.py` (~211), `test_present_polish.py`, `test_markup_census.py` (update the
+census reason "shared with the x export"); `tests/test_colour_budget_app.py` (`KEYBAR_BASE`: gantt 80
+primary gains `H` before `↓ ↑`; gantt 118 more becomes `… /  H  ↓ +3`; recorded re-baseline);
+`tests/test_added_list.py` (TC-4321's `global_keys("gantt")` expectation drops `H`); any key-bar test
+that pins `H` as `bar=False`.
 
 ## 7. Counts
 
-US 1 · HLR 6 · LLR 40 (4501: 14, 4502: 6, 4503: 7, 4504: 3, 4505: 5, 4506: 5) · AT 6.
+US 1 · HLR 6 · LLR 42 (4501: 15, 4502: 7, 4503: 7, 4504: 3, 4505: 5, 4506: 5) · AT 6.
