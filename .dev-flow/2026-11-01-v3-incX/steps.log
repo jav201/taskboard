@@ -3,3 +3,4 @@ E1 01:18Z-01:27Z requirements (architect, Opus): 6 HLR, 40 LLR, 6 AT; slice 13 u
 E1 01:29Z done 4f9aef0 (Opus architect) · E2a baseline done dde7fbe (Opus) · rulings 1-7
 E2 01:43Z prototype done 9186362 (Opus; nodes 5/11/11; trace 40/40, 6/6) · rulings 8-10
 E2c 01:47Z rulings 8-10 applied 113482e (Opus) · ruling 11 · E3 start
+E3r1 01:57Z architect FAIL 8d884ac + security PWN d0ff4f1 (Opus) · rulings 12-22 · design correction -> Kimi K3.1
