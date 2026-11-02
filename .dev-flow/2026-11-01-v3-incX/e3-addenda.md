@@ -39,3 +39,13 @@ Read-only in-memory probe of `keymap.KEYMAP`, with only `H` changed to `bar=True
 - **S-5:** a planted `reports/` symlink or junction is followed, matching `H`; no guard is added.
 - **F-13:** the stale `PresentKeys` docstring remains until a separate `modals.py` change.
 - **S-6(2):** no residual remains after F-12; the shared app offer supersedes the reviewer's stale-toast limitation.
+
+## E3 round-2 addenda (orchestrator, 2026-11-01). Binding on E4.
+
+E3 closed with PASS-WITH-NOTES from the architect (`21cffe6`) and from security (`d4dbd30`). Per the skill, the minor findings left at this point go to E4 as addenda.
+
+- **A-R2-1 (architect).** HLR-4502 reads "hides", not "does not draw". The tester encodes the "hides" meaning.
+- **A-R2-2 (architect).** The oracle for LLR-4501.3/.4 is a FIXTURE board whose tasks already have empty `urls`. Run `H` → `c` on that fixture and compare it byte for byte with `x` on the same fixture with URLs. Never compare the proxy with itself.
+- **S-R2-2 (security, MUST).** Clearing URLs means REBINDING them on per-task COPIES in the proxy. Never call `.clear()` or mutate the board's own `Task` objects or lists. The test is a negative control: after `x`, every source task keeps its exact `urls`, and a subsequent save writes the board's original URLs. A mutant that empties the source `urls` turns it RED.
+- **S-R2-1 (security).** Done and folded tasks' titles and notes reach the file by design. That is ruling 13. State it in the README's export paragraph, and widen the BACKLOG known-limit text.
+- Any other note in the two r2 reports that is marked MINOR or LOW and still unaddressed goes to BACKLOG.
