@@ -20,7 +20,7 @@ from textual.keys import format_key
 from textual.screen import ModalScreen, Screen
 from textual.widgets import Input, Static
 
-from . import history, report_html
+from . import history, report_html, report_deck
 from .boards import Registry, announce, name_for, open_elsewhere, peek_board, renew, withdraw
 from .people import PEOPLE_NAME, Directory
 from .marks import MARKS_NAME, Directory as MarksDirectory
@@ -52,13 +52,13 @@ from .views import (HEX, ago, added_order, added_rows, agenda_buckets, all_agend
                     board_chip_text, board_hex, first_created, render_added_list,
                     board_summary, home_card, home_keys, render_all_agenda,
                     people_by_urgency, person_items, render_people_directory,
-                    home_missing, home_title, present_all_export,
+                    home_missing, home_title, present_deck_boards,
                     clip, filtered_board, focus_tasks, gantt_group_key, group_key,
-                    gantt_plan, nav_model, present_paths, present_project_id,
+                    gantt_plan, nav_model, present_name, present_project_id,
                     present_hidden, present_hidden_rows, present_tasks_m, render_present,
-                    render_present_all, render_view, save_present_png, PresentAll,
+                    render_present_all, render_view, PresentAll,
                     PRESENT_MIN_WIDTH, PRESENT_RAIL_MIN, PRESENT_SCREEN_VIEWS,
-                     save_present_svg, sort_by_due, fit, vis, valid_url, _md,
+                    sort_by_due, fit, vis, valid_url, _md,
                     milestone_mark, render_marks)
 
 
@@ -215,16 +215,16 @@ class PresentScreen(ModalScreen[None]):
     Views 1/2 share one cursor and one project's hidden tasks; view 3 has its
     own cursor over project headers and tasks (on the rail, or on the timeline:
     `←`/`→` switch where the rail is drawn), handed over both ways.
-    `x` exports the current view's frame (view 3: its timeline, without the
-    rail) as SVG + PNG to the board's `reports/` folder, `esc`/`q` leave. The
+    `x` writes the HTML deck of what the presentation shows to the board's
+    `reports/` folder and `o` opens it for 10 s, `esc`/`q` leave. The
     presentation writes only the "show in presentation" flags (a task's, and in
     view 3 a project's) and the projects' presentation order: `space` hides the
     cursor's row, `a` shows everything hidden, `shift+↑/↓` move a project in
     view 3, `u` opens the list of hidden items — each change saved at once.
     The keys and the hidden count ride the hint row only — the frame is what
-    the room sees and what `x` exports. With a board chip (batch 2026-10-20-batch-03)
+    the room sees. With a board chip (batch 2026-10-20-batch-03)
     the hint row opens with it; `?` lists every key (`PresentKeys`); `K`/`J` reorder
-    beside `shift+↑/↓`; view 3 exports its timeline without the cursor."""
+    beside `shift+↑/↓`."""
 
     # GENERATED from the presentation's seat (batch 2026-10-20-batch-03): every key
     # priority, so the screen's own `a`/`u`/`1`-`3` beat the app's; the app's
@@ -620,33 +620,57 @@ class PresentScreen(ModalScreen[None]):
         rows = present_hidden_rows(self._board, self._project_id, self._all())
         self.app.push_screen(PresentHiddenPicker(self._board, rows), lambda _: self._paint())
 
+    def _deck_lane(self) -> tuple[str | None, str, str, Board]:
+        """The presented board as `report_html.extract` names it — the lane
+        `board_lanes` gives the open board, without reading any other board's
+        file. A registry board keeps its id, name and colour; an unlisted one
+        (`--open`) is keyed None and named by its label."""
+        board_id = self.app.board_id
+        if board_id is not None:
+            entry = self.app.registry.get(board_id)
+            if entry is not None:
+                return (entry.id, entry.name, entry.color, self._board)
+        label = self._board.label or ("this board", "pink")
+        return (None, label[0], label[1], self._board)
+
     def action_export(self) -> None:
         w = self.size.width or 0
         if self._narrow():
             self.app.notify(f"Widen the terminal to {PRESENT_MIN_WIDTH}+ columns to export",
                             title="Present", severity="warning", timeout=6, markup=False)
             return
-        h = self._frame_height()
-        if self._all():
-            # the timeline as laid out on screen but without the cursor, cut to its
-            # content (batch 2026-10-20-batch-03, the round's item 4)
-            proj = self._cursor_project()
-            text, w, h = present_all_export(self._board, self._today, w, h,
-                                            frozenset(self._folded), proj.id if proj else None)
-            svg_path, png_path = present_paths(self._board, None, self._today, "all")
+        lane = self._deck_lane()
+        pid = None if self._all() else self._project_id
+        boards = present_deck_boards(lane, pid)   # read at this press: never cached on self
+        if self._view < 2:
+            project = boards[0][3].projects[0] if boards[0][3].projects else None
+            key = None if project is None else f"{lane[0] if lane[0] is not None else '#0'}:{project.id}"
+            project_name = None if project is None else (
+                self._project_name if self._board.project_by_id(pid) is not None else project.name)
         else:
-            text = self._frame_text()
-            svg_path, png_path = present_paths(self._board, self._project_name, self._today,
-                                               PRESENT_SCREEN_VIEWS[self._view])
-        save_present_svg(text, svg_path, w, h)
-        png = save_present_png(svg_path, png_path, w, h)
-        if png is None:
-            self.app.notify(
-                f"Exported {svg_path.name} to {svg_path.parent} — PNG needs Microsoft Edge",
-                title="Present", severity="warning", timeout=10, markup=False)
-        else:
-            self.app.notify(f"Exported {svg_path.name} + {png_path.name} to {svg_path.parent}",
-                            title="Present", severity="information", timeout=10, markup=False)
+            key = project_name = None
+        today = date.today()
+        d = report_html.extract(boards, self.app.people.people, self.app.marks.marks,
+                                today, project=key)
+        folder = Path(self._board.path).parent / "reports"
+        path = folder / present_name(project_name, today)
+
+        def write() -> list[Path]:
+            folder.mkdir(parents=True, exist_ok=True)
+            path.write_text(report_deck.render(d), encoding="utf-8")
+            return [path]
+
+        written = self.app._write_report(write, folder)
+        self.app._report_offer = (written, self.app._report_clock() + 10) if written is not None else None
+
+    def action_open_export(self) -> None:
+        """`o` — open the last export while its toast is up (10 s): the app's
+        shared single-use offer, made by `H`'s and by `x`'s write toast and
+        consumed here. Nothing when no offer is live; never raises"""
+        offer = self.app._report_offer
+        self.app._report_offer = None
+        if offer is not None and self.app._report_clock() < offer[1]:
+            self.app._open_report(offer[0])
 
     def action_close(self) -> None:
         self.dismiss(None)
@@ -3021,19 +3045,28 @@ class TaskboardApp(App):
         today = date.today()
         d = report_html.extract(boards, self.people.people, self.marks.marks, today,
                                 project=key if scope == "project" else None)
+        first = self._write_report(
+            lambda: report_html.write_reports(d, kinds, folder, today), folder, skipped)
+        self._report_offer = (first, self._report_clock() + 10) if first is not None else None
+
+    def _write_report(self, write, folder: Path, skipped: int = 0) -> Path | None:
+        """The write -> toast tail `H`'s report flow had, now shared by `H`
+        and the presentation's `x`: one write, one toast naming the file(s),
+        the folder and the `o` offer; the first path, or None when the write
+        raised OSError (a part may be written: no offer — the caller clears
+        the shared slot). It stores no offer itself (F-12)."""
         try:
-            paths = report_html.write_reports(d, kinds, folder, today)
-        except OSError as e:                      # a part may be written: no offer
-            self._report_offer = None
-            self.notify(f"Report not (fully) written: {e}", title="Report", severity="error",
-                        timeout=10, markup=False)
-            return
+            paths = write()
+        except OSError as e:
+            self.notify(f"Report not (fully) written: {e}", title="Report",
+                        severity="error", timeout=10, markup=False)
+            return None
         text = f"Report written: {' and '.join(p.name for p in paths)}"
         if skipped:
             text += f" · {skipped} board{'s' if skipped > 1 else ''} skipped"
         text += f"\n{folder}\no opens it (10 s)"     # a line each: a long path never splits the names
         self.notify(text, title="Report", severity="information", timeout=10, markup=False)
-        self._report_offer = (paths[0], self._report_clock() + 10)
+        return paths[0]
 
     def _open_report(self, path: Path) -> None:
         """Open a report this app just wrote in `<board dir>/reports/` (its name built
@@ -3044,7 +3077,7 @@ class TaskboardApp(App):
                 opened = True
             else:
                 opened = webbrowser.open(path.as_uri())
-        except OSError:
+        except (OSError, ValueError):           # as_uri() can raise ValueError off Windows
             opened = False
         if not opened:
             self.notify(f"Could not open the report {path.name}.", title="Report",

@@ -16,10 +16,7 @@ from __future__ import annotations
 import copy
 import functools
 import math
-import os
 import re
-import shutil
-import subprocess
 import textwrap
 import unicodedata
 from datetime import date, datetime, timedelta
@@ -7337,66 +7334,48 @@ def render_present(board: Board, project_id: str | None, cursor_id: str | None,
     return _present_finish(lines, height, width)
 
 
-def present_paths(board: Board, project_name: str | None,
-                  today: date | None = None, view: str = "gantt") -> tuple[Path, Path]:
-    """The SVG and PNG export destinations, beside the board in the same
-    `reports/` folder the HTML report used — the shipped destination convention.
-    A view other than `gantt` adds its name, so exporting both views on one day
-    keeps both files."""
-    today = today or date.today()
-    slug = "".join(ch.lower() if ch.isalnum() else "-" for ch in (project_name or "board"))
-    slug = slug.strip("-")[:40] or "board"
-    tail = "" if view == "gantt" else f"-{view}"
-    base = Path(board.path).parent / "reports" / f"present-{slug}-{today.isoformat()}{tail}"
-    return base.with_suffix(".svg"), base.with_suffix(".png")
+def present_deck_boards(lane: tuple[str | None, str, str, Board],
+                        project_id: str | None) -> list[tuple[str | None, str, str, Board]]:
+    """The `x` export's scope: the presented board as a shallow proxy holding
+    exactly what the presentation does not hide. Views 1/2 hold the presented
+    project — whatever its own `show_in_present` — resolved exactly as
+    `render_present` does; view 3 (`project_id` None) holds every shown
+    project in `present_order`. The held tasks are the shown ones
+    (`present_tasks_m`, open and done, folds never read) as per-task shallow
+    copies in board order with their `urls` rebound to [] — the source board's
+    projects, tasks and URLs are never touched, and the proxy reaches only
+    `report_html.extract`, never `save` or a cache."""
+    bid, name, colour, board = lane
+    proxy = copy.copy(board)
+    if project_id is None:
+        proxy.projects = [p for p in present_order(board) if p.show_in_present]
+    else:
+        p = board.project_by_id(project_id)
+        if p is None:                       # `render_present`'s first-visible fallback
+            visible = board.visible_projects(False)
+            p = visible[0] if visible else None
+        proxy.projects = [] if p is None else [p]
+    pos = {t.id: i for i, t in enumerate(board.tasks)}
+    held: list[Task] = []
+    for p in proxy.projects:
+        for t in present_tasks_m(board, p.id)[1]:
+            t2 = copy.copy(t)
+            t2.urls = []                    # a copy's list: the board's own URLs stay
+            held.append(t2)
+    proxy.tasks = sorted(held, key=lambda t: pos[t.id])
+    return [(bid, name, colour, proxy)]
 
 
-def save_present_svg(text: Text, path: Path, width: int, height: int) -> Path:
-    """The rich export path the report's SVG used: the frame as a standalone SVG.
-    The console writes to devnull so the width-1 glyphs (◆ ╎ ┆) never hit the
-    Windows console's cp1252 encoder on their way to the file."""
-    con = Console(width=width + 2, height=height + 4, force_terminal=True,
-                  color_system="truecolor", record=True,
-                  file=open(os.devnull, "w", encoding="utf-8"))
-    con.print(text, end="")
-    path.parent.mkdir(parents=True, exist_ok=True)
-    con.save_svg(str(path), title="taskboard · presentation")
-    return path
-
-
-def _find_msedge() -> str | None:
-    """The headless Edge binary, from the standard install locations then PATH.
-    None when Edge is not installed — the PNG cannot be rasterised without it."""
-    pfx = os.environ.get("ProgramFiles(x86)") or r"C:\Program Files (x86)"
-    pf = os.environ.get("ProgramFiles") or r"C:\Program Files"
-    for base in (pfx, pf):
-        cand = Path(base) / "Microsoft" / "Edge" / "Application" / "msedge.exe"
-        if cand.is_file():
-            return str(cand)
-    return shutil.which("msedge") or shutil.which("microsoft-edge")
-
-
-def save_present_png(svg_path: Path, png_path: Path,
-                     width: int, height: int) -> Path | None:
-    """Rasterise the SVG to a PNG with headless Edge. The terminal's own
-    screenshot is SVG-only, so the PNG is Edge's render of the same file. None
-    when Edge is absent or the render fails — the SVG is already written and the
-    caller says the PNG needs Edge; it never crashes the export."""
-    exe = _find_msedge()
-    if exe is None:
-        return None
-    png_path.parent.mkdir(parents=True, exist_ok=True)
-    cmd = [exe, "--headless=new", "--disable-gpu",
-           f"--screenshot={png_path}",
-           f"--window-size={width * 10},{height * 20}",
-           svg_path.as_uri()]
-    try:
-        proc = subprocess.run(cmd, capture_output=True, timeout=30)
-    except (subprocess.TimeoutExpired, OSError):
-        return None
-    if proc.returncode != 0 or not png_path.exists():
-        return None
-    return png_path
+def present_name(project_name: str | None, today: date) -> str:
+    """The `x` export's file name in the board's `reports/` folder (rulings 9
+    and 21/F-11): `present-<project slug>-<date>.html`, `project` when the
+    slug is empty; view 3 (`None`) is the collision-free
+    `present-<date>.html`. Never the `deck-…`/`workspace-…` names, so `x`
+    never overwrites `H`'s files."""
+    from .report_html import slug          # function-local: the module level is circular
+    if project_name is None:
+        return f"present-{today.isoformat()}.html"
+    return f"present-{slug(project_name) or 'project'}-{today.isoformat()}.html"
 
 
 # --------------------------------------------------------------------------- #
@@ -7413,7 +7392,7 @@ PRESENT_RAIL_W = 24
 
 class PresentAll(NamedTuple):
     frame: Text            # what the screen paints
-    timeline: Text         # the frame without the rail: what `x` exports
+    timeline: Text         # the frame without the rail
     timeline_w: int
     stops: list            # the timeline's drawn rows, ("proj" | "task", id), screen order
     rail_stops: list       # every visible project on the rail; empty without a rail
@@ -7565,9 +7544,9 @@ def _all_fit(lines: list[str], height: int, width: int) -> list[str]:
 
 
 def _all_timeline(board: Board, width: int, height: int, today: date, cur, folded,
-                  rail_focus: bool, anchor: str | None = None):
-    """`anchor` lays the rows out around that project instead of the cursor's (the
-    export draws no cursor but folds as the screen does — batch 2026-10-20-batch-03)."""
+                  rail_focus: bool):
+    """The export draws no cursor but folds as the screen does —
+    batch 2026-10-20-batch-03."""
     plan = _all_plan(board)
     wide = width >= 100
     label_w, chip_w, field_w = _present_cols(width, wide)
@@ -7575,7 +7554,7 @@ def _all_timeline(board: Board, width: int, height: int, today: date, cur, folde
     g = _PresentGeo(width, label_w, chip_w, field_w, ax, set(critical_chain(board)), today,
                     wide, "dim")
     _, _, cur_proj = _all_resolve(board, cur)
-    around = anchor if anchor is not None else (cur_proj.id if cur_proj else None)
+    around = cur_proj.id if cur_proj else None
     open_, gap, stops, rows = _all_layout(plan, around, folded, height - 3)
     if rows and max(rows.values()) >= height:   # the overflow row takes the last row:
         stops = [s for s in stops if rows[s] < height - 1]   # what it covers is no stop
@@ -7651,21 +7630,6 @@ def render_present_all(board: Board, cursor, today: date, width: int, height: in
     joined = [rail[y] + c("│", "frame") + lines[y] for y in range(height)]
     return PresentAll(_present_finish(joined, height, width), _present_finish(lines, height, tw),
                       tw, stops, [("proj", p.id) for p in present_order(board)], drawn)
-
-
-def present_all_export(board: Board, today: date, width: int, height: int, folded=frozenset(),
-                       anchor: str | None = None) -> tuple[Text, int, int]:
-    """What `x` writes in view 3 (batch 2026-10-20-batch-03, the round's item 4
-    "limpia"): the timeline at the width the screen draws it (without the rail), laid
-    out around `anchor` — the cursor's project, so its folds are the screen's — but
-    drawn with NO cursor, and cut after its last row that holds anything but blanks
-    (a row with content is never cut). Returns (text, width, rows)."""
-    tw = width - PRESENT_RAIL_W - 1 if width >= PRESENT_RAIL_MIN else width
-    # `cur=None` with `rail_focus=True` is `_all_timeline`'s "no cursor drawn"
-    lines, _stops, _cur = _all_timeline(board, tw, height, today, None, folded, True, anchor)
-    while lines and not _strip(lines[-1]).strip():
-        lines.pop()
-    return to_text(lines, len(lines), tw), tw, len(lines)
 
 
 def present_hidden_rows(board: Board, project_id: str | None,

@@ -137,8 +137,8 @@ between the short and the full layer. Every key below is also in the command pal
 | `n` | Capture | A full-screen notes pad: type, and separate notes with a `____` line (`alt+l` inserts one); beside each note, the project of any board that matches it best, with the words that matched. `alt+d` turns the cursor's note into a task there, `alt+o` picks the next suggestion, `alt+n` a new project, `alt+a` reviews every note, `alt+i` attaches the clipboard image, `alt+u` undoes the last dump (kept 7 days), `esc` closes. The pad lives in `~/.taskboard/inbox.json` |
 | `@` | People directory | Who you owe what: the people of `~/.taskboard/people.json` (most late first) beside the chosen person's open tasks of every board, each with the note line that mentions them and a `late · today · open` box; `enter` opens a task on its board, `n`/`e` add and edit a person, `/` finds a name. Not view `9` (the team's `People`) |
 | `#` | Milestone classes | The classes of `~/.taskboard/marks.json`: `n`/`e` add and edit a class, `space` hides or shows it, `esc` closes |
-| `R` / `S` | Present / Standup | Present the selected task's project, or every project (`3`), with gantt + brief, export SVG+PNG / show the week's standup |
-| `H` | Report | Export an HTML report into the open board's `reports/` folder: `b` the workspace (filters, print, "download this view"), `c` the deck, `a` both; scope `o` all loaded boards (the default) or `p` the current project (the selected task's, else the focused one); the toast names the file, and `o` opens it while the toast is up (10 s). The file lands beside the open board, and scope `o` writes every loaded board into it: do not export into a folder shared with people who should not see all your boards |
+| `R` / `S` | Present / Standup | Present the selected task's project, or every project (`3`), with gantt + brief, export the HTML deck / show the week's standup |
+| `H` | Report | Export an HTML report into the open board's `reports/` folder: `b` the workspace (filters, print, "download this view"), `c` the deck, `a` both; scope `o` all loaded boards (the default) or `p` the current project (the selected task's, else the focused one); the toast names the file, and `o` opens it while the toast is up (10 s). It sits on the key bar. The file lands beside the open board, and scope `o` writes every loaded board into it: do not export into a folder shared with people who should not see all your boards |
 | `I` | Templates | Insert a process template (a named chain of tasks) into the selected task's project |
 | `comma` | Save chain | Save the selected chain as a template (chain map) |
 | `c` | Clocks | Choose the ribbon's two city clocks |
@@ -186,7 +186,7 @@ with no class keeps the plain `◆`. The editor's `alt+m` beside `milestone` pic
 
 `#` opens the class manager: `n`/`e` add and edit a class (name, shape, colour), `space` hides or
 shows it. A hidden class's milestones leave the gantt and the presentation — all three
-presentation views and their SVG/PNG exports — and the strip under the gantt's ruler (and in the
+presentation views — and the strip under the gantt's ruler (and in the
 presentation) names the classes drawn in the frame plus how many are hidden. In the filter,
 `/#cls` keeps exactly that class's milestones — `/#pay` shows the Payment ones, `/#zzz` shows
 none — and the bar names the class. `?` names the classes too.
@@ -288,12 +288,14 @@ has three views, and `R` always opens on the first:
 
 `tab` and `shift+tab` (`⇥`, `⇧⇥`) cycle through the views; `↑`/`↓` move the cursor (and
 `←`/`→` in views 1 and 2). Views 1 and 2 share one cursor; leaving view 3 shows its cursor's
-project in views 1 and 2. `x` exports the view on screen to an SVG and a PNG in the `reports`
-folder (the split view's files end in `-split`; view 3 exports its timeline without the rail
-and without the cursor, cut to its last row, to files ending in `-all`); `esc` leaves. The
-keys live in the hint row under the frame, never in the frame, so the room and the export see
+project in views 1 and 2. `x` writes the HTML deck of what the presentation shows — every shown
+project and task of the view, done tasks and folded projects included (nothing the presentation
+hides is in it), with no task URLs — as `present-<project>-<date>.html` in the board's `reports`
+folder (view 3: `present-<date>.html`; never `H`'s `deck-…` names, so a same-day export of both
+keeps both). The toast names the file, and `o` opens it while the toast is up (10 s); `esc`
+leaves. The keys live in the hint row under the frame, never in the frame, so the room sees
 only the projects; with several boards the hint row opens with the board's name, which the
-frame and the exports never show. `?` opens a window with every key of the presentation, the
+frame never shows. `?` opens a window with every key of the presentation, the
 current view's bright and another view's dimmed.
 
 `space` hides the cursor's row from the presentation — a task, or in view 3 a whole project on
@@ -407,7 +409,7 @@ Everything lives under `~/.taskboard/` (or beside the file you pass with `--boar
 | `board.json.pre-move-<date>` | A copy of a board file taken before a project moved to or from it |
 | `move-<date>.json` | The projects moved that day, beside each board involved: tasks, links kept, links dropped |
 | `images/<task id>/` | Pasted images, as plain files |
-| `reports/` | HTML reports and the presentation's SVG + PNG exports |
+| `reports/` | HTML reports: `H`'s workspace and deck files, and the presentation's `present-…​.html` decks |
 | `people.json` | The people you mention, for every board: handle, name, role, a note; written only when you add or edit a person (never sent to a team folder) |
 | `people.json.corrupt` | A copy of an unreadable `people.json`, kept before the app starts with no people |
 | `marks.json` | The milestone classes, for every board: id, name, shape, colour, hidden; written only when you add, edit or hide a class (never sent to a team folder) |

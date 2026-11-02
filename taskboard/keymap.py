@@ -142,14 +142,15 @@ KEYMAP: tuple[Key, ...] = (
     # global, off the bar, like `R`; the home's key row names it too
     Key("A", "A", "agenda_all", "All boards", group="misc", bar=False),
     # `N` — the added-order list of every task of every board (Inc L, LLR-4303.1):
-    # global, off the bar, like `A`; it sits right after `A` so the `?` help's
-    # global line and the palette read "… A All boards  N Added list  H Report …"
+    # global, off the bar, like `A`; it sits right after `A` so the palette
+    # reads "… A All boards  N Added list  H Report …"
     Key("N", "N", "added_list", "Added list", group="misc", bar=False),
     # `n` — the capture view (Inc K, LLR-4401.1): global, off the bar, like `N`
     Key("n", "n", "capture", "Capture", group="misc", bar=False),
     # `H` — export an HTML report, the workspace and/or the deck (batch 2026-10-29-batch-01,
-    # HLR-3107): global, off the bar, like `R`/`A`; its modal names its own keys
-    Key("H", "H", "report_export", "Report", group="misc", bar=False),
+    # HLR-3107): global, ON the bar in both layers at its seat between `n` and `@`
+    # (`H Report` first fits at ~193 columns; Inc X / HLR-4505)
+    Key("H", "H", "report_export", "Report", primary=True, group="misc"),
     # `@` — the people directory's view (batch 2026-10-21-batch-01, the round's item 1):
     # global, off the bar, like `A`; named apart from view 9's team `People` (D4)
     Key("at", "@", "people_directory", "People directory", group="misc", bar=False),
@@ -241,7 +242,8 @@ PRESENT_KEYS: tuple[PresentKey, ...] = (
     PresentKey((("shift+up,K", "reorder(-1)"), ("shift+down,J", "reorder(1)")),
                "⇧↑↓ K J", "move a project up / down", "CURATE", "all"),
     PresentKey((("enter", "fold"),), "enter", "fold a project", "CURATE", "all"),
-    PresentKey((("x", "export"),), "x", "export this view · SVG + PNG", "OUT"),
+    PresentKey((("x", "export"),), "x", "export this view · HTML deck", "OUT"),
+    PresentKey((("o", "open_export"),), "o", "open the last export (10 s)", "OUT"),
     PresentKey((("escape,q", "close"),), "esc q", "leave", "OUT"),
     PresentKey((("question_mark", "keys"),), "?", "these keys", "OUT"),
 )
