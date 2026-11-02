@@ -1,0 +1,27 @@
+taskboard: C:\Users\jjgh8\Github\taskboard-wt\x-html\taskboard\__init__.py
+head: f144145
+        rows = [k for k in keymap.KEYMAP if k.show == "H"]
+        assert len(rows) == 1
+        h = rows[0]
+        assert (h.keys, h.action, h.label, h.group, h.bar, h.primary) == (
+            "H", "report_export", "Report", "misc", True, True)
+        for view in keymap.VIEWS:
+            assert ("H", "Report", "report_export") in keymap.palette_commands(view)
+            assert h in keymap.bar_keys(view, "primary")
+            assert h in keymap.bar_keys(view, "more")
+            assert h not in keymap.global_keys(view)
+        assert next(k for k in keymap.KEYMAP if k.action == "hmove(-1)").keys == "left,h"
+        app = open_home(home)
+        async with app.run_test(size=(118, 30)) as pilot:
+            await start(pilot)
+            await press(pilot, "question_mark")
+            await pilot.pause()
+>           assert "H Report" in painted(app)
+E           AssertionError: assert 'H Report' in '                                                                                                                     ...                                                                                                                      '
+E            +  where '                                                                                                                     ...                                                                                                                      ' = painted(TaskboardApp(title='taskboard', classes={'-dark-mode'}, pseudo_classes={'dark', 'focus'}))
+
+tests\test_report_export_app.py:259: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_present_html_export.py::test_TC_4737_LLR_4503_7_markup_in_folder_is_literal_toast_text
+FAILED tests/test_report_export_app.py::test_TC_3117_H_is_seated_once_on_the_bar
+2 failed, 531 passed in 280.87s (0:04:40)

@@ -238,8 +238,10 @@ async def test_AT_3105_H_c_writes_the_deck_with_one_slide_per_chosen_project(hom
 async def test_TC_3117_H_is_seated_once_on_the_bar(home):
     """TC-3117 (LLR-3107.1, amended by Inc X ruling 7): exactly one `KEYMAP` row
     shows `H` — action `report_export`, group misc, on both bar layers and out of
-    the global line; it stays in the palette and `?` paints `H Report` once.
-    Lowercase `h` keeps its meaning (left). RED: the row dropped or moved off the bar."""
+    the global line; it stays in the palette and `?` lists `H Report` once.
+    Lowercase `h` keeps its meaning (left). Under the fit rules (ruling 16) the bar
+    draws a bare `H` at 118 and `H Report` once its own width reaches 193 (a 195-cell
+    terminal); the wide arm paints at 201. RED: the row dropped or moved off the bar."""
     rows = [k for k in keymap.KEYMAP if k.show == "H"]
     assert len(rows) == 1
     h = rows[0]
@@ -254,9 +256,17 @@ async def test_TC_3117_H_is_seated_once_on_the_bar(home):
     app = open_home(home)
     async with app.run_test(size=(118, 30)) as pilot:
         await start(pilot)
+        bar = painted(app).splitlines()[-1]
+        assert "  H  " in bar and "H Report" not in bar
         await press(pilot, "question_mark")
         await pilot.pause()
-        assert "H Report" in painted(app)
+        # The Keys band can sit below the fold at 30 rows, so read the help's text.
+        texts = [app.screen.query_one(i).content.plain for i in ("#help-keys", "#help-global")]
+        assert sum(len(re.findall(r"(?:^|\s)H\s+Report(?:\s|$)", t)) for t in texts) == 1
+    app = open_home(home)
+    async with app.run_test(size=(201, 30)) as pilot:
+        await start(pilot)
+        assert "H Report" in painted(app).splitlines()[-1]
 
 
 # --------------------------------------------------------------------------- #

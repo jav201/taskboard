@@ -16,6 +16,7 @@ from datetime import date
 from pathlib import Path
 
 import pytest
+from textual.content import Content
 
 from taskboard import app as app_module, keymap, models, modals, views
 from taskboard.app import PresentScreen, TaskboardApp
@@ -602,14 +603,20 @@ async def test_TC_4736b_LLR_4503_6_relative_uri_valueerror_is_caught(tmp_path, m
 
 
 async def test_TC_4737_LLR_4503_7_markup_in_folder_is_literal_toast_text(tmp_path):
-    board = _default_board(tmp_path / "[red]rx[/red]" / "board.json")
+    # `[red]rx[/red]` (the LLR's literal) holds a `/`, which splits the folder on
+    # every OS; `[red]rx[red]` carries the same markup in ONE path segment.
+    folder = "[red]rx[red]"
+    board = _default_board(tmp_path / folder / "board.json")
     app = _app(board)
     async with app.run_test(size=(118, 31), notifications=True) as pilot:
         await _present(pilot)
         await _press(pilot, "x")
     toasts = _toasts(app)
     assert toasts, "x must use the shared Report toast"
-    assert "[red]rx[/red]" in toasts[-1].message
+    n = toasts[-1]
+    # The toast's plain text, by the rule Textual's Toast.render applies.
+    plain = (Content.from_markup(n.message) if n.markup else Content(n.message)).plain
+    assert folder in plain
 
 
 # ---------------------------------------------------------------------------

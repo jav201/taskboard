@@ -1,0 +1,24 @@
+GREEN-2 — E4 integration run
+cmd: env -u NO_COLOR python -m pytest <files> -q -rf  (cwd = C:/Users/jjgh8/Github/taskboard-wt/x-html)
+taskboard: C:\Users\jjgh8\Github\taskboard-wt\x-html\taskboard\__init__.py
+head: f144145 + working-tree E4 test fixes (committed with this file)
+files (19): tests/test_added_list.py tests/test_colour_budget.py tests/test_colour_budget_app.py tests/test_english.py tests/test_legend.py tests/test_markup_census.py tests/test_modal_keys.py tests/test_present.py tests/test_present_all.py tests/test_present_backlog_round.py tests/test_present_hide.py tests/test_present_html_at.py tests/test_present_html_export.py tests/test_present_note_highlights.py tests/test_present_room.py tests/test_present_views_app.py tests/test_prism_laws.py tests/test_report_export_app.py tests/test_tick_label.py 
+
+C:\Users\jjgh8\anaconda3\Lib\site-packages\pytest_asyncio\plugin.py:207: PytestDeprecationWarning: The configuration option "asyncio_default_fixture_loop_scope" is unset.
+The event loop scope for asynchronous fixtures will default to the fixture caching scope. Future versions of pytest-asyncio will default the loop scope for asynchronous fixtures to function scope. Set the default fixture loop scope explicitly in order to avoid unexpected behavior in the future. Valid fixture loop scopes are: "function", "class", "module", "package", "session"
+
+  warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCOPE_UNSET))
+........................................................................ [ 13%]
+........................................................................ [ 27%]
+........................................................................ [ 40%]
+........................................................................ [ 54%]
+........................................................................ [ 68%]
+........................................................................ [ 81%]
+........................................................................ [ 95%]
+.......................                                                  [100%]
+527 passed in 277.21s (0:04:37)
+exit: 0
+
+--- supplementary (not in the briefed set): tests/test_keymap.py, which LLR-4506 / TC-4765 names ---
+........................                                                 [100%]
+24 passed in 1.32s
