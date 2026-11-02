@@ -20,3 +20,13 @@ These rulings answer the E1 author's four open questions, at commit `4f9aef0`.
 5. **Prototype scripts.** Three prototype scripts call the functions being removed. They are frozen design evidence, not product code, and no test collects them. Leave them as they are. One line in the README of each prototype folder, or in BACKLOG, says they no longer run after this change. This follows the 2026-10-18 precedent of marking such scripts HISTORICAL.
 6. **`o` inside `R`.** The presentation is a modal screen, so the app-level keys do not reach it. `o` therefore binds on `PresentScreen` itself, and the export offer lives there. `H` stays app-level and works outside `R` only. The `R` hint names `x` (HTML), not `H`.
 7. **`test_TC_3117`.** This test pins `H` as `bar=False`. Rewrite it to pin X-3, with its reason recorded in the packet.
+
+## Rulings on the E2 findings (2026-11-01, commit `9186362`)
+
+These rulings settle the conflicts between ruling 3 / rulings 1 and 6 and the E1 requirements. The design is simplified: removing a feature wins over guarding it.
+
+8. **The cover is dropped from ruling 3.** The `x` deck stays BYTE-IDENTICAL to what `H` → `c` writes for the same scope. The E2 probe already matches it byte for byte. No change to the cover text, and no change to `report_deck.py`'s rendering. LLR-4501.3/.4 stand as written.
+9. **The separate file name is kept from ruling 3.** It prevents same-day overwrites of `H`'s files. The name is `present-<project-slug|all>-<YYYY-MM-DD>.html` in `reports/`, built by a name helper (S-3 `present_name`), and the file bytes do not change.
+
+   Amend LLR-4501.1, LLR-4501.2, LLR-4501.11, LLR-4504.1, AT-4501 and AT-4502 to this name with targeted edits. Each amendment gets one ledger entry that names each id.
+10. **The hint row keeps its current wording,** and the hint parts of rulings 1 and 6 are withdrawn. LLR-4506.4 stands. HTML is named in the presentation's `?` window (ruling 4) and in the README, not in the hint row.
