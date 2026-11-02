@@ -1,19 +1,20 @@
 # E2 trace, Inc X (LLR -> example, AT -> example) over graph-interfaces + graph-proto-A + graph-proto-B
 # command: python e2_trace.py .dev-flow/2026-11-01-v3-incX   (the script is reproduced below; adapted from incK/e2-trace.py)
 # lint: codewire_lint.py on the three files -> not read=0, exit 0 each
+# re-run after the rulings 8-10 design pass (cover nodes removed from proto-B: render, _cover, _presented_line)
 
 LLR-4501.1 (TC TC-4701): interfaces:present_name TC-4701,TC-4701b; proto-A:PresentScreen.action_export TC-4701; proto-B:present_name TC-4701c
 LLR-4501.2 (TC TC-4702): interfaces:present_name TC-4702; proto-A:PresentScreen.action_export TC-4702
-LLR-4501.3 (TC TC-4703): interfaces:extract TC-4703; interfaces:render TC-4703; proto-A:PresentScreen.action_export TC-4703; proto-A:TaskboardApp._on_report_chosen TC-4703; proto-B:present_deck_boards TC-4703; proto-B:render TC-4703; proto-B:_cover TC-4703; proto-B:_presented_line TC-4703
-LLR-4501.4 (TC TC-4704): interfaces:extract TC-4704; interfaces:render TC-4704; proto-A:PresentScreen.action_export TC-4704; proto-A:TaskboardApp._on_report_chosen TC-4704; proto-B:_presented_line TC-4704
+LLR-4501.3 (TC TC-4703): interfaces:extract TC-4703; interfaces:render TC-4703; proto-A:PresentScreen.action_export TC-4703; proto-A:TaskboardApp._on_report_chosen TC-4703; proto-B:present_deck_boards TC-4703
+LLR-4501.4 (TC TC-4704): interfaces:extract TC-4704; interfaces:render TC-4704; proto-A:PresentScreen.action_export TC-4704; proto-A:TaskboardApp._on_report_chosen TC-4704
 LLR-4501.5 (TC TC-4705): interfaces:present_deck_boards TC-4705
 LLR-4501.6 (TC TC-4706): interfaces:present_deck_boards TC-4706
 LLR-4501.7 (TC TC-4707): interfaces:present_deck_boards TC-4707; proto-A:PresentScreen._deck_lane TC-4707
 LLR-4501.8 (TC TC-4708): interfaces:present_deck_boards TC-4708
 LLR-4501.9 (TC TC-4709): interfaces:present_deck_boards TC-4709
 LLR-4501.10 (TC TC-4710): proto-A:PresentScreen.action_export TC-4710; proto-B:present_deck_boards TC-4710
-LLR-4501.11 (TC TC-4711): proto-A:PresentScreen._deck_lane TC-4711; proto-B:_cover TC-4711
-LLR-4501.12 (TC TC-4712): interfaces:present_deck_boards TC-4712; interfaces:render TC-4712; proto-B:_presented_line TC-4712
+LLR-4501.11 (TC TC-4711): proto-A:PresentScreen._deck_lane TC-4711
+LLR-4501.12 (TC TC-4712): interfaces:present_deck_boards TC-4712; interfaces:render TC-4712
 LLR-4501.13 (TC TC-4713): proto-A:PresentScreen.action_export TC-4713
 LLR-4501.14 (TC TC-4714): proto-A:PresentScreen.action_export TC-4714
 LLR-4502.1 (TC TC-4721): interfaces:present_deck_boards TC-4721

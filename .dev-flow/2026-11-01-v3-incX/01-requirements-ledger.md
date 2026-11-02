@@ -23,3 +23,15 @@
 - **What changed:** X-3's "`H report` shows in the key bar" is pinned as the key `H` in the primary bar of all 10 main views at 80 and 118 columns, with the word `Report` required only where every entry keeps its word (≥ about 201 columns).
 - **Why:** measured on `509d444` (`keymap.fit_bar`, `H` appended as the primary layer's last entry): 0/20 cases drop a key, 0/20 lose more than one word, but `H`'s word is the first the fit rule drops, and the primary bar already overflows below 191 columns, so at 80 and 118 `H` is drawn bare. Declared at its current seat position instead, `H` lands before `↓ ↑` (also 0 keys dropped). Declared universal, it keeps its word but 7/20 cases lose two or more view words. The commission's capture "showing `H report`" will show `H` (open question OQ-1).
 - **Evidence:** the probe's output in this stage's report (`fit_bar` over 10 views × {80, 118, 140}, three placements); `taskboard/keymap.py:308-325` (`fit_bar`), `keymap.py:284-287` (`global_keys`), `taskboard/modals.py:3391-3397` (the `?` help's band reads `bar_keys`, its global line `global_keys`).
+
+### LED-2026-11-01-incX.3 — `x` gets its own file name, `present-<project slug|all>-<date>.html` (ruling 9)
+- **Requirement:** LLR-4501.1
+- **Requirement:** LLR-4501.2
+- **Requirement:** LLR-4501.11
+- **Requirement:** LLR-4504.1
+- **Requirement:** AT-4501
+- **Requirement:** AT-4502
+- **Date:** 2026-11-01
+- **What changed:** LLR-4501.1 names the views-1/2 file `present-<project slug>-<date>.html` (an empty slug becomes `project`), and its negative control becomes "write `H`'s `deck-<board slug>-<project slug>-<date>.html` name". LLR-4501.2 names the view-3 file `present-all-<date>.html`, and its negative control becomes "write `H`'s `deck-<date>.html` name". LLR-4501.11 keeps only its cover arm: the board's label is no longer part of the file name, and its threshold checks the views-1 file as `present-<project slug>-<date>.html`. LLR-4504.1's threshold drops "0 `present-*` files" and checks exactly 1 new `present-*.html` per press, beside 0 `.svg` and 0 `.png`. AT-4501's toast reads `Report written: present-<project slug>-<date>.html`. AT-4502's file is `present-all-<date>.html`. Thresholds (2/2, 1/1, 2/2, 3/3) and every other negative control are unchanged.
+- **Why:** ruling 9 (00-e1-rulings.md) keeps ruling 3's separate name so that a same-day `x` never overwrites `H`'s `deck-…` files; E2 finding I-2 showed the six texts still named `deck-…`. Ruling 8 drops the cover change, so the file's bytes stay those of `H` → `c`; only the name differs.
+- **Evidence:** `graph-interfaces.cw.md` node `present_name` (S-3) and findings I-1, I-2, I-3; `report_html.py:182-188` (`report_name`, `H`'s `deck-…` names).

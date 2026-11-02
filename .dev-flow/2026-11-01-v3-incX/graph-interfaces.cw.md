@@ -4,13 +4,14 @@
 > (+ the README rows, docs only): `PresentScreen` (the `x` export, the new `o`, the offer, the presented
 > board's lane), the one shared write → toast tail `TaskboardApp._write_report` that `H` and `x` both call,
 > the `KEYMAP` `H` row and the `PRESENT_KEYS` rows. **Group B** owns `taskboard/views.py` +
-> `taskboard/report_deck.py` (ruling 3: the cover and the name go in `report_deck.py`, so
+> `taskboard/report_deck.py` (ruling 9: the name goes in `report_deck.py`, so
 > `report_html.py` stays unchanged and the source budget is app, views, keymap, report_deck = 4):
-> the deck scope (`present_deck_boards`), the removals (X-2), the cover line and the file name.
+> the deck scope (`present_deck_boards`), the removals (X-2) and the file name. No cover change (ruling 8).
 > Only the DIFFERENCES from `graph-baseline.cw.md` (509d444) are written; a node marked "unchanged" is
 > listed only because a seam or an example needs it.
-> Rulings applied: 00-e1-rulings.md 1–7. Where a ruling and 01-requirements.md differ, the ruling wins and
-> the difference is a finding (`## Findings` below and in the group files); no requirement text is changed.
+> Rulings applied: 00-e1-rulings.md 1–10. Where a ruling and 01-requirements.md differ, the ruling wins and
+> the difference is a finding (`## Findings` below and in the group files); requirement texts change only by
+> ruling 9's amendments (LED-2026-11-01-incX.3).
 > Fixture X (synthetic, used by every example unless a line says otherwise): today 2026-11-01; registry
 > `S/boards.json` lists one board `main` named "Main", colour "sky", file `S/boards/main/board.json`
 > (folder `F` = `S/boards/main/reports`); phases ["Backlog", "Doing", "Done"]; projects Alpha `pA`
@@ -51,24 +52,24 @@ in: list boards; dict people; dict marks; date today; str? project = None
 out: dict d
 func: UNCHANGED (report_html.py stays byte-unchanged). The scope input of the deck writer, frozen: group A calls it with `boards = present_deck_boards(lane, pid)`, `app.people.people`, `app.marks.marks`, `date.today()` at the press, and `project = None` in view 3, else the key `<lane id, or "#0" when the id is None>:<project id>` — the key `H` builds for a registry board (app.py:3006-3009), so the dict of views 1/2 equals `H` → `p`'s.
 module: taskboard/report_html.py
-examples: (TC-4703) the proxy of pA, project "main:pA" → scope kind "project", the same dict as `H`'s extract over the real board (P-X1: pA bytes equal True before the cover change)
-examples: (TC-4704) the proxy of view 3, project `None`, a registry of one board → scope kind "all", boards ["Main"] (P-X1: bytes equal True before the cover change)
+examples: (TC-4703) the proxy of pA, project "main:pA" → scope kind "project", the same dict as `H`'s extract over the real board (P-X1: pA bytes equal True)
+examples: (TC-4704) the proxy of view 3, project `None`, a registry of one board → scope kind "all", boards ["Main"] (P-X1: bytes equal True)
 
 render
 req: LLR-4501.3, LLR-4501.4, LLR-4501.12
-in: dict d; bool presented = False
+in: dict d
 out: str page
-func: CHANGED (group B, report_deck.py): new keyword `presented`. False (every existing caller: `write_reports` for `H` and the CLI) → the page is byte-identical to base. True (only `x`) → the cover's `<p class="scope">` holds `_presented_line(d)` instead of `_scope_line(d, boards)`; every other byte is the base page. Ruling 3.
+func: UNCHANGED (ruling 8: no cover change; report_deck.py's rendering is the base code). The deck writer `H` → `c` uses; group A calls it as `render(d)`, so the `x` deck is byte-identical to `H`'s for the same d.
 module: taskboard/report_deck.py
-examples: (TC-4703) d of fixture X, scope "main:pA", presented `True` → the page's scope element reads "Presented · Alpha"; with that one element replaced by `H`'s "Project Alpha on Main" the bytes equal `H`'s deck
-examples: (TC-4704) d of view 3 (Alpha, Beta), presented `True` → the scope element reads "Presented · 2 projects"; every other byte equals `H` `c` `o`'s deck
-examples: (TC-4712) d with no project, presented `True` → the overview reads "No project in this scope holds a task." and the scope element "Presented · 0 projects"
+examples: (TC-4703) d of fixture X, scope "main:pA" → the page's scope element reads "Project Alpha on Main", and the bytes equal `H` `p` `c`'s deck (P-X1: pA bytes equal True)
+examples: (TC-4704) d of view 3 (Alpha, Beta), a registry of one board → the scope element reads "All loaded boards (1): Main", and the bytes equal `H` `c` `o`'s deck (P-X1: bytes equal True)
+examples: (TC-4712) d with no project → the overview reads "No project in this scope holds a task."
 
 present_name
 req: LLR-4501.1, LLR-4501.2
 in: dict d
 out: str name
-func: NEW (group B, report_deck.py; ruling 3 replaces the `deck-…` names of LLR-4501.1/.2): `present-<project slug>-<d.meta.today>.html` when d's scope kind is "project" (the slug = `report_html.slug` of that project's name in d, or "project" when the slug is empty); `present-all-<d.meta.today>.html` for scope "all". Pure; never the `deck-…`/`workspace-…` names, so `x` never overwrites `H`'s files.
+func: NEW (group B, report_deck.py; ruling 9, LLR-4501.1/.2 as amended by LED-2026-11-01-incX.3): `present-<project slug>-<d.meta.today>.html` when d's scope kind is "project" (the slug = `report_html.slug` of that project's name in d, or "project" when the slug is empty); `present-all-<d.meta.today>.html` for scope "all". Pure; never the `deck-…`/`workspace-…` names, so `x` never overwrites `H`'s files.
 module: taskboard/report_deck.py
 examples: (TC-4701) scope "main:pA", project "Alpha", today 2026-11-01 → name "present-alpha-2026-11-01.html" (views 1 and 2 write the same file)
 examples: (TC-4701b) project "Website Redesign" → name "present-website-redesign-2026-11-01.html"
@@ -93,7 +94,7 @@ in: tuple[Path, float]?
 desc: NEW: the `x` export's `o` offer, (the written deck, `_report_clock()` + 10); None at open; set by `action_export` on a written deck, set to None by a failed write (LLR-4503.5) and by every `o`; read only by `action_open_export`; dies with the screen. Apart from `TaskboardApp._report_offer`, which stays `H`'s and the main screen's.
 
 [I/O: reports/present-*.html]
-desc: NEW: `<board folder>/reports/present-<project slug>-<date>.html` (views 1/2) or `present-all-<date>.html` (view 3), written by `PresentScreen.action_export` from `render(d, presented=True)`; a same-day export overwrites; never a `deck-*`/`workspace-*` name.
+desc: NEW: `<board folder>/reports/present-<project slug>-<date>.html` (views 1/2) or `present-all-<date>.html` (view 3), written by `PresentScreen.action_export` from `render(d)` (bytes = `H` → `c`'s, ruling 8); a same-day export overwrites; never a `deck-*`/`workspace-*` name.
 
 [Outside: key o in R]
 desc: PRESENT_KEYS row `o` → `open_export`, a priority binding on PresentScreen; the app's `o` (`open_url`) stays as it is and does not pass the modal.
@@ -115,18 +116,25 @@ anchor: render
 seen: (P-X1) with `presented` False the `x` deck of fixture X equals `H`'s byte for byte, views 1/2 and 3; ruling 3 puts "Presented · Alpha" / "Presented · 2 projects" on the cover where `H` writes "Project Alpha on Main" / "All loaded boards (1): Main"
 cause: ruling 3 (cover) and LLR-4501.3/.4 (bytes ==) were written apart; rulings override
 effect: a literal `bytes ==` test is RED by design
-decision: proposed — read LLR-4501.3/.4 as "equal after the one `<p class="scope">` element is replaced"; the examples above test that; the orchestrator words the amendment
+decision: resolved — ruling 8: the cover change is dropped; `render(d)` is unchanged, LLR-4501.3/.4 stand as written (`bytes ==`), and the examples test plain byte equality
 
 finding I-2 ruling 3's file name differs from LLR-4501.1, .2, .11, LLR-4504.1, AT-4501 and AT-4502
 anchor: present_name
 seen: LLR-4501.1 `deck-<board slug>-<project slug>-<date>.html`, LLR-4501.2 `deck-<date>.html`, LLR-4501.11 a board slug in the name, LLR-4504.1 "0 `present-*` files", AT-4501 toast `Report written: deck-…`, AT-4502 `deck-<date>.html`; LLR-4501.1's negative control ("keep the `present-<slug>-<date>` stem: RED") is now the design
 cause: ruling 3 gives `x` its own name `present-<project-slug|all>-<YYYY-MM-DD>.html`
 effect: the graph uses ruling 3 under the same TC ids; the requirement texts still say `deck-…`
-decision: proposed — amend those six texts to ruling 3's names; LLR-4504.1's check becomes "0 `.svg`, 0 `.png`"; LLR-4501.1's NC becomes "write `H`'s `deck-…` name: RED"; LLR-4501.11 keeps only its cover arm
+decision: resolved — ruling 9: the six texts are amended to `present-<project slug|all>-<date>.html` (LED-2026-11-01-incX.3); LLR-4504.1 checks 0 `.svg`, 0 `.png` and 1 `present-*.html` per press; LLR-4501.1's and LLR-4501.2's NCs write `H`'s `deck-…` name; LLR-4501.11 keeps only its cover arm
 
 finding I-3 ruling 3's cover line has no requirement
 anchor: render
 seen: no LLR states the text "Presented · <project name>" / "Presented · <n> project(s)"
 cause: ruling 3 came after E1
 effect: the cover line is designed (`_presented_line`, group B) but traced only through TC-4703/4704
-decision: proposed — a new LLR (Ubiquitous): "The deck `x` writes shall state on its cover `Presented · <project name>` in views 1 and 2, and `Presented · <n> project` / `<n> projects` in view 3."
+decision: resolved — ruling 8: no cover line, so no new LLR; `_presented_line` and the `_cover` change are removed from group B
+
+finding I-4 the slice and two texts outside ruling 9's list still describe report_deck.py as unchanged
+anchor: present_name
+seen: 01-requirements.md §1 "Not in" lists `report_deck.py` as reused unchanged; §6 says "13 units in 3 source files" and "`report_deck.py` … unchanged on purpose"; HLR-4501's NC reads "(no `deck-*.html`)"; `present_name` (ruling 9) is a new unit in report_deck.py
+cause: ruling 9 lists six ids to amend; the scope, the slice and HLR-4501 were not among them
+effect: the slice under-counts by one unit and one source file (14 units in 4 files, still within ruling 3's budget); HLR-4501's NC names the wrong file, though TC-4701 is still RED at base (base `x` writes `.svg`)
+decision: open — the orchestrator rules whether §1, §6 and HLR-4501's NC are amended

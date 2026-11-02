@@ -106,10 +106,10 @@ sentido ahora, y quedémonos con el html.»)
 
 ### 4.1 Writing the deck (HLR-4501)
 
-- **LLR-4501.1 — Event.** When `x` is pressed in view 1 or view 2 at a width of 36 columns or more, the system shall write the deck to `<board dir>/reports/deck-<board slug>-<project slug>-<date>.html`, where the project slug is `report_html.slug` of the presented project's name.
-  Threshold: views 1 and 2 each → that file exists, its name exact; 2/2. *NC:* keep the `present-<slug>-<date>` stem: RED.
-- **LLR-4501.2 — Event.** When `x` is pressed in view 3 at a width of 36 columns or more, the system shall write the deck to `<board dir>/reports/deck-<date>.html`.
-  Threshold: 1/1 exact name. *NC:* a `-all` suffix: RED.
+- **LLR-4501.1 — Event.** When `x` is pressed in view 1 or view 2 at a width of 36 columns or more, the system shall write the deck to `<board dir>/reports/present-<project slug>-<date>.html`, where the project slug is `report_html.slug` of the presented project's name, or `project` when that slug is empty.
+  Threshold: views 1 and 2 each → that file exists, its name exact; 2/2. *NC:* write `H`'s name `deck-<board slug>-<project slug>-<date>.html`: RED.
+- **LLR-4501.2 — Event.** When `x` is pressed in view 3 at a width of 36 columns or more, the system shall write the deck to `<board dir>/reports/present-all-<date>.html`.
+  Threshold: 1/1 exact name. *NC:* write `H`'s name `deck-<date>.html`: RED.
 - **LLR-4501.3 — State.** While no task of the presented project is hidden, archived or a milestone of a hidden class, the deck `x` writes in view 1 or view 2 shall be byte-identical to the deck `H` writes with `c` and scope `p` for that project on the same day.
   Threshold: fixture board (2 projects, a done task, a milestone with a class, a dependency, notes with a mention), views 1 and 2 vs `H c p` → `bytes ==`; 2/2. *NC:* render with a board key other than the registry id (`#0`): RED.
 - **LLR-4501.4 — State.** While the registry lists only the presented board and none of its projects or tasks is hidden, archived, ranked out of board order or without a project, the deck `x` writes in view 3 shall be byte-identical to the deck `H` writes with `c` and scope `o` on the same day.
@@ -126,8 +126,8 @@ sentido ahora, y quedémonos con el html.»)
   Threshold: a project with 2 open and 1 done shown task → its slide reads `3 tasks` and the done title is present; views 1 and 3; 2/2. *NC:* open tasks only (view 3's frame population): RED.
 - **LLR-4501.10 — Event.** When `x` writes the deck, the system shall leave the board file and its `history.jsonl` unchanged.
   Threshold: sha256 of both equal before and after `x` in views 1, 2, 3; 6/6. *NC:* a `board.save()` in the export: RED.
-- **LLR-4501.11 — Unwanted.** If the presented board is not in the registry (opened with `--open`), then the system shall name the board in the deck and in the file name by the board's label name, or `this board` when the board has no label.
-  Threshold: label `("Client A", "pink")` → the cover's board cell is `Client A` and the views-1 file is `deck-client-a-<project slug>-<date>.html`; no label → `this board` and `deck-this-board-…`; 2/2. *NC:* a registry lookup that raises on `bid None`: RED.
+- **LLR-4501.11 — Unwanted.** If the presented board is not in the registry (opened with `--open`), then the system shall name the board in the deck by the board's label name, or `this board` when the board has no label.
+  Threshold: label `("Client A", "pink")` → the cover's board cell is `Client A` and the views-1 file is `present-<project slug>-<date>.html`; no label → `this board` and the same file name; 2/2. *NC:* a registry lookup that raises on `bid None`: RED.
 - **LLR-4501.12 — Unwanted.** If no project is shown in view 3, then the system shall write a deck whose overview slide reads `No project in this scope holds a task.`
   Threshold: every project hidden on the rail, `x` → the file exists and holds the sentence; 0 exceptions; 2/2. *NC:* return before writing on an empty scope: RED.
 - **LLR-4501.13 — Unwanted.** If `x` is pressed while the presentation is narrower than 36 columns, then the system shall show the warning toast `Widen the terminal to 36+ columns to export`, titled `Present`.
@@ -170,7 +170,7 @@ sentido ahora, y quedémonos con el html.»)
 ### 4.4 The SVG/PNG export removed (HLR-4504)
 
 - **LLR-4504.1 — Ubiquitous.** The presentation's export shall write exactly one file, an `.html`.
-  Threshold: `reports/` after `x` in views 1, 2 and 3 holds 0 `.svg`, 0 `.png` and 0 `present-*` files; 3/3. *NC:* keep the `save_present_svg` call: RED.
+  Threshold: `reports/` after `x` in views 1, 2 and 3 holds 0 `.svg`, 0 `.png` and, for each press, exactly 1 new file, that view's `present-*.html`; 3/3. *NC:* keep the `save_present_svg` call: RED.
 - **LLR-4504.2 — Ubiquitous.** The presentation's export shall start no external process.
   Threshold: `subprocess.run` and `subprocess.Popen` monkeypatched to raise → `x` in views 1, 2 and 3 writes the deck; 0 calls; 3/3. *NC:* keep the Edge rasteriser: RED.
 - **LLR-4504.3 — Ubiquitous.** The package shall hold no code that writes the presentation frame as an SVG or rasterises it.
@@ -204,8 +204,8 @@ sentido ahora, y quedémonos con el html.»)
 
 ## 5. Acceptance tests (black-box, keys and dialogs)
 
-- **AT-4501** — views 1 and 2. A registry of 2 boards; the open board has 2 projects; a task of the presented project titled `HIDDEN-T-7Q`. `R`, `space` on that task, `x` → the toast reads `Report written: deck-<board slug>-<project slug>-<date>.html` …; the file exists; `HIDDEN-T-7Q`, the other project's name and the other board's name 0 occurrences; `reports/` holds no `.svg`/`.png`; the board file's sha256 equal before and after `x`. `2`, `x` → the same file, rewritten. (LLR-4501.1, .5, .7, .10; LLR-4502.1, .6; LLR-4504.1)
-- **AT-4502** — view 3. Projects A, B, C. `R`, `3`; on the rail `K` until C is first; `space` on B (hidden); `enter` folds A on the timeline; `x` → `deck-<date>.html`; overview and slides read C, A; B's name 0 occurrences; A's slide lists all its shown tasks. (LLR-4501.2, .6, .8; LLR-4502.2)
+- **AT-4501** — views 1 and 2. A registry of 2 boards; the open board has 2 projects; a task of the presented project titled `HIDDEN-T-7Q`. `R`, `space` on that task, `x` → the toast reads `Report written: present-<project slug>-<date>.html` …; the file exists; `HIDDEN-T-7Q`, the other project's name and the other board's name 0 occurrences; `reports/` holds no `.svg`/`.png`; the board file's sha256 equal before and after `x`. `2`, `x` → the same file, rewritten. (LLR-4501.1, .5, .7, .10; LLR-4502.1, .6; LLR-4504.1)
+- **AT-4502** — view 3. Projects A, B, C. `R`, `3`; on the rail `K` until C is first; `space` on B (hidden); `enter` folds A on the timeline; `x` → `present-all-<date>.html`; overview and slides read C, A; B's name 0 occurrences; A's slide lists all its shown tasks. (LLR-4501.2, .6, .8; LLR-4502.2)
 - **AT-4503** — the offer. `R`, `x`, `o` → the OS handler (monkeypatched) gets the deck's path once; `o` again → no second call; `x`, the clock moved 10 s, `o` → no call. (LLR-4503.1..4503.3)
 - **AT-4504** — the failure. `reports` exists as a plain file. `R`, `x` → `Report not (fully) written: …`; `o` → no call; the presentation still answers `esc`. (LLR-4503.4, .5)
 - **AT-4505** — narrow. The terminal at 30 columns: `R`, `x` → `Widen the terminal to 36+ columns to export`; no `reports/` folder. (LLR-4501.13, .14)

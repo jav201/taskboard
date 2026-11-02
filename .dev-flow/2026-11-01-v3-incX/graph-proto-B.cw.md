@@ -1,9 +1,10 @@
 # Inc X — prototype graph, group B: `taskboard/views.py` + `taskboard/report_deck.py`
 
 > Only the differences from `graph-baseline.cw.md` (509d444). The seams are frozen in `graph-interfaces.cw.md`:
-> `present_deck_boards`, `render(d, presented)` and `present_name` are implemented exactly as frozen there; this
+> `present_deck_boards` and `present_name` are implemented exactly as frozen there (`render` is unchanged, ruling 8); this
 > file adds their internal parts, the extra examples, and the removals (X-2). `report_html.py` stays
-> byte-unchanged (ruling 3: the cover and the name go in `report_deck.py`). Fixture X and probe P-X1: see the
+> byte-unchanged (ruling 9: the name goes in `report_deck.py`; ruling 8: no cover change, so `render`, `_cover` and
+> every other byte of `report_deck.py`'s output are the base code). Fixture X and probe P-X1: see the
 > head of `graph-interfaces.cw.md`. Removed nodes keep their baseline contract so the extractor and the review can
 > name what goes; each says REMOVED in `func:`.
 
@@ -15,35 +16,8 @@ in: tuple[str?, str, str, Board] lane; str? project_id
 out: list[tuple[str?, str, str, Board]] boards
 func: as frozen in graph-interfaces.cw.md. Internal rules: `copy.copy(board)` (the `_hide` proxy pattern, views.py:3151), then `proxy.projects` and `proxy.tasks` are assigned NEW lists; the source board's lists, its projects and its tasks are never changed; `present_order`, `present_tasks_m` and `_hidden_class_ids` are the only readers of the hide flags, so the deck hides what the frames hide. No call of `save`, no write of any file.
 module: taskboard/views.py
-examples: (TC-4703) fixture X, project_id "pA", nothing hidden → proxy tasks "a1", "a2", "a3" in board order (not gantt order); the deck's bytes equal `H`'s before the cover change (P-X1: pA bytes equal True)
+examples: (TC-4703) fixture X, project_id "pA", nothing hidden → proxy tasks "a1", "a2", "a3" in board order (not gantt order); the deck's bytes equal `H`'s (P-X1: pA bytes equal True)
 examples: (TC-4710) the hidden-sentinel board, project_id `None` → the source board keeps its projects ["pA", "pB", "pH", "pR"] and every task's flag (P-X1: board untouched True)
-
-render
-req: LLR-4501.3, LLR-4501.4
-in: dict d; bool presented = False
-out: str page
-func: as frozen in graph-interfaces.cw.md: passes `presented` to `_cover`; the overview, the slides, NAV, the script and the `<title>` "taskboard · project deck" are the base code.
-module: taskboard/report_deck.py
-examples: (TC-4703) d of fixture X (scope "main:pA"), presented `False` → the base page, scope element "Project Alpha on Main" (H's path, unchanged)
-
-_cover
-req: LLR-4501.3, LLR-4501.4, LLR-4501.11
-in: dict d; dict boards; bool presented = False
-out: str section
-func: CHANGED from base: the `<p class="scope">` element holds `esc(_presented_line(d))` when `presented`, else `esc(_scope_line(d, boards))` (base). The tiles, the board table (one row per board of d), the legend (d's marks only) and the hint are the base code.
-module: taskboard/report_deck.py
-examples: (TC-4703) d of fixture X, scope "main:pA", presented `True` → the scope element "Presented · Alpha"; the board table's rows ["Main"]
-examples: (TC-4711) d over the lane (`None`, "Client A", "pink", board) → the board table's cell "Client A"
-
-_presented_line
-req: LLR-4501.3, LLR-4501.4, LLR-4501.12
-in: dict d
-out: str line
-func: NEW (ruling 3, finding I-3): scope kind "project" → "Presented · <that project's name in d>"; scope kind "all" → "Presented · " + `_plural(len(d["projects"]), "project")` (every project the presentation showed, a task-less one included). Plain text; `_cover` escapes it.
-module: taskboard/report_deck.py
-examples: (TC-4703) scope "main:pA" → line "Presented · Alpha"
-examples: (TC-4704) scope "all", projects Alpha and Beta → line "Presented · 2 projects"
-examples: (TC-4712) scope "all", no project → line "Presented · 0 projects"
 
 present_name
 req: LLR-4501.1
@@ -125,7 +99,6 @@ desc: CHANGED reader set: `present_deck_boards` orders view 3's projects by `pre
 [Data: Task.show_in_present] ──▶ present_deck_boards
 [Data: Project.show_in_present] ──▶ present_deck_boards
 [Data: Project.present_rank] ──▶ present_deck_boards
-_presented_line.line ──▶ _cover
 
 ## Findings
 
@@ -141,7 +114,7 @@ anchor: present_name
 seen: `report_html.slug("All")` = "all", so a project named "All" in view 1 writes "present-all-<date>.html", view 3's name; `slug("!!!")` = "" (P-X1)
 cause: ruling 3's pattern `present-<project-slug|all>-<date>.html`
 effect: a same-day `x` of view 3 overwrites that project's deck, as any same-day `x` overwrites its own file
-decision: proposed — the empty slug becomes "project" (designed above); the "all" collision is accepted unless the orchestrator rules a prefix
+decision: resolved — ruling 9 fixes the name as `present-<project-slug|all>-<date>.html` with no prefix, so the "all" collision is accepted as proposed; the empty slug becomes "project" (designed above; LLR-4501.1 as amended)
 
 finding P-B-3 the frozen signature of present_deck_boards differs from the slice's
 anchor: present_deck_boards

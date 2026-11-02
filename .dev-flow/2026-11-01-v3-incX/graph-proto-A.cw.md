@@ -1,11 +1,12 @@
 # Inc X — prototype graph, group A: `taskboard/app.py` + `taskboard/keymap.py`
 
 > Only the differences from `graph-baseline.cw.md` (509d444). The seams are frozen in
-> `graph-interfaces.cw.md`: this file calls `present_deck_boards`, `extract` (unchanged), `render(d, presented=True)`
-> and `present_name` there, and implements `PresentScreen.action_open_export` exactly as frozen there (not repeated
+> `graph-interfaces.cw.md`: this file calls `present_deck_boards`, `extract` (unchanged), `render(d)` (unchanged,
+> ruling 8) and `present_name` there, and implements `PresentScreen.action_open_export` exactly as frozen there (not repeated
 > here). Fixture X, probes P-X1 and P-X2: see the head of `graph-interfaces.cw.md`. `F` = `S/boards/main/reports`.
-> Rulings: 1 (the bar's fit rules stand), 3 (name + cover), 4 (the `?` window's `o` row), 6 (`o` binds on
-> PresentScreen; the offer lives there; `H` stays app-level), 7 (TC_3117 rewritten). Docs in this group, no node:
+> Rulings: 1 (the bar's fit rules stand; its hint part withdrawn by 10), 3 (the name; its cover part dropped by 8), 4 (the `?` window's `o` row), 6 (`o` binds on
+> PresentScreen; the offer lives there; `H` stays app-level; its hint part withdrawn by 10), 7 (TC_3117 rewritten),
+> 8 (no cover change: the `x` deck is byte-identical to `H` → `c`'s), 9 (the `present-…` name), 10 (the hint row unchanged). Docs in this group, no node:
 > the README rows at lines 140, 189, 291, 410 (LLR-4506.5, carried by `action_export`'s `oracle:` below) and the
 > PresentScreen docstring (`x` writes the HTML deck of what is shown to `reports/`; `o` opens it for 10 s).
 
@@ -15,14 +16,14 @@ PresentScreen.action_export
 req: LLR-4501.1, LLR-4501.2, LLR-4501.3, LLR-4501.4, LLR-4501.10, LLR-4501.13, LLR-4501.14, LLR-4502.6, LLR-4503.1, LLR-4503.4, LLR-4503.5, LLR-4503.7, LLR-4504.1, LLR-4504.2, LLR-4504.3, LLR-4506.5
 in:
 out: None
-func: CHANGED from baseline (rewritten). (1) `_narrow()` → the warning toast "Widen the terminal to 36+ columns to export", title "Present", timeout 6, markup False, and return: no file, the offer untouched (base). (2) `lane = self._deck_lane()`; `pid = None` in view 3, else `self._project_id`. (3) `boards = present_deck_boards(lane, pid)`, read at this press (the hide flags as they stand now). (4) `key = None` when pid is None, else `f"{lane[0] if lane[0] is not None else '#0'}:{pid}"`; `today = date.today()` (as `H`); `d = report_html.extract(boards, self.app.people.people, self.app.marks.marks, today, project=key)`. (5) `folder = Path(self._board.path).parent / "reports"`, `path = folder / report_deck.present_name(d)`. (6) `written = self.app._write_report(write, folder)` where `write()` does `folder.mkdir(parents=True, exist_ok=True)`, `path.write_text(report_deck.render(d, presented=True), encoding="utf-8")` and returns `[path]`. (7) `self._export_offer = (written, self.app._report_clock() + 10)` when written is not None, else None. No `board.save()`, no subprocess, no SVG/PNG; the module drops its imports of `present_all_export`, `present_paths`, `save_present_png`, `save_present_svg` (slice 4) and imports `report_deck`.
+func: CHANGED from baseline (rewritten). (1) `_narrow()` → the warning toast "Widen the terminal to 36+ columns to export", title "Present", timeout 6, markup False, and return: no file, the offer untouched (base). (2) `lane = self._deck_lane()`; `pid = None` in view 3, else `self._project_id`. (3) `boards = present_deck_boards(lane, pid)`, read at this press (the hide flags as they stand now). (4) `key = None` when pid is None, else `f"{lane[0] if lane[0] is not None else '#0'}:{pid}"`; `today = date.today()` (as `H`); `d = report_html.extract(boards, self.app.people.people, self.app.marks.marks, today, project=key)`. (5) `folder = Path(self._board.path).parent / "reports"`, `path = folder / report_deck.present_name(d)`. (6) `written = self.app._write_report(write, folder)` where `write()` does `folder.mkdir(parents=True, exist_ok=True)`, `path.write_text(report_deck.render(d), encoding="utf-8")` and returns `[path]`. (7) `self._export_offer = (written, self.app._report_clock() + 10)` when written is not None, else None. No `board.save()`, no subprocess, no SVG/PNG; the module drops its imports of `present_all_export`, `present_paths`, `save_present_png`, `save_present_svg` (slice 4) and imports `report_deck`.
 module: taskboard/app.py
 modify: [Data: PresentScreen._export_offer] (replace); [I/O: reports/present-*.html] (replace)
 oracle: README.md rows at lines 140, 189, 291, 410: the `R` key-table row and the presentation section describe `x` as the HTML deck
-examples: (TC-4701, root action_export) fixture X, `R` on a1 at 118x31, `x` → the file "present-alpha-2026-11-01.html" in `F`; `2`, `x` → the same name, rewritten (ruling 3, finding I-2)
+examples: (TC-4701, root action_export) fixture X, `R` on a1 at 118x31, `x` → the file "present-alpha-2026-11-01.html" in `F`; `2`, `x` → the same name, rewritten (ruling 9, LLR-4501.1 as amended)
 examples: (TC-4702, root action_export) `3`, `x` → the file "present-all-2026-11-01.html" in `F`
-examples: (TC-4703, root action_export) fixture X, view 1 and view 2 `x` vs `H` `p` `c` the same day → equal bytes once the `<p class="scope">` element is replaced: "Presented · Alpha" vs "Project Alpha on Main" (finding I-1)
-examples: (TC-4704, root action_export) a registry of one board, nothing hidden, ranks in board order, `3`, `x` vs `H` `c` `o` → equal bytes once the scope element is replaced: "Presented · 2 projects" vs "All loaded boards (1): Main"
+examples: (TC-4703, root action_export) fixture X, view 1 and view 2 `x` vs `H` `p` `c` the same day → `bytes ==` (ruling 8; both scope elements read "Project Alpha on Main")
+examples: (TC-4704, root action_export) a registry of one board, nothing hidden, ranks in board order, `3`, `x` vs `H` `c` `o` → `bytes ==` (ruling 8; both scope elements read "All loaded boards (1): Main")
 examples: (TC-4710, root action_export) sha256 of "board.json" and "history.jsonl" before and after `x` in views 1, 2, 3 → equal, `6`/`6`
 examples: (TC-4713, root action_export) 30 columns, `x` → toast "Widen the terminal to 36+ columns to export", title "Present"
 examples: (TC-4714, root action_export) 30 columns, `x` → `reports/` exists `False`
@@ -76,7 +77,7 @@ PresentScreen._keys_hint
 req: LLR-4506.4
 in: int w; int hidden; int room
 out: Text hint
-func: UNCHANGED (X-4, LLR-4506.4): the wordings still say "x export", which now means the HTML deck; no `o` in the hint (finding P-A-1).
+func: UNCHANGED (X-4, LLR-4506.4): the wordings still say "x export", which now means the HTML deck; no `o` in the hint (finding P-A-1, ruling 10).
 module: taskboard/app.py
 examples: (TC-4764) views 1, 2, 3 × widths 130, 118, 100, 80, 60, 36 × hidden `0` and `2` → plain text equal to base, `36`/`36`; view 1 at 118, hidden 0 holds "⇥ next · ←→ ↑↓ move · ␣ hide · a show all · x export · esc leave"
 
@@ -180,7 +181,7 @@ anchor: PresentScreen._keys_hint
 seen: ruling 1 says "the presentation's hint and `?` window name the export as HTML"; ruling 6 says "The R hint names x (HTML), not H"; LLR-4506.4 and X-4 say the hint reads exactly as at base ("x export"), and 6 test files pin "x export"
 cause: the rulings can be read as "the hint names `x`, whose export is now HTML" or as "the hint's words change"
 effect: a changed wording shifts which wording fits at the boundary widths, so more of the hint than the export word changes (against X-4)
-decision: proposed — keep the base hint (LLR-4506.4); the `?` window carries "HTML deck". The orchestrator confirms or rules a new wording with its widths
+decision: resolved — ruling 10: the hint row keeps its base wording and LLR-4506.4 stands; the hint parts of rulings 1 and 6 are withdrawn; HTML is named in the `?` window (ruling 4) and the README only
 
 finding P-A-2 ruling 4 names the `o` row "o open export"; LLR-4506.2 fixes the words "open the last export (10 s)"
 anchor: present_bindings
