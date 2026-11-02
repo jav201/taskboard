@@ -21,5 +21,5 @@ Synthetic boards in a temp HOME (`Path.home` redirected), owner `username_subjec
 - Playwright: 0 non-file requests, 0 page errors, both viewports.
 
 ## End state
-Every shot: end-state check OK in `capture-log.txt`; every PNG has > 8 colours (full-image counts 134-2667 on the checked set;
+Every shot: end-state check OK in `capture-log.txt`; every PNG has > 8 colours (full-image counts 134-1250;
 the black `xh-keys_118x30` first take was replaced). `shoot.ps1` asserts at the end that no `xh-*` window is left open.
