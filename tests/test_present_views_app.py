@@ -173,16 +173,16 @@ async def test_AT_1802_the_gantt_note_keeps_its_line_breaks(tmp_path, monkeypatc
 
 
 # --------------------------------------------------------------------------- #
-# AT-1803 — the keys: switch, share, scroll, export, leave
+# AT-1803 — the keys: switch, share, scroll, leave
 # --------------------------------------------------------------------------- #
 async def test_AT_1803_the_view_keys_and_what_the_views_share(tmp_path, monkeypatch, frozen):
     """AT-1803 (US-1803, HLR-1803): `2` / `1` / `tab` / `shift+tab` switch the
     view and never reach the board behind (its view stays, no add-task editor,
     the presentation stays open); the cursor moved in one view is the cursor in
     the other; `space` in the split view hides the task from both; `pgdn`
-    scrolls the cut cursor note and `pgup` brings it back; `x` exports the
-    current view's frame with no key in it; `esc` leaves, and `R` again opens
-    on the gantt view; only `space` / `a` wrote the board."""
+    scrolls the cut cursor note and `pgup` brings it back; no key reaches the
+    frame; `esc` leaves, and `R` again opens on the gantt view; only
+    `space` / `a` wrote the board."""
     s = _Presenting(tmp_path, monkeypatch, (80, 25))
     async with s.app.run_test(size=s.size) as pilot:
         board_view = s.app.view_mode
@@ -235,20 +235,8 @@ async def test_AT_1803_the_view_keys_and_what_the_views_share(tmp_path, monkeypa
         assert "Launch new homepage" not in s.frame()
         assert len(s.saves) == 1
 
-        # x exports the current view's frame, each view to its own file, no key in it
-        reports = tmp_path / "reports"
-        await s.press(pilot, "x")                                  # the gantt view
-        await s.press(pilot, "2", "x")                             # the split view
-        gantt_svg = reports / "present-website-redesign-2026-09-30.svg"
-        split_svg = reports / "present-website-redesign-2026-09-30-split.svg"
-        assert gantt_svg.is_file() and split_svg.is_file(), sorted(reports.iterdir())
-        g = gantt_svg.read_text(encoding="utf-8").replace("&#160;", " ")
-        sp = split_svg.read_text(encoding="utf-8").replace("&#160;", " ")
-        assert "gantt" in g and "split" in sp
-        assert "Design tokens are frozen" in sp and "Design tokens are frozen" not in g
         for k in KEY_WORDS:
             assert k not in s.frame(), k
-            assert k not in sp and k not in g, k
 
         await s.press(pilot, "a")
         assert len(s.saves) == 2
@@ -308,21 +296,6 @@ async def test_TC_1808_the_hint_row_per_view(tmp_path, monkeypatch, frozen, size
         assert s.hint() == split_hidden
         for h in (gantt, split, split_hidden):
             assert views.vis(h) <= size[0] - 2, (size, h)
-
-
-# --------------------------------------------------------------------------- #
-# TC-1809 — the export names the view (LLR-1803.3)
-# --------------------------------------------------------------------------- #
-def test_TC_1809_each_view_exports_to_its_own_file(tmp_path):
-    """TC-1809 (LLR-1803.3): the gantt view keeps the shipped file name; the
-    split view adds `-split`, so exporting both on one day keeps both."""
-    b = nb.build(tmp_path / "board.json")
-    g = views.present_paths(b, "Website Redesign", pb.TODAY)
-    assert g == views.present_paths(b, "Website Redesign", pb.TODAY, "gantt")
-    assert g[0].name == "present-website-redesign-2026-09-30.svg"
-    sp = views.present_paths(b, "Website Redesign", pb.TODAY, "split")
-    assert sp[0].name == "present-website-redesign-2026-09-30-split.svg"
-    assert sp[1].name == "present-website-redesign-2026-09-30-split.png"
 
 
 # --------------------------------------------------------------------------- #

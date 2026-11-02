@@ -1,0 +1,2019 @@
+taskboard.__file__ = C:\Users\jjgh8\Github\taskboard-wt\incX-tests\taskboard\__init__.py
+C:\Users\jjgh8\anaconda3\Lib\site-packages\pytest_asyncio\plugin.py:207: PytestDeprecationWarning: The configuration option "asyncio_default_fixture_loop_scope" is unset.
+The event loop scope for asynchronous fixtures will default to the fixture caching scope. Future versions of pytest-asyncio will default the loop scope for asynchronous fixtures to function scope. Set the default fixture loop scope explicitly in order to avoid unexpected behavior in the future. Valid fixture loop scopes are: "function", "class", "module", "package", "session"
+
+  warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCOPE_UNSET))
+============================= test session starts =============================
+platform win32 -- Python 3.12.7, pytest-8.3.4, pluggy-1.6.0
+rootdir: C:\Users\jjgh8\Github\taskboard-wt\incX-tests
+configfile: pyproject.toml
+plugins: anyio-4.2.0, asyncio-0.25.0, cov-7.1.0, textual-snapshot-1.1.0, timeout-2.3.1, syrupy-4.8.0
+asyncio: mode=Mode.AUTO, asyncio_default_fixture_loop_scope=None
+collected 172 items
+
+tests\test_present_html_export.py FFFFFFFFFFFFFFFFFFFFFFF..FFFFFFFFFFFFF [ 22%]
+FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF [ 63%]
+FFFFFFFFFFFFFFFFFFF....................................F                 [ 96%]
+tests\test_present_html_at.py FFFF.F                                     [100%]
+
+================================== FAILURES ===================================
+_______ test_TC_4701_LLR_4501_1_project_views_write_exact_html_name[1] ________
+tests\test_present_html_export.py:165: in test_TC_4701_LLR_4501_1_project_views_write_exact_html_name
+    assert _deck_bytes(path)
+tests\test_present_html_export.py:119: in _deck_bytes
+    assert path.exists(), f"x must write the HTML deck {path.name}, not SVG/PNG"
+E   AssertionError: x must write the HTML deck present-alpha-2026-11-01.html, not SVG/PNG
+E   assert False
+E    +  where False = exists()
+E    +    where exists = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-32003/test_TC_4701_LLR_4501_1_projec0/reports/present-alpha-2026-11-01.html').exists
+_______ test_TC_4701_LLR_4501_1_project_views_write_exact_html_name[2] ________
+tests\test_present_html_export.py:165: in test_TC_4701_LLR_4501_1_project_views_write_exact_html_name
+    assert _deck_bytes(path)
+tests\test_present_html_export.py:119: in _deck_bytes
+    assert path.exists(), f"x must write the HTML deck {path.name}, not SVG/PNG"
+E   AssertionError: x must write the HTML deck present-alpha-2026-11-01.html, not SVG/PNG
+E   assert False
+E    +  where False = exists()
+E    +    where exists = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-32003/test_TC_4701_LLR_4501_1_projec1/reports/present-alpha-2026-11-01.html').exists
+_ test_TC_4701b_LLR_4501_1_names_cannot_escape_reports[..\\..\\evil-present-evil-2026-11-01.html] _
+tests\test_present_html_export.py:182: in test_TC_4701b_LLR_4501_1_names_cannot_escape_reports
+    assert _deck_bytes(path)
+tests\test_present_html_export.py:119: in _deck_bytes
+    assert path.exists(), f"x must write the HTML deck {path.name}, not SVG/PNG"
+E   AssertionError: x must write the HTML deck present-evil-2026-11-01.html, not SVG/PNG
+E   assert False
+E    +  where False = exists()
+E    +    where exists = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-32003/test_TC_4701b_LLR_4501_1_names0/reports/present-evil-2026-11-01.html').exists
+_ test_TC_4701b_LLR_4501_1_names_cannot_escape_reports[CON-present-con-2026-11-01.html] _
+tests\test_present_html_export.py:182: in test_TC_4701b_LLR_4501_1_names_cannot_escape_reports
+    assert _deck_bytes(path)
+tests\test_present_html_export.py:119: in _deck_bytes
+    assert path.exists(), f"x must write the HTML deck {path.name}, not SVG/PNG"
+E   AssertionError: x must write the HTML deck present-con-2026-11-01.html, not SVG/PNG
+E   assert False
+E    +  where False = exists()
+E    +    where exists = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-32003/test_TC_4701b_LLR_4501_1_names1/reports/present-con-2026-11-01.html').exists
+_ test_TC_4701b_LLR_4501_1_names_cannot_escape_reports[!!!-present-project-2026-11-01.html] _
+tests\test_present_html_export.py:182: in test_TC_4701b_LLR_4501_1_names_cannot_escape_reports
+    assert _deck_bytes(path)
+tests\test_present_html_export.py:119: in _deck_bytes
+    assert path.exists(), f"x must write the HTML deck {path.name}, not SVG/PNG"
+E   AssertionError: x must write the HTML deck present-project-2026-11-01.html, not SVG/PNG
+E   assert False
+E    +  where False = exists()
+E    +    where exists = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-32003/test_TC_4701b_LLR_4501_1_names2/reports/present-project-2026-11-01.html').exists
+___________ test_TC_4702_LLR_4501_2_all_view_writes_exact_html_name ___________
+tests\test_present_html_export.py:193: in test_TC_4702_LLR_4501_2_all_view_writes_exact_html_name
+    assert _deck_bytes(_present_path(board, f"present-{DAY}.html"))
+tests\test_present_html_export.py:119: in _deck_bytes
+    assert path.exists(), f"x must write the HTML deck {path.name}, not SVG/PNG"
+E   AssertionError: x must write the HTML deck present-2026-11-01.html, not SVG/PNG
+E   assert False
+E    +  where False = exists()
+E    +    where exists = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-32003/test_TC_4702_LLR_4501_2_all_vi0/reports/present-2026-11-01.html').exists
+____ test_TC_4703_LLR_4501_3_bytes_equal_independent_url_free_H_fixture[1] ____
+tests\test_present_html_export.py:206: in test_TC_4703_LLR_4501_3_bytes_equal_independent_url_free_H_fixture
+    assert _deck_bytes(_present_path(board)) == reference
+tests\test_present_html_export.py:119: in _deck_bytes
+    assert path.exists(), f"x must write the HTML deck {path.name}, not SVG/PNG"
+E   AssertionError: x must write the HTML deck present-alpha-2026-11-01.html, not SVG/PNG
+E   assert False
+E    +  where False = exists()
+E    +    where exists = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-32003/test_TC_4703_LLR_4501_3_bytes_0/presented/reports/present-alpha-2026-11-01.html').exists
+____ test_TC_4703_LLR_4501_3_bytes_equal_independent_url_free_H_fixture[2] ____
+tests\test_present_html_export.py:206: in test_TC_4703_LLR_4501_3_bytes_equal_independent_url_free_H_fixture
+    assert _deck_bytes(_present_path(board)) == reference
+tests\test_present_html_export.py:119: in _deck_bytes
+    assert path.exists(), f"x must write the HTML deck {path.name}, not SVG/PNG"
+E   AssertionError: x must write the HTML deck present-alpha-2026-11-01.html, not SVG/PNG
+E   assert False
+E    +  where False = exists()
+E    +    where exists = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-32003/test_TC_4703_LLR_4501_3_bytes_1/presented/reports/present-alpha-2026-11-01.html').exists
+___ test_TC_4704_LLR_4501_4_all_bytes_equal_independent_url_free_H_fixture ____
+tests\test_present_html_export.py:216: in test_TC_4704_LLR_4501_4_all_bytes_equal_independent_url_free_H_fixture
+    assert _deck_bytes(_present_path(board, f"present-{DAY}.html")) == reference
+tests\test_present_html_export.py:119: in _deck_bytes
+    assert path.exists(), f"x must write the HTML deck {path.name}, not SVG/PNG"
+E   AssertionError: x must write the HTML deck present-2026-11-01.html, not SVG/PNG
+E   assert False
+E    +  where False = exists()
+E    +    where exists = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-32003/test_TC_4704_LLR_4501_4_all_by0/presented/reports/present-2026-11-01.html').exists
+______ test_TC_4705_LLR_4501_5_project_scope_ignores_own_rail_flag[True] ______
+tests\test_present_html_export.py:230: in test_TC_4705_LLR_4501_5_project_scope_ignores_own_rail_flag
+    page = _page(_present_path(board))
+tests\test_present_html_export.py:124: in _page
+    return _deck_bytes(path).decode("utf-8")
+tests\test_present_html_export.py:119: in _deck_bytes
+    assert path.exists(), f"x must write the HTML deck {path.name}, not SVG/PNG"
+E   AssertionError: x must write the HTML deck present-alpha-2026-11-01.html, not SVG/PNG
+E   assert False
+E    +  where False = exists()
+E    +    where exists = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-32003/test_TC_4705_LLR_4501_5_projec0/reports/present-alpha-2026-11-01.html').exists
+_____ test_TC_4705_LLR_4501_5_project_scope_ignores_own_rail_flag[False] ______
+tests\test_present_html_export.py:230: in test_TC_4705_LLR_4501_5_project_scope_ignores_own_rail_flag
+    page = _page(_present_path(board))
+tests\test_present_html_export.py:124: in _page
+    return _deck_bytes(path).decode("utf-8")
+tests\test_present_html_export.py:119: in _deck_bytes
+    assert path.exists(), f"x must write the HTML deck {path.name}, not SVG/PNG"
+E   AssertionError: x must write the HTML deck present-alpha-2026-11-01.html, not SVG/PNG
+E   assert False
+E    +  where False = exists()
+E    +    where exists = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-32003/test_TC_4705_LLR_4501_5_projec1/reports/present-alpha-2026-11-01.html').exists
+__________ test_TC_4706_LLR_4501_6_all_scope_uses_presentation_order __________
+tests\test_present_html_export.py:246: in test_TC_4706_LLR_4501_6_all_scope_uses_presentation_order
+    page = _page(_present_path(board, f"present-{DAY}.html"))
+tests\test_present_html_export.py:124: in _page
+    return _deck_bytes(path).decode("utf-8")
+tests\test_present_html_export.py:119: in _deck_bytes
+    assert path.exists(), f"x must write the HTML deck {path.name}, not SVG/PNG"
+E   AssertionError: x must write the HTML deck present-2026-11-01.html, not SVG/PNG
+E   assert False
+E    +  where False = exists()
+E    +    where exists = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-32003/test_TC_4706_LLR_4501_6_all_sc0/reports/present-2026-11-01.html').exists
+________ test_TC_4707_LLR_4501_7_only_presented_board_reaches_deck[1] _________
+tests\test_present_html_export.py:267: in test_TC_4707_LLR_4501_7_only_presented_board_reaches_deck
+    page = _page(_present_path(board, name))
+tests\test_present_html_export.py:124: in _page
+    return _deck_bytes(path).decode("utf-8")
+tests\test_present_html_export.py:119: in _deck_bytes
+    assert path.exists(), f"x must write the HTML deck {path.name}, not SVG/PNG"
+E   AssertionError: x must write the HTML deck present-alpha-2026-11-01.html, not SVG/PNG
+E   assert False
+E    +  where False = exists()
+E    +    where exists = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-32003/test_TC_4707_LLR_4501_7_only_p0/main/reports/present-alpha-2026-11-01.html').exists
+________ test_TC_4707_LLR_4501_7_only_presented_board_reaches_deck[3] _________
+tests\test_present_html_export.py:267: in test_TC_4707_LLR_4501_7_only_presented_board_reaches_deck
+    page = _page(_present_path(board, name))
+tests\test_present_html_export.py:124: in _page
+    return _deck_bytes(path).decode("utf-8")
+tests\test_present_html_export.py:119: in _deck_bytes
+    assert path.exists(), f"x must write the HTML deck {path.name}, not SVG/PNG"
+E   AssertionError: x must write the HTML deck present-2026-11-01.html, not SVG/PNG
+E   assert False
+E    +  where False = exists()
+E    +    where exists = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-32003/test_TC_4707_LLR_4501_7_only_p1/main/reports/present-2026-11-01.html').exists
+________ test_TC_4708_LLR_4501_8_folded_project_keeps_tasks_and_notes _________
+tests\test_present_html_export.py:285: in test_TC_4708_LLR_4501_8_folded_project_keeps_tasks_and_notes
+    page = _page(_present_path(board, f"present-{DAY}.html"))
+tests\test_present_html_export.py:124: in _page
+    return _deck_bytes(path).decode("utf-8")
+tests\test_present_html_export.py:119: in _deck_bytes
+    assert path.exists(), f"x must write the HTML deck {path.name}, not SVG/PNG"
+E   AssertionError: x must write the HTML deck present-2026-11-01.html, not SVG/PNG
+E   assert False
+E    +  where False = exists()
+E    +    where exists = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-32003/test_TC_4708_LLR_4501_8_folded0/reports/present-2026-11-01.html').exists
+_______ test_TC_4709_LLR_4501_9_done_task_title_and_notes_reach_file[1] _______
+tests\test_present_html_export.py:300: in test_TC_4709_LLR_4501_9_done_task_title_and_notes_reach_file
+    page = _page(_present_path(board, name))
+tests\test_present_html_export.py:124: in _page
+    return _deck_bytes(path).decode("utf-8")
+tests\test_present_html_export.py:119: in _deck_bytes
+    assert path.exists(), f"x must write the HTML deck {path.name}, not SVG/PNG"
+E   AssertionError: x must write the HTML deck present-alpha-2026-11-01.html, not SVG/PNG
+E   assert False
+E    +  where False = exists()
+E    +    where exists = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-32003/test_TC_4709_LLR_4501_9_done_t0/reports/present-alpha-2026-11-01.html').exists
+_______ test_TC_4709_LLR_4501_9_done_task_title_and_notes_reach_file[3] _______
+tests\test_present_html_export.py:300: in test_TC_4709_LLR_4501_9_done_task_title_and_notes_reach_file
+    page = _page(_present_path(board, name))
+tests\test_present_html_export.py:124: in _page
+    return _deck_bytes(path).decode("utf-8")
+tests\test_present_html_export.py:119: in _deck_bytes
+    assert path.exists(), f"x must write the HTML deck {path.name}, not SVG/PNG"
+E   AssertionError: x must write the HTML deck present-2026-11-01.html, not SVG/PNG
+E   assert False
+E    +  where False = exists()
+E    +    where exists = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-32003/test_TC_4709_LLR_4501_9_done_t1/reports/present-2026-11-01.html').exists
+____ test_TC_4710_LLR_4501_10_export_changes_neither_board_nor_history[1] _____
+tests\test_present_html_export.py:322: in test_TC_4710_LLR_4501_10_export_changes_neither_board_nor_history
+    assert _deck_bytes(_present_path(board, name))
+tests\test_present_html_export.py:119: in _deck_bytes
+    assert path.exists(), f"x must write the HTML deck {path.name}, not SVG/PNG"
+E   AssertionError: x must write the HTML deck present-alpha-2026-11-01.html, not SVG/PNG
+E   assert False
+E    +  where False = exists()
+E    +    where exists = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-32003/test_TC_4710_LLR_4501_10_expor0/reports/present-alpha-2026-11-01.html').exists
+____ test_TC_4710_LLR_4501_10_export_changes_neither_board_nor_history[2] _____
+tests\test_present_html_export.py:322: in test_TC_4710_LLR_4501_10_export_changes_neither_board_nor_history
+    assert _deck_bytes(_present_path(board, name))
+tests\test_present_html_export.py:119: in _deck_bytes
+    assert path.exists(), f"x must write the HTML deck {path.name}, not SVG/PNG"
+E   AssertionError: x must write the HTML deck present-alpha-2026-11-01.html, not SVG/PNG
+E   assert False
+E    +  where False = exists()
+E    +    where exists = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-32003/test_TC_4710_LLR_4501_10_expor1/reports/present-alpha-2026-11-01.html').exists
+____ test_TC_4710_LLR_4501_10_export_changes_neither_board_nor_history[3] _____
+tests\test_present_html_export.py:322: in test_TC_4710_LLR_4501_10_export_changes_neither_board_nor_history
+    assert _deck_bytes(_present_path(board, name))
+tests\test_present_html_export.py:119: in _deck_bytes
+    assert path.exists(), f"x must write the HTML deck {path.name}, not SVG/PNG"
+E   AssertionError: x must write the HTML deck present-2026-11-01.html, not SVG/PNG
+E   assert False
+E    +  where False = exists()
+E    +    where exists = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-32003/test_TC_4710_LLR_4501_10_expor2/reports/present-2026-11-01.html').exists
+_ test_TC_4711_LLR_4501_11_unlisted_board_uses_label_or_fallback[label0-Client A] _
+tests\test_present_html_export.py:334: in test_TC_4711_LLR_4501_11_unlisted_board_uses_label_or_fallback
+    page = _page(_present_path(board))
+tests\test_present_html_export.py:124: in _page
+    return _deck_bytes(path).decode("utf-8")
+tests\test_present_html_export.py:119: in _deck_bytes
+    assert path.exists(), f"x must write the HTML deck {path.name}, not SVG/PNG"
+E   AssertionError: x must write the HTML deck present-alpha-2026-11-01.html, not SVG/PNG
+E   assert False
+E    +  where False = exists()
+E    +    where exists = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-32003/test_TC_4711_LLR_4501_11_unlis0/reports/present-alpha-2026-11-01.html').exists
+_ test_TC_4711_LLR_4501_11_unlisted_board_uses_label_or_fallback[None-this board] _
+tests\test_present_html_export.py:334: in test_TC_4711_LLR_4501_11_unlisted_board_uses_label_or_fallback
+    page = _page(_present_path(board))
+tests\test_present_html_export.py:124: in _page
+    return _deck_bytes(path).decode("utf-8")
+tests\test_present_html_export.py:119: in _deck_bytes
+    assert path.exists(), f"x must write the HTML deck {path.name}, not SVG/PNG"
+E   AssertionError: x must write the HTML deck present-alpha-2026-11-01.html, not SVG/PNG
+E   assert False
+E    +  where False = exists()
+E    +    where exists = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-32003/test_TC_4711_LLR_4501_11_unlis1/reports/present-alpha-2026-11-01.html').exists
+_________ test_TC_4712_LLR_4501_12_empty_all_scope_still_writes_deck __________
+tests\test_present_html_export.py:346: in test_TC_4712_LLR_4501_12_empty_all_scope_still_writes_deck
+    assert "No project in this scope holds a task." in _page(
+tests\test_present_html_export.py:124: in _page
+    return _deck_bytes(path).decode("utf-8")
+tests\test_present_html_export.py:119: in _deck_bytes
+    assert path.exists(), f"x must write the HTML deck {path.name}, not SVG/PNG"
+E   AssertionError: x must write the HTML deck present-2026-11-01.html, not SVG/PNG
+E   assert False
+E    +  where False = exists()
+E    +    where exists = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-32003/test_TC_4712_LLR_4501_12_empty0/reports/present-2026-11-01.html').exists
+____ test_TC_4715_LLR_4501_15_missing_project_falls_back_to_first_visible _____
+tests\test_present_html_export.py:377: in test_TC_4715_LLR_4501_15_missing_project_falls_back_to_first_visible
+    page = _page(_present_path(board))
+tests\test_present_html_export.py:124: in _page
+    return _deck_bytes(path).decode("utf-8")
+tests\test_present_html_export.py:119: in _deck_bytes
+    assert path.exists(), f"x must write the HTML deck {path.name}, not SVG/PNG"
+E   AssertionError: x must write the HTML deck present-alpha-2026-11-01.html, not SVG/PNG
+E   assert False
+E    +  where False = exists()
+E    +    where exists = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-32003/test_TC_4715_LLR_4501_15_missi0/reports/present-alpha-2026-11-01.html').exists
+_____ test_TC_4721_LLR_4502_1_hidden_task_and_id_have_zero_occurrences[1] _____
+tests\test_present_html_export.py:393: in test_TC_4721_LLR_4502_1_hidden_task_and_id_have_zero_occurrences
+    page = _page(_present_path(board, name))
+tests\test_present_html_export.py:124: in _page
+    return _deck_bytes(path).decode("utf-8")
+tests\test_present_html_export.py:119: in _deck_bytes
+    assert path.exists(), f"x must write the HTML deck {path.name}, not SVG/PNG"
+E   AssertionError: x must write the HTML deck present-alpha-2026-11-01.html, not SVG/PNG
+E   assert False
+E    +  where False = exists()
+E    +    where exists = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-32003/test_TC_4721_LLR_4502_1_hidden0/reports/present-alpha-2026-11-01.html').exists
+_____ test_TC_4721_LLR_4502_1_hidden_task_and_id_have_zero_occurrences[2] _____
+tests\test_present_html_export.py:393: in test_TC_4721_LLR_4502_1_hidden_task_and_id_have_zero_occurrences
+    page = _page(_present_path(board, name))
+tests\test_present_html_export.py:124: in _page
+    return _deck_bytes(path).decode("utf-8")
+tests\test_present_html_export.py:119: in _deck_bytes
+    assert path.exists(), f"x must write the HTML deck {path.name}, not SVG/PNG"
+E   AssertionError: x must write the HTML deck present-alpha-2026-11-01.html, not SVG/PNG
+E   assert False
+E    +  where False = exists()
+E    +    where exists = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-32003/test_TC_4721_LLR_4502_1_hidden1/reports/present-alpha-2026-11-01.html').exists
+_____ test_TC_4721_LLR_4502_1_hidden_task_and_id_have_zero_occurrences[3] _____
+tests\test_present_html_export.py:393: in test_TC_4721_LLR_4502_1_hidden_task_and_id_have_zero_occurrences
+    page = _page(_present_path(board, name))
+tests\test_present_html_export.py:124: in _page
+    return _deck_bytes(path).decode("utf-8")
+tests\test_present_html_export.py:119: in _deck_bytes
+    assert path.exists(), f"x must write the HTML deck {path.name}, not SVG/PNG"
+E   AssertionError: x must write the HTML deck present-2026-11-01.html, not SVG/PNG
+E   assert False
+E    +  where False = exists()
+E    +    where exists = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-32003/test_TC_4721_LLR_4502_1_hidden2/reports/present-2026-11-01.html').exists
+_ test_TC_4722_LLR_4502_2_hidden_project_and_its_tasks_have_zero_occurrences __
+tests\test_present_html_export.py:405: in test_TC_4722_LLR_4502_2_hidden_project_and_its_tasks_have_zero_occurrences
+    page = _page(_present_path(board, f"present-{DAY}.html"))
+tests\test_present_html_export.py:124: in _page
+    return _deck_bytes(path).decode("utf-8")
+tests\test_present_html_export.py:119: in _deck_bytes
+    assert path.exists(), f"x must write the HTML deck {path.name}, not SVG/PNG"
+E   AssertionError: x must write the HTML deck present-2026-11-01.html, not SVG/PNG
+E   assert False
+E    +  where False = exists()
+E    +    where exists = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-32003/test_TC_4722_LLR_4502_2_hidden0/reports/present-2026-11-01.html').exists
+___ test_TC_4723_LLR_4502_3_archived_and_projectless_tasks_are_excluded[1] ____
+tests\test_present_html_export.py:421: in test_TC_4723_LLR_4502_3_archived_and_projectless_tasks_are_excluded
+    page = _page(_present_path(board, name))
+tests\test_present_html_export.py:124: in _page
+    return _deck_bytes(path).decode("utf-8")
+tests\test_present_html_export.py:119: in _deck_bytes
+    assert path.exists(), f"x must write the HTML deck {path.name}, not SVG/PNG"
+E   AssertionError: x must write the HTML deck present-alpha-2026-11-01.html, not SVG/PNG
+E   assert False
+E    +  where False = exists()
+E    +    where exists = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-32003/test_TC_4723_LLR_4502_3_archiv0/reports/present-alpha-2026-11-01.html').exists
+___ test_TC_4723_LLR_4502_3_archived_and_projectless_tasks_are_excluded[3] ____
+tests\test_present_html_export.py:421: in test_TC_4723_LLR_4502_3_archived_and_projectless_tasks_are_excluded
+    page = _page(_present_path(board, name))
+tests\test_present_html_export.py:124: in _page
+    return _deck_bytes(path).decode("utf-8")
+tests\test_present_html_export.py:119: in _deck_bytes
+    assert path.exists(), f"x must write the HTML deck {path.name}, not SVG/PNG"
+E   AssertionError: x must write the HTML deck present-2026-11-01.html, not SVG/PNG
+E   assert False
+E    +  where False = exists()
+E    +    where exists = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-32003/test_TC_4723_LLR_4502_3_archiv1/reports/present-2026-11-01.html').exists
+________ test_TC_4724_LLR_4502_4_hidden_milestone_class_is_excluded[1] ________
+tests\test_present_html_export.py:435: in test_TC_4724_LLR_4502_4_hidden_milestone_class_is_excluded
+    assert "HID-CLASS-MS" not in _page(_present_path(board, name))
+tests\test_present_html_export.py:124: in _page
+    return _deck_bytes(path).decode("utf-8")
+tests\test_present_html_export.py:119: in _deck_bytes
+    assert path.exists(), f"x must write the HTML deck {path.name}, not SVG/PNG"
+E   AssertionError: x must write the HTML deck present-alpha-2026-11-01.html, not SVG/PNG
+E   assert False
+E    +  where False = exists()
+E    +    where exists = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-32003/test_TC_4724_LLR_4502_4_hidden0/reports/present-alpha-2026-11-01.html').exists
+________ test_TC_4724_LLR_4502_4_hidden_milestone_class_is_excluded[3] ________
+tests\test_present_html_export.py:435: in test_TC_4724_LLR_4502_4_hidden_milestone_class_is_excluded
+    assert "HID-CLASS-MS" not in _page(_present_path(board, name))
+tests\test_present_html_export.py:124: in _page
+    return _deck_bytes(path).decode("utf-8")
+tests\test_present_html_export.py:119: in _deck_bytes
+    assert path.exists(), f"x must write the HTML deck {path.name}, not SVG/PNG"
+E   AssertionError: x must write the HTML deck present-2026-11-01.html, not SVG/PNG
+E   assert False
+E    +  where False = exists()
+E    +    where exists = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-32003/test_TC_4724_LLR_4502_4_hidden1/reports/present-2026-11-01.html').exists
+_____ test_TC_4725_LLR_4502_5_legend_omits_class_used_only_by_hidden_task _____
+tests\test_present_html_export.py:447: in test_TC_4725_LLR_4502_5_legend_omits_class_used_only_by_hidden_task
+    assert "CLASS-ONLY-HIDDEN" not in _page(_present_path(board))
+tests\test_present_html_export.py:124: in _page
+    return _deck_bytes(path).decode("utf-8")
+tests\test_present_html_export.py:119: in _deck_bytes
+    assert path.exists(), f"x must write the HTML deck {path.name}, not SVG/PNG"
+E   AssertionError: x must write the HTML deck present-alpha-2026-11-01.html, not SVG/PNG
+E   assert False
+E    +  where False = exists()
+E    +    where exists = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-32003/test_TC_4725_LLR_4502_5_legend0/reports/present-alpha-2026-11-01.html').exists
+________ test_TC_4726_LLR_4502_6_export_reads_hide_flags_at_each_press ________
+tests\test_present_html_export.py:457: in test_TC_4726_LLR_4502_6_export_reads_hide_flags_at_each_press
+    assert "a-open-1" not in _page(path)
+tests\test_present_html_export.py:124: in _page
+    return _deck_bytes(path).decode("utf-8")
+tests\test_present_html_export.py:119: in _deck_bytes
+    assert path.exists(), f"x must write the HTML deck {path.name}, not SVG/PNG"
+E   AssertionError: x must write the HTML deck present-alpha-2026-11-01.html, not SVG/PNG
+E   assert False
+E    +  where False = exists()
+E    +    where exists = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-32003/test_TC_4726_LLR_4502_6_export0/reports/present-alpha-2026-11-01.html').exists
+_ test_TC_4727_LLR_4502_7_urls_strip_without_mutating_source_or_next_save[1] __
+tests\test_present_html_export.py:471: in test_TC_4727_LLR_4502_7_urls_strip_without_mutating_source_or_next_save
+    assert TASK_URL not in _page(_present_path(board, name))
+tests\test_present_html_export.py:124: in _page
+    return _deck_bytes(path).decode("utf-8")
+tests\test_present_html_export.py:119: in _deck_bytes
+    assert path.exists(), f"x must write the HTML deck {path.name}, not SVG/PNG"
+E   AssertionError: x must write the HTML deck present-alpha-2026-11-01.html, not SVG/PNG
+E   assert False
+E    +  where False = exists()
+E    +    where exists = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-32003/test_TC_4727_LLR_4502_7_urls_s0/reports/present-alpha-2026-11-01.html').exists
+_ test_TC_4727_LLR_4502_7_urls_strip_without_mutating_source_or_next_save[2] __
+tests\test_present_html_export.py:471: in test_TC_4727_LLR_4502_7_urls_strip_without_mutating_source_or_next_save
+    assert TASK_URL not in _page(_present_path(board, name))
+tests\test_present_html_export.py:124: in _page
+    return _deck_bytes(path).decode("utf-8")
+tests\test_present_html_export.py:119: in _deck_bytes
+    assert path.exists(), f"x must write the HTML deck {path.name}, not SVG/PNG"
+E   AssertionError: x must write the HTML deck present-alpha-2026-11-01.html, not SVG/PNG
+E   assert False
+E    +  where False = exists()
+E    +    where exists = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-32003/test_TC_4727_LLR_4502_7_urls_s1/reports/present-alpha-2026-11-01.html').exists
+_ test_TC_4727_LLR_4502_7_urls_strip_without_mutating_source_or_next_save[3] __
+tests\test_present_html_export.py:471: in test_TC_4727_LLR_4502_7_urls_strip_without_mutating_source_or_next_save
+    assert TASK_URL not in _page(_present_path(board, name))
+tests\test_present_html_export.py:124: in _page
+    return _deck_bytes(path).decode("utf-8")
+tests\test_present_html_export.py:119: in _deck_bytes
+    assert path.exists(), f"x must write the HTML deck {path.name}, not SVG/PNG"
+E   AssertionError: x must write the HTML deck present-2026-11-01.html, not SVG/PNG
+E   assert False
+E    +  where False = exists()
+E    +    where exists = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-32003/test_TC_4727_LLR_4502_7_urls_s2/reports/present-2026-11-01.html').exists
+_______________ test_TC_4731_LLR_4503_1_success_toast_is_exact ________________
+tests\test_present_html_export.py:490: in test_TC_4731_LLR_4503_1_success_toast_is_exact
+    assert _deck_bytes(path)
+tests\test_present_html_export.py:119: in _deck_bytes
+    assert path.exists(), f"x must write the HTML deck {path.name}, not SVG/PNG"
+E   AssertionError: x must write the HTML deck present-alpha-2026-11-01.html, not SVG/PNG
+E   assert False
+E    +  where False = exists()
+E    +    where exists = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-32003/test_TC_4731_LLR_4503_1_succes0/reports/present-alpha-2026-11-01.html').exists
+______________ test_TC_4732_LLR_4503_2_o_opens_offered_deck_once ______________
+tests\test_present_html_export.py:505: in test_TC_4732_LLR_4503_2_o_opens_offered_deck_once
+    assert opened == [_present_path(board)]
+E   AssertionError: assert [] == [WindowsPath(...-11-01.html')]
+E     
+E     Right contains one more item: WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-32003/test_TC_4732_LLR_4503_2_o_open0/reports/present-alpha-2026-11-01.html')
+E     Use -v to get more diff
+___ test_TC_4733_LLR_4503_3_absent_expired_and_consumed_offers_open_nothing ___
+tests\test_present_html_export.py:526: in test_TC_4733_LLR_4503_3_absent_expired_and_consumed_offers_open_nothing
+    assert opened == [_present_path(board)]
+E   AssertionError: assert [] == [WindowsPath(...-11-01.html')]
+E     
+E     Right contains one more item: WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-32003/test_TC_4733_LLR_4503_3_absent0/reports/present-alpha-2026-11-01.html')
+E     Use -v to get more diff
+______ test_TC_4733b_LLR_4503_3_shared_offer_survives_esc_for_one_main_o ______
+tests\test_present_html_export.py:539: in test_TC_4733b_LLR_4503_3_shared_offer_survives_esc_for_one_main_o
+    assert opened == [_present_path(board)] and urls == []
+E   AssertionError: assert ([] == [WindowsPath(...-11-01.html')]
+E     
+E     Right contains one more item: WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-32003/test_TC_4733b_LLR_4503_3_share0/reports/present-alpha-2026-11-01.html')
+E     Use -v to get more diff)
+________ test_TC_4734_LLR_4503_4_write_oserror_toasts_without_crashing ________
+tests\test_present_html_export.py:552: in test_TC_4734_LLR_4503_4_write_oserror_toasts_without_crashing
+    async with app.run_test(size=(118, 31), notifications=True) as pilot:
+..\..\..\anaconda3\Lib\contextlib.py:217: in __aexit__
+    await anext(self.gen)
+..\..\..\anaconda3\Lib\site-packages\textual\app.py:2218: in run_test
+    raise self._exception
+..\..\..\anaconda3\Lib\site-packages\textual\message_pump.py:663: in _process_messages_loop
+    await self._dispatch_message(message)
+..\..\..\anaconda3\Lib\site-packages\textual\message_pump.py:727: in _dispatch_message
+    await self.on_event(message)
+..\..\..\anaconda3\Lib\site-packages\textual\app.py:4136: in on_event
+    if not await self._check_bindings(event.key, priority=True):
+..\..\..\anaconda3\Lib\site-packages\textual\app.py:3986: in _check_bindings
+    if await self.run_action(binding.action, namespace):
+..\..\..\anaconda3\Lib\site-packages\textual\app.py:4246: in run_action
+    return await self._dispatch_action(action_target, action_name, params)
+..\..\..\anaconda3\Lib\site-packages\textual\app.py:4279: in _dispatch_action
+    await invoke(public_method, *params)
+..\..\..\anaconda3\Lib\site-packages\textual\_callback.py:96: in invoke
+    return await _invoke(callback, *params)
+..\..\..\anaconda3\Lib\site-packages\textual\_callback.py:56: in _invoke
+    result = callback(*params[:parameter_count])
+taskboard\app.py:641: in action_export
+    save_present_svg(text, svg_path, w, h)
+taskboard\views.py:7362: in save_present_svg
+    path.parent.mkdir(parents=True, exist_ok=True)
+..\..\..\anaconda3\Lib\pathlib.py:1311: in mkdir
+    os.mkdir(self, mode)
+E   FileExistsError: [WinError 183] Cannot create a file when that file already exists: 'C:\\Users\\jjgh8\\AppData\\Local\\Temp\\pytest-of-jjgh8\\pytest-32003\\test_TC_4734_LLR_4503_4_write_0\\reports'
+---------------------------- Captured stderr call -----------------------------
+╭───────────────────── Traceback (most recent call last) ──────────────────────
+│ C:\Users\jjgh8\Github\taskboard-wt\incX-tests\taskboard\app.py:641 in        
+│ action_export                                                                
+│                                                                              
+│    638 │   │   │   text = self._frame_text()                                 
+│    639 │   │   │   svg_path, png_path = present_paths(self._board, self._pro 
+│    640 │   │   │   │   │   │   │   │   │   │   │      PRESENT_SCREEN_VIEWS[s 
+│ ❱  641 │   │   save_present_svg(text, svg_path, w, h)                        
+│    642 │   │   png = save_present_png(svg_path, png_path, w, h)              
+│    643 │   │   if png is None:                                               
+│    644 │   │   │   self.app.notify(                                          
+│                                                                              
+│ ╭───────────────────────────────── locals ─────────────────────────────────╮ 
+│ │        h = 30                                                            │ 
+│ │ png_path = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjg… │ 
+│ │     self = PresentScreen()                                               │ 
+│ │ svg_path = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjg… │ 
+│ │     text = <text '◆ PRESENT · Alpha  gantt                               │ 
+│ │            2 open · 1 done \n              today Sun Nov 1  October ┃1   │ 
+│ │            November                                                 ┃Dec │ 
+│ │            \n              selected task ▸  ⟦━━━━━━━━━━━━━━━━⟧ Oct       │ 
+│ │            28–Nov 5       16            23            30                 │ 
+│ │            \n  ▲ Gate   0 hidden                                         │ 
+│ │            \n▌ ALPHA                                                     │ 
+│ │            ········╎·┆·············┆·············┆·············┆·······… │ 
+│ │            no dates\n  ▎ a-open-1 ↗                                      │ 
+│ │            ⟦━━━━━━━━━━━━━━━━⟧······┆·············┆·············┆·······… │ 
+│ │            Oct 28–Nov 5\n  ▎ ▲ a-gate                                    │ 
+│ │            ········╎·┆·····▲ Nov                                         │ 
+│ │            5·┆·············┆·············┆·············┆······     due   │ 
+│ │            Nov                                                           │ 
+│ │            5\n─────────────────────────────────────────────────────────… │ 
+│ │            ⟦a-open-1⟧                                                    │ 
+│ │            in 4d\n  · ask @Synthetic\xa0Person                           │ 
+│ │            \n   a-gate                                                   │ 
+│ │            in 4d\n                                                       │ 
+│ │            \n                                                            │ 
+│ │            \n                                                            │ 
+│ │            \n                                                            │ 
+│ │            \n                                                            │ 
+│ │            \n                                                            │ 
+│ │            \n                                                            │ 
+│ │            \n                                                            │ 
+│ │            \n                                                            │ 
+│ │            \n                                                            │ 
+│ │            \n                                                            │ 
+│ │            \n                                                            │ 
+│ │            \n                                                            │ 
+│ │            \n                                                            │ 
+│ │            \n                                                            │ 
+│ │            \n                                                            │ 
+│ │            \n                                                            │ 
+│ │            \n                                                            │ 
+│ │            \n                                                            │ 
+│ │            ' [Span(0, 9, 'bold #e6edf7'), Span(9, 12, '#5b6675'),        │ 
+│ │            Span(12, 17, 'bold #38bdf8'), Span(17, 24, '#7a828c'),        │ 
+│ │            Span(102, 108, '#8b98a5'), Span(108, 111, '#5b6675'),         │ 
+│ │            Span(111, 117, '#3f9c6d'), Span(119, 149, '#2dd4bf'),         │ 
+│ │            Span(150, 157, 'bold #c9d4e0'), Span(158, 159, '#334154'),    │ 
+│ │            Span(159, 160, 'bold reverse #2dd4bf'), Span(161, 169, 'bold  │ 
+│ │            #e6edf3'), Span(218, 219, '#334154'), Span(219, 222, 'bold    │ 
+│ │            #c9d4e0'), Span(238, 268, 'bold #e6edf7'), Span(269, 287,     │ 
+│ │            'bold #e6edf7'), Span(287, 288, '#334154'), Span(288, 300,    │ 
+│ │            'bold #e6edf7'), Span(300, 307, '#334154'), Span(307, 309,    │ 
+│ │            '#8b98a5'), Span(309, 321, '#334154'), Span(321, 323,         │ 
+│ │            '#8b98a5'), Span(323, 335, '#334154'), Span(335, 337,         │ 
+│ │            '#8b98a5'), Span(337, 342, '#334154'), Span(357, 359,         │ 
+│ │            '#5b6675'), Span(359, 361, '#22d3ee'), Span(361, 365,         │ 
+│ │            '#8b98a5'), Span(365, 376, '#5b6675'), Span(476, 478,         │ 
+│ │            '#38bdf8'), Span(478, 506, 'bold #38bdf8'), Span(507, 515,    │ 
+│ │            '#6b4a3f'), Span(515, 516, 'bold #e6edf7'), Span(516, 580,    │ 
+│ │            '#5b6675'), Span(581, 594, '#5b6675'), Span(597, 598,         │ 
+│ │            '#38bdf8'), Span(599, 625, 'bold #e6edf7'), Span(599, 625,    │ 
+│ │            'link https://example.test/capability-a1'), Span(626, 644,    │ 
+│ │            'bold #e6edf7'), Span(644, 699, '#5b6675'), Span(700, 713,    │ 
+│ │            '#8b98a5'), Span(716, 717, '#38bdf8'), Span(718, 719,         │ 
+│ │            '#22d3ee'), Span(720, 744, 'bold #e6edf7'), Span(745, 753,    │ 
+│ │            '#6b4a3f'), Span(753, 754, 'bold #e6edf7'), Span(754, 761,    │ 
+│ │            '#5b6675'), Span(761, 762, '#22d3ee'), Span(762, 763,         │ 
+│ │            '#5b6675'), Span(763, 766, '#8b98a5'), Span(766, 767,         │ 
+│ │            '#5b6675'), Span(767, 768, '#8b98a5'), Span(768, 818,         │ 
+│ │            '#5b6675'), Span(819, 832, '#8b98a5'), Span(833, 951,         │ 
+│ │            '#334154'), Span(954, 964, 'bold #2dd4bf'), Span(1059, 1070,  │ 
+│ │            '#8b98a5'), Span(1073, 1075, '#5b6675'), Span(1075, 1079,     │ 
+│ │            '#e6edf3'), Span(1075, 1075, '#8b98a5'), Span(1079, 1096,     │ 
+│ │            'bold #f472b6'), Span(1193, 1199, 'bold #e6edf7'), Span(1297, │ 
+│ │            1308, '#8b98a5')] ''>                                         │ 
+│ │        w = 118                                                           │ 
+│ ╰──────────────────────────────────────────────────────────────────────────╯ 
+│                                                                              
+│ C:\Users\jjgh8\Github\taskboard-wt\incX-tests\taskboard\views.py:7362 in     
+│ save_present_svg                                                             
+│                                                                              
+│   7359 │   │   │   │     color_system="truecolor", record=True,              
+│   7360 │   │   │   │     file=open(os.devnull, "w", encoding="utf-8"))       
+│   7361 │   con.print(text, end="")                                           
+│ ❱ 7362 │   path.parent.mkdir(parents=True, exist_ok=True)                    
+│   7363 │   con.save_svg(str(path), title="taskboard · presentation")         
+│   7364 │   return path                                                       
+│   7365                                                                       
+│                                                                              
+│ ╭───────────────────────────────── locals ─────────────────────────────────╮ 
+│ │    con = <console width=119 ColorSystem.TRUECOLOR>                       │ 
+│ │ height = 30                                                              │ 
+│ │   path = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8… │ 
+│ │   text = <text '◆ PRESENT · Alpha  gantt                                 │ 
+│ │          2 open · 1 done \n              today Sun Nov 1  October ┃1     │ 
+│ │          November                                                 ┃Dec   │ 
+│ │          \n              selected task ▸  ⟦━━━━━━━━━━━━━━━━⟧ Oct 28–Nov  │ 
+│ │          5       16            23            30                   \n  ▲  │ 
+│ │          Gate   0 hidden                                                 │ 
+│ │          \n▌ ALPHA                                                       │ 
+│ │          ········╎·┆·············┆·············┆·············┆·········… │ 
+│ │          no dates\n  ▎ a-open-1 ↗                                        │ 
+│ │          ⟦━━━━━━━━━━━━━━━━⟧······┆·············┆·············┆·········… │ 
+│ │          Oct 28–Nov 5\n  ▎ ▲ a-gate                   ········╎·┆·····▲  │ 
+│ │          Nov 5·┆·············┆·············┆·············┆······     due │ 
+│ │          Nov                                                             │ 
+│ │          5\n───────────────────────────────────────────────────────────… │ 
+│ │          ⟦a-open-1⟧                                                      │ 
+│ │          in 4d\n  · ask @Synthetic\xa0Person                             │ 
+│ │          \n   a-gate                                                     │ 
+│ │          in 4d\n                                                         │ 
+│ │          \n                                                              │ 
+│ │          \n                                                              │ 
+│ │          \n                                                              │ 
+│ │          \n                                                              │ 
+│ │          \n                                                              │ 
+│ │          \n                                                              │ 
+│ │          \n                                                              │ 
+│ │          \n                                                              │ 
+│ │          \n                                                              │ 
+│ │          \n                                                              │ 
+│ │          \n                                                              │ 
+│ │          \n                                                              │ 
+│ │          \n                                                              │ 
+│ │          \n                                                              │ 
+│ │          \n                                                              │ 
+│ │          \n                                                              │ 
+│ │          \n                                                              │ 
+│ │          \n                                                              │ 
+│ │          ' [Span(0, 9, 'bold #e6edf7'), Span(9, 12, '#5b6675'), Span(12, │ 
+│ │          17, 'bold #38bdf8'), Span(17, 24, '#7a828c'), Span(102, 108,    │ 
+│ │          '#8b98a5'), Span(108, 111, '#5b6675'), Span(111, 117,           │ 
+│ │          '#3f9c6d'), Span(119, 149, '#2dd4bf'), Span(150, 157, 'bold     │ 
+│ │          #c9d4e0'), Span(158, 159, '#334154'), Span(159, 160, 'bold      │ 
+│ │          reverse #2dd4bf'), Span(161, 169, 'bold #e6edf3'), Span(218,    │ 
+│ │          219, '#334154'), Span(219, 222, 'bold #c9d4e0'), Span(238, 268, │ 
+│ │          'bold #e6edf7'), Span(269, 287, 'bold #e6edf7'), Span(287, 288, │ 
+│ │          '#334154'), Span(288, 300, 'bold #e6edf7'), Span(300, 307,      │ 
+│ │          '#334154'), Span(307, 309, '#8b98a5'), Span(309, 321,           │ 
+│ │          '#334154'), Span(321, 323, '#8b98a5'), Span(323, 335,           │ 
+│ │          '#334154'), Span(335, 337, '#8b98a5'), Span(337, 342,           │ 
+│ │          '#334154'), Span(357, 359, '#5b6675'), Span(359, 361,           │ 
+│ │          '#22d3ee'), Span(361, 365, '#8b98a5'), Span(365, 376,           │ 
+│ │          '#5b6675'), Span(476, 478, '#38bdf8'), Span(478, 506, 'bold     │ 
+│ │          #38bdf8'), Span(507, 515, '#6b4a3f'), Span(515, 516, 'bold      │ 
+│ │          #e6edf7'), Span(516, 580, '#5b6675'), Span(581, 594,            │ 
+│ │          '#5b6675'), Span(597, 598, '#38bdf8'), Span(599, 625, 'bold     │ 
+│ │          #e6edf7'), Span(599, 625, 'link                                 │ 
+│ │          https://example.test/capability-a1'), Span(626, 644, 'bold      │ 
+│ │          #e6edf7'), Span(644, 699, '#5b6675'), Span(700, 713,            │ 
+│ │          '#8b98a5'), Span(716, 717, '#38bdf8'), Span(718, 719,           │ 
+│ │          '#22d3ee'), Span(720, 744, 'bold #e6edf7'), Span(745, 753,      │ 
+│ │          '#6b4a3f'), Span(753, 754, 'bold #e6edf7'), Span(754, 761,      │ 
+│ │          '#5b6675'), Span(761, 762, '#22d3ee'), Span(762, 763,           │ 
+│ │          '#5b6675'), Span(763, 766, '#8b98a5'), Span(766, 767,           │ 
+│ │          '#5b6675'), Span(767, 768, '#8b98a5'), Span(768, 818,           │ 
+│ │          '#5b6675'), Span(819, 832, '#8b98a5'), Span(833, 951,           │ 
+│ │          '#334154'), Span(954, 964, 'bold #2dd4bf'), Span(1059, 1070,    │ 
+│ │          '#8b98a5'), Span(1073, 1075, '#5b6675'), Span(1075, 1079,       │ 
+│ │          '#e6edf3'), Span(1075, 1075, '#8b98a5'), Span(1079, 1096, 'bold │ 
+│ │          #f472b6'), Span(1193, 1199, 'bold #e6edf7'), Span(1297, 1308,   │ 
+│ │          '#8b98a5')] ''>                                                 │ 
+│ │  width = 118                                                             │ 
+│ ╰──────────────────────────────────────────────────────────────────────────╯ 
+│                                                                              
+│ C:\Users\jjgh8\anaconda3\Lib\pathlib.py:1311 in mkdir                        
+│                                                                              
+│   1308 │   │   Create a new directory at this given path.                    
+│   1309 │   │   """                                                           
+│   1310 │   │   try:                                                          
+│ ❱ 1311 │   │   │   os.mkdir(self, mode)                                      
+│   1312 │   │   except FileNotFoundError:                                     
+│   1313 │   │   │   if not parents or self.parent == self:                    
+│   1314 │   │   │   │   raise                                                 
+│                                                                              
+│ ╭───────────────────────────────── locals ─────────────────────────────────╮ 
+│ │ exist_ok = True                                                          │ 
+│ │     mode = 511                                                           │ 
+│ │  parents = True                                                          │ 
+│ │     self = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjg… │ 
+│ ╰──────────────────────────────────────────────────────────────────────────╯ 
+╰──────────────────────────────────────────────────────────────────────────────
+FileExistsError: [WinError 183] Cannot create a file when that file already 
+exists: 
+'C:\\Users\\jjgh8\\AppData\\Local\\Temp\\pytest-of-jjgh8\\pytest-32003\\test_TC
+4734_LLR_4503_4_write_0\\reports'
+________ test_TC_4735_LLR_4503_5_failed_export_withdraws_earlier_offer ________
+tests\test_present_html_export.py:568: in test_TC_4735_LLR_4503_5_failed_export_withdraws_earlier_offer
+    assert _deck_bytes(path)
+tests\test_present_html_export.py:119: in _deck_bytes
+    assert path.exists(), f"x must write the HTML deck {path.name}, not SVG/PNG"
+E   AssertionError: x must write the HTML deck present-alpha-2026-11-01.html, not SVG/PNG
+E   assert False
+E    +  where False = exists()
+E    +    where exists = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-32003/test_TC_4735_LLR_4503_5_failed0/reports/present-alpha-2026-11-01.html').exists
+________ test_TC_4736_LLR_4503_6_opener_oserror_has_exact_error_toast _________
+tests\test_present_html_export.py:586: in test_TC_4736_LLR_4503_6_opener_oserror_has_exact_error_toast
+    assert toasts, "o must route the opener failure to a Report toast"
+E   AssertionError: o must route the opener failure to a Report toast
+E   assert []
+_________ test_TC_4736b_LLR_4503_6_relative_uri_valueerror_is_caught __________
+tests\test_present_html_export.py:598: in test_TC_4736b_LLR_4503_6_relative_uri_valueerror_is_caught
+    assert _deck_bytes(path)
+tests\test_present_html_export.py:119: in _deck_bytes
+    assert path.exists(), f"x must write the HTML deck {path.name}, not SVG/PNG"
+E   AssertionError: x must write the HTML deck present-alpha-2026-11-01.html, not SVG/PNG
+E   assert False
+E    +  where False = exists()
+E    +    where exists = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-32003/test_TC_4736b_LLR_4503_6_relat0/reports/present-alpha-2026-11-01.html').exists
+_______ test_TC_4737_LLR_4503_7_markup_in_folder_is_literal_toast_text ________
+tests\test_present_html_export.py:611: in test_TC_4737_LLR_4503_7_markup_in_folder_is_literal_toast_text
+    assert toasts, "x must use the shared Report toast"
+E   AssertionError: x must use the shared Report toast
+E   assert []
+_________________ test_TC_4741_LLR_4504_1_one_file_oracle[1] __________________
+tests\test_present_html_export.py:630: in test_TC_4741_LLR_4504_1_one_file_oracle
+    assert changed == {path}
+E   AssertionError: assert {WindowsPath(...6-11-01.svg')} == {WindowsPath(...-11-01.html')}
+E     
+E     Extra items in the left set:
+E     WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-32003/test_TC_4741_LLR_4504_1_one_fi0/reports/present-alpha-2026-11-01.svg')
+E     Extra items in the right set:
+E     WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-32003/test_TC_4741_LLR_4504_1_one_fi0/reports/present-alpha-2026-11-01.html')
+E     Use -v to get more diff
+_________________ test_TC_4741_LLR_4504_1_one_file_oracle[2] __________________
+tests\test_present_html_export.py:630: in test_TC_4741_LLR_4504_1_one_file_oracle
+    assert changed == {path}
+E   AssertionError: assert {WindowsPath(...1-split.svg')} == {WindowsPath(...-11-01.html')}
+E     
+E     Extra items in the left set:
+E     WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-32003/test_TC_4741_LLR_4504_1_one_fi1/reports/present-alpha-2026-11-01-split.svg')
+E     Extra items in the right set:
+E     WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-32003/test_TC_4741_LLR_4504_1_one_fi1/reports/present-alpha-2026-11-01.html')
+E     Use -v to get more diff
+_________________ test_TC_4741_LLR_4504_1_one_file_oracle[3] __________________
+tests\test_present_html_export.py:630: in test_TC_4741_LLR_4504_1_one_file_oracle
+    assert changed == {path}
+E   AssertionError: assert {WindowsPath(...-01-all.svg')} == {WindowsPath(...-11-01.html')}
+E     
+E     Extra items in the left set:
+E     WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-32003/test_TC_4741_LLR_4504_1_one_fi2/reports/present-board-2026-11-01-all.svg')
+E     Extra items in the right set:
+E     WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-32003/test_TC_4741_LLR_4504_1_one_fi2/reports/present-2026-11-01.html')
+E     Use -v to get more diff
+___________ test_TC_4742_LLR_4504_2_export_starts_no_subprocess[1] ____________
+tests\test_present_html_export.py:646: in test_TC_4742_LLR_4504_2_export_starts_no_subprocess
+    async with app.run_test(size=(118, 31)) as pilot:
+..\..\..\anaconda3\Lib\contextlib.py:217: in __aexit__
+    await anext(self.gen)
+..\..\..\anaconda3\Lib\site-packages\textual\app.py:2218: in run_test
+    raise self._exception
+..\..\..\anaconda3\Lib\site-packages\textual\message_pump.py:663: in _process_messages_loop
+    await self._dispatch_message(message)
+..\..\..\anaconda3\Lib\site-packages\textual\message_pump.py:727: in _dispatch_message
+    await self.on_event(message)
+..\..\..\anaconda3\Lib\site-packages\textual\app.py:4136: in on_event
+    if not await self._check_bindings(event.key, priority=True):
+..\..\..\anaconda3\Lib\site-packages\textual\app.py:3986: in _check_bindings
+    if await self.run_action(binding.action, namespace):
+..\..\..\anaconda3\Lib\site-packages\textual\app.py:4246: in run_action
+    return await self._dispatch_action(action_target, action_name, params)
+..\..\..\anaconda3\Lib\site-packages\textual\app.py:4279: in _dispatch_action
+    await invoke(public_method, *params)
+..\..\..\anaconda3\Lib\site-packages\textual\_callback.py:96: in invoke
+    return await _invoke(callback, *params)
+..\..\..\anaconda3\Lib\site-packages\textual\_callback.py:56: in _invoke
+    result = callback(*params[:parameter_count])
+taskboard\app.py:642: in action_export
+    png = save_present_png(svg_path, png_path, w, h)
+taskboard\views.py:7394: in save_present_png
+    proc = subprocess.run(cmd, capture_output=True, timeout=30)
+tests\test_present_html_export.py:640: in forbidden
+    raise AssertionError("presentation export started a subprocess")
+E   AssertionError: presentation export started a subprocess
+---------------------------- Captured stderr call -----------------------------
+╭───────────────────── Traceback (most recent call last) ──────────────────────
+│ C:\Users\jjgh8\Github\taskboard-wt\incX-tests\taskboard\app.py:642 in        
+│ action_export                                                                
+│                                                                              
+│    639 │   │   │   svg_path, png_path = present_paths(self._board, self._pro 
+│    640 │   │   │   │   │   │   │   │   │   │   │      PRESENT_SCREEN_VIEWS[s 
+│    641 │   │   save_present_svg(text, svg_path, w, h)                        
+│ ❱  642 │   │   png = save_present_png(svg_path, png_path, w, h)              
+│    643 │   │   if png is None:                                               
+│    644 │   │   │   self.app.notify(                                          
+│    645 │   │   │   │   f"Exported {svg_path.name} to {svg_path.parent} — PNG 
+│                                                                              
+│ ╭───────────────────────────────── locals ─────────────────────────────────╮ 
+│ │        h = 30                                                            │ 
+│ │ png_path = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjg… │ 
+│ │     self = PresentScreen()                                               │ 
+│ │ svg_path = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjg… │ 
+│ │     text = <text '◆ PRESENT · Alpha  gantt                               │ 
+│ │            2 open · 1 done \n              today Sun Nov 1  October ┃1   │ 
+│ │            November                                                 ┃Dec │ 
+│ │            \n              selected task ▸  ⟦━━━━━━━━━━━━━━━━⟧ Oct       │ 
+│ │            28–Nov 5       16            23            30                 │ 
+│ │            \n  ▲ Gate   0 hidden                                         │ 
+│ │            \n▌ ALPHA                                                     │ 
+│ │            ········╎·┆·············┆·············┆·············┆·······… │ 
+│ │            no dates\n  ▎ a-open-1 ↗                                      │ 
+│ │            ⟦━━━━━━━━━━━━━━━━⟧······┆·············┆·············┆·······… │ 
+│ │            Oct 28–Nov 5\n  ▎ ▲ a-gate                                    │ 
+│ │            ········╎·┆·····▲ Nov                                         │ 
+│ │            5·┆·············┆·············┆·············┆······     due   │ 
+│ │            Nov                                                           │ 
+│ │            5\n─────────────────────────────────────────────────────────… │ 
+│ │            ⟦a-open-1⟧                                                    │ 
+│ │            in 4d\n  · ask @Synthetic\xa0Person                           │ 
+│ │            \n   a-gate                                                   │ 
+│ │            in 4d\n                                                       │ 
+│ │            \n                                                            │ 
+│ │            \n                                                            │ 
+│ │            \n                                                            │ 
+│ │            \n                                                            │ 
+│ │            \n                                                            │ 
+│ │            \n                                                            │ 
+│ │            \n                                                            │ 
+│ │            \n                                                            │ 
+│ │            \n                                                            │ 
+│ │            \n                                                            │ 
+│ │            \n                                                            │ 
+│ │            \n                                                            │ 
+│ │            \n                                                            │ 
+│ │            \n                                                            │ 
+│ │            \n                                                            │ 
+│ │            \n                                                            │ 
+│ │            \n                                                            │ 
+│ │            \n                                                            │ 
+│ │            ' [Span(0, 9, 'bold #e6edf7'), Span(9, 12, '#5b6675'),        │ 
+│ │            Span(12, 17, 'bold #38bdf8'), Span(17, 24, '#7a828c'),        │ 
+│ │            Span(102, 108, '#8b98a5'), Span(108, 111, '#5b6675'),         │ 
+│ │            Span(111, 117, '#3f9c6d'), Span(119, 149, '#2dd4bf'),         │ 
+│ │            Span(150, 157, 'bold #c9d4e0'), Span(158, 159, '#334154'),    │ 
+│ │            Span(159, 160, 'bold reverse #2dd4bf'), Span(161, 169, 'bold  │ 
+│ │            #e6edf3'), Span(218, 219, '#334154'), Span(219, 222, 'bold    │ 
+│ │            #c9d4e0'), Span(238, 268, 'bold #e6edf7'), Span(269, 287,     │ 
+│ │            'bold #e6edf7'), Span(287, 288, '#334154'), Span(288, 300,    │ 
+│ │            'bold #e6edf7'), Span(300, 307, '#334154'), Span(307, 309,    │ 
+│ │            '#8b98a5'), Span(309, 321, '#334154'), Span(321, 323,         │ 
+│ │            '#8b98a5'), Span(323, 335, '#334154'), Span(335, 337,         │ 
+│ │            '#8b98a5'), Span(337, 342, '#334154'), Span(357, 359,         │ 
+│ │            '#5b6675'), Span(359, 361, '#22d3ee'), Span(361, 365,         │ 
+│ │            '#8b98a5'), Span(365, 376, '#5b6675'), Span(476, 478,         │ 
+│ │            '#38bdf8'), Span(478, 506, 'bold #38bdf8'), Span(507, 515,    │ 
+│ │            '#6b4a3f'), Span(515, 516, 'bold #e6edf7'), Span(516, 580,    │ 
+│ │            '#5b6675'), Span(581, 594, '#5b6675'), Span(597, 598,         │ 
+│ │            '#38bdf8'), Span(599, 625, 'bold #e6edf7'), Span(599, 625,    │ 
+│ │            'link https://example.test/capability-a1'), Span(626, 644,    │ 
+│ │            'bold #e6edf7'), Span(644, 699, '#5b6675'), Span(700, 713,    │ 
+│ │            '#8b98a5'), Span(716, 717, '#38bdf8'), Span(718, 719,         │ 
+│ │            '#22d3ee'), Span(720, 744, 'bold #e6edf7'), Span(745, 753,    │ 
+│ │            '#6b4a3f'), Span(753, 754, 'bold #e6edf7'), Span(754, 761,    │ 
+│ │            '#5b6675'), Span(761, 762, '#22d3ee'), Span(762, 763,         │ 
+│ │            '#5b6675'), Span(763, 766, '#8b98a5'), Span(766, 767,         │ 
+│ │            '#5b6675'), Span(767, 768, '#8b98a5'), Span(768, 818,         │ 
+│ │            '#5b6675'), Span(819, 832, '#8b98a5'), Span(833, 951,         │ 
+│ │            '#334154'), Span(954, 964, 'bold #2dd4bf'), Span(1059, 1070,  │ 
+│ │            '#8b98a5'), Span(1073, 1075, '#5b6675'), Span(1075, 1079,     │ 
+│ │            '#e6edf3'), Span(1075, 1075, '#8b98a5'), Span(1079, 1096,     │ 
+│ │            'bold #f472b6'), Span(1193, 1199, 'bold #e6edf7'), Span(1297, │ 
+│ │            1308, '#8b98a5')] ''>                                         │ 
+│ │        w = 118                                                           │ 
+│ ╰──────────────────────────────────────────────────────────────────────────╯ 
+│                                                                              
+│ C:\Users\jjgh8\Github\taskboard-wt\incX-tests\taskboard\views.py:7394 in     
+│ save_present_png                                                             
+│                                                                              
+│   7391 │   │      f"--window-size={width * 10},{height * 20}",               
+│   7392 │   │      svg_path.as_uri()]                                         
+│   7393 │   try:                                                              
+│ ❱ 7394 │   │   proc = subprocess.run(cmd, capture_output=True, timeout=30)   
+│   7395 │   except (subprocess.TimeoutExpired, OSError):                      
+│   7396 │   │   return None                                                   
+│   7397 │   if proc.returncode != 0 or not png_path.exists():                 
+│                                                                              
+│ ╭───────────────────────────────── locals ─────────────────────────────────╮ 
+│ │      cmd = [                                                             │ 
+│ │            │   'synthetic-edge',                                         │ 
+│ │            │   '--headless=new',                                         │ 
+│ │            │   '--disable-gpu',                                          │ 
+│ │            │                                                             │ 
+│ │            '--screenshot=C:\\Users\\jjgh8\\AppData\\Local\\Temp\\pytest… │ 
+│ │            │   '--window-size=1180,600',                                 │ 
+│ │            │                                                             │ 
+│ │            'file:///C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/p… │ 
+│ │            ]                                                             │ 
+│ │      exe = 'synthetic-edge'                                              │ 
+│ │   height = 30                                                            │ 
+│ │ png_path = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjg… │ 
+│ │ svg_path = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjg… │ 
+│ │    width = 118                                                           │ 
+│ ╰──────────────────────────────────────────────────────────────────────────╯ 
+│                                                                              
+│ C:\Users\jjgh8\Github\taskboard-wt\incX-tests\tests\test_present_html_export 
+│ .py:640 in forbidden                                                         
+│                                                                              
+│   637 │   calls = []                                                         
+│   638 │   def forbidden(*args, **kwargs):                                    
+│   639 │   │   calls.append((args, kwargs))                                   
+│ ❱ 640 │   │   raise AssertionError("presentation export started a subprocess 
+│   641 │   monkeypatch.setattr(subprocess, "run", forbidden)                  
+│   642 │   monkeypatch.setattr(subprocess, "Popen", forbidden)                
+│   643 │   monkeypatch.setattr(views, "_find_msedge", lambda: "synthetic-edge 
+│                                                                              
+│ ╭───────────────────────────────── locals ─────────────────────────────────╮ 
+│ │   args = (                                                               │ 
+│ │          │   [                                                           │ 
+│ │          │   │   'synthetic-edge',                                       │ 
+│ │          │   │   '--headless=new',                                       │ 
+│ │          │   │   '--disable-gpu',                                        │ 
+│ │          │   │                                                           │ 
+│ │          '--screenshot=C:\\Users\\jjgh8\\AppData\\Local\\Temp\\pytest-o… │ 
+│ │          │   │   '--window-size=1180,600',                               │ 
+│ │          │   │                                                           │ 
+│ │          'file:///C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pyt… │ 
+│ │          │   ],                                                          │ 
+│ │          )                                                               │ 
+│ │  calls = [                                                               │ 
+│ │          │   (                                                           │ 
+│ │          │   │   (                                                       │ 
+│ │          │   │   │   [                                                   │ 
+│ │          │   │   │   │   'synthetic-edge',                               │ 
+│ │          │   │   │   │   '--headless=new',                               │ 
+│ │          │   │   │   │   '--disable-gpu',                                │ 
+│ │          │   │   │   │                                                   │ 
+│ │          '--screenshot=C:\\Users\\jjgh8\\AppData\\Local\\Temp\\pytest-o… │ 
+│ │          │   │   │   │   '--window-size=1180,600',                       │ 
+│ │          │   │   │   │                                                   │ 
+│ │          'file:///C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pyt… │ 
+│ │          │   │   │   ],                                                  │ 
+│ │          │   │   ),                                                      │ 
+│ │          │   │   {'capture_output': True, 'timeout': 30}                 │ 
+│ │          │   )                                                           │ 
+│ │          ]                                                               │ 
+│ │ kwargs = {'capture_output': True, 'timeout': 30}                         │ 
+│ ╰──────────────────────────────────────────────────────────────────────────╯ 
+╰──────────────────────────────────────────────────────────────────────────────
+AssertionError: presentation export started a subprocess
+___________ test_TC_4742_LLR_4504_2_export_starts_no_subprocess[2] ____________
+tests\test_present_html_export.py:646: in test_TC_4742_LLR_4504_2_export_starts_no_subprocess
+    async with app.run_test(size=(118, 31)) as pilot:
+..\..\..\anaconda3\Lib\contextlib.py:217: in __aexit__
+    await anext(self.gen)
+..\..\..\anaconda3\Lib\site-packages\textual\app.py:2218: in run_test
+    raise self._exception
+..\..\..\anaconda3\Lib\site-packages\textual\message_pump.py:663: in _process_messages_loop
+    await self._dispatch_message(message)
+..\..\..\anaconda3\Lib\site-packages\textual\message_pump.py:727: in _dispatch_message
+    await self.on_event(message)
+..\..\..\anaconda3\Lib\site-packages\textual\app.py:4136: in on_event
+    if not await self._check_bindings(event.key, priority=True):
+..\..\..\anaconda3\Lib\site-packages\textual\app.py:3986: in _check_bindings
+    if await self.run_action(binding.action, namespace):
+..\..\..\anaconda3\Lib\site-packages\textual\app.py:4246: in run_action
+    return await self._dispatch_action(action_target, action_name, params)
+..\..\..\anaconda3\Lib\site-packages\textual\app.py:4279: in _dispatch_action
+    await invoke(public_method, *params)
+..\..\..\anaconda3\Lib\site-packages\textual\_callback.py:96: in invoke
+    return await _invoke(callback, *params)
+..\..\..\anaconda3\Lib\site-packages\textual\_callback.py:56: in _invoke
+    result = callback(*params[:parameter_count])
+taskboard\app.py:642: in action_export
+    png = save_present_png(svg_path, png_path, w, h)
+taskboard\views.py:7394: in save_present_png
+    proc = subprocess.run(cmd, capture_output=True, timeout=30)
+tests\test_present_html_export.py:640: in forbidden
+    raise AssertionError("presentation export started a subprocess")
+E   AssertionError: presentation export started a subprocess
+---------------------------- Captured stderr call -----------------------------
+╭───────────────────── Traceback (most recent call last) ──────────────────────
+│ C:\Users\jjgh8\Github\taskboard-wt\incX-tests\taskboard\app.py:642 in        
+│ action_export                                                                
+│                                                                              
+│    639 │   │   │   svg_path, png_path = present_paths(self._board, self._pro 
+│    640 │   │   │   │   │   │   │   │   │   │   │      PRESENT_SCREEN_VIEWS[s 
+│    641 │   │   save_present_svg(text, svg_path, w, h)                        
+│ ❱  642 │   │   png = save_present_png(svg_path, png_path, w, h)              
+│    643 │   │   if png is None:                                               
+│    644 │   │   │   self.app.notify(                                          
+│    645 │   │   │   │   f"Exported {svg_path.name} to {svg_path.parent} — PNG 
+│                                                                              
+│ ╭───────────────────────────────── locals ─────────────────────────────────╮ 
+│ │        h = 30                                                            │ 
+│ │ png_path = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjg… │ 
+│ │     self = PresentScreen()                                               │ 
+│ │ svg_path = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjg… │ 
+│ │     text = <text '◆ PRESENT · Alpha  split                               │ 
+│ │            2 open · 1 done \n              today Sun Nov 1  October ┃1   │ 
+│ │            November                                                 ┃Dec │ 
+│ │            \n              selected task ▸  ⟦━━━━━━━━━━━━━━━━⟧ Oct       │ 
+│ │            28–Nov 5       16            23            30                 │ 
+│ │            \n  ▲ Gate   0 hidden                                         │ 
+│ │            \n▌ ALPHA                                                     │ 
+│ │            ········╎·┆·············┆·············┆·············┆·······… │ 
+│ │            no dates\n  ▎ a-open-1 ↗                                      │ 
+│ │            ⟦━━━━━━━━━━━━━━━━⟧······┆·············┆·············┆·······… │ 
+│ │            Oct 28–Nov 5\n  ▎ ▲ a-gate                                    │ 
+│ │            ········╎·┆·····▲ Nov                                         │ 
+│ │            5·┆·············┆·············┆·············┆······     due   │ 
+│ │            Nov                                                           │ 
+│ │            5\n─────────────────────────────────────────────────────────… │ 
+│ │            ▌ a-open-1                            Oct 28–Nov 5 in 4d │ ▎  │ 
+│ │            a-gate                 no notes  ·  Oct 28–Nov 5 in 4d  \n ▌  │ 
+│ │            ask @Synthetic\xa0Person                                  │   │ 
+│ │            \n                                                          │ │ 
+│ │            \n                                                          │ │ 
+│ │            \n                                                          │ │ 
+│ │            \n                                                          │ │ 
+│ │            \n                                                          │ │ 
+│ │            \n                                                          │ │ 
+│ │            \n                                                          │ │ 
+│ │            \n                                                          │ │ 
+│ │            \n                                                          │ │ 
+│ │            \n                                                          │ │ 
+│ │            \n                                                          │ │ 
+│ │            \n                                                          │ │ 
+│ │            \n                                                          │ │ 
+│ │            \n                                                          │ │ 
+│ │            \n                                                          │ │ 
+│ │            \n                                                          │ │ 
+│ │            \n                                                          │ │ 
+│ │            \n                                                          │ │ 
+│ │            \n                                                          │ │ 
+│ │            \n                                                          │ │ 
+│ │            ' [Span(0, 9, 'bold #e6edf7'), Span(9, 12, '#5b6675'),        │ 
+│ │            Span(12, 17, 'bold #38bdf8'), Span(17, 24, '#7a828c'),        │ 
+│ │            Span(102, 108, '#8b98a5'), Span(108, 111, '#5b6675'),         │ 
+│ │            Span(111, 117, '#3f9c6d'), Span(119, 149, '#2dd4bf'),         │ 
+│ │            Span(150, 157, 'bold #c9d4e0'), Span(158, 159, '#334154'),    │ 
+│ │            Span(159, 160, 'bold reverse #2dd4bf'), Span(161, 169, 'bold  │ 
+│ │            #e6edf3'), Span(218, 219, '#334154'), Span(219, 222, 'bold    │ 
+│ │            #c9d4e0'), Span(238, 268, 'bold #e6edf7'), Span(269, 287,     │ 
+│ │            'bold #e6edf7'), Span(287, 288, '#334154'), Span(288, 300,    │ 
+│ │            'bold #e6edf7'), Span(300, 307, '#334154'), Span(307, 309,    │ 
+│ │            '#8b98a5'), Span(309, 321, '#334154'), Span(321, 323,         │ 
+│ │            '#8b98a5'), Span(323, 335, '#334154'), Span(335, 337,         │ 
+│ │            '#8b98a5'), Span(337, 342, '#334154'), Span(357, 359,         │ 
+│ │            '#5b6675'), Span(359, 361, '#22d3ee'), Span(361, 365,         │ 
+│ │            '#8b98a5'), Span(365, 376, '#5b6675'), Span(476, 478,         │ 
+│ │            '#38bdf8'), Span(478, 506, 'bold #38bdf8'), Span(507, 515,    │ 
+│ │            '#6b4a3f'), Span(515, 516, 'bold #e6edf7'), Span(516, 580,    │ 
+│ │            '#5b6675'), Span(581, 594, '#5b6675'), Span(597, 598,         │ 
+│ │            '#38bdf8'), Span(599, 625, 'bold #e6edf7'), Span(599, 625,    │ 
+│ │            'link https://example.test/capability-a1'), Span(626, 644,    │ 
+│ │            'bold #e6edf7'), Span(644, 699, '#5b6675'), Span(700, 713,    │ 
+│ │            '#8b98a5'), Span(716, 717, '#38bdf8'), Span(718, 719,         │ 
+│ │            '#22d3ee'), Span(720, 744, 'bold #e6edf7'), Span(745, 753,    │ 
+│ │            '#6b4a3f'), Span(753, 754, 'bold #e6edf7'), Span(754, 761,    │ 
+│ │            '#5b6675'), Span(761, 762, '#22d3ee'), Span(762, 763,         │ 
+│ │            '#5b6675'), Span(763, 766, '#8b98a5'), Span(766, 767,         │ 
+│ │            '#5b6675'), Span(767, 768, '#8b98a5'), Span(768, 818,         │ 
+│ │            '#5b6675'), Span(819, 832, '#8b98a5'), Span(833, 951,         │ 
+│ │            '#334154'), Span(953, 955, '#2dd4bf'), Span(955, 963, 'bold   │ 
+│ │            #2dd4bf'), Span(991, 1003, '#8b98a5'), Span(1004, 1009,       │ 
+│ │            '#8b98a5'), Span(1009, 1012, '#334154'), Span(1012, 1014,     │ 
+│ │            '#38bdf8'), Span(1014, 1020, 'bold #e6edf7'), Span(1037,      │ 
+│ │            1050, '#5b6675'), Span(1050, 1062, '#8b98a5'), Span(1063,     │ 
+│ │            1068, '#8b98a5'), Span(1072, 1074, '#2dd4bf'), Span(1074,     │ 
+│ │            1078, '#e6edf3'), Span(1074, 1074, '#8b98a5'), Span(1078,     │ 
+│ │            1095, 'bold #f472b6'), Span(1128, 1131, '#334154'),           │ 
+│ │            Span(1247, 1250, '#334154'), Span(1366, 1369, '#334154'),     │ 
+│ │            Span(1485, 1488, '#334154'), Span(1604, 1607, '#334154'),     │ 
+│ │            Span(1723, 1726, '#334154'), Span(1842, 1845, '#334154'),     │ 
+│ │            Span(1961, 1964, '#334154'), Span(2080, 2083, '#334154'),     │ 
+│ │            Span(2199, 2202, '#334154'), Span(2318, 2321, '#334154'),     │ 
+│ │            Span(2437, 2440, '#334154'), Span(2556, 2559, '#334154'),     │ 
+│ │            Span(2675, 2678, '#334154'), Span(2794, 2797, '#334154'),     │ 
+│ │            Span(2913, 2916, '#334154'), Span(3032, 3035, '#334154'),     │ 
+│ │            Span(3151, 3154, '#334154'), Span(3270, 3273, '#334154'),     │ 
+│ │            Span(3389, 3392, '#334154'), Span(3508, 3511, '#334154')] ''> │ 
+│ │        w = 118                                                           │ 
+│ ╰──────────────────────────────────────────────────────────────────────────╯ 
+│                                                                              
+│ C:\Users\jjgh8\Github\taskboard-wt\incX-tests\taskboard\views.py:7394 in     
+│ save_present_png                                                             
+│                                                                              
+│   7391 │   │      f"--window-size={width * 10},{height * 20}",               
+│   7392 │   │      svg_path.as_uri()]                                         
+│   7393 │   try:                                                              
+│ ❱ 7394 │   │   proc = subprocess.run(cmd, capture_output=True, timeout=30)   
+│   7395 │   except (subprocess.TimeoutExpired, OSError):                      
+│   7396 │   │   return None                                                   
+│   7397 │   if proc.returncode != 0 or not png_path.exists():                 
+│                                                                              
+│ ╭───────────────────────────────── locals ─────────────────────────────────╮ 
+│ │      cmd = [                                                             │ 
+│ │            │   'synthetic-edge',                                         │ 
+│ │            │   '--headless=new',                                         │ 
+│ │            │   '--disable-gpu',                                          │ 
+│ │            │                                                             │ 
+│ │            '--screenshot=C:\\Users\\jjgh8\\AppData\\Local\\Temp\\pytest… │ 
+│ │            │   '--window-size=1180,600',                                 │ 
+│ │            │                                                             │ 
+│ │            'file:///C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/p… │ 
+│ │            ]                                                             │ 
+│ │      exe = 'synthetic-edge'                                              │ 
+│ │   height = 30                                                            │ 
+│ │ png_path = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjg… │ 
+│ │ svg_path = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjg… │ 
+│ │    width = 118                                                           │ 
+│ ╰──────────────────────────────────────────────────────────────────────────╯ 
+│                                                                              
+│ C:\Users\jjgh8\Github\taskboard-wt\incX-tests\tests\test_present_html_export 
+│ .py:640 in forbidden                                                         
+│                                                                              
+│   637 │   calls = []                                                         
+│   638 │   def forbidden(*args, **kwargs):                                    
+│   639 │   │   calls.append((args, kwargs))                                   
+│ ❱ 640 │   │   raise AssertionError("presentation export started a subprocess 
+│   641 │   monkeypatch.setattr(subprocess, "run", forbidden)                  
+│   642 │   monkeypatch.setattr(subprocess, "Popen", forbidden)                
+│   643 │   monkeypatch.setattr(views, "_find_msedge", lambda: "synthetic-edge 
+│                                                                              
+│ ╭───────────────────────────────── locals ─────────────────────────────────╮ 
+│ │   args = (                                                               │ 
+│ │          │   [                                                           │ 
+│ │          │   │   'synthetic-edge',                                       │ 
+│ │          │   │   '--headless=new',                                       │ 
+│ │          │   │   '--disable-gpu',                                        │ 
+│ │          │   │                                                           │ 
+│ │          '--screenshot=C:\\Users\\jjgh8\\AppData\\Local\\Temp\\pytest-o… │ 
+│ │          │   │   '--window-size=1180,600',                               │ 
+│ │          │   │                                                           │ 
+│ │          'file:///C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pyt… │ 
+│ │          │   ],                                                          │ 
+│ │          )                                                               │ 
+│ │  calls = [                                                               │ 
+│ │          │   (                                                           │ 
+│ │          │   │   (                                                       │ 
+│ │          │   │   │   [                                                   │ 
+│ │          │   │   │   │   'synthetic-edge',                               │ 
+│ │          │   │   │   │   '--headless=new',                               │ 
+│ │          │   │   │   │   '--disable-gpu',                                │ 
+│ │          │   │   │   │                                                   │ 
+│ │          '--screenshot=C:\\Users\\jjgh8\\AppData\\Local\\Temp\\pytest-o… │ 
+│ │          │   │   │   │   '--window-size=1180,600',                       │ 
+│ │          │   │   │   │                                                   │ 
+│ │          'file:///C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pyt… │ 
+│ │          │   │   │   ],                                                  │ 
+│ │          │   │   ),                                                      │ 
+│ │          │   │   {'capture_output': True, 'timeout': 30}                 │ 
+│ │          │   )                                                           │ 
+│ │          ]                                                               │ 
+│ │ kwargs = {'capture_output': True, 'timeout': 30}                         │ 
+│ ╰──────────────────────────────────────────────────────────────────────────╯ 
+╰──────────────────────────────────────────────────────────────────────────────
+AssertionError: presentation export started a subprocess
+___________ test_TC_4742_LLR_4504_2_export_starts_no_subprocess[3] ____________
+tests\test_present_html_export.py:646: in test_TC_4742_LLR_4504_2_export_starts_no_subprocess
+    async with app.run_test(size=(118, 31)) as pilot:
+..\..\..\anaconda3\Lib\contextlib.py:217: in __aexit__
+    await anext(self.gen)
+..\..\..\anaconda3\Lib\site-packages\textual\app.py:2218: in run_test
+    raise self._exception
+..\..\..\anaconda3\Lib\site-packages\textual\message_pump.py:663: in _process_messages_loop
+    await self._dispatch_message(message)
+..\..\..\anaconda3\Lib\site-packages\textual\message_pump.py:727: in _dispatch_message
+    await self.on_event(message)
+..\..\..\anaconda3\Lib\site-packages\textual\app.py:4136: in on_event
+    if not await self._check_bindings(event.key, priority=True):
+..\..\..\anaconda3\Lib\site-packages\textual\app.py:3986: in _check_bindings
+    if await self.run_action(binding.action, namespace):
+..\..\..\anaconda3\Lib\site-packages\textual\app.py:4246: in run_action
+    return await self._dispatch_action(action_target, action_name, params)
+..\..\..\anaconda3\Lib\site-packages\textual\app.py:4279: in _dispatch_action
+    await invoke(public_method, *params)
+..\..\..\anaconda3\Lib\site-packages\textual\_callback.py:96: in invoke
+    return await _invoke(callback, *params)
+..\..\..\anaconda3\Lib\site-packages\textual\_callback.py:56: in _invoke
+    result = callback(*params[:parameter_count])
+taskboard\app.py:642: in action_export
+    png = save_present_png(svg_path, png_path, w, h)
+taskboard\views.py:7394: in save_present_png
+    proc = subprocess.run(cmd, capture_output=True, timeout=30)
+tests\test_present_html_export.py:640: in forbidden
+    raise AssertionError("presentation export started a subprocess")
+E   AssertionError: presentation export started a subprocess
+---------------------------- Captured stderr call -----------------------------
+╭───────────────────── Traceback (most recent call last) ──────────────────────
+│ C:\Users\jjgh8\Github\taskboard-wt\incX-tests\taskboard\app.py:642 in        
+│ action_export                                                                
+│                                                                              
+│    639 │   │   │   svg_path, png_path = present_paths(self._board, self._pro 
+│    640 │   │   │   │   │   │   │   │   │   │   │      PRESENT_SCREEN_VIEWS[s 
+│    641 │   │   save_present_svg(text, svg_path, w, h)                        
+│ ❱  642 │   │   png = save_present_png(svg_path, png_path, w, h)              
+│    643 │   │   if png is None:                                               
+│    644 │   │   │   self.app.notify(                                          
+│    645 │   │   │   │   f"Exported {svg_path.name} to {svg_path.parent} — PNG 
+│                                                                              
+│ ╭───────────────────────────────── locals ─────────────────────────────────╮ 
+│ │        h = 9                                                             │ 
+│ │ png_path = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjg… │ 
+│ │     proj = Project(                                                      │ 
+│ │            │   name='Alpha',                                             │ 
+│ │            │   color='sky',                                              │ 
+│ │            │   status='on_track',                                        │ 
+│ │            │   archived=False,                                           │ 
+│ │            │   pinned=False,                                             │ 
+│ │            │   start_date=None,                                          │ 
+│ │            │   due_date=None,                                            │ 
+│ │            │   show_in_present=True,                                     │ 
+│ │            │   present_rank=0,                                           │ 
+│ │            │   extra={},                                                 │ 
+│ │            │   id='pA'                                                   │ 
+│ │            )                                                             │ 
+│ │     self = PresentScreen()                                               │ 
+│ │ svg_path = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjg… │ 
+│ │     text = <text '◆ PRESENT · 2 projects  all                            │ 
+│ │            3 open · nothing past due \n    today Sun Nov 1  October ┃1   │ 
+│ │            November                                                      │ 
+│ │            \n                             ╎ 2             9              │ 
+│ │            16            23                  \n▾ ■ Alpha         2       │ 
+│ │            ········╎·┆·············┆·············┆·············┆·····    │ 
+│ │            no dates\n  ▎ a-open-1 ↗                                      │ 
+│ │            ▬╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌◔······┆·············┆·············┆·····    │ 
+│ │            Oct 28–Nov 5\n  ▎ ▲ a-gate         ········╎·┆·····▲ Nov      │ 
+│ │            5·┆·············┆·············┆·····     due Nov 5\n          │ 
+│ │            \n▾ ■ Beta          1                                         │ 
+│ │            ········╎·┆·············┆·············┆·············┆·····    │ 
+│ │            no dates\n  ▎ b-open                                          │ 
+│ │            ▬╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌◔······┆·············┆·············┆·····    │ 
+│ │            Oct 28–Nov 5' [Span(0, 9, 'bold #e6edf7'), Span(9, 12,        │ 
+│ │            '#5b6675'), Span(12, 22, 'bold #e6edf7'), Span(22, 27,        │ 
+│ │            '#7a828c'), Span(67, 73, '#8b98a5'), Span(73, 92, '#5b6675'), │ 
+│ │            Span(94, 114, '#2dd4bf'), Span(115, 122, 'bold #c9d4e0'),     │ 
+│ │            Span(123, 124, '#334154'), Span(124, 125, 'bold reverse       │ 
+│ │            #2dd4bf'), Span(126, 134, 'bold #e6edf3'), Span(209, 217,     │ 
+│ │            '#334154'), Span(217, 218, '#2dd4bf'), Span(218, 219,         │ 
+│ │            '#334154'), Span(219, 220, '#8b98a5'), Span(220, 233,         │ 
+│ │            '#334154'), Span(233, 234, '#8b98a5'), Span(234, 247,         │ 
+│ │            '#334154'), Span(247, 249, '#8b98a5'), Span(249, 261,         │ 
+│ │            '#334154'), Span(261, 263, '#8b98a5'), Span(263, 267,         │ 
+│ │            '#334154'), Span(282, 283, '#38bdf8'), Span(284, 285,         │ 
+│ │            '#38bdf8'), Span(286, 299, 'bold #38bdf8'), Span(300, 301,    │ 
+│ │            '#8b98a5'), Span(303, 311, '#6b4a3f'), Span(311, 312, 'bold   │ 
+│ │            #e6edf7'), Span(312, 361, '#5b6675'), Span(362, 375,          │ 
+│ │            '#5b6675'), Span(378, 379, '#38bdf8'), Span(380, 396, 'bold   │ 
+│ │            #e6edf7'), Span(380, 396, 'link                               │ 
+│ │            https://example.test/capability-a1'), Span(397, 398,          │ 
+│ │            '#8b98a5'), Span(398, 415, '#38bdf8'), Span(415, 455,         │ 
+│ │            '#5b6675'), Span(456, 469, '#8b98a5'), Span(472, 473,         │ 
+│ │            '#38bdf8'), Span(474, 475, '#22d3ee'), Span(476, 490, 'bold   │ 
+│ │            #e6edf7'), Span(491, 499, '#6b4a3f'), Span(499, 500, 'bold    │ 
+│ │            #e6edf7'), Span(500, 507, '#5b6675'), Span(507, 508,          │ 
+│ │            '#22d3ee'), Span(508, 509, '#5b6675'), Span(509, 512,         │ 
+│ │            '#8b98a5'), Span(512, 513, '#5b6675'), Span(513, 514,         │ 
+│ │            '#8b98a5'), Span(514, 549, '#5b6675'), Span(550, 563,         │ 
+│ │            '#8b98a5'), Span(658, 659, '#a3e635'), Span(660, 661,         │ 
+│ │            '#a3e635'), Span(662, 675, 'bold #a3e635'), Span(676, 677,    │ 
+│ │            '#8b98a5'), Span(679, 687, '#6b4a3f'), Span(687, 688, 'bold   │ 
+│ │            #e6edf7'), Span(688, 737, '#5b6675'), Span(738, 751,          │ 
+│ │            '#5b6675'), Span(754, 755, '#a3e635'), Span(756, 772, 'bold   │ 
+│ │            #e6edf7'), Span(773, 774, '#8b98a5'), Span(774, 791,          │ 
+│ │            '#38bdf8'), Span(791, 831, '#5b6675'), Span(832, 845,         │ 
+│ │            '#8b98a5')] ''>                                               │ 
+│ │        w = 93                                                            │ 
+│ ╰──────────────────────────────────────────────────────────────────────────╯ 
+│                                                                              
+│ C:\Users\jjgh8\Github\taskboard-wt\incX-tests\taskboard\views.py:7394 in     
+│ save_present_png                                                             
+│                                                                              
+│   7391 │   │      f"--window-size={width * 10},{height * 20}",               
+│   7392 │   │      svg_path.as_uri()]                                         
+│   7393 │   try:                                                              
+│ ❱ 7394 │   │   proc = subprocess.run(cmd, capture_output=True, timeout=30)   
+│   7395 │   except (subprocess.TimeoutExpired, OSError):                      
+│   7396 │   │   return None                                                   
+│   7397 │   if proc.returncode != 0 or not png_path.exists():                 
+│                                                                              
+│ ╭───────────────────────────────── locals ─────────────────────────────────╮ 
+│ │      cmd = [                                                             │ 
+│ │            │   'synthetic-edge',                                         │ 
+│ │            │   '--headless=new',                                         │ 
+│ │            │   '--disable-gpu',                                          │ 
+│ │            │                                                             │ 
+│ │            '--screenshot=C:\\Users\\jjgh8\\AppData\\Local\\Temp\\pytest… │ 
+│ │            │   '--window-size=930,180',                                  │ 
+│ │            │                                                             │ 
+│ │            'file:///C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/p… │ 
+│ │            ]                                                             │ 
+│ │      exe = 'synthetic-edge'                                              │ 
+│ │   height = 9                                                             │ 
+│ │ png_path = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjg… │ 
+│ │ svg_path = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjg… │ 
+│ │    width = 93                                                            │ 
+│ ╰──────────────────────────────────────────────────────────────────────────╯ 
+│                                                                              
+│ C:\Users\jjgh8\Github\taskboard-wt\incX-tests\tests\test_present_html_export 
+│ .py:640 in forbidden                                                         
+│                                                                              
+│   637 │   calls = []                                                         
+│   638 │   def forbidden(*args, **kwargs):                                    
+│   639 │   │   calls.append((args, kwargs))                                   
+│ ❱ 640 │   │   raise AssertionError("presentation export started a subprocess 
+│   641 │   monkeypatch.setattr(subprocess, "run", forbidden)                  
+│   642 │   monkeypatch.setattr(subprocess, "Popen", forbidden)                
+│   643 │   monkeypatch.setattr(views, "_find_msedge", lambda: "synthetic-edge 
+│                                                                              
+│ ╭───────────────────────────────── locals ─────────────────────────────────╮ 
+│ │   args = (                                                               │ 
+│ │          │   [                                                           │ 
+│ │          │   │   'synthetic-edge',                                       │ 
+│ │          │   │   '--headless=new',                                       │ 
+│ │          │   │   '--disable-gpu',                                        │ 
+│ │          │   │                                                           │ 
+│ │          '--screenshot=C:\\Users\\jjgh8\\AppData\\Local\\Temp\\pytest-o… │ 
+│ │          │   │   '--window-size=930,180',                                │ 
+│ │          │   │                                                           │ 
+│ │          'file:///C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pyt… │ 
+│ │          │   ],                                                          │ 
+│ │          )                                                               │ 
+│ │  calls = [                                                               │ 
+│ │          │   (                                                           │ 
+│ │          │   │   (                                                       │ 
+│ │          │   │   │   [                                                   │ 
+│ │          │   │   │   │   'synthetic-edge',                               │ 
+│ │          │   │   │   │   '--headless=new',                               │ 
+│ │          │   │   │   │   '--disable-gpu',                                │ 
+│ │          │   │   │   │                                                   │ 
+│ │          '--screenshot=C:\\Users\\jjgh8\\AppData\\Local\\Temp\\pytest-o… │ 
+│ │          │   │   │   │   '--window-size=930,180',                        │ 
+│ │          │   │   │   │                                                   │ 
+│ │          'file:///C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pyt… │ 
+│ │          │   │   │   ],                                                  │ 
+│ │          │   │   ),                                                      │ 
+│ │          │   │   {'capture_output': True, 'timeout': 30}                 │ 
+│ │          │   )                                                           │ 
+│ │          ]                                                               │ 
+│ │ kwargs = {'capture_output': True, 'timeout': 30}                         │ 
+│ ╰──────────────────────────────────────────────────────────────────────────╯ 
+╰──────────────────────────────────────────────────────────────────────────────
+AssertionError: presentation export started a subprocess
+_______ test_TC_4743_LLR_4504_3_package_has_no_svg_or_rasteriser_route ________
+tests\test_present_html_export.py:658: in test_TC_4743_LLR_4504_3_package_has_no_svg_or_rasteriser_route
+    assert hits == []
+E   AssertionError: assert [('app.py', 5... None,'), ...] == []
+E     
+E     Left contains 13 more items, first extra item: ('app.py', 55, '                    home_missing, home_title, present_all_export,')
+E     Use -v to get more diff
+______ test_TC_4751_LLR_4505_1_H_is_in_all_20_primary_bars[80-swimlanes] ______
+tests\test_present_html_export.py:668: in test_TC_4751_LLR_4505_1_H_is_in_all_20_primary_bars
+    assert "H" in {show for show, _label in entries}
+E   AssertionError: assert 'H' in {'0', '1', '2', '3', '4', '5', ...}
+_______ test_TC_4751_LLR_4505_1_H_is_in_all_20_primary_bars[80-agenda] ________
+tests\test_present_html_export.py:668: in test_TC_4751_LLR_4505_1_H_is_in_all_20_primary_bars
+    assert "H" in {show for show, _label in entries}
+E   AssertionError: assert 'H' in {'0', '1', '2', '3', '4', '5', ...}
+________ test_TC_4751_LLR_4505_1_H_is_in_all_20_primary_bars[80-gantt] ________
+tests\test_present_html_export.py:668: in test_TC_4751_LLR_4505_1_H_is_in_all_20_primary_bars
+    assert "H" in {show for show, _label in entries}
+E   AssertionError: assert 'H' in {'0', '1', '2', '3', '4', '5', ...}
+_______ test_TC_4751_LLR_4505_1_H_is_in_all_20_primary_bars[80-kanban] ________
+tests\test_present_html_export.py:668: in test_TC_4751_LLR_4505_1_H_is_in_all_20_primary_bars
+    assert "H" in {show for show, _label in entries}
+E   AssertionError: assert 'H' in {'0', '1', '2', '3', '4', '5', ...}
+________ test_TC_4751_LLR_4505_1_H_is_in_all_20_primary_bars[80-focus] ________
+tests\test_present_html_export.py:668: in test_TC_4751_LLR_4505_1_H_is_in_all_20_primary_bars
+    assert "H" in {show for show, _label in entries}
+E   AssertionError: assert 'H' in {'0', '1', '2', '3', '4', '5', ...}
+______ test_TC_4751_LLR_4505_1_H_is_in_all_20_primary_bars[80-chainmap] _______
+tests\test_present_html_export.py:668: in test_TC_4751_LLR_4505_1_H_is_in_all_20_primary_bars
+    assert "H" in {show for show, _label in entries}
+E   AssertionError: assert 'H' in {'0', '1', '2', '3', '4', '5', ...}
+________ test_TC_4751_LLR_4505_1_H_is_in_all_20_primary_bars[80-flow] _________
+tests\test_present_html_export.py:668: in test_TC_4751_LLR_4505_1_H_is_in_all_20_primary_bars
+    assert "H" in {show for show, _label in entries}
+E   AssertionError: assert 'H' in {'0', '1', '2', '3', '4', '5', ...}
+_______ test_TC_4751_LLR_4505_1_H_is_in_all_20_primary_bars[80-standup] _______
+tests\test_present_html_export.py:668: in test_TC_4751_LLR_4505_1_H_is_in_all_20_primary_bars
+    assert "H" in {show for show, _label in entries}
+E   AssertionError: assert 'H' in {'0', '1', '2', '3', '4', '5', ...}
+_______ test_TC_4751_LLR_4505_1_H_is_in_all_20_primary_bars[80-people] ________
+tests\test_present_html_export.py:668: in test_TC_4751_LLR_4505_1_H_is_in_all_20_primary_bars
+    assert "H" in {show for show, _label in entries}
+E   AssertionError: assert 'H' in {'0', '1', '2', '3', '4', '5', ...}
+________ test_TC_4751_LLR_4505_1_H_is_in_all_20_primary_bars[80-setup] ________
+tests\test_present_html_export.py:668: in test_TC_4751_LLR_4505_1_H_is_in_all_20_primary_bars
+    assert "H" in {show for show, _label in entries}
+E   AssertionError: assert 'H' in {'0', '1', '2', '3', '4', '5', ...}
+_____ test_TC_4751_LLR_4505_1_H_is_in_all_20_primary_bars[118-swimlanes] ______
+tests\test_present_html_export.py:668: in test_TC_4751_LLR_4505_1_H_is_in_all_20_primary_bars
+    assert "H" in {show for show, _label in entries}
+E   AssertionError: assert 'H' in {'0', '1', '2', '3', '4', '5', ...}
+_______ test_TC_4751_LLR_4505_1_H_is_in_all_20_primary_bars[118-agenda] _______
+tests\test_present_html_export.py:668: in test_TC_4751_LLR_4505_1_H_is_in_all_20_primary_bars
+    assert "H" in {show for show, _label in entries}
+E   AssertionError: assert 'H' in {'0', '1', '2', '3', '4', '5', ...}
+_______ test_TC_4751_LLR_4505_1_H_is_in_all_20_primary_bars[118-gantt] ________
+tests\test_present_html_export.py:668: in test_TC_4751_LLR_4505_1_H_is_in_all_20_primary_bars
+    assert "H" in {show for show, _label in entries}
+E   AssertionError: assert 'H' in {'0', '1', '2', '3', '4', '5', ...}
+_______ test_TC_4751_LLR_4505_1_H_is_in_all_20_primary_bars[118-kanban] _______
+tests\test_present_html_export.py:668: in test_TC_4751_LLR_4505_1_H_is_in_all_20_primary_bars
+    assert "H" in {show for show, _label in entries}
+E   AssertionError: assert 'H' in {'0', '1', '2', '3', '4', '5', ...}
+_______ test_TC_4751_LLR_4505_1_H_is_in_all_20_primary_bars[118-focus] ________
+tests\test_present_html_export.py:668: in test_TC_4751_LLR_4505_1_H_is_in_all_20_primary_bars
+    assert "H" in {show for show, _label in entries}
+E   AssertionError: assert 'H' in {'0', '1', '2', '3', '4', '5', ...}
+______ test_TC_4751_LLR_4505_1_H_is_in_all_20_primary_bars[118-chainmap] ______
+tests\test_present_html_export.py:668: in test_TC_4751_LLR_4505_1_H_is_in_all_20_primary_bars
+    assert "H" in {show for show, _label in entries}
+E   AssertionError: assert 'H' in {'0', '1', '2', '3', '4', '5', ...}
+________ test_TC_4751_LLR_4505_1_H_is_in_all_20_primary_bars[118-flow] ________
+tests\test_present_html_export.py:668: in test_TC_4751_LLR_4505_1_H_is_in_all_20_primary_bars
+    assert "H" in {show for show, _label in entries}
+E   AssertionError: assert 'H' in {'0', '1', '2', '3', '4', '5', ...}
+______ test_TC_4751_LLR_4505_1_H_is_in_all_20_primary_bars[118-standup] _______
+tests\test_present_html_export.py:668: in test_TC_4751_LLR_4505_1_H_is_in_all_20_primary_bars
+    assert "H" in {show for show, _label in entries}
+E   AssertionError: assert 'H' in {'0', '1', '2', '3', '4', '5', ...}
+_______ test_TC_4751_LLR_4505_1_H_is_in_all_20_primary_bars[118-people] _______
+tests\test_present_html_export.py:668: in test_TC_4751_LLR_4505_1_H_is_in_all_20_primary_bars
+    assert "H" in {show for show, _label in entries}
+E   AssertionError: assert 'H' in {'0', '1', '2', '3', '4', '5', ...}
+_______ test_TC_4751_LLR_4505_1_H_is_in_all_20_primary_bars[118-setup] ________
+tests\test_present_html_export.py:668: in test_TC_4751_LLR_4505_1_H_is_in_all_20_primary_bars
+    assert "H" in {show for show, _label in entries}
+E   AssertionError: assert 'H' in {'0', '1', '2', '3', '4', '5', ...}
+_ test_TC_4752_LLR_4505_2_base_keys_and_overflow_are_preserved[80-swimlanes] __
+tests\test_present_html_export.py:676: in test_TC_4752_LLR_4505_2_base_keys_and_overflow_are_preserved
+    assert "H" in {show for show, _label in entries}
+E   AssertionError: assert 'H' in {'0', '1', '2', '3', '4', '5', ...}
+___ test_TC_4752_LLR_4505_2_base_keys_and_overflow_are_preserved[80-agenda] ___
+tests\test_present_html_export.py:676: in test_TC_4752_LLR_4505_2_base_keys_and_overflow_are_preserved
+    assert "H" in {show for show, _label in entries}
+E   AssertionError: assert 'H' in {'0', '1', '2', '3', '4', '5', ...}
+___ test_TC_4752_LLR_4505_2_base_keys_and_overflow_are_preserved[80-gantt] ____
+tests\test_present_html_export.py:676: in test_TC_4752_LLR_4505_2_base_keys_and_overflow_are_preserved
+    assert "H" in {show for show, _label in entries}
+E   AssertionError: assert 'H' in {'0', '1', '2', '3', '4', '5', ...}
+___ test_TC_4752_LLR_4505_2_base_keys_and_overflow_are_preserved[80-kanban] ___
+tests\test_present_html_export.py:676: in test_TC_4752_LLR_4505_2_base_keys_and_overflow_are_preserved
+    assert "H" in {show for show, _label in entries}
+E   AssertionError: assert 'H' in {'0', '1', '2', '3', '4', '5', ...}
+___ test_TC_4752_LLR_4505_2_base_keys_and_overflow_are_preserved[80-focus] ____
+tests\test_present_html_export.py:676: in test_TC_4752_LLR_4505_2_base_keys_and_overflow_are_preserved
+    assert "H" in {show for show, _label in entries}
+E   AssertionError: assert 'H' in {'0', '1', '2', '3', '4', '5', ...}
+__ test_TC_4752_LLR_4505_2_base_keys_and_overflow_are_preserved[80-chainmap] __
+tests\test_present_html_export.py:676: in test_TC_4752_LLR_4505_2_base_keys_and_overflow_are_preserved
+    assert "H" in {show for show, _label in entries}
+E   AssertionError: assert 'H' in {'0', '1', '2', '3', '4', '5', ...}
+____ test_TC_4752_LLR_4505_2_base_keys_and_overflow_are_preserved[80-flow] ____
+tests\test_present_html_export.py:676: in test_TC_4752_LLR_4505_2_base_keys_and_overflow_are_preserved
+    assert "H" in {show for show, _label in entries}
+E   AssertionError: assert 'H' in {'0', '1', '2', '3', '4', '5', ...}
+__ test_TC_4752_LLR_4505_2_base_keys_and_overflow_are_preserved[80-standup] ___
+tests\test_present_html_export.py:676: in test_TC_4752_LLR_4505_2_base_keys_and_overflow_are_preserved
+    assert "H" in {show for show, _label in entries}
+E   AssertionError: assert 'H' in {'0', '1', '2', '3', '4', '5', ...}
+___ test_TC_4752_LLR_4505_2_base_keys_and_overflow_are_preserved[80-people] ___
+tests\test_present_html_export.py:676: in test_TC_4752_LLR_4505_2_base_keys_and_overflow_are_preserved
+    assert "H" in {show for show, _label in entries}
+E   AssertionError: assert 'H' in {'0', '1', '2', '3', '4', '5', ...}
+___ test_TC_4752_LLR_4505_2_base_keys_and_overflow_are_preserved[80-setup] ____
+tests\test_present_html_export.py:676: in test_TC_4752_LLR_4505_2_base_keys_and_overflow_are_preserved
+    assert "H" in {show for show, _label in entries}
+E   AssertionError: assert 'H' in {'0', '1', '2', '3', '4', '5', ...}
+_ test_TC_4752_LLR_4505_2_base_keys_and_overflow_are_preserved[118-swimlanes] _
+tests\test_present_html_export.py:676: in test_TC_4752_LLR_4505_2_base_keys_and_overflow_are_preserved
+    assert "H" in {show for show, _label in entries}
+E   AssertionError: assert 'H' in {'0', '1', '2', '3', '4', '5', ...}
+__ test_TC_4752_LLR_4505_2_base_keys_and_overflow_are_preserved[118-agenda] ___
+tests\test_present_html_export.py:676: in test_TC_4752_LLR_4505_2_base_keys_and_overflow_are_preserved
+    assert "H" in {show for show, _label in entries}
+E   AssertionError: assert 'H' in {'0', '1', '2', '3', '4', '5', ...}
+___ test_TC_4752_LLR_4505_2_base_keys_and_overflow_are_preserved[118-gantt] ___
+tests\test_present_html_export.py:676: in test_TC_4752_LLR_4505_2_base_keys_and_overflow_are_preserved
+    assert "H" in {show for show, _label in entries}
+E   AssertionError: assert 'H' in {'0', '1', '2', '3', '4', '5', ...}
+__ test_TC_4752_LLR_4505_2_base_keys_and_overflow_are_preserved[118-kanban] ___
+tests\test_present_html_export.py:676: in test_TC_4752_LLR_4505_2_base_keys_and_overflow_are_preserved
+    assert "H" in {show for show, _label in entries}
+E   AssertionError: assert 'H' in {'0', '1', '2', '3', '4', '5', ...}
+___ test_TC_4752_LLR_4505_2_base_keys_and_overflow_are_preserved[118-focus] ___
+tests\test_present_html_export.py:676: in test_TC_4752_LLR_4505_2_base_keys_and_overflow_are_preserved
+    assert "H" in {show for show, _label in entries}
+E   AssertionError: assert 'H' in {'0', '1', '2', '3', '4', '5', ...}
+_ test_TC_4752_LLR_4505_2_base_keys_and_overflow_are_preserved[118-chainmap] __
+tests\test_present_html_export.py:676: in test_TC_4752_LLR_4505_2_base_keys_and_overflow_are_preserved
+    assert "H" in {show for show, _label in entries}
+E   AssertionError: assert 'H' in {'0', '1', '2', '3', '4', '5', ...}
+___ test_TC_4752_LLR_4505_2_base_keys_and_overflow_are_preserved[118-flow] ____
+tests\test_present_html_export.py:676: in test_TC_4752_LLR_4505_2_base_keys_and_overflow_are_preserved
+    assert "H" in {show for show, _label in entries}
+E   AssertionError: assert 'H' in {'0', '1', '2', '3', '4', '5', ...}
+__ test_TC_4752_LLR_4505_2_base_keys_and_overflow_are_preserved[118-standup] __
+tests\test_present_html_export.py:676: in test_TC_4752_LLR_4505_2_base_keys_and_overflow_are_preserved
+    assert "H" in {show for show, _label in entries}
+E   AssertionError: assert 'H' in {'0', '1', '2', '3', '4', '5', ...}
+__ test_TC_4752_LLR_4505_2_base_keys_and_overflow_are_preserved[118-people] ___
+tests\test_present_html_export.py:676: in test_TC_4752_LLR_4505_2_base_keys_and_overflow_are_preserved
+    assert "H" in {show for show, _label in entries}
+E   AssertionError: assert 'H' in {'0', '1', '2', '3', '4', '5', ...}
+___ test_TC_4752_LLR_4505_2_base_keys_and_overflow_are_preserved[118-setup] ___
+tests\test_present_html_export.py:676: in test_TC_4752_LLR_4505_2_base_keys_and_overflow_are_preserved
+    assert "H" in {show for show, _label in entries}
+E   AssertionError: assert 'H' in {'0', '1', '2', '3', '4', '5', ...}
+_____ test_TC_4753_LLR_4505_3_at_most_one_base_word_is_lost[80-swimlanes] _____
+tests\test_present_html_export.py:690: in test_TC_4753_LLR_4505_3_at_most_one_base_word_is_lost
+    assert "H" in {show for show, _label in entries}
+E   AssertionError: assert 'H' in {'0', '1', '2', '3', '4', '5', ...}
+______ test_TC_4753_LLR_4505_3_at_most_one_base_word_is_lost[80-agenda] _______
+tests\test_present_html_export.py:690: in test_TC_4753_LLR_4505_3_at_most_one_base_word_is_lost
+    assert "H" in {show for show, _label in entries}
+E   AssertionError: assert 'H' in {'0', '1', '2', '3', '4', '5', ...}
+_______ test_TC_4753_LLR_4505_3_at_most_one_base_word_is_lost[80-gantt] _______
+tests\test_present_html_export.py:690: in test_TC_4753_LLR_4505_3_at_most_one_base_word_is_lost
+    assert "H" in {show for show, _label in entries}
+E   AssertionError: assert 'H' in {'0', '1', '2', '3', '4', '5', ...}
+______ test_TC_4753_LLR_4505_3_at_most_one_base_word_is_lost[80-kanban] _______
+tests\test_present_html_export.py:690: in test_TC_4753_LLR_4505_3_at_most_one_base_word_is_lost
+    assert "H" in {show for show, _label in entries}
+E   AssertionError: assert 'H' in {'0', '1', '2', '3', '4', '5', ...}
+_______ test_TC_4753_LLR_4505_3_at_most_one_base_word_is_lost[80-focus] _______
+tests\test_present_html_export.py:690: in test_TC_4753_LLR_4505_3_at_most_one_base_word_is_lost
+    assert "H" in {show for show, _label in entries}
+E   AssertionError: assert 'H' in {'0', '1', '2', '3', '4', '5', ...}
+_____ test_TC_4753_LLR_4505_3_at_most_one_base_word_is_lost[80-chainmap] ______
+tests\test_present_html_export.py:690: in test_TC_4753_LLR_4505_3_at_most_one_base_word_is_lost
+    assert "H" in {show for show, _label in entries}
+E   AssertionError: assert 'H' in {'0', '1', '2', '3', '4', '5', ...}
+_______ test_TC_4753_LLR_4505_3_at_most_one_base_word_is_lost[80-flow] ________
+tests\test_present_html_export.py:690: in test_TC_4753_LLR_4505_3_at_most_one_base_word_is_lost
+    assert "H" in {show for show, _label in entries}
+E   AssertionError: assert 'H' in {'0', '1', '2', '3', '4', '5', ...}
+______ test_TC_4753_LLR_4505_3_at_most_one_base_word_is_lost[80-standup] ______
+tests\test_present_html_export.py:690: in test_TC_4753_LLR_4505_3_at_most_one_base_word_is_lost
+    assert "H" in {show for show, _label in entries}
+E   AssertionError: assert 'H' in {'0', '1', '2', '3', '4', '5', ...}
+______ test_TC_4753_LLR_4505_3_at_most_one_base_word_is_lost[80-people] _______
+tests\test_present_html_export.py:690: in test_TC_4753_LLR_4505_3_at_most_one_base_word_is_lost
+    assert "H" in {show for show, _label in entries}
+E   AssertionError: assert 'H' in {'0', '1', '2', '3', '4', '5', ...}
+_______ test_TC_4753_LLR_4505_3_at_most_one_base_word_is_lost[80-setup] _______
+tests\test_present_html_export.py:690: in test_TC_4753_LLR_4505_3_at_most_one_base_word_is_lost
+    assert "H" in {show for show, _label in entries}
+E   AssertionError: assert 'H' in {'0', '1', '2', '3', '4', '5', ...}
+____ test_TC_4753_LLR_4505_3_at_most_one_base_word_is_lost[118-swimlanes] _____
+tests\test_present_html_export.py:690: in test_TC_4753_LLR_4505_3_at_most_one_base_word_is_lost
+    assert "H" in {show for show, _label in entries}
+E   AssertionError: assert 'H' in {'0', '1', '2', '3', '4', '5', ...}
+______ test_TC_4753_LLR_4505_3_at_most_one_base_word_is_lost[118-agenda] ______
+tests\test_present_html_export.py:690: in test_TC_4753_LLR_4505_3_at_most_one_base_word_is_lost
+    assert "H" in {show for show, _label in entries}
+E   AssertionError: assert 'H' in {'0', '1', '2', '3', '4', '5', ...}
+______ test_TC_4753_LLR_4505_3_at_most_one_base_word_is_lost[118-gantt] _______
+tests\test_present_html_export.py:690: in test_TC_4753_LLR_4505_3_at_most_one_base_word_is_lost
+    assert "H" in {show for show, _label in entries}
+E   AssertionError: assert 'H' in {'0', '1', '2', '3', '4', '5', ...}
+______ test_TC_4753_LLR_4505_3_at_most_one_base_word_is_lost[118-kanban] ______
+tests\test_present_html_export.py:690: in test_TC_4753_LLR_4505_3_at_most_one_base_word_is_lost
+    assert "H" in {show for show, _label in entries}
+E   AssertionError: assert 'H' in {'0', '1', '2', '3', '4', '5', ...}
+______ test_TC_4753_LLR_4505_3_at_most_one_base_word_is_lost[118-focus] _______
+tests\test_present_html_export.py:690: in test_TC_4753_LLR_4505_3_at_most_one_base_word_is_lost
+    assert "H" in {show for show, _label in entries}
+E   AssertionError: assert 'H' in {'0', '1', '2', '3', '4', '5', ...}
+_____ test_TC_4753_LLR_4505_3_at_most_one_base_word_is_lost[118-chainmap] _____
+tests\test_present_html_export.py:690: in test_TC_4753_LLR_4505_3_at_most_one_base_word_is_lost
+    assert "H" in {show for show, _label in entries}
+E   AssertionError: assert 'H' in {'0', '1', '2', '3', '4', '5', ...}
+_______ test_TC_4753_LLR_4505_3_at_most_one_base_word_is_lost[118-flow] _______
+tests\test_present_html_export.py:690: in test_TC_4753_LLR_4505_3_at_most_one_base_word_is_lost
+    assert "H" in {show for show, _label in entries}
+E   AssertionError: assert 'H' in {'0', '1', '2', '3', '4', '5', ...}
+_____ test_TC_4753_LLR_4505_3_at_most_one_base_word_is_lost[118-standup] ______
+tests\test_present_html_export.py:690: in test_TC_4753_LLR_4505_3_at_most_one_base_word_is_lost
+    assert "H" in {show for show, _label in entries}
+E   AssertionError: assert 'H' in {'0', '1', '2', '3', '4', '5', ...}
+______ test_TC_4753_LLR_4505_3_at_most_one_base_word_is_lost[118-people] ______
+tests\test_present_html_export.py:690: in test_TC_4753_LLR_4505_3_at_most_one_base_word_is_lost
+    assert "H" in {show for show, _label in entries}
+E   AssertionError: assert 'H' in {'0', '1', '2', '3', '4', '5', ...}
+______ test_TC_4753_LLR_4505_3_at_most_one_base_word_is_lost[118-setup] _______
+tests\test_present_html_export.py:690: in test_TC_4753_LLR_4505_3_at_most_one_base_word_is_lost
+    assert "H" in {show for show, _label in entries}
+E   AssertionError: assert 'H' in {'0', '1', '2', '3', '4', '5', ...}
+___________ test_TC_4754_LLR_4505_4_wide_primary_bar_names_H_Report ___________
+tests\test_present_html_export.py:702: in test_TC_4754_LLR_4505_4_wide_primary_bar_names_H_Report
+    assert "H Report" in keymap.key_bar_plain(250, "swimlanes", "primary")
+E   AssertionError: assert 'H Report' in '? Map  ; More  q Quit  B Boards  1 Lanes  2 Agenda  3 Gantt  4 Kanban  5 Focus  6 Chains  7 Flow  8 Standup  9 People  0 Setup  ↵ Details  a Add  e Edit  d Del  L Link  ⇥ Layout  ↓ Down  ↑ Up'
+E    +  where '? Map  ; More  q Quit  B Boards  1 Lanes  2 Agenda  3 Gantt  4 Kanban  5 Focus  6 Chains  7 Flow  8 Standup  9 People  0 Setup  ↵ Details  a Add  e Edit  d Del  L Link  ⇥ Layout  ↓ Down  ↑ Up' = <function key_bar_plain at 0x000001E2582663E0>(250, 'swimlanes', 'primary')
+E    +    where <function key_bar_plain at 0x000001E2582663E0> = keymap.key_bar_plain
+_____ test_TC_4755_LLR_4505_5_help_lists_H_Report_exactly_once[swimlanes] _____
+tests\test_present_html_export.py:709: in test_TC_4755_LLR_4505_5_help_lists_H_Report_exactly_once
+    assert band.count("H   Report") == 1
+E   AssertionError: assert 0 == 1
+E    +  where 0 = <built-in method count of str object at 0x000001E2589BAD10>('H   Report')
+E    +    where <built-in method count of str object at 0x000001E2589BAD10> = '?   Map         4   Kanban      ↵   Details     v   Archived    !   Prio        ↑   Up\n;   More        5   Focus    ...  x   Archive     [   Phase−      ⇥   Layout\n3   Gantt       0   Setup       X   Purge done  ]   Phase+      ↓   Down'.count
+______ test_TC_4755_LLR_4505_5_help_lists_H_Report_exactly_once[agenda] _______
+tests\test_present_html_export.py:709: in test_TC_4755_LLR_4505_5_help_lists_H_Report_exactly_once
+    assert band.count("H   Report") == 1
+E   AssertionError: assert 0 == 1
+E    +  where 0 = <built-in method count of str object at 0x000001E258E9F700>('H   Report')
+E    +    where <built-in method count of str object at 0x000001E258E9F700> = '?   Map         4   Kanban      ↵   Details     v   Archived    !   Prio        ←   Left\n;   More        5   Focus  ...      x   Archive     [   Phase−      ↓   Down\n3   Gantt       0   Setup       X   Purge done  ]   Phase+      ↑   Up'.count
+_______ test_TC_4755_LLR_4505_5_help_lists_H_Report_exactly_once[gantt] _______
+tests\test_present_html_export.py:709: in test_TC_4755_LLR_4505_5_help_lists_H_Report_exactly_once
+    assert band.count("H   Report") == 1
+E   AssertionError: assert 0 == 1
+E    +  where 0 = <built-in method count of str object at 0x000001E258761BB0>('H   Report')
+E    +    where <built-in method count of str object at 0x000001E258761BB0> = '?   Map         4   Kanban      ↵   Details     v   Archived    !   Prio        /   Search\n;   More        5   Focus...  Archive     [   Phase−      F   Focus\n3   Gantt       0   Setup       X   Purge done  ]   Phase+      esc Focus off'.count
+______ test_TC_4755_LLR_4505_5_help_lists_H_Report_exactly_once[kanban] _______
+tests\test_present_html_export.py:709: in test_TC_4755_LLR_4505_5_help_lists_H_Report_exactly_once
+    assert band.count("H   Report") == 1
+E   AssertionError: assert 0 == 1
+E    +  where 0 = <built-in method count of str object at 0x000001E258B75100>('H   Report')
+E    +    where <built-in method count of str object at 0x000001E258B75100> = '?   Map         5   Focus       e   Edit        T   Pin proj    m   Chain       ↓   Down\n;   More        6   Chains ...u   Undo        +   Due+        /   Search\n4   Kanban      a   Add         t   Pin task    -   Due-        ⇥   Layout'.count
+_______ test_TC_4755_LLR_4505_5_help_lists_H_Report_exactly_once[focus] _______
+tests\test_present_html_export.py:709: in test_TC_4755_LLR_4505_5_help_lists_H_Report_exactly_once
+    assert band.count("H   Report") == 1
+E   AssertionError: assert 0 == 1
+E    +  where 0 = <built-in method count of str object at 0x000001E2589BB1E0>('H   Report')
+E    +    where <built-in method count of str object at 0x000001E2589BB1E0> = '?   Map         4   Kanban      ↵   Details     v   Archived    !   Prio        ↑   Up\n;   More        5   Focus    ...  x   Archive     [   Phase−      ⇥   Layout\n3   Gantt       0   Setup       X   Purge done  ]   Phase+      ↓   Down'.count
+_____ test_TC_4755_LLR_4505_5_help_lists_H_Report_exactly_once[chainmap] ______
+tests\test_present_html_export.py:709: in test_TC_4755_LLR_4505_5_help_lists_H_Report_exactly_once
+    assert band.count("H   Report") == 1
+E   AssertionError: assert 0 == 1
+E    +  where 0 = <built-in method count of str object at 0x000001E258B75690>('H   Report')
+E    +    where <built-in method count of str object at 0x000001E258B75690> = '?   Map             5   Focus           e   Edit            T   Pin proj        ,   Save chain tpl\n;   More         ...   Details         u   Undo            -   Due-\n4   Kanban          a   Add             t   Pin task        m   Chain'.count
+_______ test_TC_4755_LLR_4505_5_help_lists_H_Report_exactly_once[flow] ________
+tests\test_present_html_export.py:709: in test_TC_4755_LLR_4505_5_help_lists_H_Report_exactly_once
+    assert band.count("H   Report") == 1
+E   AssertionError: assert 0 == 1
+E    +  where 0 = <built-in method count of str object at 0x000001E258CE5600>('H   Report')
+E    +    where <built-in method count of str object at 0x000001E258CE5600> = '?   Map         3   Gantt       9   People      x   Archive     [   Phase−      m   Chain\n;   More        4   Kanban...   t   Pin task    +   Due+        →   Right\n2   Agenda      8   Standup     d   Del         T   Pin proj    -   Due-'.count
+______ test_TC_4755_LLR_4505_5_help_lists_H_Report_exactly_once[standup] ______
+tests\test_present_html_export.py:709: in test_TC_4755_LLR_4505_5_help_lists_H_Report_exactly_once
+    assert band.count("H   Report") == 1
+E   AssertionError: assert 0 == 1
+E    +  where 0 = <built-in method count of str object at 0x000001E258CE44C0>('H   Report')
+E    +    where <built-in method count of str object at 0x000001E258CE44C0> = '?   Map         3   Gantt       9   People      x   Archive     [   Phase−      m   Chain\n;   More        4   Kanban...   t   Pin task    +   Due+        →   Right\n2   Agenda      8   Standup     d   Del         T   Pin proj    -   Due-'.count
+______ test_TC_4755_LLR_4505_5_help_lists_H_Report_exactly_once[people] _______
+tests\test_present_html_export.py:709: in test_TC_4755_LLR_4505_5_help_lists_H_Report_exactly_once
+    assert band.count("H   Report") == 1
+E   AssertionError: assert 0 == 1
+E    +  where 0 = <built-in method count of str object at 0x000001E258CE5EA0>('H   Report')
+E    +    where <built-in method count of str object at 0x000001E258CE5EA0> = '?   Map         3   Gantt       9   People      x   Archive     [   Phase−      m   Chain\n;   More        4   Kanban...   t   Pin task    +   Due+        →   Right\n2   Agenda      8   Standup     d   Del         T   Pin proj    -   Due-'.count
+_______ test_TC_4755_LLR_4505_5_help_lists_H_Report_exactly_once[setup] _______
+tests\test_present_html_export.py:709: in test_TC_4755_LLR_4505_5_help_lists_H_Report_exactly_once
+    assert band.count("H   Report") == 1
+E   AssertionError: assert 0 == 1
+E    +  where 0 = <built-in method count of str object at 0x000001E2589BB6B0>('H   Report')
+E    +    where <built-in method count of str object at 0x000001E2589BB6B0> = '?   Map         4   Kanban      ↵   Details     u   Undo        +   Due+        →   Right\n;   More        5   Focus ...      X   Purge done  !   Prio        ↑   Up\n3   Gantt       0   Setup       v   Archived    b   Blocked     ←   Left'.count
+__________ test_TC_4761_LLR_4506_1_present_help_names_only_HTML_deck __________
+tests\test_present_html_export.py:723: in test_TC_4761_LLR_4506_1_present_help_names_only_HTML_deck
+    assert re.search(r"^  x\s+export this view · HTML deck$", text, re.M)
+E   assert None
+E    +  where None = <function search at 0x000001E2542D8040>('^  x\\s+export this view · HTML deck$', "PRESENTATION KEYS · view gantt\nVIEWS\n  1 2 3     gantt · split · all\n  ⇥ ⇧⇥      next / previous view\nMOVE\n  ↑↓ ...     export this view · SVG + PNG\n  esc q     leave\n  ?         these keys\n? / esc close · dim = another view's key", re.MULTILINE)
+E    +    where <function search at 0x000001E2542D8040> = re.search
+E    +    and   re.MULTILINE = re.M
+_____________ test_TC_4762_LLR_4506_2_present_help_names_o_offer ______________
+tests\test_present_html_export.py:734: in test_TC_4762_LLR_4506_2_present_help_names_o_offer
+    assert re.search(r"^  o\s+open the last export \(10 s\)$", text, re.M)
+E   assert None
+E    +  where None = <function search at 0x000001E2542D8040>('^  o\\s+open the last export \\(10 s\\)$', "PRESENTATION KEYS · view gantt\nVIEWS\n  1 2 3     gantt · split · all\n  ⇥ ⇧⇥      next / previous view\nMOVE\n  ↑↓ ...     export this view · SVG + PNG\n  esc q     leave\n  ?         these keys\n? / esc close · dim = another view's key", re.MULTILINE)
+E    +    where <function search at 0x000001E2542D8040> = re.search
+E    +    and   re.MULTILINE = re.M
+________ test_TC_4763_LLR_4506_3_present_bindings_are_base_plus_only_o ________
+tests\test_present_html_export.py:742: in test_TC_4763_LLR_4506_3_present_bindings_are_base_plus_only_o
+    assert {b.key for b in PresentScreen.BINDINGS} == expected
+E   AssertionError: assert {'1', '2', '3... 'enter', ...} == {'1', '2', '3... 'enter', ...}
+E     
+E     Extra items in the right set:
+E     'o'
+E     Use -v to get more diff
+________ test_TC_4765_LLR_4506_5_readme_names_html_deck_not_svg_or_png ________
+tests\test_present_html_export.py:797: in test_TC_4765_LLR_4506_5_readme_names_html_deck_not_svg_or_png
+    assert not re.search(r"SVG|PNG", text)
+E   AssertionError: assert not <re.Match object; span=(8157, 8160), match='SVG'>
+E    +  where <re.Match object; span=(8157, 8160), match='SVG'> = <function search at 0x000001E2542D8040>('SVG|PNG', '# taskboard\n\nA keyboard-first task board for the terminal, built with [Textual](https://textual.textualize.io/).\nR...and People views need team mode.\n- A real board is never part of this repo; the screenshots use the seeded demo data.')
+E    +    where <function search at 0x000001E2542D8040> = re.search
+__________ test_AT_4501_views_1_and_2_write_only_the_presented_scope __________
+tests\test_present_html_at.py:145: in test_AT_4501_views_1_and_2_write_only_the_presented_scope
+    assert _files(folder) == [deck.name]
+E   AssertionError: assert ['present-alp...26-11-01.svg'] == ['present-alp...6-11-01.html']
+E     
+E     At index 0 diff: 'present-alpha-2026-11-01.svg' != 'present-alpha-2026-11-01.html'
+E     Use -v to get more diff
+__________ test_AT_4502_view_3_exports_order_scope_and_folded_tasks ___________
+tests\test_present_html_at.py:183: in test_AT_4502_view_3_exports_order_scope_and_folded_tasks
+    assert _files(folder) == [deck.name]
+E   AssertionError: assert ['present-boa...1-01-all.svg'] == ['present-2026-11-01.html']
+E     
+E     At index 0 diff: 'present-board-2026-11-01-all.svg' != 'present-2026-11-01.html'
+E     Use -v to get more diff
+____________ test_AT_4503_the_open_offer_is_single_use_and_expires ____________
+tests\test_present_html_at.py:215: in test_AT_4503_the_open_offer_is_single_use_and_expires
+    assert deck.is_file()
+E   AssertionError: assert False
+E    +  where False = is_file()
+E    +    where is_file = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-32003/home168/.taskboard/boards/main/reports/present-alpha-2026-11-01.html').is_file
+______ test_AT_4504_an_oserror_toasts_offers_nothing_and_leaves_r_usable ______
+tests\test_present_html_at.py:240: in test_AT_4504_an_oserror_toasts_offers_nothing_and_leaves_r_usable
+    assert toasts, "a failed export must leave a Report toast"
+E   AssertionError: a failed export must leave a Report toast
+E   assert []
+
+During handling of the above exception, another exception occurred:
+tests\test_present_html_at.py:237: in test_AT_4504_an_oserror_toasts_offers_nothing_and_leaves_r_usable
+    async with app.run_test(size=(118, 30), notifications=True) as pilot:
+..\..\..\anaconda3\Lib\contextlib.py:231: in __aexit__
+    await self.gen.athrow(value)
+..\..\..\anaconda3\Lib\site-packages\textual\app.py:2218: in run_test
+    raise self._exception
+..\..\..\anaconda3\Lib\site-packages\textual\message_pump.py:663: in _process_messages_loop
+    await self._dispatch_message(message)
+..\..\..\anaconda3\Lib\site-packages\textual\message_pump.py:727: in _dispatch_message
+    await self.on_event(message)
+..\..\..\anaconda3\Lib\site-packages\textual\app.py:4136: in on_event
+    if not await self._check_bindings(event.key, priority=True):
+..\..\..\anaconda3\Lib\site-packages\textual\app.py:3986: in _check_bindings
+    if await self.run_action(binding.action, namespace):
+..\..\..\anaconda3\Lib\site-packages\textual\app.py:4246: in run_action
+    return await self._dispatch_action(action_target, action_name, params)
+..\..\..\anaconda3\Lib\site-packages\textual\app.py:4279: in _dispatch_action
+    await invoke(public_method, *params)
+..\..\..\anaconda3\Lib\site-packages\textual\_callback.py:96: in invoke
+    return await _invoke(callback, *params)
+..\..\..\anaconda3\Lib\site-packages\textual\_callback.py:56: in _invoke
+    result = callback(*params[:parameter_count])
+taskboard\app.py:641: in action_export
+    save_present_svg(text, svg_path, w, h)
+taskboard\views.py:7362: in save_present_svg
+    path.parent.mkdir(parents=True, exist_ok=True)
+..\..\..\anaconda3\Lib\pathlib.py:1311: in mkdir
+    os.mkdir(self, mode)
+E   FileExistsError: [WinError 183] Cannot create a file when that file already exists: 'C:\\Users\\jjgh8\\AppData\\Local\\Temp\\pytest-of-jjgh8\\pytest-32003\\home169\\.taskboard\\boards\\main\\reports'
+---------------------------- Captured stderr call -----------------------------
+╭───────────────────── Traceback (most recent call last) ──────────────────────
+│ C:\Users\jjgh8\Github\taskboard-wt\incX-tests\taskboard\app.py:641 in        
+│ action_export                                                                
+│                                                                              
+│    638 │   │   │   text = self._frame_text()                                 
+│    639 │   │   │   svg_path, png_path = present_paths(self._board, self._pro 
+│    640 │   │   │   │   │   │   │   │   │   │   │      PRESENT_SCREEN_VIEWS[s 
+│ ❱  641 │   │   save_present_svg(text, svg_path, w, h)                        
+│    642 │   │   png = save_present_png(svg_path, png_path, w, h)              
+│    643 │   │   if png is None:                                               
+│    644 │   │   │   self.app.notify(                                          
+│                                                                              
+│ ╭───────────────────────────────── locals ─────────────────────────────────╮ 
+│ │        h = 29                                                            │ 
+│ │ png_path = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjg… │ 
+│ │     self = PresentScreen()                                               │ 
+│ │ svg_path = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjg… │ 
+│ │     text = <text '◆ PRESENT · Alpha  gantt                               │ 
+│ │            1 open · 0 done \n              today Sun Nov 1  Oct ┃1       │ 
+│ │            November       ◆                                              │ 
+│ │            ┃December              \n              selected task ▸        │ 
+│ │            ⟦━━━━━━━━━━━━⟧ Oct 30–Nov 5       16            23            │ 
+│ │            30                       \n▌ ALPHA                            │ 
+│ │            ◂───╎────●────────────◆···········┆·············┆···········… │ 
+│ │            Oct 28–Nov 10\n  ▎ Alpha open                                 │ 
+│ │            ⟦━━━━━━━━━━━━⟧······┆·············┆·············┆···········… │ 
+│ │            Oct 30–Nov                                                    │ 
+│ │            5\n─────────────────────────────────────────────────────────… │ 
+│ │            ⟦Alpha open⟧                                                  │ 
+│ │            in 4d\n                                                       │ 
+│ │            \n                                                            │ 
+│ │            \n                                                            │ 
+│ │            \n                                                            │ 
+│ │            \n                                                            │ 
+│ │            \n                                                            │ 
+│ │            \n                                                            │ 
+│ │            \n                                                            │ 
+│ │            \n                                                            │ 
+│ │            \n                                                            │ 
+│ │            \n                                                            │ 
+│ │            \n                                                            │ 
+│ │            \n                                                            │ 
+│ │            \n                                                            │ 
+│ │            \n                                                            │ 
+│ │            \n                                                            │ 
+│ │            \n                                                            │ 
+│ │            \n                                                            │ 
+│ │            \n                                                            │ 
+│ │            \n                                                            │ 
+│ │            \n                                                            │ 
+│ │            \n                                                            │ 
+│ │            ' [Span(0, 9, 'bold #e6edf7'), Span(9, 12, '#5b6675'),        │ 
+│ │            Span(12, 17, 'bold #38bdf8'), Span(17, 24, '#7a828c'),        │ 
+│ │            Span(102, 108, '#8b98a5'), Span(108, 111, '#5b6675'),         │ 
+│ │            Span(111, 117, '#3f9c6d'), Span(119, 149, '#2dd4bf'),         │ 
+│ │            Span(150, 153, 'bold #c9d4e0'), Span(154, 155, '#334154'),    │ 
+│ │            Span(155, 156, 'bold reverse #2dd4bf'), Span(157, 165, 'bold  │ 
+│ │            #e6edf3'), Span(172, 173, 'bold #38bdf8'), Span(214, 215,     │ 
+│ │            '#334154'), Span(215, 223, 'bold #c9d4e0'), Span(238, 268,    │ 
+│ │            'bold #e6edf7'), Span(269, 283, 'bold #e6edf7'), Span(283,    │ 
+│ │            284, '#334154'), Span(284, 296, 'bold #e6edf7'), Span(296,    │ 
+│ │            303, '#334154'), Span(303, 305, '#8b98a5'), Span(305, 317,    │ 
+│ │            '#334154'), Span(317, 319, '#8b98a5'), Span(319, 331,         │ 
+│ │            '#334154'), Span(331, 333, '#8b98a5'), Span(333, 342,         │ 
+│ │            '#334154'), Span(357, 359, '#38bdf8'), Span(359, 387, 'bold   │ 
+│ │            #38bdf8'), Span(388, 389, '#8b98a5'), Span(389, 392,          │ 
+│ │            '#6b4a3f'), Span(392, 393, 'bold #e6edf7'), Span(393, 411,    │ 
+│ │            '#38bdf8'), Span(411, 461, '#5b6675'), Span(462, 475,         │ 
+│ │            '#8b98a5'), Span(478, 479, '#38bdf8'), Span(480, 506, 'bold   │ 
+│ │            #e6edf7'), Span(507, 521, 'bold #e6edf7'), Span(521, 580,     │ 
+│ │            '#5b6675'), Span(581, 594, '#8b98a5'), Span(595, 713,         │ 
+│ │            '#334154'), Span(716, 728, 'bold #2dd4bf'), Span(821, 832,    │ 
+│ │            '#8b98a5')] ''>                                               │ 
+│ │        w = 118                                                           │ 
+│ ╰──────────────────────────────────────────────────────────────────────────╯ 
+│                                                                              
+│ C:\Users\jjgh8\Github\taskboard-wt\incX-tests\taskboard\views.py:7362 in     
+│ save_present_svg                                                             
+│                                                                              
+│   7359 │   │   │   │     color_system="truecolor", record=True,              
+│   7360 │   │   │   │     file=open(os.devnull, "w", encoding="utf-8"))       
+│   7361 │   con.print(text, end="")                                           
+│ ❱ 7362 │   path.parent.mkdir(parents=True, exist_ok=True)                    
+│   7363 │   con.save_svg(str(path), title="taskboard · presentation")         
+│   7364 │   return path                                                       
+│   7365                                                                       
+│                                                                              
+│ ╭───────────────────────────────── locals ─────────────────────────────────╮ 
+│ │    con = <console width=119 ColorSystem.TRUECOLOR>                       │ 
+│ │ height = 29                                                              │ 
+│ │   path = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8… │ 
+│ │   text = <text '◆ PRESENT · Alpha  gantt                                 │ 
+│ │          1 open · 0 done \n              today Sun Nov 1  Oct ┃1         │ 
+│ │          November       ◆                                                │ 
+│ │          ┃December              \n              selected task ▸          │ 
+│ │          ⟦━━━━━━━━━━━━⟧ Oct 30–Nov 5       16            23              │ 
+│ │          30                       \n▌ ALPHA                              │ 
+│ │          ◂───╎────●────────────◆···········┆·············┆·············… │ 
+│ │          Oct 28–Nov 10\n  ▎ Alpha open                                   │ 
+│ │          ⟦━━━━━━━━━━━━⟧······┆·············┆·············┆·············… │ 
+│ │          Oct 30–Nov                                                      │ 
+│ │          5\n───────────────────────────────────────────────────────────… │ 
+│ │          ⟦Alpha open⟧                                                    │ 
+│ │          in 4d\n                                                         │ 
+│ │          \n                                                              │ 
+│ │          \n                                                              │ 
+│ │          \n                                                              │ 
+│ │          \n                                                              │ 
+│ │          \n                                                              │ 
+│ │          \n                                                              │ 
+│ │          \n                                                              │ 
+│ │          \n                                                              │ 
+│ │          \n                                                              │ 
+│ │          \n                                                              │ 
+│ │          \n                                                              │ 
+│ │          \n                                                              │ 
+│ │          \n                                                              │ 
+│ │          \n                                                              │ 
+│ │          \n                                                              │ 
+│ │          \n                                                              │ 
+│ │          \n                                                              │ 
+│ │          \n                                                              │ 
+│ │          \n                                                              │ 
+│ │          \n                                                              │ 
+│ │          \n                                                              │ 
+│ │          ' [Span(0, 9, 'bold #e6edf7'), Span(9, 12, '#5b6675'), Span(12, │ 
+│ │          17, 'bold #38bdf8'), Span(17, 24, '#7a828c'), Span(102, 108,    │ 
+│ │          '#8b98a5'), Span(108, 111, '#5b6675'), Span(111, 117,           │ 
+│ │          '#3f9c6d'), Span(119, 149, '#2dd4bf'), Span(150, 153, 'bold     │ 
+│ │          #c9d4e0'), Span(154, 155, '#334154'), Span(155, 156, 'bold      │ 
+│ │          reverse #2dd4bf'), Span(157, 165, 'bold #e6edf3'), Span(172,    │ 
+│ │          173, 'bold #38bdf8'), Span(214, 215, '#334154'), Span(215, 223, │ 
+│ │          'bold #c9d4e0'), Span(238, 268, 'bold #e6edf7'), Span(269, 283, │ 
+│ │          'bold #e6edf7'), Span(283, 284, '#334154'), Span(284, 296,      │ 
+│ │          'bold #e6edf7'), Span(296, 303, '#334154'), Span(303, 305,      │ 
+│ │          '#8b98a5'), Span(305, 317, '#334154'), Span(317, 319,           │ 
+│ │          '#8b98a5'), Span(319, 331, '#334154'), Span(331, 333,           │ 
+│ │          '#8b98a5'), Span(333, 342, '#334154'), Span(357, 359,           │ 
+│ │          '#38bdf8'), Span(359, 387, 'bold #38bdf8'), Span(388, 389,      │ 
+│ │          '#8b98a5'), Span(389, 392, '#6b4a3f'), Span(392, 393, 'bold     │ 
+│ │          #e6edf7'), Span(393, 411, '#38bdf8'), Span(411, 461,            │ 
+│ │          '#5b6675'), Span(462, 475, '#8b98a5'), Span(478, 479,           │ 
+│ │          '#38bdf8'), Span(480, 506, 'bold #e6edf7'), Span(507, 521,      │ 
+│ │          'bold #e6edf7'), Span(521, 580, '#5b6675'), Span(581, 594,      │ 
+│ │          '#8b98a5'), Span(595, 713, '#334154'), Span(716, 728, 'bold     │ 
+│ │          #2dd4bf'), Span(821, 832, '#8b98a5')] ''>                       │ 
+│ │  width = 118                                                             │ 
+│ ╰──────────────────────────────────────────────────────────────────────────╯ 
+│                                                                              
+│ C:\Users\jjgh8\anaconda3\Lib\pathlib.py:1311 in mkdir                        
+│                                                                              
+│   1308 │   │   Create a new directory at this given path.                    
+│   1309 │   │   """                                                           
+│   1310 │   │   try:                                                          
+│ ❱ 1311 │   │   │   os.mkdir(self, mode)                                      
+│   1312 │   │   except FileNotFoundError:                                     
+│   1313 │   │   │   if not parents or self.parent == self:                    
+│   1314 │   │   │   │   raise                                                 
+│                                                                              
+│ ╭───────────────────────────────── locals ─────────────────────────────────╮ 
+│ │ exist_ok = True                                                          │ 
+│ │     mode = 511                                                           │ 
+│ │  parents = True                                                          │ 
+│ │     self = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjg… │ 
+│ ╰──────────────────────────────────────────────────────────────────────────╯ 
+╰──────────────────────────────────────────────────────────────────────────────
+FileExistsError: [WinError 183] Cannot create a file when that file already 
+exists: 
+'C:\\Users\\jjgh8\\AppData\\Local\\Temp\\pytest-of-jjgh8\\pytest-32003\\home169
+\.taskboard\\boards\\main\\reports'
+_______ test_AT_4506_h_is_discoverable_and_presentation_help_says_html ________
+tests\test_present_html_at.py:273: in test_AT_4506_h_is_discoverable_and_presentation_help_says_html
+    assert re.search(r"(?:^|\s)H(?:\s|$)", bar), bar
+E   AssertionError: ? Map  ; More  q Quit  B Boards  1 Lanes  2 Agenda  3 Gantt  4 Kanban  5  6  7  8  9  0  ↵  a  e  d  L  ⇥  ↓  ↑
+E   assert None
+E    +  where None = <function search at 0x000001E2542D8040>('(?:^|\\s)H(?:\\s|$)', '? Map  ; More  q Quit  B Boards  1 Lanes  2 Agenda  3 Gantt  4 Kanban  5  6  7  8  9  0  ↵  a  e  d  L  ⇥  ↓  ↑')
+E    +    where <function search at 0x000001E2542D8040> = re.search
+=========================== short test summary info ===========================
+FAILED tests/test_present_html_export.py::test_TC_4701_LLR_4501_1_project_views_write_exact_html_name[1]
+FAILED tests/test_present_html_export.py::test_TC_4701_LLR_4501_1_project_views_write_exact_html_name[2]
+FAILED tests/test_present_html_export.py::test_TC_4701b_LLR_4501_1_names_cannot_escape_reports[..\\..\\evil-present-evil-2026-11-01.html]
+FAILED tests/test_present_html_export.py::test_TC_4701b_LLR_4501_1_names_cannot_escape_reports[CON-present-con-2026-11-01.html]
+FAILED tests/test_present_html_export.py::test_TC_4701b_LLR_4501_1_names_cannot_escape_reports[!!!-present-project-2026-11-01.html]
+FAILED tests/test_present_html_export.py::test_TC_4702_LLR_4501_2_all_view_writes_exact_html_name
+FAILED tests/test_present_html_export.py::test_TC_4703_LLR_4501_3_bytes_equal_independent_url_free_H_fixture[1]
+FAILED tests/test_present_html_export.py::test_TC_4703_LLR_4501_3_bytes_equal_independent_url_free_H_fixture[2]
+FAILED tests/test_present_html_export.py::test_TC_4704_LLR_4501_4_all_bytes_equal_independent_url_free_H_fixture
+FAILED tests/test_present_html_export.py::test_TC_4705_LLR_4501_5_project_scope_ignores_own_rail_flag[True]
+FAILED tests/test_present_html_export.py::test_TC_4705_LLR_4501_5_project_scope_ignores_own_rail_flag[False]
+FAILED tests/test_present_html_export.py::test_TC_4706_LLR_4501_6_all_scope_uses_presentation_order
+FAILED tests/test_present_html_export.py::test_TC_4707_LLR_4501_7_only_presented_board_reaches_deck[1]
+FAILED tests/test_present_html_export.py::test_TC_4707_LLR_4501_7_only_presented_board_reaches_deck[3]
+FAILED tests/test_present_html_export.py::test_TC_4708_LLR_4501_8_folded_project_keeps_tasks_and_notes
+FAILED tests/test_present_html_export.py::test_TC_4709_LLR_4501_9_done_task_title_and_notes_reach_file[1]
+FAILED tests/test_present_html_export.py::test_TC_4709_LLR_4501_9_done_task_title_and_notes_reach_file[3]
+FAILED tests/test_present_html_export.py::test_TC_4710_LLR_4501_10_export_changes_neither_board_nor_history[1]
+FAILED tests/test_present_html_export.py::test_TC_4710_LLR_4501_10_export_changes_neither_board_nor_history[2]
+FAILED tests/test_present_html_export.py::test_TC_4710_LLR_4501_10_export_changes_neither_board_nor_history[3]
+FAILED tests/test_present_html_export.py::test_TC_4711_LLR_4501_11_unlisted_board_uses_label_or_fallback[label0-Client A]
+FAILED tests/test_present_html_export.py::test_TC_4711_LLR_4501_11_unlisted_board_uses_label_or_fallback[None-this board]
+FAILED tests/test_present_html_export.py::test_TC_4712_LLR_4501_12_empty_all_scope_still_writes_deck
+FAILED tests/test_present_html_export.py::test_TC_4715_LLR_4501_15_missing_project_falls_back_to_first_visible
+FAILED tests/test_present_html_export.py::test_TC_4721_LLR_4502_1_hidden_task_and_id_have_zero_occurrences[1]
+FAILED tests/test_present_html_export.py::test_TC_4721_LLR_4502_1_hidden_task_and_id_have_zero_occurrences[2]
+FAILED tests/test_present_html_export.py::test_TC_4721_LLR_4502_1_hidden_task_and_id_have_zero_occurrences[3]
+FAILED tests/test_present_html_export.py::test_TC_4722_LLR_4502_2_hidden_project_and_its_tasks_have_zero_occurrences
+FAILED tests/test_present_html_export.py::test_TC_4723_LLR_4502_3_archived_and_projectless_tasks_are_excluded[1]
+FAILED tests/test_present_html_export.py::test_TC_4723_LLR_4502_3_archived_and_projectless_tasks_are_excluded[3]
+FAILED tests/test_present_html_export.py::test_TC_4724_LLR_4502_4_hidden_milestone_class_is_excluded[1]
+FAILED tests/test_present_html_export.py::test_TC_4724_LLR_4502_4_hidden_milestone_class_is_excluded[3]
+FAILED tests/test_present_html_export.py::test_TC_4725_LLR_4502_5_legend_omits_class_used_only_by_hidden_task
+FAILED tests/test_present_html_export.py::test_TC_4726_LLR_4502_6_export_reads_hide_flags_at_each_press
+FAILED tests/test_present_html_export.py::test_TC_4727_LLR_4502_7_urls_strip_without_mutating_source_or_next_save[1]
+FAILED tests/test_present_html_export.py::test_TC_4727_LLR_4502_7_urls_strip_without_mutating_source_or_next_save[2]
+FAILED tests/test_present_html_export.py::test_TC_4727_LLR_4502_7_urls_strip_without_mutating_source_or_next_save[3]
+FAILED tests/test_present_html_export.py::test_TC_4731_LLR_4503_1_success_toast_is_exact
+FAILED tests/test_present_html_export.py::test_TC_4732_LLR_4503_2_o_opens_offered_deck_once
+FAILED tests/test_present_html_export.py::test_TC_4733_LLR_4503_3_absent_expired_and_consumed_offers_open_nothing
+FAILED tests/test_present_html_export.py::test_TC_4733b_LLR_4503_3_shared_offer_survives_esc_for_one_main_o
+FAILED tests/test_present_html_export.py::test_TC_4734_LLR_4503_4_write_oserror_toasts_without_crashing
+FAILED tests/test_present_html_export.py::test_TC_4735_LLR_4503_5_failed_export_withdraws_earlier_offer
+FAILED tests/test_present_html_export.py::test_TC_4736_LLR_4503_6_opener_oserror_has_exact_error_toast
+FAILED tests/test_present_html_export.py::test_TC_4736b_LLR_4503_6_relative_uri_valueerror_is_caught
+FAILED tests/test_present_html_export.py::test_TC_4737_LLR_4503_7_markup_in_folder_is_literal_toast_text
+FAILED tests/test_present_html_export.py::test_TC_4741_LLR_4504_1_one_file_oracle[1]
+FAILED tests/test_present_html_export.py::test_TC_4741_LLR_4504_1_one_file_oracle[2]
+FAILED tests/test_present_html_export.py::test_TC_4741_LLR_4504_1_one_file_oracle[3]
+FAILED tests/test_present_html_export.py::test_TC_4742_LLR_4504_2_export_starts_no_subprocess[1]
+FAILED tests/test_present_html_export.py::test_TC_4742_LLR_4504_2_export_starts_no_subprocess[2]
+FAILED tests/test_present_html_export.py::test_TC_4742_LLR_4504_2_export_starts_no_subprocess[3]
+FAILED tests/test_present_html_export.py::test_TC_4743_LLR_4504_3_package_has_no_svg_or_rasteriser_route
+FAILED tests/test_present_html_export.py::test_TC_4751_LLR_4505_1_H_is_in_all_20_primary_bars[80-swimlanes]
+FAILED tests/test_present_html_export.py::test_TC_4751_LLR_4505_1_H_is_in_all_20_primary_bars[80-agenda]
+FAILED tests/test_present_html_export.py::test_TC_4751_LLR_4505_1_H_is_in_all_20_primary_bars[80-gantt]
+FAILED tests/test_present_html_export.py::test_TC_4751_LLR_4505_1_H_is_in_all_20_primary_bars[80-kanban]
+FAILED tests/test_present_html_export.py::test_TC_4751_LLR_4505_1_H_is_in_all_20_primary_bars[80-focus]
+FAILED tests/test_present_html_export.py::test_TC_4751_LLR_4505_1_H_is_in_all_20_primary_bars[80-chainmap]
+FAILED tests/test_present_html_export.py::test_TC_4751_LLR_4505_1_H_is_in_all_20_primary_bars[80-flow]
+FAILED tests/test_present_html_export.py::test_TC_4751_LLR_4505_1_H_is_in_all_20_primary_bars[80-standup]
+FAILED tests/test_present_html_export.py::test_TC_4751_LLR_4505_1_H_is_in_all_20_primary_bars[80-people]
+FAILED tests/test_present_html_export.py::test_TC_4751_LLR_4505_1_H_is_in_all_20_primary_bars[80-setup]
+FAILED tests/test_present_html_export.py::test_TC_4751_LLR_4505_1_H_is_in_all_20_primary_bars[118-swimlanes]
+FAILED tests/test_present_html_export.py::test_TC_4751_LLR_4505_1_H_is_in_all_20_primary_bars[118-agenda]
+FAILED tests/test_present_html_export.py::test_TC_4751_LLR_4505_1_H_is_in_all_20_primary_bars[118-gantt]
+FAILED tests/test_present_html_export.py::test_TC_4751_LLR_4505_1_H_is_in_all_20_primary_bars[118-kanban]
+FAILED tests/test_present_html_export.py::test_TC_4751_LLR_4505_1_H_is_in_all_20_primary_bars[118-focus]
+FAILED tests/test_present_html_export.py::test_TC_4751_LLR_4505_1_H_is_in_all_20_primary_bars[118-chainmap]
+FAILED tests/test_present_html_export.py::test_TC_4751_LLR_4505_1_H_is_in_all_20_primary_bars[118-flow]
+FAILED tests/test_present_html_export.py::test_TC_4751_LLR_4505_1_H_is_in_all_20_primary_bars[118-standup]
+FAILED tests/test_present_html_export.py::test_TC_4751_LLR_4505_1_H_is_in_all_20_primary_bars[118-people]
+FAILED tests/test_present_html_export.py::test_TC_4751_LLR_4505_1_H_is_in_all_20_primary_bars[118-setup]
+FAILED tests/test_present_html_export.py::test_TC_4752_LLR_4505_2_base_keys_and_overflow_are_preserved[80-swimlanes]
+FAILED tests/test_present_html_export.py::test_TC_4752_LLR_4505_2_base_keys_and_overflow_are_preserved[80-agenda]
+FAILED tests/test_present_html_export.py::test_TC_4752_LLR_4505_2_base_keys_and_overflow_are_preserved[80-gantt]
+FAILED tests/test_present_html_export.py::test_TC_4752_LLR_4505_2_base_keys_and_overflow_are_preserved[80-kanban]
+FAILED tests/test_present_html_export.py::test_TC_4752_LLR_4505_2_base_keys_and_overflow_are_preserved[80-focus]
+FAILED tests/test_present_html_export.py::test_TC_4752_LLR_4505_2_base_keys_and_overflow_are_preserved[80-chainmap]
+FAILED tests/test_present_html_export.py::test_TC_4752_LLR_4505_2_base_keys_and_overflow_are_preserved[80-flow]
+FAILED tests/test_present_html_export.py::test_TC_4752_LLR_4505_2_base_keys_and_overflow_are_preserved[80-standup]
+FAILED tests/test_present_html_export.py::test_TC_4752_LLR_4505_2_base_keys_and_overflow_are_preserved[80-people]
+FAILED tests/test_present_html_export.py::test_TC_4752_LLR_4505_2_base_keys_and_overflow_are_preserved[80-setup]
+FAILED tests/test_present_html_export.py::test_TC_4752_LLR_4505_2_base_keys_and_overflow_are_preserved[118-swimlanes]
+FAILED tests/test_present_html_export.py::test_TC_4752_LLR_4505_2_base_keys_and_overflow_are_preserved[118-agenda]
+FAILED tests/test_present_html_export.py::test_TC_4752_LLR_4505_2_base_keys_and_overflow_are_preserved[118-gantt]
+FAILED tests/test_present_html_export.py::test_TC_4752_LLR_4505_2_base_keys_and_overflow_are_preserved[118-kanban]
+FAILED tests/test_present_html_export.py::test_TC_4752_LLR_4505_2_base_keys_and_overflow_are_preserved[118-focus]
+FAILED tests/test_present_html_export.py::test_TC_4752_LLR_4505_2_base_keys_and_overflow_are_preserved[118-chainmap]
+FAILED tests/test_present_html_export.py::test_TC_4752_LLR_4505_2_base_keys_and_overflow_are_preserved[118-flow]
+FAILED tests/test_present_html_export.py::test_TC_4752_LLR_4505_2_base_keys_and_overflow_are_preserved[118-standup]
+FAILED tests/test_present_html_export.py::test_TC_4752_LLR_4505_2_base_keys_and_overflow_are_preserved[118-people]
+FAILED tests/test_present_html_export.py::test_TC_4752_LLR_4505_2_base_keys_and_overflow_are_preserved[118-setup]
+FAILED tests/test_present_html_export.py::test_TC_4753_LLR_4505_3_at_most_one_base_word_is_lost[80-swimlanes]
+FAILED tests/test_present_html_export.py::test_TC_4753_LLR_4505_3_at_most_one_base_word_is_lost[80-agenda]
+FAILED tests/test_present_html_export.py::test_TC_4753_LLR_4505_3_at_most_one_base_word_is_lost[80-gantt]
+FAILED tests/test_present_html_export.py::test_TC_4753_LLR_4505_3_at_most_one_base_word_is_lost[80-kanban]
+FAILED tests/test_present_html_export.py::test_TC_4753_LLR_4505_3_at_most_one_base_word_is_lost[80-focus]
+FAILED tests/test_present_html_export.py::test_TC_4753_LLR_4505_3_at_most_one_base_word_is_lost[80-chainmap]
+FAILED tests/test_present_html_export.py::test_TC_4753_LLR_4505_3_at_most_one_base_word_is_lost[80-flow]
+FAILED tests/test_present_html_export.py::test_TC_4753_LLR_4505_3_at_most_one_base_word_is_lost[80-standup]
+FAILED tests/test_present_html_export.py::test_TC_4753_LLR_4505_3_at_most_one_base_word_is_lost[80-people]
+FAILED tests/test_present_html_export.py::test_TC_4753_LLR_4505_3_at_most_one_base_word_is_lost[80-setup]
+FAILED tests/test_present_html_export.py::test_TC_4753_LLR_4505_3_at_most_one_base_word_is_lost[118-swimlanes]
+FAILED tests/test_present_html_export.py::test_TC_4753_LLR_4505_3_at_most_one_base_word_is_lost[118-agenda]
+FAILED tests/test_present_html_export.py::test_TC_4753_LLR_4505_3_at_most_one_base_word_is_lost[118-gantt]
+FAILED tests/test_present_html_export.py::test_TC_4753_LLR_4505_3_at_most_one_base_word_is_lost[118-kanban]
+FAILED tests/test_present_html_export.py::test_TC_4753_LLR_4505_3_at_most_one_base_word_is_lost[118-focus]
+FAILED tests/test_present_html_export.py::test_TC_4753_LLR_4505_3_at_most_one_base_word_is_lost[118-chainmap]
+FAILED tests/test_present_html_export.py::test_TC_4753_LLR_4505_3_at_most_one_base_word_is_lost[118-flow]
+FAILED tests/test_present_html_export.py::test_TC_4753_LLR_4505_3_at_most_one_base_word_is_lost[118-standup]
+FAILED tests/test_present_html_export.py::test_TC_4753_LLR_4505_3_at_most_one_base_word_is_lost[118-people]
+FAILED tests/test_present_html_export.py::test_TC_4753_LLR_4505_3_at_most_one_base_word_is_lost[118-setup]
+FAILED tests/test_present_html_export.py::test_TC_4754_LLR_4505_4_wide_primary_bar_names_H_Report
+FAILED tests/test_present_html_export.py::test_TC_4755_LLR_4505_5_help_lists_H_Report_exactly_once[swimlanes]
+FAILED tests/test_present_html_export.py::test_TC_4755_LLR_4505_5_help_lists_H_Report_exactly_once[agenda]
+FAILED tests/test_present_html_export.py::test_TC_4755_LLR_4505_5_help_lists_H_Report_exactly_once[gantt]
+FAILED tests/test_present_html_export.py::test_TC_4755_LLR_4505_5_help_lists_H_Report_exactly_once[kanban]
+FAILED tests/test_present_html_export.py::test_TC_4755_LLR_4505_5_help_lists_H_Report_exactly_once[focus]
+FAILED tests/test_present_html_export.py::test_TC_4755_LLR_4505_5_help_lists_H_Report_exactly_once[chainmap]
+FAILED tests/test_present_html_export.py::test_TC_4755_LLR_4505_5_help_lists_H_Report_exactly_once[flow]
+FAILED tests/test_present_html_export.py::test_TC_4755_LLR_4505_5_help_lists_H_Report_exactly_once[standup]
+FAILED tests/test_present_html_export.py::test_TC_4755_LLR_4505_5_help_lists_H_Report_exactly_once[people]
+FAILED tests/test_present_html_export.py::test_TC_4755_LLR_4505_5_help_lists_H_Report_exactly_once[setup]
+FAILED tests/test_present_html_export.py::test_TC_4761_LLR_4506_1_present_help_names_only_HTML_deck
+FAILED tests/test_present_html_export.py::test_TC_4762_LLR_4506_2_present_help_names_o_offer
+FAILED tests/test_present_html_export.py::test_TC_4763_LLR_4506_3_present_bindings_are_base_plus_only_o
+FAILED tests/test_present_html_export.py::test_TC_4765_LLR_4506_5_readme_names_html_deck_not_svg_or_png
+FAILED tests/test_present_html_at.py::test_AT_4501_views_1_and_2_write_only_the_presented_scope
+FAILED tests/test_present_html_at.py::test_AT_4502_view_3_exports_order_scope_and_folded_tasks
+FAILED tests/test_present_html_at.py::test_AT_4503_the_open_offer_is_single_use_and_expires
+FAILED tests/test_present_html_at.py::test_AT_4504_an_oserror_toasts_offers_nothing_and_leaves_r_usable
+FAILED tests/test_present_html_at.py::test_AT_4506_h_is_discoverable_and_presentation_help_says_html
+======================= 133 failed, 39 passed in 31.84s =======================

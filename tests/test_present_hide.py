@@ -331,15 +331,14 @@ async def test_TC_1605_a_new_task_starts_shown(tmp_path):
 
 
 # --------------------------------------------------------------------------- #
-# AT-1602 — hide, export, restart, show all: through the shipped surface
+# AT-1602 — hide, restart, show all: through the shipped surface
 # --------------------------------------------------------------------------- #
 async def test_AT_1602_space_hides_and_it_is_remembered_a_shows_all(tmp_path, frozen):
     """AT-1602 (US-1602, HLR-1602): on the oracle board saved to disk, `R`,
     `space` → the cursor task's title is gone from the painted frame, the hint
     row ends `· 1 hidden`, and `board.json` differs from before by that task's
-    flag only; `x` → the exported SVG holds no `hidden`, not the hidden title,
-    and the header says `4 open`; restart the app, `R` → still hidden; `a` → the
-    title is back and the file equals its original bytes."""
+    flag only; restart the app, `R` → still hidden; `a` → the title is back and
+    the file equals its original bytes."""
     from taskboard.app import TaskboardApp
 
     path = _saved(tmp_path / "board.json")
@@ -366,15 +365,6 @@ async def test_AT_1602_space_hides_and_it_is_remembered_a_shows_all(tmp_path, fr
         after = _tasks(path)
         assert after["tw3"].pop("show_in_present") is False
         assert after == original
-
-        await pilot.press("x")
-        await pilot.pause()
-        svgs = list((tmp_path / "reports").glob("present-*.svg"))
-        assert len(svgs) == 1, svgs
-        svg = svgs[0].read_text(encoding="utf-8").replace("&#160;", " ")
-        assert "hidden" not in svg
-        assert "checkout" not in svg
-        assert "4 open" in svg
 
     app = TaskboardApp(board_path=str(path))
     async with app.run_test(size=(118, 31)) as pilot:

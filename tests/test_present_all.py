@@ -455,10 +455,9 @@ async def test_AT_2103_the_portfolio_on_one_ruler(tmp_path, frozen):
             assert any("│" in r for r in rows) == has_rail
 
 
-async def test_AT_2104_three_views_one_cursor_and_the_export(tmp_path, frozen):
+async def test_AT_2104_three_views_one_cursor(tmp_path, frozen):
     """AT-2104 (US-2102, HLR-2104): the hint names three views; `tab` cycles 1 → 2
-    → 3 → 1 with the cursor handed over; `x` in view 3 writes one `-all` SVG
-    without the rail or the hint; view 3's hint keeps its labels and `u`."""
+    → 3 → 1 with the cursor handed over; view 3's hint keeps its labels and `u`."""
     s = _Show(tmp_path, (160, 45))
     async with s.app.run_test(size=s.size) as pilot:
         await s.open(pilot)
@@ -485,15 +484,6 @@ async def test_AT_2104_three_views_one_cursor_and_the_export(tmp_path, frozen):
         assert hint.rstrip().endswith("· u 3 hidden  ? keys"), hint
         for key in ("␣ hide", "⇧↑↓", "enter fold"):
             assert key in hint, (key, hint)
-        await s.press(pilot, "x")
-        svgs = list((tmp_path / "reports").glob("*.svg"))
-        assert [p.name for p in svgs] == ["present-board-2026-10-19-all.svg"], svgs
-        svg = svgs[0].read_text(encoding="utf-8").replace("&#160;", " ")
-        for name in ("Customer Portal", "Billing Migration", "Mobile Release 3.2",
-                     "Data Platform", "Brand Refresh"):
-            assert name in svg, name
-        for absent in ("PROJECTS", "shown ·", "u 3 hidden", "3 all"):
-            assert absent not in svg, absent
 
 
 async def test_AT_2102_the_order_and_hidden_projects_survive_a_restart(tmp_path, frozen):
@@ -694,8 +684,6 @@ def test_TC_2104_the_view_names_and_the_u_tail_in_views_1_2(tmp_path):
     assert scr._hint(30).plain == "esc leave · 1 hidden"
     assert views.PRESENT_SCREEN_VIEWS == ("gantt", "split", "all")
     assert views.PRESENT_VIEWS == ("gantt", "split")
-    svg, png = views.present_paths(b, None, pf.TODAY, "all")
-    assert svg.name == "present-board-2026-10-19-all.svg" and png.suffix == ".png"
 
 
 async def test_TC_2104_the_cycle_and_the_hand_off(tmp_path, frozen):

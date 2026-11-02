@@ -22,7 +22,6 @@ import re
 from pathlib import Path
 
 import pytest
-from rich.text import Text
 
 import kg_board
 import present_board as pb
@@ -37,19 +36,11 @@ OLD_SCALE_LABELS = ("Mondays · 1 day = 2 cells", "Mondays · 1 cell = 1 day",
 NOT_SCALE = ("cancelled", "Daily revenue model", "selected task ▸", "selected: no dates")
 
 
-def _svg_text(path: Path) -> str:
-    """The export's text as a reader sees it: Rich writes each space `&#160;`."""
-    return path.read_text(encoding="utf-8").replace("&#160;", " ")
-
-
-def test_TC_1701_the_scale_pattern_sees_every_old_label(tmp_path):
+def test_TC_1701_the_scale_pattern_sees_every_old_label():
     """TC-1701 positive control: the pattern matches each label the old renderer
-    painted — as plain text and inside an SVG the export path writes — and none
-    of the words a frame legitimately paints."""
-    for i, text in enumerate(OLD_SCALE_LABELS):
+    painted and none of the words a frame legitimately paints."""
+    for text in OLD_SCALE_LABELS:
         assert SCALE_TEXT.search(text), text
-        svg = views.save_present_svg(Text("  " + text + "  9"), tmp_path / f"{i}.svg", 60, 2)
-        assert SCALE_TEXT.search(_svg_text(svg)), ("svg", text)
     for text in NOT_SCALE:
         assert not SCALE_TEXT.search(text), text
 
@@ -232,10 +223,9 @@ def test_TC_1701_no_gantt_frame_paints_the_scale(w, h):
 
 
 @pytest.mark.parametrize("w, h", SIZES)
-def test_TC_1701_no_present_frame_or_export_paints_the_scale(tmp_path, w, h):
+def test_TC_1701_no_present_frame_paints_the_scale(tmp_path, w, h):
     """TC-1701 (b): every open task as the cursor, a dateless cursor and no
-    cursor — no row of the frame and nothing in its `x` SVG holds the scale
-    text."""
+    cursor — no row of the frame holds the scale text."""
     b = pb.build(tmp_path / "board.json")
     open_t, _ = views.present_tasks(b, pb.PROJECT_ID)
     cases = [t.id for t in open_t]
@@ -248,9 +238,6 @@ def test_TC_1701_no_present_frame_or_export_paints_the_scale(tmp_path, w, h):
         assert "today" in rows[1] and re.search(r"\d", rows[2][label_w:]), (tag, rows[2])
         for i, row in enumerate(rows):
             assert not SCALE_TEXT.search(row), (tag, i, row)
-        svg = _svg_text(views.save_present_svg(text, tmp_path / f"{tag}.svg", w, h))
-        assert "PRESENT" in svg and "Redesign" in svg, "probe cannot read the SVG"
-        assert not SCALE_TEXT.search(svg), tag
 
     for tid in cases:
         check(tid, tid)

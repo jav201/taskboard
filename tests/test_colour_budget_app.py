@@ -473,7 +473,9 @@ KEYBAR_BASE = {   # read off the base tree a0e7d9a (`key_bar_plain`), not typed
         # batch 2026-10-20-batch-01 added `B` (Boards) as a universal key: the bar
         # sheds "Lanes" too and keeps every key (law-driven: the seat's strings fitted
         # by hand, `.dev-flow/2026-10-20-batch-01/evidence/keybar-law.txt`)
-        "? Map  ; More  q Quit  B  1  2  3  4  5  6  7  8  9  0  ↵  a  e  d  L  ↓  ↑",
+        # Inc X added `H` (Report) at its existing seat: every key remains and the
+        # recorded fit is in `.dev-flow/2026-11-01-v3-incX/e3-addenda.md` (ruling 15).
+        "? Map  ; More  q Quit  B  1  2  3  4  5  6  7  8  9  0  ↵  a  e  d  L  H  ↓  ↑",
     ("gantt", 118, "more"):
         # batch 2026-10-04-batch-02 added `M` (Milestone); batch 2026-10-06-batch-01
         # added `m` (Chain) to the more layer — both keep every key
@@ -482,8 +484,10 @@ KEYBAR_BASE = {   # read off the base tree a0e7d9a (`key_bar_plain`), not typed
         # batch 2026-10-20-batch-01 added `B` (Boards): every word was already gone,
         # so the last two keys (← →) go and are counted, `+2` (law-driven, the same
         # evidence file)
+        # Inc X added `H` before ↓: one more key overflows (+3), as recorded in
+        # `.dev-flow/2026-11-01-v3-incX/e3-addenda.md` (ruling 15).
         "?  ;  q  B  1  2  3  4  5  6  7  8  9  0  ↵  a  e  d  L  x  X  v  u  t  T  M  [  ]  !  b"
-        "  +  -  m  F  esc  /  ↓  ↑ +2",
+        "  +  -  m  F  esc  /  H  ↓ +3",
 }
 
 

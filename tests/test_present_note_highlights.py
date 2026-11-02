@@ -195,38 +195,6 @@ async def test_AT_2902_split_view_colours_highlights_two_sizes(home, size):
 
 
 # --------------------------------------------------------------------------- #
-# AT-2903 — the `x` export carries the same colours, no markers (HLR-2903)
-# --------------------------------------------------------------------------- #
-async def test_AT_2903_split_export_svg_carries_tones(home):
-    """AT-2903 (HLR-2903, LLR-2903.1): the `x` SVG of the split view holds
-    #fbbf24 / #f43f5e / #4ade80, no marker run, the span words inside the
-    text elements; a hostile note with `<`, `&` and a `<script>` tag reaches
-    the file only escaped (0 raw `<script` bytes)."""
-    from taskboard.__main__ import open_app
-    _seed(home, {"tc5": _WRAP_NOTE,
-                 "tc7": "hostile <b> & <script>alert(1)</script> end"})
-    app = open_app(None)
-    async with app.run_test(size=(118, 30)) as pilot:
-        await _present(pilot, app, "tc5", "2")
-        await pilot.press("x")
-        await pilot.pause()
-        svgs = list((home / "boards/client-a/reports").glob("*.svg"))
-        assert len(svgs) == 1, svgs
-        data = svgs[0].read_bytes()
-        for key in ("soon", "over", "green"):
-            assert HEX[key].encode() in data, (key, data[:400])
-        for run in (b"==one==", b"!!two!!", b"++alpha"):
-            assert run not in data, run
-        for word in (b"one", b"two", b"alpha", b"lima"):
-            assert word in data, word
-        assert b"<script" not in data
-        assert b"&lt;script" in data
-        assert b"<b>" not in data
-        assert b"&lt;b&gt;" in data
-        assert b"&amp;" in data
-
-
-# --------------------------------------------------------------------------- #
 # AT-2904 — mentions, bullets and unpaired markers keep their rules (HLR-2904)
 # --------------------------------------------------------------------------- #
 async def test_AT_2904_mentions_bullets_unpaired_markers(home):

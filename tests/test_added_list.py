@@ -870,7 +870,8 @@ def test_TC_4397_the_meta_line_says_archived(tmp_path):
 def test_TC_4321_N_is_one_global_key_of_the_seat():
     """TC-4321 (LLR-4303.1): exactly one KEYMAP entry `N` → `added_list`, label `Added
     list`, `bar=False`, no `views`, not priority (like `A`); the app has the action; the
-    `?` help's global keys read … A N H …; every palette lists it once (NC missing)."""
+    `?` help's global keys read … A N n @ … (`H` moved to the bar in Inc X, ruling 15);
+    every palette lists N once (NC missing)."""
     entries = [k for k in keymap.KEYMAP if k.keys == "N"]
     assert len(entries) == 1, "no KEYMAP entry for N"
     n = entries[0]
@@ -878,7 +879,7 @@ def test_TC_4321_N_is_one_global_key_of_the_seat():
         ("N", "added_list", "Added list", False, None, False, "misc")
     assert hasattr(TaskboardApp, "action_added_list")
     assert [k.show for k in keymap.global_keys("gantt")] == [
-        "o", "i", "p", "P", "f", "c", "R", "A", "N", "n", "H", "@", "#", "I", "S"]  # n: Inc K, LLR-4401.1
+        "o", "i", "p", "P", "f", "c", "R", "A", "N", "n", "@", "#", "I", "S"]  # n: Inc K, LLR-4401.1
     assert keymap.palette_commands("swimlanes").count(("N", "Added list", "added_list")) == 1
 
 

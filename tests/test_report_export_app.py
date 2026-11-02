@@ -235,19 +235,21 @@ async def test_AT_3105_H_c_writes_the_deck_with_one_slide_per_chosen_project(hom
 # --------------------------------------------------------------------------- #
 # TC-3117 — the `H` seat
 # --------------------------------------------------------------------------- #
-async def test_TC_3117_H_is_seated_once_off_the_bar(home):
-    """TC-3117 (LLR-3107.1): exactly one `KEYMAP` row shows `H` — action `report_export`,
-    group misc, off the bar like `R`/`A`/`S`; it is in the palette and in `?`'s global
-    keys of every view, and `?` paints `H Report`; lowercase `h` keeps its meaning (left).
-    RED: the row dropped."""
+async def test_TC_3117_H_is_seated_once_on_the_bar(home):
+    """TC-3117 (LLR-3107.1, amended by Inc X ruling 7): exactly one `KEYMAP` row
+    shows `H` — action `report_export`, group misc, on both bar layers and out of
+    the global line; it stays in the palette and `?` paints `H Report` once.
+    Lowercase `h` keeps its meaning (left). RED: the row dropped or moved off the bar."""
     rows = [k for k in keymap.KEYMAP if k.show == "H"]
     assert len(rows) == 1
     h = rows[0]
-    assert (h.keys, h.action, h.label, h.group, h.bar) == ("H", "report_export", "Report",
-                                                            "misc", False)
+    assert (h.keys, h.action, h.label, h.group, h.bar, h.primary) == (
+        "H", "report_export", "Report", "misc", True, True)
     for view in keymap.VIEWS:
         assert ("H", "Report", "report_export") in keymap.palette_commands(view)
-        assert h in keymap.global_keys(view)
+        assert h in keymap.bar_keys(view, "primary")
+        assert h in keymap.bar_keys(view, "more")
+        assert h not in keymap.global_keys(view)
     assert next(k for k in keymap.KEYMAP if k.action == "hmove(-1)").keys == "left,h"
     app = open_home(home)
     async with app.run_test(size=(118, 30)) as pilot:

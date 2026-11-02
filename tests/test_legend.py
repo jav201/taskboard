@@ -580,11 +580,10 @@ def test_TC_2607_the_presentation_strip_names_only_the_projects_shown_classes(tm
     assert legend_strip_project(_fx_board(tmp_path, bid="main"), quiet, 118) == ""
 
 
-def test_TC_2607_the_presentation_views_and_export_carry_the_strip(tmp_path):
+def test_TC_2607_the_presentation_views_carry_the_strip(tmp_path):
     """`render_present`'s gantt and split views draw the strip under the ruler
-    and the SVG export carries it — at 118x30 and 80x24. RED: the strip row
-    computed but never painted into the frame (the PDR's reddener)."""
-    from taskboard.views import present_all_export, save_present_svg
+    at 118x30 and 80x24. RED: the strip row computed but never painted into the
+    frame (the PDR's reddener)."""
     b = _fx_board(tmp_path)
     for w, h in ((118, 30), (80, 24)):
         for view in ("gantt", "split"):
@@ -593,12 +592,6 @@ def test_TC_2607_the_presentation_views_and_export_carry_the_strip(tmp_path):
                        if "hidden" in ln and "Review" in ln)
             for n in ("Payment", "Review", "Launch"):
                 assert n in row, (w, view, row)
-    text = render_present(b, "pcr", None, FX_TODAY, 118, 30, "gantt")
-    out = save_present_svg(text, tmp_path / "reports" / "present.svg", 118, 30)
-    svg = out.read_text(encoding="utf-8")
-    assert "Payment" in svg and "Launch" in svg
-    exp_text, exp_w, exp_h = present_all_export(b, FX_TODAY, 118, 30)
-    assert "Final payment" in exp_text.plain     # view 3's export path is exercised
 
 
 # --------------------------------------------------------------------------- #
@@ -668,12 +661,10 @@ def test_TC_2608_present_tasks_m_drops_hidden_classes_and_none_hidden_is_identit
     assert [t.id for t in t2] == [t.id for t in views.present_tasks(b2, "pcr")[1]]
 
 
-def test_TC_2608_hidden_classes_leave_the_presentations_three_views_and_exports(tmp_path):
+def test_TC_2608_hidden_classes_leave_the_presentations_three_views(tmp_path):
     """At 118x30 and 80x24: the payment milestones are gone from the gantt and
-    split views, view 3's timeline, and the exported bytes — and the strips
-    keep the hidden count instead of the names. RED: one export still drawing
-    a hidden class."""
-    from taskboard.views import present_all_export, save_present_svg
+    split views and view 3's timeline, and the strips keep the hidden count
+    instead of the names. RED: one view still drawing a hidden class."""
     b = _fx_board(tmp_path, hidden=("payment",))
     for w, h in ((118, 30), (80, 24)):
         for view in ("gantt", "split"):
@@ -686,14 +677,6 @@ def test_TC_2608_hidden_classes_leave_the_presentations_three_views_and_exports(
         all_frame = render_present_all(b, None, FX_TODAY, w, h)
         for title in PAYMENT_TITLES:
             assert title not in all_frame.timeline.plain, (w, title)
-    text = render_present(b, "pcr", None, FX_TODAY, 118, 30, "gantt")
-    out = save_present_svg(text, tmp_path / "reports" / "hidden.svg", 118, 30)
-    svg = out.read_text(encoding="utf-8")
-    for title in PAYMENT_TITLES:
-        assert title not in svg, title
-    exp_text, _w, _h = present_all_export(b, FX_TODAY, 118, 30)
-    for title in PAYMENT_TITLES:
-        assert title not in exp_text.plain, title
 
 
 # --------------------------------------------------------------------------- #
@@ -701,12 +684,11 @@ def test_TC_2608_hidden_classes_leave_the_presentations_three_views_and_exports(
 # --------------------------------------------------------------------------- #
 async def test_AT_2605_hide_and_the_legend(fx_home):
     """`#`, `down`, `space` on Payment: its milestones leave the gantt (cells,
-    title markers) and the presentation's three views and their exports, at
-    118x30 and 80x24; the strip under the ruler names the drawn classes and
-    `1 hidden`; the gantt's details line names the classes beside `◆
-    milestone` (painted at both sizes); `space` again brings the class back.
-    Tone claims ride the styled-segment export. RED: the strip naming a class
-    not drawn, or a hidden class still drawn in one export."""
+    title markers) and the presentation's three views at 118x30 and 80x24; the
+    strip under the ruler names the drawn classes and `1 hidden`; the gantt's
+    details line names the classes beside `◆ milestone` (painted at both sizes);
+    `space` again brings the class back. RED: the strip naming a class not drawn,
+    or a hidden class still drawn in one view."""
     app = _fx_open(fx_home)
     async with app.run_test(size=(118, 30)) as pilot:
         await pilot.pause()
@@ -744,7 +726,7 @@ async def test_AT_2605_hide_and_the_legend(fx_home):
         for name in ("Delivery", "Review", "Launch"):
             assert name in dtext, dtext
         assert "Payment" not in dtext
-        # ---- the presentation: views 1/2/3 and their exports ----
+        # ---- the presentation: views 1/2/3 ----
         app.selected_task_id = "tc9"                 # Pilot rollout: payment ms inside
         await pilot.press("R")
         await pilot.pause()
@@ -757,17 +739,6 @@ async def test_AT_2605_hide_and_the_legend(fx_home):
             await pilot.pause()
             rows = _painted2(app)
             assert not any(PAYMENT_TITLES[1] in ln for ln in _ptext(rows)), view_key
-        await pilot.press("x")                       # export view 1's frame
-        await pilot.press("3")                       # view 3: its timeline exports
-        await pilot.press("x")
-        await pilot.pause()
-        reports = fx_home / "boards" / "client-a" / "reports"
-        svgs = sorted(reports.glob("*.svg"))
-        assert len(svgs) >= 2, svgs
-        for svg in svgs:
-            body = svg.read_text(encoding="utf-8")
-            for title in PAYMENT_TITLES:
-                assert title not in body, (svg.name, title)
         await pilot.press("escape")                  # leave the presentation
         await pilot.pause()
         # ---- unhide: the class is back ----

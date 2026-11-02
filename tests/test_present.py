@@ -132,17 +132,16 @@ def test_TC_1004_the_empty_boundaries_still_paint(tmp_path):
 
 
 # --------------------------------------------------------------------------- #
-# AT-1001 — `R` presents, the cursor expands, `x` exports, `esc` leaves no trace
+# AT-1001 — `R` presents, the cursor expands, `esc` leaves no trace
 # --------------------------------------------------------------------------- #
 async def test_AT_1001_R_presents_the_project_and_the_frame_is_the_oracle(
         tmp_path, monkeypatch, frozen):
     """AT-1001 (US-1001, HLR-1001): on the oracle board saved to disk,
     pressing `R` paints the PRES-V3-gantt-118x30 frame through the shipped surface;
-    moving the cursor expands another task's notes; `x` writes the SVG (+ the
-    PNG where Microsoft Edge renders it); `esc` leaves without a trace — the
+    moving the cursor expands another task's notes; `esc` leaves without a trace — the
     board untouched (no save, same mtime) and no HTML report written. The
     narrower law since batch 2026-10-16-batch-01 (LLR-1602.2): opening,
-    moving, exporting and leaving write nothing; only `space`/`a` write, and
+    moving and leaving write nothing; only `space`/`a` write, and
     only the flag (`tests/test_present_hide.py::test_AT_1602_...`). The
     startup milestone offer stays open underneath the presentation: unanswered,
     it writes nothing (D-615/616)."""
@@ -180,15 +179,6 @@ async def test_AT_1001_R_presents_the_project_and_the_frame_is_the_oracle(
         await pilot.pause()
         moved = _plain(frame)
         assert nxt.notes[:40] in moved, (nxt.id, moved)
-
-        # x exports what it shows; SVG always, PNG where Edge renders it
-        await pilot.press("x")
-        await pilot.pause()
-        svg, png = views.present_paths(app.board, "Website Redesign", pb.TODAY)
-        assert svg.is_file(), svg
-        toasts = [str(t.render()) for t in app.screen.query("Toast")]
-        if not png.is_file():
-            assert any("PNG needs Microsoft Edge" in t for t in toasts), toasts
 
         # esc leaves; the board is untouched, no HTML report written
         await pilot.press("escape")
