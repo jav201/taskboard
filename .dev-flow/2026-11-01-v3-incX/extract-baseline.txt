@@ -1,0 +1,77 @@
+# Extractor output — baseline graph at 509d444 (marks tree taskboard-wt/incX-marks, 22 generated marks)
+# command: python code-wire/tools/codewire_lint.py x-html/.dev-flow/2026-11-01-v3-incX/graph-baseline.cw.md   (nodes=22 entities=17 edges=23 findings=0 not read=0, exit 0)
+# command: python code-wire/tools/codewire_marks.py --repo incX-marks --graph x-html/.dev-flow/2026-11-01-v3-incX/graph-baseline.cw.md   (22 marks written, 0 nodes without code, exit 0)
+# command: python code-wire/tools/codewire_extract.py --repo incX-marks --graph x-html/.dev-flow/2026-11-01-v3-incX/graph-baseline.cw.md --path taskboard/app.py --path taskboard/views.py --path taskboard/models.py --path taskboard/modals.py --path taskboard/report_html.py --path taskboard/report_deck.py --path taskboard/keymap.py --out <tmp>
+# exit code: 1 — 2 findings, both of kind input_untyped_in_code (the code has no annotation on that parameter; the graph names the type it is called with). No type mismatch, no missing node, no mark drift.
+# NOTE: line numbers below are in the MARKED tree (each mark adds one line above its def); baseline-notes.md gives the 509d444 lines.
+# NOTE: `render` is report_deck.render; report_workspace.render and views' other `render`-named calls resolve to it by name, so some rows are collisions. The Class column below is added by hand; the rest of the report is verbatim.
+
+## stdout
+marks=22 graph_nodes=22 calls=18 findings=2 parse_failures=0
+
+## diff-report.md (verbatim, with a Class column added to the calls table)
+# Code-Wire extractor report
+
+- Marks found: 22
+- Graph nodes parsed: 22
+- Real calls between marked nodes: 18
+- Findings: 2 (2 drift, 0 info)
+- Ambiguous call resolutions (a name matched several defs): 904
+- Files that failed to parse: 0
+
+Type normalisation: spaces and quotes dropped; `List/Dict/Tuple/Set` -> builtins; `X | None` and graph `X?` -> `Optional[X]`; graph `(Callable) A->B` -> `Callable[[A], B]`; graph `tuple(A a, B b)` -> `tuple[A, B]`. A bare graph container (`dict`) against a parameterised code type (`dict[str, Any]`) is info (loose match), not drift.
+
+Call resolution is name-based (`f()`, `Class()` -> `__init__`, `self.m()`, `x.m()` -> top-level `m` or a marked method `m`); dynamic calls and callables passed as values are not seen. Tests excluded.
+
+## Counts
+
+| Kind | Count |
+|---|---|
+| Parameter unannotated in code (cannot compare) | 2 |
+
+## Real calls between marked nodes
+
+| Caller | Callee | Sites | Class |
+|---|---|---|---|
+| `PresentScreen._frame_text` | `present_order` | taskboard/views.py:7430, taskboard/views.py:7616, taskboard/views.py:7658 | LIFTED through render_present_all (_all_plan, _all_rail) |
+| `PresentScreen._frame_text` | `present_tasks` | taskboard/views.py:6657 | LIFTED through render_present / present_tasks_m |
+| `PresentScreen.action_export` | `PresentScreen._frame_text` | taskboard/app.py:640 | REAL (views 1/2) |
+| `PresentScreen.action_export` | `present_all_export` | taskboard/app.py:636 | REAL (view 3) |
+| `PresentScreen.action_export` | `present_paths` | taskboard/app.py:638, taskboard/app.py:641 | REAL (view 3; views 1/2) |
+| `PresentScreen.action_export` | `save_present_png` | taskboard/app.py:644 | REAL |
+| `PresentScreen.action_export` | `save_present_svg` | taskboard/app.py:643 | REAL |
+| `TaskboardApp._on_report_chosen` | `extract` | taskboard/app.py:3026 | REAL |
+| `TaskboardApp._on_report_chosen` | `write_reports` | taskboard/app.py:3029 | REAL |
+| `TaskboardApp.action_open_url` | `TaskboardApp._open_report` | taskboard/app.py:4681 | REAL (the `H` offer) |
+| `TaskboardApp.action_report_export` | `TaskboardApp._on_report_chosen` | taskboard/app.py:3017 | REAL (the push_screen callback lambda) |
+| `fit_bar` | `bar_keys` | taskboard/keymap.py:317 | REAL |
+| `present_all_export` | `present_order` | taskboard/views.py:7430 | LIFTED through _all_timeline → _all_plan |
+| `present_all_export` | `present_tasks` | taskboard/views.py:6657 | LIFTED through _all_plan → present_tasks_m |
+| `render` | `slide_projects` | taskboard/report_deck.py:512 | REAL |
+| `save_present_png` | `_find_msedge` | prototypes/present_views/app_capture.py:120, taskboard/views.py:7390 | REAL at views.py:7390; the prototypes/ site is a collision (the name is lifted through an unmarked def of that file) |
+| `write_reports` | `present_tasks` | prototypes/present_portfolio/portfolio_proto.py:72, prototypes/present_views/views_proto.py:38, taskboard/views.py:6657 | COLLISION: lifted through `render` name matches outside report_deck, not a call |
+| `write_reports` | `render` | taskboard/report_html.py:222, taskboard/views.py:4228 | REAL at report_html.py:222 (`renderer.render(d)`: report_workspace or report_deck); views.py:4228 is a collision |
+
+Top-level sites (no marked node above them):
+
+- `PresentScreen._frame_text`: prototypes/backlog_round/proto.py:457, taskboard/app.py:312, taskboard/app.py:494
+- `bar_keys`: prototypes/present_rulers/legend_proto.py:69, taskboard/modals.py:3395
+- `extract`: taskboard/__main__.py:213
+- `fit_bar`: taskboard/keymap.py:341, taskboard/keymap.py:359
+- `global_keys`: taskboard/modals.py:3396
+- `present_order`: taskboard/app.py:325, taskboard/app.py:326, taskboard/app.py:550, taskboard/app.py:551, taskboard/app.py:584, taskboard/views.py:7685
+- `present_tasks`: prototypes/present_rulers/app_capture.py:168, prototypes/present_rulers/app_capture.py:66, prototypes/present_rulers/app_capture.py:71, prototypes/present_rulers/proto.py:132, prototypes/present_rulers/proto.py:186
+- `render`: prototypes/capture.py:49, prototypes/next_level/proto.py:58, prototypes/present_portfolio/app_capture.py:101, prototypes/present_rulers/legend_proto.py:65, prototypes/verify_language.py:11161, prototypes/verify_language.py:11899, prototypes/verify_language.py:11974, prototypes/verify_language.py:12037, prototypes/verify_language.py:12770, prototypes/verify_language.py:7817, prototypes/verify_language.py:7830, prototypes/verify_variants.py:97
+- `save_present_png`: prototypes/backlog_round/proto.py:871
+- `save_present_svg`: prototypes/backlog_round/proto.py:870, prototypes/present_portfolio/app_capture.py:288
+- `write_reports`: taskboard/__main__.py:215
+
+## Parameter unannotated in code (cannot compare)
+
+- `taskboard/views.py:7661` — `folded` has no annotation (graph: `frozenset`)
+- `taskboard/app.py:3019` — `res` has no annotation (graph: `Optional[tuple[tuple[str, ...], str]]`)
+
+## Not in the extractor's view (name-based resolution misses them; checked by grep, see baseline-notes.md)
+
+- `_find_msedge` is also imported by prototypes/present_views/app_capture.py:42 (a direct import; the call is the :120 site above).
+- `present_paths` and `present_all_export` have no top-level site in taskboard/ besides action_export; tests are excluded by the extractor and are listed in baseline-notes.md.
