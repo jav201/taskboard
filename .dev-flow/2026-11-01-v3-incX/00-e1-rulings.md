@@ -30,3 +30,7 @@ These rulings settle the conflicts between ruling 3 / rulings 1 and 6 and the E1
 
    Amend LLR-4501.1, LLR-4501.2, LLR-4501.11, LLR-4504.1, AT-4501 and AT-4502 to this name with targeted edits. Each amendment gets one ledger entry that names each id.
 10. **The hint row keeps its current wording,** and the hint parts of rulings 1 and 6 are withdrawn. LLR-4506.4 stands. HTML is named in the presentation's `?` window (ruling 4) and in the README, not in the hint row.
+
+11. **I-4 (2026-11-01, commit `113482e`) is resolved with no edit.**
+    - `present_name` lives in `views.py`, beside `present_deck_boards`, so `report_deck.py` is unchanged and the requirements' §1/§6 statement (13 units, 3 source files) is correct.
+    - HLR-4501's negative control names `deck-*.html` deliberately: a mutant that writes `H`'s name must turn the test RED.
