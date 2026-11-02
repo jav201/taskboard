@@ -1,0 +1,132 @@
+# Inc X — shared interfaces (frozen at E2; owned by the orchestrator: a group PROPOSES a change as a finding in its own file, never edits here)
+
+> The seams between the two prototype groups. **Group A** owns `taskboard/app.py` + `taskboard/keymap.py`
+> (+ the README rows, docs only): `PresentScreen` (the `x` export, the new `o`, the offer, the presented
+> board's lane), the one shared write → toast tail `TaskboardApp._write_report` that `H` and `x` both call,
+> the `KEYMAP` `H` row and the `PRESENT_KEYS` rows. **Group B** owns `taskboard/views.py` +
+> `taskboard/report_deck.py` (ruling 3: the cover and the name go in `report_deck.py`, so
+> `report_html.py` stays unchanged and the source budget is app, views, keymap, report_deck = 4):
+> the deck scope (`present_deck_boards`), the removals (X-2), the cover line and the file name.
+> Only the DIFFERENCES from `graph-baseline.cw.md` (509d444) are written; a node marked "unchanged" is
+> listed only because a seam or an example needs it.
+> Rulings applied: 00-e1-rulings.md 1–7. Where a ruling and 01-requirements.md differ, the ruling wins and
+> the difference is a finding (`## Findings` below and in the group files); no requirement text is changed.
+> Fixture X (synthetic, used by every example unless a line says otherwise): today 2026-11-01; registry
+> `S/boards.json` lists one board `main` named "Main", colour "sky", file `S/boards/main/board.json`
+> (folder `F` = `S/boards/main/reports`); phases ["Backlog", "Doing", "Done"]; projects Alpha `pA`
+> (present_rank 1), Beta `pB` (present_rank 0); tasks a1 "a-open-1" (pA, Doing, 2026-10-28 → 2026-11-05,
+> notes "ask @ana.ruiz"), a2 "a-done" (pA, Done), a3 "a-gate" (pA, milestone, class `gate`, depends on a1),
+> b1 "b-open" (pB). People {ana.ruiz: "Ana Ruiz"}; classes {gate: "Gate" ▲}. `_report_clock` replaced by a
+> fake clock that starts at `100.0`. Probe P-X1 (read-only, `%TEMP%\incX-e2\probe_deck.py`, cwd and
+> PYTHONPATH = this worktree, `taskboard.__file__` = `…\taskboard-wt\x-html\taskboard\__init__.py`)
+> simulated `present_deck_boards` with `copy.copy` on fixture X and printed the values cited "(P-X1)".
+> Probe P-X2 (`%TEMP%\incX-e2\probe_bar.py`, same tree) swapped `keymap.KEYMAP` in memory for the new
+> seat (H after ↑, bar=True, primary=True) and printed the bars cited "(P-X2)".
+
+## Nodes
+
+present_deck_boards
+req: LLR-4501.5, LLR-4501.6, LLR-4501.7, LLR-4501.8, LLR-4501.9, LLR-4501.12, LLR-4502.1, LLR-4502.2, LLR-4502.3, LLR-4502.4, LLR-4502.5
+in: tuple[str?, str, str, Board] lane; str? project_id
+out: list[tuple[str?, str, str, Board]] boards
+func: NEW (group B, views.py). `lane` = the presented board as `report_html.extract` takes it, `(registry id | None, name, colour, Board)` (group A builds it, `PresentScreen._deck_lane`). Returns `[(id, name, colour, proxy)]`, exactly one entry, where `proxy = copy.copy(board)` with two NEW lists and nothing else changed: `proxy.projects` = `[board.project_by_id(project_id)]` when `project_id` is given (views 1/2; that project whatever its own `show_in_present`), else `[p for p in present_order(board) if p.show_in_present]` (view 3, presentation order); `proxy.tasks` = the tasks of `board.tasks`, IN BOARD ORDER, that are in `present_tasks_m(board, p.id)[1]` for a project p of `proxy.projects` (shown, not archived, not a milestone of a hidden class, open and done). Folds (`_folded`) are not read. The Task and Project objects are shared, never changed; the proxy is handed only to `extract` (read-only, TC-3101) and is never saved. Board order of the tasks keeps the deck's bytes equal to `H`'s when nothing is hidden (P-X1).
+module: taskboard/views.py
+examples: (TC-4705) a board of 3 projects, project_id "pA" whose show_in_present is `False` → boards[0] proxy projects ["pA"]; the deck holds "Alpha" and neither other name
+examples: (TC-4706) ranks C=`0`, A=`1`, B=`2`, project_id `None` → proxy projects "Gamma", "Alpha", "Beta" (P-X1 prints view3 project order ['Gamma', 'Alpha', 'Beta'])
+examples: (TC-4707) lane ("main", "Main", "sky", board), a registry of 2 boards → boards has `1` entry, its name "Main"
+examples: (TC-4708) project B folded with `enter` in view 3 → B's proxy tasks are both its shown tasks (folds are not an input)
+examples: (TC-4709) Alpha with 2 open and 1 done shown task → `3` proxy tasks of pA; the deck slide reads "3 tasks" and holds "a-done" (P-X1)
+examples: (TC-4712) every project hidden on the rail, project_id `None` → proxy projects [] and the deck reads "No project in this scope holds a task." (P-X1: empty True, scope boards ['Main'])
+examples: (TC-4721) task "HIDDEN-T-7Q" id "hidt7q" with show_in_present `False` → in no proxy list; `0` occurrences in the deck (P-X1, views 1 and 3)
+examples: (TC-4722) project "HIDDEN-P-4K" hidden, its task "UNDER-HIDDEN-P" shown, project_id `None` → neither in the proxy (P-X1)
+examples: (TC-4723) "ARCH-T" (archived task), "ARCH-P-TASK" (task of an archived project), "NO-PROJ-T" (no project) → none in the proxy; no "Inbox" in the deck (P-X1)
+examples: (TC-4724) milestone "HID-CLASS-MS" of a class hidden in `#` → not in the proxy (present_tasks_m) (P-X1)
+examples: (TC-4725) class "CLASS-ONLY-HIDDEN" used only by a hidden task → extract's marks over the proxy hold no such class; the deck's legend `0` occurrences (P-X1)
+examples: (AT-4501) registry of 2 boards, `space` on "HIDDEN-T-7Q" in view 1 → the proxy holds pA only, without that task
+examples: (AT-4502) projects A, B, C; C ranked first; B hidden on the rail; A folded → proxy projects "C", "A"; A with all its shown tasks
+
+extract
+req: LLR-4501.3, LLR-4501.4, LLR-4501.7
+in: list boards; dict people; dict marks; date today; str? project = None
+out: dict d
+func: UNCHANGED (report_html.py stays byte-unchanged). The scope input of the deck writer, frozen: group A calls it with `boards = present_deck_boards(lane, pid)`, `app.people.people`, `app.marks.marks`, `date.today()` at the press, and `project = None` in view 3, else the key `<lane id, or "#0" when the id is None>:<project id>` — the key `H` builds for a registry board (app.py:3006-3009), so the dict of views 1/2 equals `H` → `p`'s.
+module: taskboard/report_html.py
+examples: (TC-4703) the proxy of pA, project "main:pA" → scope kind "project", the same dict as `H`'s extract over the real board (P-X1: pA bytes equal True before the cover change)
+examples: (TC-4704) the proxy of view 3, project `None`, a registry of one board → scope kind "all", boards ["Main"] (P-X1: bytes equal True before the cover change)
+
+render
+req: LLR-4501.3, LLR-4501.4, LLR-4501.12
+in: dict d; bool presented = False
+out: str page
+func: CHANGED (group B, report_deck.py): new keyword `presented`. False (every existing caller: `write_reports` for `H` and the CLI) → the page is byte-identical to base. True (only `x`) → the cover's `<p class="scope">` holds `_presented_line(d)` instead of `_scope_line(d, boards)`; every other byte is the base page. Ruling 3.
+module: taskboard/report_deck.py
+examples: (TC-4703) d of fixture X, scope "main:pA", presented `True` → the page's scope element reads "Presented · Alpha"; with that one element replaced by `H`'s "Project Alpha on Main" the bytes equal `H`'s deck
+examples: (TC-4704) d of view 3 (Alpha, Beta), presented `True` → the scope element reads "Presented · 2 projects"; every other byte equals `H` `c` `o`'s deck
+examples: (TC-4712) d with no project, presented `True` → the overview reads "No project in this scope holds a task." and the scope element "Presented · 0 projects"
+
+present_name
+req: LLR-4501.1, LLR-4501.2
+in: dict d
+out: str name
+func: NEW (group B, report_deck.py; ruling 3 replaces the `deck-…` names of LLR-4501.1/.2): `present-<project slug>-<d.meta.today>.html` when d's scope kind is "project" (the slug = `report_html.slug` of that project's name in d, or "project" when the slug is empty); `present-all-<d.meta.today>.html` for scope "all". Pure; never the `deck-…`/`workspace-…` names, so `x` never overwrites `H`'s files.
+module: taskboard/report_deck.py
+examples: (TC-4701) scope "main:pA", project "Alpha", today 2026-11-01 → name "present-alpha-2026-11-01.html" (views 1 and 2 write the same file)
+examples: (TC-4701b) project "Website Redesign" → name "present-website-redesign-2026-11-01.html"
+examples: (TC-4702) scope "all" → name "present-all-2026-11-01.html"
+
+PresentScreen.action_open_export
+req: LLR-4503.2, LLR-4503.3, LLR-4503.6
+in:
+out: None
+func: NEW (group A, app.py; ruling 6: the offer lives on the presentation, `o` binds on PresentScreen). Bound by the new PRESENT_KEYS row `(("o", "open_export"),)`, priority like every row. Takes `offer = self._export_offer` and sets it to None; when offer is not None and `self.app._report_clock() < offer[1]`, calls `self.app._open_report(offer[0])` (os.startfile, else webbrowser.open of the URI; its failure toast unchanged). Otherwise nothing: no URL fallback, no toast. Never raises.
+module: taskboard/app.py
+modify: [Data: PresentScreen._export_offer] (clear)
+examples: (TC-4732, root action_open_export) `x` in view 1 at clock `100.0`, `o` → opener called once with "present-alpha-2026-11-01.html"
+examples: (TC-4733, root action_open_export) no `x`, `o` → opener called `0` times; `x`, clock `110.0`, `o` → `0` calls; `x`, `o`, `o` → `1` call in total
+examples: (TC-4736, root action_open_export) os.startfile raises OSError → error toast "Could not open the report present-alpha-2026-11-01.html."
+examples: (AT-4503) `R`, `x`, `o` → the handler gets the deck's path once; `o` again → no second call
+
+## Entities
+
+[Data: PresentScreen._export_offer]
+in: tuple[Path, float]?
+desc: NEW: the `x` export's `o` offer, (the written deck, `_report_clock()` + 10); None at open; set by `action_export` on a written deck, set to None by a failed write (LLR-4503.5) and by every `o`; read only by `action_open_export`; dies with the screen. Apart from `TaskboardApp._report_offer`, which stays `H`'s and the main screen's.
+
+[I/O: reports/present-*.html]
+desc: NEW: `<board folder>/reports/present-<project slug>-<date>.html` (views 1/2) or `present-all-<date>.html` (view 3), written by `PresentScreen.action_export` from `render(d, presented=True)`; a same-day export overwrites; never a `deck-*`/`workspace-*` name.
+
+[Outside: key o in R]
+desc: PRESENT_KEYS row `o` → `open_export`, a priority binding on PresentScreen; the app's `o` (`open_url`) stays as it is and does not pass the modal.
+
+## Edges
+
+present_deck_boards.boards ──▶ extract.boards
+extract.d ──▶ render.d
+extract.d ──▶ present_name.d
+[Data: PresentScreen._export_offer] ──▶ PresentScreen.action_open_export
+PresentScreen.action_open_export ──▶ [Data: PresentScreen._export_offer]
+[Outside: key o in R] ──▶ PresentScreen.action_open_export
+when: PresentScreen is the top screen
+
+## Findings
+
+finding I-1 the cover of ruling 3 breaks the byte identity of LLR-4501.3 and LLR-4501.4
+anchor: render
+seen: (P-X1) with `presented` False the `x` deck of fixture X equals `H`'s byte for byte, views 1/2 and 3; ruling 3 puts "Presented · Alpha" / "Presented · 2 projects" on the cover where `H` writes "Project Alpha on Main" / "All loaded boards (1): Main"
+cause: ruling 3 (cover) and LLR-4501.3/.4 (bytes ==) were written apart; rulings override
+effect: a literal `bytes ==` test is RED by design
+decision: proposed — read LLR-4501.3/.4 as "equal after the one `<p class="scope">` element is replaced"; the examples above test that; the orchestrator words the amendment
+
+finding I-2 ruling 3's file name differs from LLR-4501.1, .2, .11, LLR-4504.1, AT-4501 and AT-4502
+anchor: present_name
+seen: LLR-4501.1 `deck-<board slug>-<project slug>-<date>.html`, LLR-4501.2 `deck-<date>.html`, LLR-4501.11 a board slug in the name, LLR-4504.1 "0 `present-*` files", AT-4501 toast `Report written: deck-…`, AT-4502 `deck-<date>.html`; LLR-4501.1's negative control ("keep the `present-<slug>-<date>` stem: RED") is now the design
+cause: ruling 3 gives `x` its own name `present-<project-slug|all>-<YYYY-MM-DD>.html`
+effect: the graph uses ruling 3 under the same TC ids; the requirement texts still say `deck-…`
+decision: proposed — amend those six texts to ruling 3's names; LLR-4504.1's check becomes "0 `.svg`, 0 `.png`"; LLR-4501.1's NC becomes "write `H`'s `deck-…` name: RED"; LLR-4501.11 keeps only its cover arm
+
+finding I-3 ruling 3's cover line has no requirement
+anchor: render
+seen: no LLR states the text "Presented · <project name>" / "Presented · <n> project(s)"
+cause: ruling 3 came after E1
+effect: the cover line is designed (`_presented_line`, group B) but traced only through TC-4703/4704
+decision: proposed — a new LLR (Ubiquitous): "The deck `x` writes shall state on its cover `Presented · <project name>` in views 1 and 2, and `Presented · <n> project` / `<n> projects` in view 3."

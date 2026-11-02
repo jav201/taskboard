@@ -1,0 +1,161 @@
+# E2 trace, Inc X (LLR -> example, AT -> example) over graph-interfaces + graph-proto-A + graph-proto-B
+# command: python e2_trace.py .dev-flow/2026-11-01-v3-incX   (the script is reproduced below; adapted from incK/e2-trace.py)
+# lint: codewire_lint.py on the three files -> not read=0, exit 0 each
+
+LLR-4501.1 (TC TC-4701): interfaces:present_name TC-4701,TC-4701b; proto-A:PresentScreen.action_export TC-4701; proto-B:present_name TC-4701c
+LLR-4501.2 (TC TC-4702): interfaces:present_name TC-4702; proto-A:PresentScreen.action_export TC-4702
+LLR-4501.3 (TC TC-4703): interfaces:extract TC-4703; interfaces:render TC-4703; proto-A:PresentScreen.action_export TC-4703; proto-A:TaskboardApp._on_report_chosen TC-4703; proto-B:present_deck_boards TC-4703; proto-B:render TC-4703; proto-B:_cover TC-4703; proto-B:_presented_line TC-4703
+LLR-4501.4 (TC TC-4704): interfaces:extract TC-4704; interfaces:render TC-4704; proto-A:PresentScreen.action_export TC-4704; proto-A:TaskboardApp._on_report_chosen TC-4704; proto-B:_presented_line TC-4704
+LLR-4501.5 (TC TC-4705): interfaces:present_deck_boards TC-4705
+LLR-4501.6 (TC TC-4706): interfaces:present_deck_boards TC-4706
+LLR-4501.7 (TC TC-4707): interfaces:present_deck_boards TC-4707; proto-A:PresentScreen._deck_lane TC-4707
+LLR-4501.8 (TC TC-4708): interfaces:present_deck_boards TC-4708
+LLR-4501.9 (TC TC-4709): interfaces:present_deck_boards TC-4709
+LLR-4501.10 (TC TC-4710): proto-A:PresentScreen.action_export TC-4710; proto-B:present_deck_boards TC-4710
+LLR-4501.11 (TC TC-4711): proto-A:PresentScreen._deck_lane TC-4711; proto-B:_cover TC-4711
+LLR-4501.12 (TC TC-4712): interfaces:present_deck_boards TC-4712; interfaces:render TC-4712; proto-B:_presented_line TC-4712
+LLR-4501.13 (TC TC-4713): proto-A:PresentScreen.action_export TC-4713
+LLR-4501.14 (TC TC-4714): proto-A:PresentScreen.action_export TC-4714
+LLR-4502.1 (TC TC-4721): interfaces:present_deck_boards TC-4721
+LLR-4502.2 (TC TC-4722): interfaces:present_deck_boards TC-4722
+LLR-4502.3 (TC TC-4723): interfaces:present_deck_boards TC-4723
+LLR-4502.4 (TC TC-4724): interfaces:present_deck_boards TC-4724
+LLR-4502.5 (TC TC-4725): interfaces:present_deck_boards TC-4725
+LLR-4502.6 (TC TC-4726): proto-A:PresentScreen.action_export TC-4726
+LLR-4503.1 (TC TC-4731): proto-A:PresentScreen.action_export TC-4731; proto-A:TaskboardApp._write_report TC-4731
+LLR-4503.2 (TC TC-4732): interfaces:PresentScreen.action_open_export TC-4732; proto-A:present_bindings TC-4732
+LLR-4503.3 (TC TC-4733): interfaces:PresentScreen.action_open_export TC-4733
+LLR-4503.4 (TC TC-4734): proto-A:PresentScreen.action_export TC-4734; proto-A:TaskboardApp._write_report TC-4734
+LLR-4503.5 (TC TC-4735): proto-A:PresentScreen.action_export TC-4735
+LLR-4503.6 (TC TC-4736): interfaces:PresentScreen.action_open_export TC-4736
+LLR-4503.7 (TC TC-4737): proto-A:PresentScreen.action_export TC-4737; proto-A:TaskboardApp._write_report TC-4737
+LLR-4504.1 (TC TC-4741): proto-A:PresentScreen.action_export TC-4741; proto-B:save_present_svg TC-4741; proto-B:save_present_png TC-4741
+LLR-4504.2 (TC TC-4742): proto-A:PresentScreen.action_export TC-4742; proto-B:_find_msedge TC-4742; proto-B:save_present_png TC-4742
+LLR-4504.3 (TC TC-4743): proto-A:PresentScreen.action_export TC-4743; proto-B:present_paths TC-4743; proto-B:save_present_svg TC-4743; proto-B:_find_msedge TC-4743; proto-B:save_present_png TC-4743; proto-B:present_all_export TC-4743; proto-B:_all_timeline TC-4743
+LLR-4505.1 (TC TC-4751): proto-A:fit_bar TC-4751
+LLR-4505.2 (TC TC-4752): proto-A:fit_bar TC-4752
+LLR-4505.3 (TC TC-4753): proto-A:fit_bar TC-4753
+LLR-4505.4 (TC TC-4754): proto-A:fit_bar TC-4754
+LLR-4505.5 (TC TC-4755): proto-A:HelpModal._key_texts TC-4755; proto-A:global_keys TC-4755; proto-A:bar_keys TC-4755
+LLR-4506.1 (TC TC-4761): proto-A:PresentKeys.lines TC-4761
+LLR-4506.2 (TC TC-4762): proto-A:PresentKeys.lines TC-4762
+LLR-4506.3 (TC TC-4763): proto-A:present_bindings TC-4763
+LLR-4506.4 (TC TC-4764): proto-A:PresentScreen._keys_hint TC-4764
+LLR-4506.5 (TC TC-4765): proto-A:PresentScreen.action_export TC-4765
+AT-4501: interfaces:present_deck_boards; proto-A:PresentScreen.action_export
+AT-4502: interfaces:present_deck_boards; proto-A:PresentScreen.action_export
+AT-4503: interfaces:PresentScreen.action_open_export
+AT-4504: proto-A:PresentScreen.action_export
+AT-4505: proto-A:PresentScreen.action_export
+AT-4506: proto-A:PresentKeys.lines; proto-A:fit_bar; proto-A:HelpModal._key_texts
+withdrawn (not traced): none
+traced 40/40 active LLRs (40 ids)
+traced 6/6 ATs
+untraced: none
+exit=0
+
+# ---- script: e2_trace.py ----
+"""E2 trace, Inc X: every LLR and AT of 01-requirements.md -> the graph nodes and TC ids that carry an example for it.
+
+An LLR counts as traced when a node whose `req:` names it carries an `examples:` (or `offers:`) line whose TC id is
+that LLR's test by the numbering rule of 01-requirements.md's header (LLR-4501.n -> TC-(4700+n), 4502 -> 4720+n,
+4503 -> 4730+n, 4504 -> 4740+n, 4505 -> 4750+n, 4506 -> 4760+n; a trailing letter is a second test of the same LLR).
+An AT counts as traced when any node carries an `examples:` line opened by `(AT-45nn`.
+Graphs: interfaces + A + B. Usage: python e2_trace.py <increment folder>
+"""
+import re
+import sys
+from pathlib import Path
+
+HERE = Path(sys.argv[1]) if len(sys.argv) > 1 else Path(__file__).resolve().parent
+GRAPHS = ["graph-interfaces.cw.md", "graph-proto-A.cw.md", "graph-proto-B.cw.md"]
+BASE = {"4501": 4700, "4502": 4720, "4503": 4730, "4504": 4740, "4505": 4750,
+        "4506": 4760}
+OVERFLOW = {}  # Inc X has no overflow block
+RULED = {}  # no ruling assigns an explicit TC id in Inc X
+KEYS = ("req:", "in:", "out:", "func:", "module:", "modify:", "examples:", "offers:", "oracle:",
+        "desc:", "when:", "anchor:", "seen:", "cause:", "effect:", "decision:")
+TC_RE = re.compile(r"\((TC-\d{4}[a-z]?)")
+AT_RE = re.compile(r"\((AT-\d{4})")
+
+
+def expected(llr):
+    grp, n = llr[4:].split(".")
+    n = int(n)
+    if grp in OVERFLOW and n >= OVERFLOW[grp][0]:
+        return f"TC-{OVERFLOW[grp][1] + n}"
+    return f"TC-{BASE[grp] + n}"
+
+
+def llrs():
+    """(active, withdrawn, ats): an id whose bold heading reads `— Withdrawn` (optionally `(<finding>)`) is not traced."""
+    text = (HERE / "01-requirements.md").read_text(encoding="utf-8")
+    key = lambda s: (s[4:8], int(s.split(".")[1]))  # noqa: E731
+    ids = set(re.findall(r"\*\*(LLR-\d{4}\.\d+)\b", text))
+    gone = set(re.findall(r"\*\*(LLR-\d{4}\.\d+) — Withdrawn(?: \([^)*]*\))?\*\*", text))
+    ats = sorted(set(re.findall(r"^- \*\*(AT-\d{4})\*\*", text, re.M)))
+    return sorted(ids - gone, key=key), sorted(gone, key=key), ats
+
+
+def blocks():
+    """Yield (file, node, reqs, tcs, ats) for every node/entity block of the Nodes/Entities sections."""
+    for g in GRAPHS:
+        name, reqs, tcs, ats, section = None, set(), [], [], None
+        for line in (HERE / g).read_text(encoding="utf-8").splitlines():
+            s = line.strip()
+            if s.startswith("## "):
+                if name:
+                    yield g, name, reqs, tcs, ats
+                name, reqs, tcs, ats, section = None, set(), [], [], s[3:]
+                continue
+            if section not in ("Nodes", "Entities") or not s or s[0] in "#>|":
+                continue
+            if s.startswith(KEYS):
+                if s.startswith("req:"):
+                    reqs |= set(re.findall(r"LLR-\d{4}\.\d+", s))
+                elif s.startswith(("examples:", "offers:")):
+                    tcs += TC_RE.findall(s)
+                    ats += AT_RE.findall(s)
+                continue
+            if name:
+                yield g, name, reqs, tcs, ats
+            name, reqs, tcs, ats = s, set(), [], []
+        if name:
+            yield g, name, reqs, tcs, ats
+
+
+def short(g):
+    return g.split(".")[0].replace("graph-", "")
+
+
+def main():
+    all_llr, withdrawn, all_at = llrs()
+    bl = list(blocks())
+    untraced = []
+    for llr in all_llr:
+        want = {expected(llr)} | RULED.get(llr, set())
+        hits = []
+        for g, node, reqs, tcs, _ats in bl:
+            if llr not in reqs:
+                continue
+            got = sorted({t for t in tcs if re.sub(r"[a-z]$", "", t) in want or t in want})
+            if got:
+                hits.append(f"{short(g)}:{node} {','.join(got)}")
+        print(f"{llr} (TC {'/'.join(sorted(want))}): " + ("; ".join(hits) if hits else "UNTRACED"))
+        if not hits:
+            untraced.append(llr)
+    at_missing = []
+    for at in all_at:
+        hits = [f"{short(g)}:{node}" for g, node, _r, _t, ats in bl if at in ats]
+        print(f"{at}: " + ("; ".join(hits) if hits else "UNTRACED"))
+        if not hits:
+            at_missing.append(at)
+    print("withdrawn (not traced): " + (", ".join(withdrawn) if withdrawn else "none"))
+    print(f"traced {len(all_llr) - len(untraced)}/{len(all_llr)} active LLRs ({len(all_llr) + len(withdrawn)} ids)")
+    print(f"traced {len(all_at) - len(at_missing)}/{len(all_at)} ATs")
+    print("untraced: " + (", ".join(untraced + at_missing) if untraced or at_missing else "none"))
+    return 1 if untraced or at_missing else 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())
