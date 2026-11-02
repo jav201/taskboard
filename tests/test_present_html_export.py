@@ -40,12 +40,9 @@ class _Today(date):
 
 
 @pytest.fixture(autouse=True)
-def _frozen_day_and_no_rasteriser(monkeypatch):
+def _frozen_day(monkeypatch):
     for module in (app_module, models, views, modals):
         monkeypatch.setattr(module, "date", _Today)
-    # Base's PNG arm must never start a real browser while these design tests
-    # diagnose the missing HTML behavior. TC-4742 restores a synthetic Edge arm.
-    monkeypatch.setattr(views, "_find_msedge", lambda: None, raising=False)
 
 
 def _task(tid: str, title: str, project_id: str | None = "pA",
@@ -305,7 +302,8 @@ async def test_TC_4709_LLR_4501_9_done_task_title_and_notes_reach_file(tmp_path,
 
 
 @pytest.mark.parametrize("view", [1, 2, 3])
-async def test_TC_4710_LLR_4501_10_export_changes_neither_board_nor_history(tmp_path, view):
+async def test_TC_4710_LLR_4501_10_export_changes_neither_board_nor_history(
+        tmp_path, monkeypatch, view):
     board = _default_board(tmp_path / "board.json")
     history = board.path.parent / "history.jsonl"
     _save(board)
@@ -315,10 +313,20 @@ async def test_TC_4710_LLR_4501_10_export_changes_neither_board_nor_history(tmp_
         await _present(pilot, view)
         before = {p: hashlib.sha256(p.read_bytes()).hexdigest()
                   for p in (board.path, history)}
+        # A byte-identical re-save keeps the hashes equal, so the write path
+        # itself is watched: the export reaches no save at all (M10).
+        saves: list[str] = []
+        for name in ("save", "save_atomic"):
+            def spy(self, *args, _real=getattr(Board, name), _name=name, **kwargs):
+                saves.append(_name)
+                return _real(self, *args, **kwargs)
+            monkeypatch.setattr(Board, name, spy)
         await _press(pilot, "x")
+        saved_by_export = list(saves)
         after = {p: hashlib.sha256(p.read_bytes()).hexdigest()
                  for p in (board.path, history)}
     assert after == before
+    assert saved_by_export == []
     name = f"present-{DAY}.html" if view == 3 else f"present-alpha-{DAY}.html"
     assert _deck_bytes(_present_path(board, name))
 
@@ -368,15 +376,27 @@ async def test_TC_4714_LLR_4501_14_narrow_export_writes_nothing(tmp_path):
     assert not (board.path.parent / "reports").exists()
 
 
-async def test_TC_4715_LLR_4501_15_missing_project_falls_back_to_first_visible(tmp_path):
+@pytest.mark.parametrize("none_visible", [False, True])
+async def test_TC_4715_LLR_4501_15_missing_project_falls_back_to_first_visible(
+        tmp_path, none_visible):
     board = _default_board(tmp_path / "board.json")
     app = _app(board)
     async with app.run_test(size=(118, 31)) as pilot:
         await _present(pilot)
         app.screen._project_id = "missing"
+        if none_visible:
+            # Nothing visible to fall back to: the deck holds no project,
+            # never a `None` slot (M15).
+            for project in app.board.projects:
+                project.archived = True
         await _press(pilot, "x")
-    page = _page(_present_path(board))
-    assert _slide_names(page) == ["Alpha"] and "Beta" not in page
+    if none_visible:
+        page = _page(_present_path(board, f"present-{DAY}.html"))
+        assert "No project in this scope holds a task." in page
+        assert _slide_names(page) == []
+    else:
+        page = _page(_present_path(board))
+        assert _slide_names(page) == ["Alpha"] and "Beta" not in page
 
 
 # ---------------------------------------------------------------------------
@@ -545,10 +565,9 @@ async def test_TC_4734_LLR_4503_4_write_oserror_toasts_without_crashing(tmp_path
     _save(board)
     folder = board.path.parent / "reports"
     folder.write_text("plain file", encoding="utf-8")
-    try:
+    with pytest.raises(OSError) as exc:
         folder.mkdir(parents=True, exist_ok=True)
-    except OSError as exc:
-        expected = f"Report not (fully) written: {exc}"
+    expected = f"Report not (fully) written: {exc.value}"
     app = _app(board)
     async with app.run_test(size=(118, 31), notifications=True) as pilot:
         await _present(pilot)
@@ -647,6 +666,7 @@ async def test_TC_4742_LLR_4504_2_export_starts_no_subprocess(tmp_path, monkeypa
         raise AssertionError("presentation export started a subprocess")
     monkeypatch.setattr(subprocess, "run", forbidden)
     monkeypatch.setattr(subprocess, "Popen", forbidden)
+    # Guard: a returning Edge arm would find an Edge here and start it.
     monkeypatch.setattr(views, "_find_msedge", lambda: "synthetic-edge", raising=False)
     board = _default_board(tmp_path / "board.json")
     app = _app(board)

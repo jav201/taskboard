@@ -289,8 +289,9 @@ has three views, and `R` always opens on the first:
 `tab` and `shift+tab` (`⇥`, `⇧⇥`) cycle through the views; `↑`/`↓` move the cursor (and
 `←`/`→` in views 1 and 2). Views 1 and 2 share one cursor; leaving view 3 shows its cursor's
 project in views 1 and 2. `x` writes the HTML deck of what the presentation shows — every shown
-project and task of the view, done tasks and folded projects included (nothing the presentation
-hides is in it), with no task URLs — as `present-<project>-<date>.html` in the board's `reports`
+project and task of the view, done tasks and folded projects included with their titles and
+notes (nothing the presentation hides is in it; `space` is how a task stays out), with no task
+URLs — as `present-<project>-<date>.html` in the board's `reports`
 folder (view 3: `present-<date>.html`; never `H`'s `deck-…` names, so a same-day export of both
 keeps both). The toast names the file, and `o` opens it while the toast is up (10 s); `esc`
 leaves. The keys live in the hint row under the frame, never in the frame, so the room sees

@@ -6,3 +6,5 @@ E2c 01:47Z rulings 8-10 applied 113482e (Opus) · ruling 11 · E3 start
 E3r1 01:57Z architect FAIL 8d884ac + security PWN d0ff4f1 (Opus) · rulings 12-22 · design correction -> Kimi K3.1
 E3r2 02:23Z architect PWN 21cffe6 + security PWN d4dbd30 (Opus) · design corr by Kimi K3.1 279356e · addenda A-R2-1/2, S-R2-1/2 · E4 start
 E4 03:16Z build f104e98 (Kimi K2.8) · tests 02b793e (Kimi K3.1, RED 133/172) · integration c1a365d (Opus, 2 test fixes) GREEN-2 527/0 · E5 start
+E5r ..03:39Z code review PWN 740dceb + security review PWN 227ab07 (Opus) · mutants 4c49dd8 40/42 (Kimi K2.8)
+E5c 03:52Z corrective pass (Opus software-dev): F1, F2, F5, F6, E5-S1, E5-S2 fixed; M10, M15 killed in copy incX-mut2 (removed); CP-1 TC-2607 stale README oracle fixed; F3, F4, E5-S3 to BACKLOG; GREEN-3 528/0 (19 files) + 35/0 supplementary; 04-validation.md written; trace_check: CASE gap open (no 02-test-cases.md)

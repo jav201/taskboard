@@ -204,7 +204,7 @@ def test_TC_2607_readme_documents_the_classes_end_to_end():
     for keys in ("`n`/`e`", "`space`"):
         assert keys in text, keys
     assert "leave the gantt and the presentation" in text
-    assert "all three\npresentation views and their SVG/PNG exports" in text
+    assert "all three\npresentation views —" in text   # no SVG/PNG export since Inc X
     assert "`/#cls`" in text and "`/#pay`" in text and "`/#zzz`" in text
     assert "`?` names the classes too" in text
     for cost in ("month ruler shows no lateness", "no red mark",

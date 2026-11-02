@@ -290,8 +290,7 @@ class PresentScreen(ModalScreen[None]):
                                   frozenset(self._folded), self._on_rail())
 
     def _frame_text(self, scroll: int | None = None) -> Text:
-        """The current view's frame at the panel's size — what is painted and
-        what `x` exports (view 3 exports its timeline, `action_export`)."""
+        """The current view's frame at the panel's size — what is painted."""
         if self._all():
             return self._render_all().frame
         return render_present(self._board, self._project_id, self._cursor_id,
@@ -634,7 +633,6 @@ class PresentScreen(ModalScreen[None]):
         return (None, label[0], label[1], self._board)
 
     def action_export(self) -> None:
-        w = self.size.width or 0
         if self._narrow():
             self.app.notify(f"Widen the terminal to {PRESENT_MIN_WIDTH}+ columns to export",
                             title="Present", severity="warning", timeout=6, markup=False)

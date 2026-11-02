@@ -6648,7 +6648,7 @@ def present_tasks(board: Board, project_id: str | None) -> tuple[list[Task], lis
 def present_tasks_m(board: Board, project_id: str | None) -> tuple[list[Task], list[Task]]:
     """`present_tasks` with the hidden classes left out (LLR-2608.1, the round's
     `present_tasks_m`, proto.py:367): a hidden class's milestones leave the
-    presentation's three views and their exports — the field, the briefs, the
+    presentation's three views — the field, the briefs, the
     counts and the axis alike. With no hidden class this is the identity."""
     open_t, tasks = present_tasks(board, project_id)
     hidden = _hidden_class_ids(board)
@@ -6662,7 +6662,7 @@ def legend_strip_project(board, proj, w: int) -> str:
     """The presentation's strip (LLR-2607.1, the round's
     `legend_strip_project`, proto.py:353): the classes of the milestones this
     project shows, then how many classes are hidden — drawn under the ruler of
-    the gantt and split views alike and carried by their exports. Nothing when
+    the gantt and split views alike. Nothing when
     the project shows no classed milestone. The round's `◆ milestone` part
     stays the `_gantt_legend` entry's one home (delta A8 — no double ◆)."""
     used = {t.mark for t in board.tasks
@@ -7217,7 +7217,7 @@ def _present_ruler(proj: Project, board: Board, p: _PresentGeo,
             _pad(_pad(dlabel, p.label_w) + " " + "".join(dcells) + tail, p.width)]
     strip = legend_strip_project(board, proj, p.width)
     if strip:
-        rows.append(strip)          # under the ruler, with the frame's export
+        rows.append(strip)          # under the ruler
     return rows
 
 
@@ -7545,8 +7545,7 @@ def _all_fit(lines: list[str], height: int, width: int) -> list[str]:
 
 def _all_timeline(board: Board, width: int, height: int, today: date, cur, folded,
                   rail_focus: bool):
-    """The export draws no cursor but folds as the screen does —
-    batch 2026-10-20-batch-03."""
+    """The cursor's project anchors the layout — batch 2026-10-20-batch-03."""
     plan = _all_plan(board)
     wide = width >= 100
     label_w, chip_w, field_w = _present_cols(width, wide)

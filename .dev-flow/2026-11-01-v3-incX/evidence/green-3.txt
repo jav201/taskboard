@@ -1,0 +1,30 @@
+GREEN-3 — E5 corrective pass
+cmd: env -u NO_COLOR python -m pytest <files> -q -rf  (cwd = C:/Users/jjgh8/Github/taskboard-wt/x-html)
+taskboard: C:\Users\jjgh8\Github\taskboard-wt\x-html\taskboard\__init__.py
+head: 4c49dd8 + working-tree corrective pass (committed with this file)
+files (19): tests/test_added_list.py tests/test_colour_budget.py tests/test_colour_budget_app.py tests/test_english.py tests/test_legend.py tests/test_markup_census.py tests/test_modal_keys.py tests/test_present.py tests/test_present_all.py tests/test_present_backlog_round.py tests/test_present_hide.py tests/test_present_html_at.py tests/test_present_html_export.py tests/test_present_note_highlights.py tests/test_present_room.py tests/test_present_views_app.py tests/test_prism_laws.py tests/test_report_export_app.py tests/test_tick_label.py
+
+........................................................................ [ 13%]
+........................................................................ [ 27%]
+........................................................................ [ 40%]
+........................................................................ [ 54%]
+........................................................................ [ 68%]
+........................................................................ [ 81%]
+........................................................................ [ 95%]
+........................                                                 [100%]
+528 passed in 279.00s (0:04:38)
+exit: 0
+
+--- supplementary (not in the briefed set): tests/test_keymap.py (TC-4765 names it) and tests/test_readme.py (README edited by E5-S1) ---
+1 failed, 34 passed in 1.49s
+
+--- pyflakes, the three source files (F1: no unused local in action_export) ---
+taskboard/views.py:5527:13: local variable 'tone' is assigned to but never used
+taskboard/views.py:8138:5: local variable 'h' is assigned to but never used
+
+--- corrective finding CP-1: the supplementary failure above is tests/test_readme.py::test_TC_2607_readme_documents_the_classes_end_to_end ---
+cause: E4's README edit (X-2) removed 'and their SVG/PNG exports' from the classes paragraph (README.md:188-189); TC-2607 still pinned the removed words. The file is outside the 19-file set, so GREEN-2 did not run it. It fails at 4c49dd8 too: the corrective pass did not touch that README line.
+fix: the oracle pins the new wording, 'all three' + newline + 'presentation views —'. The claim is unchanged: a hidden class leaves all three presentation views.
+re-run after the fix:
+35 passed in 1.49s
+note: the two views.py warnings are pre-existing (same two on base 8506cb7: 'tone', 'h'); none in app.py.

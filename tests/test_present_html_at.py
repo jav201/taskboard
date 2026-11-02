@@ -39,11 +39,6 @@ def home(monkeypatch):
     return Path.home() / ".taskboard"
 
 
-@pytest.fixture(autouse=True)
-def _never_launch_edge(monkeypatch):
-    monkeypatch.setattr(app_module, "save_present_png", lambda *args: None, raising=False)
-
-
 def _project(pid: str, name: str) -> Project:
     return Project(id=pid, name=name, color="sky", start_date="2026-10-28",
                    due_date="2026-11-10")

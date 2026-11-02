@@ -1,0 +1,31 @@
+E5 corrective pass — M10/M15 replay in the copy incX-mut2 (detached at 4c49dd8, corrective-pass tests copied in)
+taskboard: C:\Users\jjgh8\Github\taskboard-wt\incX-mut2\taskboard\__init__.py
+prev = tests/test_present_html_export.py at 4c49dd8, saved as tests/test_prev_export.py; new = corrective-pass tests
+cmd: env -u NO_COLOR python -m pytest -q -p no:cacheprovider <file> -k <TC>
+
+== M10 (LLR-4501.10): self._board.save() inside action_export, before the deck path ==
++        self._board.save()
+-- prev TC-4710:
+3 passed, 163 deselected in 1.42s
+-- new TC-4710:
+E       AssertionError: assert ['save'] == []
+E       AssertionError: assert ['save'] == []
+E       AssertionError: assert ['save'] == []
+FAILED tests/test_present_html_export.py::test_TC_4710_LLR_4501_10_export_changes_neither_board_nor_history[1]
+FAILED tests/test_present_html_export.py::test_TC_4710_LLR_4501_10_export_changes_neither_board_nor_history[2]
+FAILED tests/test_present_html_export.py::test_TC_4710_LLR_4501_10_export_changes_neither_board_nor_history[3]
+3 failed, 164 deselected in 1.44s
+
+== M15 (LLR-4501.15): proxy.projects = [p] (missing id kept in the proxy) ==
+-        proxy.projects = [] if p is None else [p]
++        proxy.projects = [p]
+-- prev TC-4715:
+1 passed, 165 deselected in 0.81s
+-- new TC-4715:
+FAILED tests/test_present_html_export.py::test_TC_4715_LLR_4501_15_missing_project_falls_back_to_first_visible[True]
+1 failed, 1 passed, 165 deselected in 1.99s
+
+== reverted: new tests on the unmutated copy ==
+5 passed, 162 deselected in 2.09s
+git status taskboard/ after revert: []
+note: the M15 [True] failure is AttributeError: 'NoneType' object has no attribute 'id' at taskboard/views.py:7361 (present_deck_boards, p = None), seen in the same copy's first replay run (its rich traceback is filtered out above).

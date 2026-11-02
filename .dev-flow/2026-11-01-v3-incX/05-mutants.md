@@ -10,7 +10,7 @@ and the mutant reverted with `git checkout -- <file>`.
 Baseline before the battery: `tests/test_present_html_export.py` +
 `tests/test_present_html_at.py` → **172 passed, 0 failed** (GREEN).
 
-Result: **40 KILLED, 2 SURVIVED** (42 NCs).
+Result: **40 KILLED, 2 SURVIVED** (42 NCs). After the E5 corrective pass: **43 KILLED, 0 SURVIVED** (43 NCs; M10 and M15 killed by strengthened tests, M43 added from the security review). See *Corrective pass*.
 
 | id | LLR | mutation | test | result |
 |---|---|---|---|---|
@@ -23,12 +23,12 @@ Result: **40 KILLED, 2 SURVIVED** (42 NCs).
 | M07 | 4501.7 | deck scope built from the presented board twice (every-board scope) | TC-4707 | KILLED |
 | M08 | 4501.8 | proxy skips folded projects (folds read at export) | TC-4708; AT-4502 | KILLED |
 | M09 | 4501.9 | proxy holds open tasks only (`present_tasks_m[0]`) | TC-4709; AT-4502 | KILLED |
-| M10 | 4501.10 | `action_export` calls `self._board.save()` during export | TC-4710 | **SURVIVED** |
+| M10 | 4501.10 | `action_export` calls `self._board.save()` during export | TC-4710 | **SURVIVED** → KILLED (E5 corrective, 3/3) |
 | M11 | 4501.11 | `_deck_lane` indexes the registry unguarded (raises on `bid None`) | TC-4711 | KILLED |
 | M12 | 4501.12 | `action_export` returns without writing an empty view-3 scope | TC-4712 | KILLED |
 | M13 | 4501.13 | narrow-width warning branch dropped | TC-4713; AT-4505 | KILLED |
 | M14 | 4501.14 | narrow branch warns but no longer returns (writes anyway) | TC-4714; AT-4505 | KILLED |
-| M15 | 4501.15 | missing presented id kept in the proxy (`proxy.projects = [p]`) | TC-4715 | **SURVIVED** |
+| M15 | 4501.15 | missing presented id kept in the proxy (`proxy.projects = [p]`) | TC-4715 | **SURVIVED** → KILLED (E5 corrective, arm `[True]`) |
 | M16 | 4502.1 | proxy skipped: the unfiltered board is extracted | TC-4721; AT-4501 | KILLED |
 | M17 | 4502.2 | view-3 proxy keeps hidden projects (tasks filtered only) | TC-4722; AT-4502 | KILLED |
 | M18 | 4502.3 | `proxy.tasks = list(board.tasks)` (archived/projectless kept, Inbox row) | TC-4723 | KILLED |
@@ -56,6 +56,7 @@ Result: **40 KILLED, 2 SURVIVED** (42 NCs).
 | M40 | 4506.3 | `K`/`J` aliases dropped from the reorder binding | TC-4763 | KILLED |
 | M41 | 4506.4 | hint row gains `o open` wording | TC-4764 | KILLED |
 | M42 | 4506.5 | README key table names `SVG + PNG` as the presentation export | TC-4765 | KILLED |
+| M43 | 4502.7 (S-R2-2) | `t2.urls = []` → `t2.urls.clear()` (empties the SOURCE task's URLs) | TC-4727 (3 views) | KILLED 3/3 (security reviewer's replay in a `git archive` copy, `05-review-security.md` §Runs and E5-S2) |
 
 ## Survivors
 
@@ -86,3 +87,18 @@ missing **and** the board has zero visible projects (or a direct unit assertion 
   remove the generated window row).
 - Every mutation was reverted with `git checkout -- <file>` after its run; the worktree
   is clean at `f55bb4b` and no background processes remain.
+
+## Corrective pass (E5)
+
+Replayed in the throwaway copy `incX-mut2` (`git worktree add --detach … HEAD` at `4c49dd8`,
+removed with `git worktree remove --force` afterwards), with the corrective-pass tests copied
+in and `taskboard.__file__` checked to resolve to the copy. Evidence:
+`evidence/mutants-replay-e5.txt`.
+
+| id | mutation | previous test | strengthened test | result |
+|---|---|---|---|---|
+| M10 | `self._board.save()` added in `action_export` before the deck path | TC-4710: 3 passed (survived again, as recorded) | TC-4710 now spies on `Board.save` / `Board.save_atomic` around the `x` press and asserts no call | KILLED 3/3: `assert ['save'] == []` |
+| M15 | `proxy.projects = [p]` | TC-4715: 1 passed (survived again) | TC-4715 gains the arm `none_visible=True`: missing id and every project archived, so the deck must hold no project and name the empty scope | KILLED: `[True]` FAILED (`AttributeError: 'NoneType' object has no attribute 'id'`, views.py:7361); `[False]` passes |
+| M43 | `t2.urls.clear()` | — | TC-4727 (unchanged) | KILLED 3/3 by the security reviewer (not re-run here) |
+
+With the mutants reverted, the copy's TC-4710 and TC-4715 pass (5 passed).
