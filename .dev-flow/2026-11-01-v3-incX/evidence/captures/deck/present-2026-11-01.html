@@ -1,0 +1,128 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>taskboard · project deck</title>
+<style>
+:root{color-scheme:light dark;
+  --bg:#0d1117;--panel:#161b22;--ink:#e6edf3;--mut:#8b98a5;--line:#21262d;--frame:#334154;
+  --accent:#2dd4bf;--over:#f43f5e;--weekend:#151a22;--done:#3f9c6d;
+  --ph0:#64748b;--ph1:#60a5fa;--ph2:#a78bfa;--ph3:#fb923c;--ph4:#3f9c6d;--msr:#7a828c;
+  --soon:#fbbf24;--green:#4ade80;--orange:#fb923c;--blue:#60a5fa;--violet:#a78bfa;}
+@media (prefers-color-scheme:light){ :root{--bg:#ffffff;--panel:#f6f8fa;--ink:#1f2328;--mut:#59636e;--line:#d8dee4;
+  --frame:#c8d0da;--weekend:#edf1f5;--done:#2f8f5b;--accent:#0f766e;--over:#c81e4f;
+  --ph0:#94a3b8;--ph1:#1f6feb;--ph2:#8250df;--ph3:#bf6106;--ph4:#2f8f5b;--msr:#8a919b;
+  --soon:#8a5a00;--green:#1a7f37;--orange:#bc4c00;--blue:#0969da;--violet:#8250df;} }
+*{box-sizing:border-box}
+body{margin:0;padding:1.2rem .9rem 6rem;background:var(--bg);color:var(--ink);
+  font:15px/1.55 ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;overflow-wrap:anywhere}
+.slide{display:none;max-width:1100px;margin:0 auto}
+.slide.on{display:block}
+h1{font-size:2rem;margin:1rem 0 .3rem;letter-spacing:-.01em}
+h2{font-size:1.2rem;margin:.6rem 0 .2rem;font-weight:650;display:flex;align-items:center;
+  gap:.5rem;flex-wrap:wrap}
+h3{font-size:.95rem;margin:1.6rem 0 .4rem;color:var(--mut);text-transform:uppercase;
+  letter-spacing:.06em;font-weight:600}
+.scope{font-weight:600;margin:0 0 .3rem}
+.sub{color:var(--mut);margin:0 0 1rem;font-size:.9rem}
+.chip{display:inline-block;width:.75rem;height:.75rem;border-radius:3px;flex:none}
+.tiles{display:flex;flex-wrap:wrap;gap:.7rem;margin:.4rem 0 1.2rem}
+.tile{flex:1 1 6rem;background:var(--panel);border:1px solid var(--line);border-radius:8px;
+  padding:.65rem .8rem}
+.tile .n{font-size:1.5rem;font-weight:650}
+.tile .k{color:var(--mut);font-size:.75rem;text-transform:uppercase;letter-spacing:.06em}
+table{border-collapse:collapse;width:100%;margin:.4rem 0 1rem;font-size:.9rem}
+th,td{text-align:left;padding:.4rem .6rem;border-bottom:1px solid var(--line);vertical-align:top}
+th{color:var(--mut);font-weight:600;font-size:.75rem;text-transform:uppercase;letter-spacing:.06em}
+td.n,th.n{text-align:right;font-variant-numeric:tabular-nums}
+.over{color:var(--over);font-weight:600}
+.g{display:block;width:100%;height:auto;background:var(--panel);border:1px solid var(--line);
+  border-radius:10px;margin:.6rem 0}
+.g-narrow{display:none}
+svg text{font-family:inherit}
+.t{fill:var(--ink)} .m{fill:var(--mut)} .mo{fill:var(--over)} .mk{fill:var(--accent)}
+.td{fill:var(--accent)} .bd{fill:var(--mut)}
+.wk{fill:var(--weekend)} .gl{stroke:var(--line);stroke-width:1}
+.rl{stroke:var(--line);stroke-width:1;opacity:.55}
+.today{stroke:var(--accent);stroke-width:1.5}
+.ahd{fill:var(--mut)} .arrow{stroke:var(--mut);stroke-width:1.3;fill:none;opacity:.9}
+.bar{opacity:.92} .bar.blk{stroke:var(--over);stroke-width:1.6;stroke-dasharray:4 2}
+.bar.ph0{fill:var(--ph0)} .bar.ph1{fill:var(--ph1)} .bar.ph2{fill:var(--ph2)}
+.bar.ph3{fill:var(--ph3)} .bar.ph4,.bar.done{fill:var(--done)}
+.undated{fill:none;stroke:var(--frame);stroke-width:1.2;stroke-dasharray:5 3}
+.msr{fill:var(--msr)} .mso{fill:var(--over)}
+.legend{display:flex;flex-wrap:wrap;gap:.4rem 1rem;color:var(--mut);font-size:.82rem;margin:.8rem 0 0}
+.lg{display:inline-flex;align-items:center;gap:.35rem}
+.sw{display:inline-block;width:.7rem;height:.7rem;border-radius:2px}
+.sw.ph0{background:var(--ph0)} .sw.ph1{background:var(--ph1)} .sw.ph2{background:var(--ph2)}
+.sw.ph3{background:var(--ph3)} .sw.ph4{background:var(--ph4)} .sw.msr{background:var(--msr)}
+.notes{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(17rem,100%),1fr));gap:.6rem}
+.note{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:.55rem .75rem}
+.nt{margin:0 0 .25rem;font-weight:600;font-size:.88rem}
+.nl{margin:.12rem 0;font-size:.86rem}
+.mention{color:var(--accent);font-weight:600}
+.hl-soon{color:var(--soon)} .hl-over{color:var(--over)} .hl-green{color:var(--green)}
+.hl-orange{color:var(--orange)} .hl-blue{color:var(--blue)} .hl-violet{color:var(--violet)}
+.url{color:var(--accent);font-size:.82rem;word-break:break-all}
+.foot{color:var(--mut);font-size:.85rem;margin:1.2rem 0 0;padding-top:.4rem;
+  border-top:1px solid var(--line)}
+.hint{color:var(--mut);font-size:.85rem;margin-top:1.4rem}
+.bar-nav{position:fixed;left:0;right:0;bottom:0;z-index:9;display:flex;align-items:center;
+  justify-content:center;gap:1rem;padding:.55rem;background:var(--panel);
+  border-top:1px solid var(--line)}
+.bar-nav button{font:inherit;font-size:1.05rem;min-width:3rem;min-height:2.6rem;border-radius:8px;
+  cursor:pointer;background:var(--bg);color:var(--ink);border:1px solid var(--frame)}
+.bar-nav button:disabled{opacity:.35;cursor:default}
+#cnt{font-variant-numeric:tabular-nums;color:var(--mut);min-width:4rem;text-align:center}
+@media (max-width:700px){
+  .g-wide{display:none} .g-narrow{display:block}
+  body{padding:.7rem .5rem 6rem}
+  h1{font-size:1.5rem}
+  th,td{padding:.3rem .35rem}
+  th{letter-spacing:0;font-size:.62rem;overflow-wrap:normal}
+  table{font-size:.82rem}
+}
+@media print{
+  :root{color-scheme:light;--bg:#ffffff;--panel:#f6f8fa;--ink:#1f2328;--mut:#59636e;--line:#d8dee4;
+  --frame:#c8d0da;--weekend:#edf1f5;--done:#2f8f5b;--accent:#0f766e;--over:#c81e4f;
+  --ph0:#94a3b8;--ph1:#1f6feb;--ph2:#8250df;--ph3:#bf6106;--ph4:#2f8f5b;--msr:#8a919b;
+  --soon:#8a5a00;--green:#1a7f37;--orange:#bc4c00;--blue:#0969da;--violet:#8250df;}
+  body{background:#fff;color:#000;padding:0}
+  .bar-nav{display:none}
+  .slide{display:block!important;break-after:page;max-width:none}
+  .g-narrow{display:none!important} .g-wide{display:block!important}
+}
+</style></head>
+<body>
+<section class="slide cover"><h1>taskboard · project deck</h1><p class="scope">All loaded boards (1): Work</p><p class="sub">Generated 2026-11-01 · statuses as of 2026-11-01 · counts and dates only, nothing here is a forecast.</p><div class="tiles"><div class="tile"><div class="n">1</div><div class="k">boards</div></div><div class="tile"><div class="n">1</div><div class="k">projects</div></div><div class="tile"><div class="n">3</div><div class="k">open</div></div><div class="tile"><div class="n">0</div><div class="k">done</div></div><div class="tile"><div class="n">0</div><div class="k">overdue</div></div><div class="tile"><div class="n">0</div><div class="k">archived</div></div></div><table><thead><tr><th>board</th><th class="n">projects</th><th class="n">open</th><th class="n">done</th><th class="n">overdue</th><th class="n">archived</th></tr></thead><tbody><tr><td>Work</td><td class="n">1</td><td class="n">3</td><td class="n">0</td><td class="n">0</td><td class="n">0</td></tr></tbody></table><p class="legend"><span class="lg"><span class="sw ph0"></span>Backlog</span><span class="lg"><span class="sw ph1"></span>Doing</span><span class="lg"><span class="sw ph2"></span>Review</span><span class="lg"><span class="sw ph3"></span>Done</span><span class="lg"><span class="sw msr"></span>reached (done)</span></p><p class="hint">Page with ← → (PageUp / PageDown, Home / End) or the buttons below · prints as one slide per page · every figure is labelled directly — colour never carries meaning alone.</p></section><section class="slide"><h2>All projects — the overview</h2><p class="sub">Every project in scope on one timeline. Bars wear their phase; diamonds are milestones.</p><svg class="g g-wide" viewBox="0 0 1000 92" role="img" aria-label="all projects on one timeline"><rect x="208.0" y="30" width="194.5" height="58" class="wk"/><line x1="208.0" y1="30" x2="208.0" y2="88" class="gl"/><text x="211.0" y="22" class="m" font-size="10">Nov 1</text><line x1="402.5" y1="30" x2="402.5" y2="88" class="gl"/><text x="405.5" y="22" class="m" font-size="10">Nov 2</text><line x1="597.0" y1="30" x2="597.0" y2="88" class="gl"/><text x="600.0" y="22" class="m" font-size="10">Nov 3</text><line x1="791.5" y1="30" x2="791.5" y2="88" class="gl"/><text x="794.5" y="22" class="m" font-size="10">Nov 4</text><line x1="986.0" y1="30" x2="986.0" y2="88" class="gl"/><line x1="208.0" y1="30" x2="208.0" y2="88" class="today"/><text x="211.0" y="83" class="td" font-size="10">today</text><text x="8" y="43" class="bd" font-size="11">Work</text><line x1="4" y1="79" x2="996" y2="79" class="rl"/><text x="8" y="63" class="t" font-size="12">Eval harness</text><text x="8" y="75" class="m" font-size="9.5">open 3 · no date</text><rect x="597.0" y="60" width="3.0" height="10" rx="2" class="bar ph2"/></svg><svg class="g g-narrow" viewBox="0 0 420 96" role="img" aria-label="all projects on one timeline"><rect x="8.0" y="26" width="101.0" height="66" class="wk"/><line x1="8.0" y1="26" x2="8.0" y2="92" class="gl"/><text x="11.0" y="18" class="m" font-size="10">Nov 1</text><line x1="109.0" y1="26" x2="109.0" y2="92" class="gl"/><text x="112.0" y="18" class="m" font-size="10">Nov 2</text><line x1="210.0" y1="26" x2="210.0" y2="92" class="gl"/><text x="213.0" y="18" class="m" font-size="10">Nov 3</text><line x1="311.0" y1="26" x2="311.0" y2="92" class="gl"/><text x="314.0" y="18" class="m" font-size="10">Nov 4</text><line x1="412.0" y1="26" x2="412.0" y2="92" class="gl"/><line x1="8.0" y1="26" x2="8.0" y2="92" class="today"/><text x="11.0" y="87" class="td" font-size="10">today</text><text x="8" y="39" class="bd" font-size="10.5">Work</text><line x1="4" y1="83" x2="416" y2="83" class="rl"/><text x="8" y="56" class="t" font-size="11">Eval harness</text><text x="8" y="67" class="m" font-size="8.8">open 3 · no date</text><rect x="210.0" y="72" width="3.0" height="9" rx="2" class="bar ph2"/></svg></section><section class="slide" data-project="work:p1"><h2><span class="chip" style="background:#60a5fa"></span><span class="pname">Eval harness</span></h2><p class="sub">Work · open 3 · done 0 · high 1 · 0 overdue · due no date · momentum: unaged</p><svg class="g g-wide" viewBox="0 0 1000 156" role="img" aria-label="gantt of the project’s tasks"><defs><marker id="ah0w" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0L10,5L0,10z" class="ahd"/></marker></defs><rect x="208.0" y="30" width="194.5" height="122" class="wk"/><line x1="208.0" y1="30" x2="208.0" y2="152" class="gl"/><text x="211.0" y="22" class="m" font-size="10">Nov 1</text><line x1="402.5" y1="30" x2="402.5" y2="152" class="gl"/><text x="405.5" y="22" class="m" font-size="10">Nov 2</text><line x1="597.0" y1="30" x2="597.0" y2="152" class="gl"/><text x="600.0" y="22" class="m" font-size="10">Nov 3</text><line x1="791.5" y1="30" x2="791.5" y2="152" class="gl"/><text x="794.5" y="22" class="m" font-size="10">Nov 4</text><line x1="986.0" y1="30" x2="986.0" y2="152" class="gl"/><line x1="208.0" y1="30" x2="208.0" y2="152" class="today"/><text x="211.0" y="147" class="td" font-size="10">today</text><line x1="4" y1="67" x2="996" y2="67" class="rl"/><text x="8" y="44" class="t" font-size="12.5">Sync notes</text><text x="8" y="57" font-size="9.5"><tspan class="m">Review</tspan><tspan class="m"> · </tspan><tspan class="m">high</tspan><tspan class="m"> · </tspan><tspan class="m">in 2d</tspan></text><rect x="597.0" y="38" width="4.0" height="18" rx="3" class="bar ph2"/><line x1="4" y1="105" x2="996" y2="105" class="rl"/><text x="8" y="82" class="t" font-size="12.5">Volume oracle script</text><text x="8" y="95" font-size="9.5"><tspan class="m">Backlog</tspan><tspan class="m"> · </tspan><tspan class="m">no date</tspan></text><rect x="208" y="76" width="778" height="14" class="undated"/><text x="214" y="88" class="m" font-size="10">no dates</text><line x1="4" y1="143" x2="996" y2="143" class="rl"/><text x="8" y="120" class="t" font-size="12.5">Pilot store list</text><text x="8" y="133" font-size="9.5"><tspan class="m">Backlog</tspan><tspan class="m"> · </tspan><tspan class="m">no date</tspan></text><rect x="208" y="114" width="778" height="14" class="undated"/><text x="214" y="126" class="m" font-size="10">no dates</text></svg><svg class="g g-narrow" viewBox="0 0 420 176" role="img" aria-label="gantt of the project’s tasks"><defs><marker id="ah0n" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0L10,5L0,10z" class="ahd"/></marker></defs><rect x="8.0" y="26" width="101.0" height="146" class="wk"/><line x1="8.0" y1="26" x2="8.0" y2="172" class="gl"/><text x="11.0" y="18" class="m" font-size="10">Nov 1</text><line x1="109.0" y1="26" x2="109.0" y2="172" class="gl"/><text x="112.0" y="18" class="m" font-size="10">Nov 2</text><line x1="210.0" y1="26" x2="210.0" y2="172" class="gl"/><text x="213.0" y="18" class="m" font-size="10">Nov 3</text><line x1="311.0" y1="26" x2="311.0" y2="172" class="gl"/><text x="314.0" y="18" class="m" font-size="10">Nov 4</text><line x1="412.0" y1="26" x2="412.0" y2="172" class="gl"/><line x1="8.0" y1="26" x2="8.0" y2="172" class="today"/><text x="11.0" y="167" class="td" font-size="10">today</text><line x1="4" y1="71" x2="416" y2="71" class="rl"/><text x="8" y="38" class="t" font-size="11.5">Sync notes</text><text x="8" y="50" font-size="8.8"><tspan class="m">Review</tspan><tspan class="m"> · </tspan><tspan class="m">high</tspan><tspan class="m"> · </tspan><tspan class="m">in 2d</tspan></text><rect x="210.0" y="54" width="4.0" height="13" rx="3" class="bar ph2"/><line x1="4" y1="117" x2="416" y2="117" class="rl"/><text x="8" y="84" class="t" font-size="11.5">Volume oracle script</text><text x="8" y="96" font-size="8.8"><tspan class="m">Backlog</tspan><tspan class="m"> · </tspan><tspan class="m">no date</tspan></text><rect x="8" y="100" width="404" height="9" class="undated"/><text x="14" y="109" class="m" font-size="9">no dates</text><line x1="4" y1="163" x2="416" y2="163" class="rl"/><text x="8" y="130" class="t" font-size="11.5">Pilot store list</text><text x="8" y="142" font-size="8.8"><tspan class="m">Backlog</tspan><tspan class="m"> · </tspan><tspan class="m">no date</tspan></text><rect x="8" y="146" width="404" height="9" class="undated"/><text x="14" y="155" class="m" font-size="9">no dates</text></svg><p class="legend"><span class="lg"><span class="sw ph0"></span>Backlog</span><span class="lg"><span class="sw ph1"></span>Doing</span><span class="lg"><span class="sw ph2"></span>Review</span><span class="lg"><span class="sw ph3"></span>Done</span><span class="lg"><span class="sw msr"></span>reached (done)</span></p><h3>Notes</h3><div class="notes"><div class="note"><p class="nt">Sync notes</p><p class="nl"><span class="hl-mut">Sync notes, 3 pens</span><br><span class="hl-soon">decided: 400-token chunks</span><br><span class="hl-over">blocker: 12 questions lack a key</span><br><span class="hl-green">done: rubric draft</span><br><span class="hl-blue">ask the vendor for the store list</span></p></div></div><p class="foot">3 tasks</p></section>
+<div class="bar-nav"><button id="prev" type="button" aria-label="Previous slide">&#9664;</button><span id="cnt" aria-live="polite"></span><button id="next" type="button" aria-label="Next slide">&#9654;</button></div>
+<script>
+(function () {
+  var slides = [].slice.call(document.querySelectorAll('.slide'));
+  var cur = 0;
+  var cnt = document.getElementById('cnt');
+  var prev = document.getElementById('prev');
+  var next = document.getElementById('next');
+  function show(n) {
+    cur = Math.min(slides.length - 1, Math.max(0, n));
+    slides.forEach(function (s, i) { s.classList.toggle('on', i === cur); });
+    cnt.textContent = (cur + 1) + ' / ' + slides.length;
+    prev.disabled = cur === 0;
+    next.disabled = cur === slides.length - 1;
+    window.scrollTo(0, 0);
+  }
+  prev.addEventListener('click', function () { show(cur - 1); });
+  next.addEventListener('click', function () { show(cur + 1); });
+  document.addEventListener('keydown', function (e) {
+    var t = e.target;
+    if (t && (t.tagName === 'INPUT' || t.tagName === 'TEXTAREA' ||
+              t.tagName === 'SELECT' || t.isContentEditable)) { return; }
+    if (e.ctrlKey || e.altKey || e.metaKey) { return; }
+    if (e.key === 'ArrowLeft' || e.key === 'PageUp') { show(cur - 1); e.preventDefault(); }
+    else if (e.key === 'ArrowRight' || e.key === 'PageDown') { show(cur + 1); e.preventDefault(); }
+    else if (e.key === 'Home') { show(0); e.preventDefault(); }
+    else if (e.key === 'End') { show(slides.length - 1); e.preventDefault(); }
+  });
+  show(0);
+})();
+</script>
+</body></html>

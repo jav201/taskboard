@@ -1,0 +1,14 @@
+﻿ok   xh-bar 118x30 (1095 x 627, 24 colours sampled) via PrintWindow, try 1, state OK 'Screen' - window closed
+ok   xh-bar 80x24 (753 x 513, 12 colours sampled) via PrintWindow, try 1, state OK 'Screen' - window closed
+ok   xh-toast 118x30 (1095 x 627, 25 colours sampled) via PrintWindow, try 1, state OK 'PresentScreen' - window closed
+ok   xh-toast 80x24 (753 x 513, 15 colours sampled) via PrintWindow, try 1, state OK 'PresentScreen' - window closed
+try  xh-keys 118x30 : rejected: 1 colours sampled via CopyFromScreen (PrintWindow gave 5 colours) - window closed
+try  xh-keys 118x30 : rejected: 1 colours sampled via CopyFromScreen (PrintWindow gave 5 colours) - window closed
+ok   xh-keys 118x30 (1095 x 627, 18 colours sampled) via CopyFromScreen (PrintWindow gave 5 colours), try 3, state OK 'PresentKeys' - window closed
+ok   xh-keys 80x24 (753 x 513, 10 colours sampled) via PrintWindow, try 1, state OK 'PresentKeys' - window closed
+ok   xh-bar-wide 201x30 (1842 x 627, 27 colours sampled) via PrintWindow, try 1, state OK 'Screen' - window closed
+try  xh-keys 118x30 : rejected: 1 colours sampled via CopyFromScreen (PrintWindow gave 5 colours) - window closed
+try  xh-keys 118x30 : rejected: 1 colours sampled via CopyFromScreen (PrintWindow gave 5 colours) - window closed
+try  xh-keys 118x30 : rejected: 1 colours sampled via CopyFromScreen (PrintWindow gave 5 colours) - window closed
+FAIL xh-keys 118x30 : 3 tries
+ok   xh-keys 118x30 (1095 x 627, 79 colours sampled) via PrintWindow, try 1, state OK 'PresentKeys' - window closed
