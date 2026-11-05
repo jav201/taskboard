@@ -3219,12 +3219,15 @@ def legend_strip(board, w: int, lead: str = " ") -> str:
     return _legend_row(drawn, len(_hidden_class_ids(board)), w, lead)
 
 
-def _gantt_legend(width: int, drawn: set[str], classes: tuple = ()) -> str:
+def _gantt_legend(width: int, drawn: set[str], classes: tuple = (),
+                  chain_off: bool = False) -> str:
     """One row naming the marks this frame draws — only those — when the
     height has a row to spare. The class entries ride between the selection
     and the stock entries (LLR-2607.2): the shape in the class colour beside
     the name; `◆ milestone` among the stock entries is the unclassified
-    mark's one mention (delta A8)."""
+    mark's one mention (delta A8). When the operator turned the critical
+    chain off (`C`, hotfix 2026-11-05), the chain's seat says so, and names
+    the key that turns it back on, instead of listing the chain."""
     wide = width >= 100
     items = [("⟦━⟧", "bright", "selected, exact dates", "selected"),
              # right after the selection, as the M-1 frames place them (D-624)
@@ -3234,10 +3237,11 @@ def _gantt_legend(width: int, drawn: set[str], classes: tuple = ()) -> str:
              ("↳", "over", "starts before its dependency is due" if wide else "starts early",
               "early"),
              (CRITICAL_REACH, "crit", "critical chain" if wide else "chain", "crit"),
+             ("·", "dim", "chain off · C", "chainoff"),
              ("●", "mut", "progress", "progress"),
              ("◆", "mut", "committed due" if wide else "due", "due"),
              ("◂▸", "mut", "beyond window", "beyond")]
-    items = [it for it in items if it[3] in drawn]
+    items = [it for it in items if it[3] in drawn or (it[3] == "chainoff" and chain_off)]
     if classes:
         sel = [it for it in items if it[3] == "selected"]
         items = sel + [(m.shape, m.colour, escape(m.name), None) for m in classes] + \
@@ -3263,7 +3267,8 @@ def render_gantt(board, show_archived, selected_id, today=None,
     w = _clamp_width(width)
     pinned = 0
     if len(lines) < (height or 24):
-        legend = _gantt_legend(w, drawn, tuple(_drawn_class_marks(board)))
+        legend = _gantt_legend(w, drawn, tuple(_drawn_class_marks(board)),
+                               chain_off=not board.chain_shown())
         if legend:
             lines.append(legend)
             pinned = 1
@@ -3305,7 +3310,7 @@ def _gantt_frame(board, show_archived, selected_id, today=None, width=68, height
                         done_rows)
     ax = gantt_axis(field_w, today, *gantt_window(groups, today))
     guides, weekends = ax.guides(), ax.weekends()
-    chain = set(critical_chain(board))
+    chain = set(critical_chain(board)) if board.chain_shown() else set()
     sel = board.task_by_id(selected_id) if selected_id else None
     drawn: set[str] = set()
 
@@ -6139,7 +6144,7 @@ def _chainmap_plan(board: Board, show_archived: bool):
     linked = [t for t in tasks if any(x in tid for x in t.depends_on)
               or any(t.id in o.depends_on for o in tasks)]
     depth = _chainmap_depths(board, linked)
-    chain = set(critical_chain(board))
+    chain = set(critical_chain(board)) if board.chain_shown() else set()
     ncol = max(depth.values()) + 1 if depth else 1
     # CM-1: cap the columns so the tile width can never crash the wrapper (the
     # 24-column floor gives tile_w >= 3 -> inner >= 1); the oracle frames use
@@ -6509,9 +6514,11 @@ def render_chainmap(board, show_archived, selected_id, today=None,
     body = body[:body_h]
     body += [" " * w] * (body_h - len(body))
     if leg:
+        # chain off (`C`, hotfix 2026-11-05): the seat says so and names the key
+        chain_item = (("━", "bright", "critical chain") if board.chain_shown()
+                      else ("·", "dim", "chain off · C"))
         body[-1] = _chainmap_legend(w, [("✓", "ash", "done"), ("▷", "done", "ready"),
-                                        ("◂N", "hd", "waits on N"),
-                                        ("━", "bright", "critical chain"),
+                                        ("◂N", "hd", "waits on N"), chain_item,
                                         ("─", "over", "starts before due"),
                                         ("─", "ash", "satisfied"), ("▲", "over", "late")])
 
@@ -7286,7 +7293,7 @@ def render_present(board: Board, project_id: str | None, cursor_id: str | None,
     wide = width >= 100
     label_w, chip_w, field_w = _present_cols(width, wide)
     ax = _present_axis(board, proj, open_t, field_w, today)
-    chain = set(critical_chain(board))
+    chain = set(critical_chain(board)) if board.chain_shown() else set()
     p = _PresentGeo(width, label_w, chip_w, field_w, ax, chain, today, wide, proj.color)
 
     if open_t:
@@ -7550,7 +7557,8 @@ def _all_timeline(board: Board, width: int, height: int, today: date, cur, folde
     wide = width >= 100
     label_w, chip_w, field_w = _present_cols(width, wide)
     ax = _all_axis(plan, field_w, today)
-    g = _PresentGeo(width, label_w, chip_w, field_w, ax, set(critical_chain(board)), today,
+    g = _PresentGeo(width, label_w, chip_w, field_w, ax,
+                    set(critical_chain(board)) if board.chain_shown() else set(), today,
                     wide, "dim")
     _, _, cur_proj = _all_resolve(board, cur)
     around = cur_proj.id if cur_proj else None
@@ -8743,6 +8751,8 @@ def legend_entries(mode: str, board: Board, today: date | None = None,
         if "crit" in drawn:
             out.append((c(CRITICAL_REACH * 2, "bright", bold=True),
                         "the critical chain"))
+        elif not board.chain_shown():
+            out.append((c("·", "dim"), "chain off · C"))
         if "waits" in drawn or "early" in drawn:
             out.append((c("↳", "mut"), "waits on open work (red: starts too early)"))
         if "beyond" in drawn:
@@ -8794,7 +8804,10 @@ def legend_entries(mode: str, board: Board, today: date | None = None,
         out.append((c("✓", "ash"), "done"))
         out.append((c("▷", "done"), "ready"))
         out.append((c("◂N", "hd"), "waits on N open"))
-        out.append((c("━", "bright"), "critical chain"))
+        if board.chain_shown():
+            out.append((c("━", "bright"), "critical chain"))
+        else:
+            out.append((c("·", "dim"), "chain off · C"))
         out.append((c("─", "over"), "starts before due"))
         out.append((c("─", "ash"), "satisfied"))
         out.append((c("▲", "over"), "late"))

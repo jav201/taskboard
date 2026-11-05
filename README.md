@@ -122,10 +122,12 @@ between the short and the full layer. Every key below is also in the command pal
 | `b` | Blocked | Mark an outside block (`▲`) on the task, or clear it |
 | `+` `=` / `-` | Due | Due date one day later / earlier — what waits on it follows by the project's rule |
 | `m` | Chain | Re-apply the last date move under the next mode (stay / push / together) |
+| `C` | Chain | Gantt and chain map: turn the critical chain off or on. Off takes the heavy `━` structure and the critical styling out of every drawing, and the legend says `chain off · C`; the choice is remembered in the board's settings |
 | `u` | Undo | Undo the last quick change |
 | `x` / `v` | Archive | Archive or unarchive / show archived tasks |
 | `X` | Purge done | Archive all finished work that has no completion date (asks first) |
 | `t` / `T` | Pin | Pin the task / its whole project (Focus view) |
+| `O` | Move board | The selected task moves to another board: pick the board, then the project there (Inbox is a choice), then confirm with `y`. Its notes, images, dates, milestone and mark go with it; links between it and this board's tasks are dropped and listed, both board files are backed up first (`*.pre-move-DATE`), and `u` cannot undo it — the backups are the way back, as with a project move |
 | `o` / `i` | Links / Images | Open the task's http(s) links / view its images |
 | `p` / `P` | Projects | Add a project / manage projects |
 | `f` | Phases | Add, rename, reorder or delete the board's phases |
@@ -134,7 +136,7 @@ between the short and the full layer. Every key below is also in the command pal
 | `Tab` | Layout | Cycle the layouts of kanban, focus and lanes |
 | `A` | All boards | The agenda of every board: a lane per board with a dot per due day, the chosen day's tasks below; `enter` opens a task on its board (also on the home) |
 | `N` | Added list | Every task of every board in the order you added it, newest first (`o` flips it): when it was added (`≈` from history, `?` unknown), a box per phase, and the cursor's task in full beside the list; `v` shows archived tasks, `enter` opens a task on its board, `esc` or `N` closes. Nothing here edits a task |
-| `n` | Capture | A full-screen notes pad: type, and separate notes with a `____` line (`alt+l` inserts one); beside each note, the project of any board that matches it best, with the words that matched. `alt+d` turns the cursor's note into a task there, `alt+o` picks the next suggestion, `alt+n` a new project, `alt+a` reviews every note, `alt+i` attaches the clipboard image, `alt+u` undoes the last dump (kept 7 days), `esc` closes. The pad lives in `~/.taskboard/inbox.json` |
+| `n` | Capture | A full-screen notes pad: type, and separate notes with a `____` line (`alt+l` inserts one); beside each note, the project of any board that matches it best, with the words that matched. `alt+d` turns the cursor's note into a task there, `alt+o` picks the next suggestion, `alt+n` a new project, `alt+a` reviews every note, `alt+i` attaches the clipboard image, `alt+u` undoes the last dump (kept 7 days), `ctrl+v` pastes the clipboard's text at the cursor, `ctrl+c` copies the selection out, `esc` closes. The pad lives in `~/.taskboard/inbox.json` |
 | `@` | People directory | Who you owe what: the people of `~/.taskboard/people.json` (most late first) beside the chosen person's open tasks of every board, each with the note line that mentions them and a `late · today · open` box; `enter` opens a task on its board, `n`/`e` add and edit a person, `/` finds a name. Not view `9` (the team's `People`) |
 | `#` | Milestone classes | The classes of `~/.taskboard/marks.json`: `n`/`e` add and edit a class, `space` hides or shows it, `esc` closes |
 | `R` / `S` | Present / Standup | Present the selected task's project, or every project (`3`), with gantt + brief, export the HTML deck / show the week's standup |
@@ -149,7 +151,9 @@ confirmation takes `y` (yes) and `n` or `esc` (no) — `Enter` alone does nothin
 the forms that hold text fields take `alt+s` (save), `alt+i` (paste an image), `alt+t` / `alt+d`
 (the start / due calendar) and `esc` (cancel), so a letter you type is always text.
 
-In the task and project editors, `Ctrl+E` inserts an emoji and `Ctrl+V` pastes text.
+In the task and project editors, `Ctrl+E` inserts an emoji, `Ctrl+V` pastes text from the
+clipboard and `Ctrl+C` copies the selection out to it — the same two clipboard keys work in
+the capture pad.
 
 ## Working with tasks
 

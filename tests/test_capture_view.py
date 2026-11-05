@@ -47,9 +47,10 @@ EVAL_NOTE = "eval rubric for the oracle pilot"     # Eval harness 0.4379, Pilot 
 WEAK3 = "store rubric"                             # [+ new project, Pilot rollout, Eval harness]
 GHOST = ["first line → the task's title", "next lines → its notes", "─" * 24,
          "____ ↵ starts the next note"]
-HINT = "____ ↵ new note · alt+l divider"
+HINT = "____ ↵ new note · alt+l divider · ctrl+v paste · ctrl+c copy"
 CAPTURE_KEYS = [("alt+d", "dump"), ("alt+o", "other"), ("alt+n", "new project"),
-                ("alt+a", "review"), ("alt+i", "image"), ("alt+u", "undo"), ("esc", "close")]
+                ("alt+a", "review"), ("alt+i", "image"), ("alt+u", "undo"),
+                ("ctrl+v", "paste"), ("ctrl+c", "copy"), ("esc", "close")]
 DIVIDER_NOTICE = ("That ____ line divides notes: the text above and below it dump as two tasks. "
                   "alt+l inserts one.")
 DUMP_COURSE = "Dumped → Module 4 · Volumes · Course   ·   alt+u undo"
@@ -330,18 +331,21 @@ async def test_TC_4409_the_head_row_counts_the_notes(home, pad, expected):
 @pytest.mark.parametrize("size", [W80, W118])
 async def test_TC_4410_the_key_row_names_every_pad_key(home, size):
     """TC-4410 (LLR-4401.10): the key row is `keymap.key_line(CAPTURE_KEYS, w − 2)` (words go
-    first, keys never): at 80x24 all 7 key glyphs, at 118x30 all 7 words (2/2, P-V-6). NC: no
-    `alt+u`."""
+    first, keys never): at 80x24 all 9 key glyphs, at 118x30 every word but the last (2/2,
+    P-V-6). NC: no `alt+u`. Updated hotfix 2026-11-05: the pad gained the ctrl+v / ctrl+c
+    clipboard pair — the key row names them like every other pad key."""
     async with capture(home, size=size) as (app, pilot, p):
         row = fx.keys_row(app)
         assert row == keymap.key_line(CAPTURE_KEYS, size[0] - 2).plain
         for key, word in CAPTURE_KEYS:
-            assert key in row
-            if size == W118:
-                assert f"{key} {word}" in row
+            assert key in row           # a key never drops before its word
+        if size == W118:
+            for full in ("alt+d dump", "alt+o other", "alt+n new project", "alt+a review",
+                         "alt+i image", "alt+u undo", "ctrl+v paste"):
+                assert full in row
         if size == W80:
-            assert row == ("alt+d dump   alt+o other   alt+n new project   alt+a   alt+i   "
-                           "alt+u   esc")
+            assert row == ("alt+d dump   alt+o   alt+n   alt+a   alt+i   alt+u   ctrl+v   "
+                           "ctrl+c   esc")
 
 
 async def test_TC_4411_capture_is_refused_while_a_modal_is_open(home):

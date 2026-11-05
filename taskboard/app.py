@@ -7,6 +7,7 @@ import time
 import webbrowser
 from datetime import date, datetime
 from pathlib import Path
+from types import SimpleNamespace
 
 from typing import NamedTuple
 
@@ -21,7 +22,7 @@ from textual.screen import ModalScreen, Screen
 from textual.widgets import Input, Static
 
 from . import history, report_html, report_deck
-from .boards import Registry, announce, name_for, open_elsewhere, peek_board, renew, withdraw
+from .boards import Registry, announce, move_task, name_for, open_elsewhere, peek_board, renew, task_move_plan, withdraw
 from .people import PEOPLE_NAME, Directory
 from .marks import MARKS_NAME, Directory as MarksDirectory
 from .inbox import (INBOX_NAME, DumpTarget, Inbox, attach_images, dump_note, entry_for,
@@ -30,16 +31,17 @@ from .inbox import (INBOX_NAME, DumpTarget, Inbox, attach_images, dump_note, ent
 from .suggest import bars, corpus, options, suggest
 from .models import (AUTO_ARCHIVE_DAYS, IMAGE_EXTS, LINKS_MIGRATION, MILESTONES_MIGRATION,
                      Board, Project, Task,
-                     archive_refusal, chain_template, default_board_path, grab_clipboard_image, is_open,
+                     archive_refusal, chain_template, default_board_path, grab_clipboard_image, grab_clipboard_text, is_open,
                      link_refusal,
                      milestone_candidates, milestones_marked, next_priority, parse_iso,
                      present_order, set_present_order,
                      ready_messages, run_link_migration, run_milestone_offer,
-                     set_milestone, strip_controls, templates, waiting_ids,
+                     set_milestone, stash_clipboard_text, strip_controls, templates, waiting_ids,
                      CASCADE_MODES, apply_plan, plan_move, resolve_mode, restore,
                      snapshot, stamp)
 from .modals import (BoardForm, PersonForm, SearchPrompt, ClockModal, GanttLinkMode, InkArea, LinkPicker, CommandPalette, ConfirmModal,
-                     HelpModal, ImageViewer, MarkForm, MilestoneOffer, PhaseEditor, ProjectModal,
+                     HelpModal, ImageViewer, MarkForm, MilestoneOffer, MoveConfirm, MoveProjectTarget, MoveTarget,
+                     PhaseEditor, ProjectModal,
                      PresentHiddenPicker, PresentKeys, ProjectPicker, ReportExport, StandupModal,
                      TaskDetails, TaskModal,
                      TeamIdentityPicker,
@@ -1337,7 +1339,7 @@ GHOST = ("first line → the task's title\nnext lines → its notes\n"
 # before a key does when the row is tight (keymap law).
 CAPTURE_KEYS = [("alt+d", "dump"), ("alt+o", "other"), ("alt+n", "new project"),
                 ("alt+a", "review"), ("alt+i", "image"), ("alt+u", "undo"),
-                ("esc", "close")]
+                ("ctrl+v", "paste"), ("ctrl+c", "copy"), ("esc", "close")]
 
 # The `+ new project` option's identity (Inc K, ARCH-2): the choice dict holds
 # this string where the chosen option is None, never a list index.
@@ -1390,13 +1392,21 @@ def capture_head(count: int, unread: int, width: int) -> Text:
 
 
 def capture_hint() -> Text:
-    """The hint row under the pad, shown in every state (Inc K, LLR-4402.11, R1-1)."""
+    """The hint row under the pad, shown in every state (Inc K, LLR-4402.11, R1-1).
+    `ctrl+v`/`ctrl+c` are the OS clipboard pair (hotfix 2026-11-05), named here
+    because the pad once had no paste key at all."""
     t = Text(no_wrap=True)
     t.append("____ ↵", KEY_STYLE)
     t.append(" new note", HEX["mut"])
     t.append(" · ", HEX["dim"])
     t.append("alt+l", KEY_STYLE)
     t.append(" divider", HEX["mut"])
+    t.append(" · ", HEX["dim"])
+    t.append("ctrl+v", KEY_STYLE)
+    t.append(" paste", HEX["mut"])
+    t.append(" · ", HEX["dim"])
+    t.append("ctrl+c", KEY_STYLE)
+    t.append(" copy", HEX["mut"])
     return t
 
 
@@ -1553,9 +1563,13 @@ class CaptureView(Screen[None]):
     """The `n` capture view (Inc K, HLR-4401): a full-screen notes pad beside a
     suggestion rail. Every pad key is a PRIORITY binding (P-V-2, LLR-4401.18),
     so the terminal form of `alt+<letter>` inserts nothing into the pad.
-    `alt+enter` is not bound (R1-1); the divider key is `alt+l`."""
+    `alt+enter` is not bound (R1-1); the divider key is `alt+l`. `ctrl+v` pastes
+    the OS clipboard's text and `ctrl+c` copies the selection out to it (hotfix
+    2026-11-05) — the same keys, through the same clipboard, as the editors."""
 
     BINDINGS = [Binding("escape", "close", "", priority=True),
+                Binding("ctrl+v", "paste_text", "", priority=True),
+                Binding("ctrl+c", "copy_text", "", priority=True),
                 Binding("alt+d", "dump", "", priority=True),
                 Binding("alt+o", "other", "", priority=True),
                 Binding("alt+n", "new", "", priority=True),
@@ -1640,6 +1654,45 @@ class CaptureView(Screen[None]):
 
     def _pad(self) -> PadArea:
         return self.query_one("#cap-pad", PadArea)
+
+    def action_paste_text(self) -> None:
+        """`ctrl+v` (hotfix 2026-11-05): the OS clipboard's text lands at the
+        pad's cursor — Textual's own paste reads the app-local clipboard, which
+        starts empty, so before this binding the pad could never receive a
+        paste."""
+        target = self.app.focused
+        if not isinstance(target, (Input, PadArea)):
+            self.notify("Focus the pad to paste into.", title="Capture",
+                        severity="warning", markup=False)
+            return
+        text = grab_clipboard_text()
+        if not text:
+            self.notify("Clipboard has no text.", title="Capture",
+                        severity="warning", markup=False)
+            return
+        target.insert(text)
+
+    def action_copy_text(self) -> None:
+        """`ctrl+c` (hotfix 2026-11-05): the pad selection goes to the OS
+        clipboard, so it can be pasted anywhere — Textual's native copy only
+        reaches the app-local clipboard, which the rest of the world never
+        sees."""
+        target = self.app.focused
+        if not isinstance(target, (Input, PadArea)):
+            self.notify("Focus the pad to copy from.", title="Capture",
+                        severity="warning", markup=False)
+            return
+        selected = target.selected_text
+        if not selected:
+            self.notify("Nothing selected to copy.", title="Capture",
+                        severity="warning", markup=False)
+            return
+        if stash_clipboard_text(selected):
+            self.notify(f"Copied {len(selected)} characters.", title="Capture",
+                        severity="information", markup=False)
+        else:
+            self.notify("The clipboard could not be written.", title="Capture",
+                        severity="warning", markup=False)
 
     def _rebuild_docs(self) -> None:
         """One corpus over every board `board_lanes` returns (Inc K, ARCH-6,
@@ -2361,9 +2414,11 @@ class TaskboardApp(App):
             # actions (focus_next for tab in a modal) are not the seat's. The
             # capture view holds the seat too (Inc K, LLR-4401.12).
             return action == "quit"
-        if (action in ("cursor", "hmove", "toggle_presentation", "boards")
+        if (action in ("cursor", "hmove", "toggle_presentation", "boards",
+                       "chain_toggle", "task_move_board")
                 and len(self.screen_stack) > 1):
-            # `boards` too: the home never opens over the presentation or a modal
+            # `boards` too: the home never opens over the presentation or a modal;
+            # `chain_toggle`/`task_move_board` push nothing over another screen
             return False
         return True
 
@@ -3653,6 +3708,86 @@ class TaskboardApp(App):
             return
         self.unlink_tasks(task, pred)
 
+    # ---- moving ONE task to another board (hotfix 2026-11-05, `O`) ------------
+    def action_task_move_board(self) -> None:
+        """`O` — the selected task leaves for another board, whole. The project
+        move's machinery, one task wide: the board picker (`MoveTarget`), the
+        target project's picker (Inbox allowed), then the confirm (`MoveConfirm`,
+        `y`/`n`) — same lock, backups, history lines and move log. Links between
+        the task and this board's other tasks are dropped, listed in the confirm
+        and the log, exactly as a project move lists them. `u` cannot undo it;
+        a task shared in team mode is refused."""
+        task = self.selected_task
+        if task is None or self.board is None:
+            return
+        if self.board_id is None:
+            self.notify("This board is not listed (--open): open it with --board to move "
+                        "its tasks.", title="Boards", severity="warning", markup=False)
+            return
+        others = [e for e in self.registry.active() if e.id != self.board_id]
+        if not others:
+            self.notify("There is no other board to move it to — B, then n, creates one.",
+                        title="Boards", severity="warning", markup=False)
+            return
+        boards = {e.id: peek_board(e.path) for e in others}
+        proj = self.board.project_by_id(task.project_id)
+        name, color = task.title, (proj.color if proj is not None else "sky")
+        self.push_screen(MoveTarget(name, color, 1, others, boards),
+                         lambda bid, t=task: self._task_move_target(t, bid))
+
+    def _task_move_target(self, task: Task, bid: str | None) -> None:
+        if not bid:
+            return
+        # read again now: the picker's copy may be older than the file (security F1)
+        dst = peek_board(self.registry.get(bid).path)
+        self.push_screen(MoveProjectTarget(task.title, self.registry.get(bid).name, dst),
+                         lambda pid, t=task, d=dst, b=bid:
+                         self._task_move_project(t, d, b, pid))
+
+    def _task_move_project(self, task: Task, dst: Board, bid: str,
+                           target_pid: str | None) -> None:
+        if target_pid is None:
+            return                       # the picker was cancelled
+        plan = task_move_plan(self.board, dst, task.id, self.move_team_ids(self.board),
+                              self.move_team_ids(dst))
+        if plan.refusal:
+            self.notify(f"{clip(task.title, 40)} was not moved to "
+                        f"{self.registry.get(bid).name}: {plan.refusal}.",
+                        title="Boards", severity="warning", markup=False)
+            return
+        src_e, dst_e = self.registry.get(self.board_id), self.registry.get(bid)
+        proj = self.board.project_by_id(task.project_id)
+        shown = SimpleNamespace(name=task.title, color=proj.color if proj else "sky")
+        self.push_screen(MoveConfirm(plan, shown, self.board, src_e, dst_e,
+                                     date.today().isoformat(), what="task"),
+                         lambda ok, t=task, d=dst, b=bid, p=target_pid, pl=plan:
+                         self._task_move_confirmed(t, d, b, p, pl, ok))
+
+    def _task_move_confirmed(self, task: Task, dst: Board, bid: str,
+                             target_pid: str | None, plan, ok: bool) -> None:
+        if not ok:
+            return
+        src_e, dst_e = self.registry.get(self.board_id), self.registry.get(bid)
+        try:
+            new_src, _steps = move_task(self.board, dst, task.id, target_pid, plan,
+                                        date.today().isoformat(), (src_e.name, dst_e.name))
+        except OSError as exc:
+            if getattr(exc, "board", None) is not None:
+                # the source file no longer holds the task: neither may the open
+                # board, or the next save would write it back (architect A-27)
+                self.after_move(exc.board)
+            steps = getattr(exc, "steps", [])
+            backups = (f" The backups (*.pre-move-{date.today().isoformat()}) are beside "
+                       "each board file." if steps else "")
+            self.notify(f"The move stopped: {exc}. Done: {', '.join(steps) or 'nothing'}."
+                        + backups, title="Boards", severity="error", timeout=30, markup=False)
+            return
+        self.after_move(new_src)
+        proj_name = (dst.project_by_id(target_pid).name if target_pid else "Inbox")
+        self.notify(f"Moved {clip(task.title, 40)} to {dst_e.name} · {proj_name} · "
+                    f"{len(plan.crossing)} link{'s' if len(plan.crossing) != 1 else ''} "
+                    "dropped", title="Boards", timeout=30, markup=False)
+
     def _create_and_link(self, waiter: Task, title: str) -> None:
         """The picker's create row: a new task in the waiter's project, first
         phase, no dates, and the link to it. `u` takes the link back; the task
@@ -3845,6 +3980,24 @@ class TaskboardApp(App):
                              for one in cas["tasks"]})
         nxt = CASCADE_MODES[(CASCADE_MODES.index(cas["mode"]) + 1) % len(CASCADE_MODES)]
         self._apply_cascade(task, cas["sd"], cas["dd"], mode=nxt)
+
+    def action_chain_toggle(self) -> None:
+        """`C` — the critical chain off/on, on the board, remembered (hotfix
+        2026-11-05, the operator's item 1). Off takes the heavy `━` structure,
+        the critical styling and the chain mentions out of every drawing site;
+        the gantt and chain-map legends say `chain off · C` instead. The state
+        persists in the board's settings, so the next open honours it; the
+        default is on, so a never-toggled board renders as before. The toast
+        names the key both ways — discoverability WAS the defect."""
+        if self.board is None:
+            return
+        on = not self.board.chain_shown()
+        self.board.set_chain_shown(on)
+        self.board.save()
+        self.refresh_view()
+        self.notify("Critical chain off · C turns it on" if not on
+                    else "Critical chain on · C turns it off",
+                    title="Chain", severity="information", markup=False)
 
     def _chainmap_cycle_rule(self) -> None:
         """`m` on the chain map (LLR-802.1): cycle the selected task's PROJECT

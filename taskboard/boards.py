@@ -869,3 +869,175 @@ def move_project(src: Board, dst: Board, project_id: str, plan: MovePlan, day: s
         raise err from exc
     finally:
         held.close()       # a no-op once released after the target's save
+
+
+# ---- moving ONE task to another board (hotfix 2026-11-05, the operator's item 2) ----
+def task_move_plan(src: Board, dst: Board, task_id: str, src_team: set | None,
+                   dst_team: set | None) -> MovePlan:
+    """What a task move would do, and whether it may — the project move's plan
+    (HLR-2206) computed for one task: `tasks` is just it, `kept` is links between
+    two of the moved set (a lone task has none), `crossing` is every link between
+    it and the source board's other tasks, in both directions."""
+    mine = [src.task_by_id(task_id)]
+    ids = {task_id}
+    by = {t.id: t for t in src.tasks}
+    crossing_in, crossing_out, kept = [], [], 0
+    for t in src.tasks:
+        for dep in t.depends_on:
+            if t.id in ids and dep in ids:
+                kept += 1
+            elif t.id in ids and dep in by:
+                crossing_out.append((t, by[dep]))
+            elif t.id not in ids and dep in ids:
+                crossing_in.append((t, by[dep]))
+    plan = MovePlan(mine, kept, crossing_in + crossing_out)
+    plan.dst_stamp = _stamp(dst.path)
+    plan.refusal = _task_refusal(src, dst, task_id, mine[0], src_team, dst_team)
+    return plan
+
+
+def _task_refusal(src, dst, tid, task, src_team, dst_team) -> str | None:
+    """The project move's guards, one task wide: not onto itself or a sibling
+    folder, a readable target, team configuration readable, a task shared in
+    team mode refused like a shared project, ids and image folders free on the
+    target, and the target holds the task's phase."""
+    if _key(src.path) == _key(dst.path) or _samefile(src.path, dst.path):
+        return "the target is this board"
+    if _key(src.path.parent) == _key(dst.path.parent):
+        # history.jsonl and images/ live beside the board file (code review F1)
+        return "the two boards share a folder (their history and images are one)"
+    if not dst.path.exists():
+        return "the target board's file is missing"
+    if dst.load_report.get("file_unreadable"):
+        return "the target board's file cannot be read"
+    if src_team is None or dst_team is None:
+        return "a board is in team mode and its team configuration cannot be read"
+    if tid in src_team or tid in dst_team:
+        return "the task is shared in team mode"
+    if not (isinstance(tid, str) and _ID.fullmatch(tid)):
+        return f"the id {tid!r} cannot name a folder"
+    dst_ids = {p.id for p in dst.projects} | {t.id for t in dst.tasks}
+    if tid in dst_ids:
+        return f"the target already holds the id {tid}"
+    if dst.image_dir(tid).exists():
+        return f"the target already holds images/{tid}"
+    phases = {p.strip().lower() for p in dst.phases}
+    if task is not None and task.phase.strip().lower() not in phases:
+        return f"the target has no phase {task.phase!r} — add it there first (f)"
+    return None
+
+
+def move_task(src: Board, dst: Board, task_id: str, target_pid: str | None,
+              plan: MovePlan, day: str, names: tuple[str, str]) -> tuple[Board, list[str]]:
+    """Carry ONE task out on COPIES of both boards; return the new source board
+    and the steps done. The project move's order, one task wide: the byte
+    copies, the target saved, the source saved (the live boards are never
+    changed, so a failure before the source save leaves the open board as its
+    file), then the image folder, the history lines and the move logs. The
+    task arrives whole — title, notes, images, `created`, milestone and mark,
+    dates — under `target_pid` (None = the target's Inbox); every link between
+    it and the source board's tasks is dropped (the confirm listed them). An
+    `OSError` carries `.steps`, and `.board`: the new source once it was saved
+    (the caller adopts it), else None. `u` cannot undo it, as a project move."""
+    steps: list[str] = []
+    saved = None
+    held = ExitStack()
+    try:
+        if plan.refusal:
+            raise OSError(plan.refusal)
+        # the target is held from the stale-plan check to its save, so another
+        # taskboard's move cannot write it in between (batch 2026-10-20-batch-02)
+        beat = held.enter_context(file_lock(dst.path, names[1]))
+        if _stamp(dst.path) != plan.dst_stamp:
+            raise OSError("the target board changed since the move was planned")
+        new_src, new_dst = copy.deepcopy(src), copy.deepcopy(dst)
+        for b in (src, dst):
+            if _backup(b.path, day):
+                steps.append(f"copied {b.path.name}")
+            beat()      # a copy can take a while on a slow drive (security S-2, S-8)
+        if _backup(src.path.parent / "history.jsonl", day):
+            steps.append("copied history.jsonl")    # rewritten below (security N1)
+        beat()
+        task = new_src.task_by_id(task_id)
+        images = (src.path.parent / "images").resolve()
+        img_ok = (src.image_dir(task_id).is_dir()
+                  and src.image_dir(task_id).resolve().parent == images)
+        img_src = src.image_dir(task_id) if img_ok else None
+        # the task keeps only links inside the moved set — a lone task keeps
+        # none; the crossing ones were listed in the confirm and the log
+        task.depends_on = [d for d in task.depends_on
+                           if new_src.task_by_id(d) is None]
+        if img_src is not None:
+            refs = []
+            for ref in task.images:
+                r = Path(ref)
+                if r.is_absolute() and _inside(r, img_src):
+                    refs.append(str(dst.image_dir(task_id)
+                                    / r.resolve().relative_to(img_src.resolve())))
+                else:
+                    refs.append(ref)
+            task.images = refs
+        task.project_id = target_pid
+        new_src.tasks = [t for t in new_src.tasks if t.id != task_id]
+        for t in new_src.tasks:
+            t.depends_on = [d for d in t.depends_on if d != task_id]
+        new_dst.tasks.append(task)
+        new_dst.path.parent.mkdir(parents=True, exist_ok=True)
+        new_dst.save_atomic()
+        steps.append("saved the target")
+        held.close()
+        new_src.save_atomic()
+        saved = new_src
+        steps.append("saved the source")
+        if img_src is not None:
+            target = dst.image_dir(task_id)
+            target.parent.mkdir(parents=True, exist_ok=True)
+            tmp = target.parent / f".{task_id}.moving"
+            shutil.rmtree(tmp, ignore_errors=True)
+            try:
+                shutil.copytree(img_src, tmp, symlinks=True)
+                os.replace(tmp, target)
+            except OSError:
+                shutil.rmtree(tmp, ignore_errors=True)
+                raise
+            shutil.rmtree(img_src)
+            steps.append(f"moved images/{task_id}")
+        hist = src.path.parent / "history.jsonl"
+        if hist.exists():
+            keep, moved = [], []
+            for line in hist.read_text(encoding="utf-8", errors="replace").splitlines():
+                try:
+                    rec = json.loads(line)
+                except (ValueError, RecursionError):
+                    rec = None
+                rec_task = rec.get("task") if isinstance(rec, dict) else None
+                (moved if rec_task == task_id else keep).append(line)
+            if moved:
+                target_hist = dst.path.parent / "history.jsonl"
+                # F6: never glue the first moved line onto a hand-edited last one
+                lead = ("\n" if target_hist.exists() and target_hist.stat().st_size
+                        and not target_hist.read_bytes().endswith(b"\n") else "")
+                with open(target_hist, "a", encoding="utf-8") as fh:
+                    fh.write(lead)
+                    fh.writelines(x + "\n" for x in moved)
+                write_atomic(hist, "".join(x + "\n" for x in keep))
+                steps.append("moved the history lines")
+        entry = {"date": day, "task": task.title, "from": names[0], "to": names[1],
+                 "project": (new_dst.project_by_id(target_pid).name
+                             if target_pid else None),
+                 "links_dropped": [{"task": a.title, "waits_on": b.title}
+                                   for a, b in plan.crossing]}
+        for b in (src, dst):
+            _log(b.path.parent, day, entry)
+        steps.append("wrote the move logs")
+        return new_src, steps
+    except OSError as exc:
+        exc.steps = steps
+        exc.board = saved      # past the source save: the caller must adopt it
+        raise
+    except Exception as exc:   # any other failure is reported the same way (F2)
+        err = OSError(f"{type(exc).__name__}: {exc}")
+        err.steps, err.board = steps, saved
+        raise err from exc
+    finally:
+        held.close()       # a no-op once released after the target's save

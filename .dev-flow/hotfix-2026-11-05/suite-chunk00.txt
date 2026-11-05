@@ -1,0 +1,17 @@
+taskboard: C:\Users\jjgh8\Github\taskboard-wt\hotfix3\taskboard\__init__.py
+head: fc598df + uncommitted hotfix
+                continue
+            seeded += 1
+            got = ours()                                  # our reader first...
+            if oracle() != sample:                        # ...then confirm it held
+                continue
+>           assert got == sample, (
+                "the clipboard held the sample and grab_clipboard_text did not "
+                f"return it: {got!r} — this IS the handle bug")
+E           AssertionError: the clipboard held the sample and grab_clipboard_text did not return it: None — this IS the handle bug
+E           assert None == 'roundtrip 123 ABC taskboard'
+
+tests\test_app.py:1203: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_app.py::test_win_clipboard_roundtrip - AssertionError: the ...
+1 failed, 1906 passed in 614.59s (0:10:14)

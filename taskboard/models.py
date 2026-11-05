@@ -603,6 +603,87 @@ def _win_clipboard_text() -> str | None:
         return None
 
 
+def _win_clipboard_set(text: str) -> bool:
+    """Write TEXT to the Windows clipboard via the Win32 API (ctypes). False on
+    error. The HANDLE types are explicit for the same 64-bit reason as the read
+    above. The sequence is the documented one: Open, Empty, GlobalAlloc a
+    moveable buffer, fill it UTF-16LE + NUL, hand OWNERSHIP of the handle to
+    the clipboard (after SetClipboardData the caller must NOT free it), Close."""
+    import ctypes
+    from ctypes import wintypes
+    CF_UNICODETEXT = 13
+    GMEM_MOVEABLE = 0x0002
+
+    def _fail() -> bool:
+        try:
+            ctypes.windll.user32.CloseClipboard()
+        except Exception:
+            pass
+        return False
+
+    try:
+        u, k = ctypes.windll.user32, ctypes.windll.kernel32
+        u.OpenClipboard.argtypes = [wintypes.HWND]
+        u.OpenClipboard.restype = wintypes.BOOL
+        u.EmptyClipboard.restype = wintypes.BOOL
+        u.SetClipboardData.argtypes = [wintypes.UINT, wintypes.HANDLE]
+        u.SetClipboardData.restype = wintypes.HANDLE            # 64-bit (was c_int)
+        u.CloseClipboard.restype = wintypes.BOOL
+        k.GlobalAlloc.argtypes = [wintypes.UINT, ctypes.c_size_t]
+        k.GlobalAlloc.restype = wintypes.HGLOBAL
+        k.GlobalLock.argtypes = [wintypes.HGLOBAL]
+        k.GlobalLock.restype = wintypes.LPVOID
+        k.GlobalUnlock.argtypes = [wintypes.HGLOBAL]
+        if not u.OpenClipboard(None):
+            return False
+        try:
+            if not u.EmptyClipboard():
+                return _fail()
+            data = text.encode("utf-16-le") + b"\x00\x00"      # the terminator
+            handle = k.GlobalAlloc(GMEM_MOVEABLE, len(data))
+            if not handle:
+                return _fail()
+            ptr = k.GlobalLock(handle)
+            if not ptr:
+                return _fail()
+            try:
+                ctypes.memmove(ptr, data, len(data))
+            finally:
+                k.GlobalUnlock(handle)
+            if not u.SetClipboardData(CF_UNICODETEXT, handle):
+                return _fail()      # the clipboard owns the handle either way
+            return True
+        finally:
+            u.CloseClipboard()
+    except Exception:
+        return False
+
+
+def stash_clipboard_text(text: str | None) -> bool:
+    """Write `text` to the OS clipboard. The write-side twin of
+    `grab_clipboard_text`: Windows writes the Win32 clipboard directly
+    (ctypes); macOS uses ``pbcopy``; Linux uses ``xclip``/``xsel -i``. Fixed
+    argv (never a shell). Returns True when something was handed over. Never
+    raises: a clipboard that cannot be opened must never break the app."""
+    import sys
+    try:
+        if not text:
+            return False
+        if sys.platform == "win32":
+            return _win_clipboard_set(text)
+        import subprocess
+        argv = (["pbcopy"] if sys.platform == "darwin"
+                else ["xclip", "-selection", "clipboard", "-i"])
+        res = subprocess.run(argv, input=text.encode("utf-8"), timeout=2,
+                             capture_output=True)
+        if res.returncode != 0 and sys.platform != "darwin":
+            res = subprocess.run(["xsel", "-b", "-i"], input=text.encode("utf-8"),
+                                 timeout=2, capture_output=True)
+        return res.returncode == 0
+    except Exception:
+        return False
+
+
 def grab_clipboard_text() -> str | None:
     """Return the OS clipboard's TEXT as a str, or None when it holds no text or
     on any error. Windows reads the Win32 clipboard directly (ctypes); macOS uses
@@ -1136,6 +1217,24 @@ class Board:
         self.settings["clock1"] = clock1
         self.settings["clock2"] = clock2
         self.save()
+
+    # ---- critical chain (hotfix 2026-11-05, the operator's item 1) ------------
+    def chain_shown(self) -> bool:
+        """The critical chain draws everywhere it is drawn, unless the operator
+        turned it off here. PURE like `wip_limit`: the getter never writes. The
+        stored form is the string "off"; ANYTHING else (absent, "on", a hand
+        edit) means on, so a board without the setting renders exactly as
+        before — the default is on."""
+        return self.settings.get("critical_chain") != "off"
+
+    def set_chain_shown(self, on: bool) -> None:
+        """The ONLY write path for the chain toggle. Off is stored; on pops the
+        key, so a never-toggled board file never carries the setting. The
+        caller saves (the set_clocks precedent)."""
+        if on:
+            self.settings.pop("critical_chain", None)
+        else:
+            self.settings["critical_chain"] = "off"
 
     # ---- WIP limits (kanban phase headers, HLR-005 / LLR-005.1) -------------
     def wip_limit(self, phase: str) -> int | None:

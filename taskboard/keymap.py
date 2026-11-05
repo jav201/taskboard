@@ -88,6 +88,13 @@ KEYMAP: tuple[Key, ...] = (
     Key("u", "u", "undo", "Undo", group="task"),
     Key("t", "t", "pin_toggle", "Pin task", group="task"),
     Key("T", "T", "project_pin_toggle", "Pin proj", group="task"),
+    # `O` — the selected task leaves for ANOTHER board (hotfix 2026-11-05, the
+    # operator's item 2: moving one task meant delete-and-create). Same
+    # machinery as the project move (`P` → `m`): the board picker, the target
+    # project's picker, the confirm, the lock, the backups, the log. Where a
+    # task can be selected, like `L`.
+    Key("O", "O", "task_move_board", "Move board", primary=True, group="task",
+        views=("swimlanes", "agenda", "gantt", "kanban", "focus", "chainmap")),
     # `M` — one date, its due: a milestone (batch 2026-10-04-batch-02, D-604).
     # Shifted like `L`; its lowercase `m` is the chain's mode key below (B2b).
     Key("M", "M", "milestone_toggle", "Milestone", group="task",
@@ -106,6 +113,13 @@ KEYMAP: tuple[Key, ...] = (
     # the chain's rule is per project, the override is per move. (Was reserved
     # for this batch since the milestone key landed.)
     Key("m", "m", "cascade_mode", "Chain", group="date"),
+    # `C` — the critical chain's own switch (hotfix 2026-11-05, the operator's
+    # item 1: "no veo los keywords para apagar la cadena principal"). Drawn only
+    # where the chain is drawn — the gantt and the chain map — so that is where
+    # the key is shown; `?` lists it with the view's band. `c` (lowercase) is
+    # the Clocks modal.
+    Key("C", "C", "chain_toggle", "Chain", primary=True, group="date",
+        views=("gantt", "chainmap")),
 
     # -- kanban-only ----------------------------------------------------------
     # `s`/`g` reshape kanban columns only, so — like Tab below — they are only

@@ -282,7 +282,7 @@ INVENTORY: dict[str, dict[str, str]] = {
     "TemplatePicker": {}, "MilestoneOffer": {}, "PresentHiddenPicker": {}, "GanttLinkMode": {},
     "TeamIdentityPicker": {}, "PhaseEditor": {}, "ImageViewer": {}, "TaskDetails": {},
     "HelpModal": {}, "StandupModal": {}, "CommandPalette": {}, "BoardForm": {},
-    "MoveTarget": {}, "MoveConfirm": {}, "HelpScreen": {}, "PresentScreen": {},
+    "MoveTarget": {}, "MoveProjectTarget": {}, "MoveConfirm": {}, "HelpScreen": {}, "PresentScreen": {},
     "PresentKeys": {},
     "ReportExport": {},    # the `H` export (batch 2026-10-29-batch-01, LLR-3107.2): keys only
     "ColourPalette": {},   # the notes' colour palette (batch 2026-11-01-v3-incC, TC-4278): keys only

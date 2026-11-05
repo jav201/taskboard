@@ -43,6 +43,7 @@ from .models import (IMAGE_EXTS, PROJECT_COLORS, PROJECT_STATUSES, TASK_PRIORITI
                      is_open, link_candidates, link_conflicts, loopers_of,
                      open_dependents, project_archive_refusal,
                      grab_clipboard_image, grab_clipboard_text, parse_iso,
+                     stash_clipboard_text,
                      resolve_city, save_pil_image, templates)
 from .boards import clean_name, move_plan, move_project, peek_board, slug
 from .people import Directory, mention_ids
@@ -327,11 +328,14 @@ class EmojiPickerMixin:
 
 
 class ClipboardPasteMixin:
-    """Reliable Ctrl+V text paste for a modal: reads OS clipboard TEXT and
-    inserts it into the focused Input/TextArea. Textual's native paste is
-    unreliable on Windows, so we read the clipboard ourselves. Each modal wires
-    the Ctrl+V binding in its own BINDINGS (Textual doesn't collect BINDINGS from
-    a plain mixin); this class supplies the action."""
+    """Reliable Ctrl+V text paste and Ctrl+C text copy for a modal: reads and
+    writes the OS clipboard TEXT and inserts/collects it at the focused
+    Input/TextArea. Textual's own clipboard is app-local (and its write is an
+    OSC 52 escape Windows Terminal drops), so the OS clipboard is read and
+    written directly, exactly as `grab_clipboard_text` already did for paste.
+    Each modal wires the Ctrl+V / Ctrl+C bindings in its own BINDINGS (Textual
+    doesn't collect BINDINGS from a plain mixin); this class supplies the
+    actions."""
 
     def action_paste_text(self) -> None:
         target = self.app.focused
@@ -346,6 +350,24 @@ class ClipboardPasteMixin:
             target.insert_text_at_cursor(text)
         else:
             target.insert(text)
+
+    def action_copy_text(self) -> None:
+        """`ctrl+c`: the focused field's selection goes to the OS clipboard, so
+        it can be pasted anywhere — Textual's native copy only reaches the
+        app-local clipboard, which the rest of the world never sees."""
+        target = self.app.focused
+        if not isinstance(target, (Input, TextArea)):
+            self.notify("Focus a text field to copy from.", severity="warning")
+            return
+        selected = target.selected_text
+        if not selected:
+            self.notify("Nothing selected to copy.", severity="warning")
+            return
+        if stash_clipboard_text(selected):
+            self.notify(f"Copied {len(selected)} characters.", severity="information",
+                        markup=False)
+        else:
+            self.notify("The clipboard could not be written.", severity="warning")
 
 
 class ButtonKeysMixin:
@@ -762,6 +784,7 @@ class TaskModal(ClipboardPasteMixin, EmojiPickerMixin, DatePickerMixin, ButtonKe
 
     BINDINGS = [("escape", "cancel", "Cancel"),
                 Binding("ctrl+v", "paste_text", "Paste", priority=True),
+                Binding("ctrl+c", "copy_text", "Copy", priority=True),
                 Binding("ctrl+e", "pick_emoji", "Emoji", priority=True),
                 *FORM_KEYS, *DATE_KEYS,
                 Binding("alt+m", "mark", "Class", priority=True),
@@ -1364,6 +1387,7 @@ class ProjectModal(ClipboardPasteMixin, EmojiPickerMixin, DatePickerMixin, Butto
 
     BINDINGS = [("escape", "cancel", "Cancel"),
                 Binding("ctrl+v", "paste_text", "Paste", priority=True),
+                Binding("ctrl+c", "copy_text", "Copy", priority=True),
                 Binding("ctrl+e", "pick_emoji", "Emoji", priority=True),
                 *FORM_KEYS, *DATE_KEYS]
 
@@ -1592,7 +1616,7 @@ class ProjectPicker(ModalScreen[None]):
             return
         boards = {e.id: peek_board(e.path) for e in others}
         n = sum(1 for t in self.board.tasks if t.project_id == proj.id)
-        app.push_screen(MoveTarget(proj, n, others, boards),
+        app.push_screen(MoveTarget(proj.name, proj.color, n, others, boards),
                         lambda bid, p=proj: self._move_target(p, bid))
 
     def _move_target(self, proj: Project, bid: str | None) -> None:
@@ -2371,7 +2395,9 @@ class ClockModal(ClipboardPasteMixin, ButtonKeysMixin, ModalScreen[dict | None])
     """Pick the two ribbon clocks by CITY (type to find one). Returns city names."""
 
     BINDINGS = [("escape", "cancel", "Cancel"),
-                Binding("ctrl+v", "paste_text", "Paste", priority=True), *FORM_KEYS]
+                Binding("ctrl+v", "paste_text", "Paste", priority=True),
+                Binding("ctrl+c", "copy_text", "Copy", priority=True),
+                *FORM_KEYS]
 
     def __init__(self, clock1: str, clock2: str):
         super().__init__()
@@ -3627,25 +3653,29 @@ class BoardForm(ModalScreen[tuple[str, str] | None]):
 
 
 class MoveTarget(ModalScreen[str | None]):
-    """The board a project moves to (HLR-2206): the other active boards, each
-    with its colour, name and size. Names are plain `Text` pieces."""
+    """The board something moves to (HLR-2206; a project, or — hotfix 2026-11-05 —
+    ONE task): the other active boards, each with its colour, name and size.
+    `name`/`color` are the mover's display (a project, or the task's title in its
+    project's colour). Names are plain `Text` pieces."""
 
     BINDINGS = [Binding("escape", "cancel", "", priority=True),
                 Binding("up,k", "move(-1)", "", priority=True, show=False),
                 Binding("down,j", "move(1)", "", priority=True, show=False),
                 Binding("enter", "choose", "", priority=True, show=False)]
 
-    def __init__(self, project: Project, n_tasks: int, entries: list, boards: dict):
+    def __init__(self, name: str, color: str, n_tasks: int, entries: list, boards: dict):
         super().__init__()
-        self.project, self.n_tasks = project, n_tasks
+        # `name` is a Screen property: the mover's display lives on its own keys
+        self.mover, self.mover_color, self.n_tasks = name, color, n_tasks
         self.targets, self.boards = entries, boards
         self.cursor = 0
 
     def compose(self) -> ComposeResult:
         head = Text("Move ", style=f"bold {HEX['bright']}")
-        head.append("██ ", style=HEX.get(self.project.color, HEX["violet"]))
-        head.append(self.project.name, style=f"bold {HEX['bright']}")
-        head.append(f"  ({self.n_tasks} tasks)  to which board?", style=HEX["mut"])
+        head.append("██ ", style=HEX.get(self.mover_color, HEX["violet"]))
+        head.append(clip(self.mover, 40), style=f"bold {HEX['bright']}")
+        head.append(f"  ({self.n_tasks} task{'s' if self.n_tasks != 1 else ''})  "
+                    "to which board?", style=HEX["mut"])
         with Vertical(id="mt-box"):
             yield Static(head, id="mt-title")
             yield Static(id="mt-rows")
@@ -3681,51 +3711,124 @@ class MoveTarget(ModalScreen[str | None]):
         self.dismiss(None)
 
 
+class MoveProjectTarget(ModalScreen[str | None]):
+    """`O`'s second question (hotfix 2026-11-05): the project the moved task
+    lands in on the TARGET board. Inbox is a real choice here and goes first;
+    each project says its size. Returns the project id, "" for Inbox, None for
+    cancel. Keys exactly like `MoveTarget`'s."""
+
+    BINDINGS = [Binding("escape", "cancel", "", priority=True),
+                Binding("up,k", "move(-1)", "", priority=True, show=False),
+                Binding("down,j", "move(1)", "", priority=True, show=False),
+                Binding("enter", "choose", "", priority=True, show=False)]
+
+    def __init__(self, task_title: str, dst_name: str, dst_board: Board):
+        super().__init__()
+        self.title, self.dst_name, self.board = task_title, dst_name, dst_board
+        self.rows: list[tuple[str, str, str]] = [("", "Inbox", "no project")]
+        for p in dst_board.projects:
+            if not p.archived:
+                n = sum(1 for t in dst_board.tasks if t.project_id == p.id)
+                self.rows.append((p.id, p.name, f"{n} task{'s' if n != 1 else ''}"))
+        self.cursor = 0
+
+    def compose(self) -> ComposeResult:
+        head = Text("Move task ", style=f"bold {HEX['bright']}")
+        head.append(clip(self.title, 40), style=f"bold {HEX['bright']}")
+        head.append(f"  to which project on ", style=HEX["mut"])
+        head.append(self.dst_name, style=f"bold {HEX['bright']}")
+        head.append("?", style=HEX["mut"])
+        with Vertical(id="mt-box"):
+            yield Static(head, id="mt-title")
+            yield Static(id="mt-rows")
+            yield Static(Text("↑↓ move · ↵ choose · esc cancel", style=HEX["dim"]),
+                         id="mt-keys")
+
+    def on_mount(self) -> None:
+        self._paint()
+
+    def _paint(self) -> None:
+        t = Text(no_wrap=True)
+        for i, (_pid, name, size) in enumerate(self.rows):
+            on = i == self.cursor
+            if i:
+                t.append("\n")
+            t.append("▶ " if on else "  ", style=HEX["accent"])
+            t.append(fit(name, 32), style=f"bold {HEX['bright']}" if on else HEX["ink"])
+            t.append(f"  {size}", style=HEX["dim"])
+        self.query_one("#mt-rows", Static).update(t)
+
+    def action_move(self, delta: int) -> None:
+        self.cursor = max(0, min(len(self.rows) - 1, self.cursor + delta))
+        self._paint()
+
+    def action_choose(self) -> None:
+        self.dismiss(self.rows[self.cursor][0])
+
+    def action_cancel(self) -> None:
+        self.dismiss(None)
+
+
 class MoveConfirm(ModalScreen[bool]):
-    """What a move does, said before it is done (HLR-2206): what moves, the
-    links that stay, each link that crosses the boards and will be dropped, the
-    backups, the log, and that `u` cannot undo it. The links scroll; the head
-    and the keys are always on screen."""
+    """What a move does, said before it is done (HLR-2206; hotfix 2026-11-05:
+    a `what="task"` move too): what moves, the links that stay, each link that
+    crosses the boards and will be dropped, the backups, the log, and that `u`
+    cannot undo it. The links scroll; the head and the keys are always on
+    screen."""
 
     BINDINGS = [Binding("escape", "no", "", priority=True),
                 Binding("y", "yes", "", priority=True, show=False),
                 Binding("n", "no", "", priority=True, show=False)]
 
-    def __init__(self, plan, project: Project, src_board: Board, src_entry, dst_entry,
-                 day: str):
+    def __init__(self, plan, project, src_board: Board, src_entry, dst_entry,
+                 day: str, what: str = "project"):
         super().__init__()
         self.plan, self.project, self.board = plan, project, src_board
         self.src, self.dst, self.day = src_entry, dst_entry, day
+        self.what = what
 
     def compose(self) -> ComposeResult:
         p, plan = self.project, self.plan
+        task_move = self.what == "task"
         done = sum(1 for t in plan.tasks if self.board.is_done(t) or t.archived)
         head = Text()
-        head.append("Move project to another board\n\n", style=f"bold {HEX['bright']}")
+        head.append(f"Move {self.what} to another board\n\n", style=f"bold {HEX['bright']}")
         head.append("  ██ ", style=HEX.get(p.color, HEX["violet"]))
-        head.append(p.name, style=f"bold {HEX['bright']}")
+        head.append(clip(p.name, 40), style=f"bold {HEX['bright']}")
         head.append("   from ", style=HEX["mut"])
         head.append(f" {self.src.name} ",
                     style=f"bold #0d1117 on {HEX.get(self.src.color, HEX['violet'])}")
         head.append("  to ", style=HEX["mut"])
         head.append(f" {self.dst.name} ",
                     style=f"bold #0d1117 on {HEX.get(self.dst.color, HEX['violet'])}")
-        head.append(f"\n\n  {len(plan.tasks)} tasks move ({len(plan.tasks) - done} open, {done} "
-                    f"done) · {plan.kept} links inside the project stay", style=HEX["hd"])
+        if task_move:
+            head.append(f"\n\n  1 task moves ({'open' if len(plan.tasks) - done else 'done'})"
+                        " · its links to this board's tasks are dropped", style=HEX["hd"])
+        else:
+            head.append(f"\n\n  {len(plan.tasks)} tasks move ({len(plan.tasks) - done} open, "
+                        f"{done} done) · {plan.kept} links inside the project stay",
+                        style=HEX["hd"])
         links = Text()
         n = len(plan.crossing)
         if n:
             pname = {q.id: q.name for q in self.board.projects}
             links.append(f"  {n} link{'s' if n > 1 else ''} cross the boards and will be "
                          "dropped:\n", style=f"bold {HEX['over']}")
+            moving_ids = {t.id for t in plan.tasks}
             for waiter, pred in plan.crossing:
                 for task, role in ((waiter, ""), (pred, "waits on ")):
                     links.append("    " + ("✕ " if not role else "    "), style=HEX["over"])
                     if role:
                         links.append(role, style=HEX["mut"])
                     links.append(task.title, style=HEX["ink"])
-                    where = ("moves" if task.project_id == p.id else
-                             f"{pname.get(task.project_id, 'Inbox')}, stays on {self.src.name}")
+                    if task_move:
+                        where = ("moves" if task.id in moving_ids else
+                                 f"{pname.get(task.project_id, 'Inbox')}, "
+                                 f"stays on {self.src.name}")
+                    else:
+                        where = ("moves" if task.project_id == p.id else
+                                 f"{pname.get(task.project_id, 'Inbox')}, "
+                                 f"stays on {self.src.name}")
                     links.append(f"  ({where})\n", style=HEX["dim"])
         links.rstrip()
         foot = Text()

@@ -241,7 +241,10 @@ async def test_TC_3117_H_is_seated_once_on_the_bar(home):
     the global line; it stays in the palette and `?` lists `H Report` once.
     Lowercase `h` keeps its meaning (left). Under the fit rules (ruling 16) the bar
     draws a bare `H` at 118 and `H Report` once its own width reaches 193 (a 195-cell
-    terminal); the wide arm paints at 201. RED: the row dropped or moved off the bar."""
+    terminal); the wide arm paints at 201. Updated hotfix 2026-11-05: `O` (Move
+    board) joined the primary layer, so `H Report` now first fits at 207 and the
+    wide arm paints at 210 — words shed from the right before any key, per the
+    seat's own fit law. RED: the row dropped or moved off the bar."""
     rows = [k for k in keymap.KEYMAP if k.show == "H"]
     assert len(rows) == 1
     h = rows[0]
@@ -264,7 +267,7 @@ async def test_TC_3117_H_is_seated_once_on_the_bar(home):
         texts = [app.screen.query_one(i).content.plain for i in ("#help-keys", "#help-global")]
         assert sum(len(re.findall(r"(?:^|\s)H\s+Report(?:\s|$)", t)) for t in texts) == 1
     app = open_home(home)
-    async with app.run_test(size=(201, 30)) as pilot:
+    async with app.run_test(size=(210, 30)) as pilot:
         await start(pilot)
         assert "H Report" in painted(app).splitlines()[-1]
 
