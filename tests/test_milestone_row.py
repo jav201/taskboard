@@ -506,12 +506,16 @@ def test_TC_4830_LLR_4603_10_the_legend_names_the_rows_marks():
 
 
 # ---- TC-4820 / LLR-4603.11 / R-7 / SEC-1, SEC-2, SEC-7 -------------------------
-DANGER = ["a]b[/]", "[@click=app.quit]x", "x\\", "里程碑 frozen", "étape"]
+DECOMPOSED = "e\u0301tape"           # a combining acute (U+0301), not the precomposed U+00E9
+ZW_INSIDE = "a\u0301\u200bb gate"    # F2: a combining mark and a zero-width space inside
+DANGER = ["a]b[/]", "[@click=app.quit]x", "x\\", "里程碑 frozen",
+          DECOMPOSED, ZW_INSIDE]
 LONG = {"a]b[/]": "a]b[/] a]b[/] a]b[/]",
         "[@click=app.quit]x": "[@click=app.quit]x [@click=app.quit]x",
         "x\\": "x\\" * 6,
         "里程碑 frozen": "里程碑 frozen 里程碑 frozen",
-        "étape": "étape" * 3}
+        DECOMPOSED: DECOMPOSED * 3,
+        ZW_INSIDE: " ".join([ZW_INSIDE] * 3)}
 
 
 def _lab_board(place: str, title: str, W: int):
@@ -581,6 +585,52 @@ def test_TC_4820_LLR_4603_11_a_field_label_draws_its_literal_text_in_cells(place
     assert cell_len(f.lines[i]) == W, f.lines[i]
     assert max(cell_len(ln) for ln in f.lines) <= W
     _no_live_spans(f.text)
+
+
+ZERO_CELL = ["́", "​", "́​"]
+
+
+@pytest.mark.parametrize("title", ZERO_CELL, ids=["acute", "zwsp", "acute-zwsp"])
+def test_TC_4820b_SEC6_a_zero_cell_title_draws_nothing_and_keeps_the_width(title):
+    """SEC-6 / SEC-8: a selected title of 0 cells (a lone combining mark, a
+    zero-width space) → no label cell, the milestone row exactly `W` cells and
+    its field exactly `ax.w`. NC: drop the `n <= 0` guard in `put_label` (the
+    0-cell run takes a cell and draws none, so the row is `W - 1`)."""
+    b, ids = _lab_board("after", title, 118)
+    f = Frame(b, "ts", 118, 0)
+    i = f.lane_line(ids)
+    assert cell_len(f.lines[i]) == 118, ascii(f.lines[i])
+    assert len(f.fcells(i)) == f.ax.w
+    assert f.fcells(i)[f.cell("ts") + 2] in GROUND, ascii(f.lines[i])
+
+
+def _bg(style) -> str | None:
+    return style.bgcolor.triplet.hex.lower() if style.bgcolor else None
+
+
+@pytest.mark.parametrize("title", ["x", "中", "Go"], ids=["1cp", "1cp-wide", "2cp"])
+def test_TC_4820c_N9_a_label_run_takes_no_weekend_ground(title):
+    """N-9: the selected title drawn on a weekend cell carries its own style,
+    never the weekend background — for a 1-codepoint title (`x`, a wide `中`)
+    as for a longer one; a weekend ground cell on the same row keeps the
+    background (the control that the shading is there). NC (F1): tell a label
+    run by `len(glyph) > 1` (the 1-codepoint title takes the mark branch and
+    is shaded)."""
+    weekend = views.WEEKEND_BG.lower()
+    for off in range(1, 21):
+        b = _with(T("lb", "pb", "Bench run", "Doing", -1, 21),
+                  T("s", "pb", title, "Next", None, off, True, "delivery"),
+                  projects=[P("pb", "Lab bench")])
+        f = Frame(b, "ts", 118, 0)
+        i, x = f.lm["ts"], f.cell("ts") + 2
+        if x in f.ax.weekends():
+            break
+    else:
+        pytest.fail("no due put the label on a weekend cell")
+    assert f.fcells(i)[x] == title[0], ascii(f.lines[i])
+    assert _bg(f.fstyle(i, x)) != weekend, (title, f.fstyle(i, x))
+    ground = [k for k in f.ax.weekends() if f.fcells(i)[k] in GROUND]
+    assert ground and _bg(f.fstyle(i, ground[0])) == weekend
 
 
 # =============================================================================
@@ -732,13 +782,15 @@ def test_TC_4842_LLR_4605_2_a_hidden_class_leaves_the_row():
 
 
 async def test_TC_4843_LLR_4605_3_the_walk_skips_what_the_row_does_not_draw(home):
-    """Review hidden, m1 selected, `→`, `→` → m4, m5; `/store` + `←`/`→` → m4
-    stays. NC: walk the unfiltered milestones."""
+    """Review hidden, m1 selected: EACH `→` then `←` lands on the next drawn
+    milestone — m4, m5, m5 (the end), m4, m1, m1; `/store` + `←`/`→` → m4
+    stays. NC (C-1): walk the unfiltered lane — `←` from m4 lands on the hidden
+    m3 and the selection law snaps it back to the stop m4, not m1."""
     async with gantt(home, sel="tm1", hidden=("review",)) as (app, pilot):
-        await keys(pilot, "right")
-        assert app.selected_task_id == "tm4"
-        await keys(pilot, "right")
-        assert app.selected_task_id == "tm5"
+        for k, want in [("right", "tm4"), ("right", "tm5"), ("right", "tm5"),
+                        ("left", "tm4"), ("left", "tm1"), ("left", "tm1")]:
+            await keys(pilot, k)
+            assert app.selected_task_id == want, (k, want, app.selected_task_id)
     async with gantt(home, sel="tm4") as (app, pilot):
         await keys(pilot, "slash", *"store", "enter")
         app.selected_task_id = "tm4"

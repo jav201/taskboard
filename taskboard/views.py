@@ -2820,8 +2820,19 @@ def gantt_milestone_chip(task: Task, board: Board, today: date, width: int) -> s
     return c(fit(lab, width, "right"), tone)
 
 
+class _LaneMark(NamedTuple):
+    """One occupied cell of the milestone row (`_lane_marks`)."""
+    members: list[Task]
+    cell: int
+    start: int
+    length: int
+    seq: list[tuple[str, str]]
+    left: bool
+    right: bool
+
+
 def _lane_marks(lane: tuple[Task, ...], selected_id: str | None, board: Board,
-                ax: GanttAxis, today: date) -> list[dict]:
+                ax: GanttAxis, today: date) -> list[_LaneMark]:
     """The milestone row's marks, one record per occupied cell in cell order:
     its members in walk order (the "share one cell" rule, R-6 F-1, an N-8
     collision joining the earlier bucket), its start, length, glyph run and
@@ -2865,21 +2876,20 @@ def _lane_marks(lane: tuple[Task, ...], selected_id: str | None, board: Board,
             start = min(cell, W - length)
         return start, length, seq, left, right
 
-    placed: list[dict] = []
+    placed: list[_LaneMark] = []
     for cell in sorted(buckets):
         members = buckets[cell]
         start, length, seq, left, right = geom(members, cell)
         while placed:
             prev = placed[-1]
-            if prev["start"] + prev["length"] > start:   # N-8: marks collide
-                members = prev["members"] + members
-                cell = prev["cell"]
+            if prev.start + prev.length > start:   # N-8: marks collide
+                members = prev.members + members
+                cell = prev.cell
                 placed.pop()
                 start, length, seq, left, right = geom(members, cell)
                 continue
             break
-        placed.append(dict(members=members, cell=cell, start=start, length=length,
-                           seq=seq, left=left, right=right))
+        placed.append(_LaneMark(members, cell, start, length, seq, left, right))
     return placed
 
 
@@ -2912,14 +2922,14 @@ def gantt_milestone_row(lane: tuple[Task, ...], selected_id: str | None, board: 
 
     occ: set[int] = set()
     for rec in placed:
-        if rec["left"]:
+        if rec.left:
             cells[0] = (OFF_LEFT, "mut")
             occ.add(0)
-        if rec["right"]:
+        if rec.right:
             cells[W - 1] = (OFF_RIGHT, "mut")
             occ.add(W - 1)
-        for i, (g, t) in enumerate(rec["seq"]):
-            ci = rec["start"] + i
+        for i, (g, t) in enumerate(rec.seq):
+            ci = rec.start + i
             if 0 <= ci < W:
                 cells[ci] = (g, t)
                 occ.add(ci)
@@ -2943,7 +2953,7 @@ def gantt_milestone_row(lane: tuple[Task, ...], selected_id: str | None, board: 
         if n <= 0:                       # SEC-6: a 0-cell label is not drawn
             return
         piece = _literal(text)           # R-7 step 3: escaped once, whole
-        cells[start] = (piece, tone)
+        cells[start] = (piece, f"run:{tone}")   # SEC-9: the run is marked, not inferred
         for k in range(1, n):
             cells[start + k] = ("", tone)
         for k in range(n):
@@ -2951,31 +2961,31 @@ def gantt_milestone_row(lane: tuple[Task, ...], selected_id: str | None, board: 
 
     # Pass 2 — the selected member's title
     for rec in placed:
-        on = next((t for t in rec["members"] if t.id == selected_id), None)
+        on = next((t for t in rec.members if t.id == selected_id), None)
         if on is None:
             continue
         title = on.title
-        ra = room_right(rec["start"] + rec["length"] - 1) - 1
-        rb = room_left(rec["start"]) - 1
+        ra = room_right(rec.start + rec.length - 1) - 1
+        rb = room_left(rec.start) - 1
         w_t = cell_len(title)
         if ra >= w_t:
-            put_label(rec["start"] + rec["length"] + 1, title, "bright")
+            put_label(rec.start + rec.length + 1, title, "bright")
         elif rb >= w_t:
-            put_label(rec["start"] - 1 - w_t, title, "bright")
+            put_label(rec.start - 1 - w_t, title, "bright")
         elif max(ra, rb) >= 6:
             cut = fit(title, max(ra, rb))
             if ra >= rb:
-                put_label(rec["start"] + rec["length"] + 1, cut, "bright")
+                put_label(rec.start + rec.length + 1, cut, "bright")
             else:
-                put_label(rec["start"] - 1 - cell_len(cut), cut, "bright")
+                put_label(rec.start - 1 - cell_len(cut), cut, "bright")
         break
 
     # Pass 3 — the other marks' dates, left to right
     for rec in placed:
-        on = next((t for t in rec["members"] if t.id == selected_id), None)
+        on = next((t for t in rec.members if t.id == selected_id), None)
         if on is not None:
             continue
-        lead = rec["members"][0]
+        lead = rec.members[0]
         _glyph, _style, chip = milestone_mark(lead, board, today)
         d = parse_iso(lead.due_date)
         if chip.startswith("▲"):
@@ -2983,13 +2993,13 @@ def gantt_milestone_row(lane: tuple[Task, ...], selected_id: str | None, board: 
         else:
             text, tone = _md(d), ("reached" if chip == "✓" else "soon" if d == today
                                   else "mut")
-        ra = room_right(rec["start"] + rec["length"] - 1) - 1
-        rb = room_left(rec["start"]) - 1
+        ra = room_right(rec.start + rec.length - 1) - 1
+        rb = room_left(rec.start) - 1
         w_t = cell_len(text)
         if ra >= w_t:
-            put_label(rec["start"] + rec["length"] + 1, text, tone)
+            put_label(rec.start + rec.length + 1, text, tone)
         elif rb >= w_t:
-            put_label(rec["start"] - 1 - w_t, text, tone)
+            put_label(rec.start - 1 - w_t, text, tone)
     return cells
 
 
@@ -3008,8 +3018,8 @@ def gantt_lane_label(lane: tuple[Task, ...], selected_id: str | None, board: Boa
     on = next((t for t in lane if t.id == selected_id), None)
     if on is not None:
         glyph, style, _chip = milestone_mark(on, board, today)
-        same = next((r["members"] for r in _lane_marks(lane, selected_id, board, ax, today)
-                     if on in r["members"]), [on])
+        same = next((r.members for r in _lane_marks(lane, selected_id, board, ax, today)
+                     if on in r.members), [on])
         tag = f" {same.index(on) + 1}/{len(same)}" if len(same) > 1 else ""
         title = title_markup(on, max(1, label_w - 4 - len(tag)), True)
         return " " + c(glyph, style) + " " + title + c(tag, "mut") + " "
@@ -3132,18 +3142,19 @@ def _gantt_field(cells: list[tuple[str, str]], ax: GanttAxis,
     """Cells to markup over the field's own ground: lattice `·` (ash behind
     today, dim ahead), the calendar guide `┆`, and the today rule `╎` in any
     cell nothing else took; a weekend cell carries the weekend background
-    under whatever it holds. A cell whose glyph is a multi-character run is a
-    field label run (cut by `fit` and escaped once, whole, by `_literal`
-    upstream, R-7): it is painted as given, in its tone, never split or
-    re-measured, and never shaded by the weekend ground (N-9). A `""` glyph
+    under whatever it holds. A cell whose tone is `run:<tone>` is a field label
+    run (cut by `fit` and escaped once, whole, by `_literal` upstream, R-7) of
+    any length, one codepoint included: it is painted as given, in its tone,
+    never split or re-measured, and never shaded by the weekend ground (N-9).
+    Only `gantt_milestone_row.put_label` writes that tone (SEC-9). A `""` glyph
     (a consumed label cell) paints nothing. A `rev:<style>` tone paints its
     glyph reverse-video and bold in `HEX[<style>]` (SEAM-8)."""
     out = []
     for x, (glyph, tone) in enumerate(cells):
         if glyph == "":                     # a consumed cell of a label run
             continue
-        if len(glyph) > 1:                   # a field label run, escaped whole
-            out.append(c(glyph, tone))
+        if tone.startswith("run:"):          # a field label run, escaped whole
+            out.append(c(glyph, tone[4:]))
             continue
         if tone == "gap":                      # a space inside a written date
             m = c(" ", "dim")
@@ -3562,6 +3573,7 @@ def _gantt_frame(board, show_archived, selected_id, today=None, width=68, height
     the marks they draw, the plan and the axis — the legend asks THIS frame
     what it shows (LLR-102.5)."""
     today = today or date.today()
+    raw = board
     if _hidden_class_ids(board):
         board = _hide(board)          # hidden classes leave the frame (LLR-2608.1)
     w = _clamp_width(width)
@@ -3570,9 +3582,10 @@ def _gantt_frame(board, show_archived, selected_id, today=None, width=68, height
     strip = legend_strip(board, w)    # the classes this frame draws (LLR-2607.1)
     body_rows = max(0, h - 1 - GANTT_RULER_ROWS - (1 if strip else 0)) if height else 10 ** 6
     pinned_t = board.task_by_id(pinned_id) if pinned_id else None
-    groups = gantt_plan(board, show_archived, selected_id, today, body_rows, focus,
-                        previous, gantt_group_key(board, pinned_t) if pinned_t else None,
-                        done_rows)
+    # the board gantt's plan applies the class filter itself (N-5: its one seat)
+    groups = gantt_plan(raw if done_rows else board, show_archived, selected_id, today,
+                        body_rows, focus, previous,
+                        gantt_group_key(board, pinned_t) if pinned_t else None, done_rows)
     ax = gantt_axis(field_w, today, *gantt_window(groups, today))
     guides, weekends = ax.guides(), ax.weekends()
     chain = set(critical_chain(board)) if board.chain_shown() else set()

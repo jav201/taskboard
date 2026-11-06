@@ -1,0 +1,10 @@
+# E5 corrective RED-first, source at HEAD 478b32c, new/strengthened tests only
+# cwd: /c/Users/jjgh8/Github/taskboard-wt/ms-row-proto
+# taskboard.__file__: C:\Users\jjgh8\Github\taskboard-wt\ms-row-proto\taskboard\__init__.py
+# cmd: env -u NO_COLOR python -m pytest -q -p no:cacheprovider tests/test_milestone_row.py -k 'TC_4820 or TC_4843_'
+E        +      where fstyle = <milestone_row_fixture.Frame object at 0x000001AFABEE5E50>.fstyle
+tests\test_milestone_row.py:631: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_milestone_row.py::test_TC_4820c_N9_a_label_run_takes_no_weekend_ground[1cp]
+FAILED tests/test_milestone_row.py::test_TC_4820c_N9_a_label_run_takes_no_weekend_ground[1cp-wide]
+2 failed, 29 passed, 53 deselected in 3.43s
