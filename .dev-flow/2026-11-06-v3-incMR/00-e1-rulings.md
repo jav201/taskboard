@@ -77,3 +77,12 @@ Range check (2026-11-06, `grep -rhoE "(HLR|LLR|AT|US)-<r>[0-9]{2}" REQUIREMENTS.
   `↑↓`.
 - **Q-2.** Confirm ruling 2 (link mode as at base) over the alternative.
 - **Q-3.** Confirm the split, and that view 2 follows view 1 (shared code, `views.py:7325`).
+
+## Orchestrator rulings (2026-11-06) on the E1 size gate
+
+- **R-1 (Q-3): the split is confirmed.**
+  - **MR-a, board gantt.** Runs now, in this folder (`2026-11-06-v3-incMR`).
+  - **MR-b, presentation.** A separate increment, run after MR-a closes, in folder `2026-11-06-v3-incMRb`.
+  - View 2 changes with view 1, because the two share code.
+- **R-2 (Q-1), presentation: `↑↓` stops at each milestone, and no key changes.** In `R`, `←→` already moves the cursor, or toggles rail and timeline in view 3. This rule applies to MR-b only. On the board gantt (MR-a), `←→` walks the milestone row as the round showed, because `hmove` is a no-op there today.
+- **R-3 (Q-2): the link mode keeps one row per milestone.** While `L` is active, each overlay and each `⟲` names exactly one task. The simple form is kept.
