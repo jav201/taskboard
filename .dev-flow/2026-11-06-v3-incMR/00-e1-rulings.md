@@ -88,3 +88,20 @@ Range check (2026-11-06, `grep -rhoE "(HLR|LLR|AT|US)-<r>[0-9]{2}" REQUIREMENTS.
 - **R-3 (Q-2): the link mode keeps one row per milestone.** While `L` is active, each overlay and each `⟲` names exactly one task. The simple form is kept.
 - **R-4 (baseline finding, `974289f`).** The gantt cursor's row list (`nav_model`) ignores hidden milestone classes, so the cursor can stop on rows that are not drawn. This is a pre-existing defect, and MR-a fixes it: navigation reads the same filtered board the renderer draws, which is what LLR-4605.3 depends on. E2 designs the fix, and E4 carries a regression test that is RED on base.
 - **R-5.** HLR-4606 has two responses: link mode and the paged fold. E2 may split it into two HLRs with a ledger entry. The orchestrator approves this in advance.
+
+## E3 round-1 rulings (2026-11-06). Architect: FAIL (`5d08321`). Security: FAIL (`79ad23f`).
+
+- **R-6 (F-1, F-2, F-3, F-4, F-5).** The architect's resolutions are adopted as written.
+  - **F-1:** a shared cell shows its lead's date, or `▲Nd` when the lead is late. `i/N` counts "in its cell".
+  - **F-2:** the threshold is `mut`, from the seat. `milestone_tone` stays as it is.
+  - **F-3:** AT-4607 and LLR-4602.6 are rewritten with a milestone reached early: `<hollow>✓▸`.
+  - **F-4:** the slice is 9 units, including `nav_model`.
+  - **F-5:** the dependency gutter stays blank on the milestone row. This is the new LLR-4601.8.
+- **R-7 (SEC-1, HIGH, and N-1, MAJOR: the same defect).**
+  - **Defect:** the selected milestone's title (and any label) is never placed into field cells as raw markup characters. Probes showed a `MarkupError` on `a]b[/]`, and that `[@click…]` became a live tag.
+  - **Fix:** each label is escaped as one whole string BEFORE it is cut into cells. Cell runs are joined only from escaped segments. Better still, the label is emitted as a styled `Text` segment rather than per-cell markup; pick the smaller change that the markup census law accepts.
+  - **Width:** the label is measured with cell width (`cell_len`, wide glyphs) and cut with a visible `…`. No row may exceed the field.
+  - **Requirements and tests:** one new Unwanted-form LLR carries a negative control: titles `a]b[/]`, `[@click=app.quit]x`, `\` and a wide-glyph title must each render literally, with no exception, and stay within the width.
+- **R-8.** The security reviewer's other MEDIUM and LOW findings, and the architect's other MINOR findings, are adopted as proposed. They go into the requirements or graph where they are design, and into `e3-addenda.md` where they are E4 instructions.
+
+The design correction is ONE agent making targeted edits (Opus). E3 round 2 follows: the same two roles re-check only what was blocking, plus anything new.
