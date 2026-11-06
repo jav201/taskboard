@@ -1,0 +1,142 @@
+# Extractor output — baseline graph at 59775bb (marks tree taskboard-wt/incMR-marks, 24 generated marks)
+# command: python code-wire/tools/codewire_lint.py ms-row-proto/.dev-flow/2026-11-06-v3-incMR/graph-baseline.cw.md   (nodes=24 entities=12 edges=27 findings=0 not read=0, exit 0)
+# command: python code-wire/tools/codewire_marks.py --repo incMR-marks --graph ms-row-proto/.dev-flow/2026-11-06-v3-incMR/graph-baseline.cw.md   (24 marks written, 0 nodes without code, exit 0)
+# command: python code-wire/tools/codewire_extract.py --repo incMR-marks --graph ms-row-proto/.dev-flow/2026-11-06-v3-incMR/graph-baseline.cw.md --path taskboard/app.py --path taskboard/views.py --path taskboard/modals.py --out <tmp>
+# exit code: 1 — 36 findings: 33 input_untyped_in_code + 3 return_untyped_in_code (the code has no annotation; the graph names the type). No type mismatch, no parameter missing from the graph (a first run found 8 nav_model parameters missing; the graph was completed), no missing node, no mark drift.
+# NOTE: line numbers below are in the MARKED tree (each mark adds one line above its def); the graph and baseline-notes.md give 59775bb lines.
+# NOTE: resolution is by name, so `self.refresh_view()` and other unmarked defs lift many calls; the Class column (added by hand) marks each row REAL, LIFTED or COLLISION. The rest of the report is verbatim.
+
+## stdout
+marks=24 graph_nodes=24 calls=47 findings=36 parse_failures=0
+
+## diff-report.md (verbatim, with a Class column added to the calls table)
+# Code-Wire extractor report
+
+- Marks found: 24
+- Graph nodes parsed: 24
+- Real calls between marked nodes: 47
+- Findings: 36 (36 drift, 0 info)
+- Ambiguous call resolutions (a name matched several defs): 927
+- Files that failed to parse: 0
+
+Type normalisation: spaces and quotes dropped; `List/Dict/Tuple/Set` -> builtins; `X | None` and graph `X?` -> `Optional[X]`; graph `(Callable) A->B` -> `Callable[[A], B]`; graph `tuple(A a, B b)` -> `tuple[A, B]`. A bare graph container (`dict`) against a parameterised code type (`dict[str, Any]`) is info (loose match), not drift.
+
+Call resolution is name-based (`f()`, `Class()` -> `__init__`, `self.m()`, `x.m()` -> top-level `m` or a marked method `m`); dynamic calls and callables passed as values are not seen. Tests excluded.
+
+## Counts
+
+| Kind | Count |
+|---|---|
+| Parameter unannotated in code (cannot compare) | 33 |
+| Return unannotated in code (cannot compare) | 3 |
+
+## Real calls between marked nodes
+
+| Caller | Callee | Sites | Class |
+|---|---|---|---|
+| `GanttLinkMode.action_move` | `gantt_link_frame` | taskboard/modals.py:2248 | LIFTED through GanttLinkMode._paint (modals.py:2248) |
+| `PresentScreen.action_move` | `present_tasks_m` | taskboard/app.py:403 | LIFTED through PresentScreen._shown_ids (app.py:403) |
+| `PresentScreen.action_move` | `render_present` | taskboard/app.py:298 | LIFTED through _paint → PresentScreen._frame_text (app.py:298) |
+| `PresentScreen.action_move` | `render_present_all` | taskboard/app.py:290 | LIFTED through _paint → PresentScreen._render_all (app.py:290) |
+| `PresentScreen.action_side` | `PresentScreen.action_move` | taskboard/app.py:449 | REAL (views 1/2 and a rail-less view 3) |
+| `PresentScreen.action_side` | `render_present` | taskboard/app.py:298 | LIFTED through _paint → _frame_text |
+| `PresentScreen.action_side` | `render_present_all` | taskboard/app.py:290 | LIFTED through _paint → _render_all |
+| `TaskboardApp._nav_columns` | `nav_model` | taskboard/app.py:3302 | REAL |
+| `TaskboardApp.action_cursor` | `TaskboardApp._nav_columns` | taskboard/app.py:3322, taskboard/app.py:3385, taskboard/app.py:3403, taskboard/app.py:3431 | REAL at app.py:3431; the others lifted through _nav_flat / _select_first |
+| `TaskboardApp.action_cursor` | `_present_task_row` | prototypes/present_views/views_proto.py:106 | COLLISION (prototypes/ name match, lifted through refresh_view) |
+| `TaskboardApp.action_cursor` | `milestone_mark` | taskboard/views.py:1112, taskboard/views.py:1691, taskboard/views.py:1782, taskboard/views.py:2710, taskboard/views.py:4042 | LIFTED through refresh_view → render_view → other views' rows (grid, title, bank, milestone title, focus review) |
+| `TaskboardApp.action_cursor` | `render_gantt` | _prototypes/gantt_line_circle.py:147, taskboard/views.py:8054, taskboard/views.py:8062 | LIFTED through refresh_view → render_view (views.py:8054/8062); the _prototypes/ site is a collision |
+| `TaskboardApp.action_cursor` | `render_present` | prototypes/present_portfolio/portfolio_proto.py:373 | COLLISION (prototypes/ name match) |
+| `TaskboardApp.action_hmove` | `TaskboardApp._nav_columns` | taskboard/app.py:3322, taskboard/app.py:3385, taskboard/app.py:3403, taskboard/app.py:3446 | REAL at app.py:3446; the others lifted through _nav_flat / _select_first |
+| `TaskboardApp.action_hmove` | `_present_task_row` | prototypes/present_views/views_proto.py:106 | COLLISION (prototypes/ name match) |
+| `TaskboardApp.action_hmove` | `milestone_mark` | taskboard/views.py:1112, taskboard/views.py:1691, taskboard/views.py:1782, taskboard/views.py:2710, taskboard/views.py:4042 | LIFTED through refresh_view → render_view (other views) |
+| `TaskboardApp.action_hmove` | `render_gantt` | _prototypes/gantt_line_circle.py:147, taskboard/views.py:8054, taskboard/views.py:8062 | LIFTED through refresh_view → render_view; the _prototypes/ site is a collision |
+| `TaskboardApp.action_hmove` | `render_present` | prototypes/present_portfolio/portfolio_proto.py:373 | COLLISION (prototypes/ name match) |
+| `TaskboardApp.action_link` | `TaskboardApp._nav_columns` | taskboard/app.py:3322, taskboard/app.py:3385, taskboard/app.py:3403 | LIFTED through open_link_picker/_on_link_picked → refresh paths (_nav_flat, _select_first); name-based |
+| `TaskboardApp.action_link` | `gantt_link_order` | taskboard/modals.py:2218 | LIFTED through GanttLinkMode() → GanttLinkMode.__init__ (modals.py:2218) |
+| `TaskboardApp.action_link` | `milestone_mark` | taskboard/views.py:4042 | LIFTED through refresh_view → render_view (_focus_review); name-based |
+| `TaskboardApp.action_link` | `render_gantt` | taskboard/views.py:8054, taskboard/views.py:8062 | LIFTED through refresh_view → render_view |
+| `_all_plan` | `present_tasks_m` | taskboard/views.py:7422 | REAL |
+| `_all_timeline` | `_all_layout` | taskboard/views.py:7578 | REAL |
+| `_all_timeline` | `_all_plan` | taskboard/views.py:7569 | REAL |
+| `_all_timeline` | `_present_task_row` | taskboard/views.py:7604 | REAL |
+| `_all_timeline` | `milestone_mark` | taskboard/views.py:2946 | LIFTED through _all_ruler → gantt_echo (views.py:2946) |
+| `_gantt_frame` | `_gantt_frame.<locals>.task_row` | taskboard/views.py:3431, taskboard/views.py:3441, taskboard/views.py:3486 | REAL (the paged-fold selection row, the page, the unfolded rows) |
+| `_gantt_frame` | `_hide` | taskboard/views.py:3307 | REAL |
+| `_gantt_frame` | `gantt_plan` | taskboard/views.py:3314 | REAL |
+| `_gantt_frame` | `milestone_mark` | taskboard/views.py:2946, taskboard/views.py:3360 | REAL at views.py:3360 (the ruler's milestone marks); views.py:2946 lifted through gantt_echo |
+| `_gantt_frame.<locals>.task_row` | `gantt_milestone_cells` | taskboard/views.py:3406 | REAL |
+| `_gantt_frame.<locals>.task_row` | `milestone_mark` | taskboard/views.py:2820, taskboard/views.py:3400 | REAL at views.py:3400; views.py:2820 lifted through _gantt_bar |
+| `_present_task_row` | `gantt_milestone_cells` | taskboard/views.py:7188 | REAL |
+| `_present_task_row` | `milestone_mark` | taskboard/views.py:2820, taskboard/views.py:7187 | REAL at views.py:7187; views.py:2820 lifted through _gantt_bar |
+| `gantt_link_frame` | `_gantt_frame` | taskboard/views.py:8921 | REAL (with pinned_id = the waiter) |
+| `gantt_link_frame` | `milestone_mark` | taskboard/views.py:4042 | COLLISION/LIFTED by name through an unmarked def (_focus_review site); not a call of the link frame |
+| `gantt_link_frame` | `render_gantt` | taskboard/views.py:8054, taskboard/views.py:8062 | COLLISION (render_view sites lifted by name); not a call of the link frame |
+| `gantt_link_order` | `gantt_plan` | taskboard/views.py:8905 | REAL |
+| `gantt_milestone_cells` | `milestone_mark` | taskboard/views.py:2728 | REAL |
+| `nav_model` | `gantt_plan` | taskboard/views.py:8443 | REAL (the gantt branch) |
+| `render_gantt` | `_gantt_frame` | taskboard/views.py:3269 | REAL |
+| `render_present` | `_present_task_row` | taskboard/views.py:7324 | REAL |
+| `render_present` | `milestone_mark` | taskboard/views.py:2946 | LIFTED through _present_ruler → gantt_echo |
+| `render_present` | `present_tasks_m` | taskboard/views.py:7301 | REAL |
+| `render_present_all` | `_all_timeline` | taskboard/views.py:7644, taskboard/views.py:7648 | REAL (rail-less and with the rail) |
+| `render_present_all` | `render_present` | taskboard/views.py:7641 | REAL (below PRESENT_MIN_WIDTH, the narrow frame) |
+
+Top-level sites (no marked node above them):
+
+- `GanttLinkMode.action_move`: prototypes/present_portfolio/app_capture.py:196, prototypes/present_views/app_capture.py:106, taskboard/modals.py:2323, taskboard/modals.py:2331
+- `PresentScreen.action_move`: prototypes/present_portfolio/app_capture.py:196, prototypes/present_views/app_capture.py:106
+- `TaskboardApp._nav_columns`: taskboard/app.py:3486, taskboard/app.py:3493, taskboard/app.py:4589
+- `TaskboardApp.action_hmove`: prototypes/milestone_row/proto.py:429
+- `_all_timeline`: prototypes/backlog_round/proto.py:864
+- `_gantt_frame`: prototypes/milestone_row/proto.py:524, taskboard/views.py:8733
+- `_hide`: prototypes/milestone_row/proto.py:319
+- `_present_task_row`: prototypes/present_portfolio/portfolio_proto.py:192, prototypes/present_rulers/proto.py:150, prototypes/present_views/views_d.py:97, prototypes/present_views/views_proto.py:374
+- `gantt_milestone_cells`: prototypes/present_portfolio/portfolio_proto.py:194
+- `gantt_plan`: taskboard/app.py:3536
+- `milestone_mark`: prototypes/milestone_row/proto.py:224, prototypes/milestone_row/proto.py:254, prototypes/milestone_row/proto.py:274, prototypes/milestone_row/proto.py:279, taskboard/app.py:3541, taskboard/app.py:3581, taskboard/views.py:2064, taskboard/views.py:5540, taskboard/views.py:7784, taskboard/views.py:9117, taskboard/views.py:9540
+- `present_tasks_m`: prototypes/milestone_marks/proto.py:988 (ref), prototypes/milestone_marks/proto.py:989 (ref), taskboard/views.py:7378
+- `render_gantt`: _prototypes/gantt_circle_pulse.py:135, prototypes/capture_gantt_shipped.py:39, prototypes/next_level/capture.py:100 (ref), prototypes/next_level/proto.py:209
+- `render_present`: prototypes/present_portfolio/app_capture.py:106, prototypes/present_rulers/proto.py:129
+
+## Parameter unannotated in code (cannot compare)
+
+- `taskboard/views.py:3283` — `board` has no annotation (graph: `Board`)
+- `taskboard/views.py:3283` — `show_archived` has no annotation (graph: `bool`)
+- `taskboard/views.py:3283` — `selected_id` has no annotation (graph: `Optional[str]`)
+- `taskboard/views.py:3283` — `today` has no annotation (graph: `Optional[date]`)
+- `taskboard/views.py:3283` — `width` has no annotation (graph: `int`)
+- `taskboard/views.py:3283` — `height` has no annotation (graph: `int`)
+- `taskboard/views.py:3283` — `line_map` has no annotation (graph: `Optional[dict]`)
+- `taskboard/views.py:3283` — `tick` has no annotation (graph: `int`)
+- `taskboard/views.py:3263` — `board` has no annotation (graph: `Board`)
+- `taskboard/views.py:3263` — `show_archived` has no annotation (graph: `bool`)
+- `taskboard/views.py:3263` — `selected_id` has no annotation (graph: `Optional[str]`)
+- `taskboard/views.py:3263` — `today` has no annotation (graph: `Optional[date]`)
+- `taskboard/views.py:3263` — `width` has no annotation (graph: `int`)
+- `taskboard/views.py:3263` — `height` has no annotation (graph: `int`)
+- `taskboard/views.py:3263` — `line_map` has no annotation (graph: `Optional[dict]`)
+- `taskboard/views.py:3263` — `tick` has no annotation (graph: `int`)
+- `taskboard/views.py:8317` — `mode` has no annotation (graph: `str`)
+- `taskboard/views.py:8317` — `board` has no annotation (graph: `Board`)
+- `taskboard/views.py:8317` — `show_archived` has no annotation (graph: `bool`)
+- `taskboard/views.py:8317` — `today` has no annotation (graph: `Optional[date]`)
+- `taskboard/views.py:8317` — `kanban_sort` has no annotation (graph: `str`)
+- `taskboard/views.py:8317` — `kanban_group` has no annotation (graph: `str`)
+- `taskboard/views.py:8317` — `kanban_collapsed` has no annotation (graph: `bool`)
+- `taskboard/views.py:8317` — `kanban_focus` has no annotation (graph: `Optional[str]`)
+- `taskboard/views.py:8317` — `gantt_focus` has no annotation (graph: `Optional[str]`)
+- `taskboard/views.py:8317` — `presentation` has no annotation (graph: `str`)
+- `taskboard/views.py:8317` — `focus_presentation` has no annotation (graph: `str`)
+- `taskboard/views.py:7514` — `plan` has no annotation (graph: `list`)
+- `taskboard/views.py:7514` — `folded` has no annotation (graph: `frozenset`)
+- `taskboard/views.py:7565` — `cur` has no annotation (graph: `Optional[tuple]`)
+- `taskboard/views.py:7565` — `folded` has no annotation (graph: `frozenset`)
+- `taskboard/views.py:7630` — `cursor` has no annotation (graph: `Optional[tuple]`)
+- `taskboard/views.py:7630` — `folded` has no annotation (graph: `frozenset`)
+
+## Return unannotated in code (cannot compare)
+
+- `taskboard/views.py:3283` — graph `tuple[list[str], set[str], list[GanttGroup], GanttAxis]`, no return annotation
+- `taskboard/views.py:7514` — graph `tuple[dict, bool, list, dict]`, no return annotation
+- `taskboard/views.py:7565` — graph `tuple[list[str], list, Optional[tuple]]`, no return annotation
