@@ -2,3 +2,4 @@ E1 21:27Z stopped at the size gate (MR-3): ~58 LLRs estimated (board ~40, presen
 E1 21:31Z MR-a requirements: US 1, HLR 6, LLR 40, AT 7; slice 6 units in views.py/app.py (Opus architect)
 E2 21:54Z prototype graph: interfaces 3 nodes, V 5, S 2; 9 seams; lint 0/0/0; trace 47/47; findings F-1..F-5; HLR-4606 split (LED .3) (Opus architect)
 E3 22:09Z round-1 correction (R-6..R-8): targeted edits; LLR 43 (+4601.8, 4602.8, 4603.11); slice 9 units; label path fit->_literal->run in graph-interfaces; lint not-read 0/0/0; trace 50/50, 0 issues; e3-addenda A-1..A-11 (Opus)
+E3 22:12Z r1 FAIL (arch 5d08321, sec 79ad23f) · rulings R-6..R-8 · correction 6c2891f (Opus) · r2 PWN (arch d603b53, sec cbc14a8) · E4 start

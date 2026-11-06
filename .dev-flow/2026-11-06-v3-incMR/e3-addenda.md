@@ -17,3 +17,13 @@ Sources: `03-pdr-architect.md` (F-3, F-5, N-3, N-4, N-5, N-7) and `03-pdr-securi
 | A-9 | SEC-1 (R-7) | V implementer | Follow the LABEL PATH in `graph-interfaces.cw.md` `gantt_milestone_row` in order: cells, `fit`, `_literal`, then lay the run. Amend `_gantt_field`'s docstring invariant ("every cell here is a constant glyph") to name the escaped label run. Register no HEX key at run time. |
 | A-10 | SEC-2 | V tester | The wide-glyph and combining-mark titles that SEC-2 asked of TC-4829 are covered by TC-4820 (LLR-4603.11, 15 cases). TC-4829 keeps its MR-F frames. |
 | A-11 | SEC-1 | orchestrator | The SEC-1 block lifts only after the security reviewer re-verifies the amended graph (LABEL PATH, `[Data: field label run]`, SEAM-8) and TC-4820's design in E3 round 2. |
+
+## E3 round-2 addenda (orchestrator, 2026-11-06). Binding on E4.
+
+E3 closed PASS-WITH-NOTES from both reviewers: the architect (`d603b53`) and security (`cbc14a8`). Each minor finding below is an E4 instruction.
+
+- **N-8.** A two-cell mark never overwrites a neighbouring mark's cell. A clash resolves to the `◆N` rule.
+- **N-9.** A label run does not inherit its first cell's weekend shading. The label carries its own style.
+- **N-10.** Apply the architect's two threshold-wording and fixture fixes, as `03-pdr-architect-r2.md` states them.
+- **SEC-6.** A 0-cell label (no room) leaves the row at exactly the field width. Pad, and never fall short.
+- **SEC-7.** TC-4820 includes titles long enough to hit the `…` cut at 80 and 118 columns.
