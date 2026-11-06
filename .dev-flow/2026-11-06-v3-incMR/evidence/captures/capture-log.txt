@@ -1,0 +1,8 @@
+﻿ok   mri-rest 118x30 (1095 x 627, 229 colours sampled) via PrintWindow, try 1, state OK sel=tstore width_ok=True - window closed
+ok   mri-rest 80x24 (753 x 513, 201 colours sampled) via PrintWindow, try 1, state OK sel=tstore width_ok=True - window closed
+ok   mri-sel 118x30 (1095 x 627, 224 colours sampled) via PrintWindow, try 1, state OK sel=tm5 width_ok=True - window closed
+ok   mri-sel 80x24 (753 x 513, 202 colours sampled) via PrintWindow, try 1, state OK sel=tm5 width_ok=True - window closed
+ok   mri-hidden 118x30 (1095 x 627, 221 colours sampled) via PrintWindow, try 1, state OK sel=tm4 width_ok=True - window closed
+ok   mri-hidden 80x24 (753 x 513, 195 colours sampled) via PrintWindow, try 1, state OK sel=tm4 width_ok=True - window closed
+ok   mri-hostile 118x30 (1095 x 627, 232 colours sampled) via PrintWindow, try 1, state OK sel=thx width_ok=True - window closed
+ok   mri-hostile 80x24 (753 x 513, 205 colours sampled) via PrintWindow, try 1, state OK sel=thx width_ok=True - window closed
