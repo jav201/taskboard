@@ -280,5 +280,6 @@ async def test_AT_4607_edges(home, size):
         f = s.field(i)
         assert f[-3:] == "⬡✓▸", f
         assert "▲+" in f, f
-        assert sum(ch in MARKS for ch in f) == 6, f
+        marks = re.sub(r"▲\d+d", "", f)              # late labels (LLR-4603.4) are not marks
+        assert sum(ch in MARKS for ch in marks) == 6, f
         assert all(len(cells_of(r)) <= size[0] for r in s.rows)

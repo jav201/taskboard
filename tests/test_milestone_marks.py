@@ -222,6 +222,10 @@ ALLOWED_LINES = [
     # mark — drawn in help seats, never as a live mark (the strips and the
     # details line carry the class entries dynamically, with no literal ◆)
     '◆ = no class · # manage the classes,',
+    # Inc MR-a (LLR-4603.6): the milestone row's label column at rest COUNTS the
+    # row's members (`◆ 5 milestones`) — a summary, not one task's mark, so
+    # `milestone_mark(task, …)` has nothing to return for it
+    'return (" " + c("◆", "mut") + " " + c(text, "mut")',
 ] + COUNT_TAILS
 
 

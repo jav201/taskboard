@@ -155,7 +155,7 @@ línea en el gantt... esto gasta mucho espacio. Necesito que queden en una sola 
 ### 4.3 Labels, label column, chip (HLR-4603)
 
 - **LLR-4603.1 — Ubiquitous.** The milestone row shall draw the selected milestone's full title after its mark, past one blank cell, when the cells up to the next mark leave room for the whole title, else before its mark when the room there does.
-  Threshold: 118x30, m3 selected → `Steering go/no-go` follows `■2 `; m5 (rightmost) selected with no room after → its title ends one cell before its mark; 2/2. *NC:* always after, overflowing into the next mark: RED.
+  Threshold (amended, LED-2026-11-06-incMR.7): 118x30, m5 selected → `Pilot launch` follows `★ `; a reached milestone due on the field's last day selected → its title ends one cell before `⬡✓`; 2/2. *NC:* always after, overflowing into the next mark: RED.
 - **LLR-4603.2 — Unwanted.** If neither side of the selected milestone's mark has room for its whole title, then the milestone row shall draw the title cut with `…` on the side with more room when that side has 6 cells or more, and no title in the field otherwise.
   Threshold: 118x30, m2 selected → `Rubric…` between m2 and m3; a cramped row (marks 4 cells apart) → no title cells; 2/2. *NC:* cut to any width (a 2-cell `R…`): RED.
 - **LLR-4603.3 — Ubiquitous.** The milestone row shall draw, beside each mark that holds no selected milestone and whose lead is not late, the lead's date `Mon D`, past one blank cell, only where the whole date fits without touching another mark or label.

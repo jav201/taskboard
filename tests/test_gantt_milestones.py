@@ -24,7 +24,7 @@ from rich.text import Text
 import kg_board
 from taskboard.app import TaskboardApp
 from taskboard.models import Board, Project, Task
-from taskboard.views import (GANTT_RULER_ROWS, HEX, MARK_GLYPHS, _md, gantt_axis,
+from taskboard.views import (GANTT_RULER_ROWS, HEX, MARK_GLYPHS, _md, gantt_axis, gantt_lane,
                              gantt_columns, gantt_milestone_cells, gantt_milestone_chip,
                              gantt_plan, gantt_window, help_usage, legend_entries,
                              milestone_tone, nav_model, render_gantt)
@@ -306,7 +306,14 @@ async def _select(app, pilot, tid: str) -> None:
             return
         order = app._nav_flat()
         cur = app.selected_task_id
-        if tid in order and cur in order and order.index(tid) < order.index(cur):
+        # Inc MR-a: a milestone sharing a row is reached at that row's stop, then
+        # walked along it (LLR-4604.1, .3, .4)
+        lane = [t.id for t in gantt_lane(app._view_board(), app.show_archived, tid,
+                                         date.today(), app.focused_project_id)]
+        aim = next((x for x in lane if x in order), tid)
+        if cur in lane:
+            await pilot.press("right" if lane.index(tid) > lane.index(cur) else "left")
+        elif aim in order and cur in order and order.index(aim) < order.index(cur):
             await pilot.press("up")
         else:
             await pilot.press("down")

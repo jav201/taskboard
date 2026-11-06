@@ -1,0 +1,40 @@
+# I-2 measurement. cmd (cwd = worktree): PYTHONIOENCODING=utf-8 python measure.py ; source:
+#   import sys, os; sys.path[:0] = [os.getcwd(), "tests"]
+#   import taskboard, milestone_row_fixture as fx
+#   from taskboard.models import parse_iso
+#   from taskboard.views import cell_len
+#   print("# taskboard.__file__:", taskboard.__file__)
+#   for W, H in ((118, 30), (80, 24)):
+#       b = fx.board()
+#       f = fx.Frame(b, "tm3", W, H)
+#       print(f"\n## {W}x{H}: axis start={f.ax.start} k={f.ax.k} w={f.ax.w}")
+#       for key in fx.PILOT_MS + ["tg1", "tg2"]:
+#           t = b.task_by_id(key)
+#           print(f"  {key:4} cell={f.cell(key):3}  title={t.title!r} ({cell_len(t.title)} cells)")
+#       for sel in ("tm3", "tm5"):
+#           g = fx.Frame(b, sel, W, H)
+#           i = g.lane_line(fx.PILOT_MS)
+#           print(f"  {sel} selected -> field: {g.ftext(i)!r}")
+# taskboard.__file__: C:\Users\jjgh8\Github\taskboard-wt\ms-row-proto\taskboard\__init__.py
+
+## 118x30: axis start=2026-10-14 k=0.5 w=79
+  tm1  cell=  6  title='Kickoff invoice paid' (20 cells)
+  tm2  cell= 10  title='Rubric sign-off' (15 cells)
+  tm3  cell= 20  title='Steering go/no-go' (17 cells)
+  tm4  cell= 20  title='Store list frozen' (17 cells)
+  tm5  cell= 32  title='Pilot launch' (12 cells)
+  tg1  cell= 14  title='Golden set frozen' (17 cells)
+  tg2  cell= 28  title='Eval report v1' (14 cells)
+  tm3 selected -> field: '      ⬡✓  ■ ▲1d     ■2 Steerin… ★ Oct 30                                       '
+  tm5 selected -> field: '      ⬡✓  ■ ▲1d     ■2 Oct 24   ★ Pilot launch                                 '
+
+## 80x24: axis start=2026-10-17 k=0.5 w=52
+  tm1  cell=  0  title='Kickoff invoice paid' (20 cells)
+  tm2  cell=  4  title='Rubric sign-off' (15 cells)
+  tm3  cell= 14  title='Steering go/no-go' (17 cells)
+  tm4  cell= 14  title='Store list frozen' (17 cells)
+  tm5  cell= 26  title='Pilot launch' (12 cells)
+  tg1  cell=  8  title='Golden set frozen' (17 cells)
+  tg2  cell= 22  title='Eval report v1' (14 cells)
+  tm3 selected -> field: '⬡✓  ■ ▲1d     ■2 Steerin… ★ Oct 30                  '
+  tm5 selected -> field: '⬡✓  ■ ▲1d     ■2 Oct 24   ★ Pilot launch            '

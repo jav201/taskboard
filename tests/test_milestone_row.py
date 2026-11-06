@@ -315,10 +315,16 @@ def test_TC_4818_LLR_4602_8_a_two_cell_mark_in_the_last_cell_starts_one_before()
 # =============================================================================
 def test_TC_4821_LLR_4603_1_the_selected_title_after_its_mark_else_before():
     """The selected title whole, one ground cell after its mark when it fits; else
-    before it, ending one cell before the mark. `after`: g2 (nothing to its right);
-    `before`: a reached one on the field's last day (no room after). Threshold
-    deviation recorded in e4-tests.md: MR-F's m3 does not fit after `■2` at 118
-    (8 cells to m5), the oracle cuts it — TC-4822 holds that case."""
+    before it, ending one cell before the mark. Threshold as amended by
+    LED-2026-11-06-incMR.7 (F-T1, evidence/i2-measure.txt): at 118x30 m5
+    selected → `Pilot launch` follows `★ `; a reached milestone due on the field's
+    last day selected → its title ends one cell before `⬡✓`. Also g2 (nothing to
+    its right). MR-F's m3 cannot fit after `■2` (8 cells to m5) — TC-4822 holds the
+    cut. NC: always after, overflowing: the `before` case is RED."""
+    m = Frame(mrf(), "tm5")
+    i, x = m.lane_line(PILOT), m.cell("tm5")
+    assert m.fcells(i)[x + 1] in GROUND
+    assert "".join(m.fcells(i)[x + 2:x + 2 + len("Pilot launch")]) == "Pilot launch", m.lines[i]
     f = Frame(mrf(), "tg2")
     i, x = f.lane_line(EVAL), f.cell("tg2")
     title = "Eval report v1"
@@ -435,6 +441,23 @@ def test_TC_4827_LLR_4603_7_the_label_column_names_the_selected_member():
     n = Frame(mrf(), "tm4", 80, 24)
     lab = n.label(n.lane_line(PILOT)).strip()
     assert lab.startswith("▲ Store") and "…" in lab and lab.endswith("2/2"), lab
+
+
+def test_TC_4827b_R6_i_of_n_counts_the_cell_not_the_day():
+    """E4 I-1 (R-6 F-1): at k = 2 days per cell, m3, m4 (day 4) and a third due
+    day 5 fall in ONE cell → one mark `<glyph>3`, and the label column tags each
+    `i/3` by the same buckets. NC: count by due date (`2/2`, no tag on the day-5
+    one): RED."""
+    xa = T("xa", "pr", "Audit hand-in", "Next", None, 5, True, "review")
+    b = _with(xa)
+    lane = tuple(b.task_by_id(k) for k in ("tm3", "tm4", "txa"))   # walk order
+    ax = views.GanttAxis(TODAY, 2, 40, TODAY)
+    assert {ax.cell(parse_iso(t.due_date)) for t in lane} == {2}
+    field = "".join(g for g, _ in views.gantt_milestone_row(lane, "txa", b, ax, TODAY))
+    assert field[2:4] == "■3", field
+    for key, tag in (("tm3", "1/3"), ("tm4", "2/3"), ("txa", "3/3")):
+        lab = Text.from_markup(views.gantt_lane_label(lane, key, b, ax, TODAY, 30)).plain
+        assert lab.rstrip().endswith(tag), (key, lab)
 
 
 def test_TC_4828_LLR_4603_8_the_chip_is_the_selected_else_the_upcoming_anchor():
@@ -650,9 +673,7 @@ async def test_TC_4836_LLR_4604_6_off_the_row_left_right_are_base(home):
         app.selected_task_id = None
         app._select_first()                          # base's own pick, read first
         want = app.selected_task_id
-        app.selected_task_id = None
-        app.refresh_view()
-        await pilot.pause()
+        app.selected_task_id = None          # no refresh: it re-selects (E4 I-T1)
         await keys(pilot, "right")
         assert app.selected_task_id == want
         await keys(pilot, "4")                       # the kanban

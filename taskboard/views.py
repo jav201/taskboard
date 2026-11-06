@@ -2820,31 +2820,14 @@ def gantt_milestone_chip(task: Task, board: Board, today: date, width: int) -> s
     return c(fit(lab, width, "right"), tone)
 
 
-def gantt_milestone_row(lane: tuple[Task, ...], selected_id: str | None, board: Board,
-                        ax: GanttAxis, today: date) -> list[tuple[str, str]]:
-    """The milestone row's field (Inc MR-a): `ax.w` cells of (glyph, tone) for
-    `_gantt_field` (SEAM-7).
-
-    Pass 1 draws the marks, one per occupied cell (LLR-4602): a lone milestone
-    its class glyph, a reached one alone `<hollow>✓`, two to nine sharing one
-    cell `<glyph><N>` and ten or more `<glyph>+`; the glyph is the cell's
-    lead's (its selected member, else its first in walk order). The selected
-    mark's tone is `rev:<style>`; the count digit and `+` are `bright` beside
-    it, else the class style (N-7). Off the window, `◂`/`▸` in the edge cell
-    and the mark next inward; a two-cell mark whose cell is `w-1` starts at
-    `w-2` (SEC-3), and a member whose cell falls inside an earlier mark's
-    footprint joins that bucket (N-8). Pass 2 draws the selected member's
-    title in `bright`, whole one blank cell after its mark else before, else
-    cut on the roomier side when that side has 6 cells or more. Pass 3 draws
-    the other marks' lead date `Mon D` (or its `▲Nd` in `over` when late),
-    whole only. Every label follows the LABEL PATH (R-7): room in cells, `fit`
-    on the PLAIN text, `_literal` once whole, then one run in the first cell
-    and `""` in the cells it covers."""
+def _lane_marks(lane: tuple[Task, ...], selected_id: str | None, board: Board,
+                ax: GanttAxis, today: date) -> list[dict]:
+    """The milestone row's marks, one record per occupied cell in cell order:
+    its members in walk order (the "share one cell" rule, R-6 F-1, an N-8
+    collision joining the earlier bucket), its start, length, glyph run and
+    edge flags. `gantt_milestone_row` draws them; `gantt_lane_label` counts
+    its ` i/N` from the same buckets."""
     W = ax.w
-    cells: list[tuple[str, str]] = [(" ", "dim")] * W
-    if W < 3 or not lane:
-        return cells
-
     buckets: dict[int, list[Task]] = {}
     for t in lane:
         d = parse_iso(t.due_date)
@@ -2897,6 +2880,35 @@ def gantt_milestone_row(lane: tuple[Task, ...], selected_id: str | None, board: 
             break
         placed.append(dict(members=members, cell=cell, start=start, length=length,
                            seq=seq, left=left, right=right))
+    return placed
+
+
+def gantt_milestone_row(lane: tuple[Task, ...], selected_id: str | None, board: Board,
+                        ax: GanttAxis, today: date) -> list[tuple[str, str]]:
+    """The milestone row's field (Inc MR-a): `ax.w` cells of (glyph, tone) for
+    `_gantt_field` (SEAM-7).
+
+    Pass 1 draws the marks, one per occupied cell (LLR-4602): a lone milestone
+    its class glyph, a reached one alone `<hollow>✓`, two to nine sharing one
+    cell `<glyph><N>` and ten or more `<glyph>+`; the glyph is the cell's
+    lead's (its selected member, else its first in walk order). The selected
+    mark's tone is `rev:<style>`; the count digit and `+` are `bright` beside
+    it, else the class style (N-7). Off the window, `◂`/`▸` in the edge cell
+    and the mark next inward; a two-cell mark whose cell is `w-1` starts at
+    `w-2` (SEC-3), and a member whose cell falls inside an earlier mark's
+    footprint joins that bucket (N-8). Pass 2 draws the selected member's
+    title in `bright`, whole one blank cell after its mark else before, else
+    cut on the roomier side when that side has 6 cells or more. Pass 3 draws
+    the other marks' lead date `Mon D` (or its `▲Nd` in `over` when late),
+    whole only. Every label follows the LABEL PATH (R-7): room in cells, `fit`
+    on the PLAIN text, `_literal` once whole, then one run in the first cell
+    and `""` in the cells it covers."""
+    W = ax.w
+    cells: list[tuple[str, str]] = [(" ", "dim")] * W
+    if W < 3 or not lane:
+        return cells
+
+    placed = _lane_marks(lane, selected_id, board, ax, today)
 
     occ: set[int] = set()
     for rec in placed:
@@ -2982,7 +2994,7 @@ def gantt_milestone_row(lane: tuple[Task, ...], selected_id: str | None, board: 
 
 
 def gantt_lane_label(lane: tuple[Task, ...], selected_id: str | None, board: Board,
-                     today: date, label_w: int) -> str:
+                     ax: GanttAxis, today: date, label_w: int) -> str:
     """The milestone row's label column, padded to `label_w` (V-internal, N-6).
 
     Nothing selected: `◆ <N> milestones` (`milestone` when N = 1) at `label_w`
@@ -2990,11 +3002,14 @@ def gantt_lane_label(lane: tuple[Task, ...], selected_id: str | None, board: Boa
     member selected: its glyph in its style, its title through
     `title_markup(…, selected=True)` (escaped, cut to the column, wearing the
     selection cue, N-7), and ` <i>/<N>` in `mut` when it is the i-th of N
-    members that share its cell; the tag is kept and the title is cut first."""
+    members that share its cell — the row's own buckets on `ax` (`_lane_marks`,
+    R-6 F-1), so at k > 1 two days in one cell count together; the tag is kept
+    and the title is cut first."""
     on = next((t for t in lane if t.id == selected_id), None)
     if on is not None:
         glyph, style, _chip = milestone_mark(on, board, today)
-        same = [t for t in lane if t.due_date == on.due_date]
+        same = next((r["members"] for r in _lane_marks(lane, selected_id, board, ax, today)
+                     if on in r["members"]), [on])
         tag = f" {same.index(on) + 1}/{len(same)}" if len(same) > 1 else ""
         title = title_markup(on, max(1, label_w - 4 - len(tag)), True)
         return " " + c(glyph, style) + " " + title + c(tag, "mut") + " "
@@ -3654,7 +3669,7 @@ def _gantt_frame(board, show_archived, selected_id, today=None, width=68, height
                               and (d := parse_iso(m.due_date)) and d >= today), None)
             chip = (gantt_milestone_chip(nxt, board, today, chip_w) if nxt
                     else " " * chip_w)
-            return row(gantt_lane_label(lane, selected_id, board, today, label_w),
+            return row(gantt_lane_label(lane, selected_id, board, ax, today, label_w),
                        " ", gantt_milestone_row(lane, selected_id, board, ax, today),
                        chip)
         mark = gantt_dep_mark(t, board, chain)

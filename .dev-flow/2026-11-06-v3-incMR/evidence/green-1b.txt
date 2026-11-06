@@ -1,0 +1,152 @@
+# GREEN-1b (intermediate re-run after the first fixes; superseded) 2026-11-06T16:58:28-06:00 base 74bc18c + E4 integration working tree
+# cwd: /c/Users/jjgh8/Github/taskboard-wt/ms-row-proto
+# cmd: env -u NO_COLOR python -m pytest -q -p no:cacheprovider tests/test_milestone_row.py tests/test_milestone_row_at.py tests/test_boards_home.py tests/test_gantt_milestones.py tests/test_legend.py tests/test_milestone_marks.py tests/test_milestone_offer.py tests/test_colour_budget.py tests/test_colour_budget_app.py tests/test_english.py tests/test_prism_laws.py tests/test_markup_census.py tests/test_modal_keys.py
+# taskboard.__file__ (python -c from the same cwd; python -m puts cwd first on sys.path the same way): C:\Users\jjgh8\Github\taskboard-wt\ms-row-proto\taskboard\__init__.py
+C:\Users\jjgh8\anaconda3\Lib\site-packages\pytest_asyncio\plugin.py:207: PytestDeprecationWarning: The configuration option "asyncio_default_fixture_loop_scope" is unset.
+The event loop scope for asynchronous fixtures will default to the fixture caching scope. Future versions of pytest-asyncio will default the loop scope for asynchronous fixtures to function scope. Set the default fixture loop scope explicitly in order to avoid unexpected behavior in the future. Valid fixture loop scopes are: "function", "class", "module", "package", "session"
+
+  warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCOPE_UNSET))
+........................................................................ [ 21%]
+........................................................................ [ 43%]
+....F................................................................... [ 65%]
+........................................................................ [ 87%]
+.........................................                                [100%]
+================================== FAILURES ===================================
+_ test_AT_602_milestones_read_as_dates_reached_ones_quiet_the_ruler_marks_them _
+
+tmp_path = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-32422/test_AT_602_milestones_read_as0')
+
+    async def test_AT_602_milestones_read_as_dates_reached_ones_quiet_the_ruler_marks_them(tmp_path):
+        """AT-602 (US-602): at 118\xd730 in the gantt, `Launch new homepage` is a ` \u25c6` row
+        with its date in the field and `in 10d`, no bar; `Mockups approved` is `\u25c6\u2713`
+        with `\u2713 done`, all in the reached grey; `Security review sign-off`'s chip `\u25b22d` is over; the
+        month row holds a reached-grey `\u25c6`; with `Revenue model signed off` selected its column
+        holds a Data Warehouse `\u25c6`; the legend names both marks at 118\xd730 and 80\xd724;
+        `\u2191` from `Build component library` selects `Mockups approved`, `\u2193` returns;
+        `]` pressed on `Launch new homepage` until Done says "reached", never
+        "folded", and its row becomes `\u25c6\u2713`. RED on base: plain task rows (P-3/P-4)."""
+        path = tmp_path / "board.json"
+        b = kg_board.milestones(kg_board.shifted(path), date.today())
+        b.settings[RENUMBER] = True
+        b.save()
+        today = date.today()
+        app = TaskboardApp(board_path=str(path), team_sync_interval=1e9)
+        async with app.run_test(size=(118, 30), notifications=True) as pilot:
+            await pilot.press("3")
+            await pilot.pause()
+            await _select(app, pilot, "tw5")
+            rows = _painted(app)
+            launch = _row(rows, " \u25c6 Launch new homepage")
+            text = "".join(ch for ch, _ in launch)
+            label_w, _cw, field_w = gantt_columns(118)
+            field = text[label_w + 1:label_w + 1 + field_w]
+            # Inc MR-a re-baseline: Website Redesign's two milestones share ONE row
+            # (LLR-4601.1). The selected one's label column names it (LLR-4603.7) and
+            # its title sits beside its mark in the field, where its date stood
+            # (LLR-4603.1); still no bar.
+            assert "\u25c6" in field and "Launch new homepage" in field and "\u254c" not in field
+            assert field.index("Launch new homepage") > field.index("\u25c6")
+            assert text.rstrip().endswith("in 10d")
+            # the reached `Mockups approved` is on that same row: `\u25c7\u2713` in mut and the
+            # reached grey, its date beside it in the reached grey (LLR-4602.4,
+            # LLR-4603.3). Its own title and `\u2713 done` chip left with its own row
+            # (LLR-4603.3: other members show a date; LLR-4603.8: the chip is the
+            # selected member's).
+            mock, mtext = launch, text
+            assert app._line_map["tw0"] == app._line_map["tw5"]
+            i = mtext.index("\u25c7\u2713", label_w)
+            assert mock[i][1] == MUT and mock[i + 1][1] == REACHED
+            md = _md(today - timedelta(days=12))
+            assert mtext[i + 3:i + 3 + len(md)] == md
+            assert mock[i + 3][1] == REACHED
+            # `Security review sign-off`, alone and late on its row: `\u25b22d` in over
+            # beside its mark (LLR-4603.4), and a blank chip — no member is upcoming
+            # (LLR-4603.8)
+            sec = rows[app._line_map["to0"]]
+            stext = "".join(ch for ch, _ in sec)
+            j = stext.index("\u25b22d", label_w + 1)
+            assert sec[j][1] == OVER and j < label_w + 1 + field_w
+            assert stext[label_w + 1 + field_w:].strip() == ""
+            month = rows[1]
+            # the hollow `\u25c7` sits at Mockups' exact column, not merely "any": its due
+            # through the shipped axis math, in mut — the seat's reached unclassified.
+            ax = gantt_axis(gantt_columns(118)[2], today, *gantt_window(
+                    gantt_plan(app.board, False, "tw5", today, 30 - 1 - GANTT_RULER_ROWS),
+                    today))
+            ash = ax.cell(date.fromisoformat(app.board.task_by_id("tw0").due_date))
+            assert month[gantt_columns(118)[0] + 1 + ash] == ("\u25c7", MUT)
+            assert "\u25c6 milestone \xb7 \u25c6\u2713 reached" in "".join("".join(c for c, _ in r) for r in rows)
+            # the ruler on another project's milestone
+            await _select(app, pilot, "td0")
+            await pilot.pause()
+            rows = _painted(app)
+            dwh = HEX[app.board.project_by_id("pdwh").color].lower()   # as loaded
+            # one mark in the project hue (the due); the milestone itself is \u25c6 in mut
+            # through the seat — the hue belongs to the project, not the mark (MM-D1)
+            tail = rows[1][gantt_columns(118)[0]:]
+            assert sum(ch == "\u25c6" and hx == dwh for ch, hx in tail) == 1
+            assert sum(ch == "\u25c6" and hx == MUT for ch, hx in tail) == 1
+            # \u2191 / \u2193 over the reached row \u2014 Inc MR-a re-baseline: `\u2191` stops on the
+            # shared row once, at its anchor (the next open one, LLR-4604.2); the
+            # reached one is one `\u2190` along it (LLR-4604.4); `\u2193` returns
+            await _select(app, pilot, "tw2")
+            await pilot.pause()
+            await pilot.press("up")
+            await pilot.pause()
+            assert app.selected_task_id == "tw5"
+            await pilot.press("left")
+            await pilot.pause()
+            assert app.selected_task_id == "tw0"
+            await pilot.press("down")
+            await pilot.pause()
+            assert app.selected_task_id == "tw2"
+            # `]` until Done: reached, not folded
+            await _select(app, pilot, "tw5")
+            await pilot.pause()
+            app.clear_notifications()
+            for _ in range(4):
+                await pilot.press("right_square_bracket")
+                await pilot.pause()
+            said = _toasts(app)
+            assert sum("Launch new homepage reached \xb7 \u25c7\u2713" in x for x in said) == 1, said
+            assert not any("folded" in x for x in said)
+            assert "\u25c7\u2713" in "".join(ch for ch, _ in _row(_painted(app), " \u25c7 Launch new homepage"))
+        app = TaskboardApp(board_path=str(path), team_sync_interval=1e9)
+        async with app.run_test(size=(80, 24)) as pilot:
+            await pilot.press("3")
+            await pilot.pause()
+            # walk onto the reached milestone's group, so the 80-wide legend draws
+            # (and must name) both marks — reached by keys, not assigned
+>           await _select(app, pilot, "tw5")
+
+tests\test_gantt_milestones.py:422: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+app = TaskboardApp(title='taskboard', classes={'-dark-mode'}, pseudo_classes={'dark', 'focus'})
+pilot = <Pilot app=TaskboardApp(title='taskboard', classes={'-dark-mode'}, pseudo_classes={'dark', 'focus'})>
+tid = 'tw5'
+
+    async def _select(app, pilot, tid: str) -> None:
+        """Walk the view with the real arrow keys until `tid` is the selection — the
+        direction read off the shipped nav seat, the move made by a key press."""
+        for _ in range(200):
+            if app.selected_task_id == tid:
+                return
+            order = app._nav_flat()
+            cur = app.selected_task_id
+            lane = [t.id for t in gantt_lane(app._view_board(), app.show_archived, cur,
+                                             date.today(), app.focused_project_id)]
+            if tid in lane and cur in lane:      # Inc MR-a: along the shared row (LLR-4604.3/.4)
+                await pilot.press("right" if lane.index(tid) > lane.index(cur) else "left")
+            elif tid in order and cur in order and order.index(tid) < order.index(cur):
+                await pilot.press("up")
+            else:
+                await pilot.press("down")
+            await pilot.pause()
+>       raise AssertionError(f"{tid} never selected by the arrows")
+E       AssertionError: tw5 never selected by the arrows
+
+tests\test_gantt_milestones.py:318: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_gantt_milestones.py::test_AT_602_milestones_read_as_dates_reached_ones_quiet_the_ruler_marks_them
+1 failed, 328 passed in 137.43s (0:02:17)
