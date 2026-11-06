@@ -56,7 +56,7 @@ from .views import (HEX, ago, added_order, added_rows, agenda_buckets, all_agend
                     people_by_urgency, person_items, render_people_directory,
                     home_missing, home_title, present_deck_boards,
                     clip, filtered_board, focus_tasks, gantt_group_key, group_key,
-                    gantt_plan, nav_model, present_name, present_project_id,
+                    gantt_plan, gantt_lane, nav_model, present_name, present_project_id,
                     present_hidden, present_hidden_rows, present_tasks_m, render_present,
                     render_present_all, render_view, PresentAll,
                     PRESENT_MIN_WIDTH, PRESENT_RAIL_MIN, PRESENT_SCREEN_VIEWS,
@@ -3437,7 +3437,20 @@ class TaskboardApp(App):
             self.refresh_view()
 
     def action_hmove(self, delta: int) -> None:
-        """Left/Right: jump to the nearest non-empty column's first task."""
+        """Left/Right: in the gantt, a selected lane milestone walks its lane
+        in walk order (SEAM-3); elsewhere, jump to the nearest non-empty
+        column's first task."""
+        if self.view_mode == "gantt":
+            lane = gantt_lane(self._view_board(), self.show_archived,
+                              self.selected_task_id, date.today(),
+                              self.focused_project_id)
+            ids = [t.id for t in lane]
+            if self.selected_task_id in ids:
+                i = ids.index(self.selected_task_id) + delta
+                if 0 <= i < len(ids):
+                    self.selected_task_id = ids[i]
+                    self.refresh_view()
+                return
         cols = self._nav_columns()
         loc = self._locate(cols)
         if loc is None:

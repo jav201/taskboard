@@ -2408,6 +2408,9 @@ class GanttGroup(NamedTuple):
     # keeps its done work visible, quietly, at the tail (2026-10-26). `open` and
     # `rest` keep their counts.
     rows: tuple = ()
+    # the group's drawn milestones in walk order (SEAM-1); set only under
+    # `done_rows` (the board gantt), else `()`.
+    lane: tuple = ()
 
 
 # The Inbox's key as a gantt group, beside the project ids (None means "no
@@ -2451,6 +2454,8 @@ def gantt_plan(board: Board, show_archived: bool, selected_id: str | None,
     DONE, NOT-archived, non-milestone tasks at the tail, sorted by due: a done
     task stays visible until it is archived (the operator, 2026-10-26). Archived
     work never draws a row: it is only counted in the `✓n` on its span row."""
+    if done_rows and _hidden_class_ids(board):
+        board = _hide(board)          # N-5: THE ONE SEAT of the class filter (R-4)
     tasks = board.visible_tasks(show_archived)
     raw: list[tuple[object | None, list[Task], list[Task]]] = []
     for p in board.visible_projects(show_archived):
@@ -2482,6 +2487,38 @@ def gantt_plan(board: Board, show_archived: bool, selected_id: str | None,
                   + done_tail(r))
             for _p, o, r in raw]
 
+    def walk_key(t: Task):
+        d = parse_iso(t.due_date)
+        return (d is None, d or date.max, t.title, t.id)
+
+    def lane_anchor(ms: list[Task]) -> Task | None:
+        """The anchor (LLR-4604.2): first in walk order open with a due on or
+        after today, else the first open one, else the first."""
+        if not ms:
+            return None
+        opn = [t for t in ms if not board.is_done(t)]
+        fut = [t for t in opn if (d := parse_iso(t.due_date)) and d >= today]
+        return (fut or opn or ms)[0]
+
+    lanes: list[tuple[Task, ...]] = []
+    if done_rows:
+        # the shared row (SEAM-1, SEAM-2): milestones leave `rows` for `lane` in
+        # walk order; the stop is the selected member, else the anchor; with no
+        # member, no stop. The fold budget below counts `len(rows)`, so the row
+        # costs 1.
+        new_rows = []
+        for g_rows in rows:
+            ms = tuple(sorted((t for t in g_rows if t.milestone), key=walk_key))
+            rest = tuple(t for t in g_rows if not t.milestone)
+            stop = next((t for t in ms if t.id == selected_id), None)
+            if stop is None:
+                stop = lane_anchor(list(ms))
+            lanes.append(ms)
+            new_rows.append((stop,) + rest if stop is not None else rest)
+        rows = new_rows
+    else:
+        lanes = [() for _ in rows]
+
     sel = board.task_by_id(selected_id) if selected_id else None
     sel_i = next((i for i, (p, o, r) in enumerate(raw)
                   if sel is not None and sel in o + r), None)
@@ -2511,8 +2548,24 @@ def gantt_plan(board: Board, show_archived: bool, selected_id: str | None,
         if n and n <= left:
             unfold[i] = True
             left -= n
-    return [GanttGroup(p, o, r, late_n(o), unfold[i], rows[i])
+    return [GanttGroup(p, o, r, late_n(o), unfold[i], rows[i], lanes[i])
             for i, (p, o, r) in enumerate(raw)]
+
+
+def gantt_lane(board: Board, show_archived: bool, selected_id: str | None,
+               today: date, focus: str | None = None) -> tuple[Task, ...]:
+    """The lane of drawn milestones (walk order) that holds `selected_id`, over
+    the hidden-class-filtered board (N-5: the filter is inside `gantt_plan`,
+    none here); `()` when the selection is None or not on a milestone row
+    (SEAM-3). S passes `_view_board()`, so the `/` query is already applied."""
+    if selected_id is None:
+        return ()
+    groups = gantt_plan(board, show_archived, selected_id, today, 10 ** 6, focus,
+                        done_rows=True)
+    for g in groups:
+        if g.lane and any(t.id == selected_id for t in g.lane):
+            return g.lane
+    return ()
 
 
 def gantt_window(groups: list[GanttGroup], today: date
@@ -2767,6 +2820,191 @@ def gantt_milestone_chip(task: Task, board: Board, today: date, width: int) -> s
     return c(fit(lab, width, "right"), tone)
 
 
+def gantt_milestone_row(lane: tuple[Task, ...], selected_id: str | None, board: Board,
+                        ax: GanttAxis, today: date) -> list[tuple[str, str]]:
+    """The milestone row's field (Inc MR-a): `ax.w` cells of (glyph, tone) for
+    `_gantt_field` (SEAM-7).
+
+    Pass 1 draws the marks, one per occupied cell (LLR-4602): a lone milestone
+    its class glyph, a reached one alone `<hollow>✓`, two to nine sharing one
+    cell `<glyph><N>` and ten or more `<glyph>+`; the glyph is the cell's
+    lead's (its selected member, else its first in walk order). The selected
+    mark's tone is `rev:<style>`; the count digit and `+` are `bright` beside
+    it, else the class style (N-7). Off the window, `◂`/`▸` in the edge cell
+    and the mark next inward; a two-cell mark whose cell is `w-1` starts at
+    `w-2` (SEC-3), and a member whose cell falls inside an earlier mark's
+    footprint joins that bucket (N-8). Pass 2 draws the selected member's
+    title in `bright`, whole one blank cell after its mark else before, else
+    cut on the roomier side when that side has 6 cells or more. Pass 3 draws
+    the other marks' lead date `Mon D` (or its `▲Nd` in `over` when late),
+    whole only. Every label follows the LABEL PATH (R-7): room in cells, `fit`
+    on the PLAIN text, `_literal` once whole, then one run in the first cell
+    and `""` in the cells it covers."""
+    W = ax.w
+    cells: list[tuple[str, str]] = [(" ", "dim")] * W
+    if W < 3 or not lane:
+        return cells
+
+    buckets: dict[int, list[Task]] = {}
+    for t in lane:
+        d = parse_iso(t.due_date)
+        if d is None:
+            continue
+        x = ax.cell(d)
+        buckets.setdefault(min(max(x, 0), W - 1), []).append(t)
+
+    def flags(members: list[Task]) -> tuple[bool, bool]:
+        left = any(ax.cell(parse_iso(t.due_date)) < 0 for t in members)
+        right = any(ax.cell(parse_iso(t.due_date)) >= W for t in members)
+        return left, right
+
+    def geom(members: list[Task], cell: int):
+        """(start, length, seq, left, right) for one bucket's mark."""
+        left, right = flags(members)
+        on = next((t for t in members if t.id == selected_id), None)
+        lead = on or members[0]
+        glyph, style, chip = milestone_mark(lead, board, today)
+        tone = f"rev:{style}" if on else style
+        if len(members) > 1:
+            seq = [(glyph, tone),
+                   (str(len(members)) if len(members) < 10 else "+",
+                    "bright" if on else style)]
+        elif chip == "✓":
+            seq = [(glyph, tone), ("✓", "reached")]
+        else:
+            seq = [(glyph, tone)]
+        length = len(seq)
+        if left:
+            start = 1
+        elif right:
+            start = W - 1 - length
+        else:
+            start = min(cell, W - length)
+        return start, length, seq, left, right
+
+    placed: list[dict] = []
+    for cell in sorted(buckets):
+        members = buckets[cell]
+        start, length, seq, left, right = geom(members, cell)
+        while placed:
+            prev = placed[-1]
+            if prev["start"] + prev["length"] > start:   # N-8: marks collide
+                members = prev["members"] + members
+                cell = prev["cell"]
+                placed.pop()
+                start, length, seq, left, right = geom(members, cell)
+                continue
+            break
+        placed.append(dict(members=members, cell=cell, start=start, length=length,
+                           seq=seq, left=left, right=right))
+
+    occ: set[int] = set()
+    for rec in placed:
+        if rec["left"]:
+            cells[0] = (OFF_LEFT, "mut")
+            occ.add(0)
+        if rec["right"]:
+            cells[W - 1] = (OFF_RIGHT, "mut")
+            occ.add(W - 1)
+        for i, (g, t) in enumerate(rec["seq"]):
+            ci = rec["start"] + i
+            if 0 <= ci < W:
+                cells[ci] = (g, t)
+                occ.add(ci)
+
+    def room_right(a: int) -> int:
+        n, i = 0, a + 1
+        while 0 <= i < W and i not in occ and (i + 1 >= W or i + 1 not in occ):
+            n += 1
+            i += 1
+        return n
+
+    def room_left(a: int) -> int:
+        n, i = 0, a - 1
+        while 0 <= i < W and i not in occ and (i - 1 < 0 or i - 1 not in occ):
+            n += 1
+            i -= 1
+        return n
+
+    def put_label(start: int, text: str, tone: str) -> None:
+        n = cell_len(text)
+        if n <= 0:                       # SEC-6: a 0-cell label is not drawn
+            return
+        piece = _literal(text)           # R-7 step 3: escaped once, whole
+        cells[start] = (piece, tone)
+        for k in range(1, n):
+            cells[start + k] = ("", tone)
+        for k in range(n):
+            occ.add(start + k)
+
+    # Pass 2 — the selected member's title
+    for rec in placed:
+        on = next((t for t in rec["members"] if t.id == selected_id), None)
+        if on is None:
+            continue
+        title = on.title
+        ra = room_right(rec["start"] + rec["length"] - 1) - 1
+        rb = room_left(rec["start"]) - 1
+        w_t = cell_len(title)
+        if ra >= w_t:
+            put_label(rec["start"] + rec["length"] + 1, title, "bright")
+        elif rb >= w_t:
+            put_label(rec["start"] - 1 - w_t, title, "bright")
+        elif max(ra, rb) >= 6:
+            cut = fit(title, max(ra, rb))
+            if ra >= rb:
+                put_label(rec["start"] + rec["length"] + 1, cut, "bright")
+            else:
+                put_label(rec["start"] - 1 - cell_len(cut), cut, "bright")
+        break
+
+    # Pass 3 — the other marks' dates, left to right
+    for rec in placed:
+        on = next((t for t in rec["members"] if t.id == selected_id), None)
+        if on is not None:
+            continue
+        lead = rec["members"][0]
+        _glyph, _style, chip = milestone_mark(lead, board, today)
+        d = parse_iso(lead.due_date)
+        if chip.startswith("▲"):
+            text, tone = chip, "over"
+        else:
+            text, tone = _md(d), ("reached" if chip == "✓" else "soon" if d == today
+                                  else "mut")
+        ra = room_right(rec["start"] + rec["length"] - 1) - 1
+        rb = room_left(rec["start"]) - 1
+        w_t = cell_len(text)
+        if ra >= w_t:
+            put_label(rec["start"] + rec["length"] + 1, text, tone)
+        elif rb >= w_t:
+            put_label(rec["start"] - 1 - w_t, text, tone)
+    return cells
+
+
+def gantt_lane_label(lane: tuple[Task, ...], selected_id: str | None, board: Board,
+                     today: date, label_w: int) -> str:
+    """The milestone row's label column, padded to `label_w` (V-internal, N-6).
+
+    Nothing selected: `◆ <N> milestones` (`milestone` when N = 1) at `label_w`
+    24 or more, else `◆ <N> ms`, then ` ▲<L>` in `over` when L are late. A
+    member selected: its glyph in its style, its title through
+    `title_markup(…, selected=True)` (escaped, cut to the column, wearing the
+    selection cue, N-7), and ` <i>/<N>` in `mut` when it is the i-th of N
+    members that share its cell; the tag is kept and the title is cut first."""
+    on = next((t for t in lane if t.id == selected_id), None)
+    if on is not None:
+        glyph, style, _chip = milestone_mark(on, board, today)
+        same = [t for t in lane if t.due_date == on.due_date]
+        tag = f" {same.index(on) + 1}/{len(same)}" if len(same) > 1 else ""
+        title = title_markup(on, max(1, label_w - 4 - len(tag)), True)
+        return " " + c(glyph, style) + " " + title + c(tag, "mut") + " "
+    n = len(lane)
+    late = sum(1 for t in lane if milestone_mark(t, board, today)[2].startswith("▲"))
+    text = f"{n} milestone{'s' if n != 1 else ''}" if label_w >= 24 else f"{n} ms"
+    return (" " + c("◆", "mut") + " " + c(text, "mut")
+            + (" " + c(f"▲{late}", "over") if late else ""))
+
+
 def _gantt_span(project, ax: GanttAxis, progress: float, tick: int
                 ) -> list[tuple[str, str]]:
     """The project span on the fitted axis: ash behind today, hue ahead, `◆`
@@ -2879,11 +3117,23 @@ def _gantt_field(cells: list[tuple[str, str]], ax: GanttAxis,
     """Cells to markup over the field's own ground: lattice `·` (ash behind
     today, dim ahead), the calendar guide `┆`, and the today rule `╎` in any
     cell nothing else took; a weekend cell carries the weekend background
-    under whatever it holds (every cell here is a constant glyph)."""
+    under whatever it holds. A cell whose glyph is a multi-character run is a
+    field label run (cut by `fit` and escaped once, whole, by `_literal`
+    upstream, R-7): it is painted as given, in its tone, never split or
+    re-measured, and never shaded by the weekend ground (N-9). A `""` glyph
+    (a consumed label cell) paints nothing. A `rev:<style>` tone paints its
+    glyph reverse-video and bold in `HEX[<style>]` (SEAM-8)."""
     out = []
     for x, (glyph, tone) in enumerate(cells):
+        if glyph == "":                     # a consumed cell of a label run
+            continue
+        if len(glyph) > 1:                   # a field label run, escaped whole
+            out.append(c(glyph, tone))
+            continue
         if tone == "gap":                      # a space inside a written date
             m = c(" ", "dim")
+        elif tone.startswith("rev:"):
+            m = f"[b reverse {HEX[tone[4:]]}]{glyph}[/]"
         elif glyph != " ":
             m = (c(glyph, "bright", bold=True) if tone == "crit" else c(glyph, tone))
         elif x == ax.tc:
@@ -3385,7 +3635,28 @@ def _gantt_frame(board, show_archived, selected_id, today=None, width=68, height
             cells, chip = [(" ", "dim")] * ax.w, " " * chip_w
         return row(_gantt_group_label(g, label_w, paged), " ", cells, chip)
 
+    lane_by_stop: dict[str, tuple[Task, ...]] = {}
+    for g in groups:
+        if g.lane and g.unfolded and g.rows:
+            lane_by_stop[g.rows[0].id] = g.lane
+
     def task_row(t: Task) -> str:
+        lane = lane_by_stop.get(t.id)
+        if lane is not None:
+            # the shared milestone row: a blank gutter (LLR-4601.8, R-6 F-5) —
+            # no gantt_dep_mark, so no `waits`/`early` from this row.
+            for m in lane:
+                if parse_iso(m.due_date) is not None:
+                    drawn.add("reached" if board.is_done(m) else "milestone")
+            on = next((m for m in lane if m.id == selected_id), None)
+            nxt = on or next((m for m in lane
+                              if not board.is_done(m)
+                              and (d := parse_iso(m.due_date)) and d >= today), None)
+            chip = (gantt_milestone_chip(nxt, board, today, chip_w) if nxt
+                    else " " * chip_w)
+            return row(gantt_lane_label(lane, selected_id, board, today, label_w),
+                       " ", gantt_milestone_row(lane, selected_id, board, ax, today),
+                       chip)
         mark = gantt_dep_mark(t, board, chain)
         if "↳" in mark:
             drawn.add("early" if HEX["over"] in mark else "waits")
@@ -3486,6 +3757,10 @@ def _gantt_frame(board, show_archived, selected_id, today=None, width=68, height
         lines.append(markup)
         if tid is not None and line_map is not None:
             line_map[tid] = len(lines) - 1
+            lane = lane_by_stop.get(tid)
+            if lane is not None:                 # SEAM-9: every lane id maps here
+                for m in lane:
+                    line_map[m.id] = len(lines) - 1
     if strip:
         lines.insert(1 + GANTT_RULER_ROWS, strip)   # under the ruler, over the body
         if line_map is not None:
