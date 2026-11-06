@@ -86,3 +86,5 @@ Range check (2026-11-06, `grep -rhoE "(HLR|LLR|AT|US)-<r>[0-9]{2}" REQUIREMENTS.
   - View 2 changes with view 1, because the two share code.
 - **R-2 (Q-1), presentation: `↑↓` stops at each milestone, and no key changes.** In `R`, `←→` already moves the cursor, or toggles rail and timeline in view 3. This rule applies to MR-b only. On the board gantt (MR-a), `←→` walks the milestone row as the round showed, because `hmove` is a no-op there today.
 - **R-3 (Q-2): the link mode keeps one row per milestone.** While `L` is active, each overlay and each `⟲` names exactly one task. The simple form is kept.
+- **R-4 (baseline finding, `974289f`).** The gantt cursor's row list (`nav_model`) ignores hidden milestone classes, so the cursor can stop on rows that are not drawn. This is a pre-existing defect, and MR-a fixes it: navigation reads the same filtered board the renderer draws, which is what LLR-4605.3 depends on. E2 designs the fix, and E4 carries a regression test that is RED on base.
+- **R-5.** HLR-4606 has two responses: link mode and the paged fold. E2 may split it into two HLRs with a ledger entry. The orchestrator approves this in advance.
