@@ -91,3 +91,18 @@ neutralised by the selection-validity law before it is observable.
 - 4605.1: applied as `filtered_board` keeping all milestones (the row reads the unfiltered milestone set); killed.
 - 4606.3: applied as `render_gantt` dropping `done_rows=True` (the shared-row flag is not restored); killed.
 - No background processes left; the tree was reverted to `8e3272e` after every mutant (`git status` clean).
+
+## E5 corrective replay (2026-11-06, Opus 5.5)
+
+Tree: `C:\Users\jjgh8\Github\taskboard-wt\incMR-mut2`, detached at `5d2c880` (the corrective commit), removed
+afterwards with `git worktree remove --force`. Same command and interpreter as above; `taskboard.__file__` =
+the copy's. Baseline of the replayed nodes: 37 passed. Evidence: `evidence/e5-mutant-replay.txt`.
+
+| # | LLR | Mutation (negative control) | Test node(s) | Result |
+|---|---|---|---|---|
+| 38 | 4605.2 | drop the class filter in `gantt_plan` (`if False:`), now the row's only seat (C-2) | test_TC_4842… | KILLED (1 failed) |
+| 39 | 4605.3 | `action_hmove` walks the unfiltered lane: `gantt_lane` over a copy of `self.board` with `marks = {}` | test_TC_4843…, test_AT_4605… | KILLED (2 failed) |
+| 46 | 4603.11 N-9 | tell a label run by `len(glyph) > 1` again (F1) | test_TC_4820c… ×3 | KILLED (2 failed, the 2-codepoint arm passes by design) |
+| 47 | SEC-6 | drop the `n <= 0` guard in `put_label` (SEC-8) | test_TC_4820b… ×3 | KILLED (3 failed) |
+
+**After the replay: Killed 47 · Survived 0.** Rows 38 and 39 replace the SURVIVED rows above; 46 and 47 are new.

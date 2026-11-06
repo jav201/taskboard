@@ -1,0 +1,10 @@
+# GREEN-3 2026-11-06T17:43:00-06:00 tree 5d2c880 (E5 corrective)
+# cwd: /c/Users/jjgh8/Github/taskboard-wt/ms-row-proto
+# cmd: env -u NO_COLOR python -m pytest -q -p no:cacheprovider tests/test_milestone_row.py tests/test_milestone_row_at.py tests/test_boards_home.py tests/test_gantt_milestones.py tests/test_legend.py tests/test_milestone_marks.py tests/test_milestone_offer.py tests/test_colour_budget.py tests/test_colour_budget_app.py tests/test_english.py tests/test_prism_laws.py tests/test_markup_census.py tests/test_modal_keys.py tests/test_hygiene.py
+# taskboard.__file__: C:\Users\jjgh8\Github\taskboard-wt\ms-row-proto\taskboard\__init__.py
+........................................................................ [ 21%]
+........................................................................ [ 42%]
+........................................................................ [ 63%]
+........................................................................ [ 84%]
+.....................................................                    [100%]
+341 passed in 159.47s (0:02:39)

@@ -69,3 +69,12 @@
 - **What changed:** the threshold EXAMPLE only; the `shall` is unchanged. Was: "118x30, m3 selected → `Steering go/no-go` follows `■2 `; m5 (rightmost) selected with no room after → its title ends one cell before its mark". Now: "118x30, m5 selected → `Pilot launch` follows `★ `; a reached milestone due on the field's last day selected → its title ends one cell before `⬡✓`; 2/2". The behaviour under test is the same: whole title after the mark when the room to the next mark (or edge) holds it, else whole before it; the NC (always after, overflowing) is still RED on the `before` case. TC-4821 asserts the new example (plus the g2 case it already had).
 - **Why:** measured, `evidence/i2-measure.txt`: the fitted axis at 118x30 is k = 0.5 from Oct 14; m3 sits at cell 20 and m5 at cell 32, so 8 cells lie between `■2 ` and the gap before m5, and the 17-cell title cannot be whole on either side (TC-4822's `Steerin…` cut is the requirement-true output). m5 has 46 cells after it, so "no room after" is false. The axis is fitted by the board, not by the selection, so no code change can make the old example hold.
 - **Evidence:** `evidence/i2-measure.txt`; `e4-tests.md` §7 F-T1; `e4-deviations.md` D-2; `e4-integration.md` I-2.
+
+### LED-2026-11-06-incMR.8 — E5 corrective, rulings C-2, C-3 and C-5: the graph of record follows the shipped code (F3, F4, F6, SEC-9)
+- **Requirement:** LLR-4603.7
+- **Requirement:** LLR-4603.11
+- **Requirement:** LLR-4605.2
+- **Date:** 2026-11-06
+- **What changed:** graph text only; no `shall` changes. `graph-proto-V.cw.md`: `gantt_lane_label` takes `GanttAxis ax` (E4 I-1), and the new V-internal node `_lane_marks` feeds `gantt_milestone_row` and `gantt_lane_label` (F3). `_gantt_field` reads a label run from the tone `run:<tone>`, never from the glyph's length (C-5, SEC-9), so N-9 holds for a 1-codepoint title (F1). `_gantt_frame` hands `gantt_plan` the board it received under `done_rows`, so the plan's `_hide` is the board gantt's one class-filter seat (C-2, N-5). `graph-interfaces.cw.md` `gantt_milestone_row`: LABEL PATH step 4 counts the PLAIN cut label's cells (F4); pass 3 names the date tones `reached`, `soon` and `mut` (F6).
+- **Why:** E5 requires a `design-gap` fix to update the graph. The E5 mutant run showed two filter seats (TC-4842 could not see either one removed), and the code review found the I-1 signature and `_lane_marks` absent from the graph.
+- **Evidence:** `05-review-code.md` F1, F3, F4, F6; `05-review-security.md` SEC-9; `05-mutants.md` rows 38, 39, 46, 47; `e5-corrective.md`.

@@ -1693,3 +1693,7 @@ and found the records layer lagging the code. All proposed fixes are written in 
 - **K-BL-13 — retention** (I-1, ARCH-11): dumped text stays 7 days after its task is deleted (commission-mandated); future-dated entries never expire; orphan images in `inbox-images/` stay; one `.corrupt` copy per launch.
 - **K-BL-14 — the one-time divider notice covers the `alt+n` field for 15 s on first use** (E13 captures run 1).
 - **K-BL-15 — operator flags (deviations from the commission text):** the divider key is `alt+l`, not `alt+enter` (R1-1: Textual 8.2.8 reads ESC CR as `enter` from Windows Terminal); the new-project field cycles boards with `tab`, not `alt+b` (P-V-1: `alt+b` parses as `ctrl+left`).
+
+## Inc MR-a (2026-11-06-v3-incMR), E5 leftovers
+- **MR-BL-1 — the label placement block is repeated** (code review F5, LOW): passes 2 and 3 of `gantt_milestone_row` repeat the `ra`/`rb` after/before placement. The reviewer's optional `place(rec, text, tone, cut_ok)` helper was not done in the corrective pass; F5's `_LaneMark` NamedTuple was.
+- **MR-BL-2 — the link mode's candidate cycle may offer hidden-class milestones** (seen in E5 C-2, NOT verified): `gantt_link_order` calls `gantt_plan` without `done_rows` on a board no caller filters by class, while the link frame draws the filtered board. Probe it before you act.

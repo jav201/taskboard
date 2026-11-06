@@ -29,7 +29,7 @@ _gantt_frame
 req: LLR-4601.1, LLR-4601.6, LLR-4603.9, LLR-4603.10, LLR-4605.2, LLR-4606.3, LLR-4606.4
 in: Board board; bool show_archived; str? selected_id; date? today = None; int width = 68; int height = 0; dict? line_map = None; int tick = 0; str? focus = None; str? previous = None; str? pinned_id = None; bool done_rows = False
 out: tuple(list[str] lines, set[str] drawn, list[GanttGroup] groups, GanttAxis ax)
-func: CHANGED. It draws each group's stop through `task_row`, which draws the milestone row there: directly under the span row, because the stop is the first entry of `rows`. In `line_map`, every lane id maps to the row's line. The paged branch is unchanged: it pages by `rows` index, and a selected lane member is the stop, so the page that holds the selection holds the row. The D8 branch is unchanged: `task_row(sel)` draws the milestone row. `_hide` runs first as base; `gantt_plan` applies it again under `done_rows` (N-5), which changes nothing, so a hidden class's milestones are not in any lane
+func: CHANGED. It draws each group's stop through `task_row`, which draws the milestone row there: directly under the span row, because the stop is the first entry of `rows`. In `line_map`, every lane id maps to the row's line. The paged branch is unchanged: it pages by `rows` index, and a selected lane member is the stop, so the page that holds the selection holds the row. The D8 branch is unchanged: `task_row(sel)` draws the milestone row. `_hide` runs first as base, for the frame's own reads (legend strip, chain, title markers). Under `done_rows` the frame hands `gantt_plan` the board it received, so the plan's `_hide` is the one seat that filters the board gantt's rows and lanes (N-5, E5 C-2); without `done_rows` (link frame, presentation) it hands the filtered board, as base.
 module: taskboard/views.py
 examples: (TC-4801) MR-F at 118x30 → `4` milestone rows, each the line right after its span row; no other body line holds a milestone mark; `line_map` "m1".."m5" all equal Pilot rollout's row line
 examples: (TC-4806) MR-F at 118x12 → each folded group's span row is followed by the next span row; ≥ `1` folded group
@@ -46,7 +46,7 @@ _gantt_frame.<locals>.task_row
 req: LLR-4601.8, LLR-4603.8, LLR-4606.5
 in: Task t
 out: str row
-func: CHANGED. When `t` is the stop of an unfolded group's lane (an id → group map built once per frame), it returns `row(gantt_lane_label(lane, selected_id, board, today, label_w), " ", gantt_milestone_row(lane, selected_id, board, ax, today), chip)`. The chip is `gantt_milestone_chip` of the selected member, else of the anchor when it is open with a due on or after today, else `chip_w` blanks. The gutter is blank (LLR-4601.8, R-6 F-5): no `gantt_dep_mark`, so a milestone row adds neither `waits` nor `early` to `drawn`; the wait stays visible in details, the link mode and the chain map. It adds "milestone" to `drawn` when an open member has a mark, and "reached" when a reached one does; `row` adds "beyond" for `◂`/`▸` as base. Any other `t` is drawn as base
+func: CHANGED. When `t` is the stop of an unfolded group's lane (an id → group map built once per frame), it returns `row(gantt_lane_label(lane, selected_id, board, ax, today, label_w), " ", gantt_milestone_row(lane, selected_id, board, ax, today), chip)`. The chip is `gantt_milestone_chip` of the selected member, else of the anchor when it is open with a due on or after today, else `chip_w` blanks. The gutter is blank (LLR-4601.8, R-6 F-5): no `gantt_dep_mark`, so a milestone row adds neither `waits` nor `early` to `drawn`; the wait stays visible in details, the link mode and the chain map. It adds "milestone" to `drawn` when an open member has a mark, and "reached" when a reached one does; `row` adds "beyond" for `◂`/`▸` as base. Any other `t` is drawn as base
 module: taskboard/views.py
 examples: (TC-4808) MR-F with m3 waiting on `store` → each milestone row's gutter cell is blank; `drawn` gets no `waits` from a milestone row (base: m3's row draws `↳`)
 examples: (TC-4828) m2 selected → chip `▲1d`; nothing on Pilot rollout selected → `in 4d` (m3); a row whose only members are late → blank chip
@@ -57,7 +57,7 @@ _gantt_field
 req: LLR-4602.5, LLR-4603.11
 in: list[tuple[str, str]] cells; GanttAxis ax; frozenset[int] guides; frozenset[int] weekends = frozenset()
 out: str markup
-func: CHANGED. A tone `rev:<style>` paints its glyph in reverse video and bold, in `HEX[<style>]`. A cell may also hold a `[Data: field label run]` (R-7): `_gantt_field` paints it as given, in its tone, and never escapes, splits or re-measures it; a consumed cell (`""`) paints nothing. Every other cell is still a constant glyph, and the docstring's invariant is amended to name the run. Every other tone paints as base. This is the one place where the selected mark's reverse is drawn; no HEX key is registered at run time (the prototype's `_skey` did that)
+func: CHANGED. A tone `rev:<style>` paints its glyph in reverse video and bold, in `HEX[<style>]`. A cell may also hold a `[Data: field label run]` (R-7), marked by the tone `run:<tone>` (E5 C-5, SEC-9: marked, never inferred from the glyph's length): `_gantt_field` paints it as given, in `<tone>`, with no weekend ground at any length, one codepoint included (N-9, F1), in its tone, and never escapes, splits or re-measures it; a consumed cell (`""`) paints nothing. Every other cell is still a constant glyph, and the docstring's invariant is amended to name the run. Every other tone paints as base. This is the one place where the selected mark's reverse is drawn; no HEX key is registered at run time (the prototype's `_skey` did that)
 module: taskboard/views.py
 examples: (TC-4820) the cells (the `_literal` run of the title `x\`, `bright`), (`""`, `bright`) → one run that prints `x\`, 2 cells, no open style after it
 examples: (TC-4815) the cell (`■`, `rev:violet`) → markup `[b reverse <HEX violet>]■[/]`; the cell (`■`, `violet`) → base `c("■", "violet")`
@@ -72,9 +72,18 @@ examples: (TC-4831) MR-F, selected "store" → gantt `[["m3", "store", "tele", "
 examples: (TC-4843b) the test_legend fixture with class "payment" hidden, 118x30 → the column holds none of "tc8", "tcc", "tce" (RED on base: P-10, R-4)
 examples: (TC-4843c) MR-F with class Review hidden, selected "store" → Pilot rollout's stop is "m4" (m3 is hidden), the one the frame draws
 
+_lane_marks
+req: LLR-4602.2, LLR-4602.6, LLR-4602.8, LLR-4603.7
+in: tuple[Task, ...] lane; str? selected_id; Board board; GanttAxis ax; date today
+out: list[_LaneMark] marks
+func: NEW, V-internal (E4 I-1, recorded at E5 F3). One `_LaneMark` record per occupied cell of the milestone row, in cell order: `members` (walk order; a dated member bucketed by the cell it is DRAWN in, an off-window one in its edge-side cell), `cell`, `start`, `length`, `seq` (the mark's (glyph, tone) cells) and the `left`/`right` edge flags. A mark that starts inside an earlier mark's footprint joins that bucket and the geometry is recomputed (N-8). An undated member is in no bucket. It is the one rule for what shares a cell: `gantt_milestone_row` draws its records and `gantt_lane_label` counts its ` i/N` from the bucket that holds the selection
+module: taskboard/views.py
+examples: (TC-4812) m3 + m4 on Oct 24, nothing selected → one record, members [m3, m4], seq `■2`
+examples: (TC-4827b) at k > 1 two days in one cell → one record holding both, so the label counts `1/2`
+
 gantt_lane_label
 req: LLR-4603.6, LLR-4603.7
-in: tuple[Task, ...] lane; str? selected_id; Board board; date today; int label_w
+in: tuple[Task, ...] lane; str? selected_id; Board board; GanttAxis ax; date today; int label_w
 out: str label
 func: the milestone row's label column, padded to `label_w`. V-internal (N-6): MR-b may adopt it, but it is not frozen. While no lane member is selected: ` ◆ <N> milestones` (`milestone` when N = 1) at `label_w` 24 or more, else ` ◆ <N> ms`, then ` ▲<L>` in `over` when L ≥ 1 members are late. While a member is selected: its `<glyph>` in its style, its title as `title_markup(t, w, selected=True)` (escaped, cut to the column, wearing the selection cue every other row wears, N-7), and ` <i>/<N>` in `mut` when it is the i-th of N members that share its cell; the tag is kept and the title is cut first
 module: taskboard/views.py
@@ -129,5 +138,7 @@ when: a class is hidden (R-4, N-5: `_hide` inside the plan when `done_rows`)
 [Data: TaskboardApp.selected_task_id] ──▶ gantt_plan
 when: picks the stop: the selected lane member, else the anchor
 _gantt_frame.<locals>.task_row ──▶ gantt_lane_label
+_lane_marks ──▶ gantt_milestone_row
+_lane_marks ──▶ gantt_lane_label
 _gantt_frame.<locals>.task_row ──▶ gantt_milestone_row
 _gantt_frame.<locals>.task_row ──▶ _gantt_field

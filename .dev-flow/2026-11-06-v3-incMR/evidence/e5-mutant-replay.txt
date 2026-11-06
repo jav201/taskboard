@@ -1,0 +1,6 @@
+# taskboard.__file__: C:\Users\jjgh8\Github\taskboard-wt\incMR-mut2\taskboard\__init__.py
+# baseline | 37 passed, 58 deselected in 15.79s
+38 4605.2 drop the gantt_plan seat | 1 failed in 0.57s
+39 4605.3 hmove walks the unfiltered lane | 2 failed in 3.17s
+46 N-9 run told by len(glyph)>1 | 2 failed, 1 passed in 0.84s
+47 SEC-6/SEC-8 drop the 0-cell guard | 3 failed in 0.66s
