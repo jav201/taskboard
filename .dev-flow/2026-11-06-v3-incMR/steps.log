@@ -1,1 +1,2 @@
 E1 21:27Z stopped at the size gate (MR-3): ~58 LLRs estimated (board ~40, presentation ~18); split proposed, rulings 2-3 and Q-1..Q-3 in 00-e1-rulings.md (Opus architect)
+E1 21:31Z MR-a requirements: US 1, HLR 6, LLR 40, AT 7; slice 6 units in views.py/app.py (Opus architect)
