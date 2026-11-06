@@ -91,17 +91,23 @@ línea en el gantt... esto gasta mucho espacio. Necesito que queden en una sola 
 - **Acceptance test(s):** AT-4605
 - **Negative control:** build the row from the unfiltered board: TC-4841 RED.
 
-### HLR-4606 — the link mode and the paged fold (MR-2)
+### HLR-4606.1 — the link mode keeps one row per milestone (MR-2, R-3)
 - **Traceability:** US-4601 · MR-2 · R-3
-- **Ledger:** LED-2026-11-06-incMR.2
-- **Statement:** The system shall keep one row per milestone in the link mode and treat the milestone row as one row of the board gantt's pages.
-- **Validation:** `test` — pilot (link mode) + layer 0 (paged frames)
-- **Numeric pass threshold:** all LLR-4606.n thresholds.
+- **Ledger:** LED-2026-11-06-incMR.2, LED-2026-11-06-incMR.3
+- **Statement:** While the link mode is open, the system shall draw each milestone on its own row.
+- **Validation:** `test` — pilot (link mode)
+- **Numeric pass threshold:** all thresholds of LLR-4606.1, LLR-4606.2, LLR-4606.3.
 - **Acceptance test(s):** AT-4606
 - **Negative control:** the shared row in the link frame: TC-4851 RED.
 
-> HLR-4606's statement holds two responses for two contexts; it is a grouping heading for MR-2, and each of
-> its LLRs holds one. Split it into HLR-4606 (link) and HLR-4607 (pages) if E2 finds the grouping misleading.
+### HLR-4606.2 — the milestone row is one row of the board gantt's pages (MR-2)
+- **Traceability:** US-4601 · MR-2
+- **Ledger:** LED-2026-11-06-incMR.2, LED-2026-11-06-incMR.3
+- **Statement:** The system shall count the milestone row as one row of the board gantt's pages.
+- **Validation:** `test` — layer 0 (paged frames)
+- **Numeric pass threshold:** all thresholds of LLR-4606.4, LLR-4606.5.
+- **Acceptance test(s):** AT-4606
+- **Negative control:** page by the milestone's base row index: TC-4854 RED.
 
 ## 4. Low-level requirements
 
@@ -190,7 +196,7 @@ línea en el gantt... esto gasta mucho espacio. Necesito que queden en una sola 
 - **LLR-4605.3 — Unwanted.** If a milestone is not drawn on its row (a `/` query does not match it, or its class is hidden), then the system shall leave it out of the `←→` walk.
   Threshold: Review hidden, m1 selected, `→`, `→` → m4, m5; `/store` + `←`/`→` → m4 stays; 2/2. *NC:* walk the unfiltered milestones: RED.
 
-### 4.6 Link mode and the paged fold (HLR-4606, MR-2)
+### 4.6 Link mode and the paged fold (HLR-4606.1: LLR-4606.1–.3; HLR-4606.2: LLR-4606.4, .5; MR-2)
 
 - **LLR-4606.1 — State.** While the link mode is open, the system shall draw each milestone on its own row.
   Threshold: MR-F, a task selected, `L` → the link frame draws m1..m5 on 5 rows (reached m1 kept while the group has open work, as base), each named in `line_map`; byte-equal to base's link frame; 1/1. *NC:* the shared row in the link frame: RED.
@@ -233,4 +239,4 @@ Within the 4-source-file budget. Tests that pin one row per milestone in the boa
 
 ## 7. Counts
 
-US 1 · HLR 6 · LLR 40 (4601: 7, 4602: 7, 4603: 10, 4604: 8, 4605: 3, 4606: 5) · AT 7.
+US 1 · HLR 7 (HLR-4606 split into .1 and .2, LED-2026-11-06-incMR.3) · LLR 40 (4601: 7, 4602: 7, 4603: 10, 4604: 8, 4605: 3, 4606: 5) · AT 7.

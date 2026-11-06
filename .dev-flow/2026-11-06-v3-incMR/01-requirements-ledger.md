@@ -24,3 +24,12 @@
 - **What changed:** the link mode keeps one row per milestone (LLR-4606.1) and opens with the walked milestone as waiter (LLR-4606.2); the board gantt's rows return when it closes (LLR-4606.3). The paged fold treats the row as one row: a selected milestone pages to the row (LLR-4606.4), and the D8 and ≤ 2-row frames draw the row as the selected row (LLR-4606.5).
 - **Why:** R-3 (`00-e1-rulings.md`): each `═`, connector and `⟲` names one task by its row. The pages and the D8 frame index rows and draw `task_row(sel)`, which would draw a lone milestone row the board no longer has.
 - **Evidence:** `views.py:8885-8960` (`gantt_link_order`, `gantt_link_frame`, `gantt_link_overlay`), `views.py:3421-3476` (D8 and paged branches); `00-e1-rulings.md` §3 facts 3–4, §4, R-3.
+
+### LED-2026-11-06-incMR.3 — HLR-4606 split into HLR-4606.1 (link mode) and HLR-4606.2 (pages), ruling R-5
+- **Requirement:** HLR-4606
+- **Requirement:** HLR-4606.1
+- **Requirement:** HLR-4606.2
+- **Date:** 2026-11-06
+- **What changed:** HLR-4606 had two responses (one row per milestone in the link mode; the milestone row as one row of the pages) under one `shall`. It is split in place and keeps the parent id with `.1` and `.2`, as the skill's E1 rule says. HLR-4606.1 holds LLR-4606.1, LLR-4606.2 and LLR-4606.3. HLR-4606.2 holds LLR-4606.4 and LLR-4606.5. No LLR id, TC number or AT changes. The E1 note proposed HLR-4607 for the second half; the skill's split rule takes precedence, so HLR-4607 is not used.
+- **Why:** one `shall` per requirement. In the E2 graph the two responses fall on different units: the link mode on `gantt_plan` with `done_rows` off, and the pages on `_gantt_frame`'s paged and D8 branches.
+- **Evidence:** `00-e1-rulings.md` R-5 (approved in advance); `graph-proto-V.cw.md` nodes `gantt_plan` (TC-4851), `_gantt_frame` (TC-4854) and `_gantt_frame.<locals>.task_row` (TC-4855).
