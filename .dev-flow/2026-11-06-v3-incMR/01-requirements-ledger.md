@@ -33,3 +33,32 @@
 - **What changed:** HLR-4606 had two responses (one row per milestone in the link mode; the milestone row as one row of the pages) under one `shall`. It is split in place and keeps the parent id with `.1` and `.2`, as the skill's E1 rule says. HLR-4606.1 holds LLR-4606.1, LLR-4606.2 and LLR-4606.3. HLR-4606.2 holds LLR-4606.4 and LLR-4606.5. No LLR id, TC number or AT changes. The E1 note proposed HLR-4607 for the second half; the skill's split rule takes precedence, so HLR-4607 is not used.
 - **Why:** one `shall` per requirement. In the E2 graph the two responses fall on different units: the link mode on `gantt_plan` with `done_rows` off, and the pages on `_gantt_frame`'s paged and D8 branches.
 - **Evidence:** `00-e1-rulings.md` R-5 (approved in advance); `graph-proto-V.cw.md` nodes `gantt_plan` (TC-4851), `_gantt_frame` (TC-4854) and `_gantt_frame.<locals>.task_row` (TC-4855).
+
+### LED-2026-11-06-incMR.4 — E3 round 1, ruling R-6: the architect's F-1 to F-5 adopted as written
+- **Requirement:** LLR-4601.8
+- **Requirement:** LLR-4602.1
+- **Requirement:** LLR-4602.6
+- **Requirement:** LLR-4603.3
+- **Requirement:** LLR-4603.4
+- **Requirement:** LLR-4603.7
+- **Requirement:** AT-4601
+- **Requirement:** AT-4607
+- **Date:** 2026-11-06
+- **What changed:** §1 defines *share one cell* and *lead*. LLR-4603.3 dates each mark by its lead, a shared cell included (F-1). LLR-4603.4 shows `▲Nd` when the mark's lead is late (F-1). LLR-4603.7 counts ` i/N` in the mark's cell, not on its day (F-1). LLR-4602.1's threshold gives h1 `◆` in `mut`, the seat (F-2). LLR-4602.6's threshold uses a reached milestone due 90 days ahead, `<hollow>✓▸` in the last three cells, and two off-window members bucketed in the cell they are drawn in (F-3). AT-4607 is rewritten with the same reached milestone (F-3). New LLR-4601.8: the milestone row's dependency gutter is blank, TC-4808 (F-5). AT-4601 now cites LLR-4601.8 and checks the blank gutter. §6: the slice is 9 units in 2 files, 3 new and 6 changed, with `gantt_lane`, `_gantt_field` and `nav_model` numbered (F-4).
+- **Why:** F-1: the statement of LLR-4603.3 contradicted its threshold and AT-4601. At `k > 1` days per cell, "on its day" and "in its cell" disagree. F-2: no seat draws a project hue, and `milestone_tone` has no caller. F-3: `gantt_window` keeps every open due inside the window, so the open `▸` case cannot be reached through a product route. F-4: the count left out the painter, the lane accessor and `nav_model`'s change of behaviour. F-5: one gutter cell cannot name which of N marks waits. Removing it is preferred over guarding it.
+- **Evidence:** `03-pdr-architect.md` §1 (F-1 to F-5); `00-e1-rulings.md` R-6; `views.py:2310-2321` (`GanttAxis` k), `views.py:2518-2533` (`gantt_window`), `views.py:2600-2602` (`milestone_mark`), `views.py:2731-2733` (reached mark geometry), `views.py:3384-3386` (`gantt_dep_mark` in the gutter).
+
+### LED-2026-11-06-incMR.5 — E3 round 1, ruling R-7: field labels are escaped as one string before they are laid into cells (SEC-1, N-1, SEC-2)
+- **Requirement:** LLR-4603.11
+- **Date:** 2026-11-06
+- **What changed:** new Unwanted LLR-4603.11. A field label that holds markup brackets, a backslash, or wide or combining characters is drawn as its literal text, measured and cut in cells, within the field's width. The threshold covers 5 titles (`a]b[/]`, `[@click=app.quit]x`, `x\`, a wide-glyph title and a combining-mark title) in 3 placements (after, before, cut). It has two negative controls (per-character cells; room measured with `len`). Its TC is TC-4820, an exception to the numbering rule, because TC-4831 is LLR-4604.1's. The design is in `graph-interfaces.cw.md` `gantt_milestone_row`, LABEL PATH, in this order: measure in cells, cut the plain text with `fit`, escape once with `_literal`, then lay the run into one cell and mark the cells it covers as consumed. Of the two fixes the ruling allows, this is the smaller one: the seat stays Rich markup, and the change adds no `Text` pipeline.
+- **Why:** the probes in `03-pdr-security.md` SEC-1: `a]b[/]` raises `MarkupError`, `[@click…]` becomes a live tag, and `x\` leaves a style open. SEC-2 measured a `wide中文` title at 6 by `len` and 8 cells wide. Escaping each character does not help, because `collapse_runs` joins same-style neighbours again.
+- **Evidence:** `03-pdr-security.md` SEC-1, SEC-2; `03-pdr-architect.md` N-1; `views.py:75-78` (`c`), `views.py:95-108` (`fit`), `views.py:290` (`_literal`), `views.py:2877-2895` (`_gantt_field`); `prototypes/milestone_row/proto.py:242-266` (`put`).
+
+### LED-2026-11-06-incMR.6 — E3 round 1, ruling R-8: the remaining MEDIUM, LOW and MINOR findings
+- **Requirement:** LLR-4602.8
+- **Requirement:** AT-4606
+- **Date:** 2026-11-06
+- **What changed:** new Unwanted LLR-4602.8. A two-cell mark that falls in the field's last cell starts one cell inward, TC-4818 (SEC-3). AT-4606 now reads "one row per drawn milestone (m1..m5), byte-equal to base" (N-2). The rest is design or an E4 instruction and changes no requirement text. The *share one cell* definition answers SEC-4. In the graph, the class filter moves into `gantt_plan` (N-5). Only `gantt_milestone_row` stays frozen for MR-b, and `gantt_lane_label` moves to V (N-6). The tones go into the funcs (N-7). TC-4843d covers N-3 and SEC-5. N-4 and the E4 checks go in `e3-addenda.md`. LLR count: 43.
+- **Why:** SEC-3: the second cell of the mark would land at index `w`. N-2: AT-4606 disagreed with LLR-4606.1 and TC-4851.
+- **Evidence:** `03-pdr-security.md` SEC-3, SEC-4, SEC-5; `03-pdr-architect.md` N-2 to N-7; `00-e1-rulings.md` R-8.

@@ -10,7 +10,8 @@
 > R-1..R-3 in `00-e1-rulings.md`. The presentation (D1) is Inc MR-b, not this one.
 > **TC numbering:** LLR-4601.n → TC-(4800+n); LLR-4602.n → TC-(4810+n); LLR-4603.n → TC-(4820+n);
 > LLR-4604.n → TC-(4830+n); LLR-4605.n → TC-(4840+n); LLR-4606.n → TC-(4850+n). A second test of one LLR
-> adds a letter (TC-4803b).
+> adds a letter (TC-4803b). One exception: LLR-4603.11 → TC-4820, because TC-4831 is LLR-4604.1's
+> (LED-2026-11-06-incMR.5).
 
 ## 1. Scope
 
@@ -30,6 +31,8 @@ the legend strip; the milestone data model and editors. No new dependency, no ne
 | drawn milestones | a group's milestones the base board gantt draws as rows: its open milestones and, while the group has open work, its reached, not-archived ones (D-606) |
 | milestone row | the one body row that draws a group's drawn milestones |
 | walk order | the drawn milestones sorted by due date (no due last), then title, then id |
+| share one cell | two or more drawn milestones whose marks fall in the same field cell, an off-window one counted in the edge-side cell it is drawn in (LLR-4602.6); the mark's count, its lead and the label column's ` i/N` all count by this one rule (R-6 F-1, SEC-4) |
+| lead | of a mark's cell: its selected member, else its first in walk order; walk order sorts by due first, so the lead's date is the cell's earliest |
 | anchor | the milestone `↑↓` lands on: the first in walk order that is open with a due on or after today, else the first open one, else the first |
 | late | open with a due before today; its `▲Nd` is `N` = days past due |
 | reached | done (`board.is_done`) |
@@ -127,11 +130,13 @@ línea en el gantt... esto gasta mucho espacio. Necesito que queden en una sola 
   Threshold: MR-F at 118x12 → each folded group's span row is followed by the next span row; 1/1 per folded group, ≥ 1 folded. *NC:* draw the row under a folded span: RED.
 - **LLR-4601.7 — Ubiquitous.** The board gantt shall count a group's milestone row as one row when it decides which groups unfold.
   Threshold: MR-F at 80x24 → 0 folded groups (base folds ≥ 1); MR-F at 118x30 → 0 folded and 18 body rows; 2/2. *NC:* count each milestone as a row in the budget: 80x24 folds a group: RED.
+- **LLR-4601.8 — Ubiquitous.** The milestone row's dependency gutter shall be blank.
+  Threshold: MR-F with m3 waiting on the open task `store` → the gutter cell of each of the 4 milestone rows is blank; no `waits` or `early` entry of the frame's `drawn` comes from a milestone row (base adds `waits` for m3's row); 4/4. *NC:* draw the stop's `gantt_dep_mark` (`↳`) in the gutter: RED.
 
 ### 4.2 The marks (HLR-4602)
 
 - **LLR-4602.1 — Ubiquitous.** The milestone row shall draw each drawn milestone whose due lies inside the field's window as its `<glyph>` in its class style, in its cell.
-  Threshold: MR-F, nothing selected on the row → g1 `▲` cyan, g2 `■` violet, h1 `◆` in its project hue, i1 `⬢` amber, each at `ax.cell(due)`; 4/4. *NC:* draw `◆` for every class: RED.
+  Threshold: MR-F, nothing selected on the row → g1 `▲` cyan, g2 `■` violet, h1 `◆` in `mut` (the seat, `milestone_mark`), i1 `⬢` amber, each at `ax.cell(due)`; 4/4. *NC:* draw `◆` for every class: RED.
 - **LLR-4602.2 — Ubiquitous.** The milestone row shall draw two to nine milestones sharing one cell as one `<glyph>` followed by the digit of their count, the glyph being the selected one's among them, else the first's in walk order.
   Threshold: m3 + m4 (Oct 24) → `■2` (m3 first by title `Steering…` vs `Store…`); with m4 selected → `▲2`; 2/2. *NC:* draw only the first glyph, no count: RED.
 - **LLR-4602.3 — Unwanted.** If ten or more milestones share one cell, then the milestone row shall draw them as one `<glyph>` followed by `+`.
@@ -140,10 +145,12 @@ línea en el gantt... esto gasta mucho espacio. Necesito que queden en una sola 
   Threshold: m1 (Payment) → `⬡✓`; 1/1. *NC:* filled glyph: RED.
 - **LLR-4602.5 — Ubiquitous.** The milestone row shall draw the selected milestone's mark in reverse video.
   Threshold: m2 selected → its cell's style has `reverse`; every other mark's style lacks it; 2/2. *NC:* no reverse: RED.
-- **LLR-4602.6 — Unwanted.** If a drawn milestone's due lies before or after the field's window, then the milestone row shall draw `◂` (before) or `▸` (after) in the field's edge cell on that side and its mark in the next cell inward.
-  Threshold: a reached milestone 40 days back; an open one 90 days ahead → `◂<hollow>` at cells 0–1 and `<glyph>▸` at the last two; 2/2. *NC:* clamp without the edge glyph: RED.
+- **LLR-4602.6 — Unwanted.** If a drawn milestone's due lies before or after the field's window, then the milestone row shall draw `◂` (before) or `▸` (after) in the field's edge cell on that side and its mark in the cells next inward.
+  Threshold: a reached milestone 40 days back (before `ctx`, the earliest open start); a reached milestone due 90 days ahead (done early), in a group with open work → `◂<hollow>✓` at cells 0–2 and `<hollow>✓▸` at the last three; two reached milestones after the window share the drawn cell → `<glyph>2▸`; 3/3. *NC:* clamp without the edge glyph: RED.
 - **LLR-4602.7 — Unwanted.** If a drawn milestone has no due date, then the milestone row shall draw no mark for it.
   Threshold: a milestone with `due_date None` on a row with one dated one → 1 mark in the field; 1/1; 0 exceptions. *NC:* draw it at today's cell: RED.
+- **LLR-4602.8 — Unwanted.** If a two-cell mark (`<glyph>N`, `<glyph>+` or `<hollow>✓`) falls in the field's last cell, then the milestone row shall start that mark in the cell before it.
+  Threshold: through `render_gantt`, a reached milestone alone with its due on the window's last day; two reached ones sharing that cell → `<hollow>✓` and `<glyph>2` at cells `w-2`–`w-1`; the row is exactly `w` cells; 0 exceptions; 2/2. *NC:* start the mark at `w-1`: an IndexError or a row of `w+1` cells: RED.
 
 ### 4.3 Labels, label column, chip (HLR-4603)
 
@@ -151,15 +158,15 @@ línea en el gantt... esto gasta mucho espacio. Necesito que queden en una sola 
   Threshold: 118x30, m3 selected → `Steering go/no-go` follows `■2 `; m5 (rightmost) selected with no room after → its title ends one cell before its mark; 2/2. *NC:* always after, overflowing into the next mark: RED.
 - **LLR-4603.2 — Unwanted.** If neither side of the selected milestone's mark has room for its whole title, then the milestone row shall draw the title cut with `…` on the side with more room when that side has 6 cells or more, and no title in the field otherwise.
   Threshold: 118x30, m2 selected → `Rubric…` between m2 and m3; a cramped row (marks 4 cells apart) → no title cells; 2/2. *NC:* cut to any width (a 2-cell `R…`): RED.
-- **LLR-4603.3 — Ubiquitous.** The milestone row shall draw each milestone that is not selected, not late and not part of a shared cell with its date `Mon D` beside its mark, past one blank cell, only where the whole date fits without touching another mark or label.
-  Threshold: 118x30, nothing on Pilot rollout's row selected → `Oct 24`, `Oct 30` beside their marks; g1 `Oct 21`, g2 `Oct 28`; 4/4. *NC:* cut a date to fit (`Oct`): RED.
-- **LLR-4603.4 — Ubiquitous.** The milestone row shall draw a late milestone's `▲Nd`, in the over style, in place of its date.
+- **LLR-4603.3 — Ubiquitous.** The milestone row shall draw, beside each mark that holds no selected milestone and whose lead is not late, the lead's date `Mon D`, past one blank cell, only where the whole date fits without touching another mark or label.
+  Threshold: 118x30, nothing on Pilot rollout's row selected → `Oct 24` (beside `■2`: its lead m3's date), `Oct 30` beside their marks; g1 `Oct 21`, g2 `Oct 28`; 4/4. *NC:* cut a date to fit (`Oct`): RED.
+- **LLR-4603.4 — Ubiquitous.** The milestone row shall draw, beside a mark whose lead is late, the lead's `▲Nd` in the over style in place of its date.
   Threshold: m2 not selected → `▲1d` beside its mark, `Oct 19` 0 occurrences on the row; 1/1. *NC:* draw `Oct 19`: RED.
 - **LLR-4603.5 — Ubiquitous.** The milestone row shall draw no label over a mark, over another label, or past the field's edges.
   Threshold: every row of AT-4601..AT-4603 scenes at 118 and 80 → every mark cell still holds its mark, labels disjoint; 10/10 frames. *NC:* drop the one-cell gap check: RED.
 - **LLR-4603.6 — State.** While no milestone of a row is selected, the row's label column shall read `◆ <N> milestones` (`milestone` when N = 1) at a label width of 24 cells or more and `◆ <N> ms` below, followed by ` ▲<L>` in the over style when L ≥ 1 of them are late.
   Threshold: 118 → `◆ 2 milestones`, `◆ 1 milestone`; 80 → `◆ 5 ms ▲1`; 3/3. *NC:* omit the late count: RED.
-- **LLR-4603.7 — State.** While a milestone of a row is selected, the row's label column shall read its `<glyph>`, its title cut to the column, and ` <i>/<N>` when it is the i-th of N milestones on its day.
+- **LLR-4603.7 — State.** While a milestone of a row is selected, the row's label column shall read its `<glyph>`, its title cut to the column, and ` <i>/<N>` when it is the i-th of N milestones in its cell.
   Threshold: m2 → `■ Rubric sign-off`; m4 → `▲ Store list frozen 2/2` (cut at 80, the `2/2` kept); 2/2. *NC:* drop the `i/N` tag: RED.
 - **LLR-4603.8 — Ubiquitous.** The milestone row's chip shall be the selected milestone's `gantt_milestone_chip`, else the anchor's when it is open with a due on or after today, else blank.
   Threshold: m2 selected → `▲1d`; nothing selected on Pilot rollout → `in 4d` (m3); a row whose only milestones are late → blank; 3/3. *NC:* the first milestone's chip: `✓ done`: RED.
@@ -167,6 +174,8 @@ línea en el gantt... esto gasta mucho espacio. Necesito que queden en una sola 
   Threshold: every frame of AT-4601..AT-4607 at 118x30 and 80x24 → max `cell_len` per line ≤ width; 14/14. *NC:* a label padded to label_w + 1: RED.
 - **LLR-4603.10 — Ubiquitous.** The board gantt's legend shall name the milestone mark and the reached mark whenever a milestone row draws them.
   Threshold: MR-F at 118x30 → the legend holds `◆ milestone`; with m1 drawn it holds the reached entry as base does; 2/2. *NC:* the row not adding to the frame's `drawn` set: RED.
+- **LLR-4603.11 — Unwanted.** If a label that the milestone row draws in the field holds markup brackets, a backslash, or characters wider or narrower than one cell, then the milestone row shall draw the label's literal text, measured and cut in cells, within the field's width.
+  Threshold (TC-4820): the selected milestone's title set in turn to `a]b[/]`, `[@click=app.quit]x`, `x\`, a wide-glyph title `里程碑 frozen` and a combining-mark title (`e` + U+0301 + `tape`), each drawn after its mark, before it, and cut with `…` → 0 exceptions; the row's `plain` holds the exact title or its `fit` cut ending in `…`; no span carries `@click` or any meta; every line's `cell_len` equals the frame width; 15/15. *NC:* lay the title one character per cell, each painted `c(char, tone)` (the oracle's `put`): `a]b[/]` raises `MarkupError`: RED. *NC 2:* measure the room with `len`: the wide title's line is wider than the frame: RED.
 
 ### 4.4 Navigation (HLR-4604)
 
@@ -211,32 +220,36 @@ línea en el gantt... esto gasta mucho espacio. Necesito que queden en una sola 
 
 ## 5. Acceptance tests (black-box, through keys)
 
-- **AT-4601** — the row at rest. Fixture MR-F at 118x30 and 80x24, `3`, the cursor on `Pilot store list` → one milestone row under each of the 4 span rows; Pilot rollout's row reads `⬡✓`, `■ ▲1d`, `■2 Oct 24`, `★ Oct 30` (at 118); body 18 rows at 118x30 (base 23); 0 folded groups at 80x24; no line wider than the terminal. (LLR-4601.1–.4, .7; LLR-4602.1, .2, .4; LLR-4603.3, .4, .6, .9)
+- **AT-4601** — the row at rest. Fixture MR-F at 118x30 and 80x24, `3`, the cursor on `Pilot store list` → one milestone row under each of the 4 span rows; Pilot rollout's row reads `⬡✓`, `■ ▲1d`, `■2 Oct 24`, `★ Oct 30` (at 118); body 18 rows at 118x30 (base 23); 0 folded groups at 80x24; a blank gutter on every milestone row; no line wider than the terminal. (LLR-4601.1–.4, .7, .8; LLR-4602.1, .2, .4; LLR-4603.3, .4, .6, .9)
 - **AT-4602** — folding. MR-F at 118x12 → folded groups show only their span row; a group with no milestone shows none. (LLR-4601.5, .6)
 - **AT-4603** — onto the row and along it. From `Pilot store list`: `↑` → m3 selected, its title beside `■2`, the label column `■ Steering go/no-go 1/2`, chip `in 4d`; `→` → m4 (`▲2`, `2/2`); `→` → m5; `→` → m5; `←`×4 → m1; `←` → m1. (LLR-4602.2, .5; LLR-4603.1, .7, .8; LLR-4604.1–.5)
 - **AT-4604** — acting on the walked one. m3, `→`, `enter` → details of m4; `esc`, `]` → m4 one phase on. `↓` → `Pilot store list`; `←`/`→` → no change. (LLR-4604.6–.8)
 - **AT-4605** — D3. `/store` `enter` → Pilot rollout's row holds m4 only; `→` keeps m4. `esc` the query; hide class Review in `#` → the row holds m1, m4, m5; `→` from m1 → m4. (LLR-4605.1–.3)
-- **AT-4606** — MR-2. m3, `→`, `L` → the link frame: one row per open milestone, waiter m4; `esc` → milestone rows back, m4 selected. A paged group: `↑` onto its row → the page holding the row. (LLR-4606.1–.4)
-- **AT-4607** — edges. A milestone 90 days ahead and one with no due on a row; 10 on one day → `▸`, no mark, `<glyph>+`; no line wider than the terminal at 80x24. (LLR-4602.3, .6, .7; LLR-4603.9)
+- **AT-4606** — MR-2. m3, `→`, `L` → the link frame: one row per drawn milestone (m1..m5), byte-equal to base, waiter m4; `esc` → milestone rows back, m4 selected. A paged group: `↑` onto its row → the page holding the row. (LLR-4606.1–.4)
+- **AT-4607** — edges. On one row, in a group with open work: a reached milestone due 90 days ahead (done early), one with no due, and 10 on one day → `<hollow>✓▸` in the field's last three cells, no mark for the undated one, `<glyph>+`; no line wider than the terminal at 118x30 and 80x24. (LLR-4602.3, .6, .7; LLR-4603.9)
 
 ## 6. Slice of functions to change (named and counted)
 
 | # | File | Unit | Change | Requirements |
 |---|---|---|---|---|
 | 1 | views.py | `GanttGroup` | changed: a `lane` field (the group's drawn milestones in walk order); `rows` holds one stop for them, the anchor or the selected one, first | LLR-4601.1–.3, LLR-4604.1, .2 |
-| 2 | views.py | `gantt_plan` | changed: under the board-gantt flag, milestones leave `rows` for `lane`; the stop rule; the fold budget counts 1 | LLR-4601.1–.7, LLR-4604.1, .2, LLR-4605.1 |
-| 3 | views.py | `gantt_milestone_row` | new: the row's field cells — marks, clash count, hollow `✓`, reverse, edges — and the field labels | LLR-4602.1–.7, LLR-4603.1–.5 |
+| 2 | views.py | `gantt_plan` | changed: under the board-gantt flag, the class filter first (`_hide`, N-5: its one seat), then milestones leave `rows` for `lane`; the stop rule; the fold budget counts 1 | LLR-4601.1–.7, LLR-4604.1, .2, LLR-4605.1, .2 |
+| 3 | views.py | `gantt_milestone_row` | new: the row's field cells — marks, clash count, hollow `✓`, reverse, edges, the last-cell shift — and the field labels, each cut in cells and escaped once as a whole before it is laid into cells (R-7) | LLR-4602.1–.8, LLR-4603.1–.5, .11 |
 | 4 | views.py | `gantt_lane_label` | new: the row's label column | LLR-4603.6, .7 |
-| 5 | views.py | `_gantt_frame` | changed: draws the row in the stop's place, maps every lane id to its line in `line_map`, adds to `drawn`, the chip; the paged and D8 branches | LLR-4601.1, .6, LLR-4603.8–.10, LLR-4606.4, .5 |
-| 6 | app.py | `TaskboardApp.action_hmove` | changed: in the gantt, a selected lane milestone walks its lane over the view's (filtered, class-hidden) board; else base | LLR-4604.3–.6, LLR-4605.3 |
-| — | views.py | `render_gantt`, `nav_model` (gantt branch), the legend's `_gantt_frame` call (`views.py:8718`) | call sites pass the board-gantt flag if E2 does not reuse `done_rows`; `nav_model` reads the plan's rows (and must see the class-hidden board, LLR-4605.3) | LLR-4601.1, LLR-4604.1, LLR-4603.10 |
+| 5 | views.py | `gantt_lane` | new: the lane that holds the selection, for `action_hmove` (F-4) | LLR-4604.3–.6, LLR-4605.3 |
+| 6 | views.py | `_gantt_frame` | changed: draws the row in the stop's place with a blank gutter, maps every lane id to its line in `line_map`, adds to `drawn`, the chip; the paged and D8 branches | LLR-4601.1, .6, .8, LLR-4603.8–.10, LLR-4606.4, .5 |
+| 7 | views.py | `_gantt_field` | changed: one `rev:<style>` branch; its invariant names the escaped label run, painted as given (R-7) | LLR-4602.5, LLR-4603.11 |
+| 8 | views.py | `nav_model` (gantt branch) | changed: builds the plan with `done_rows=True`, so the column reads the class-filtered board the frame draws (R-4, N-5) | LLR-4604.1, LLR-4605.3 |
+| 9 | app.py | `TaskboardApp.action_hmove` | changed: in the gantt, a selected lane milestone walks its lane over the view's (filtered, class-hidden) board; else base | LLR-4604.3–.6, LLR-4605.3 |
+| — | views.py | `render_gantt`, the legend's `_gantt_frame` call (`views.py:8718`) | call sites pass `done_rows=True` | LLR-4601.1, LLR-4603.10 |
 | — | views.py | `gantt_link_frame`, `gantt_link_order` | unchanged on purpose: they never set the flag | LLR-4606.1 |
 
-**Count: 6 units in 2 source files** (views.py, app.py) — 2 new, 4 changed — plus up to 3 call-site edits.
-Within the 4-source-file budget. Tests that pin one row per milestone in the board gantt
-(`tests/test_gantt.py`, `test_gantt_board.py`, `test_gantt_milestones.py`, `test_milestone_marks.py`,
-`test_hotfix_2026_11_05.py`, `test_app.py`) are listed and re-baselined one by one in E4.
+**Count: 9 units in 2 source files** (views.py, app.py) — 3 new, 6 changed — plus 2 call-site edits
+(LED-2026-11-06-incMR.4, R-6 F-4). Within the 4-source-file budget. Tests that pin one row per milestone in the
+board gantt (`tests/test_gantt.py`, `test_gantt_board.py`, `test_gantt_milestones.py`, `test_milestone_marks.py`,
+`test_hotfix_2026_11_05.py`, `test_app.py`) are re-baselined one by one in E4, from the instrumented run's
+`g` tags, not from this list (`e3-addenda.md` A-4).
 
 ## 7. Counts
 
-US 1 · HLR 7 (HLR-4606 split into .1 and .2, LED-2026-11-06-incMR.3) · LLR 40 (4601: 7, 4602: 7, 4603: 10, 4604: 8, 4605: 3, 4606: 5) · AT 7.
+US 1 · HLR 7 (HLR-4606 split into .1 and .2, LED-2026-11-06-incMR.3) · LLR 43 (4601: 8, 4602: 8, 4603: 11, 4604: 8, 4605: 3, 4606: 5; LED-2026-11-06-incMR.4, .5, .6) · AT 7.
