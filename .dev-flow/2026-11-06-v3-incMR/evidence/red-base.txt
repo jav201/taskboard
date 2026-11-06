@@ -1,0 +1,322 @@
+# Inc MR-a E4 — RED on base (tester)
+# base: 154e260 (branch incMR-tests); changed files under taskboard/: 0
+# cmd: env -u NO_COLOR PYTHONPATH=<scratch with print_tb.py> python -m pytest tests/test_milestone_row.py tests/test_milestone_row_at.py tests/test_gantt_milestones.py tests/test_milestone_marks.py tests/test_legend.py tests/test_milestone_offer.py tests/test_boards_home.py -p no:cacheprovider -p print_tb -q -rA --tb=line
+# print_tb.py: def pytest_sessionstart(session): import taskboard; print(taskboard.__file__)
+# date: 2026-11-06T16:49:58-06:00
+C:\Users\jjgh8\anaconda3\Lib\site-packages\pytest_asyncio\plugin.py:207: PytestDeprecationWarning: The configuration option "asyncio_default_fixture_loop_scope" is unset.
+The event loop scope for asynchronous fixtures will default to the fixture caching scope. Future versions of pytest-asyncio will default the loop scope for asynchronous fixtures to function scope. Set the default fixture loop scope explicitly in order to avoid unexpected behavior in the future. Valid fixture loop scopes are: "function", "class", "module", "package", "session"
+
+  warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCOPE_UNSET))
+
+# taskboard.__file__ (inside the pytest process) = C:\Users\jjgh8\Github\taskboard-wt\incMR-tests\taskboard\__init__.py
+FFFF..FFFFFFFFFFFFFFFFFFF....FFFFFFFFFFFFFFFFFFFFFFFFFF..FFFFFFFF...FFFF [ 31%]
+FFF.FFFFFFFF............................F........F...................... [ 62%]
+........................................................................ [ 94%]
+.............                                                            [100%]
+================================== FAILURES ===================================
+C:\Users\jjgh8\Github\taskboard-wt\incMR-tests\tests\milestone_row_fixture.py:214: AssertionError: the lane is not one row: line_map {'tm1': 5, 'tm2': 6, 'tm3': 8, 'tm4': 9, 'tm5': 12}
+C:\Users\jjgh8\Github\taskboard-wt\incMR-tests\tests\milestone_row_fixture.py:214: AssertionError: the lane is not one row: line_map {'tm1': 5, 'tm2': 6, 'tm3': 8, 'tm4': 9, 'tm5': 12}
+C:\Users\jjgh8\Github\taskboard-wt\incMR-tests\tests\milestone_row_fixture.py:214: AssertionError: the lane is not one row: line_map {'tm1': 5, 'tm2': 6, 'tm3': 8, 'tm4': 9, 'tm5': 12}
+C:\Users\jjgh8\Github\taskboard-wt\incMR-tests\tests\test_milestone_row.py:131: AssertionError: assert 26 == (24 + 1)
+C:\\Users\\jjgh8\\Github\\taskboard-wt\\incMR-tests\\tests\\test_milestone_row.py:176: AssertionError: assert ['\u25b8 Docs & ha...\xb7\xb7\xb7\xb7\xb7  Nov 4'] == []
+C:\Users\jjgh8\Github\taskboard-wt\incMR-tests\tests\test_milestone_row.py:189: AssertionError: {'beyond', 'crit', 'due', 'milestone', 'progress', 'reached', ...}
+C:\Users\jjgh8\Github\taskboard-wt\incMR-tests\tests\milestone_row_fixture.py:214: AssertionError: the lane is not one row: line_map {'tg1': 16, 'tg2': 18}
+C:\Users\jjgh8\Github\taskboard-wt\incMR-tests\tests\milestone_row_fixture.py:214: AssertionError: the lane is not one row: line_map {'tm1': 5, 'tm2': 6, 'tm3': 8, 'tm4': 9, 'tm5': 12}
+C:\Users\jjgh8\Github\taskboard-wt\incMR-tests\tests\milestone_row_fixture.py:214: AssertionError: the lane is not one row: line_map {'tz0': 25, 'tz1': 26, 'tz2': 27, 'tz3': 28, 'tz4': 29, 'tz5': 30, 'tz6': 31, 'tz7': 32, 'tz8': 33, 'tz9': 34}
+C:\Users\jjgh8\Github\taskboard-wt\incMR-tests\tests\milestone_row_fixture.py:214: AssertionError: the lane is not one row: line_map {'tm1': 5, 'tm2': 6, 'tm3': 8, 'tm4': 9, 'tm5': 12}
+C:\Users\jjgh8\Github\taskboard-wt\incMR-tests\tests\milestone_row_fixture.py:214: AssertionError: the lane is not one row: line_map {'tm1': 5, 'tm2': 6, 'tm3': 8, 'tm4': 9, 'tm5': 12}
+C:\Users\jjgh8\Github\taskboard-wt\incMR-tests\tests\milestone_row_fixture.py:214: AssertionError: the lane is not one row: line_map {'tm1': 6, 'tm2': 7, 'tm3': 9, 'tm4': 10, 'tm5': 13, 'tx1': 5, 'tx2': 15}
+C:\Users\jjgh8\Github\taskboard-wt\incMR-tests\tests\milestone_row_fixture.py:214: AssertionError: the lane is not one row: line_map {'tny': 25, 'tnd': 27}
+C:\Users\jjgh8\Github\taskboard-wt\incMR-tests\tests\milestone_row_fixture.py:214: AssertionError: the lane is not one row: line_map {'tm1': 5, 'tm2': 6, 'tm3': 8, 'tm4': 9, 'tm5': 12, 'txl': 14}
+C:\Users\jjgh8\Github\taskboard-wt\incMR-tests\tests\milestone_row_fixture.py:214: AssertionError: the lane is not one row: line_map {'tg1': 16, 'tg2': 18}
+C:\Users\jjgh8\Github\taskboard-wt\incMR-tests\tests\milestone_row_fixture.py:214: AssertionError: the lane is not one row: line_map {'tm1': 5, 'tm2': 6, 'tm3': 8, 'tm4': 9, 'tm5': 12}
+C:\Users\jjgh8\Github\taskboard-wt\incMR-tests\tests\milestone_row_fixture.py:214: AssertionError: the lane is not one row: line_map {'tm1': 5, 'tm2': 6, 'tm3': 8, 'tm4': 9, 'tm5': 12}
+C:\Users\jjgh8\Github\taskboard-wt\incMR-tests\tests\milestone_row_fixture.py:214: AssertionError: the lane is not one row: line_map {'tm1': 5, 'tm2': 6, 'tm3': 8, 'tm4': 9, 'tm5': 12}
+C:\Users\jjgh8\Github\taskboard-wt\incMR-tests\tests\milestone_row_fixture.py:214: AssertionError: the lane is not one row: line_map {'tm1': 5, 'tm2': 6, 'tm3': 8, 'tm4': 9, 'tm5': 12}
+C:\Users\jjgh8\Github\taskboard-wt\incMR-tests\tests\milestone_row_fixture.py:214: AssertionError: the lane is not one row: line_map {'tm1': 5, 'tm2': 6, 'tm3': 8, 'tm4': 9, 'tm5': 12}
+C:\Users\jjgh8\Github\taskboard-wt\incMR-tests\tests\milestone_row_fixture.py:214: AssertionError: the lane is not one row: line_map {'tg1': 16, 'tg2': 18}
+C:\Users\jjgh8\Github\taskboard-wt\incMR-tests\tests\milestone_row_fixture.py:214: AssertionError: the lane is not one row: line_map {'tm1': 5, 'tm2': 6, 'tm3': 8, 'tm4': 9, 'tm5': 12}
+C:\Users\jjgh8\Github\taskboard-wt\incMR-tests\tests\milestone_row_fixture.py:214: AssertionError: the lane is not one row: line_map {'tm1': 5, 'tm2': 6, 'tm3': 8, 'tm4': 9, 'tm5': 12}
+C:\\Users\\jjgh8\\Github\\taskboard-wt\\incMR-tests\\tests\\test_milestone_row.py:550: AssertionError: ('after', 'a]b[/]', ' \u25b2 a]b[/]                      \xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\u2506\xb7\u254e\xb7\xb7\xb7\u25b2 Oct 22\u2506\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\u2506\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\u2506\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\u2506\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7   in 2d')
+C:\\Users\\jjgh8\\Github\\taskboard-wt\\incMR-tests\\tests\\test_milestone_row.py:550: AssertionError: ('after', '[@click=app.quit]x', ' \u25b2 [@click=app.quit]x          \xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\u2506\xb7\u254e\xb7\xb7\xb7\u25b2 Oct 22\u2506\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\u2506\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\u2506\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\u2506\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7   in 2d')
+C:\\Users\\jjgh8\\Github\\taskboard-wt\\incMR-tests\\tests\\test_milestone_row.py:550: AssertionError: ('after', 'x\\\\', ' \u25b2 x\\\\                          \xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\u2506\xb7\u254e\xb7\xb7\xb7\u25b2 Oct 22\u2506\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\u2506\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\u2506\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\u2506\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7   in 2d')
+C:\\Users\\jjgh8\\Github\\taskboard-wt\\incMR-tests\\tests\\test_milestone_row.py:550: AssertionError: ('after', '\u91cc\u7a0b\u7891 frozen', ' \u25b2 \u91cc\u7a0b\u7891 frozen               \xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\u2506\xb7\u254e\xb7\xb7\xb7\u25b2 Oct 22\u2506\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\u2506\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\u2506\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\u2506\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7   in 2d')
+C:\\Users\\jjgh8\\Github\\taskboard-wt\\incMR-tests\\tests\\test_milestone_row.py:550: AssertionError: ('after', 'e\u0301tape', ' \u25b2 e\u0301tape                       \xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\u2506\xb7\u254e\xb7\xb7\xb7\u25b2 Oct 22\u2506\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\u2506\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\u2506\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\u2506\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7   in 2d')
+C:\\Users\\jjgh8\\Github\\taskboard-wt\\incMR-tests\\tests\\test_milestone_row.py:550: AssertionError: ('before', 'a]b[/]', ' \u2b21 a]b[/]                      \xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\u2506\xb7\u254e\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\u2506\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\u2506\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\u2506\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\u2506\xb7\xb7\xb7\xb7Nov 22 \u2b21  \u2713 done')
+C:\\Users\\jjgh8\\Github\\taskboard-wt\\incMR-tests\\tests\\test_milestone_row.py:550: AssertionError: ('before', '[@click=app.quit]x', ' \u2b21 [@click=app.quit]x          \xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\u2506\xb7\u254e\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\u2506\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\u2506\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\u2506\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\u2506\xb7\xb7\xb7\xb7Nov 22 \u2b21  \u2713 done')
+C:\\Users\\jjgh8\\Github\\taskboard-wt\\incMR-tests\\tests\\test_milestone_row.py:550: AssertionError: ('before', 'x\\\\', ' \u2b21 x\\\\                          \xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\u2506\xb7\u254e\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\u2506\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\u2506\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\u2506\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\u2506\xb7\xb7\xb7\xb7Nov 22 \u2b21  \u2713 done')
+C:\\Users\\jjgh8\\Github\\taskboard-wt\\incMR-tests\\tests\\test_milestone_row.py:550: AssertionError: ('before', '\u91cc\u7a0b\u7891 frozen', ' \u2b21 \u91cc\u7a0b\u7891 frozen               \xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\u2506\xb7\u254e\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\u2506\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\u2506\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\u2506\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\u2506\xb7\xb7\xb7\xb7Nov 22 \u2b21  \u2713 done')
+C:\\Users\\jjgh8\\Github\\taskboard-wt\\incMR-tests\\tests\\test_milestone_row.py:550: AssertionError: ('before', 'e\u0301tape', ' \u2b21 e\u0301tape                       \xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\u2506\xb7\u254e\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\u2506\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\u2506\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\u2506\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\u2506\xb7\xb7\xb7\xb7Nov 22 \u2b21  \u2713 done')
+C:\\Users\\jjgh8\\Github\\taskboard-wt\\incMR-tests\\tests\\test_milestone_row.py:547: AssertionError: ('cut', 'a]b[/]', ' \u25b2 a]b[/] a]b[/] a]b[/]        \xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\u2506\xb7\u254e\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\u25b2 Oct 26\xb7\xb7\xb7\xb7\xb7\xb7\u2506\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\u2506\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\u2506\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7   in 6d')
+C:\\Users\\jjgh8\\Github\\taskboard-wt\\incMR-tests\\tests\\test_milestone_row.py:547: AssertionError: ('cut', '[@click=app.quit]x', ' \u25b2 [@click=app.quit]x [@clic\u2026  \xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\u2506\xb7\u254e\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\u25b2 Oct 26\xb7\xb7\xb7\xb7\xb7\xb7\u2506\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\u2506\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\u2506\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7   in 6d')
+C:\\Users\\jjgh8\\Github\\taskboard-wt\\incMR-tests\\tests\\test_milestone_row.py:547: AssertionError: ('cut', 'x\\\\', ' \u25b2 x\\\\x\\\\x\\\\x\\\\x\\\\x\\\\                \xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\u2506\xb7\u254e\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\u25b2 Oct 26\xb7\xb7\xb7\xb7\xb7\xb7\u2506\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\u2506\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\u2506\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7   in 6d')
+C:\\Users\\jjgh8\\Github\\taskboard-wt\\incMR-tests\\tests\\test_milestone_row.py:547: AssertionError: ('cut', '\u91cc\u7a0b\u7891 frozen', ' \u25b2 \u91cc\u7a0b\u7891 frozen \u91cc\u7a0b\u7891 froz\u2026  \xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\u2506\xb7\u254e\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\u25b2 Oct 26\xb7\xb7\xb7\xb7\xb7\xb7\u2506\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\u2506\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\u2506\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7   in 6d')
+C:\\Users\\jjgh8\\Github\\taskboard-wt\\incMR-tests\\tests\\test_milestone_row.py:547: AssertionError: ('cut', 'e\u0301tape', ' \u25b2 e\u0301tapee\u0301tapee\u0301tape             \xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\u2506\xb7\u254e\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\u25b2 Oct 26\xb7\xb7\xb7\xb7\xb7\xb7\u2506\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\u2506\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\u2506\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7   in 6d')
+C:\\Users\\jjgh8\\Github\\taskboard-wt\\incMR-tests\\tests\\test_milestone_row.py:547: AssertionError: ('cut', 'a]b[/]', ' \u25b2 a]b[/] a]b[/] a\u2026  \xb7\xb7\xb7\xb7\u2506\xb7\u254e\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\u25b2 Oct 26\xb7\xb7\xb7\xb7\xb7\xb7\u2506\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\u2506\xb7\xb7\xb7\xb7\xb7  in 6d')
+C:\\Users\\jjgh8\\Github\\taskboard-wt\\incMR-tests\\tests\\test_milestone_row.py:547: AssertionError: ('cut', '[@click=app.quit]x', ' \u25b2 [@click=app.qui\u2026  \xb7\xb7\xb7\xb7\u2506\xb7\u254e\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\u25b2 Oct 26\xb7\xb7\xb7\xb7\xb7\xb7\u2506\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\u2506\xb7\xb7\xb7\xb7\xb7  in 6d')
+C:\\Users\\jjgh8\\Github\\taskboard-wt\\incMR-tests\\tests\\test_milestone_row.py:547: AssertionError: ('cut', 'x\\\\', ' \u25b2 x\\\\x\\\\x\\\\x\\\\x\\\\x\\\\      \xb7\xb7\xb7\xb7\u2506\xb7\u254e\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\u25b2 Oct 26\xb7\xb7\xb7\xb7\xb7\xb7\u2506\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\u2506\xb7\xb7\xb7\xb7\xb7  in 6d')
+C:\\Users\\jjgh8\\Github\\taskboard-wt\\incMR-tests\\tests\\test_milestone_row.py:547: AssertionError: ('cut', '\u91cc\u7a0b\u7891 frozen', ' \u25b2 \u91cc\u7a0b\u7891 frozen  \u2026  \xb7\xb7\xb7\xb7\u2506\xb7\u254e\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\u25b2 Oct 26\xb7\xb7\xb7\xb7\xb7\xb7\u2506\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\u2506\xb7\xb7\xb7\xb7\xb7  in 6d')
+C:\\Users\\jjgh8\\Github\\taskboard-wt\\incMR-tests\\tests\\test_milestone_row.py:547: AssertionError: ('cut', 'e\u0301tape', ' \u25b2 e\u0301tapee\u0301tapee\u0301tape   \xb7\xb7\xb7\xb7\u2506\xb7\u254e\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\u25b2 Oct 26\xb7\xb7\xb7\xb7\xb7\xb7\u2506\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\u2506\xb7\xb7\xb7\xb7\xb7  in 6d')
+C:\Users\jjgh8\Github\taskboard-wt\incMR-tests\tests\test_milestone_row.py:570: AssertionError: assert [['tm1', 'tm2...'ttele', ...]] == [['tm3', 'tst..., 'tg1', ...]]
+C:\Users\jjgh8\Github\taskboard-wt\incMR-tests\tests\test_milestone_row.py:583: AssertionError: assert 'tm1' == 'tm2'
+C:\Users\jjgh8\Github\taskboard-wt\incMR-tests\tests\test_milestone_row.py:602: AssertionError: ('tstore', ['tm1', 'tm2', 'tstore', 'tm3', 'tm4', 'ttele', ...])
+C:\Users\jjgh8\Github\taskboard-wt\incMR-tests\tests\test_milestone_row.py:608: AssertionError: assert 'tm2' == 'tm3'
+C:\Users\jjgh8\Github\taskboard-wt\incMR-tests\tests\test_milestone_row.py:615: AssertionError: assert 'tm3' == 'tm4'
+C:\Users\jjgh8\Github\taskboard-wt\incMR-tests\tests\test_milestone_row.py:624: AssertionError: assert 'tm3' == 'tm2'
+C:\Users\jjgh8\Github\taskboard-wt\incMR-tests\tests\test_milestone_row.py:672: AssertionError: assert 'tm3' == 'tm4'
+C:\Users\jjgh8\Github\taskboard-wt\incMR-tests\tests\test_milestone_row.py:680: AssertionError: assert 'Next' == 'Doing'
+C:\Users\jjgh8\Github\taskboard-wt\incMR-tests\tests\test_milestone_row.py:696: AssertionError: assert 6 == (4 + 1)
+C:\Users\jjgh8\Github\taskboard-wt\incMR-tests\tests\milestone_row_fixture.py:214: AssertionError: the lane is not one row: line_map {'tm1': 5, 'tm4': 7, 'tm5': 10}
+C:\Users\jjgh8\Github\taskboard-wt\incMR-tests\tests\test_milestone_row.py:718: AssertionError: assert 'tm1' == 'tm4'
+C:\Users\jjgh8\Github\taskboard-wt\incMR-tests\tests\test_milestone_row.py:740: AssertionError: ['tc1', 'tc2', 'tc3', 'tc4', 'tc6', 'tc5', ...]
+C:\Users\jjgh8\Github\taskboard-wt\incMR-tests\tests\test_milestone_row.py:755: AssertionError: ['tm2', 'tm1', 'tm1', 'tm2', 'tstore', 'tm3', ...]
+C:\Users\jjgh8\Github\taskboard-wt\incMR-tests\tests\test_milestone_row.py:765: AssertionError: ['tm1', 'tm2', 'tstore', 'tm3', 'tm4', 'ttele', ...]
+C:\Users\jjgh8\Github\taskboard-wt\incMR-tests\tests\test_milestone_row.py:816: AssertionError: assert 'tm3' == 'tm4'
+C:\\Users\\jjgh8\\Github\\taskboard-wt\\incMR-tests\\tests\\test_milestone_row.py:831: AssertionError: \u25c6 GANTT                                                                                         \u25b21 past due \xb7 chain 2
+C:\Users\jjgh8\Github\taskboard-wt\incMR-tests\tests\milestone_row_fixture.py:214: AssertionError: the lane is not one row: line_map {'tbm1': 10, 'tbm2': None}
+C:\\Users\\jjgh8\\Github\\taskboard-wt\\incMR-tests\\tests\\test_milestone_row.py:867: AssertionError:  \u25a0 Steering go/no-go           \xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\u2506\xb7\u254e\xb7\xb7\xb7\xb7\xb7\xb7\xb7\u25a0 Oct 24\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\u2506\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\u2506\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\u2506\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7   in 4d
+C:\\Users\\jjgh8\\Github\\taskboard-wt\\incMR-tests\\tests\\test_milestone_row.py:867: AssertionError:  \u25b2 Store list frozen           \xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\u2506\xb7\u254e\xb7\xb7\xb7\xb7\xb7\xb7\xb7\u25b2 Oct 24\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\u2506\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\u2506\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\u2506\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7   in 4d
+C:\\Users\\jjgh8\\Github\\taskboard-wt\\incMR-tests\\tests\\test_milestone_row_at.py:110: AssertionError:  \u2b21 Kickoff invoice paid        \xb7\xb7\xb7\xb7\xb7\xb7\u2b21\u2713 Oct 17\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\u2506\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\u2506\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\u2506\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\u2506\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7  \u2713 done
+C:\\Users\\jjgh8\\Github\\taskboard-wt\\incMR-tests\\tests\\test_milestone_row_at.py:108: AssertionError: \u25c6 GANTT                                                             \u25b21 past due
+C:\Users\jjgh8\Github\taskboard-wt\incMR-tests\tests\test_milestone_row_at.py:145: AssertionError: assert 'tm2' == 'tm3'
+C:\Users\jjgh8\Github\taskboard-wt\incMR-tests\tests\test_milestone_row_at.py:145: AssertionError: assert 'tm2' == 'tm3'
+C:\Users\jjgh8\Github\taskboard-wt\incMR-tests\tests\test_milestone_row_at.py:175: AssertionError: assert 'tm2' == 'tm4'
+C:\Users\jjgh8\Github\taskboard-wt\incMR-tests\tests\test_milestone_row_at.py:196: AssertionError: assert 'tstore' == 'tm4'
+C:\Users\jjgh8\Github\taskboard-wt\incMR-tests\tests\test_milestone_row_at.py:237: AssertionError: assert 'tm2' == 'tm4'
+C:\\Users\\jjgh8\\Github\\taskboard-wt\\incMR-tests\\tests\\test_milestone_row_at.py:261: AssertionError:   Big task 12                  \u254c\u25ac\u254c\u254c\u254c\u254c\u254c\u254c\u254c\u254c\u254c\u254c\u254c\u254c\u254c\u254c\u254c\u254c\u254c\u254c\u254c\u254c\u254c\u254c\u254c\u254c\u254c\u254c\u254c\u25d4\u2506\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\u2506\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\u2506\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\u2506\xb7\xb7\xb7\xb7\xb7\xb7   Nov 1
+C:\\Users\\jjgh8\\Github\\taskboard-wt\\incMR-tests\\tests\\test_milestone_row_at.py:279: AssertionError:  \u2b21 Kickoff invoice paid        \xb7\xb7\xb7\xb7\xb7\xb7\u2b21\u2713 Oct 17\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\u2506\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\u2506\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\u2506\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\u2506\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7  \u2713 done
+C:\\Users\\jjgh8\\Github\\taskboard-wt\\incMR-tests\\tests\\test_milestone_row_at.py:279: AssertionError:  \u2b21 Kickoff invoice\u2026  \u2b21\u2713 Oct 17\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\u2506\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\u2506\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\u2506\xb7\xb7\xb7\xb7\xb7 \u2713 done
+C:\\Users\\jjgh8\\Github\\taskboard-wt\\incMR-tests\\tests\\test_gantt_milestones.py:345: AssertionError: assert ('\u25c6' in '\xb7\xb7\xb7\xb7\xb7\u2506\xb7\xb7\xb7\xb7\xb7\xb7\u2506\xb7\xb7\xb7\u254e\xb7\xb7\u2506\xb7\xb7\xb7\xb7\xb7\xb7\u25c6 Nov 16\xb7\xb7\xb7\xb7\xb7\xb7\u2506\xb7\xb7\xb7\xb7\xb7\xb7\u2506\xb7\xb7\xb7\xb7\xb7\xb7\u2506\xb7\xb7\xb7\xb7\xb7\xb7\u2506\xb7\xb7\xb7\xb7\xb7\xb7\u2506\xb7\xb7\xb7\xb7\xb7\xb7\u2506\xb7\xb7\xb7' and 'Launch new homepage' in '\xb7\xb7\xb7\xb7\xb7\u2506\xb7\xb7\xb7\xb7\xb7\xb7\u2506\xb7\xb7\xb7\u254e\xb7\xb7\u2506\xb7\xb7\xb7\xb7\xb7\xb7\u25c6 Nov 16\xb7\xb7\xb7\xb7\xb7\xb7\u2506\xb7\xb7\xb7\xb7\xb7\xb7\u2506\xb7\xb7\xb7\xb7\xb7\xb7\u2506\xb7\xb7\xb7\xb7\xb7\xb7\u2506\xb7\xb7\xb7\xb7\xb7\xb7\u2506\xb7\xb7\xb7\xb7\xb7\xb7\u2506\xb7\xb7\xb7')
+C:\Users\jjgh8\Github\taskboard-wt\incMR-tests\tests\test_milestone_marks.py:579: assert 10 == 12
+=================================== PASSES ====================================
+=========================== short test summary info ===========================
+PASSED tests/test_milestone_row.py::test_TC_4805_LLR_4601_5_no_drawn_milestone_no_row
+PASSED tests/test_milestone_row.py::test_TC_4806_LLR_4601_6_a_folded_group_draws_no_row
+PASSED tests/test_milestone_row.py::test_TC_4829_LLR_4603_9_no_line_wider_than_the_terminal[118-30]
+PASSED tests/test_milestone_row.py::test_TC_4829_LLR_4603_9_no_line_wider_than_the_terminal[80-24]
+PASSED tests/test_milestone_row.py::test_TC_4829_LLR_4603_9_no_line_wider_than_the_terminal[118-12]
+PASSED tests/test_milestone_row.py::test_TC_4830_LLR_4603_10_the_legend_names_the_rows_marks
+PASSED tests/test_milestone_row.py::test_TC_4835_LLR_4604_5_the_ends_keep_the_selection
+PASSED tests/test_milestone_row.py::test_TC_4836_LLR_4604_6_off_the_row_left_right_are_base
+PASSED tests/test_milestone_row.py::test_TC_4843d_A5_hiding_the_selected_milestones_class
+PASSED tests/test_milestone_row.py::test_TC_4851_LLR_4606_1_the_link_frame_keeps_one_row_per_milestone[size0]
+PASSED tests/test_milestone_row.py::test_TC_4851_LLR_4606_1_the_link_frame_keeps_one_row_per_milestone[size1]
+PASSED tests/test_milestone_row_at.py::test_AT_4602_folding
+PASSED tests/test_gantt_milestones.py::test_TC_609_rows_merge_reached_milestones_by_due_while_open_work_remains
+PASSED tests/test_gantt_milestones.py::test_TC_609_a_group_with_only_reached_milestones_draws_no_row
+PASSED tests/test_gantt_milestones.py::test_TC_609_nav_walks_the_drawn_rows_in_draw_order[size0]
+PASSED tests/test_gantt_milestones.py::test_TC_609_nav_walks_the_drawn_rows_in_draw_order[size1]
+PASSED tests/test_gantt_milestones.py::test_TC_609_a_selected_reached_milestone_is_drawn_when_rows_are_scarce[size0]
+PASSED tests/test_gantt_milestones.py::test_TC_609_a_selected_reached_milestone_is_drawn_when_rows_are_scarce[size1]
+PASSED tests/test_gantt_milestones.py::test_TC_609_a_selected_reached_milestone_unfolds_its_group
+PASSED tests/test_gantt_milestones.py::test_TC_610_tone_and_chip_equal_the_verdicts_rule[ta3]
+PASSED tests/test_gantt_milestones.py::test_TC_610_tone_and_chip_equal_the_verdicts_rule[td0]
+PASSED tests/test_gantt_milestones.py::test_TC_610_tone_and_chip_equal_the_verdicts_rule[tm5]
+PASSED tests/test_gantt_milestones.py::test_TC_610_tone_and_chip_equal_the_verdicts_rule[to0]
+PASSED tests/test_gantt_milestones.py::test_TC_610_tone_and_chip_equal_the_verdicts_rule[tw0]
+PASSED tests/test_gantt_milestones.py::test_TC_610_tone_and_chip_equal_the_verdicts_rule[tw5]
+PASSED tests/test_gantt_milestones.py::test_TC_610_today_no_due_and_the_inbox
+PASSED tests/test_gantt_milestones.py::test_TC_610_cells_hold_one_diamond_and_its_date_and_never_a_bar[-40]
+PASSED tests/test_gantt_milestones.py::test_TC_610_cells_hold_one_diamond_and_its_date_and_never_a_bar[0]
+PASSED tests/test_gantt_milestones.py::test_TC_610_cells_hold_one_diamond_and_its_date_and_never_a_bar[6]
+PASSED tests/test_gantt_milestones.py::test_TC_610_cells_hold_one_diamond_and_its_date_and_never_a_bar[25]
+PASSED tests/test_gantt_milestones.py::test_TC_610_cells_hold_one_diamond_and_its_date_and_never_a_bar[400]
+PASSED tests/test_gantt_milestones.py::test_TC_610_a_reached_milestone_on_the_last_column_keeps_its_day
+PASSED tests/test_gantt_milestones.py::test_TC_610_a_milestone_title_paints_literally[[b]x[/b]]
+PASSED tests/test_gantt_milestones.py::test_TC_610_a_milestone_title_paints_literally[[/]]
+PASSED tests/test_gantt_milestones.py::test_TC_610_a_milestone_title_paints_literally[ends in \\]
+PASSED tests/test_gantt_milestones.py::test_TC_611_the_month_row_marks_the_selected_projects_milestones
+PASSED tests/test_gantt_milestones.py::test_TC_611_a_project_without_milestones_marks_only_its_due
+PASSED tests/test_gantt_milestones.py::test_TC_611_the_legend_names_milestones_right_after_the_selection[118-30]
+PASSED tests/test_gantt_milestones.py::test_TC_611_the_legend_names_milestones_right_after_the_selection[80-24]
+PASSED tests/test_gantt_milestones.py::test_TC_611_the_map_and_the_help_name_milestones
+PASSED tests/test_milestone_marks.py::test_TC_2604_the_seats_truth_table
+PASSED tests/test_milestone_marks.py::test_TC_2604_a_nonempty_chip_implies_over_at_the_gantt_cells
+PASSED tests/test_milestone_marks.py::test_TC_2604_the_sites_enumeration_every_milestone_mark_routes_through_the_seat
+PASSED tests/test_milestone_marks.py::test_TC_2606_render_marks_every_row_is_exactly_w_cells
+PASSED tests/test_milestone_marks.py::test_TC_2606_render_marks_the_frame_names_every_class_and_the_plain_row
+PASSED tests/test_milestone_marks.py::test_TC_2606_render_marks_a_hidden_class_is_dimmed_with_what_hiding_means
+PASSED tests/test_milestone_marks.py::test_TC_2606_render_marks_narrow_counts_drop_before_the_names
+PASSED tests/test_milestone_marks.py::test_TC_2606_render_marks_an_empty_directory_says_so_and_a_markup_name_is_literal
+PASSED tests/test_milestone_marks.py::test_AT_2607_an_unknown_id_is_safe
+PASSED tests/test_milestone_marks.py::test_TC_2602_a_mark_set_on_a_non_milestone_is_kept_and_drawn_nowhere
+PASSED tests/test_milestone_marks.py::test_AT_2606_hash_pay_filters_to_that_class
+PASSED tests/test_milestone_marks.py::test_TC_2608_the_class_query_keeps_exactly_that_class_milestones
+PASSED tests/test_milestone_marks.py::test_TC_2608_the_bar_names_the_class_and_nothing_when_no_class_holds
+PASSED tests/test_milestone_marks.py::test_TC_2608_the_class_query_lights_no_text_in_the_overlay
+PASSED tests/test_legend.py::test_no_entry_describes_a_mark_the_view_is_not_drawing
+PASSED tests/test_legend.py::test_a_quiet_board_gets_a_shorter_legend_than_a_busy_one
+PASSED tests/test_legend.py::test_the_status_marks_appear_only_for_statuses_the_board_holds
+PASSED tests/test_legend.py::test_an_empty_board_promises_nothing
+PASSED tests/test_legend.py::test_the_meter_swatches_are_the_meter_itself
+PASSED tests/test_legend.py::test_the_phase_swatches_are_the_phase_glyph_itself
+PASSED tests/test_legend.py::test_each_view_gets_its_own_legend
+PASSED tests/test_legend.py::test_the_legend_describes_marks_and_never_addresses_the_reader
+PASSED tests/test_legend.py::test_the_legend_key_is_universal_so_it_can_never_be_dropped
+PASSED tests/test_legend.py::test_pressing_question_mark_opens_help_modal
+PASSED tests/test_legend.py::test_the_palette_follows_the_view_the_reader_is_on
+PASSED tests/test_legend.py::test_the_palette_lists_exactly_the_current_views_live_keys
+PASSED tests/test_legend.py::test_the_palette_keys_follow_the_views_scope
+PASSED tests/test_legend.py::test_the_palette_filters_commands_by_name_or_key
+PASSED tests/test_legend.py::test_the_palette_runs_a_selected_command
+PASSED tests/test_legend.py::test_the_palette_closes_without_running
+PASSED tests/test_legend.py::test_TC_2607_the_strip_lists_exactly_the_drawn_classes_then_the_hidden_count
+PASSED tests/test_legend.py::test_TC_2607_no_classed_milestone_in_view_draws_no_strip
+PASSED tests/test_legend.py::test_TC_2607_every_class_hidden_draws_no_strip
+PASSED tests/test_legend.py::test_TC_2607_at_80_cells_the_strip_cuts_names_from_the_right
+PASSED tests/test_legend.py::test_TC_2607_a_markup_looking_name_prints_as_typed
+PASSED tests/test_legend.py::test_TC_2607_the_presentation_strip_names_only_the_projects_shown_classes
+PASSED tests/test_legend.py::test_TC_2607_the_presentation_views_carry_the_strip
+PASSED tests/test_legend.py::test_TC_2607_help_names_the_classes_the_manager_and_the_class_filter
+PASSED tests/test_legend.py::test_TC_2608_hide_drops_the_class_from_the_gantt_and_the_board_is_untouched
+PASSED tests/test_legend.py::test_TC_2608_present_tasks_m_drops_hidden_classes_and_none_hidden_is_identity
+PASSED tests/test_legend.py::test_TC_2608_hidden_classes_leave_the_presentations_three_views
+PASSED tests/test_legend.py::test_AT_2605_hide_and_the_legend
+PASSED tests/test_legend.py::test_TC_2607_a_lone_over_long_name_is_cut_not_crashed
+PASSED tests/test_milestone_offer.py::test_TC_614_the_candidates_of_the_one_day_board_in_order
+PASSED tests/test_milestone_offer.py::test_TC_614_what_is_never_a_candidate
+PASSED tests/test_milestone_offer.py::test_TC_614_the_mark_is_read_totally[migrations0-True]
+PASSED tests/test_milestone_offer.py::test_TC_614_the_mark_is_read_totally[migrations1-False]
+PASSED tests/test_milestone_offer.py::test_TC_614_the_mark_is_read_totally[migrations2-False]
+PASSED tests/test_milestone_offer.py::test_TC_614_the_mark_is_read_totally[migrations3-False]
+PASSED tests/test_milestone_offer.py::test_TC_614_the_mark_is_read_totally[migrations4-False]
+PASSED tests/test_milestone_offer.py::test_TC_614_the_mark_is_read_totally[migrations5-False]
+PASSED tests/test_milestone_offer.py::test_TC_614_the_mark_is_read_totally[x-False]
+PASSED tests/test_milestone_offer.py::test_TC_614_the_mark_is_read_totally[None-False]
+PASSED tests/test_milestone_offer.py::test_TC_615_backup_log_flags_mark_and_never_twice
+PASSED tests/test_milestone_offer.py::test_TC_615_none_chosen_marks_without_backup_and_counts_the_ineligible
+PASSED tests/test_milestone_offer.py::test_TC_615_a_malformed_mark_is_replaced_backed_up_and_logged
+PASSED tests/test_milestone_offer.py::test_TC_615_any_failure_leaves_the_file_untouched_and_unmarked[backup]
+PASSED tests/test_milestone_offer.py::test_TC_615_any_failure_leaves_the_file_untouched_and_unmarked[log]
+PASSED tests/test_milestone_offer.py::test_TC_615_any_failure_leaves_the_file_untouched_and_unmarked[save]
+PASSED tests/test_milestone_offer.py::test_TC_615_a_failing_cleanup_still_restores_first
+PASSED tests/test_milestone_offer.py::test_TC_615_odd_due_spellings_come_back_exactly_on_failure
+PASSED tests/test_milestone_offer.py::test_TC_615_the_log_records_the_start_actually_written
+PASSED tests/test_milestone_offer.py::test_TC_615_a_team_pull_sees_no_extra_user
+PASSED tests/test_milestone_offer.py::test_TC_616_a_seeded_board_is_marked_and_never_offered
+PASSED tests/test_milestone_offer.py::test_TC_616_enter_with_nothing_checked_is_not_now
+PASSED tests/test_milestone_offer.py::test_TC_616_a_task_that_stops_being_a_candidate_is_counted_not_converted
+PASSED tests/test_milestone_offer.py::test_TC_616_u_restores_both_dates_byte_exact
+PASSED tests/test_milestone_offer.py::test_TC_616_the_offer_covers_the_identity_picker_until_answered
+PASSED tests/test_milestone_offer.py::test_TC_616_no_offer_on_an_unreadable_load
+PASSED tests/test_milestone_offer.py::test_TC_616_both_migrations_on_one_start_undo_the_offer_first
+PASSED tests/test_milestone_offer.py::test_TC_616_quitting_unanswered_leaves_the_board_unmarked
+PASSED tests/test_milestone_offer.py::test_TC_616_a_read_only_board_without_candidates_says_nothing
+PASSED tests/test_milestone_offer.py::test_TC_617_rows_order_marks_and_keys
+PASSED tests/test_milestone_offer.py::test_TC_617_enter_returns_the_checked_candidates_own_ids
+PASSED tests/test_milestone_offer.py::test_TC_617_user_text_paints_literally
+PASSED tests/test_milestone_offer.py::test_TC_617_a_long_title_is_cut_before_its_project_and_date
+PASSED tests/test_milestone_offer.py::test_TC_617_thirty_four_candidates_fit_80x24
+PASSED tests/test_milestone_offer.py::test_AT_604_only_what_was_picked_is_converted_backed_up_logged_and_undoable
+PASSED tests/test_milestone_offer.py::test_AT_605_not_now_and_no_candidate_mark_and_convert_nothing
+PASSED tests/test_milestone_offer.py::test_AT_606_a_backup_that_cannot_be_made_changes_nothing
+PASSED tests/test_boards_home.py::test_TC_2203_board_chip
+PASSED tests/test_boards_home.py::test_TC_2203_every_view_opens_with_the_chip_at_its_width[30]
+PASSED tests/test_boards_home.py::test_TC_2203_every_view_opens_with_the_chip_at_its_width[40]
+PASSED tests/test_boards_home.py::test_TC_2203_every_view_opens_with_the_chip_at_its_width[80]
+PASSED tests/test_boards_home.py::test_TC_2203_every_view_opens_with_the_chip_at_its_width[118]
+PASSED tests/test_boards_home.py::test_TC_2203_every_view_opens_with_the_chip_at_its_width[160]
+PASSED tests/test_boards_home.py::test_TC_2203_markup_in_a_board_name_paints_literally[30]
+PASSED tests/test_boards_home.py::test_TC_2203_markup_in_a_board_name_paints_literally[40]
+PASSED tests/test_boards_home.py::test_TC_2203_markup_in_a_board_name_paints_literally[80]
+PASSED tests/test_boards_home.py::test_TC_2203_markup_in_a_board_name_paints_literally[160]
+PASSED tests/test_boards_home.py::test_TC_2203_no_label_is_the_base_frame
+PASSED tests/test_boards_home.py::test_TC_2203_the_presentation_takes_no_chip
+PASSED tests/test_boards_home.py::test_TC_2204_board_summary_counts_what_the_cards_show
+PASSED tests/test_boards_home.py::test_TC_2204_ago[1-just now]
+PASSED tests/test_boards_home.py::test_TC_2204_ago[2-2m ago]
+PASSED tests/test_boards_home.py::test_TC_2204_ago[59-59m ago]
+PASSED tests/test_boards_home.py::test_TC_2204_ago[60-1h ago]
+PASSED tests/test_boards_home.py::test_TC_2204_ago[1439-23h ago]
+PASSED tests/test_boards_home.py::test_TC_2204_ago[1440-1d ago]
+PASSED tests/test_boards_home.py::test_TC_2204_ago_never
+PASSED tests/test_boards_home.py::test_TC_2204_the_strip_takes_the_first_window_that_fits[74-28-2]
+PASSED tests/test_boards_home.py::test_TC_2204_the_strip_takes_the_first_window_that_fits[53-21-2]
+PASSED tests/test_boards_home.py::test_TC_2204_the_strip_takes_the_first_window_that_fits[34-14-2]
+PASSED tests/test_boards_home.py::test_TC_2204_the_strip_takes_the_first_window_that_fits[27-21-1]
+PASSED tests/test_boards_home.py::test_TC_2204_the_strip_takes_the_first_window_that_fits[12-7-1]
+PASSED tests/test_boards_home.py::test_TC_2204_the_counts_row_joins_and_shortens
+PASSED tests/test_boards_home.py::test_TC_2204_names_paint_literally_in_a_card
+PASSED tests/test_boards_home.py::test_TC_2204_B_is_in_the_seat_for_every_view
+PASSED tests/test_boards_home.py::test_TC_2204_check_action_and_the_cursor
+PASSED tests/test_boards_home.py::test_TC_2204_seven_boards_scroll_and_a_missing_file
+PASSED tests/test_boards_home.py::test_TC_2204_enter_closes_the_home_before_the_board_starts
+PASSED tests/test_boards_home.py::test_TC_2204_the_home_reads_an_unreadable_board_without_copying_it
+PASSED tests/test_boards_home.py::test_AT_2202_switching_boards_in_place
+PASSED tests/test_boards_home.py::test_AT_2203_the_chip_in_every_view
+PASSED tests/test_boards_home.py::test_AT_2204_the_home
+FAILED tests/test_milestone_row.py::test_TC_4801_LLR_4601_1_one_milestone_row_right_under_each_span_row
+FAILED tests/test_milestone_row.py::test_TC_4802_LLR_4601_2_the_row_holds_exactly_the_groups_drawn_milestones
+FAILED tests/test_milestone_row.py::test_TC_4803_LLR_4601_3_tasks_one_per_row_in_base_order_under_the_row
+FAILED tests/test_milestone_row.py::test_TC_4804_LLR_4601_4_the_inbox_has_its_own_row
+FAILED tests/test_milestone_row.py::test_TC_4807_LLR_4601_7_the_row_costs_one_row_of_the_fold_budget
+FAILED tests/test_milestone_row.py::test_TC_4808_LLR_4601_8_the_rows_dependency_gutter_is_blank
+FAILED tests/test_milestone_row.py::test_TC_4811_LLR_4602_1_each_mark_is_its_class_glyph_in_its_class_style
+FAILED tests/test_milestone_row.py::test_TC_4812_LLR_4602_2_a_shared_cell_is_one_glyph_and_its_count
+FAILED tests/test_milestone_row.py::test_TC_4813_LLR_4602_3_ten_or_more_in_one_cell_is_glyph_plus
+FAILED tests/test_milestone_row.py::test_TC_4814_LLR_4602_4_a_reached_milestone_alone_is_hollow_and_tick
+FAILED tests/test_milestone_row.py::test_TC_4815_LLR_4602_5_the_selected_mark_is_reverse_video
+FAILED tests/test_milestone_row.py::test_TC_4816_LLR_4602_6_off_window_dues_draw_the_edge_glyph_and_the_mark_inward
+FAILED tests/test_milestone_row.py::test_TC_4817_LLR_4602_7_no_due_draws_no_mark
+FAILED tests/test_milestone_row.py::test_TC_4818_LLR_4602_8_a_two_cell_mark_in_the_last_cell_starts_one_before
+FAILED tests/test_milestone_row.py::test_TC_4821_LLR_4603_1_the_selected_title_after_its_mark_else_before
+FAILED tests/test_milestone_row.py::test_TC_4822_LLR_4603_2_no_room_cuts_on_the_roomier_side_from_6_cells
+FAILED tests/test_milestone_row.py::test_TC_4823_LLR_4603_3_other_marks_carry_their_leads_whole_date_where_it_fits
+FAILED tests/test_milestone_row.py::test_TC_4824_LLR_4603_4_a_late_lead_shows_its_days_late_in_over
+FAILED tests/test_milestone_row.py::test_TC_4825_LLR_4603_5_no_label_covers_a_mark_or_the_edge[118-30]
+FAILED tests/test_milestone_row.py::test_TC_4825_LLR_4603_5_no_label_covers_a_mark_or_the_edge[80-24]
+FAILED tests/test_milestone_row.py::test_TC_4826_LLR_4603_6_the_label_column_at_rest
+FAILED tests/test_milestone_row.py::test_TC_4827_LLR_4603_7_the_label_column_names_the_selected_member
+FAILED tests/test_milestone_row.py::test_TC_4828_LLR_4603_8_the_chip_is_the_selected_else_the_upcoming_anchor
+FAILED tests/test_milestone_row.py::test_TC_4820_LLR_4603_11_a_field_label_draws_its_literal_text_in_cells[after-0-118]
+FAILED tests/test_milestone_row.py::test_TC_4820_LLR_4603_11_a_field_label_draws_its_literal_text_in_cells[after-1-118]
+FAILED tests/test_milestone_row.py::test_TC_4820_LLR_4603_11_a_field_label_draws_its_literal_text_in_cells[after-2-118]
+FAILED tests/test_milestone_row.py::test_TC_4820_LLR_4603_11_a_field_label_draws_its_literal_text_in_cells[after-3-118]
+FAILED tests/test_milestone_row.py::test_TC_4820_LLR_4603_11_a_field_label_draws_its_literal_text_in_cells[after-4-118]
+FAILED tests/test_milestone_row.py::test_TC_4820_LLR_4603_11_a_field_label_draws_its_literal_text_in_cells[before-0-118]
+FAILED tests/test_milestone_row.py::test_TC_4820_LLR_4603_11_a_field_label_draws_its_literal_text_in_cells[before-1-118]
+FAILED tests/test_milestone_row.py::test_TC_4820_LLR_4603_11_a_field_label_draws_its_literal_text_in_cells[before-2-118]
+FAILED tests/test_milestone_row.py::test_TC_4820_LLR_4603_11_a_field_label_draws_its_literal_text_in_cells[before-3-118]
+FAILED tests/test_milestone_row.py::test_TC_4820_LLR_4603_11_a_field_label_draws_its_literal_text_in_cells[before-4-118]
+FAILED tests/test_milestone_row.py::test_TC_4820_LLR_4603_11_a_field_label_draws_its_literal_text_in_cells[cut-0-118]
+FAILED tests/test_milestone_row.py::test_TC_4820_LLR_4603_11_a_field_label_draws_its_literal_text_in_cells[cut-1-118]
+FAILED tests/test_milestone_row.py::test_TC_4820_LLR_4603_11_a_field_label_draws_its_literal_text_in_cells[cut-2-118]
+FAILED tests/test_milestone_row.py::test_TC_4820_LLR_4603_11_a_field_label_draws_its_literal_text_in_cells[cut-3-118]
+FAILED tests/test_milestone_row.py::test_TC_4820_LLR_4603_11_a_field_label_draws_its_literal_text_in_cells[cut-4-118]
+FAILED tests/test_milestone_row.py::test_TC_4820_LLR_4603_11_a_field_label_draws_its_literal_text_in_cells[cut-0-80]
+FAILED tests/test_milestone_row.py::test_TC_4820_LLR_4603_11_a_field_label_draws_its_literal_text_in_cells[cut-1-80]
+FAILED tests/test_milestone_row.py::test_TC_4820_LLR_4603_11_a_field_label_draws_its_literal_text_in_cells[cut-2-80]
+FAILED tests/test_milestone_row.py::test_TC_4820_LLR_4603_11_a_field_label_draws_its_literal_text_in_cells[cut-3-80]
+FAILED tests/test_milestone_row.py::test_TC_4820_LLR_4603_11_a_field_label_draws_its_literal_text_in_cells[cut-4-80]
+FAILED tests/test_milestone_row.py::test_TC_4831b_LLR_4604_1_the_nav_column_holds_one_stop_per_row
+FAILED tests/test_milestone_row.py::test_TC_4831_LLR_4604_1_up_down_stop_on_the_row_once
+FAILED tests/test_milestone_row.py::test_TC_4832_LLR_4604_2_landing_on_a_row_selects_its_anchor
+FAILED tests/test_milestone_row.py::test_TC_4832b_LLR_4604_2_up_lands_on_the_anchor
+FAILED tests/test_milestone_row.py::test_TC_4833_LLR_4604_3_right_walks_to_the_next_in_walk_order
+FAILED tests/test_milestone_row.py::test_TC_4834_LLR_4604_4_left_walks_back
+FAILED tests/test_milestone_row.py::test_TC_4837_LLR_4604_7_enter_opens_the_walked_milestone
+FAILED tests/test_milestone_row.py::test_TC_4838_LLR_4604_8_task_keys_act_on_the_walked_milestone
+FAILED tests/test_milestone_row.py::test_TC_4841_LLR_4605_1_a_query_keeps_only_the_matching_milestones_on_the_row
+FAILED tests/test_milestone_row.py::test_TC_4842_LLR_4605_2_a_hidden_class_leaves_the_row
+FAILED tests/test_milestone_row.py::test_TC_4843_LLR_4605_3_the_walk_skips_what_the_row_does_not_draw
+FAILED tests/test_milestone_row.py::test_TC_4843b_R4_the_nav_column_holds_no_hidden_class_milestone
+FAILED tests/test_milestone_row.py::test_TC_4843b_R4_the_cursor_never_stops_on_a_hidden_class_milestone
+FAILED tests/test_milestone_row.py::test_TC_4843c_R4_the_stop_is_the_one_the_frame_draws
+FAILED tests/test_milestone_row.py::test_TC_4852_LLR_4606_2_L_on_a_walked_milestone_makes_it_the_waiter
+FAILED tests/test_milestone_row.py::test_TC_4853_LLR_4606_3_closing_the_link_mode_brings_the_rows_back
+FAILED tests/test_milestone_row.py::test_TC_4854_LLR_4606_4_a_selected_member_selects_the_page_holding_the_row
+FAILED tests/test_milestone_row.py::test_TC_4855_LLR_4606_5_only_spans_and_the_selection_draws_the_row[tm3-\u25a0 Steering go/no-go 1/2-\u25a0-violet]
+FAILED tests/test_milestone_row.py::test_TC_4855_LLR_4606_5_only_spans_and_the_selection_draws_the_row[tm4-\u25b2 Store list frozen 2/2-\u25b2-cyan]
+FAILED tests/test_milestone_row_at.py::test_AT_4601_the_row_at_rest[size0] - ...
+FAILED tests/test_milestone_row_at.py::test_AT_4601_the_row_at_rest[size1] - ...
+FAILED tests/test_milestone_row_at.py::test_AT_4603_onto_the_row_and_along_it[size0]
+FAILED tests/test_milestone_row_at.py::test_AT_4603_onto_the_row_and_along_it[size1]
+FAILED tests/test_milestone_row_at.py::test_AT_4604_acting_on_the_walked_one
+FAILED tests/test_milestone_row_at.py::test_AT_4605_search_and_hidden_classes
+FAILED tests/test_milestone_row_at.py::test_AT_4606_link_mode_and_pages - Ass...
+FAILED tests/test_milestone_row_at.py::test_AT_4606b_a_paged_group_pages_to_its_row
+FAILED tests/test_milestone_row_at.py::test_AT_4607_edges[size0] - AssertionE...
+FAILED tests/test_milestone_row_at.py::test_AT_4607_edges[size1] - AssertionE...
+FAILED tests/test_gantt_milestones.py::test_AT_602_milestones_read_as_dates_reached_ones_quiet_the_ruler_marks_them
+FAILED tests/test_milestone_marks.py::test_AT_2603_the_state_shows_in_text - ...
+74 failed, 155 passed in 49.66s

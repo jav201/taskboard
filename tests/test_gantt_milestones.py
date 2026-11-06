@@ -92,14 +92,18 @@ def test_TC_609_a_group_with_only_reached_milestones_draws_no_row():
 @pytest.mark.parametrize("size", [(118, 30), (80, 24)])
 def test_TC_609_nav_walks_the_drawn_rows_in_draw_order(size):
     """TC-609: the arrows walk exactly the rows the frame draws, in its order,
-    reached milestones included (F-3). RED: nav over `open` misses `tw0`."""
+    reached milestones included (F-3). RED: nav over `open` misses `tw0`.
+    Re-baselined in Inc MR-a (LLR-4604.1, SEAM-9): a group's milestones share ONE
+    row, which `line_map` names by every member and the nav column by one stop —
+    so the walk is compared LINE by line: each drawn line holds exactly one stop,
+    in draw order, and the selected reached `tw0` is that row's stop."""
     b = _ms_board()
     lm: dict = {}
     render_gantt(b, False, "tw0", KT, size[0], size[1], line_map=lm)
-    drawn = [tid for tid, _row in sorted(lm.items(), key=lambda kv: kv[1])]
+    drawn = sorted(set(lm.values()))
     (nav,) = nav_model("gantt", b, False, KT, size[0], size[1], selected_id="tw0")
-    assert "tw0" in drawn and "tw0" in nav
-    assert [t for t in nav if t in drawn] == drawn
+    assert "tw0" in lm and "tw0" in nav
+    assert [lm[t] for t in nav if t in lm] == drawn
 
 
 @pytest.mark.parametrize("size", [(118, 7), (80, 6)])
@@ -334,18 +338,33 @@ async def test_AT_602_milestones_read_as_dates_reached_ones_quiet_the_ruler_mark
         text = "".join(ch for ch, _ in launch)
         label_w, _cw, field_w = gantt_columns(118)
         field = text[label_w + 1:label_w + 1 + field_w]
-        assert f"◆ {_md(today + timedelta(days=10))}" in field and "╌" not in field
+        # Inc MR-a re-baseline: Website Redesign's two milestones share ONE row
+        # (LLR-4601.1). The selected one's label column names it (LLR-4603.7) and
+        # its title sits beside its mark in the field, where its date stood
+        # (LLR-4603.1); still no bar.
+        assert "◆" in field and "Launch new homepage" in field and "╌" not in field
+        assert field.index("Launch new homepage") > field.index("◆")
         assert text.rstrip().endswith("in 10d")
-        mock = _row(rows, " ◇ Mockups approved")
-        mtext = "".join(ch for ch, _ in mock)
-        assert "◇✓" in mtext and mtext.rstrip().endswith("✓ done")
+        # the reached `Mockups approved` is on that same row: `◇✓` in mut and the
+        # reached grey, its date beside it in the reached grey (LLR-4602.4,
+        # LLR-4603.3). Its own title and `✓ done` chip left with its own row
+        # (LLR-4603.3: other members show a date; LLR-4603.8: the chip is the
+        # selected member's).
+        mock, mtext = launch, text
+        assert app._line_map["tw0"] == app._line_map["tw5"]
         i = mtext.index("◇✓", label_w)
         assert mock[i][1] == MUT and mock[i + 1][1] == REACHED
-        assert mock[mtext.index("Mockups")][1] == REACHED
-        assert mock[mtext.index(_md(today - timedelta(days=12)), label_w)][1] == REACHED
-        sec = _row(rows, " ◆ Security review sign-off")
+        md = _md(today - timedelta(days=12))
+        assert mtext[i + 3:i + 3 + len(md)] == md
+        assert mock[i + 3][1] == REACHED
+        # `Security review sign-off`, alone and late on its row: `▲2d` in over
+        # beside its mark (LLR-4603.4), and a blank chip — no member is upcoming
+        # (LLR-4603.8)
+        sec = rows[app._line_map["to0"]]
         stext = "".join(ch for ch, _ in sec)
-        assert stext.rstrip().endswith("▲2d") and sec[stext.rindex("▲2d")][1] == OVER
+        j = stext.index("▲2d", label_w + 1)
+        assert sec[j][1] == OVER and j < label_w + 1 + field_w
+        assert stext[label_w + 1 + field_w:].strip() == ""
         month = rows[1]
         # the hollow `◇` sits at Mockups' exact column, not merely "any": its due
         # through the shipped axis math, in mut — the seat's reached unclassified.
@@ -365,10 +384,15 @@ async def test_AT_602_milestones_read_as_dates_reached_ones_quiet_the_ruler_mark
         tail = rows[1][gantt_columns(118)[0]:]
         assert sum(ch == "◆" and hx == dwh for ch, hx in tail) == 1
         assert sum(ch == "◆" and hx == MUT for ch, hx in tail) == 1
-        # ↑ / ↓ over the reached row
+        # ↑ / ↓ over the reached row — Inc MR-a re-baseline: `↑` stops on the
+        # shared row once, at its anchor (the next open one, LLR-4604.2); the
+        # reached one is one `←` along it (LLR-4604.4); `↓` returns
         await _select(app, pilot, "tw2")
         await pilot.pause()
         await pilot.press("up")
+        await pilot.pause()
+        assert app.selected_task_id == "tw5"
+        await pilot.press("left")
         await pilot.pause()
         assert app.selected_task_id == "tw0"
         await pilot.press("down")

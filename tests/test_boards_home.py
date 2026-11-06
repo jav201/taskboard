@@ -168,7 +168,19 @@ def test_TC_2203_no_label_is_the_base_frame(tmp_path):
         for w in (40, 80, 118, 160):
             text = views.render_view(mode, b, False, None, today=date(2026, 10, 20), width=w,
                                      height=40)
-            assert text.plain == want[f"{mode}@{w}"]["plain"], (mode, w)
+            if mode == "gantt":
+                # Inc MR-a re-baseline: the gantt's frames changed on purpose
+                # (LLR-4601.1: a group's milestones share one row), so the
+                # 783397e capture no longer holds for this mode. The no-label
+                # claim is that render_view adds nothing to the gantt frame; it is
+                # checked against the shipped painter itself, not a stale capture.
+                # The head row, which MR-a does not touch, still equals the capture.
+                gantt = views.render_gantt(b, False, None, date(2026, 10, 20), w, 40)
+                assert text.plain == gantt.plain, (mode, w)
+                assert (text.plain.split(chr(10))[0]
+                        == want[f"{mode}@{w}"]["plain"].split(chr(10))[0]), (mode, w)
+            else:
+                assert text.plain == want[f"{mode}@{w}"]["plain"], (mode, w)
             first = text.split("\n")[0]
             assert [[first.plain[s.start:s.end], str(s.style)] for s in first.spans] \
                 == want[f"{mode}@{w}"]["row0_spans"], (mode, w)

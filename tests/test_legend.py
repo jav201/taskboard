@@ -446,6 +446,20 @@ def _fx_board(tmp_path, bid="client-a", hidden=(), extra=()):
     return b
 
 
+def _payment_marks(rows, width) -> int:
+    """Inc MR-a: the Payment class's marks (`⬢`, reached `⬡`) painted in the
+    gantt FIELD of the body rows — below the ruler and the strip, the legend
+    line excluded."""
+    label_w, _cw, field_w = views.gantt_columns(width)
+    n = 0
+    for r in rows[4:]:
+        text = "".join(ch for ch, _ in r)
+        if "◆ milestone" in text or "⟦━⟧" in text:
+            continue
+        n += sum(ch in "⬢⬡" for ch in text[label_w + 1:label_w + 1 + field_w])
+    return n
+
+
 def _painted2(app) -> list[list[tuple[str, str | None]]]:
     strips = app.screen._compositor.render_strips(app.screen.size)
     rows = []
@@ -632,9 +646,17 @@ def test_TC_2608_hide_drops_the_class_from_the_gantt_and_the_board_is_untouched(
     painted = render_view("gantt", b, False, None, FX_TODAY, 118, 30).plain
     for title in PAYMENT_TITLES:
         assert title not in painted, title
+    # Inc MR-a re-baseline: a group's milestones share one row and only the
+    # selected one's title is painted (LLR-4601.1, LLR-4603.1), so the title is
+    # no longer the probe of "drawn" — `line_map` is (SEAM-9: every member of a
+    # row maps to its line). Hidden: no payment milestone mapped; shown: all three.
+    lm: dict = {}
+    views.render_gantt(b, False, None, FX_TODAY, 118, 30, line_map=lm)
+    assert not {"tc8", "tcc", "tce"} & set(lm), lm
     b2 = _fx_board(tmp_path)                       # no hidden class: the identity
-    assert PAYMENT_TITLES[1] in render_view("gantt", b2, False, None, FX_TODAY,
-                                            118, 30).plain
+    lm2: dict = {}
+    views.render_gantt(b2, False, None, FX_TODAY, 118, 30, line_map=lm2)
+    assert {"tc8", "tcc", "tce"} <= set(lm2), lm2
     assert {t.id for t in b.tasks} == \
         {t.id for t in _fx_board(tmp_path, hidden=("payment",)).tasks}
     marked = [t for t in b.tasks if t.mark == "payment"]
@@ -700,6 +722,7 @@ async def test_AT_2605_hide_and_the_legend(fx_home):
         for name in ("Delivery", "Payment", "Review", "Launch"):
             assert name in strip
         assert "0 hidden" in strip
+        assert _payment_marks(rows, 118)             # Inc MR-a: the positive control
         srow = _prow2(rows, "Delivery")
         assert _hexes2(srow, "▲")[0] == FX_HEX["cyan"]      # the shapes in their colours
         assert _hexes2(srow, "⬢")[0] == FX_HEX["amber"]
@@ -714,6 +737,7 @@ async def test_AT_2605_hide_and_the_legend(fx_home):
         text = _ptext(rows)
         for title in PAYMENT_TITLES:
             assert not any(title in ln for ln in text), title
+        assert not _payment_marks(rows, 118)         # Inc MR-a: the marks left too
         strip = _strip_row(text)
         assert "Payment" not in strip and "1 hidden" in strip
         for name in ("Delivery", "Review", "Launch"):
@@ -750,7 +774,9 @@ async def test_AT_2605_hide_and_the_legend(fx_home):
         await pilot.pause()
         rows = _painted2(app)
         text = _ptext(rows)
-        assert any(PAYMENT_TITLES[1] in ln for ln in text)
+        # Inc MR-a re-baseline: an unselected milestone's title is not painted on
+        # the shared row (LLR-4603.1, LLR-4603.3); the class is back by its marks
+        assert _payment_marks(rows, 118)
         strip = _strip_row(text)
         assert "Payment" in strip and "0 hidden" in strip
     # ---- the same at 80x24: a second window on the same home ----
@@ -770,6 +796,7 @@ async def test_AT_2605_hide_and_the_legend(fx_home):
         text = _ptext(rows)
         for title in PAYMENT_TITLES:
             assert not any(title in ln for ln in text), title
+        assert not _payment_marks(rows, 80)          # Inc MR-a: the marks left too
         strip = next(ln for ln in text if "1 hidden" in ln)
         assert views.vis(strip) == 80
         assert "Payment" not in strip

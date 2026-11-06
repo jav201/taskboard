@@ -1,0 +1,108 @@
+# Inc MR-a E4 — the same tests against the round's visual oracle (prototypes/milestone_row/proto.py, variant A)
+# PURPOSE: catch TEST defects and show which negative controls the oracle itself embodies. NOT evidence of GREEN:
+# the oracle predates R-4 (nav filter), R-7 (label escaping/cell measure), F-3 (edge glyphs), LLR-4603.10 (reached in drawn), SEAM-9 (all lane ids in line_map; the plugin adds them).
+# base: 154e260; cmd: env -u NO_COLOR PYTHONPATH=<scratch> python -m pytest tests/test_milestone_row.py tests/test_milestone_row_at.py tests/test_gantt_milestones.py tests/test_milestone_marks.py tests/test_legend.py tests/test_milestone_offer.py tests/test_boards_home.py -p no:cacheprovider -p oracle_plugin -p print_tb -q -rf --tb=line
+# ---- oracle_plugin.py (scratch, verbatim) ----
+#   """Scratch only: run the E4 tests against the round's visual oracle (proto.py variant A)
+#   to catch TEST defects. Not evidence of GREEN: the oracle lacks R-4, R-7, N-8, SEAM-9."""
+#   import sys
+#   from pathlib import Path
+#   ROOT = Path.cwd()
+#   sys.path.insert(0, str(ROOT / "prototypes" / "milestone_row"))
+#   
+#   def pytest_configure(config):
+#       from taskboard import app as _a, models as _m, views as _v, ribbon as _r
+#       saved = (_a.date, _m.date, _v.date, _r.datetime)
+#       import proto
+#       _a.date, _m.date, _v.date, _r.datetime = saved
+#       from taskboard import views
+#       from taskboard.app import TaskboardApp
+#       proto.VAR[0] = "A"
+#       def frame(*a, **k):
+#           out = proto.frame_m(*a, **k)
+#           lm = a[6] if len(a) > 6 else k.get("line_map")
+#           if lm is not None and (a[11] if len(a) > 11 else k.get("done_rows")):
+#               for rep, ms in proto.LANE.items():
+#                   if rep in lm:
+#                       for m in ms:
+#                           lm[m.id] = lm[rep]
+#           return out
+#       views.gantt_plan, views._gantt_frame, views.to_text = proto.plan_m, frame, proto.to_text_m
+#       orig = TaskboardApp.action_hmove
+#       def hm(self, delta):
+#           t = self.selected_task
+#           if self.view_mode == "gantt" and t is not None and t.milestone:
+#               for ms in proto.LANE.values():
+#                   ids = [m.id for m in ms]
+#                   if t.id in ids:
+#                       self.selected_task_id = ids[max(0, min(len(ids) - 1, ids.index(t.id) + delta))]
+#                       self.refresh_view()
+#                       return
+#           orig(self, delta)
+#       TaskboardApp.action_hmove = hm
+# ---- run ----
+C:\Users\jjgh8\anaconda3\Lib\site-packages\pytest_asyncio\plugin.py:207: PytestDeprecationWarning: The configuration option "asyncio_default_fixture_loop_scope" is unset.
+The event loop scope for asynchronous fixtures will default to the fixture caching scope. Future versions of pytest-asyncio will default the loop scope for asynchronous fixtures to function scope. Set the default fixture loop scope explicitly in order to avoid unexpected behavior in the future. Valid fixture loop scopes are: "function", "class", "module", "package", "session"
+
+  warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCOPE_UNSET))
+
+# taskboard.__file__ (inside the pytest process) = C:\Users\jjgh8\Github\taskboard-wt\incMR-tests\taskboard\__init__.py
+.......F.....F..............F..FF.F.FF.F.FF.F.FF........F.....FFFF...... [ 31%]
+..........FF.....................F...FFFF............................... [ 62%]
+........................................................................ [ 94%]
+.............                                                            [100%]
+================================== FAILURES ===================================
+C:\Users\jjgh8\Github\taskboard-wt\incMR-tests\tests\test_milestone_row.py:189: AssertionError: {'beyond', 'crit', 'due', 'milestone', 'progress', 'selected', ...}
+C:\\Users\\jjgh8\\Github\\taskboard-wt\\incMR-tests\\tests\\test_milestone_row.py:268: AssertionError:  \u25c6 7 milestones \u25b21             \u2b21\u2713\xb7\xb7\xb7\xb7\u2b21\u2713\xb7\xb7\u25a0\xb7\u25b21d\xb7\xb7\xb7\xb7\xb7\u25a02\xb7Oct 24\xb7\xb7\xb7\u2605\xb7Oct 30\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\u2506\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\u2506\xb7\xb7\xb7Jan 18\xb7\u2b21\u2713   in 4d
+C:\Users\jjgh8\Github\taskboard-wt\incMR-tests\tests\test_milestone_row.py:480: AssertionError: assert {'milestone', 'reached'} <= {'beyond', 'd...', 'selected'}
+C:\\Users\\jjgh8\\Github\\taskboard-wt\\incMR-tests\\tests\\test_milestone_row.py:550: AssertionError: ('after', 'x\\\\', ' \u25b2 x\\\\                     1/2  \xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\u2506\xb7\u254e\xb7\xb7\xb7\u25b22\xb7x[/]\xb7\xb7\xb7\u2506\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\u2506\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\u2506\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\u2506\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7   in 2d')
+C:\\Users\\jjgh8\\Github\\taskboard-wt\\incMR-tests\\tests\\test_milestone_row.py:558: AssertionError:  \u25b2 \u91cc\u7a0b\u7891 frozen          2/2  \xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\u2506\xb7\u254e\xb7\xb7\xb7\u25b22\xb7\u91cc\u7a0b\u7891 frozen\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\u2506\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\u2506\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\u2506\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7   in 2d
+C:\Users\jjgh8\anaconda3\Lib\site-packages\rich\markup.py:174: rich.errors.MarkupError: closing tag '[/]' at position 8258 has nothing to close
+C:\\Users\\jjgh8\\Github\\taskboard-wt\\incMR-tests\\tests\\test_milestone_row.py:550: AssertionError: ('before', 'x\\\\', ' \u2b21 x\\\\                          \xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\u2506\xb7\u254e\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\u2506\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\u2506\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\u2506\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\u2506\xb7\xb7\xb7\xb7\xb7\xb7\xb7x[/]\xb7\u2b21\u2713  \u2713 done')
+C:\Users\jjgh8\Github\taskboard-wt\incMR-tests\tests\test_milestone_row.py:556: AssertionError: assert (66 + 13) < (79 - 2)
+C:\Users\jjgh8\anaconda3\Lib\site-packages\rich\markup.py:174: rich.errors.MarkupError: closing tag '[/]' at position 8160 has nothing to close
+C:\\Users\\jjgh8\\Github\\taskboard-wt\\incMR-tests\\tests\\test_milestone_row.py:547: AssertionError: ('cut', 'x\\\\', ' \u25b2 x\\\\x\\\\x\\\\x\\\\x\\\\x\\\\                \xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7Oct 22\xb7\u25a0\xb7\xb7\xb7\xb7\xb7\xb7\xb7\u25b2\xb7x[/]x[/]x[/]x[/]\u2026\xb7\u25a0\xb7Nov 1\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\u2506\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\u2506\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7   in 6d')
+C:\\Users\\jjgh8\\Github\\taskboard-wt\\incMR-tests\\tests\\test_milestone_row.py:558: AssertionError:  \u25b2 \u91cc\u7a0b\u7891 frozen \u91cc\u7a0b\u7891 froz\u2026  \xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7Oct 22\xb7\u25a0\xb7\xb7\xb7\xb7\xb7\xb7\xb7\u25b2\xb7\u91cc\u7a0b\u7891 f\u2026\xb7\xb7\xb7\xb7\u25a0\xb7Nov 1\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\u2506\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\u2506\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7   in 6d
+C:\Users\jjgh8\anaconda3\Lib\site-packages\rich\markup.py:174: rich.errors.MarkupError: closing tag '[/]' at position 6212 has nothing to close
+C:\\Users\\jjgh8\\Github\\taskboard-wt\\incMR-tests\\tests\\test_milestone_row.py:547: AssertionError: ('cut', 'x\\\\', ' \u25b2 x\\\\x\\\\x\\\\x\\\\x\\\\x\\\\      \xb7\xb7\xb7Oct 22\xb7\u25a0\xb7\xb7\xb7\xb7\xb7\xb7\xb7\u25b2\xb7x[/]x[/]x[/]x[/]\u2026\xb7\u25a0\xb7Nov 1\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\u2506\xb7\xb7\xb7\xb7\xb7  in 6d')
+C:\\Users\\jjgh8\\Github\\taskboard-wt\\incMR-tests\\tests\\test_milestone_row.py:558: AssertionError:  \u25b2 \u91cc\u7a0b\u7891 frozen  \u2026  \xb7\xb7\xb7Oct 22\xb7\u25a0\xb7\xb7\xb7\xb7\xb7\xb7\xb7\u25b2\xb7\u91cc\u7a0b\u7891 f\u2026\xb7\xb7\xb7\xb7\u25a0\xb7Nov 1\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\u2506\xb7\xb7\xb7\xb7\xb7  in 6d
+C:\Users\jjgh8\Github\taskboard-wt\incMR-tests\tests\test_milestone_row.py:657: AssertionError: assert 'tm4' == 'tm3'
+C:\Users\jjgh8\Github\taskboard-wt\incMR-tests\tests\test_milestone_row.py:743: AssertionError: ['tm3', 'tstore', 'ttele', 'ttrain', 'trota', 'tg1', ...]
+C:\Users\jjgh8\Github\taskboard-wt\incMR-tests\tests\test_milestone_row.py:755: AssertionError: ['tm3', 'tm3', 'tm3', 'tstore', 'ttele', 'ttrain', ...]
+C:\Users\jjgh8\Github\taskboard-wt\incMR-tests\tests\test_milestone_row.py:765: AssertionError: ['tm3', 'tstore', 'ttele', 'ttrain', 'trota', 'tg1', ...]
+C:\Users\jjgh8\Github\taskboard-wt\incMR-tests\tests\test_milestone_row.py:776: AssertionError: assert 'tm3' not in ('tm2', 'tm3')
+C:\\Users\\jjgh8\\Github\\taskboard-wt\\incMR-tests\\tests\\test_milestone_row_at.py:281: AssertionError:       \u2b21\u2713  \u25a0 \u25b21d     \u25a02  \u25b2+      \u2605 Oct 30                              Jan 18 \u2b21\u2713
+C:\\Users\\jjgh8\\Github\\taskboard-wt\\incMR-tests\\tests\\test_milestone_row_at.py:281: AssertionError: \u2b21\u2713  \u25a0 \u25b21d     \u25a02  \u25b2+      \u2605 Oct 30         Jan 18 \u2b21\u2713
+C:\Users\jjgh8\anaconda3\Lib\site-packages\rich\markup.py:174: rich.errors.MarkupError: closing tag '[/]' at position 2213 has nothing to close
+C:\\Users\\jjgh8\\Github\\taskboard-wt\\incMR-tests\\tests\\test_gantt_milestones.py:258: AssertionError:  \u27e6\u2501\u27e7 selected, exact dates \xb7 \u25c6 milestone \xb7 \u21b3 waits on open work \xb7 \u21b3 starts before its dependency is due \xb7 \u25cf progress
+C:\\Users\\jjgh8\\Github\\taskboard-wt\\incMR-tests\\tests\\test_gantt_milestones.py:258: AssertionError:  \u27e6\u2501\u27e7 selected, exact dates \xb7 \u25c6 milestone \xb7 \u21b3 waits \xb7 \u25cf progress \xb7 \u25c6 due
+C:\Users\jjgh8\Github\taskboard-wt\incMR-tests\tests\test_gantt_milestones.py:268: assert ('a milestone: one date, no bar' in ['the span: ash is elapsed, colour is what remains', 'how far the work actually got', "the project's committed due date", 'today', 'calendar guide: Mondays, or the 1st', 'the ruler: a month starts here', ...] and 'a milestone reached' in ['the span: ash is elapsed, colour is what remains', 'how far the work actually got', "the project's committed due date", 'today', 'calendar guide: Mondays, or the 1st', 'the ruler: a month starts here', ...])
+C:\\Users\\jjgh8\\Github\\taskboard-wt\\incMR-tests\\tests\\test_gantt_milestones.py:376: AssertionError: assert '\u25c6 milestone \xb7 \u25c6\u2713 reached' in '\u25c6 GANTT                                                                                         \u25b26 past due \xb7 chain 4... ? Map  ; More  q Quit  B Boards  1 Lanes  2 Agenda  3 Gantt  4  5  6  7  8  9  0  \u21b5  a  e  d  L  O  C  H  \u2193  \u2191       '
+=========================== short test summary info ===========================
+FAILED tests/test_milestone_row.py::test_TC_4808_LLR_4601_8_the_rows_dependency_gutter_is_blank
+FAILED tests/test_milestone_row.py::test_TC_4816_LLR_4602_6_off_window_dues_draw_the_edge_glyph_and_the_mark_inward
+FAILED tests/test_milestone_row.py::test_TC_4830_LLR_4603_10_the_legend_names_the_rows_marks
+FAILED tests/test_milestone_row.py::test_TC_4820_LLR_4603_11_a_field_label_draws_its_literal_text_in_cells[after-2-118]
+FAILED tests/test_milestone_row.py::test_TC_4820_LLR_4603_11_a_field_label_draws_its_literal_text_in_cells[after-3-118]
+FAILED tests/test_milestone_row.py::test_TC_4820_LLR_4603_11_a_field_label_draws_its_literal_text_in_cells[before-0-118]
+FAILED tests/test_milestone_row.py::test_TC_4820_LLR_4603_11_a_field_label_draws_its_literal_text_in_cells[before-2-118]
+FAILED tests/test_milestone_row.py::test_TC_4820_LLR_4603_11_a_field_label_draws_its_literal_text_in_cells[before-3-118]
+FAILED tests/test_milestone_row.py::test_TC_4820_LLR_4603_11_a_field_label_draws_its_literal_text_in_cells[cut-0-118]
+FAILED tests/test_milestone_row.py::test_TC_4820_LLR_4603_11_a_field_label_draws_its_literal_text_in_cells[cut-2-118]
+FAILED tests/test_milestone_row.py::test_TC_4820_LLR_4603_11_a_field_label_draws_its_literal_text_in_cells[cut-3-118]
+FAILED tests/test_milestone_row.py::test_TC_4820_LLR_4603_11_a_field_label_draws_its_literal_text_in_cells[cut-0-80]
+FAILED tests/test_milestone_row.py::test_TC_4820_LLR_4603_11_a_field_label_draws_its_literal_text_in_cells[cut-2-80]
+FAILED tests/test_milestone_row.py::test_TC_4820_LLR_4603_11_a_field_label_draws_its_literal_text_in_cells[cut-3-80]
+FAILED tests/test_milestone_row.py::test_TC_4836_LLR_4604_6_off_the_row_left_right_are_base
+FAILED tests/test_milestone_row.py::test_TC_4843b_R4_the_nav_column_holds_no_hidden_class_milestone
+FAILED tests/test_milestone_row.py::test_TC_4843b_R4_the_cursor_never_stops_on_a_hidden_class_milestone
+FAILED tests/test_milestone_row.py::test_TC_4843c_R4_the_stop_is_the_one_the_frame_draws
+FAILED tests/test_milestone_row.py::test_TC_4843d_A5_hiding_the_selected_milestones_class
+FAILED tests/test_milestone_row_at.py::test_AT_4607_edges[size0] - AssertionE...
+FAILED tests/test_milestone_row_at.py::test_AT_4607_edges[size1] - AssertionE...
+FAILED tests/test_gantt_milestones.py::test_TC_610_a_milestone_title_paints_literally[[/]]
+FAILED tests/test_gantt_milestones.py::test_TC_611_the_legend_names_milestones_right_after_the_selection[118-30]
+FAILED tests/test_gantt_milestones.py::test_TC_611_the_legend_names_milestones_right_after_the_selection[80-24]
+FAILED tests/test_gantt_milestones.py::test_TC_611_the_map_and_the_help_name_milestones
+FAILED tests/test_gantt_milestones.py::test_AT_602_milestones_read_as_dates_reached_ones_quiet_the_ruler_marks_them
+26 failed, 203 passed in 61.21s (0:01:01)

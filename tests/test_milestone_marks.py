@@ -472,16 +472,13 @@ async def test_AT_2603_the_state_shows_in_text(home):
         gtext = "".join(ch for ch, _ in grow)
         gi = gtext.index("■")
         assert grow[gi][1] == HEX["violet"]
-        assert OVER in (_h for _h in _hexes(grow, "Oct 18"))
+        # Inc MR-a re-baseline: a group's milestones share one row; the selected
+        # late one's label names it and its chip says `▲2d` in over (LLR-4603.7,
+        # LLR-4603.8) — its title, not its date, sits beside its mark
+        # (LLR-4603.1). The late date's channel moves to the unselected case below.
         assert gtext.rstrip().endswith("▲2d")
         assert OVER in (_h for _h in _hexes(grow, "▲2d"))
-        prow_ = _prow(rows, "Handover call")          # unclassified ◆ in mut
-        ptext = "".join(ch for ch, _ in prow_)
-        assert prow_[ptext.index("◆")][1] == MUT
-        # the row label's mark wears the class colour too
-        lrow = _prow(rows, "Pilot launch")
-        ltext = "".join(ch for ch, _ in lrow)
-        assert lrow[ltext.index("★")][1] == HEX["pink"]
+        await _gantt_states_at_rest(app, pilot, 118)
         # ---- the presentation field row (R) ----
         app.selected_task_id = "tc6"
         await pilot.press("R")
@@ -557,10 +554,37 @@ async def test_AT_2603_the_state_shows_in_text(home):
         grow = _prow(rows, "Rubric sign-off")
         gtext = "".join(ch for ch, _ in grow)
         assert grow[gtext.index("■")][1] == HEX["violet"]
-        assert OVER in (_h for _h in _hexes(grow, "Oct 18"))
-        drow = _prow(rows, "Handover call")
-        dtext = "".join(ch for ch, _ in drow)
-        assert drow[dtext.index("◆")][1] == MUT
+        await _gantt_states_at_rest(app2, pilot, 80)  # Inc MR-a re-baseline
+
+
+async def _gantt_states_at_rest(app, pilot, width):
+    """Inc MR-a re-baseline of AT-2603's gantt arm: the milestones of a group
+    share ONE row (LLR-4601.1), so an unselected milestone has no title row of
+    its own — its state is read off its mark on the shared row. Eval harness's
+    row with `Rubric sign-off` unselected: `■` violet, `▲2d` in over beside it
+    and no `Oct 18` (LLR-4603.4); Docs & handover's unclassified `Handover call`:
+    `◆` in mut; Pilot rollout's `Pilot launch`: `★` in the class colour."""
+    label_w, _cw, field_w = views.gantt_columns(width)
+    x0 = label_w + 1
+
+    def lane(tid):
+        r = rows[app._line_map[tid]]
+        return r, "".join(ch for ch, _ in r)[x0:x0 + field_w]
+
+    app.selected_task_id = "tc5"                 # an Eval harness task: rest
+    app.refresh_view()
+    await pilot.pause()
+    rows = _painted(app)
+    erow, efield = lane("tc6")
+    assert app._line_map["tc6"] == app._line_map["tc7"]
+    i = efield.index("▲2d")
+    assert erow[x0 + i][1] == OVER and efield[i - 2] == "■"
+    assert erow[x0 + i - 2][1] == HEX["violet"] and "Oct 18" not in efield
+    drow, dfield = lane("tcd")
+    assert drow[x0 + dfield.index("◆")][1] == MUT
+    if width >= 100:                             # as before: the 118 arm only
+        lrow, lfield = lane("tcb")
+        assert lrow[x0 + lfield.index("★")][1] == HEX["pink"]
 
 
 # --------------------------------------------------------------------------- #

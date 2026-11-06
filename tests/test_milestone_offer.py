@@ -611,7 +611,12 @@ async def test_AT_604_only_what_was_picked_is_converted_backed_up_logged_and_und
         assert not isinstance(fresh.screen, MilestoneOffer)
         await pilot.press("3")
         await pilot.pause()
-        assert any(" ◆ Launch new homepage" in r for r in _painted(fresh))
+        # Inc MR-a re-baseline: a group's milestones share ONE row whose label
+        # names the selected member, else `◆ N milestones` (LLR-4601.1,
+        # LLR-4603.6), so the converted task is found by its line, not its title:
+        # the line `line_map` gives it is a milestone row, `◆` first.
+        row = _painted(fresh)[fresh._line_map["tw5"]]
+        assert row.startswith(" ◆ "), row
     other = second / "board.json"
     app = TaskboardApp(board_path=str(other), team_sync_interval=1e9)
     async with app.run_test(size=(118, 40), notifications=True) as pilot:
