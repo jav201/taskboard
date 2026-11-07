@@ -25,7 +25,7 @@ There were no `impl` or `seam` failures. No production file changed in this step
 
 ## 3. GREEN-2 — see `evidence/green-2.txt`
 
-Same command, same set, same worktree, HEAD `688dc9b` plus the working-tree fixes above. `taskboard.__file__` = `…\ms-row-proto	askboard\__init__.py`. MR-a's tests are byte-identical to `8ca174c`.
+Same command, same set, same worktree, HEAD `688dc9b` plus the working-tree fixes above. `taskboard.__file__` = `…\ms-row-proto\taskboard\__init__.py`. MR-a's tests are byte-identical to `8ca174c`.
 
 ## 4. Result
 
