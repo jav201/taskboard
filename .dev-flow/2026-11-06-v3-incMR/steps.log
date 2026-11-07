@@ -5,3 +5,4 @@ E3 22:09Z round-1 correction (R-6..R-8): targeted edits; LLR 43 (+4601.8, 4602.8
 E3 22:12Z r1 FAIL (arch 5d08321, sec 79ad23f) · rulings R-6..R-8 · correction 6c2891f (Opus) · r2 PWN (arch d603b53, sec cbc14a8) · E4 start
 E4 23:05Z build 09f8703 (DeepSeek v4 Pro) · tests 74bc18c (Opus tester, RED 74) · integration 73efc58 (Opus) GREEN-2 329/0 · E5 start
 E5 23:49Z corrective C-1..C-5 (Opus 5.5): fix 5d2c880 views.py only · replay 47/47 killed (38, 39 now KILLED) · GREEN-3 341/0 · 02-test-cases 50/50 covered · trace 0 gaps
+BE 00:18Z full suite 1915+1285+1099 = 4299 passed, 0 failed, 1 skipped (chunk00; not itemised — the clipboard arms passed 8/8 on re-run) · canon af99fc0+f0f620c · captures 1eecf44
