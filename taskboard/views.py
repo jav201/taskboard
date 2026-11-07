@@ -2432,6 +2432,14 @@ def _gantt_open(board: Board, t: Task) -> bool:
     return not board.is_done(t) and not t.archived
 
 
+def milestone_walk_key(t: Task) -> tuple:
+    """The board and the presentation's ONE walk order for milestones (SEAM-1):
+    by due, undated last, then title, then id — lifted unchanged from
+    `gantt_plan`'s nested `walk_key` so the board gantt and `R` share it."""
+    d = parse_iso(t.due_date)
+    return (d is None, d or date.max, t.title, t.id)
+
+
 def gantt_plan(board: Board, show_archived: bool, selected_id: str | None,
                today: date, body_rows: int,
                focus: str | None = None, previous: str | None = None,
@@ -2487,10 +2495,6 @@ def gantt_plan(board: Board, show_archived: bool, selected_id: str | None,
                   + done_tail(r))
             for _p, o, r in raw]
 
-    def walk_key(t: Task):
-        d = parse_iso(t.due_date)
-        return (d is None, d or date.max, t.title, t.id)
-
     def lane_anchor(ms: list[Task]) -> Task | None:
         """The anchor (LLR-4604.2): first in walk order open with a due on or
         after today, else the first open one, else the first."""
@@ -2508,7 +2512,7 @@ def gantt_plan(board: Board, show_archived: bool, selected_id: str | None,
         # costs 1.
         new_rows = []
         for g_rows in rows:
-            ms = tuple(sorted((t for t in g_rows if t.milestone), key=walk_key))
+            ms = tuple(sorted((t for t in g_rows if t.milestone), key=milestone_walk_key))
             rest = tuple(t for t in g_rows if not t.milestone)
             stop = next((t for t in ms if t.id == selected_id), None)
             if stop is None:
@@ -6968,6 +6972,16 @@ def present_tasks_m(board: Board, project_id: str | None) -> tuple[list[Task], l
     return [t for t in open_t if t in keep], keep
 
 
+def present_stop_order(open_t: list[Task]) -> list[Task]:
+    """One project's stop order (SEAM-2): its milestones in walk order, then
+    its other open shown tasks in their given (base) order. Pure: it adds and
+    drops nothing (`open_t` is already `present_tasks_m(…)[0]`). The ONE source
+    of the order for the field, the briefs, the blocks, the view-3 stops and
+    the views-1/2 cursor."""
+    ms = sorted((t for t in open_t if t.milestone), key=milestone_walk_key)
+    return ms + [t for t in open_t if not t.milestone]
+
+
 def legend_strip_project(board, proj, w: int) -> str:
     """The presentation's strip (LLR-2607.1, the round's
     `legend_strip_project`, proto.py:353): the classes of the milestones this
@@ -7020,12 +7034,22 @@ def _present_field(cells: list[tuple[str, str]], ax: GanttAxis) -> str:
     """Cells to markup over the field's own ground. The ONE change from the
     shipped `_gantt_field`: the today rule is `bright` bold, NOT accent — the
     field keeps the C-2b budget (the ruler above it lights today accent, as the
-    gantt view does: the operator's verdict of 2026-10-16)."""
+    gantt view does: the operator's verdict of 2026-10-16). The three MR-a cell
+    tones (`""` consumed, `run:<tone>` label run, `rev:<style>` reverse mark)
+    paint as `_gantt_field` does (SEAM-8); every other cell as at base. No
+    caller sends a weekend set: the present field has no shading."""
     guides = ax.guides()
     out = []
     for x, (glyph, tone) in enumerate(cells):
+        if glyph == "":                     # a consumed cell of a label run
+            continue
+        if tone.startswith("run:"):          # a field label run, escaped whole
+            out.append(c(glyph, tone[4:]))
+            continue
         if tone == "gap":
             m = c(" ", "dim")
+        elif tone.startswith("rev:"):
+            m = f"[b reverse {HEX[tone[4:]]}]{glyph}[/]"
         elif glyph != " ":
             m = c(glyph, "bright", bold=True) if tone in ("crit", "accent") else c(glyph, tone)
         elif x == ax.tc:
@@ -7399,7 +7423,7 @@ def _present_heading(task: Task, w: int, on: bool, hue: str, today: date,
     if w - 2 - rw - 1 < 4:                 # too narrow for the dates: the title only
         right, rw = "", -1
     tw = max(1, w - 2 - rw - 1)
-    title = c(escape(clip(task.title, tw)), "accent" if on else "bright", bold=True)
+    title = c(_literal(clip(task.title, tw)), "accent" if on else "bright", bold=True)
     return _pad(bar + _pad(title, tw) + (" " + right if right else ""), w)
 
 
@@ -7472,23 +7496,34 @@ def _present_span_row(proj: Project, board: Board, p: _PresentGeo) -> str:
     return _pad(label + " " + _present_field(cells, p.ax) + chip, p.width)
 
 
+def _present_lane_row(lane: tuple[Task, ...], cursor_id: str | None, board: Board,
+                      p: _PresentGeo) -> str:
+    """The presentation's milestone row (SEAM-4, SEAM-5): MR-a's field and
+    label column re-seated in the present columns. `sel` is the cursor when it
+    names a member of `lane`, else None. The label column is ` `, the lead (`⟦`
+    accent bold when `sel`, else a blank), `▎` in the project's hue, then
+    `gantt_lane_label(…, p.label_w - 3)`, padded to `p.label_w`. The gutter is
+    one blank (LLR-4651.8); the field is MR-a's `gantt_milestone_row`; the chip
+    is the `sel` member's, else the first member in walk order with a due on or
+    after today, else blanks. Every label is MR-a's (R-7): nothing here cuts,
+    escapes or lays a title."""
+    sel = cursor_id if any(t.id == cursor_id for t in lane) else None
+    lead = c("⟦", "accent", bold=True) if sel else " "
+    label = " " + lead + c("▎", p.hue) + gantt_lane_label(lane, sel, board, p.ax,
+                                                           p.today, p.label_w - 3)
+    cells = gantt_milestone_row(lane, sel, board, p.ax, p.today)
+    on = next((t for t in lane if t.id == sel), None) if sel else None
+    if on is None:
+        on = next((t for t in lane
+                   if (d := parse_iso(t.due_date)) and d >= p.today), None)
+    chip = (" " + _present_chip(None, on.due_date, p.today, p.chip_w)) if on else (" " * (p.chip_w + 1))
+    return _pad(_pad(label, p.label_w) + " " + _present_field(cells, p.ax) + chip, p.width)
+
+
 def _present_task_row(task: Task, board: Board, p: _PresentGeo, cursor: bool = False) -> str:
-    """One field row. A milestone is drawn as the gantt view draws it — its mark
-    on its due and the date beside it, never a bar — with the mark before the
-    title and its due alone in the chip (batch 2026-10-19-batch-01, HLR-2101;
-    the mark is the seat's, batch 2026-10-24-batch-01, LLR-2604.1)."""
-    if task.milestone:
-        glyph, style, _chip = milestone_mark(task, board, p.today)
-        cells = gantt_milestone_cells(task, board, p.ax, p.today)
-        if cursor:
-            cells = [(g, "accent") if g in MARK_GLYPHS else (g, k)
-                     for g, k in cells]
-        lead = c("⟦", "accent", bold=True) if cursor else " "
-        label = (" " + lead + c("▎", p.hue) + " " + c(glyph, style) + " "
-                 + _present_title(task, p.label_w - 6))
-        chip = " " + _present_chip(None, task.due_date, p.today, p.chip_w)
-        return _pad(_pad(label, p.label_w) + gantt_dep_mark(task, board, p.chain)
-                    + _present_field(cells, p.ax) + chip, p.width)
+    """One field row for a non-milestone task (A-2): its bar (`⟦━⟧` on the
+    cursor), the dependency gutter and its start–end chip. A milestone is drawn
+    only by `_present_lane_row`; both callers pass only non-milestones."""
     cells = _gantt_bar(task, board, p.ax, p.chain, 0)
     if cursor:
         lo = next((x for x, (g, _) in enumerate(cells) if g != " "), None)
@@ -7541,7 +7576,7 @@ def _present_brief(task: Task, p: _PresentGeo, cursor: bool, width: int) -> str:
     txt = clip(task.title, max_title)
     gap = max_title - vis(txt)
     open_, close = (c("⟦", "accent", bold=True), c("⟧", "accent", bold=True)) if cursor else (" ", " ")
-    return _pad("  " + open_ + c(escape(txt), tone, bold=True) + close + " " * gap
+    return _pad("  " + open_ + c(_literal(txt), tone, bold=True) + close + " " * gap
                 + "  " + due, width)
 
 
@@ -7599,9 +7634,11 @@ def render_present(board: Board, project_id: str | None, cursor_id: str | None,
     chain = set(critical_chain(board)) if board.chain_shown() else set()
     p = _PresentGeo(width, label_w, chip_w, field_w, ax, chain, today, wide, proj.color)
 
+    stops = present_stop_order(open_t)
+    lane = tuple(t for t in stops if t.milestone)
     if open_t:
         wanted = board.task_by_id(cursor_id)
-        cursor = wanted if wanted in open_t else open_t[0]
+        cursor = wanted if wanted in open_t else stops[0]
     else:
         cursor = None
 
@@ -7613,16 +7650,18 @@ def render_present(board: Board, project_id: str | None, cursor_id: str | None,
 
     lines += _present_ruler(proj, board, p, cursor)
     lines.append(_present_span_row(proj, board, p))
-    for t in open_t:
+    if lane:
+        lines.append(_present_lane_row(lane, cursor.id if cursor is not None else None, board, p))
+    for t in stops[len(lane):]:
         lines.append(_present_task_row(t, board, p, cursor=cursor is not None and t.id == cursor.id))
     lines.append(_pad(c("─" * width, "frame"), width))
 
-    if view == "split" and open_t:
+    if view == "split" and stops:
         room = max(0, height - len(lines))
-        half = (len(open_t) + 1) // 2 if wide else len(open_t)
+        half = (len(stops) + 1) // 2 if wide else len(stops)
         cw = (width - 2 - 3) // 2 if wide else width - 2
         cols = [_present_column(ts, cursor, room, cw, board.people)
-                for ts in (open_t[:half], open_t[half:])]
+                for ts in (stops[:half], stops[half:])]
         whole = not any(col.note_scrolls() for col in cols)
         marks = mention_marks(board.people)
         a, b = (_present_stack(col, room, cw, proj.color, today, scroll, whole, marks)
@@ -7634,7 +7673,7 @@ def render_present(board: Board, project_id: str | None, cursor_id: str | None,
         return _present_finish(lines, height, width)
 
     room = max(3, height - len(lines) - len(open_t))     # the free rows under the briefs, 3 at least
-    for t in open_t:
+    for t in stops:
         on = cursor is not None and t.id == cursor.id
         lines.append(_present_brief(t, p, on, width))
         if on:
@@ -7710,8 +7749,10 @@ class PresentAll(NamedTuple):
 
 
 def _all_plan(board: Board) -> list[tuple[Project, list[Task]]]:
-    """(project, its shown open tasks) for every shown project, in presentation order."""
-    return [(p, present_tasks_m(board, p.id)[0]) for p in present_order(board) if p.show_in_present]
+    """(project, its shown open tasks in stop order) for every shown project,
+    in presentation order."""
+    return [(p, present_stop_order(present_tasks_m(board, p.id)[0]))
+            for p in present_order(board) if p.show_in_present]
 
 
 def _all_late(tasks: list[Task], today: date) -> int:
@@ -7805,15 +7846,21 @@ def _all_ruler(board: Board, g: _PresentGeo, kind: str | None, obj, proj) -> lis
 
 def _all_layout(plan, cur_pid: str | None, folded, room: int):
     """Which projects draw their tasks, whether a blank row parts them, and the
-    timeline's stops in screen order. Folded by hand stays folded; while the
-    rows overflow, the projects furthest from the cursor's fold to their header
-    (the cursor's own never)."""
+    timeline's stops in screen order. An unfolded project costs one head, one
+    milestone row when it has a milestone, and one row per non-milestone; each
+    milestone stop maps to the one milestone-row line, each task to its own.
+    Folded by hand stays folded; while the rows overflow, the projects furthest
+    from the cursor's fold to their header (the cursor's own never)."""
     open_ = {p.id: p.id not in folded for p, _ in plan}
     ci = next((i for i, (p, _) in enumerate(plan) if p.id == cur_pid), 0)
 
+    def cost(p, ts) -> int:
+        if not open_[p.id]:
+            return 1
+        return 1 + (1 if any(t.milestone for t in ts) else 0) + sum(1 for t in ts if not t.milestone)
+
     def need(gap: bool) -> int:
-        return (sum(1 + (len(ts) if open_[p.id] else 0) for p, ts in plan)
-                + (len(plan) - 1 if gap else 0))
+        return sum(cost(p, ts) for p, ts in plan) + (len(plan) - 1 if gap else 0)
 
     for i in sorted(range(len(plan)), key=lambda i: (-abs(i - ci), -i)):
         if need(False) <= room:
@@ -7825,10 +7872,19 @@ def _all_layout(plan, cur_pid: str | None, folded, room: int):
     stops, rows, y = [], {}, 3        # each stop and its row under the header and ruler
     for i, (p, ts) in enumerate(plan):
         y += 1 if gap and i else 0
-        drawn = [("proj", p.id)] + ([("task", t.id) for t in ts] if open_[p.id] else [])
-        for s in drawn:
-            stops.append(s)
-            rows[s], y = y, y + 1
+        ms = [t for t in ts if t.milestone]
+        tasks = [t for t in ts if not t.milestone]
+        stops.append(("proj", p.id))
+        rows[("proj", p.id)], y = y, y + 1
+        if open_[p.id]:
+            if ms:
+                for m in ms:
+                    stops.append(("task", m.id))
+                    rows[("task", m.id)] = y
+                y += 1
+            for t in tasks:
+                stops.append(("task", t.id))
+                rows[("task", t.id)], y = y, y + 1
     return open_, gap, stops, rows
 
 
@@ -7891,7 +7947,12 @@ def _all_timeline(board: Board, width: int, height: int, today: date, cur, folde
         lines.append(_all_head_row(board, p, ts, g, cur == ("proj", p.id), not open_[p.id]))
         if open_[p.id]:
             pg = g._replace(hue=p.color)
-            lines += [_present_task_row(t, board, pg, cursor=cur == ("task", t.id)) for t in ts]
+            lane = tuple(t for t in ts if t.milestone)
+            if lane:
+                sel = cur[1] if cur is not None and cur[0] == "task" else None
+                lines.append(_present_lane_row(lane, sel, board, pg))
+            for t in (t for t in ts if not t.milestone):
+                lines.append(_present_task_row(t, board, pg, cursor=cur == ("task", t.id)))
     return _all_fit(lines, height, width), stops, cur
 
 

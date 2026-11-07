@@ -57,7 +57,8 @@ from .views import (HEX, ago, added_order, added_rows, agenda_buckets, all_agend
                     home_missing, home_title, present_deck_boards,
                     clip, filtered_board, focus_tasks, gantt_group_key, group_key,
                     gantt_plan, gantt_lane, nav_model, present_name, present_project_id,
-                    present_hidden, present_hidden_rows, present_tasks_m, render_present,
+                    present_hidden, present_hidden_rows, present_stop_order, present_tasks_m,
+                    render_present,
                     render_present_all, render_view, PresentAll,
                     PRESENT_MIN_WIDTH, PRESENT_RAIL_MIN, PRESENT_SCREEN_VIEWS,
                     sort_by_due, fit, vis, valid_url, _md,
@@ -398,9 +399,9 @@ class PresentScreen(ModalScreen[None]):
         return hint
 
     def _shown_ids(self) -> list[str]:
-        """The cursor's stops in views 1/2: the shown open tasks, read live (a flag
+        """The cursor's stops in views 1/2: the stop order, read live (a flag
         change moves them)."""
-        return [t.id for t in present_tasks_m(self._board, self._project_id)[0]]
+        return [t.id for t in present_stop_order(present_tasks_m(self._board, self._project_id)[0])]
 
     def _cursor(self, ids: list[str]) -> str | None:
         """The task the frame draws the cursor on — the renderer's own rule."""
