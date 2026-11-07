@@ -154,8 +154,8 @@ SEAT_SITES = [
     # are drawn only by its one milestone row, `_present_lane_row`, which takes its
     # field and label from MR-a's units — they are the seat's callers (the test
     # below checks the row reaches them and draws no mark of its own)
-    (":6537-6547 presentation milestone row field", "gantt_milestone_row"),
-    (":6537-6547 presentation milestone row label", "gantt_lane_label"),
+    (":7499 presentation milestone row field", "gantt_milestone_row"),
+    (":7499 presentation milestone row label", "gantt_lane_label"),
     (":7146 agenda row", "_agenda_row"),
     (":8433-8467 people task rows", "_task_rows"),
     (":2133 notice reached", "_notify_folded"),
@@ -286,7 +286,8 @@ def test_TC_2604_the_sites_enumeration_every_milestone_mark_routes_through_the_s
     # Inc MR-b (J-1): the presentation's milestone row routes through the seat via
     # MR-a's field and label units only; the task row lost its milestone branch
     lane_row = _function_body(src, "_present_lane_row")
-    assert lane_row is not None and "gantt_milestone_row(" in lane_row         and "gantt_lane_label(" in lane_row and "◆" not in lane_row
+    assert (lane_row is not None and "gantt_milestone_row(" in lane_row
+            and "gantt_lane_label(" in lane_row and "◆" not in lane_row)
     task_row = _function_body(src, "_present_task_row")
     assert "milestone_mark(" not in task_row and "gantt_milestone_cells(" not in task_row
     # the fold row counts late milestones of every class: the plain diamond stays,

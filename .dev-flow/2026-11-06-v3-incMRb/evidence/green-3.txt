@@ -1,0 +1,19 @@
+# cwd: /c/Users/jjgh8/Github/taskboard-wt/ms-row-proto
+# HEAD: d04cc36 + working tree (E5 corrective: tests/test_milestone_marks.py F2; records)
+# taskboard.__file__: C:\Users\jjgh8\Github\taskboard-wt\ms-row-proto\taskboard\__init__.py
+# MR-a tests vs 8ca174c (empty = byte-identical):
+# files: tests/test_present_milestone_row.py tests/test_present_milestone_row_at.py tests/test_present_milestone.py tests/test_present_all.py tests/test_present_note_highlights.py tests/test_milestone_marks.py tests/test_milestone_row.py tests/test_milestone_row_at.py tests/test_gantt_milestones.py tests/test_colour_budget.py tests/test_colour_budget_app.py tests/test_english.py tests/test_prism_laws.py tests/test_markup_census.py tests/test_modal_keys.py
+# command: env -u NO_COLOR python -m pytest -p no:cacheprovider -q -rfE <files>
+C:\Users\jjgh8\anaconda3\Lib\site-packages\pytest_asyncio\plugin.py:207: PytestDeprecationWarning: The configuration option "asyncio_default_fixture_loop_scope" is unset.
+The event loop scope for asynchronous fixtures will default to the fixture caching scope. Future versions of pytest-asyncio will default the loop scope for asynchronous fixtures to function scope. Set the default fixture loop scope explicitly in order to avoid unexpected behavior in the future. Valid fixture loop scopes are: "function", "class", "module", "package", "session"
+
+  warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCOPE_UNSET))
+........................................................................ [ 16%]
+........................................................................ [ 33%]
+........................................................................ [ 49%]
+........................................................................ [ 66%]
+........................................................................ [ 82%]
+........................................................................ [ 99%]
+...                                                                      [100%]
+435 passed in 211.45s (0:03:31)
+# pytest exit: 0

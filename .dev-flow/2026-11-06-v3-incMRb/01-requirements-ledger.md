@@ -98,3 +98,10 @@
 - **What changed:** the negative-control example is `\[x` (base draws `▌ [x`). The "RED on base" claim for `a\[b]` is withdrawn: base already draws `a\[b]`. `a\[b]` stays in the threshold as a positive case. The 6/6 count does not change.
 - **Why:** E4 tester finding F-1. On `8ca174c`, rich's `escape` already escapes the tag-shaped `[b]`, so `a\[b]` could not be the RED regression. The base defect is a backslash before a `[` that does not open a tag.
 - **Evidence:** `e4-tests.md` §7 F-1; `TC-4920[a\[b]]` passes on base and `TC-4920[\[x]` is RED on base (`evidence/red-base.txt`); GREEN on MR-b (`evidence/green-2.txt`).
+
+### LED-2026-11-06-incMRb.11 — E5 code review F1: LLR-4652.9's negative control is `\[x`, and the threshold is 8/8
+- **Requirement:** LLR-4652.9
+- **Date:** 2026-11-06
+- **What changed:** `\[x` joins the threshold as a RED-on-base title (base draws `⟦[x`). The "RED on base" claim for `a\[b]` is withdrawn: base already draws `⟦a\[b]⟧`. `a\[b]` stays as a positive case. The threshold becomes 4 titles × 2 sizes, 8/8. NC 1 names the titles it turns RED: `\`, `x\` and `\[x`. The claim for `\` and `x\` (119 / 81 cells, reading `\\`) holds and is unchanged.
+- **Why:** E5 code review F1 (MEDIUM, `design-gap`). The probe on `8ca174c` confirmed the trailing-backslash defect and refuted the `a\[b]` half, which is the same mistake LED-2026-11-06-incMRb.10 corrected in LLR-4652.10. TC-4919 already ran the 4 titles, but the requirement still said 3 titles, 6/6. The requirement now matches its test. No code and no test changed.
+- **Evidence:** `05-review-code.md` F1; `tests/test_present_milestone_row.py` (`BRIEF_TITLES`, TC-4919); `evidence/red-base.txt` (TC-4919 RED on base for `\`, `x\`, `\[x`); `evidence/green-3.txt` (GREEN).
