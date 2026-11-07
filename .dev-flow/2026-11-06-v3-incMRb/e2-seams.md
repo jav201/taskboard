@@ -1,6 +1,6 @@
 # E2 seams — Inc MR-b (the presentation's milestone row)
 
-There are 2 groups. **V** owns `taskboard/views.py` (`graph-proto-V.cw.md`, 7 nodes), and **S** owns `taskboard/app.py` (`graph-proto-S.cw.md`, 5 nodes: one changed, four with unchanged code). The frozen contracts are in `graph-interfaces.cw.md` (3 nodes). An implementer proposes a seam change to the orchestrator and never changes a seam alone.
+There are 2 groups. **V** owns `taskboard/views.py` (`graph-proto-V.cw.md`, 10 nodes after the E3 correction: `_present_task_row`, `_present_brief` and `_present_heading` added), and **S** owns `taskboard/app.py` (`graph-proto-S.cw.md`, 5 nodes: one changed, four with unchanged code). The frozen contracts are in `graph-interfaces.cw.md` (3 nodes). An implementer proposes a seam change to the orchestrator and never changes a seam alone.
 
 | Seam | Contract | Producer → consumer | Pinned by |
 |---|---|---|---|
@@ -9,10 +9,10 @@ There are 2 groups. **V** owns `taskboard/views.py` (`graph-proto-V.cw.md`, 7 no
 | SEAM-3 `PresentAll.stops` (view 3) | the same type as at base. Per drawn project: the head; then one ("task", id) per drawn milestone in walk order, all mapped by `rows` to the one milestone-row line; then one stop per task. The overflow cut and the cursor fallback are as at base | V `_all_layout` / `_all_timeline` → S `_stops`, `action_move`, `_hide_all`, `action_view` | TC-4922, TC-4906, TC-4924 |
 | SEAM-4 `gantt_milestone_row`, `gantt_lane_label` (MR-a SEAM-7) | reused UNCHANGED: no parameter and no branch. The label column passes `label_w - 3`. Each field label stays ONE escaped run (R-7 LABEL PATH) | MR-a V → MR-b V `_present_lane_row` | TC-4911, TC-4913, TC-4914, TC-4916; MR-a TC-4811..TC-4825, TC-4820 unchanged |
 | SEAM-5 cell tones `rev:<style>`, `run:<tone>` and the glyph `""` (MR-a SEAM-8) | `_present_field` paints them as `_gantt_field` does. A run is painted as given and is never split or re-escaped; `""` paints nothing. Every other cell is painted as at base (today rule `bright` bold) | MR-a `gantt_milestone_row` → V `_present_field` | TC-4912, TC-4916, TC-4918 |
-| SEAM-6 `present_deck_boards` | UNCHANGED on purpose. The deck reads `present_tasks_m(…)[1]` in base order, never the stop order, a cursor or a fold | V → S (`x`, app.py:648) | TC-4931, AT-4656 |
+| SEAM-6 `present_deck_boards` | UNCHANGED on purpose. The deck reads `present_tasks_m(…)[1]` in base order, never the stop order, a cursor or a fold | V → S (`x`, app.py:648) | TC-4931 (its NC changes which tasks the deck holds, RB-6, A-1), AT-4656 |
 | SEAM-7 keys and the `?` window | `PRESENT_KEYS`, `present_bindings()`, `PresentKeys(view).lines()` and the hint row are unchanged (R-2) | keymap → S | TC-4926 |
 
-**Cross-group ATs** (one tester): AT-4651, AT-4652, AT-4653 and AT-4654 cross SEAM-2 and SEAM-3 (V draws, S steps or hides). AT-4655 crosses SEAM-4, SEAM-5 and SEAM-7. AT-4656 is SEAM-6 only.
+**Cross-group ATs** (one tester): AT-4651, AT-4652, AT-4653 and AT-4654 cross SEAM-2 and SEAM-3 (V draws, S steps or hides). AT-4655 crosses SEAM-4, SEAM-5 and SEAM-7, and reads V's brief and block heading (LLR-4652.9, LLR-4652.10). AT-4656 is SEAM-6 only.
 
 **Order of work:** V lands SEAM-1 and SEAM-2 first. S's one change (`_shown_ids`) imports `present_stop_order` and nothing else.
 
@@ -27,3 +27,5 @@ There are 2 groups. **V** owns `taskboard/views.py` (`graph-proto-V.cw.md`, 7 no
 | E2-F5 | NOTE | LLR-4652.8 holds for the same cursor only. LLR-4653.3 moves `ppd`'s default cursor, so its tick row follows | E4 compares base and new with the same cursor |
 | E2-F6 | NOTE | PRES-V3 and PRES-V4 are milestone-free: they are byte guards, not the re-baselines that §6 says | E4 keeps them byte-equal |
 | E2-F7 | MINOR | LLR-4654.1's negative control may be vacuous on MR-F. Its board order already equals the stop order, so only `tm1` would drop | E4 proves the NC RED by order, or adds a fixture |
+
+**Rulings (E3 round-1 correction, 2026-11-06).** E2-F1 → RB-2 with SEC-B1 (`_literal` in `_present_brief`, LLR-4652.9). E2-F2 → RB-3 (cut forms at 80). E2-F3 → RB-4 (AT-4653 at 118x18). E2-F4 → RB-5 (LLR-4651.8). E2-F7 → RB-6 with A-1 (the NC drops `tm1`; no extra fixture). E2-F5 and E2-F6 stay E4 instructions (`e3-addenda.md`). The new findings SEC-B3 and A-2 add `_present_heading` and `_present_task_row`. The slice is 12 units in 2 files. No seam changes.

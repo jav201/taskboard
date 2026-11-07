@@ -37,6 +37,7 @@ out: list[tuple[str|None, str, str, Board]] lanes
 func: UNCHANGED on purpose (slice row "—"). The `x` deck's scope keeps reading `present_tasks_m(…)[1]` in board order; it never calls `present_stop_order`, never reads a cursor, a fold or a view-3 stop. S keeps calling it as at base (app.py:648)
 module: taskboard/views.py
 examples: (TC-4931) MR-F, `x` in views 1, 2 and 3 → each deck file's sha256 equals the base oracle captured on `8ca174c` from the same fixture; `3`/`3`
+examples: (TC-4931) negative control (RB-6, A-1): `present_deck_boards` holding `present_stop_order(present_tasks_m(board, p.id)[0])` in place of `[1]` → `ppr`'s proxy holds 8 tasks, `tm1` absent → each deck's sha256 differs from the oracle: RED `3`/`3`. A mutant of the order alone is undone by the board-order sort (`views.py:7675`) and is not used
 examples: (AT-4656) the proxy for `ppr` holds the 9 shown tasks, `tm1` (reached) included, in the order base holds them; `present_stop_order` is not called (its 8 open stops would drop `tm1`)
 
 ## Entities

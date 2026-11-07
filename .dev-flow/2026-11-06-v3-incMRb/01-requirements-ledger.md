@@ -36,3 +36,58 @@
 - **What changed:** the scope's option "the deck follows what `R` draws, or state that it is unaffected" is resolved as **unaffected**. A byte-equality oracle against base pins it.
 - **Why:** MR-b changes layout and cursor order only, never which tasks are shown. The deck draws its own HTML layout from `present_deck_boards`, which reads `present_tasks_m(...)[1]` in board order (`views.py:7671`), and that order is left unchanged. A row layout has no meaning in the HTML deck.
 - **Evidence:** `views.py:7647-7680` (`present_deck_boards`); Inc X LLR-4501.3/LLR-4501.4 (the deck is `H` → `c`'s bytes).
+
+### LED-2026-11-06-incMRb.3 — E3 round 1, RB-2 with SEC-B1 and SEC-B2: the view-1 brief prints a title literally
+- **Requirement:** LLR-4652.9
+- **Requirement:** HLR-4652
+- **Date:** 2026-11-06
+- **What changed:** LLR-4652.9 is added (Unwanted). `_present_brief` joins the slice as unit 10. Of RB-2's two fixes, only `_literal` is taken; the measure-only fix is rejected, and the LLR's second NC pins that choice. The threshold is measured on the rendered frame, after `to_text`.
+- **Why:** SEC-B1 shows that `collapse_runs` merges the title run with the same-style `⟧`, so `escape`'s trailing `\` prints twice. Measuring the line would only pad it: the audience would still read `x\`. SEC-B2 shows that a test measuring with `_strip` passes on base, so its RED would be vacuous.
+- **Evidence:** `views.py:7534-7545` (`_present_brief`); `views.py:290-312` (`_literal`); `03-pdr-security.md` SEC-B1, SEC-B2 (P-a: 119 / 81 cells).
+
+### LED-2026-11-06-incMRb.4 — E3 round 1, SEC-B3: the view-2 block heading keeps a backslash before `[`
+- **Requirement:** LLR-4652.10
+- **Requirement:** AT-4655
+- **Date:** 2026-11-06
+- **What changed:** LLR-4652.10 is added (Unwanted), with an NC that is RED on base. `_present_heading` joins the slice as unit 11, with the same `_literal` swap. AT-4655 adds the titles `x\` and `a\[b]` and view 2, and it measures the rendered frame.
+- **Why:** `escape(clip(task.title, tw))` drops the `\` before a non-tag `[`, so the room reads a title that differs from the board. The architect's A-6 says to leave `views.py:7402` alone, because it is width-true. The orchestrator's ruling takes SEC-B3 into the slice instead: the defect is in the text, not the width.
+- **Evidence:** `views.py:7388-7403` (`_present_heading`); `03-pdr-security.md` SEC-B3; `03-pdr-architect.md` A-6.
+
+### LED-2026-11-06-incMRb.5 — E3 round 1, RB-3: the R-7 cut at every width
+- **Requirement:** LLR-4652.4
+- **Requirement:** AT-4651
+- **Date:** 2026-11-06
+- **What changed:** the 80-column label literals take the cut form: ` ⟦▎ ▲ Store li… 2/2` and ` ⟦▎ ■ Rubric sign-…`. The 118-column forms stay. LLR-4652.4's threshold now has 4 cases (4/4).
+- **Why:** E2-F2. `gantt_lane_label` at `label_w - 3` (17 cells at 80) cuts by cell width with `…`, so the uncut literals could not pass on a correct row.
+- **Evidence:** `baseline-notes.md` P-6; `graph-proto-V.cw.md` `_present_lane_row` (TC-4914).
+
+### LED-2026-11-06-incMRb.6 — E3 round 1, RB-4: AT-4653's fold clause
+- **Requirement:** AT-4653
+- **Date:** 2026-11-06
+- **What changed:** "At 80x24 the overflow folds fewer projects than at base" becomes "At 118x18 (room 15, need 15) the overflow folds no project, where base folds 2".
+- **Why:** E2-F3. At 80x24, base folds no project of MR-F, so "fewer" had no passing outcome. At 118x18 the fitted frame shows the fold that exists, which is also LLR-4651.7's case.
+- **Evidence:** `baseline-notes.md` P-4; `graph-proto-V.cw.md` `_all_layout` (TC-4907); `03-pdr-architect.md` A-7.
+
+### LED-2026-11-06-incMRb.7 — E3 round 1, RB-5: the milestone row's gutter is blank
+- **Requirement:** LLR-4651.8
+- **Requirement:** AT-4651
+- **Date:** 2026-11-06
+- **What changed:** LLR-4651.8 is added (Ubiquitous) and carries MR-a's LLR-4601.8 into `R`. AT-4651 checks the blank gutter.
+- **Why:** E2-F4. The design drew MR-a's blank, but no MR-b requirement or test pinned it. RB-5 allows either a citation or an LLR. The LLR is chosen because a citation alone gives `R` no test (A-7 preferred the citation).
+- **Evidence:** `views.py:7490-7491` (base: `gantt_dep_mark` on each milestone's own row); `../2026-11-06-v3-incMR/01-requirements.md` LLR-4601.8.
+
+### LED-2026-11-06-incMRb.8 — E3 round 1, RB-6 with A-1: the deck's negative control can fail
+- **Requirement:** HLR-4654
+- **Requirement:** LLR-4654.1
+- **Date:** 2026-11-06
+- **What changed:** the NC is now a mutant of WHICH tasks the deck holds. `present_deck_boards` takes `present_stop_order(present_tasks_m(board, p.id)[0])` in place of `present_tasks_m(board, p.id)[1]`, so `tm1` drops and the sha256 differs from the `8ca174c` oracle. E2-F7's extra-fixture remedy is dropped.
+- **Why:** A-1. `present_deck_boards` re-sorts the tasks it holds by board position (`views.py:7675`), so a mutant of the order alone is undone and could never turn RED.
+- **Evidence:** `views.py:7647-7680`; `03-pdr-architect.md` A-1.
+
+### LED-2026-11-06-incMRb.9 — E3 round 1, A-2: `_present_task_row` loses its milestone branch
+- **Requirement:** LLR-4651.1
+- **Requirement:** LLR-4651.4
+- **Date:** 2026-11-06
+- **What changed:** `_present_task_row` joins the slice as unit 12. Its `if task.milestone:` branch is removed. The slice now holds 12 units in 2 files. No statement changes: the LLRs that map the unit already require one milestone row and one row per non-milestone.
+- **Why:** after MR-b, both callers pass only non-milestones, so the branch is dead code. A test that called it directly would test an entry point that no product route calls (E4's partial rule), and `R` would hold two ways to draw a milestone, which could drift apart.
+- **Evidence:** `views.py:7475-7490`; callers `views.py:7617`, `views.py:7894`; `tests/test_milestone_marks.py:153`.
