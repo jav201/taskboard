@@ -257,15 +257,39 @@ def test_TC_2103_the_order_follows_present_rank(tmp_path):
 def test_TC_2103_equals_the_rounds_capture(tmp_path, size, svg):
     """TC-2103 (LLR-2103.1): with the round's starting state (`R` on `Tax rules for
     new regions`, `3`: the rail's cursor on Billing Migration) the frame's text is
-    the round's approved C capture, row for row — the screen's own hint row
-    (the capture's last row) aside."""
+    the round's approved C capture — the screen's own hint row (the capture's last
+    row) aside.
+
+    Inc MR-b re-baseline (LLR-4651.2, LLR-4651.4, LLR-4651.7): the design changes
+    this frame on purpose — a project's milestones leave their own rows for ONE
+    milestone row under its head, the rows below move up, and the freed rows may
+    become gap rows. What the capture still pins, unchanged: the header and ruler
+    rows and the rail, row for row; and the timeline's every other row (heads and
+    task rows), in order, read without the blank gap rows. The capture's milestone
+    rows (`  ▎ ◆ <title>`) are replaced by one row per project with open milestones,
+    the line directly under its head (`◆ <N> …`)."""
     w, h = size
     b = pf.build(tmp_path / "b.json")
     r = views.render_present_all(b, ("proj", "pbm"), pf.TODAY, w, h - 1, frozenset(), True)
     want = _svg_rows(ROUND / svg, w, h - 1)
     got = _plain(r.frame)
-    diff = [(y, g, x) for y, (g, x) in enumerate(zip(got, want)) if g.rstrip() != x.rstrip()]
-    assert not diff, diff
+    assert len(got) == len(want)
+    rail = views.PRESENT_RAIL_W + 1
+    diff = [(y, g[:rail], x[:rail]) for y, (g, x) in enumerate(zip(got, want))
+            if g[:rail].rstrip() != x[:rail].rstrip()]
+    assert not diff, diff                                     # the rail, row for row
+    assert [g.rstrip() for g in got[:3]] == [x.rstrip() for x in want[:3]]
+
+    def ms_row(t):                    # a milestone's own row (capture) or the shared row
+        return re.match(r"^ [ ⟦]▎ ◆ ", t) is not None
+
+    tl_got = [g[rail:].rstrip() for g in got[3:]]
+    tl_want = [x[rail:].rstrip() for x in want[3:]]
+    assert [t for t in tl_got if t and not ms_row(t)] == \
+        [t for t in tl_want if t and not ms_row(t)]
+    for name, n in (("Customer Portal", 1), ("Billing Migrat", 1), ("Mobile Release", 2)):
+        hy = next(y for y, t in enumerate(tl_got) if re.match(r"^[▾▸⟦] ■ " + name, t))
+        assert ms_row(tl_got[hy + 1]) and f"◆ {n} m" in tl_got[hy + 1], (name, tl_got[hy + 1])
 
 
 def test_TC_2103_markup_in_a_name_paints_literally(tmp_path):
@@ -431,10 +455,19 @@ async def test_AT_2103_the_portfolio_on_one_ruler(tmp_path, frozen):
         assert order == ["Customer Portal", "Billing Migration", "Mobile Release 3.2",
                          "Data Platform", "Brand Refresh"], order
         body = "\n".join(tl)
-        for _, pk, title, phase, *_ in pf.TASKS:
+        for _, pk, title, phase, _p, _s, _d, _deps, ms in pf.TASKS:
+            # Inc MR-b re-baseline (LLR-4651.2): a milestone is a mark on its project's
+            # one milestone row; its title is painted only under the cursor (MR-a
+            # LLR-4603.1), so the open milestones are read from the rows below
+            if ms:
+                continue
             if pk != "sa" and phase != "Done" and title not in ("Help-center links",
                                                                   "Cost dashboards"):
                 assert title in body, title
+        for name, n in (("Customer Portal", "1 milestone"), ("Billing Migration", "1 milestone"),
+                        ("Mobile Release 3.2", "2 milestones")):
+            hy = next(y for y, r in enumerate(tl) if "■ " + name in r)
+            assert f"  ▎ ◆ {n}" in tl[hy + 1], (name, tl[hy + 1])
         for gone in ("Threat model review", "Help-center links", "Cost dashboards"):
             assert gone not in body, gone
         rail = _rail(rows)
@@ -474,6 +507,11 @@ async def test_AT_2104_three_views_one_cursor(tmp_path, frozen):
         await s.press(pilot, "3", "right")
         assert _cursor_rows(s.frame()) == ["Billing Migration"], _timeline(s.frame())
         assert any("project span ▸" in r for r in _timeline(s.frame())[:3])
+        # Inc MR-b re-baseline (LLR-4653.2): from the head the cursor first stops on
+        # the project's milestones (on its one milestone row), then on its tasks
+        await s.press(pilot, "down")
+        assert _cursor_rows(s.frame()) == ["◆ Cut-over weekend"], _timeline(s.frame())
+        assert any("selected task ▸" in r for r in _timeline(s.frame())[:3])
         await s.press(pilot, "down")
         assert _cursor_rows(s.frame()) == ["Dual-run reconciliation"], _timeline(s.frame())
         assert any("selected task ▸" in r for r in _timeline(s.frame())[:3])
@@ -803,9 +841,22 @@ def test_TC_2103_no_stop_hides_under_the_overflow_row(tmp_path):
             r = views.render_present_all(b, cur, pf.TODAY, 118, height)
             rows = _plain(r.timeline)
             drawn = "\n".join(rows[:-1] if "more rows not shown" in rows[-1] else rows)
+            lines = drawn.split("\n")
             for kind, oid in r.stops:
+                task = b.task_by_id(oid) if kind == "task" else None
+                if task is not None and task.milestone:
+                    # Inc MR-b re-baseline (LLR-4651.2, LLR-4653.2): a milestone's stop
+                    # is its project's ONE milestone row, the line under the head; the
+                    # title is painted there only under the cursor (MR-a LLR-4603.1)
+                    name = b.project_by_id(task.project_id).name[:10]
+                    hy = next(y for y, t in enumerate(lines) if "■ " + name in t)
+                    assert hy + 1 < len(lines) and re.match(r"^ [ ⟦]▎ ◆ ", lines[hy + 1]), \
+                        (height, cur, oid, lines)
+                    if (kind, oid) == r.cursor:
+                        assert task.title[:10] in lines[hy + 1], (height, cur, lines[hy + 1])
+                    continue
                 label = (b.project_by_id(oid).name if kind == "proj"
-                         else b.task_by_id(oid).title)[:10]
+                         else task.title)[:10]
                 assert label in drawn, (height, cur, label)
             assert r.cursor is None or r.cursor in r.stops, (height, cur, r.cursor)
 

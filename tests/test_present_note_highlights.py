@@ -141,16 +141,26 @@ def _block(rows, title):
     """A task's block below the gantt separator: its heading row and the note
     rows under it, read from the block's own column (the two-column split
     pairs both columns in one frame row). The block ends at an empty row or
-    the next task's heading in the same column."""
+    the next task's heading in the same column.
+
+    Inc MR-b re-baseline (LLR-4653.5): the blocks follow the stop order — the
+    project's milestone (`Eval report v1`) first — so at 118 `Judge rubric` moves to
+    the right column. The block is read from whichever column holds its heading; the
+    right column is cut to the left one's width (`cw` cells + the one blank before
+    `│`), so a marked note and its twin compare cell for cell in either column."""
     start = next(i for i, (line, _) in enumerate(rows) if line.strip().startswith("─"))
 
-    def col(line):
-        return line[1:line.index("│")] if "│" in line else line[1:]
+    def col(line, side):
+        if "│" not in line:
+            return line[1:] if side == 0 else ""
+        bar = line.index("│")
+        return line[1:bar] if side == 0 else line[bar + 2:bar + 2 + bar - 2] + " "
 
-    i = next(i for i, (line, _) in enumerate(rows[start:], start) if title in col(line))
+    i, side = next((i, side) for i, (line, _) in enumerate(rows[start:], start)
+                   for side in (0, 1) if title in col(line, side))
     out = []
     for line, _ in rows[i + 1:]:
-        part = col(line)
+        part = col(line, side)
         if not part.strip() or any(t in part for t in _CE_TITLES if t != title):
             break
         out.append(part)

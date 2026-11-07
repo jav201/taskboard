@@ -150,7 +150,9 @@ SEAT_SITES = [
     (":3078 gantt row label", "_gantt_frame"),
     (":3613-3617 focus review label", "_focus_review"),
     (":5053-5099 band rule facts", "band_milestone_facts"),
-    (":6537-6547 presentation field row", "_present_task_row"),
+    # Inc MR-b (LLR-4651.1, addendum B-5): the presentation's milestones are drawn
+    # only by its one milestone row; `_present_task_row` lost its milestone branch
+    (":6537-6547 presentation milestone row", "_present_lane_row"),
     (":7146 agenda row", "_agenda_row"),
     (":8433-8467 people task rows", "_task_rows"),
     (":2133 notice reached", "_notify_folded"),

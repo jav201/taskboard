@@ -51,65 +51,98 @@ def _style_at(text, y, x):
 
 
 MILESTONES = [(t[0], t[1], t[2]) for t in pf.TASKS if t[8] and t[3] != "Done"]
+GROUND = set("·┆╎┃│")
+
+
+# Inc MR-b re-baseline (LLR-4651.1, LLR-4652.1, LLR-4652.5): a project's milestones
+# share ONE field row, directly under the span row, drawn by the board gantt's
+# milestone row (`gantt_milestone_row`). HLR-2101's claim — a milestone is its date,
+# never a bar — is asserted on that row; the per-milestone row it was first read on
+# no longer exists. The helpers find the row by its place, not by a title (an
+# unselected milestone's title is no longer painted, MR-a LLR-4603.1).
+def _ms_row(text):
+    rows = text.plain.split("\n")
+    span = next(y for y, r in enumerate(rows) if r.startswith("▌ "))
+    return span + 1, rows[span + 1]
+
+
+def _lane(board, pid):
+    """The project's drawn milestones in walk order (SEAM-1's rule, restated)."""
+    ms = [t for t in views.present_tasks_m(board, pid)[0] if t.milestone]
+    return tuple(sorted(ms, key=lambda t: (t.due_date is None, t.due_date or "9999-12-31",
+                                           t.title, t.id)))
+
+
+def _plain_field(cells) -> str:
+    return "".join(" " if g == " " else g for g, _ in cells)
 
 
 @pytest.mark.parametrize("view", views.PRESENT_VIEWS)
 @pytest.mark.parametrize("width", (36, 80, 118, 160))
 def test_TC_2101_a_milestone_row_is_its_date_not_a_bar(tmp_path, view, width):
-    """TC-2101 (LLR-2101.1): every open milestone of the round's board, in views
-    1 and 2 at four widths, as the cursor and as a plain row: the field holds
-    exactly `gantt_milestone_cells` on the frame's axis (no bar glyph anywhere
-    else), the chip reads `due <Mon D>`, the label holds `◆`; under the cursor
-    the `◆` is painted bright bold (the accent echo of the field), off the cursor
-    in the milestone's own tone."""
+    """TC-2101 (LLR-2101.1), re-baselined by Inc MR-b (LLR-4651.1, LLR-4652.1,
+    LLR-4652.5): every open milestone of the round's board, in views 1 and 2 at four
+    widths, as the cursor and with the cursor on a task: the project's ONE milestone
+    row (under the span) holds no bar glyph anywhere and exactly
+    `gantt_milestone_row`'s cells on the frame's axis; the label holds `◆` and the
+    lead `⟦` only on the cursor; the chip is the cursor milestone's `due <Mon D>`,
+    else the first upcoming one's; under the cursor its `◆` is painted reverse (the
+    shared row's selection, MR-a SEAM-8), off the cursor not."""
     board = _board(tmp_path)
     seen = set()
     for key, pk, title in MILESTONES:
         pid, tid = f"p{pk}", f"t{key}"
         label_w, chip_w, field_w, ax, open_t = _geo(board, pid, width)
-        other = next(t.id for t in open_t if t.id != tid)
+        other = next(t.id for t in open_t if not t.milestone)
         task = board.task_by_id(tid)
-        want = views.gantt_milestone_cells(task, board, ax, pf.TODAY)
+        lane = _lane(board, pid)
+        upcoming = next((m for m in lane if m.due_date and
+                         date.fromisoformat(m.due_date) >= pf.TODAY), None)
         for cursor in (tid, other):
+            on = cursor == tid
             text = views.render_present(board, pid, cursor, pf.TODAY, width, 30, view)
-            y, row = _row(text, title[:8])
+            y, row = _ms_row(text)
             assert vis(row) == width
             field = row[label_w + 1:label_w + 1 + field_w]
             assert not BAR_GLYPHS & set(field), (title, width, field)
-            for x, (glyph, _) in enumerate(want):
-                if glyph != " ":
-                    assert field[x] == glyph, (title, width, x, field)
-            dia = [x for x, ch in enumerate(field) if ch == "◆"]
-            assert len(dia) == sum(g == "◆" for g, _ in want), (title, width, field)
-            assert row[-chip_w:].strip() == f"due {views._md(date.fromisoformat(task.due_date))}"
+            want = _plain_field(views.gantt_milestone_row(lane, tid if on else None, board,
+                                                          ax, pf.TODAY))
+            got = "".join(" " if ch in GROUND else ch for ch in field)
+            assert got == want, (title, width, on, got, want)
+            chip_task = task if on else upcoming
+            chip = (f"due {views._md(date.fromisoformat(chip_task.due_date))}"
+                    if chip_task is not None else "")
+            assert row[-chip_w:].strip() == chip, (title, on, row[-chip_w:])
             assert "◆" in row[:label_w], (title, row[:label_w])
-            assert row[1] == ("⟦" if cursor == tid else " "), (title, row[:label_w])
-            if dia:                    # a field under 3 cells holds no `◆` (as the gantt's)
-                style = _style_at(text, y, label_w + 1 + dia[0])
-                on = cursor == tid
-                assert ("bold" in style and views.HEX["bright"] in style) == on, (title, on, style)
+            assert row[1] == ("⟦" if on else " "), (title, row[:label_w])
+            x = ax.cell(date.fromisoformat(task.due_date))
+            if field_w >= 3 and 0 <= x < field_w and want[x] == "◆":
+                style = _style_at(text, y, label_w + 1 + x)
+                assert ("reverse" in style) == on, (title, on, style)
                 seen.add(on)
     assert seen == ({True, False} if width > 36 else set())
 
 
 def test_TC_2101_a_start_date_does_not_make_a_milestone_a_bar(tmp_path):
-    """TC-2101 (LLR-2101.1 boundary): a milestone given a start date is still one
-    date — the field is `gantt_milestone_cells`, the chip its due alone; a
-    milestone with no due draws an empty field and the chip `no dates`."""
+    """TC-2101 (LLR-2101.1 boundary), re-baselined by Inc MR-b (LLR-4652.5): a
+    milestone given a start date is still one date — the cursor on it, its project's
+    milestone row holds one `◆` and no bar glyph, the chip its due alone; a milestone
+    with no due draws no mark and the chip `no dates`. The cursor moves from `tc2`
+    to the milestone: an unselected milestone's chip is the row's, not its own."""
     board = _board(tmp_path)
     golive = board.task_by_id("tc5")
     golive.start_date = "2026-10-05"
     label_w, chip_w, field_w, ax, _ = _geo(board, "pcp", 118)
-    text = views.render_present(board, "pcp", "tc2", pf.TODAY, 118, 30)
-    _, row = _row(text, "Portal go-live")
+    text = views.render_present(board, "pcp", "tc5", pf.TODAY, 118, 30)
+    _, row = _ms_row(text)
     field = row[label_w + 1:label_w + 1 + field_w]
     assert not BAR_GLYPHS & set(field), field
     assert field.count("◆") == 1
     assert row[-chip_w:].strip() == "due Nov 6"
     golive.start_date = None
     golive.due_date = None
-    text = views.render_present(board, "pcp", "tc2", pf.TODAY, 118, 30)
-    _, row = _row(text, "Portal go-live")
+    text = views.render_present(board, "pcp", "tc5", pf.TODAY, 118, 30)
+    _, row = _ms_row(text)
     field = row[label_w + 1:label_w + 1 + field_w]
     assert "◆" not in field and not BAR_GLYPHS & set(field), field
     assert row[-chip_w:].strip() == "no dates"
@@ -117,26 +150,29 @@ def test_TC_2101_a_start_date_does_not_make_a_milestone_a_bar(tmp_path):
 
 def test_TC_2101_a_late_milestone_is_painted_over(tmp_path):
     """TC-2101 (LLR-2101.1; code review F2) — as amended by batch 2026-10-24-batch-01
-    (MM-D1, one seat): a late milestone's mark itself stays `◆` in `mut` (this
-    board has no classes); the lateness rides the DATE beside it in `over` — the
-    one channel, a non-empty late_chip implies `over` everywhere. Under the
-    cursor the field's `◆` is the bright echo instead."""
+    (MM-D1, one seat) and re-baselined by Inc MR-b (LLR-4652.1, LLR-4652.5; MR-a
+    LLR-4603.3): a late milestone's mark itself stays `◆` in `mut` (this board has no
+    classes); the lateness rides the late tag beside it (`▲3d`) in `over`, and the row
+    shows no chip (no member is upcoming). Under the cursor the `◆` is reverse and the
+    chip its own `due Oct 16` in `over`."""
     board = _board(tmp_path)
     board.task_by_id("tb5").due_date = "2026-10-16"
-    label_w, _, field_w, _, _ = _geo(board, "pbm", 118)
+    label_w, chip_w, field_w, ax, _ = _geo(board, "pbm", 118)
     over, mut = views.HEX["over"], views.HEX["mut"]
-    for cursor, dia_hex in (("tb3", mut), ("tb5", views.HEX["bright"])):
-        text = views.render_present(board, "pbm", cursor, pf.TODAY, 118, 30)
-        y, row = _row(text, "Cut-over weekend")
-        field = row[label_w + 1:label_w + 1 + field_w]
-        x = label_w + 1 + field.index("◆")
-        style = _style_at(text, y, x)
-        assert dia_hex in style, (cursor, style)
-        if cursor == "tb5":               # the cursor echo: bold bright
-            assert "bold" in style, (cursor, style)
-        date_x = label_w + 1 + field.index("Oct 16")
-        assert over in _style_at(text, y, date_x)     # the DATE says late
-        assert row.rstrip().endswith("due Oct 16"), row
+    x0 = label_w + 1 + ax.cell(date(2026, 10, 16))
+    text = views.render_present(board, "pbm", "tb3", pf.TODAY, 118, 30)
+    y, row = _ms_row(text)
+    assert row[x0] == "◆", row
+    style = _style_at(text, y, x0)
+    assert mut in style and "reverse" not in style, style
+    tag = row.index("▲3d", label_w + 1)
+    assert over in _style_at(text, y, tag)                 # the late tag says late
+    assert row[-chip_w:].strip() == "", row
+    text = views.render_present(board, "pbm", "tb5", pf.TODAY, 118, 30)
+    y, row = _ms_row(text)
+    assert row[x0] == "◆" and "reverse" in _style_at(text, y, x0), row
+    assert row.rstrip().endswith("due Oct 16"), row
+    assert over in _style_at(text, y, len(row.rstrip()) - 1)
 
 
 def test_TC_2101_other_rows_are_drawn_as_shipped(tmp_path):
@@ -181,8 +217,12 @@ async def test_AT_2101_the_cut_over_weekend_reads_as_a_milestone(tmp_path, monke
                 await pilot.press(key)
                 await pilot.pause()
             frame = app.screen.query_one("#present-frame").content.plain.split("\n")
-            span = next(r for r in frame if r.startswith("▌ BILLING MIGRATION"))
-            row = next(r for r in frame if "Cut-over weekend" in r and "▎" in r)
+            at = next(y for y, r in enumerate(frame) if r.startswith("▌ BILLING MIGRATION"))
+            span = frame[at]
+            # Inc MR-b re-baseline (LLR-4651.1): the milestone is drawn on the project's
+            # one milestone row, the line under the span; with the cursor on a task its
+            # title is not painted there (MR-a LLR-4603.1), so the row is found by place
+            row = frame[at + 1]
             field = row[31:118 - 14]
             assert field.count("◆") == 1, row
             assert not BAR_GLYPHS & set(field), row
