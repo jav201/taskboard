@@ -1,3 +1,4 @@
 E1 00:56Z MR-b requirements: US 1, HLR 4, LLR 22, AT 6; slice 9 units in views.py/app.py; deck stated unaffected (Opus architect)
 E3 corr 2026-11-06 MR-b design correction RB-2..RB-6, SEC-B1..B3, A-1, A-2 (+A-4, A-5): LLR 25 (+LLR-4651.8, LLR-4652.9, LLR-4652.10), slice 12 units, V nodes 10; lint not-read 0 x3; e2-trace 31/31 (Opus)
 E1-E3 MR-b: E1 2ce3943 (Opus) · E2 1323a51 (Opus) · rulings RB-1..6 · E3 PWN arch 1cbecd4 / sec 232e12f · correction d75a45a (Opus) · E4 start 01:21Z
+E4 MR-b 02:23Z: build 4543a45 (DeepSeek) · tests c77c1c1/f671434 (Opus tester) · integration f99e18b/56b18ca (Opus) GREEN-2 435/0 · E5 start
