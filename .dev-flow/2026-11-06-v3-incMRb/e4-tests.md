@@ -111,7 +111,19 @@ the NC passing proves the byte check can fail, 3/3), AT-4655 hint row ×2, AT-46
 
 ### 4.1 Run result
 
-FILLED FROM THE RUN — see the bottom of this section after the run completes.
+Full suite on base, one complete run (2026-11-06, 22 min 43 s): **98 failed, 4317 passed**, pytest exit 1.
+Every failure is in an E4 file. No other test failed:
+
+| File | RED | Passing by design |
+|---|---|---|
+| `tests/test_present_milestone_row.py` | 68 | 31 |
+| `tests/test_present_milestone_row_at.py` | 13 | 3 |
+| `tests/test_present_milestone.py` (re-baselined) | 11 | 1 (`other_rows`, unchanged) |
+| `tests/test_present_all.py` (4 rewritten, 5 nodes) | 5 | the other 46 unchanged |
+| `tests/test_milestone_marks.py` (B-5 entry) | 1 | — |
+| `tests/test_present_note_highlights.py` (AT-2902 `_block`) | 0 | 2 (an order-neutral rewrite) |
+
+The 7 PRES-V3/PRES-V4 frame oracles and the 3 deck byte oracles of `test_present_html_export.py` pass (B-9).
 
 ## 5. Existing tests rewritten (each one, why, and what was kept)
 
