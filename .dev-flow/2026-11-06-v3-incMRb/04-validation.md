@@ -32,7 +32,7 @@ The full suite does not run in this increment. It runs once, at the batch end.
 AT-4651..AT-4656 are in `tests/test_present_milestone_row_at.py`: 7 functions, 16 items. All are GREEN in `evidence/green-3.txt`.
 
 ## Trace
-`trace_check.py --req .dev-flow/2026-11-06-v3-incMRb/01-requirements.md --base 8ca174c --src taskboard`: see the commit message for the result. The canon (`--canon`) is folded at the batch end.
+`trace_check.py --req .dev-flow/2026-11-06-v3-incMRb/01-requirements.md --base 8ca174c --src taskboard` on `7e71bcd`: **1 US, 29 active requirements (0 withdrawn), 0 gaps, exit 0.** The canon (`--canon`) is folded at the batch end.
 
 ## Not done / not run
 - **The independent re-check of the `full`/`partial` marks** in `02-test-cases.md` (E5): owed, by someone who did not write them.
