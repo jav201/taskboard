@@ -151,7 +151,7 @@ async def test_AT_4653_view_3_rows_walk_fold_rail_and_overflow(home):
         for _ in range(8):
             await keys(pilot, "down")
             r = mp.ptimeline(app)
-            cur = [i for i in range(len(r)) if r.lines[i].startswith(" ⟦▎")]
+            cur = mp.cursor_rows(r)
             assert len(cur) == 1, r.lines
             walk.append((cur[0], r.label(cur[0])))
         ms_line = r.head("Pilot rollout") + 1
@@ -203,8 +203,11 @@ async def test_AT_4654_hiding_milestones_from_the_row(home, size):
         assert "Steering go/no-go" in rows, rows
         await keys(pilot, "escape", "a")
         r = mp.pframe(app)
-        f, at = _row_cells(r, b, _body(r)[0], ax, ("tm3",))
-        assert f[at["tm3"]:at["tm3"] + 2] == "■2", f
+        # base `space` steps the cursor to the next stop (m4), and LLR-4653.4 keeps
+        # that: m3 back shares m4's cell, the cursor member leading it, counted 2
+        assert mp.screen_of(app)._cursor_id == "tm4"
+        f, at = _row_cells(r, b, _body(r)[0], ax, ("tm3", "tm4"))
+        assert at["tm3"] == at["tm4"] and f[at["tm3"]:at["tm3"] + 2] == "▲2", f
     async with mp.present(home, size, sel="tstore",
                           hidden=("review",)) as (app, pilot):
         b = mp.screen_of(app)._board

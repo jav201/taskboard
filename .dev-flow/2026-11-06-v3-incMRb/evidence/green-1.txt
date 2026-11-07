@@ -1,0 +1,199 @@
+# cwd: /c/Users/jjgh8/Github/taskboard-wt/ms-row-proto
+# HEAD: 688dc9b
+# taskboard.__file__: C:\Users\jjgh8\Github\taskboard-wt\ms-row-proto\taskboard\__init__.py
+# MR-a tests vs 8ca174c (empty = byte-identical):
+# command: env -u NO_COLOR python -m pytest -p no:cacheprovider -q -rfE <files>
+C:\Users\jjgh8\anaconda3\Lib\site-packages\pytest_asyncio\plugin.py:207: PytestDeprecationWarning: The configuration option "asyncio_default_fixture_loop_scope" is unset.
+The event loop scope for asynchronous fixtures will default to the fixture caching scope. Future versions of pytest-asyncio will default the loop scope for asynchronous fixtures to function scope. Set the default fixture loop scope explicitly in order to avoid unexpected behavior in the future. Valid fixture loop scopes are: "function", "class", "module", "package", "session"
+
+  warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCOPE_UNSET))
+........................................................................ [ 16%]
+............F..................FFF...................................... [ 33%]
+...................................F...................F................ [ 49%]
+........................................................................ [ 66%]
+........................................................................ [ 82%]
+........................................................................ [ 99%]
+...                                                                      [100%]
+================================== FAILURES ===================================
+__________ test_TC_4922_LLR_4653_2_down_from_the_head_walks_the_row ___________
+
+home = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-32512/test_TC_4922_LLR_4653_2_down_f0/.taskboard')
+
+    async def test_TC_4922_LLR_4653_2_down_from_the_head_walks_the_row(home):
+        """TC-4922 (LLR-4653.2): `3` at 118x30, `\u2192` (the timeline), the cursor on Pilot
+        rollout's head, `\u2193`\xd75 \u2192 m2, m3, m4, m5 (each the row's `\u27e6` label), then `Pilot
+        store list` (its own row); 5/5. RED on base."""
+        async with mp.present(home, (118, 30), sel="tm2", view=3) as (app, pilot):
+            await mp.keys(pilot, "right")
+            assert mp.screen_of(app)._all_cur == ("proj", "ppr")
+            got = []
+            for _ in range(5):
+                await mp.keys(pilot, "down")
+                r = mp.ptimeline(app)
+                cur = [i for i in range(len(r)) if r.lines[i].startswith(" \u27e6\u258e")]
+>               assert len(cur) == 1, r.lines
+E               AssertionError: ['\u25c6 PRESENT \xb7 3 projects  all                                            16 open \xb7 \u25b21 past due ', '   today Tue Oct 20...\xb7    due Oct 24', '  \u258e Pilot store list \xb7\xb7\xb7\xb7\xb7\xb7\u27e6\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u27e7\xb7\xb7\xb7\xb7\u2506\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\u2506\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\u2506\xb7\xb7\xb7\xb7\xb7     Oct 17\u201323', ...]
+E               assert 0 == 1
+E                +  where 0 = len([])
+
+tests\test_present_milestone_row.py:568: AssertionError
+____________ test_AT_4653_view_3_rows_walk_fold_rail_and_overflow _____________
+
+home = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-32512/test_AT_4653_view_3_rows_walk_0/.taskboard')
+
+    async def test_AT_4653_view_3_rows_walk_fold_rail_and_overflow(home):
+        """AT-4653 (LLR-4651.2, .6, .7; LLR-4653.2): `3` at 118x30 \u2192 under each head one
+        milestone row, then the tasks; `\u2192` to the timeline, `\u2193` from Pilot rollout's head
+        walks m2..m5 (the row's `\u27e6` label), then the 4 tasks; `\u2190` \u2192 the rail on Pilot
+        rollout (base); `\u2192`, then down to Eval harness's head, `enter` folds it: no
+        milestone row under it. Then at 118x19 (the frame 18 rows: room 15, need 15, RB-4)
+        the overflow folds no project, where base folds 2. RED on base."""
+        async with mp.present(home, (118, 30), sel="tm2", view=3) as (app, pilot):
+            r = mp.ptimeline(app)
+            heads = r.heads()
+            assert len(heads) == 3, r.lines
+            for h, end in zip(heads, heads[1:] + [len(r)]):
+                assert [i for i in range(h + 1, end) if r.has_mark(i)] == [h + 1], r.lines[h:end]
+            await keys(pilot, "right")
+            walk = []
+            for _ in range(8):
+                await keys(pilot, "down")
+                r = mp.ptimeline(app)
+                cur = [i for i in range(len(r)) if r.lines[i].startswith(" \u27e6\u258e")]
+>               assert len(cur) == 1, r.lines
+E               AssertionError: ['\u25c6 PRESENT \xb7 3 projects  all                                            16 open \xb7 \u25b21 past due ', '   today Tue Oct 20...\xb7    due Oct 24', '  \u258e Pilot store list \xb7\xb7\xb7\xb7\xb7\xb7\u27e6\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u27e7\xb7\xb7\xb7\xb7\u2506\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\u2506\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\xb7\u2506\xb7\xb7\xb7\xb7\xb7     Oct 17\u201323', ...]
+E               assert 0 == 1
+E                +  where 0 = len([])
+
+tests\test_present_milestone_row_at.py:155: AssertionError
+_____________ test_AT_4654_hiding_milestones_from_the_row[size0] ______________
+
+home = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-32512/test_AT_4654_hiding_milestones0/.taskboard')
+size = (118, 30)
+
+    @pytest.mark.parametrize("size", mp.SIZES)
+    async def test_AT_4654_hiding_milestones_from_the_row(home, size):
+        """AT-4654 (LLR-4651.3, .5; LLR-4653.4): view 1, the cursor on m3, `space` \u2192 the row
+        holds m2, m4, m5 (m4 alone: `\u25b2`, no count); `u` lists m3; `a` \u2192 m3 back on the row
+        (`\u25a02`); class Review hidden in `#`, then `R` \u2192 the row holds m4, m5 only; h1 hidden
+        with `space` \u2192 Docs & handover draws no milestone row. RED on base."""
+        W, _H = size
+        async with mp.present(home, size, sel="tm3") as (app, pilot):
+            b = mp.screen_of(app)._board
+            ax = mp.axis12(b, "ppr", W)
+            await keys(pilot, "space")
+            r = mp.pframe(app)
+            f, at = _row_cells(r, b, _body(r)[0], ax, ("tm2", "tm4", "tm5"))
+            assert f[at["tm2"]] == "\u25a0" and f[at["tm5"]] == "\u2605", f
+            assert f[at["tm4"]] == "\u25b2" and not re.match(r"[0-9+]", f[at["tm4"] + 1]), f
+            await keys(pilot, "u")
+            rows = app.screen.query_one("#picker-rows").content.plain
+            assert "Steering go/no-go" in rows, rows
+            await keys(pilot, "escape", "a")
+            r = mp.pframe(app)
+            f, at = _row_cells(r, b, _body(r)[0], ax, ("tm3",))
+>           assert f[at["tm3"]:at["tm3"] + 2] == "\u25a02", f
+E           AssertionError:         \u25a0 \u25b21d     \u25b22 Store l\u2026 \u2605 Oct 30                                   
+E           assert '\u25b22' == '\u25a02'
+E             
+E             - \u25a02
+E             + \u25b22
+
+tests\test_present_milestone_row_at.py:207: AssertionError
+_____________ test_AT_4654_hiding_milestones_from_the_row[size1] ______________
+
+home = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-32512/test_AT_4654_hiding_milestones1/.taskboard')
+size = (80, 24)
+
+    @pytest.mark.parametrize("size", mp.SIZES)
+    async def test_AT_4654_hiding_milestones_from_the_row(home, size):
+        """AT-4654 (LLR-4651.3, .5; LLR-4653.4): view 1, the cursor on m3, `space` \u2192 the row
+        holds m2, m4, m5 (m4 alone: `\u25b2`, no count); `u` lists m3; `a` \u2192 m3 back on the row
+        (`\u25a02`); class Review hidden in `#`, then `R` \u2192 the row holds m4, m5 only; h1 hidden
+        with `space` \u2192 Docs & handover draws no milestone row. RED on base."""
+        W, _H = size
+        async with mp.present(home, size, sel="tm3") as (app, pilot):
+            b = mp.screen_of(app)._board
+            ax = mp.axis12(b, "ppr", W)
+            await keys(pilot, "space")
+            r = mp.pframe(app)
+            f, at = _row_cells(r, b, _body(r)[0], ax, ("tm2", "tm4", "tm5"))
+            assert f[at["tm2"]] == "\u25a0" and f[at["tm5"]] == "\u2605", f
+            assert f[at["tm4"]] == "\u25b2" and not re.match(r"[0-9+]", f[at["tm4"] + 1]), f
+            await keys(pilot, "u")
+            rows = app.screen.query_one("#picker-rows").content.plain
+            assert "Steering go/no-go" in rows, rows
+            await keys(pilot, "escape", "a")
+            r = mp.pframe(app)
+            f, at = _row_cells(r, b, _body(r)[0], ax, ("tm3",))
+>           assert f[at["tm3"]:at["tm3"] + 2] == "\u25a02", f
+E           AssertionError: \u25b21d \u25a0    \u25b22    \u2605 Oct 30                      
+E           assert '\u25b22' == '\u25a02'
+E             
+E             - \u25a02
+E             + \u25b22
+
+tests\test_present_milestone_row_at.py:207: AssertionError
+_________ test_AT_2902_split_view_colours_highlights_two_sizes[size0] _________
+
+home = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-32512/test_AT_2902_split_view_colour0/.taskboard')
+size = (118, 30)
+
+    @pytest.mark.parametrize("size", [(118, 30), (80, 24)])
+    async def test_AT_2902_split_view_colours_highlights_two_sizes(home, size):
+        """AT-2902 (HLR-2902, LLR-2902.1): the split view at 118x30 AND 80x24
+        carries the three tones with no marker run; the `++…++` span crossing a
+        row boundary keeps #4ade80 on BOTH rows it touches; a note and its
+        marker-free twin wrap to identical row shapes (row count and per-row cell
+        counts)."""
+        from textual.widgets import Static
+    
+        from taskboard.__main__ import open_app
+        _seed(home, {"tc5": _WRAP_NOTE, "tc6": _WRAP_TWIN})
+        app = open_app(None)
+        async with app.run_test(size=size) as pilot:
+            await _present(pilot, app, "tc5", "2")
+            content = app.screen.query_one("#present-frame", Static).content
+            rows = _frame(content)
+            joined = "\n".join(line for line, _ in rows)
+            for run in ("==", "!!", "++"):
+                assert run not in joined, (size, run, joined)
+            styles = {style for _, spans in rows for _, style in spans}
+            for key in ("soon", "over", "green", "ink"):
+                assert HEX[key] in styles, (size, key, styles)
+            first = next(spans for line, spans in rows if "alpha" in line)
+            last = next(spans for line, spans in rows if "lima" in line)
+>           assert any(s == HEX["green"] and "alpha" in t for t, s in first), (size, first)
+E           AssertionError: ((118, 30), [('\u258e ', '#60a5fa'), ('Draft with ', '#e6edf3'), ('@Ana\\xa0Ruiz', 'bold #f472b6'), ('; ', '#e6edf3'), ('sign-off by the sponsor', '#4ade80'), (' \u2502 ', '#334154'), ...])
+E           assert False
+E            +  where False = any(<generator object test_AT_2902_split_view_colours_highlights_two_sizes.<locals>.<genexpr> at 0x0000019AF0CA5620>)
+
+tests\test_present_note_highlights.py:194: AssertionError
+_ test_TC_2604_the_sites_enumeration_every_milestone_mark_routes_through_the_seat _
+
+    def test_TC_2604_the_sites_enumeration_every_milestone_mark_routes_through_the_seat():
+        """The enumeration guard (LLR-2604.2): the 20 sites take their (glyph, style,
+        chip) from `milestone_mark` — the seat's call sits in each site's function —
+        and every literal `\u25c6` left in views.py/app.py is one of the declared
+        exclusions, count tails, seat internals or `?`/legend help text. A NEW
+        milestone site that draws outside the seat, or an exclusion edited to call
+        the seat, fails this census. RED: a site edited back to `c("\u25c6", \u2026)`."""
+        src = VIEWS_SRC.read_text(encoding="utf-8")
+        app_src = APP_SRC.read_text(encoding="utf-8")
+        for refs, fn in SEAT_SITES:
+            body = _function_body(src, fn) or _function_body(app_src, fn)
+>           assert body is not None and "milestone_mark(" in body, \
+                f"{refs}: {fn} does not route through the seat"
+E           AssertionError: :6537-6547 presentation milestone row: _present_lane_row does not route through the seat
+E           assert ('                      p: _PresentGeo) -> str:\n    """The presentation\'s milestone row (SEAM-4, SEAM-5): MR-a\'s fie..." " * (p.chip_w + 1))\n    return _pad(_pad(label, p.label_w) + " " + _present_field(cells, p.ax) + chip, p.width)\n\n' is not None and 'milestone_mark(' in '                      p: _PresentGeo) -> str:\n    """The presentation\'s milestone row (SEAM-4, SEAM-5): MR-a\'s fie..." " * (p.chip_w + 1))\n    return _pad(_pad(label, p.label_w) + " " + _present_field(cells, p.ax) + chip, p.width)\n\n')
+
+tests\test_milestone_marks.py:281: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_present_milestone_row.py::test_TC_4922_LLR_4653_2_down_from_the_head_walks_the_row
+FAILED tests/test_present_milestone_row_at.py::test_AT_4653_view_3_rows_walk_fold_rail_and_overflow
+FAILED tests/test_present_milestone_row_at.py::test_AT_4654_hiding_milestones_from_the_row[size0]
+FAILED tests/test_present_milestone_row_at.py::test_AT_4654_hiding_milestones_from_the_row[size1]
+FAILED tests/test_present_note_highlights.py::test_AT_2902_split_view_colours_highlights_two_sizes[size0]
+FAILED tests/test_milestone_marks.py::test_TC_2604_the_sites_enumeration_every_milestone_mark_routes_through_the_seat
+6 failed, 429 passed in 207.99s (0:03:27)
+# pytest exit: 1

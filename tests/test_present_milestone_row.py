@@ -564,14 +564,16 @@ async def test_TC_4922_LLR_4653_2_down_from_the_head_walks_the_row(home):
         for _ in range(5):
             await mp.keys(pilot, "down")
             r = mp.ptimeline(app)
-            cur = [i for i in range(len(r)) if r.lines[i].startswith(" ⟦▎")]
+            cur = mp.cursor_rows(r)
             assert len(cur) == 1, r.lines
             got.append((cur[0], r.label(cur[0])[6 if cur[0] == 4 else 4:].strip()))
-        want_titles = ["Rubric sign-", "Steering go/", "Store list f", "Pilot launch",
-                       "Pilot store "]
         assert [g[0] for g in got] == [4, 4, 4, 4, 5], got
-        for (_i, lab), w in zip(got, want_titles):
-            assert lab.startswith(w[:10]), (lab, w)
+        # view 3's label column is 17 cells (R-7, LLR-4652.4): the title whole, or its
+        # head cut by cell width with `…`, the `k/n` tag kept after it
+        for (_i, lab), t in zip(got, PILOT_MS_TITLES + PILOT_TASKS[:1]):
+            head = re.sub(r" \d+/\d+$", "", lab)
+            assert head == t or (head.endswith("…") and len(head) >= 9
+                                 and t.startswith(head[:-1])), (lab, t)
 
 
 def test_TC_4923_LLR_4653_3_the_cursor_falls_back_to_the_first_stop():

@@ -91,3 +91,10 @@
 - **What changed:** `_present_task_row` joins the slice as unit 12. Its `if task.milestone:` branch is removed. The slice now holds 12 units in 2 files. No statement changes: the LLRs that map the unit already require one milestone row and one row per non-milestone.
 - **Why:** after MR-b, both callers pass only non-milestones, so the branch is dead code. A test that called it directly would test an entry point that no product route calls (E4's partial rule), and `R` would hold two ways to draw a milestone, which could drift apart.
 - **Evidence:** `views.py:7475-7490`; callers `views.py:7617`, `views.py:7894`; `tests/test_milestone_marks.py:153`.
+
+### LED-2026-11-06-incMRb.10 — E4 integration, ruling J-2: LLR-4652.10's negative control is `\[x`
+- **Requirement:** LLR-4652.10
+- **Date:** 2026-11-06
+- **What changed:** the negative-control example is `\[x` (base draws `▌ [x`). The "RED on base" claim for `a\[b]` is withdrawn: base already draws `a\[b]`. `a\[b]` stays in the threshold as a positive case. The 6/6 count does not change.
+- **Why:** E4 tester finding F-1. On `8ca174c`, rich's `escape` already escapes the tag-shaped `[b]`, so `a\[b]` could not be the RED regression. The base defect is a backslash before a `[` that does not open a tag.
+- **Evidence:** `e4-tests.md` §7 F-1; `TC-4920[a\[b]]` passes on base and `TC-4920[\[x]` is RED on base (`evidence/red-base.txt`); GREEN on MR-b (`evidence/green-2.txt`).

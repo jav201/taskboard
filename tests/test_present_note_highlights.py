@@ -137,33 +137,59 @@ _WRAP_TWIN = ("one two alpha bravo charlie delta echo foxtrot golf hotel india "
 _CE_TITLES = ("Golden question set", "Judge rubric", "Eval report v1")
 
 
-def _block(rows, title):
-    """A task's block below the gantt separator: its heading row and the note
-    rows under it, read from the block's own column (the two-column split
-    pairs both columns in one frame row). The block ends at an empty row or
-    the next task's heading in the same column.
+def _col_bounds(line, side):
+    """The cells [lo, hi) of `line` that hold column `side` (0 left, 1 right) of the
+    two-column split; the right column is cut to the left one's width (`cw` cells +
+    the one blank before `│`)."""
+    if "│" not in line:
+        return (1, len(line)) if side == 0 else (0, 0)
+    bar = line.index("│")
+    return (1, bar) if side == 0 else (bar + 2, min(len(line), 2 * bar))
+
+
+def _col(line, side):
+    lo, hi = _col_bounds(line, side)
+    return line[lo:hi] + ("" if side == 0 or hi == lo else " ")
+
+
+def _block_rows(rows, title):
+    """(side, row indices) of a task's block below the gantt separator: the note
+    rows under its heading, in the heading's own column (the two-column split
+    pairs both columns in one frame row). The block ends at an empty row or the
+    next task's heading in the same column.
 
     Inc MR-b re-baseline (LLR-4653.5): the blocks follow the stop order — the
     project's milestone (`Eval report v1`) first — so at 118 `Judge rubric` moves to
-    the right column. The block is read from whichever column holds its heading; the
-    right column is cut to the left one's width (`cw` cells + the one blank before
-    `│`), so a marked note and its twin compare cell for cell in either column."""
+    the right column. The block is read from whichever column holds its heading."""
     start = next(i for i, (line, _) in enumerate(rows) if line.strip().startswith("─"))
-
-    def col(line, side):
-        if "│" not in line:
-            return line[1:] if side == 0 else ""
-        bar = line.index("│")
-        return line[1:bar] if side == 0 else line[bar + 2:bar + 2 + bar - 2] + " "
-
     i, side = next((i, side) for i, (line, _) in enumerate(rows[start:], start)
-                   for side in (0, 1) if title in col(line, side))
+                   for side in (0, 1) if title in _col(line, side))
     out = []
-    for line, _ in rows[i + 1:]:
-        part = col(line, side)
+    for j in range(i + 1, len(rows)):
+        part = _col(rows[j][0], side)
         if not part.strip() or any(t in part for t in _CE_TITLES if t != title):
             break
-        out.append(part)
+        out.append(j)
+    return side, out
+
+
+def _block(rows, title):
+    """A task's block text, column-cut (see `_block_rows`), so a marked note and its
+    twin compare cell for cell in either column."""
+    side, idx = _block_rows(rows, title)
+    return [_col(rows[j][0], side) for j in idx]
+
+
+def _col_spans(content, rows, j, side):
+    """Row `j`'s (span text, style) pairs clipped to column `side` alone, so a
+    block's styles are read from its own column, never its neighbour's."""
+    off = sum(len(line) + 1 for line, _ in rows[:j])
+    lo, hi = _col_bounds(rows[j][0], side)
+    out = []
+    for s in content.spans:
+        a, b = max(s.start, off + lo), min(s.end, off + hi)
+        if a < b:
+            out.append((content.plain[a:b], str(s.style)))
     return out
 
 
@@ -189,8 +215,13 @@ async def test_AT_2902_split_view_colours_highlights_two_sizes(home, size):
         styles = {style for _, spans in rows for _, style in spans}
         for key in ("soon", "over", "green", "ink"):
             assert HEX[key] in styles, (size, key, styles)
-        first = next(spans for line, spans in rows if "alpha" in line)
-        last = next(spans for line, spans in rows if "lima" in line)
+        # Inc MR-b (LLR-4653.5): the twin's block may now sit above the marked one
+        # (stop order), so the `++…++` rows are read in the marked block's own column
+        side, idx = _block_rows(rows, "Golden question set")
+        first = next(_col_spans(content, rows, j, side) for j in idx
+                     if "alpha" in _col(rows[j][0], side))
+        last = next(_col_spans(content, rows, j, side) for j in idx
+                    if "lima" in _col(rows[j][0], side))
         assert any(s == HEX["green"] and "alpha" in t for t, s in first), (size, first)
         assert any(s == HEX["green"] and "lima" in t for t, s in last), (size, last)
         tail = next(spans for line, spans in rows if "plain tail words" in line)

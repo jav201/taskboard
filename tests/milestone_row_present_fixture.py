@@ -241,6 +241,14 @@ def pframe(app) -> Rows:
     return Rows(text, scr.size.width)
 
 
+def cursor_rows(r: Rows) -> list[int]:
+    """The timeline rows drawn as the cursor: the milestone row with its lead
+    ` ⟦▎` (LLR-4652.4), or a task row drawn as at base — `  ▎ <title>` with the
+    `⟦━⟧` echo on its bar (graph-proto-V `_present_task_row`, LLR-4651.4)."""
+    return [i for i, ln in enumerate(r.lines)
+            if ln.startswith(" ⟦▎") or (ln.startswith("  ▎") and "⟦" in ln)]
+
+
 def ptimeline(app) -> Rows:
     """View 3's timeline as the screen draws it (the rail cut off when drawn)."""
     scr = screen_of(app)
