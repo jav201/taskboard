@@ -1,0 +1,8 @@
+﻿ok   mrb-v1 118x30 (1095 x 627, 132 colours sampled) via PrintWindow, try 1, state OK view_ok=True width_ok=True - window closed
+ok   mrb-v1 80x24 (753 x 513, 124 colours sampled) via PrintWindow, try 1, state OK view_ok=True width_ok=True - window closed
+ok   mrb-v2 118x30 (1095 x 627, 132 colours sampled) via PrintWindow, try 1, state OK view_ok=True width_ok=True - window closed
+ok   mrb-v2 80x24 (753 x 513, 129 colours sampled) via PrintWindow, try 1, state OK view_ok=True width_ok=True - window closed
+ok   mrb-v3 118x30 (1095 x 627, 150 colours sampled) via PrintWindow, try 1, state OK view_ok=True width_ok=True - window closed
+ok   mrb-v3 80x24 (753 x 513, 132 colours sampled) via PrintWindow, try 1, state OK view_ok=True width_ok=True - window closed
+ok   mrb-hostile 118x30 (1095 x 627, 136 colours sampled) via PrintWindow, try 1, state OK view_ok=True width_ok=True - window closed
+ok   mrb-hostile 80x24 (753 x 513, 133 colours sampled) via PrintWindow, try 1, state OK view_ok=True width_ok=True - window closed
