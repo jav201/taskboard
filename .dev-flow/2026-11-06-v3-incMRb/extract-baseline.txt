@@ -1,0 +1,86 @@
+# Extractor output — baseline graph at 2ce3943 (marks tree taskboard-wt/incMRb-marks, 14 generated marks; tree removed after the run)
+# command: python code-wire/tools/codewire_lint.py ms-row-proto/.dev-flow/2026-11-06-v3-incMRb/graph-baseline.cw.md   (nodes=14 entities=7 edges=22 findings=0 not read=0, exit 0)
+# command: python code-wire/tools/codewire_marks.py --repo taskboard-wt/incMRb-marks --graph ms-row-proto/.dev-flow/2026-11-06-v3-incMRb/graph-baseline.cw.md   (14 marks written, 0 nodes without code, exit 0)
+# command: python code-wire/tools/codewire_extract.py --repo taskboard-wt/incMRb-marks --graph ms-row-proto/.dev-flow/2026-11-06-v3-incMRb/graph-baseline.cw.md --path taskboard/app.py --path taskboard/views.py --out <tmp>
+# exit code: 1 — 9 findings, all "unannotated in code" (6 parameters of _all_layout/_all_timeline/render_present_all; 3 returns: walk_key, _all_layout, _all_timeline). No type mismatch, no missing node, no mark drift. A first run found 2 mismatches on present_deck_boards (the graph wrote `tuple`; the normaliser does not rewrite a nested `X | None`); the graph now writes the code's `tuple[str|None, str, str, Board]`.
+# NOTE: line numbers below are in the MARKED tree (each mark adds one line above its def); the graph and baseline-notes.md give 2ce3943 lines.
+# NOTE: resolution is by name. Class (added by hand): REAL = a direct call in the caller's body; LIFTED = reached through an unmarked def (`self._paint` -> `_frame_text`/`_render_all` at app.py:290/298; `_all_head_row` at views.py:7779; `_present_span_row` at views.py:7475). The rest is verbatim.
+
+## stdout
+marks=14 graph_nodes=14 calls=21 findings=9 parse_failures=0
+
+## diff-report.md (verbatim, with a Class column added to the calls table)
+# Code-Wire extractor report
+
+- Marks found: 14
+- Graph nodes parsed: 14
+- Real calls between marked nodes: 21
+- Findings: 9 (9 drift, 0 info)
+- Ambiguous call resolutions (a name matched several defs): 925
+- Files that failed to parse: 0
+
+Type normalisation: spaces and quotes dropped; `List/Dict/Tuple/Set` -> builtins; `X | None` and graph `X?` -> `Optional[X]`; graph `(Callable) A->B` -> `Callable[[A], B]`; graph `tuple(A a, B b)` -> `tuple[A, B]`. A bare graph container (`dict`) against a parameterised code type (`dict[str, Any]`) is info (loose match), not drift.
+
+Call resolution is name-based (`f()`, `Class()` -> `__init__`, `self.m()`, `x.m()` -> top-level `m` or a marked method `m`); dynamic calls and callables passed as values are not seen. Tests excluded.
+
+## Counts
+
+| Kind | Count |
+|---|---|
+| Parameter unannotated in code (cannot compare) | 6 |
+| Return unannotated in code (cannot compare) | 3 |
+
+## Real calls between marked nodes
+
+| Caller | Callee | Sites | Class |
+|---|---|---|---|
+| `PresentScreen._shown_ids` | `present_tasks_m` | taskboard/app.py:404 | REAL |
+| `PresentScreen.action_hide` | `PresentScreen._cursor` | taskboard/app.py:513 | REAL |
+| `PresentScreen.action_hide` | `PresentScreen._shown_ids` | taskboard/app.py:512 | REAL |
+| `PresentScreen.action_hide` | `render_present` | taskboard/app.py:298 | LIFTED |
+| `PresentScreen.action_hide` | `render_present_all` | taskboard/app.py:290 | LIFTED |
+| `PresentScreen.action_move` | `PresentScreen._cursor` | taskboard/app.py:438 | REAL |
+| `PresentScreen.action_move` | `PresentScreen._shown_ids` | taskboard/app.py:437 | REAL |
+| `PresentScreen.action_move` | `render_present` | taskboard/app.py:298 | LIFTED |
+| `PresentScreen.action_move` | `render_present_all` | taskboard/app.py:290 | LIFTED |
+| `_all_plan` | `present_tasks_m` | taskboard/views.py:7721 | REAL |
+| `_all_timeline` | `_all_layout` | taskboard/views.py:7877 | REAL |
+| `_all_timeline` | `_all_plan` | taskboard/views.py:7868 | REAL |
+| `_all_timeline` | `_present_field` | taskboard/views.py:7779 | LIFTED |
+| `_all_timeline` | `_present_task_row` | taskboard/views.py:7903 | REAL |
+| `_present_task_row` | `_present_field` | taskboard/views.py:7495, taskboard/views.py:7508 | REAL |
+| `present_deck_boards` | `present_tasks_m` | taskboard/views.py:7677 | REAL |
+| `render_present` | `_present_field` | taskboard/views.py:7475 | LIFTED |
+| `render_present` | `_present_task_row` | taskboard/views.py:7622 | REAL |
+| `render_present` | `present_tasks_m` | taskboard/views.py:7599 | REAL |
+| `render_present_all` | `_all_timeline` | taskboard/views.py:7943, taskboard/views.py:7947 | REAL |
+| `render_present_all` | `render_present` | taskboard/views.py:7940 | REAL |
+
+Top-level sites (no marked node above them):
+
+- `PresentScreen._cursor`: taskboard/app.py:574
+- `PresentScreen._shown_ids`: taskboard/app.py:574
+- `PresentScreen.action_hide`: prototypes/present_portfolio/app_capture.py:213
+- `PresentScreen.action_move`: prototypes/present_portfolio/app_capture.py:196, prototypes/present_views/app_capture.py:106, taskboard/app.py:450
+- `_all_timeline`: prototypes/backlog_round/proto.py:864
+- `_present_field`: prototypes/present_portfolio/portfolio_proto.py:161, prototypes/present_portfolio/portfolio_proto.py:202, prototypes/present_rulers/app_capture.py:107, prototypes/present_rulers/app_capture.py:122
+- `_present_task_row`: prototypes/present_portfolio/portfolio_proto.py:192, prototypes/present_rulers/proto.py:150, prototypes/present_views/views_d.py:97, prototypes/present_views/views_proto.py:106, prototypes/present_views/views_proto.py:374
+- `gantt_plan.<locals>.walk_key`: taskboard/views.py:2512 (ref)
+- `present_deck_boards`: taskboard/app.py:648
+- `present_tasks_m`: prototypes/milestone_marks/proto.py:988 (ref), prototypes/milestone_marks/proto.py:989 (ref)
+- `render_present`: prototypes/present_portfolio/app_capture.py:106, prototypes/present_portfolio/portfolio_proto.py:373, prototypes/present_rulers/proto.py:129
+
+## Parameter unannotated in code (cannot compare)
+
+- `taskboard/views.py:7813` — `plan` has no annotation (graph: `list`)
+- `taskboard/views.py:7813` — `folded` has no annotation (graph: `frozenset`)
+- `taskboard/views.py:7864` — `cur` has no annotation (graph: `Optional[tuple]`)
+- `taskboard/views.py:7864` — `folded` has no annotation (graph: `frozenset`)
+- `taskboard/views.py:7929` — `cursor` has no annotation (graph: `Optional[tuple]`)
+- `taskboard/views.py:7929` — `folded` has no annotation (graph: `frozenset`)
+
+## Return unannotated in code (cannot compare)
+
+- `taskboard/views.py:2490` — graph `tuple`, no return annotation
+- `taskboard/views.py:7813` — graph `tuple[dict, bool, list, dict]`, no return annotation
+- `taskboard/views.py:7864` — graph `tuple[list[str], list, Optional[tuple]]`, no return annotation
